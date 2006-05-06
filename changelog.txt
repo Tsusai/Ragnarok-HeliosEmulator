@@ -1,3 +1,14 @@
+- Rev 2-
+[2006/05/06] - RaX - Overview : Added Trunk/src/Config/ServerOptions.pas
+[2006/05/06] - RaX - Added basic INI functionality. INI will be named ServerOptions.ini
+ and will always be in the same folder as the exe.
+[2006/05/06] - RaX - Class TServerOptions - TMemINI descendant with ini keys as
+ class variables and  save, load, and writenewini as methods.
+[2006/05/06] - RaX - TServerOptions.Save() - saves ini to disk.
+[2006/05/06] - RaX - TServerOptions.Load() - Loads ini keys into variables.
+[2006/05/06] - RaX - TServerOptions.WriteNewINI() - Writes a new copy of the ini with default values.
+-
+
 - Rev 1-
 [2006/05/05] - Tsusai - Import to http://opensvn.csie.org/HeliosProject/
 -
