@@ -1,3 +1,9 @@
+- Rev 3-
+[2006/05/06] - Tsusai - Overview : Updated Serveroptions to what RaX wants, an "OnChange" idea.
+[2006/05/06] - Tsusai - ServerOptions: Configred to work like prometheus, load what is available,
+ save all ini options.
+-
+
 - Rev 2-
 [2006/05/06] - RaX - Overview : Added Trunk/src/Config/ServerOptions.pas
 [2006/05/06] - RaX - Added basic INI functionality. INI will be named ServerOptions.ini
