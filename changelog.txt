@@ -1,3 +1,14 @@
+- Rev 4-
+[2006/05/08] - RaX - Overview : Added ServerName under new section "CharaOptions" in serveroptions.pas
+Made all INI options actually affect code...=)
+[2006/05/08] - RaX : ServerOptions.pas - Added SetServerName, fServerName, and LoadCharaOptions to do
+ their respective tasks, exactly like similiarly named routines/vars.
+[2006/05/08] - RaX : Console.pas - Replaced hardcoded variables for server ports/ internal chara
+ server name with their respective INI variables.
+[2006/05/08] - RaX : TODO:: Input validation on ini variables, making sure that ports are between
+1 and 32767, that IP's are valid, etc.
+-
+
 - Rev 3-
 [2006/05/06] - Tsusai - Overview : Updated Serveroptions to what RaX wants, an "OnChange" idea.
 [2006/05/06] - Tsusai - ServerOptions: Configred to work like prometheus, load what is available,

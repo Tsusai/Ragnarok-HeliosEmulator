@@ -52,19 +52,19 @@ var
 	Success : Boolean;
 begin
   Console('');
-  Console('- Helios is starting...');
-	LoginServer.DefaultPort := 6900;
-	CharaServer.DefaultPort := 6121;
-	ZoneServer.DefaultPort  := 5121;
-	LoginServer.Active := true;
-	//CharaServer.Active := true;
-	//ZoneServer.Active := true;
-	Success := TRUE;
+	Console('- Helios is starting...');
 
 	AppPath  := ExtractFilePath(ParamStr(0));
 	InitGlobals;
 
-	//read ini file.
+	LoginServer.DefaultPort := ServerConfig.LoginPort;
+	CharaServer.DefaultPort := ServerConfig.CharaPort;;
+	ZoneServer.DefaultPort  := ServerConfig.ZonePort;
+	LoginServer.Active := true;
+	//CharaServer.Active := true;
+	//ZoneServer.Active := true;
+
+	Success := TRUE;
 
 	MainProc.Console('');
 
@@ -75,7 +75,7 @@ begin
 		LocalCharaServ.IP := '127.0.0.1';
 		LocalCharaServ.IPCardinal := 0;
 		LocalCharaServ.InternalServer := TRUE;
-		LocalCharaServ.ServerName := 'Helios';
+		LocalCharaServ.ServerName := ServerConfig.ServerName;
 		LocalCharaServ.Port := CharaServer.DefaultPort;
 	end;
 
@@ -100,6 +100,7 @@ end;
 
 procedure TMainProc.Shutdown;
 begin
+	Console('- Helios is shutting down...');
 	DestroyGlobals;//Make sure globals are Free'd on Application exit.
 end;
 

@@ -13,12 +13,14 @@ interface
 		private
 			fLoginPort : Word;
 			fCharaPort : Word;
-			fZonePort : Word;
+			fZonePort  : Word;
 
-			fWAN_IP : string;
-			fLAN_IP : string;
+			fWAN_IP    : string;
+			fLAN_IP    : string;
 
-			fEnableMF : Boolean;
+			fEnableMF  : Boolean;
+
+			fServerName : String;
 
 			procedure SetLoginPort(Value : word);
 			procedure SetCharaPort(Value : word);
@@ -29,16 +31,23 @@ interface
 
 			procedure SetEnableMF(Value : boolean);
 
+			procedure SetServerName(Value : String);
+
 		public
+			//Communication
 			property LoginPort : Word read fLoginPort write SetLoginPort;
 			property CharaPort : Word read fCharaPort write SetCharaPort;
 			property ZonePort  : Word read fZonePort  write SetZonePort;
 
 			property LAN_IP : string read fLAN_IP write SetLAN_IP;
 			property WAN_IP : string read fWAN_IP write SetWAN_IP;
-
+			//LoginOptions
 			property EnableMF : boolean read fEnableMF write SetEnableMF;
 
+			//CharaOptions
+			property ServerName : String read fServerName write SetServerName;
+			
+			//Public methods
 			procedure Load;
 			procedure Save;
 		end;
@@ -57,7 +66,7 @@ implementation
 		begin
 			ReadSectionValues('Communication', Section);
 
-			fWAN_IP       := Section.Values['WAN_IP'];
+			fWAN_IP      := Section.Values['WAN_IP'];
 
 			if Section.Values['LAN_IP'] = '' then fLAN_IP := '127.0.0.1'
 			else fLAN_IP := Section.Values['LAN_IP'];
@@ -65,12 +74,24 @@ implementation
 			fLoginPort   := StrToIntDef(Section.Values['LoginPort'], 6900);
 			fCharaPort   := StrToIntDef(Section.Values['CharaPort'], 6121);
 			fZonePort    := StrToIntDef(Section.Values['ZonePort'], 5121);
+
 		end;
 
 		procedure LoadLoginOptions;
 		begin
 			ReadSectionValues('LoginOptions', Section);
 			fEnableMF    := StrToBoolDef(Section.Values['EnableMF'] ,false);
+		end;
+
+		procedure LoadCharaOptions;
+		begin
+			ReadSectionValues('CharaOptions', Section);
+
+			if Section.Values['ServerName'] = '' then begin
+				Section.Values['ServerName'] := 'Helios';
+			end;
+			
+			fServerName    := Section.Values['ServerName']
 		end;
 
 	begin
@@ -81,6 +102,7 @@ implementation
 
 		LoadCommunication;
 		LoadLoginOptions;
+		LoadCharaOptions;
 
 		Section.Free;
 
@@ -95,6 +117,9 @@ implementation
 		WriteString('Communication', 'LAN_IP',    LAN_IP);
 
 		WriteString('LoginOptions','EnableMF',BoolToStr(EnableMF));
+
+		WriteString('CharaOptions','ServerName',ServerName);
+
 		UpdateFile;
 	end;
 
@@ -149,6 +174,15 @@ implementation
 		begin
 			fEnableMF := value;
 			WriteString('LoginOptions', 'EnableMF', BoolToStr(EnableMF));
+		end;
+	end;
+
+	procedure TServerOptions.SetServerName(Value : String);
+	begin
+		if fServerName <> Value then
+		begin
+			fServerName := Value;
+			WriteString('CharaOptions', 'ServerName', ServerName);
 		end;
 	end;
 
