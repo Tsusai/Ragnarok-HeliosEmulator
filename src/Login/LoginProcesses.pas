@@ -57,10 +57,10 @@ implementation
 			  $0064: //Basic login packet
 				  begin
 					  UserName := BufferReadString(6,24,Buffer);
-					  for Index := 0 to AccountList.Count -1 do begin
-						  if AccountList.Objects[Index] is TAccount then begin
-							  AnAccount := TAccount(AccountList.Objects[Index]);
-							  if AnAccount.Username = UserName then
+						for Index := 0 to ADatabase.AccountList.Count -1 do begin
+							if ADatabase.AccountList.Objects[Index] is TAccount then begin
+								AnAccount := TAccount(ADatabase.AccountList.Objects[Index]);
+								if AnAccount.Username = UserName then
                 begin
 								  Found := TRUE;
 								  break;

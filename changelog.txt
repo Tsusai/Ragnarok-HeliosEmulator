@@ -1,3 +1,17 @@
+- Rev 5-
+[2006/05/06] - RaX - Overview : stubbed Tdatabase/reorganized Tdatabase for upcoming changes
+ to allow multiple database types to be used. Added CharaServerParse's Guts, a case statement
+ based on Prometheus' charasel.pas No code was copied, however. Just the idea. I broke that up 
+ originally anyways...=)
+[2006/05/06] - RaX - Database - Overwrote Create to initialize lists and load the database.
+[2006/05/06] - RaX - Globals - Moved AccountList into TDatabase as a public var.
+[2006/05/06] - RaX - Database - Changed how reload works to accomodate later database additions.
+[2006/05/06] - RaX - LoginProcesses - Changed AccountList to ADatabase.Accountlist throughout
+the code.
+[2006/05/06] - RaX - CharaServerPacket - Added guts to CharaServerParse, a case statement to
+ decide what to do with packets.
+-
+
 - Rev 4-
 [2006/05/08] - RaX - Overview : Added ServerName under new section "CharaOptions" in serveroptions.pas
 Made all INI options actually affect code...=)

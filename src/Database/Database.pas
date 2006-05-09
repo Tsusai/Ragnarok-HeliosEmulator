@@ -1,11 +1,23 @@
 unit Database;
 
 interface
-
+	uses
+		Classes;
 type
+	TChara = record
+	//
+	end;
+
 	TDatabase = Class
- public
-		function LoadAccounts : boolean;
+	constructor Create();
+	public
+		Loaded : Boolean;
+
+		AccountList : TStringList;
+		CharaList : array of TChara;
+
+		procedure LoadAccounts;
+
 		function Reload : string;
 	private
 		function LoadAccountInfo(accountfile : string) : boolean;
@@ -16,7 +28,6 @@ implementation
 uses
 	SysUtils,
 	Globals,
-	Classes,
 	AccountTypes,
 	Console;
 
@@ -71,15 +82,16 @@ begin
 	end;
 end;
 
-function TDatabase.LoadAccounts : boolean;
+procedure TDatabase.LoadAccounts;
 begin
+	Loaded := FALSE;//RaX - Assume Failure.
 	MainProc.Console('  - Accounts Loading');
 	if not DirectoryExists(AppPath + 'save') then
 	begin
 		if not CreateDir(AppPath + 'save') then
 		begin
 			MainProc.Console(' Saved folder could not be created.  Exiting.');
-			Result := false;
+			Loaded := false;
 			exit;
 		end;
 	end;
@@ -88,12 +100,12 @@ begin
 		if not CreateDir(AppPath + 'save/accounts') then
 		begin
 			MainProc.Console(' Saved accounts folder could not be created.  Exiting.');
-			Result := false;
+			Loaded := false;
 			exit;
 		end;
 	end;
-	Result := ReadAccountFiles;
-	if not Result then
+	Loaded := ReadAccountFiles;
+	if not Loaded then
 	begin
 		MainProc.Console('    - Account load failed: Either Database is severely corrupted or does not exist.');
 	end else
@@ -107,13 +119,28 @@ end;
 function TDatabase.Reload() : String;
 	begin
 		Result := '';
-		AccountList.Free;//Changed from AccountList.Clear() to Free to fix apparent Memory Leak - RaX
+
+		//Reload account list
+		AccountList.Free;
 		AccountList := TStringList.Create;
-		if not LoadAccounts then begin
+		LoadAccounts;
+		if not Loaded then begin
 			Result := 'Failed loading accounts, check your gamedata';
+			Exit;
 		end;
+		//End Reload AccountList
+
+		//Reload Character List.
+
+		//End Reload Character List.
 	end;
 
+constructor TDatabase.Create();
+begin
+	AccountList := TStringList.Create;
+	LoadAccounts();
+	//Add additional loads (IE::LoadCharacters) here.
+end;
 end.
 
 

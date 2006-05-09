@@ -81,7 +81,7 @@ begin
 
 	if LoginServer.Active then
 	begin
-		if not ADatabase.LoadAccounts then begin  //changed to database object from functions - RaX
+		if not ADatabase.Loaded then begin  //changed to database object from functions - RaX
 			Success := FALSE;
 		end;
 	end;
