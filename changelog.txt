@@ -1,3 +1,14 @@
+- Rev 6-
+[2006/07/04] - Tsusai - Overview: Redo of certain account handling, for easy future MySQL addon.
+[2006/07/04] - Tsusai - Database is now AccountDB at this time.  Object form removed, just procedures
+ (why create memory for something only for procedures).  Redid load structure, so that it loads on the go.
+[2006/07/04] - Tsusai - Console, Globals : Updated for above.
+[2006/07/04] - Tsusai - AccountTypes : Updated TAccount;
+[2006/07/04] - Tsusai - Commands: Removed /reload.  Rather have all DB setup before doing this.
+[2006/07/04] - Tsusai - LoginProcesses: Updated to call active account search.
+[2006/07/04] - Tsusai - GameObjects : added, contains TBeing and TCharacter (works in progress).
+-
+
 - Rev 5-
 [2006/05/06] - RaX - Overview : stubbed Tdatabase/reorganized Tdatabase for upcoming changes
  to allow multiple database types to be used. Added CharaServerParse's Guts, a case statement

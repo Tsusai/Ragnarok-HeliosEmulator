@@ -3,7 +3,6 @@ unit Globals;
 interface
 uses
 	Classes,
-	Database,
 	ServerOptions;
 
 	procedure InitGlobals;
@@ -12,9 +11,12 @@ uses
 var
 	CharaServerList : TStringList;
 	AppPath : String;
-	ADatabase : TDatabase;
 
 	ServerConfig : TServerOptions;
+
+	AccountList : TStringList;
+
+	LastAccountID : Integer;
 
 implementation
 	uses
@@ -22,19 +24,18 @@ implementation
 
 procedure InitGlobals;
 begin
-
+	AccountList := TStringList.Create;
 	CharaServerList := TStringList.Create;
-	ADatabase := TDatabase.Create;
 	ServerConfig := TServerOptions.Create('./ServerOptions.ini');
 	ServerConfig.Load;
 end;
 
 procedure DestroyGlobals;
 begin
+	AccountList.Free;
 	ServerConfig.Save;
 	ServerConfig.Free;
 	CharaServerList.Free;
-	ADatabase.Free;
 end;
 
 end.

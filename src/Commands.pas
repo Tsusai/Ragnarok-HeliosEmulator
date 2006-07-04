@@ -44,7 +44,7 @@ begin
 						Result := FALSE;
 						Error := '';
 					end else if Command = '/reload' then begin
-						if Assigned(ADatabase) then Error := ADataBase.Reload;
+						{if Assigned(ADatabase) then} Error := 'Reload not setup till all DB is done';//ADataBase.Reload;
 					end else if Command = '/help' then begin
 						Error := Help;
 					end else if Command = '/restart' then begin
@@ -82,7 +82,7 @@ end;
 
 function TCommands.Reload() : String;
 begin
-	ADatabase.Reload;
+	//To be done when all DB is done.  One swoop kill
 end;
 
 function TCommands.Restart() : String;

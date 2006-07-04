@@ -34,6 +34,7 @@ uses
 	LoginProcesses,
 	CharaServerTypes,
 	CharaServerPacket,
+	SaveDB,
 	Globals;
 
 procedure TMainProc.Console(Line : string);
@@ -81,7 +82,7 @@ begin
 
 	if LoginServer.Active then
 	begin
-		if not ADatabase.Loaded then begin  //changed to database object from functions - RaX
+		if not LoadSavedDatabase then begin  //changed to database object from functions - RaX
 			Success := FALSE;
 		end;
 	end;

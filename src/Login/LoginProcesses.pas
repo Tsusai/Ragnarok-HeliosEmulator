@@ -1,9 +1,10 @@
 unit LoginProcesses;
 
 interface
-  uses
-    AccountTypes,
-    IdTCPServer;
+	uses
+		AccountTypes,
+		AccountDB,
+		IdTCPServer;
 
     procedure SendCharacterServers(AnAccount : TAccount; AThread: TIdPeerThread);
     procedure ParseLogin(AThread: TIdPeerThread);
@@ -56,31 +57,22 @@ implementation
 			  Case ID of
 			  $0064: //Basic login packet
 				  begin
-					  UserName := BufferReadString(6,24,Buffer);
-						for Index := 0 to ADatabase.AccountList.Count -1 do begin
-							if ADatabase.AccountList.Objects[Index] is TAccount then begin
-								AnAccount := TAccount(ADatabase.AccountList.Objects[Index]);
-								if AnAccount.Username = UserName then
-                begin
-								  Found := TRUE;
-								  break;
-							  end;
-						  end else Continue;
-					  end;
-					  if Found then begin
-						  Password := BufferReadString(30,24,Buffer);
-						  if AnAccount.Password = Password then
-						  begin
-							  AnAccount.LoginKey[1] := BufferReadCardinal(54,Buffer);
-							  AnAccount.LoginKey[2] := BufferReadCardinal(58,Buffer);
-							  AnAccount.LastIP := AThread.Connection.Socket.Binding.PeerIP;
-							  SendCharacterServers(AnAccount,AThread);
-						  end else begin
+						UserName := BufferReadString(6,24,Buffer);
+						AnAccount := FindAccount(UserName);
+						if Assigned(AnAccount) then begin
+							Password := BufferReadString(30,24,Buffer);
+							if AnAccount.Password = Password then
+							begin
+								AnAccount.LoginKey[1] := BufferReadCardinal(54,Buffer);
+								AnAccount.LoginKey[2] := BufferReadCardinal(58,Buffer);
+								AnAccount.LastIP := AThread.Connection.Socket.Binding.PeerIP;
+								SendCharacterServers(AnAccount,AThread);
+							end else begin
 								SendLoginError(AThread,LOGIN_INVALIDPASSWORD);
-						  end;
-					  end else begin
-						  SendLoginError(AThread,LOGIN_UNREGISTERED);
-					  end;
+							end;
+						end else begin
+							SendLoginError(AThread,LOGIN_UNREGISTERED);
+						end;
 				  end;
 		 	  end;
 		  end;
