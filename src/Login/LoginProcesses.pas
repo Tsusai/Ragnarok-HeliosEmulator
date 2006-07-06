@@ -41,13 +41,9 @@ implementation
 	  UserName : String;
 	  Password : String;
 	  AnAccount : TAccount;
-	  Index : Integer;
-	  Found : Boolean;
-	  ID : Word;
-  begin
-	  Found := FALSE;
-	  AnAccount := NIL;
-	  if AThread.Connection.Connected then
+		ID : Word;
+	begin
+		if AThread.Connection.Connected then
 	  begin
 		  PLength := AThread.Connection.ReadFromStack;
 		  if PLength >= 2 then

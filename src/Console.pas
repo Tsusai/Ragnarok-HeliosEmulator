@@ -17,7 +17,8 @@ type TMainProc = class(TComponent)
 		procedure Shutdown;
 
 		procedure LoginServerConnect(AThread: TIdPeerThread);
-    procedure LoginServerExecute(AThread: TIdPeerThread);
+		procedure LoginServerExecute(AThread: TIdPeerThread);
+		procedure CharaServerConnect(AThread: TIdPeerThread);
 		procedure CharaServerExecute(AThread: TIdPeerThread);
 		procedure ServerException(AThread: TIdPeerThread;
 			AException: Exception);
@@ -34,6 +35,8 @@ uses
 	LoginProcesses,
 	CharaServerTypes,
 	CharaServerPacket,
+	PacketTypes,
+	uMysqlClient,
 	SaveDB,
 	Globals;
 
@@ -51,6 +54,8 @@ procedure TMainProc.Startup;
 var
 	LocalCharaServ : TCharaServ;
 	Success : Boolean;
+	SQL : TMysqlClient;
+	SQLResult : TMySQLResult;
 begin
   Console('');
 	Console('- Helios is starting...');
@@ -90,6 +95,28 @@ begin
 	if Success then
 	begin
 		Console('- Startup Success');
+		SQL := TMysqlClient.create;
+		SQL.Host := 'localhost';
+		SQL.User := 'user';
+		SQL.Password := 'quakeone';
+		SQL.Db := 'Helios';
+		if SQL.Connect('localhost','root','helios','helios',3306) then
+		begin
+			writeln('SQL connected');
+			SQLResult := SQL.query('SELECT * FROM `char` c;',true,Success);
+			if Success then
+			begin
+				Writeln('Query Success');
+				WriteLn(IntToStr(SQLResult.RowsCount)); //total rows of info
+				WriteLn(IntToStr(SQLResult.FieldsCount)); //total fields
+				WriteLn(SQLResult.FieldValue(3)); // gives name
+				SQLResult.Next;                   //go to next row
+				WriteLn(SQLResult.FieldValue(3)); //gives name
+			end;
+			SQLResult.Free;
+		end;
+		SQL.Free;
+
 	end else
 	begin
 		Console('- Startup Failed');
@@ -116,6 +143,14 @@ end;
 procedure TMainProc.LoginServerConnect(AThread: TIdPeerThread);
 begin
 	Console('Connection from ' + AThread.Connection.Socket.Binding.PeerIP);
+end;
+
+procedure TMainProc.CharaServerConnect(AThread: TIdPeerThread);
+var
+	Link : TThreadLink;
+begin
+	Link := TThreadLink.Create;
+	AThread.Data := Link;
 end;
 
 procedure TMainProc.CharaServerExecute(AThread: TIdPeerThread);

@@ -1,3 +1,23 @@
+- Rev 7-
+[2006/07/05] - Tsusai - Overview: Massive code update, mainly dealing with SQL integration.
+[2006/07/05] - Tsusai - Helios.dpr : added some units.
+[2006/07/05] - Tsusai - WinLinux: Added this unit to address ALL massive ifdef mswindows/linux.
+ Currently controls the IP to ip cardinal type used for RO clients to connect to a specified server.
+[2006/07/05] - Tsusai - CharaServerTypes: Modified, IP is now a property.  Modifying it automatically
+ updates IPCardinal.
+[2006/07/05] - Tsusai - Common\SQL (Folder) added SQL.  It is GPL, but at this time I have contacted
+ the author and am asking permission.  If declined, project would be either without SQL or be GPL.
+[2006/07/05] - Tsusai - CharacterTypes: Added, basic TCharacter.  Eventually, EVERYTHING will be a property
+ for instant SQL SELECT and UPDATE procedures.
+[2006/07/05] - Tsusai - PacketTypes: Added TThreadLink type, from indy prometheus prototype.  Helps link
+ AThread.Data to actual TCharacter or TAccount.
+[2006/07/05] - Tsusai - Console: TThreadLink is now assigned to a connection thread upon character server
+ connect.  Also Added BASIC SQL retrieval.
+[2006/07/05] - Tsusai - SaveDB: Killed a warning...I want to remove this after txt file load is redone so it
+ is beautifully like SQL, with massive disk access (lol, probably do this like prommy).
+[2006/07/05] - Tsusai - LoginProcesses: Removed unneeded variables.
+-
+
 - Rev 6-
 [2006/07/04] - Tsusai - Overview: Redo of certain account handling, for easy future MySQL addon.
 [2006/07/04] - Tsusai - Database is now AccountDB at this time.  Object form removed, just procedures

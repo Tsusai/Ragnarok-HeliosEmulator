@@ -11,6 +11,7 @@ function LoadSavedDatabase : boolean;
 begin
 	//Result := ; {and blah and blah} ;
 	GetLastAccountIDAndCount;
+	Result := true; //placeholder
 end;
 
 end.
