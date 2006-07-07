@@ -1,5 +1,25 @@
+- Rev 9-
+[2006/07/06] - Tsusai - Overview : Forgot to upload the sql file, fixes (thanks to Jbain)
+[2006/07/06] - Tsusai - NonSQLFiles : Writeln -> console() update.
+[2006/07/06] - Tsusai - uMySQLVio : _WIN_ conditionals changed to MSWINDOWS (Jbain pointed it out).
+-
+
+- Rev 8-
+[2006/07/06] - Tsusai - Overview : Phased out txt for the moment.  mySQL for now.  Using jA
+[2006/07/06] - Tsusai - helios.sql : jAthena sql info with test character and account.  Would like an
+ aegis one since this would be designed to be an aegis emulator. *shrug*
+[2006/07/06] - Tsusai - AccountTypes : Modified Gender to be a char.  Once set, it modifies gendernum (0 or 1).
+ Gender as a Char is M or F.
+[2006/07/06] - Tsusai - Globals : Moved SQL out of console to Globals.  Centralized.
+[2006/07/06] - Tsusai - Console : SQL Code removed.  Also, FIXED CharaServer OnExecute and OnConnect events.
+ Also added The local character server.  Now shows up.
+[2006/07/06] - Tsusai - AccountDB : removed old txt code, now looks in either the 
+[2006/07/06] - Tsusai - Helios.dpr : removed "Command:" visual.  Goofs up with server messages.
+[2006/07/06] - Tsusai - LoginProcesses : Replaced Gender with GenderNum (see above);
+-
+
 - Rev 7-
-[2006/07/05] - Tsusai - Overview: Massive code update, mainly dealing with SQL integration.
+[2006/07/05] - Tsusai - Overview:  Massive code update, mainly dealing with SQL integration.
 [2006/07/05] - Tsusai - Helios.dpr : added some units.
 [2006/07/05] - Tsusai - WinLinux: Added this unit to address ALL massive ifdef mswindows/linux.
  Currently controls the IP to ip cardinal type used for RO clients to connect to a specified server.

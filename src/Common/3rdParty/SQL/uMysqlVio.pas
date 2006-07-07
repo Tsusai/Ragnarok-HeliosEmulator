@@ -95,7 +95,7 @@ type
     function vio_blocking(onoff:boolean):longint;
     function vio_intrerupted:boolean;
     function vio_should_retry:boolean;
-    function vio_open( _type:TEnumVioType; host:string='localhost'; unix_socket:string={$IFDEF _WIN_}MYSQL_NAMEDPIPE{$ELSE}MYSQL_UNIX_ADDR{$ENDIF}; port:longint=0; connect_timeout:cardinal=0; trysock:boolean=true):longint;
+		function vio_open( _type:TEnumVioType; host:string='localhost'; unix_socket:string={$IFDEF MSWINDOWS}MYSQL_NAMEDPIPE{$ELSE}MYSQL_UNIX_ADDR{$ENDIF}; port:longint=0; connect_timeout:cardinal=0; trysock:boolean=true):longint;
     function vio_close:longint;
     {$IFDEF HAVE_SSL}
     procedure SwitchToSSL(const key:pchar;const cert:pchar;const ca:pchar;const capath:pchar;var cipher:pchar; timeout:cardinal);
@@ -109,12 +109,12 @@ implementation
 const
   //poll constants
   IPPROTO_IP      = 0;
-  IP_TOS          = {$IFDEF _WIN_}8;{$ELSE}1;{$ENDIF} //need check
-  SOL_SOCKET      = {$IFDEF _WIN_}$ffff;{$ELSE}1;{$ENDIF} //need check
-  SO_KEEPALIVE    = {$IFDEF _WIN_}$0008;{$ELSE}$0009;{$ENDIF} //need check
+  IP_TOS          = {$IFDEF MSWINDOWS}8;{$ELSE}1;{$ENDIF} //need check
+  SOL_SOCKET      = {$IFDEF MSWINDOWS}$ffff;{$ELSE}1;{$ENDIF} //need check
+  SO_KEEPALIVE    = {$IFDEF MSWINDOWS}$0008;{$ELSE}$0009;{$ENDIF} //need check
   IPPROTO_TCP     = 6;
   TCP_NODELAY     = $0001;
-  FD_SETSIZE      = {$IFDEF _WIN_}64;{$ELSE}1024;{$ENDIF} //need check
+  FD_SETSIZE      = {$IFDEF MSWINDOWS}64;{$ELSE}1024;{$ENDIF} //need check
   POLLIN          = 1;
   POLLPRI         = 2;
   POLLOUT         = 4;
@@ -129,7 +129,7 @@ const
   POLL_CAN_WRITE    = (POLLOUT or POLLWRNORM or POLLWRBAND );
   POLL_HAS_EXCP     = (POLLRDBAND or POLLPRI );
   POLL_EVENTS_MASK  = (POLL_CAN_READ or POLL_CAN_WRITE or POLL_HAS_EXCP);
-  {$IFDEF _WIN_}
+  {$IFDEF MSWINDOWS}
   IOC_IN        = $80000000;
   IOCPARM_MASK  = $7f;
   FIONBIO       = IOC_IN or { set/clear non-blocking i/o }
@@ -155,7 +155,7 @@ type
     events:smallint;
     revents:smallint;
   end;
-  {$IFNDEF _WIN_}
+	{$IFNDEF MSWINDOWS}
   PPollFD = ^TPollFD;
   {$ENDIF}
 
@@ -165,7 +165,7 @@ const
   SOCK_STREAM     = 1;
   SOCKET_ERROR    = -1;
   INADDR_NONE     = $FFFFFFFF;
-{$IFNDEF _WIN_}
+{$IFNDEF MSWINDOWS}
   F_SETFL = 4;
   F_GETFL = 3;
   __NFDBITS = 8 * sizeof(longword);
@@ -173,7 +173,7 @@ const
   EINTR   = 4;        {  Interrupted system call  }
 {$ENDIF}
 
-{$IFDEF _WIN_}
+{$IFDEF MSWINDOWS}
   WSABASEERR          = 10000;
   WSAEINTR            = (WSABASEERR+4);
   WSAEWOULDBLOCK      = (WSABASEERR+35);
@@ -188,8 +188,8 @@ type
   HostEnt = record
     h_name: PChar;
     h_aliases: ^PChar;
-    h_addrtype: {$IFDEF _WIN_}Smallint;{$ELSE}longint;{$ENDIF}
-    h_length: {$IFDEF _WIN_}Smallint;{$ELSE}cardinal;{$ENDIF}
+    h_addrtype: {$IFDEF MSWINDOWS}Smallint;{$ELSE}longint;{$ENDIF}
+    h_length: {$IFDEF MSWINDOWS}Smallint;{$ELSE}cardinal;{$ENDIF}
     case Byte of
       0: (h_addr_list: ^PChar);
       1: (h_addr: ^PChar);
@@ -209,7 +209,7 @@ type
   end;
 
 type
-{$IFNDEF _WIN_}
+{$IFNDEF MSWINDOWS}
   TSockAddr = record
     case Integer of
       0: (sa_family: word;
@@ -235,7 +235,7 @@ type
   end;
 {$ENDIF}
 
-{$IFDEF _WIN_}
+{$IFDEF MSWINDOWS}
 type
   WSAData = record
     wVersion: Word;
@@ -284,8 +284,8 @@ const
   //windows pipes constants
   GENERIC_READ        = LongWORD($80000000);
   GENERIC_WRITE       = $40000000;
-  OPEN_EXISTING       = 3;
-  ERROR_PIPE_BUSY     = 231;
+	OPEN_EXISTING       = 3;
+	ERROR_PIPE_BUSY     = 231;
   PIPE_READMODE_BYTE  = 0;
   PIPE_WAIT           = 0;
 //windows pipes functions
@@ -298,7 +298,7 @@ function WaitNamedPipe(lpNamedPipeName: PChar; nTimeOut: LongWORD): LongBOOL; st
 function SetNamedPipeHandleState(hNamedPipe: longword; var lpMode: LongWORD; lpMaxCollectionCount, lpCollectDataTimeout: Pointer): LongBOOL; stdcall; external 'kernel32.dll' name 'SetNamedPipeHandleState';
 {$ENDIF}
 
-{$IFNDEF _WIN_}
+{$IFNDEF MSWINDOWS}
 function fcntl(Handle: Integer; Command: Integer; Arg: Longint): Integer; external 'libc.so.6' name 'fcntl';overload;
 function fcntl(Handle: Integer; Command: Integer): Integer; cdecl; external 'libc.so.6' name 'fcntl';overload;
 function recv(fd: longint; var buf; n: longword; flags: Integer): Integer; cdecl;external 'libc.so.6' name 'recv';
@@ -310,17 +310,17 @@ function connect(fd: longint; const addr: tsockaddr; len: cardinal): Integer; cd
 function socket(domain, _type, protocol: Integer): longint; cdecl; external 'libc.so.6' name 'socket';
 function inet_addr(cp: PChar): longword; cdecl;external 'libc.so.6' name 'inet_addr';function gethostbyname(name: PChar): PHostEnt; cdecl;external 'libc.so.6' name 'gethostbyname';function htons(hostshort: word): word; cdecl;external 'libc.so.6' name 'htons';function poll(fds: PPollFD; nfds: LongWord; timeout: Integer): Integer; cdecl;external 'libc.so.6' name 'poll';{$ENDIF}////////////////////////////////////////////////////////////////////////////////
 
-{$IFNDEF _WIN_}
+{$IFNDEF MSWINDOWS}
 var
   errno:longint;
 {$ENDIF}
 ////////////////////////////////////////////////////////////////////////////////
-{$IFDEF _WIN_}
+{$IFDEF MSWINDOWS}
 var
   fwsaData:WSADATA; // on windows winsock
 {$ENDIF}
 
-{$IFDEF _WIN_}
+{$IFDEF MSWINDOWS}
 ////////////////////////////////////////////////////////////////////////////////
 procedure FD_SET(Socket: longint; var FDSet: TFDSet);
 begin
@@ -630,14 +630,14 @@ function TMysqlVio.vio_blocking(onoff: boolean): longint;
 var
   r:longint;
   old_fcntl:longint;
-  {$IFDEF _WIN_}
+  {$IFDEF MSWINDOWS}
   arg:cardinal;
   {$ENDIF}
 begin
   if (ftype <> VIO_CLOSED) then //is vio connected?
     begin
       r:=0;
-      {$IFNDEF _WIN_} //if it is on linux
+      {$IFNDEF MSWINDOWS} //if it is on linux
       if (fsd >= 0) then
         begin
           old_fcntl:=ffcntl_mode;
@@ -691,7 +691,7 @@ begin
       fssl:= nil;
     end;
   {$ENDIF}
-  {$IFDEF _WIN_}
+  {$IFDEF MSWINDOWS}
   if (ftype=VIO_TYPE_NAMEDPIPE) then
     result:=longint(CloseHandle(fhPipe))
   else
@@ -703,7 +703,7 @@ begin
         result:=-1;
       vio_blocking(false);
       repeat
-        {$IFDEF _WIN_}
+        {$IFDEF MSWINDOWS}
         sleep(1);
         {$ENDIF}
         _i:= vio_read(@b[0], 256);
@@ -721,7 +721,7 @@ end;
 // checks whenever the communication was intrerupted
 function TMysqlVio.vio_intrerupted: boolean;
 begin
-  {$IFDEF _WIN_}
+  {$IFDEF MSWINDOWS}
   result:=WSAGetLastError = WSAEINTR;
   {$ELSE}
   result:=errno = EINTR;
@@ -735,10 +735,10 @@ end;
 // host and unix_socket are obvious
 // connect_timeout is used only on named pipes
 // trysock is used when you try a pipe and if in error you want to try socket
-function TMysqlVio.vio_open( _type:TEnumVioType; host:string='localhost'; unix_socket:string={$IFDEF _WIN_}MYSQL_NAMEDPIPE{$ELSE}MYSQL_UNIX_ADDR{$ENDIF}; port:longint=0; connect_timeout:cardinal=0; trysock:boolean=true): longint;
+function TMysqlVio.vio_open( _type:TEnumVioType; host:string='localhost'; unix_socket:string={$IFDEF MSWINDOWS}MYSQL_NAMEDPIPE{$ELSE}MYSQL_UNIX_ADDR{$ENDIF}; port:longint=0; connect_timeout:cardinal=0; trysock:boolean=true): longint;
 var
   sock:longint;
-  {$IFDEF _WIN_}
+  {$IFDEF MSWINDOWS}
   hPipe:longint;
   szPipeName:string[255];
   i:integer;
@@ -765,7 +765,7 @@ begin
           exit;
         end;
       //only if using winsock
-      {$IFDEF _WIN_}
+      {$IFDEF MSWINDOWS}
       if (_type = VIO_TYPE_TCPIP)or(trysock) then //do we need winsock?
         if fWsaData.wVersion=0 then // has it been initialized before
           if (WSAStartup ($0101, fWsaData)<>0) then
@@ -781,19 +781,19 @@ begin
         begin
           //one may pass wrong host info
           if (host='') or (host<>LOCAL_HOST_NAMEDPIPE) then
-            {$IFDEF _WIN_}
+            {$IFDEF MSWINDOWS}
             host:=LOCAL_HOST_NAMEDPIPE;
             {$ELSE}
             host:='localhost';
             {$ENDIF}
-          if (unix_socket='') or {$IFDEF _WIN_}(unix_socket<>MYSQL_NAMEDPIPE){$ELSE}(unix_socket<>MYSQL_UNIX_ADDR){$ENDIF} then
-            {$IFDEF _WIN_}
+          if (unix_socket='') or {$IFDEF MSWINDOWS}(unix_socket<>MYSQL_NAMEDPIPE){$ELSE}(unix_socket<>MYSQL_UNIX_ADDR){$ENDIF} then
+            {$IFDEF MSWINDOWS}
             unix_socket:=MYSQL_NAMEDPIPE;
             {$ELSE}
             unix_socket:=MYSQL_UNIX_ADDR;
             {$ENDIF}
         end;
-      {$IFDEF _WIN_}
+      {$IFDEF MSWINDOWS}
       if (_type = VIO_TYPE_NAMEDPIPE) and
          (((host<>'') and (host=LOCAL_HOST_NAMEDPIPE))or
          ((unix_socket<>'') and(unix_socket=MYSQL_NAMEDPIPE))) then //we try a named pipe
@@ -941,7 +941,7 @@ begin
           if (sock = SOCKET_ERROR) then //error?
             begin
               flast_errno:=CR_IPSOCK_ERROR;
-              {$IFDEF _WIN_}
+              {$IFDEF MSWINDOWS}
               flast_error:=format(client_errors[(flast_errno)-CR_MIN_ERROR],[WSAGetLastError]);
               {$ELSE}
               flast_error:=format(client_errors[(flast_errno)-CR_MIN_ERROR],[errno]);
@@ -949,10 +949,10 @@ begin
               result:=-8;//we failed the socket creation
               exit;
             end;
-          {$IFNDEF _WIN_}
+					{$IFNDEF MSWINDOWS}
           ffcntl_mode := fcntl(fsd, F_GETFL);
           {$ENDIF}
-          {$IFDEF _WIN_}
+          {$IFDEF MSWINDOWS}
           vio_blocking(false);
           {$ENDIF}
           //try to resolve the host
@@ -967,7 +967,7 @@ begin
               if (hp=nil) then
                 begin
 	                flast_errno:=CR_UNKNOWN_HOST;
-                  {$IFDEF _WIN_}
+                  {$IFDEF MSWINDOWS}
                   flast_error:=format(client_errors[(flast_errno)-CR_MIN_ERROR],[host, WSAGetLastError]);
                   {$ELSE}
                   flast_error:=format(client_errors[(flast_errno)-CR_MIN_ERROR],[host, errno]);
@@ -986,14 +986,14 @@ begin
           vio_blocking(false); //do not wait to connect as we'll get an error on read timed-out
           //we resolved the address .. let's try to connect
           if (connect(sock,TSockAddr(sock_addr), sizeof(sock_addr)) <0)
-             {$IFDEF _WIN_}and
+             {$IFDEF MSWINDOWS}and
              (WSAGetLastError <>WSAEWOULDBLOCK){$ELSE} {and ??? errno = EWOUDLBLOCK}{$ENDIF} then
             begin
               fsd:=0;
               ftype:=VIO_CLOSED;
               ffcntl_mode:=0; //reset mode
               flast_errno:= CR_CONN_HOST_ERROR;
-              {$IFDEF _WIN_}
+              {$IFDEF MSWINDOWS}
               flast_error:=format(client_errors[(flast_errno)-CR_MIN_ERROR], [host, WSAGetLastError]);
               {$ELSE}
               flast_error:=format(client_errors[(flast_errno)-CR_MIN_ERROR], [host, errno]);
@@ -1011,7 +1011,7 @@ begin
               ftype:=VIO_CLOSED;
               ffcntl_mode:=0; //reset mode
               flast_errno:= CR_CONN_HOST_ERROR;
-              {$IFDEF _WIN_}
+              {$IFDEF MSWINDOWS}
               flast_error:=format(client_errors[(flast_errno)-CR_MIN_ERROR], [host, WSAGetLastError]);
               {$ELSE}
               flast_error:=format(client_errors[(flast_errno)-CR_MIN_ERROR], [host, errno]);
@@ -1052,10 +1052,10 @@ begin
       fds.events:=POLLIN;
       {$IFDEF NEVERENABLEME}
       if timeout=0 then
-        res:=poll({$IFNDEF _WIN_}@{$ENDIF}fds,{$IFNDEF _WIN_}1,{$ENDIF}100)//0.1 seconds for timed out on clear net
+        res:=poll({$IFNDEF MSWINDOWS}@{$ENDIF}fds,{$IFNDEF MSWINDOWS}1,{$ENDIF}100)//0.1 seconds for timed out on clear net
       else
         {$ENDIF}
-        res:=poll({$IFNDEF _WIN_}@{$ENDIF}fds,{$IFNDEF _WIN_}1,{$ENDIF}timeout*1000);
+        res:=poll({$IFNDEF MSWINDOWS}@{$ENDIF}fds,{$IFNDEF MSWINDOWS}1,{$ENDIF}timeout*1000);
       if res<0 then
         result:=false //don't return true on errors
       else
@@ -1069,7 +1069,7 @@ begin
     end                                   
   else //vio is not connected return false
     result:=false;
-  {$IFNDEF _WIN_}
+  {$IFNDEF MSWINDOWS}
   result:=not result;
   {$ENDIF}
 end;
@@ -1077,7 +1077,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 // reads "size" bytes into a buffer "buf" from socket/pipe
 function TMysqlVio.vio_read(buf: pointer; const sz: Integer): longint;
-{$IFDEF _WIN_}
+{$IFDEF MSWINDOWS}
 var
   len1:longword;
 {$ENDIF}
@@ -1094,7 +1094,7 @@ begin
           exit;
         end;
       {$ENDIF}
-      {$IFDEF _WIN_}
+      {$IFDEF MSWINDOWS}
       //extra check since in windows we can use pipes rather than sockets
       if (ftype = VIO_TYPE_NAMEDPIPE)then
         begin
@@ -1139,13 +1139,13 @@ begin
   if (ftype <> VIO_CLOSED) then //vio is connected
     begin
       //get last error
-      {$IFDEF _WIN_}
+      {$IFDEF MSWINDOWS}
       en:=WSAGetLastError;
       {$ELSE}
       en:=errno;
       {$ENDIF}
       //check if we should retry
-      {$IFDEF _WIN_}
+      {$IFDEF MSWINDOWS}
       result:= (en=WSAEINPROGRESS)or(en=WSAEINTR)or(en=WSAEWOULDBLOCK);
       {$ELSE}
       result:= (en = EAGAIN) or (en = EINTR);
@@ -1158,7 +1158,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 // writes "size" bytes from a buffer "buf" to socket/pipe
 function TMysqlVio.vio_write(buf: pointer; size: Integer): longint;
-{$IFDEF _WIN_}
+{$IFDEF MSWINDOWS}
 var
   len1:longword;
 {$ENDIF}
@@ -1172,7 +1172,7 @@ begin
           exit;
         end;
       {$ENDIF}
-      {$IFDEF _WIN_}
+      {$IFDEF MSWINDOWS}
       //extra check since in windows we can use pipes rather than sockets
       if (ftype = VIO_TYPE_NAMEDPIPE) then
         begin
@@ -1200,7 +1200,7 @@ end;
 // Note: only for windows
 initialization
 begin
-  {$IFDEF _WIN_}
+  {$IFDEF MSWINDOWS}
   fWsaData.wVersion:=0;
   {$ENDIF}
 end;
@@ -1210,7 +1210,7 @@ end;
 // Note: only for windows
 finalization
 begin
-  {$IFDEF _WIN_}
+	{$IFDEF MSWINDOWS}
   if fWsaData.wVersion<>0 then
     WSACleanup;
   {$ENDIF}

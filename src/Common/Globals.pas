@@ -37,21 +37,21 @@ begin
 	SQLConnection.Db := 'Helios';
 	SQLConnection.ConnectTimeout := 60;
 
-	WriteLn('  - Connecting to mySQL server.  Will abort after 60 seconds');
+	Console('  - Connecting to mySQL server.  Will abort after 60 seconds');
 	if SQLConnection.Connect then
 	begin
-		writeln(Format('  - SQL Connected to %s at port %d', [SQLConnection.Host, SQLConnection.Port]));
+		Console(Format('  - SQL Connected to %s at port %d', [SQLConnection.Host, SQLConnection.Port]));
 		SQLQueryResult := SQLConnection.query('SELECT * FROM `char` c;',true,Success);
 		if Success then
 		begin
-			Writeln('    - Test Query Success');
-			WriteLn('      - Returned Rows : ' + IntToStr(SQLQueryResult.RowsCount)); //total rows of info
-			WriteLn('      - Field Count   : ' + IntToStr(SQLQueryResult.FieldsCount)); //total fields
-			WriteLn('      - Chara Name    : ' + SQLQueryResult.FieldValue(3)); // gives name (even if blank)
+			Console('    - Test Query Success');
+			Console('      - Returned Rows : ' + IntToStr(SQLQueryResult.RowsCount)); //total rows of info
+			Console('      - Field Count   : ' + IntToStr(SQLQueryResult.FieldsCount)); //total fields
+			Console('      - Chara Name    : ' + SQLQueryResult.FieldValue(3)); // gives name (even if blank)
 		end;
 	end else begin
-		WriteLn('*****Could not connect to mySQL database server.');
-		Writeln('*****All incoming client connections will be refused.');
+		Console('*****Could not connect to mySQL database server.');
+		Console('*****All incoming client connections will be refused.');
 	end;
 end;
 

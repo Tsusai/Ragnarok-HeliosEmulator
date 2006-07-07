@@ -29,7 +29,7 @@ begin
 	if Success then begin
 		if SQLqueryResult.RowsCount > 0 then
 		begin
-			WriteLn('Account found in chara server');
+			Console('Account found in chara server');
 			AnAccount := TAccount.Create;
 			AnAccount.ID := StrToInt(SQLQueryResult.FieldValue(0));
 			AnAccount.Username := SQlQueryResult.FieldValue(1);
