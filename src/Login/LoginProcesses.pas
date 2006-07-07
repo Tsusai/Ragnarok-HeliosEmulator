@@ -94,7 +94,7 @@ implementation
 		WriteBuffer(16, 0, Buffer);
 		WriteBuffer(20, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz'#0, Now), 24, Buffer);
 		WriteBuffer(44, 0, Buffer);
-		WriteBuffer(46,AnAccount.Gender,Buffer);
+		WriteBuffer(46,AnAccount.GenderNum,Buffer);
 		for Index := 0 to CharaServerList.Count - 1 do begin
 			WriteBuffer(47,TCharaServ(CharaServerList.Objects[Index]).IPCardinal,Buffer);
 			WriteBuffer(51,TCharaServ(CharaServerList.Objects[Index]).Port,Buffer);

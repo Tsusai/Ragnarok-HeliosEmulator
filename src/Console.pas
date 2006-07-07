@@ -36,7 +36,6 @@ uses
 	CharaServerTypes,
 	CharaServerPacket,
 	PacketTypes,
-	uMysqlClient,
 	SaveDB,
 	Globals;
 
@@ -54,8 +53,6 @@ procedure TMainProc.Startup;
 var
 	LocalCharaServ : TCharaServ;
 	Success : Boolean;
-	SQL : TMysqlClient;
-	SQLResult : TMySQLResult;
 begin
   Console('');
 	Console('- Helios is starting...');
@@ -67,7 +64,7 @@ begin
 	CharaServer.DefaultPort := ServerConfig.CharaPort;;
 	ZoneServer.DefaultPort  := ServerConfig.ZonePort;
 	LoginServer.Active := true;
-	//CharaServer.Active := true;
+	CharaServer.Active := true;
 	//ZoneServer.Active := true;
 
 	Success := TRUE;
@@ -79,10 +76,10 @@ begin
 		//Add local character server to the list
 		LocalCharaServ := TCharaServ.Create;
 		LocalCharaServ.IP := '127.0.0.1';
-		LocalCharaServ.IPCardinal := 0;
 		LocalCharaServ.InternalServer := TRUE;
 		LocalCharaServ.ServerName := ServerConfig.ServerName;
 		LocalCharaServ.Port := CharaServer.DefaultPort;
+		CharaServerList.AddObject(LocalCharaServ.ServerName,LocalCharaServ);
 	end;
 
 	if LoginServer.Active then
@@ -95,28 +92,6 @@ begin
 	if Success then
 	begin
 		Console('- Startup Success');
-		SQL := TMysqlClient.create;
-		SQL.Host := 'localhost';
-		SQL.User := 'user';
-		SQL.Password := 'quakeone';
-		SQL.Db := 'Helios';
-		if SQL.Connect('localhost','root','helios','helios',3306) then
-		begin
-			writeln('SQL connected');
-			SQLResult := SQL.query('SELECT * FROM `char` c;',true,Success);
-			if Success then
-			begin
-				Writeln('Query Success');
-				WriteLn(IntToStr(SQLResult.RowsCount)); //total rows of info
-				WriteLn(IntToStr(SQLResult.FieldsCount)); //total fields
-				WriteLn(SQLResult.FieldValue(3)); // gives name
-				SQLResult.Next;                   //go to next row
-				WriteLn(SQLResult.FieldValue(3)); //gives name
-			end;
-			SQLResult.Free;
-		end;
-		SQL.Free;
-
 	end else
 	begin
 		Console('- Startup Failed');
@@ -169,7 +144,8 @@ begin
 	LoginServer.OnConnect := LoginServerConnect;
 	LoginServer.OnException := ServerException;
 
-	CharaServer.OnConnect := CharaServerExecute;
+	CharaServer.OnConnect := CharaServerConnect;
+	CharaServer.OnExecute := CharaServerExecute;
 	CharaServer.OnException := ServerException;
 
 	ZoneServer.OnException := ServerException;

@@ -6,7 +6,7 @@ interface
 		AccountTypes,
 		Classes;
 
-		function FindAccount(Name : string) : TAccount; //txt searching, no massive load
+		function FindAccount(Name : string) : TAccount;
 		procedure GetLastAccountIDAndCount;
 
 implementation
@@ -17,75 +17,36 @@ uses
 	Math,
 	Console;
 
-function LoadAccountInfo(accountfile : string; Name : String) : TAccount;
-var
-	AccFile : TStringlist;
-	AnAccount : TAccount;
-begin
-	Result := nil;
-	AccFile := TStringList.Create;
-
-	AccFile.LoadFromFile(accountfile);
-	if Name = AccFile.Values['UserName'] then begin
-		AnAccount := TAccount.Create;
-		AnAccount.Username := AccFile.Values['UserName'];
-		AnAccount.ID := StrToIntDef(AccFile.Values['ID'],0);
-		AnAccount.Username := AccFile.Values['UserName'];
-		AnAccount.Password := AccFile.Values['Password'];
-		AnAccount.Banned :=  StrToBoolDef(AccFile.Values['Banned'],false);
-		AnAccount.EMail := AccFile.Values['Email'];
-
-		if ((LowerCase(AccFile.Values['Gender']) <> 'male') and
-			(LowerCase(AccFile.Values['Gender']) <> 'female')) or
-			(AnAccount.ID = 0) then begin
-			MainProc.Console('       ****Error with account file ' + accountfile + #13);
-			Result := nil;
-			AnAccount.Free;
-		end else
-		begin
-			if (LowerCase(AccFile.Values['Gender']) = 'male') then
-				AnAccount.Gender := 1
-			else AnAccount.Gender := 0;
-			Result := AnAccount;
-			AccountList.AddObject(IntToStr(AnAccount.ID),AnAccount);
-		end;
-	end;
-	AccFile.Free;
-end;
-
-function SearchAccountFiles(Name : String) : TAccount;
-var
-	searchResult : TSearchRec;
-begin
-	Result := nil;
-	if FindFirst(AppPath + 'save/accounts/*.txt', faAnyFile, searchResult) = 0 then
-	begin
-		repeat
-			Result := LoadAccountInfo(AppPath + 'save/accounts/' + searchResult.Name, Name);
-			if Assigned(Result) then break;
-		until FindNext(searchResult) <> 0;
-		// Must free up resources used by these successful finds
-		FindClose(searchResult);
-	end;
-end;
-
 function FindAccount(Name : string) : TAccount;
 var
 	idx : integer;
+	Success : boolean;
+	AnAccount : TAccount;
 begin
+	Result := nil;
 	//Check Memory
 	if not Assigned(AccountList) then Accountlist := Tstringlist.Create;
-	for idx := 0 to AccountList.Count -1 do
+	if AccountList.IndexOfName(Name) > -1 then
 	begin
-		if TAccount(AccountList.Objects[idx]).Username = Name then
+		Result := TAccount(AccountList.Objects[AccountList.IndexOfName(Name)]);
+		exit;
+	end;
+
+	SQLQueryResult := SQLConnection.query('SELECT * FROM login WHERE account_id = 100100;',true,Success);
+	if Success then begin
+		if SQLqueryResult.RowsCount = 1 then
 		begin
-			Result := TAccount(AccountList.Objects[idx]);
-			exit;
+			WriteLn('Account found in chara server');
+			AnAccount := TAccount.Create;
+			AnAccount.ID := StrToInt(SQLQueryResult.FieldValue(0));
+			AnAccount.Username := SQlQueryResult.FieldValue(1);
+			AnAccount.Password := SQlQueryResult.FieldValue(2);
+			AnAccount.Gender   := SQLQueryResult.FieldValue(4)[0];
+			AnAccount.EMail    := SQLQueryResult.FieldValue(6);
+			AccountList.AddObject(AnAccount.Username, AnAccount);
+			Result := AnAccount;
 		end;
 	end;
-	//Attempt to search txt files.  Could do a SQL query here if needed and load
-	//into memory perhaps.
-	Result := SearchAccountFiles(Name);
 end;
 
 procedure GetLastAccountIDAndCount;

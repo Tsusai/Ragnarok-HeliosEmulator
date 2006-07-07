@@ -70,7 +70,6 @@ begin
 
 	{Begin Main Loop}
 	while Run do begin
-		Write('Command: ');
 		ReadLn(AnInput);
 		Run := Command.Parse(AnInput);
 	end;

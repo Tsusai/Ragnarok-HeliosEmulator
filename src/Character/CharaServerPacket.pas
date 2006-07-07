@@ -8,15 +8,33 @@ uses
 
 implementation
 	uses
+		SysUtils,
 		Socket,
 		CharaServerTypes,
+		AccountTypes,
 		PacketTypes,
+		Globals,
 		Console;
 
 // SendCharas - RaX - Stubbed for later use.
-procedure SendCharas();
+procedure SendCharas(AThread : TIdPeerThread; var ABuffer : TBuffer);
+var
+	AccountID : Cardinal;
+	Success : boolean;
+	AnAccount : TAccount;
 begin
-
+	Success := false;
+	AccountID := Socket.BufferReadCardinal(2, ABuffer);
+	SQLQueryResult := SQLConnection.query('SELECT * FROM login WHERE account_id = 100100;',true,Success);
+	if Success then begin
+		if SQLqueryResult.RowsCount > 0 then
+		begin
+			WriteLn('Account found in chara server');
+			AnAccount := TAccount.Create;
+			AnAccount.ID := StrToInt(SQLQueryResult.FieldValue(0));
+			AnAccount.Username := SQlQueryResult.FieldValue(1);
+		end;
+	end;
 end;
 
 // SendCharaToMap - RaX - Stubbed for later use.
@@ -43,6 +61,7 @@ var
 	PacketLength : Integer;
 	ABuffer : TBuffer;
 	PacketID : Word;
+	Link : TThreadLink;
 begin
 	if AThread.Connection.Connected then
 	begin
@@ -51,22 +70,35 @@ begin
 		begin
 			AThread.Connection.ReadBuffer(ABuffer,PacketLength);
 			PacketID := BufferReadWord(0, ABuffer);
-			case PacketID of
-			$0065: // Client connection - Return Characters
+			if AThread.Data = nil then
+			begin
+				//Thread Data should have a TThreadLink object...if not, make one
+				Link := TThreadLink.Create;
+				AThread.Data := Link;
+			end;
+			//First time connection from login needs to do 0x0064.  No exceptions.
+			if TThreadLink(AThread.Data).AccountLink = nil then
+			begin
+				if PacketID = $0065 then
 				begin
-					SendCharas();
+					//Verify login and send characters
+					SendCharas(AThread,ABuffer);
 				end;
-			$0066: // Character Selected -- Refer Client to Map Server
-				begin
-					SendCharaToMap();
-				end;
-			$0067: // Create New Character
-				begin
-					CreateChara();
-				end;
-			$0068: // Request to Delete Character
-				begin
-					DeleteChara();
+			end else
+			begin
+				case PacketID of
+				$0066: // Character Selected -- Refer Client to Map Server
+					begin
+						SendCharaToMap();
+					end;
+				$0067: // Create New Character
+					begin
+						CreateChara();
+					end;
+				$0068: // Request to Delete Character
+					begin
+						DeleteChara();
+					end;
 				end;
 			end;
 		end;
