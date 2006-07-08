@@ -1,0 +1,13 @@
+2006/07/08
+Tsusai
+
+When adding units, DO NOT use Delphi/Kylix's "Add to project feature"
+Please type the unit and path in manually in Helios.dpr in the windows
+and Linux conditionals.
+
+Also with new units, please make the initial file first, save, and then
+open Helios.dpr or the project file.  Then add the name in.
+
+Reason:  the IDE removes the conditionals and undo's the / in the linux path,
+resulting in alot of units being called twice..  These steps just insure that
+you don't scream and have to do alot of cleanup.

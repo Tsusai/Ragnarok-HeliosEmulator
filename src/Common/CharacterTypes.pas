@@ -1,3 +1,11 @@
+(*------------------------------------------------------------------------------
+CharacterTypes
+Tsusai July 2006
+
+Description:
+ Basic character object.  ALMOST everything that has a field in the SQL will
+ need to be a property, to read/write values from SQL as needed.
+------------------------------------------------------------------------------*)
 unit CharacterTypes;
 
 interface
@@ -5,12 +13,12 @@ uses GameObjects;
 
 type TCharacter = class(TBeing)
 	private
-		fName : String;
-		fJob  : Cardinal;
-		 
+		//fID   : Cardinal;
+		//fName : String;
+		//fJob  : Cardinal;
+
 	public
 	CID : Cardinal; //BASIC KEY, WE DO NOT MOD IDS !!!
-	ID  : Cardinal;
 
 	SP  : Word;
 	BaseLV : Cardinal;
@@ -42,92 +50,5 @@ type TCharacter = class(TBeing)
 end;
 
 implementation
-uses
-	SysUtils,
-	Math,
-	Globals;
-
-	function GetCharaSQLDataString(
-		CharaID : Cardinal;
-		CharaParam : string;
-		ExistingVal : String
-	) : string;
-	var
-		Success : Boolean;
-	begin
-		Success := false;
-		SQLQueryResult :=
-			SQLConnection.query(
-				Format('SELECT %s FROM char WHERE char_id = %d;',[CharaParam,CharaID]),
-				true,Success
-			);
-		if Success and
-			(SQLQueryResult.FieldsCount = 1) and
-			(SQLQueryResult.RowsCount = 1) then
-		begin
-			Result := SQLQueryResult.FieldValue(0);
-		end else
-		begin
-			Result := ExistingVal;
-		end;
-	end;
-
-	function GetCharaSQLDataWord(
-		CharaID : Cardinal;
-		CharaParam : string;
-		ExistingVal : Word
-	) : Word;
-	var
-		Success : Boolean;
-	begin
-		Success := false;
-		SQLQueryResult :=
-			SQLConnection.query(
-				Format('SELECT %s FROM char WHERE char_id = %d;',[CharaParam,CharaID]),
-				true,Success
-			);
-		if Success and
-			(SQLQueryResult.FieldsCount = 1) and
-			(SQLQueryResult.RowsCount = 1) then
-		begin
-			Result := EnsureRange(StrToIntDef(SQLQueryResult.FieldValue(0),ExistingVal),Low(Word),High(Word));
-		end else
-		begin
-			Result := ExistingVal;
-		end;
-	Result := EnsureRange(Result,Low(Word),High(Word));
-	end;
-
-	function GetCharaSQLDataCardinal(
-		CharaID : Cardinal;
-		CharaParam : string;
-		ExistingVal : Cardinal
-	) : Cardinal;
-	var
-		Success : Boolean;
-	begin
-		Success := false;
-		SQLQueryResult :=
-			SQLConnection.query(
-				Format('SELECT %s FROM char WHERE char_id = %d;',[CharaParam,CharaID]),
-				true,Success
-			);
-		if Success and
-			(SQLQueryResult.FieldsCount = 1) and
-			(SQLQueryResult.RowsCount = 1) then
-		begin
-			Result := EnsureRange(StrToIntDef(SQLQueryResult.FieldValue(0),ExistingVal),Low(Cardinal),High(Cardinal));
-		end else
-		begin
-			Result := ExistingVal;
-		end;
-	Result := EnsureRange(Result,Low(Cardinal),High(Cardinal));
-	end;
-
-{------------------------------------------------------------------------------}
-{------------------------------------------------------------------------------}
-{------------------------------------------------------------------------------}
-{------------------------------------------------------------------------------}
-{------------------------------------------------------------------------------}
 
 end.

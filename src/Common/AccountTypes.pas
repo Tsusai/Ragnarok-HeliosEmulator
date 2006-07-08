@@ -1,8 +1,19 @@
+(*------------------------------------------------------------------------------
+AccountDB
+Tsusai July 2006
+
+Description:
+ The TAccount object and needed properties.
+
+[2006/07/08] Tsusai - TCharacter is now in CharacterTypes, adjusted units as
+ needed.
+------------------------------------------------------------------------------*)
 unit AccountTypes;
 
 interface
 	uses
-		GameObjects;
+		//Helios
+		CharacterTypes;
 
 	type TAccount = class
 	private
@@ -14,10 +25,10 @@ interface
 		Username : string[24];
 		Password : string[24];
 		EMail    : string[24];
-		GenderNum : Byte;
+		GenderNum : Byte; //0 or 1 for packet (F/M respectively)
 		Banned : boolean;
 		UnBanDateTime : string;
-		LastIP : string[15];
+		LastIP : string[15]; { TODO -oTsusai -cTAccount : Change to property }
 		LoginKey : array [1..2] of cardinal;
 		Characters : array [1..9] of TCharacter;
 
@@ -27,6 +38,12 @@ interface
 
 implementation
 
+(*------------------------------------------------------------------------------
+TAccount.SetGender
+
+Takes the Char from the SQL table (M or F) and figures out what to set GenderNum
+ at.
+------------------------------------------------------------------------------*)
 procedure TAccount.SetGender(Value : Char);
 begin
 	case Value of
@@ -38,7 +55,8 @@ begin
 		end;
 	end;
 	fGender := Value;
-end;
+end; (* proc TAccount.SetGender
+------------------------------------------------------------------------------*)
 
 end.
  

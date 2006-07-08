@@ -28,7 +28,7 @@ type TMainProc = class(TComponent)
 end;
 
 var
-  MainProc : TMainProc;
+	MainProc : TMainProc;
 
 implementation
 uses
@@ -54,9 +54,6 @@ var
 	LocalCharaServ : TCharaServ;
 	Success : Boolean;
 begin
-  Console('');
-	Console('- Helios is starting...');
-
 	AppPath  := ExtractFilePath(ParamStr(0));
 	InitGlobals;
 

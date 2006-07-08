@@ -62,14 +62,21 @@ var
 	AnInput : string;
 	Command : TCommands;
 	Run : Boolean;
+	HeliosVersion : string = 'Helios 0.0.0.12';
 begin
+	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
+	Randomize;
 	Command := TCommands.Create;
 	MainProc := TMainProc.Create(nil); //Form replacement
 	Run := TRUE;
 
+	MainProc.Console('');
+	MainProc.Console(Format('- %s is starting...',[HeliosVersion]));
+	
 	MainProc.Startup; //Form Create replacement
 
 	{Begin Main Loop}
+	{Must keep application alive!}
 	while Run do begin
 		ReadLn(AnInput);
 		Run := Command.Parse(AnInput);

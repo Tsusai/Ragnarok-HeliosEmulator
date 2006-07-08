@@ -1,3 +1,15 @@
+- Rev 12-
+[2006/07/08] - Tsusai - Overview : Code audit ><
+[2006/07/08] - Tsusai - Added Notes folder.
+[2006/07/08] - Tsusai - Documented and cleaned the following:
+ CharaServerTypes, CharaServerProcess, AccountTypes, CharacterTypes, Globals, PacketTypes, 
+ Socket*, ServerOptions*, Console, AccountDB, SaveDB.
+ * = RaX to document
+[2006/07/08] - Tsusai - Helios.dpr : moved "Loading text" from Console here.  Contains the revision number.  
+ Please remember to update when you commit.
+[2006/07/08] - Tsusai - GameObjects : removed duplicate TCharacter code.
+-
+
 - Rev 11-
 [2006/07/08] - RaX - Overview : Pre-organizational...organization...=)
 [2006/07/08] - RaX - Commands.pas - Moved into classes folder.

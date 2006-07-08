@@ -1,3 +1,12 @@
+(*------------------------------------------------------------------------------
+PacketTypes
+Tsusai 2006
+
+Types used with communications are listed here.
+TBuffer : Basic Buffer
+TCBuffer : Used for string buffer procedures
+TThreadLink : Used for linking accounts or characters to the client socket 
+------------------------------------------------------------------------------*)
 unit PacketTypes;
 
 interface

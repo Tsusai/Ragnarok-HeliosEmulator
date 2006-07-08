@@ -1,3 +1,10 @@
+(*------------------------------------------------------------------------------
+AccountDB
+Tsusai July 2006
+
+Description:
+ Should handle all account finding procedures
+------------------------------------------------------------------------------*)
 unit AccountDB;
 
 interface
@@ -17,6 +24,15 @@ uses
 	Math,
 	Console;
 
+(*------------------------------------------------------------------------------
+FindAccount
+
+Locates an account and returns a TAccount object.
+Tries to find the object in memory first, then procedes to load basics from SQL.
+
+[2006/07/06] Tsusai - Fixed bug of not finding it in memory, with IndexofName
+ not working for an odd reason....
+------------------------------------------------------------------------------*)
 function FindAccount(Name : string) : TAccount;
 var
 	Success : boolean;
@@ -35,22 +51,26 @@ begin
 	end;
 
 	SQLQueryResult := SQLConnection.query('SELECT * FROM login WHERE account_id = 100100;',true,Success);
-	if Success then begin
-		if SQLqueryResult.RowsCount = 1 then
-		begin
-			MainProc.Console('Account found in chara server');
-			AnAccount := TAccount.Create;
-			AnAccount.ID := StrToInt(SQLQueryResult.FieldValue(0));
-			AnAccount.Username := SQlQueryResult.FieldValue(1);
-			AnAccount.Password := SQlQueryResult.FieldValue(2);
-			AnAccount.Gender   := SQLQueryResult.FieldValue(4)[0];
-			AnAccount.EMail    := SQLQueryResult.FieldValue(6);
-			AccountList.AddObject(AnAccount.Username, AnAccount);
-			Result := AnAccount;
-		end;
+	if Success and (SQLqueryResult.RowsCount = 1) then begin
+		MainProc.Console('Account found in chara server');
+		AnAccount := TAccount.Create;
+		AnAccount.ID := StrToInt(SQLQueryResult.FieldValue(0));
+		AnAccount.Username := SQlQueryResult.FieldValue(1);
+		AnAccount.Password := SQlQueryResult.FieldValue(2);
+		AnAccount.Gender   := SQLQueryResult.FieldValue(4)[0];
+		AnAccount.EMail    := SQLQueryResult.FieldValue(6);
+		AccountList.AddObject(AnAccount.Username, AnAccount);
+		Result := AnAccount;
 	end;
-end;
+end; (* func FindAccount
+------------------------------------------------------------------------------*)
 
+(*------------------------------------------------------------------------------
+GetLastAccountIDAndCount
+
+TXT Legacy.  Placeholder till i can figure out how to retrieve the largest
+ID from SQL (i'm no query master)
+------------------------------------------------------------------------------*)
 procedure GetLastAccountIDAndCount;
 var
 	searchResult : TSearchRec;
@@ -94,7 +114,8 @@ begin
 		MainProc.Console('');
 		 //Added to display accounts loaded on statusbar. - RaX
 	end;
-end;
+end;(* proc GetLastAccountIDAndCount
+------------------------------------------------------------------------------*)
 
 end.
 

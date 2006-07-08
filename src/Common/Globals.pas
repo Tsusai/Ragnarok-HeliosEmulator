@@ -1,9 +1,19 @@
+(*------------------------------------------------------------------------------
+Globals
+Tsusai July 2006
+
+Description:
+ Contains almost all Global variables and lists for the entire project
+------------------------------------------------------------------------------*)
 unit Globals;
 
 interface
 uses
+	//IDE
 	Classes,
+	//Helios
 	ServerOptions,
+	//3rd Party
 	uMysqlClient;
 
 	procedure InitGlobals;
@@ -24,10 +34,20 @@ var
 
 implementation
 	uses
+		//
 		SysUtils,
 		Console;
 
-procedure ConnectToSQL;
+(*------------------------------------------------------------------------------
+ConnectToMySQL
+
+Connects the server to the MySQL table, creating the two main objects,
+ SQLConnection and SQLQueryResult.
+
+[2006/07/06] Tsusai - Reanmed to ConnectToMySQL.
+------------------------------------------------------------------------------*)
+{ TODO 1 -cMySQL : Replace default values with INI loaded ones }
+procedure ConnectToMySQL;
 var
 	Success : boolean;
 begin
@@ -36,6 +56,7 @@ begin
 	SQLConnection.Host := 'localhost';
 	SQLConnection.User := 'root';
 	SQLConnection.Password := 'helios';
+	SQLConnection.Port     := 3306;
 	SQLConnection.Db := 'Helios';
 	SQLConnection.ConnectTimeout := 60;
 
@@ -58,6 +79,12 @@ begin
 end;
 
 
+(*------------------------------------------------------------------------------
+InitGlobals
+
+Creates all needed global objects
+
+------------------------------------------------------------------------------*)
 procedure InitGlobals;
 begin
 	AccountList := TStringList.Create;
@@ -65,9 +92,15 @@ begin
 	CharaServerList := TStringList.Create;
 	ServerConfig := TServerOptions.Create('./ServerOptions.ini');
 	ServerConfig.Load;
-	ConnectToSQL;
-end;
+	ConnectToMySQL; //takes care of SQLConnection and SQLQueryResult
+end; (* proc InitGlobals
+------------------------------------------------------------------------------*)
 
+(*------------------------------------------------------------------------------
+DestroyGlobals
+
+Frees all global objects
+------------------------------------------------------------------------------*)
 procedure DestroyGlobals;
 begin
 	AccountList.Free;
@@ -77,6 +110,7 @@ begin
 	CharaServerList.Free;
 	SQLConnection.Free;
 	SQLQueryResult.Free;
-end;
+end; (* proc DestroyGlobals
+------------------------------------------------------------------------------*)
 
 end.
