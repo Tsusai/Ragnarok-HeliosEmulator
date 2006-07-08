@@ -1,3 +1,9 @@
+- Rev 11-
+[2006/07/08] - RaX - Overview : Pre-organizational...organization...=)
+[2006/07/08] - RaX - Commands.pas - Moved into classes folder.
+[2006/07/08] - RaX - Alphabetized units in Helios.dpr
+-
+
 - Rev 10-
 [2006/07/06] - Tsusai - Overview : CharacterServer Code and some bonus SQL code.
 [2006/07/06] - Tsusai - CharaServerPacker - SendCharas: SQL Query updated.  Code setup to return Zero
