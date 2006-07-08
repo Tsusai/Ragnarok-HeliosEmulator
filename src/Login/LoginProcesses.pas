@@ -28,8 +28,8 @@ implementation
 	var
 		Buffer : TBuffer;
 	begin
-		WriteBuffer( 0, $006a, Buffer);
-		WriteBuffer( 2, Error, Buffer);
+		WriteBufferWord( 0, $006a, Buffer);
+		WriteBufferWord( 2, Error, Buffer);
 		SendBuffer(AThread, Buffer ,23);
 	end;
 
@@ -86,22 +86,22 @@ implementation
 	  //R 0069 <len>.w <login ID1>.l <account ID>.l <login ID2>.l ?.32B <sex>.B
 	  //{<IP>.l <port>.w <server name>.20B <login users>.w <maintenance>.w <new>.w}.32B*
 		Size := 2+2+4+4+4+32+1+(CharaServerList.Count * 32);
-		WriteBuffer(0,$0069,Buffer);
-		WriteBuffer(2,Size,Buffer);
-		WriteBuffer(4,AnAccount.LoginKey[1],Buffer);
-		WriteBuffer(8,AnAccount.ID,Buffer);
-		WriteBuffer(12,AnAccount.LoginKey[2],Buffer);
-		WriteBuffer(16, 0, Buffer);
-		WriteBuffer(20, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz'#0, Now), 24, Buffer);
-		WriteBuffer(44, 0, Buffer);
-		WriteBuffer(46,AnAccount.GenderNum,Buffer);
+		WriteBufferWord(0,$0069,Buffer);
+		WriteBufferWord(2,Size,Buffer);
+		WriteBufferCardinal(4,AnAccount.LoginKey[1],Buffer);
+		WriteBufferCardinal(8,AnAccount.ID,Buffer);
+		WriteBufferCardinal(12,AnAccount.LoginKey[2],Buffer);
+		WriteBufferCardinal(16, 0, Buffer);
+		WriteBufferString(20, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz'#0, Now), 24, Buffer);
+		WriteBufferWord(44, 0, Buffer);
+		WriteBufferByte(46,AnAccount.GenderNum,Buffer);
 		for Index := 0 to CharaServerList.Count - 1 do begin
-			WriteBuffer(47,TCharaServ(CharaServerList.Objects[Index]).IPCardinal,Buffer);
-			WriteBuffer(51,TCharaServ(CharaServerList.Objects[Index]).Port,Buffer);
-			WriteBuffer(53+Index*32,TCharaServ(CharaServerList.Objects[Index]).ServerName,20,Buffer);
-			WriteBuffer(73+Index*32,TCharaServ(CharaServerList.Objects[Index]).OnlineUsers,Buffer);
-			WriteBuffer(75,0,Buffer);
-			WriteBuffer(77,0,Buffer);
+			WriteBufferCardinal(47,TCharaServ(CharaServerList.Objects[Index]).IPCardinal,Buffer);
+			WriteBufferWord(51,TCharaServ(CharaServerList.Objects[Index]).Port,Buffer);
+			WriteBufferString(53+Index*32,TCharaServ(CharaServerList.Objects[Index]).ServerName,20,Buffer);
+			WriteBufferWord(73+Index*32,TCharaServ(CharaServerList.Objects[Index]).OnlineUsers,Buffer);
+			WriteBufferWord(75,0,Buffer);
+			WriteBufferWord(77,0,Buffer);
 		end;
 
     SendBuffer(AThread, Buffer ,Size);

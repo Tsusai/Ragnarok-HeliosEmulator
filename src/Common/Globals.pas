@@ -18,12 +18,14 @@ var
 	ServerConfig : TServerOptions;
 
 	AccountList : TStringList;
+	CharacterList : TStringList;
 
 	LastAccountID : Integer;
 
 implementation
 	uses
-		SysUtils;
+		SysUtils,
+		Console;
 
 procedure ConnectToSQL;
 var
@@ -37,21 +39,21 @@ begin
 	SQLConnection.Db := 'Helios';
 	SQLConnection.ConnectTimeout := 60;
 
-	Console('  - Connecting to mySQL server.  Will abort after 60 seconds');
+	MainProc.Console('  - Connecting to mySQL server.  Will abort after 60 seconds');
 	if SQLConnection.Connect then
 	begin
-		Console(Format('  - SQL Connected to %s at port %d', [SQLConnection.Host, SQLConnection.Port]));
+		MainProc.Console(Format('  - SQL Connected to %s at port %d', [SQLConnection.Host, SQLConnection.Port]));
 		SQLQueryResult := SQLConnection.query('SELECT * FROM `char` c;',true,Success);
 		if Success then
 		begin
-			Console('    - Test Query Success');
-			Console('      - Returned Rows : ' + IntToStr(SQLQueryResult.RowsCount)); //total rows of info
-			Console('      - Field Count   : ' + IntToStr(SQLQueryResult.FieldsCount)); //total fields
-			Console('      - Chara Name    : ' + SQLQueryResult.FieldValue(3)); // gives name (even if blank)
+			MainProc.Console('    - Test Query Success');
+			MainProc.Console('      - Returned Rows : ' + IntToStr(SQLQueryResult.RowsCount)); //total rows of info
+			MainProc.Console('      - Field Count   : ' + IntToStr(SQLQueryResult.FieldsCount)); //total fields
+			MainProc.Console('      - Chara Name    : ' + SQLQueryResult.FieldValue(3)); // gives name (even if blank)
 		end;
 	end else begin
-		Console('*****Could not connect to mySQL database server.');
-		Console('*****All incoming client connections will be refused.');
+		MainProc.Console('*****Could not connect to mySQL database server.');
+		MainProc.Console('*****All incoming client connections will be refused.');
 	end;
 end;
 
@@ -59,6 +61,7 @@ end;
 procedure InitGlobals;
 begin
 	AccountList := TStringList.Create;
+	CharacterList := TStringList.Create;
 	CharaServerList := TStringList.Create;
 	ServerConfig := TServerOptions.Create('./ServerOptions.ini');
 	ServerConfig.Load;
@@ -68,6 +71,7 @@ end;
 procedure DestroyGlobals;
 begin
 	AccountList.Free;
+	CharacterList.Free;
 	ServerConfig.Save;
 	ServerConfig.Free;
 	CharaServerList.Free;

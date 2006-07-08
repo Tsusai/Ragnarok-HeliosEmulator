@@ -11,6 +11,7 @@ implementation
 		SysUtils,
 		Socket,
 		CharaServerTypes,
+		AccountDB,
 		AccountTypes,
 		PacketTypes,
 		Globals,
@@ -22,17 +23,48 @@ var
 	AccountID : Cardinal;
 	Success : boolean;
 	AnAccount : TAccount;
+	ReplyBuffer : TBuffer;
+	idx : byte;
 begin
 	Success := false;
 	AccountID := Socket.BufferReadCardinal(2, ABuffer);
-	SQLQueryResult := SQLConnection.query('SELECT * FROM login WHERE account_id = 100100;',true,Success);
+	SQLQueryResult :=
+		SQLConnection.query(
+			Format('SELECT userid FROM login WHERE account_id = %d;',[AccountID]),true,Success);
 	if Success then begin
 		if SQLqueryResult.RowsCount > 0 then
 		begin
-			Console('Account found in chara server');
-			AnAccount := TAccount.Create;
-			AnAccount.ID := StrToInt(SQLQueryResult.FieldValue(0));
-			AnAccount.Username := SQlQueryResult.FieldValue(1);
+			AnAccount := FindAccount(SQLQueryResult.FieldValue(0));
+			if Assigned(AnAccount) then
+			begin
+				if AnAccount.ID = AccountID then
+				begin
+					if (AnAccount.LoginKey[1] = Socket.BufferReadCardinal(6,ABuffer)) and
+						(AnAccount.LoginKey[2] = Socket.BufferReadCardinal(10,ABuffer)) then
+					begin
+						//Unknown why we need this spacer, but its required. Probably anti-hack
+						Socket.WriteBufferCardinal(0,$00000000,ReplyBuffer);
+						AThread.Connection.WriteBuffer(ReplyBuffer,4);
+
+						SQLQueryResult := SQLConnection.query(
+							Format('SELECT char_id FROM `char` WHERE account_id = %d;',[AccountID]),true,Success);
+						if Success then
+						begin
+							for idx := 0 to SQLQueryResult.RowsCount do
+							begin
+								//Add loop code for sending/loading character information
+								//If character doesn't exist, load ID and name from SQL
+								//add to CharacterList
+								//Rest of the character parameters will be loaded via
+								//TCharacter.Property SQL calls
+							end;
+								Socket.WriteBufferWord(0,$006b,ReplyBuffer); //header
+								Socket.WriteBufferWord(2,24,ReplyBuffer); //size (24 + count *106)
+								AThread.Connection.WriteBuffer(ReplyBuffer,24);//size (24 + count *106)
+						end;
+					end;
+				end;
+			end;
 		end;
 	end;
 end;

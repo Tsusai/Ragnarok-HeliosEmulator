@@ -5,10 +5,10 @@ uses
 	PacketTypes,
 	IdTCPServer;
 
-	procedure WriteBuffer(Index:word; ByteIn:byte; var Buffer : TBuffer); overload;
-	procedure WriteBuffer(Index:word; WordIn:word; var Buffer : TBuffer); overload;
-	procedure WriteBuffer(Index:word; CardinalIn:cardinal; var Buffer : TBuffer); overload;
-	procedure WriteBuffer(Index:word; StringIn:string; Count:word; var Buffer : TBuffer); overload;
+	procedure WriteBufferByte(Index:word; ByteIn:byte; var Buffer : TBuffer);
+	procedure WriteBufferWord(Index:word; WordIn:word; var Buffer : TBuffer);
+	procedure WriteBufferCardinal(Index:word; CardinalIn:cardinal; var Buffer : TBuffer);
+	procedure WriteBufferString(Index:word; StringIn:string; Count:word; var Buffer : TBuffer);
 
 	function BufferReadWord(Index:word; var Buffer : TBuffer) : word;
 	function BufferReadCardinal(Index:word; var Buffer : TBuffer) : cardinal;
@@ -21,28 +21,28 @@ uses
 	SysUtils;
 
 	//Socket Method WriteBuffer - Writes a Byte to the buffer.
-	procedure WriteBuffer(Index:word; ByteIn:byte; var Buffer : TBuffer);
+	procedure WriteBufferByte(Index:word; ByteIn:byte; var Buffer : TBuffer);
 	begin
 		Assert(Index <= 32767, 'TSocket.WriteBuffer - Byte: index overflow ' + IntToStr(Index));
 		Move(ByteIn, Buffer[Index], 1);
 	end;
 
   //Socket Method WriteBuffer - Writes a Word to the buffer.
-	procedure WriteBuffer(Index : word; WordIn : word; var Buffer : TBuffer);
+	procedure WriteBufferWord(Index : word; WordIn : word; var Buffer : TBuffer);
 	begin
 		Assert(Index <= 32766, 'TSocket.WriteBuffer - Word: index overflow ' + IntToStr(Index));
 		Move(WordIn, Buffer[Index], 2);
 	end;
 
   //Socket Method WriteBuffer - Writes a Cardinal to the buffer.
-	procedure WriteBuffer(index : word; CardinalIn : cardinal; var Buffer : TBuffer);
+	procedure WriteBufferCardinal(index : word; CardinalIn : cardinal; var Buffer : TBuffer);
 	begin
 		Assert(Index <= 32766, 'TSocket.WriteBuffer - Cardinal: index overflow ' + IntToStr(Index));
 		Move(CardinalIn, Buffer[Index], 4);
 	end;
 
   //Socket Method WriteBuffer - Writes a String to the buffer.
-	procedure WriteBuffer(Index:word; StringIn : string; Count : word; var Buffer : TBuffer);
+	procedure WriteBufferString(Index:word; StringIn : string; Count : word; var Buffer : TBuffer);
 	var
 		StrLength :integer;
 	begin
@@ -53,7 +53,7 @@ uses
 		StrLength := Length(StringIn);
 		if StrLength <> 0 then begin
 		  if StrLength > Count then begin
-        StrLength := Count;
+				StrLength := Count;
       end;
       Move(StringIn[1], Buffer[Index], StrLength);
     end;

@@ -1,4 +1,18 @@
-- Rev 9-
+- Rev 10-
+[2006/07/06] - Tsusai - Overview : CharacterServer Code and some bonus SQL code.
+[2006/07/06] - Tsusai - CharaServerPacker - SendCharas: SQL Query updated.  Code setup to return Zero
+ characters at this time till TCharacter is developed further.
+[2006/07/06] - Tsusai - CharacterTypes - TCharacter: All properties that will be made will be using SQL to get and
+ set data.  Basic retrieval code is now set in place, to be shared.  Write procedures to come.
+[2006/07/06] - Tsusai - Globals: Added CharacterList (not used yet).  Updated Console() to MainProc.Console()
+ thus fixing broken rev 9.
+[2006/07/06] - Tsusai - Socket - WriteBuffer: Undid overload and added the type as a suffix (WriteBufferByte)
+ Afraid of possible packet glitches, last thing I need to worry about.
+[2006/07/06] - Tsusai - AccountDB - FindAccount: Fixed searching engine.  Wouldn't find it if it already existed.
+[2006/07/06] - Tsusai - LoginProcesses: Updated WriteBuffer calls.
+-
+
+- Rev 9- Broken
 [2006/07/06] - Tsusai - Overview : Forgot to upload the sql file, fixes (thanks to Jbain)
 [2006/07/06] - Tsusai - NonSQLFiles : Writeln -> console() update.
 [2006/07/06] - Tsusai - uMySQLVio : _WIN_ conditionals changed to MSWINDOWS (Jbain pointed it out).

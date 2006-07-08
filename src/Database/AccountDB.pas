@@ -19,24 +19,26 @@ uses
 
 function FindAccount(Name : string) : TAccount;
 var
-	idx : integer;
 	Success : boolean;
 	AnAccount : TAccount;
+	idx : integer;
 begin
 	Result := nil;
 	//Check Memory
 	if not Assigned(AccountList) then Accountlist := Tstringlist.Create;
-	if AccountList.IndexOfName(Name) > -1 then
-	begin
-		Result := TAccount(AccountList.Objects[AccountList.IndexOfName(Name)]);
-		exit;
+	for idx := 0 to AccountList.Count -1 do begin
+		if TAccount(AccountList.Objects[idx]).Username = Name then
+		begin
+			Result := TAccount(AccountList.Objects[idx]);
+			exit;
+		end;
 	end;
 
 	SQLQueryResult := SQLConnection.query('SELECT * FROM login WHERE account_id = 100100;',true,Success);
 	if Success then begin
 		if SQLqueryResult.RowsCount = 1 then
 		begin
-			Console('Account found in chara server');
+			MainProc.Console('Account found in chara server');
 			AnAccount := TAccount.Create;
 			AnAccount.ID := StrToInt(SQLQueryResult.FieldValue(0));
 			AnAccount.Username := SQlQueryResult.FieldValue(1);
