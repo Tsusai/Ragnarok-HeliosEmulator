@@ -34,7 +34,7 @@ implementation
 uses
 	LoginProcesses,
 	CharaServerTypes,
-	CharaServerPacket,
+	CharaServerProcess,
 	PacketTypes,
 	SaveDB,
 	Globals;

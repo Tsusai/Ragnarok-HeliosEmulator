@@ -11,8 +11,8 @@ unit PacketTypes;
 
 interface
 uses
-	AccountTypes,
-	CharacterTypes;
+	Account,
+	Character;
 
 type
 	TBufSize = 0..(High(Word) div 2);

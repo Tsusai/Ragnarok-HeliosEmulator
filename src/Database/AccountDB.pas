@@ -10,7 +10,7 @@ unit AccountDB;
 interface
 	uses
 		GameObjects,
-		AccountTypes,
+		Account,
 		Classes;
 
 		function FindAccount(Name : string) : TAccount;

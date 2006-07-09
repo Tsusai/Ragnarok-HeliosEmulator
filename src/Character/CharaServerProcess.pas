@@ -21,7 +21,7 @@ implementation
 		//Helios
 		Socket,
 		AccountDB,
-		AccountTypes,
+		Account,
 		PacketTypes,
 		Globals;
 

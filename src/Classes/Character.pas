@@ -1,12 +1,14 @@
 (*------------------------------------------------------------------------------
-CharacterTypes
+Class Character
 Tsusai July 2006
 
 Description:
- Basic character object.  ALMOST everything that has a field in the SQL will
- need to be a property, to read/write values from SQL as needed.
+ Basic character object.
+
+[2006/07/08] RaX - Moved into the 'Classes' Directory and renamed to
+ 'Character.pas'. One class per file is the name of the game.
 ------------------------------------------------------------------------------*)
-unit CharacterTypes;
+unit Character;
 
 interface
 uses GameObjects;

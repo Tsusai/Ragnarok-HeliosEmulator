@@ -1,3 +1,9 @@
+- Rev 13-
+[2006/07/08] - RaX - Overview : Lucky 13...=)
+[2006/07/08] - RaX - Moved and renamed AccountTypes and CharacterTypes. AccountTypes in '\trunk\src\Classes\Account.pas'
+ and CharacterTypes in '\trunk\src\Classes\Character.pas'. One Class per file is the name of the game.
+-
+
 - Rev 12-
 [2006/07/08] - Tsusai - Overview : Code audit ><
 [2006/07/08] - Tsusai - Added Notes folder.

@@ -1,5 +1,5 @@
 (*------------------------------------------------------------------------------
-AccountDB
+Account
 Tsusai July 2006
 
 Description:
@@ -7,13 +7,15 @@ Description:
 
 [2006/07/08] Tsusai - TCharacter is now in CharacterTypes, adjusted units as
  needed.
+[2006/07/08] RaX - Moved to 'Classes' Directory and renamed to 'Account.pas'.
+ One class per file is the name of the game.
 ------------------------------------------------------------------------------*)
-unit AccountTypes;
+unit Account;
 
 interface
 	uses
 		//Helios
-		CharacterTypes;
+		Character;
 
 	type TAccount = class
 	private

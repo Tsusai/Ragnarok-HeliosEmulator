@@ -5,9 +5,9 @@ program Helios;
 uses
 	{$IFDEF MSWINDOWS}
 	AccountDB in 'Database\AccountDB.pas',
-	AccountTypes in 'Common\AccountTypes.pas',
-	CharacterTypes in 'Common\CharacterTypes.pas',
-	CharaServerPacket in 'Character\CharaServerPacket.pas',
+	Account in 'Classes\Account.pas',
+	Character in 'Classes\Character.pas',
+	CharaServerProcess in 'Character\CharaServerProcess.pas',
 	CharaServerTypes in 'Character\CharaServerTypes.pas',
 	Commands in 'Classes\Commands.pas',
 	GameObjects in 'Database\GameObjects.pas',
@@ -30,9 +30,9 @@ uses
 
 	{$IFDEF LINUX}
 	AccountDB in 'Database/AccountDB.pas',
-	AccountTypes in 'Common/AccountTypes.pas',
-	CharacterTypes in 'Common/CharacterTypes.pas',
-	CharaServerPacket in 'Character/CharaServerPacket.pas',
+	Account in 'Classes/Account.pas',
+	Character in 'Classes/Character.pas',
+	CharaServerProcess in 'Character/CharaServerProcess.pas',
 	CharaServerTypes in 'Character/CharaServerTypes.pas',
 	Commands in 'Classes/Commands.pas',
 	GameObjects in 'Database/GameObjects.pas',
@@ -62,7 +62,7 @@ var
 	AnInput : string;
 	Command : TCommands;
 	Run : Boolean;
-	HeliosVersion : string = 'Helios 0.0.0.12';
+	HeliosVersion : string = 'Helios 0.0.0.13';
 begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;
