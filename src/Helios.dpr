@@ -64,7 +64,7 @@ var
 	AnInput : string;
 	Command : TCommands;
 	Run : Boolean;
-	HeliosVersion : string = 'Helios 0.0.0.14';
+	HeliosVersion : string = 'Helios 0.0.0.15';
 begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;
