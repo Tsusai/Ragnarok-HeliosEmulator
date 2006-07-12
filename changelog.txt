@@ -1,3 +1,15 @@
+- Rev 14-
+[2006/07/11] - Tsusai - Overview : Character server work
+[2006/07/11] - Tsusai - SQL : Added.  Get and Set integer and string utilites.
+ SET : Needs a table, parameter, value, and ID key value.
+ GET : Needs a table, parameter, and ID key value.
+[2006/07/11] - Tsusai - CharaServerProcess : Work on CreateChara.  Need to do further work on TCharacter
+[2006/07/11] - Tsusai - Character - TCharacter : Added most of the sql chara table variables as properties.  
+ Also added a AddToSQL, which returns the new CharaID. (STILL NEEDS WORK)
+[2006/07/11] - Tsusai - Globals : Added uses description.
+[2006/07/11] - Tsusai - Socket : Added BufferReadByte.
+-
+
 - Rev 13-
 [2006/07/08] - RaX - Overview : Lucky 13...=)
 [2006/07/08] - RaX - Moved and renamed AccountTypes and CharacterTypes. AccountTypes in '\trunk\src\Classes\Account.pas'

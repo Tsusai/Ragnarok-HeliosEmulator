@@ -18,6 +18,7 @@ uses
 	SaveDB in 'Database\SaveDB.pas',
 	ServerOptions in 'Config\ServerOptions.pas',
 	Socket in 'Common\Socket.pas',
+	SQL in 'Common\SQL.pas',
 	uMysqlClient in 'Common\3rdParty\SQL\uMysqlClient.pas',
 	uMysqlCT in 'Common\3rdParty\SQL\uMysqlCT.pas',
 	uMysqlErrors in 'Common\3rdParty\SQL\uMysqlErrors.pas',
@@ -43,6 +44,7 @@ uses
 	SaveDB in 'Database/SaveDB.pas',
 	ServerOptions in 'Config/ServerOptions.pas',
 	Socket in 'Common/Socket.pas',
+	SQL in 'Common/SQL.pas',
 	uMysqlClient in 'Common/3rdParty/SQL/uMysqlClient.pas',
 	uMysqlCT in 'Common/3rdParty/SQL/uMysqlCT.pas',
 	uMysqlErrors in 'Common/3rdParty/SQL/uMysqlErrors.pas',
@@ -62,7 +64,7 @@ var
 	AnInput : string;
 	Command : TCommands;
 	Run : Boolean;
-	HeliosVersion : string = 'Helios 0.0.0.13';
+	HeliosVersion : string = 'Helios 0.0.0.14';
 begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;

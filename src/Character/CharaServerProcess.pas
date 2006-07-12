@@ -17,13 +17,30 @@ uses
 implementation
 	uses
 		//IDE
-		SysUtils,
+		SysUtils, types,
 		//Helios
+		Character,
 		Socket,
 		AccountDB,
 		Account,
 		PacketTypes,
 		Globals;
+
+
+const
+	INVALIDNAME = 0;
+	INVALIDMISC = 2;
+	
+
+procedure SendError(AThread : TIdPeerThread; const Error : byte);
+var
+	ReplyBuf : TBuffer;
+begin
+	WriteBufferWord(0, $006e, ReplyBuf);
+	WriteBufferByte(2, Error, ReplyBuf);
+	SendBuffer(AThread,ReplyBuf,3);
+end;
+
 
 (*------------------------------------------------------------------------------
 SendCharas
@@ -72,11 +89,12 @@ begin
 							begin
 								{ TODO -oTsusai -cCharacterServer :
 								Add loop code for passing characters to client }
+
 							end;
-								WriteBufferWord(0,$006b,ReplyBuffer); //header
-								//size is (24 + (character count * 106))
-								WriteBufferWord(2,24,ReplyBuffer);
-								SendBuffer(AThread,ReplyBuffer,24);
+							WriteBufferWord(0,$006b,ReplyBuffer); //header
+							//size is (24 + (character count * 106))
+							WriteBufferWord(2,24,ReplyBuffer);
+							SendBuffer(AThread,ReplyBuffer,24);
 						end;
 					end;
 				end;
@@ -92,10 +110,78 @@ begin
 
 end;
 
-// CreateChara - RaX - Stubbed for later use.
-procedure CreateChara();
-begin
+(*------------------------------------------------------------------------------
+CreateChara
 
+Is called after creating a character in the client.
+Creates and saves the character object
+
+[2006/07/06] Tsusai - Started work on changing dummy procedure to real procedure
+------------------------------------------------------------------------------*)
+procedure CreateChara(AThread : TIdPeerThread; var ABuffer : TBuffer);
+var
+	CharaName  : string;
+	StatPoints : array [0..5] of byte;
+	HairStyle  : byte;
+	HairColor  : byte;
+	SlotNum    : byte;
+	ACharacter : TCharacter;
+	Account    : TAccount;
+	Success    : boolean;
+	ReplyBuf   : TBuffer;
+	idx        : byte;
+	TotalStatPt: byte;
+begin
+	Account := TThreadLink(AThread.Data).AccountLink;
+	CharaName := BufferReadString(2,24,ABuffer);
+	SlotNum   := BufferReadByte(32,ABuffer);
+	TotalStatPt := 0;
+	//Name Check
+	SQLQueryResult :=
+		SQLConnection.query(
+		Format('SELECT name FROM `char` WHERE name = "%s"',[CharaName]),true,Success);
+	if SQLQueryResult.RowsCount = 0 then
+	begin
+		//Stat Point check
+		for idx := 0 to 5 do begin
+			StatPoints[idx] := BufferReadByte(idx+26,ABuffer);
+			if (StatPoints[idx] < 1) or (StatPoints[idx] > 9) then
+			begin
+				SendError(AThread,INVALIDMISC);
+				exit;
+			end else
+			begin
+				Inc(TotalStatPt,StatPoints[idx]);
+			end;
+		end;
+		//Too many statpoints
+		if TotalStatPt <> 30 then begin
+			SendError(AThread,INVALIDMISC);
+			exit;
+		end;
+		SQLQueryResult :=
+			SQLConnection.query(
+			Format('SELECT * FROM `char` WHERE char_num = %d',[SlotNum]),true,Success);
+		if SQLQueryResult.RowsCount > 0 then
+		begin
+			SendError(AThread,INVALIDMISC);
+			exit;
+		end;
+		//Validated...Procede with creation
+		ACharacter := TCharacter.Create;
+		//Set a record in SQL for our new character
+		ACharacter.CID := ACharacter.CreateInSQL(Account.ID,CharaName);
+		//SET THESE WITH INI OVERIDES
+		//ACharacter.Zeny := INIVALUE
+		//ACharacter.SaveMap
+		//ACharacter.SavePoint
+		//ACharacter.Map
+		//ACharacter.Point
+
+	end else
+	begin
+		SendError(AThread,INVALIDNAME);
+	end;
 end;
 
 // DeleteChara - RaX - Stubbed for later use.
@@ -131,7 +217,7 @@ begin
 		begin
 			AThread.Connection.ReadBuffer(ABuffer,PacketLength);
 			PacketID := BufferReadWord(0, ABuffer);
-			if AThread.Data = nil then
+			if (AThread.Data = nil) or not (AThread.Data is TThreadLink) then
 			begin
 				//Thread Data should have a TThreadLink object...if not, make one
 				Link := TThreadLink.Create;
@@ -154,7 +240,7 @@ begin
 					end;
 				$0067: // Create New Character
 					begin
-						CreateChara();
+						CreateChara(AThread,ABuffer);
 					end;
 				$0068: // Request to Delete Character
 					begin

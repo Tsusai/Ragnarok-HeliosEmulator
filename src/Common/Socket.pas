@@ -21,6 +21,7 @@ uses
 	procedure WriteBufferCardinal(Index:word; CardinalIn:cardinal; var Buffer : TBuffer);
 	procedure WriteBufferString(Index:word; StringIn:string; Count:word; var Buffer : TBuffer);
 
+	function BufferReadByte(Index:word; var Buffer : TBuffer) : byte;
 	function BufferReadWord(Index:word; var Buffer : TBuffer) : word;
 	function BufferReadCardinal(Index:word; var Buffer : TBuffer) : cardinal;
 	function BufferReadString(Index:word; Count:word; Buffer : TBuffer) : string;
@@ -79,6 +80,13 @@ INPUTTING DATA INTO THE BUFFER METHODS
 (*------------------------------------------------------------------------------
 READING DATA FROM THE BUFFER METHODS
 ------------------------------------------------------------------------------*)
+
+	//Socket Method BufferReadByte - Reads a Byte from the buffer.
+	function BufferReadByte(Index:word; var Buffer : TBuffer) : byte;
+	begin
+		Assert(Index <= 32766, 'BufferReadByte: Index overflow ' + IntToStr(Index));
+		Move(Buffer[Index], Result, 1);
+	end;
 
 	//Socket Method BufferReadWord - Reads a Word from the buffer.
 	function BufferReadWord(Index:word; var Buffer : TBuffer) : word;
