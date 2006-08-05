@@ -56,8 +56,7 @@ interface
 implementation
 	uses
 		Classes,
-		SysUtils,
-		Console;
+		SysUtils;
 
 	procedure TServerOptions.Load;
 	var

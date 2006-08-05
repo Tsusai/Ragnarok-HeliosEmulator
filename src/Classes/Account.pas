@@ -13,9 +13,6 @@ Description:
 unit Account;
 
 interface
-	uses
-		//Helios
-		Character;
 
 	type TAccount = class
 	private
@@ -32,7 +29,7 @@ interface
 		UnBanDateTime : string;
 		LastIP : string[15]; { TODO -oTsusai -cTAccount : Change to property }
 		LoginKey : array [1..2] of cardinal;
-		Characters : array [1..9] of TCharacter;
+		CharaID : array [0..8] of Cardinal;
 
 		property Gender : Char read fGender write SetGender;
 

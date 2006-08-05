@@ -14,6 +14,7 @@ uses
 	//Helios
 	ServerOptions,
 	//3rd Party
+	List32,
 	uMysqlClient;
 
 	procedure InitGlobals;
@@ -28,7 +29,7 @@ var
 	ServerConfig : TServerOptions;
 
 	AccountList : TStringList;
-	CharacterList : TStringList;
+	CharacterList : TIntList32;
 
 	LastAccountID : Integer;
 
@@ -89,7 +90,7 @@ Creates all needed global objects
 procedure InitGlobals;
 begin
 	AccountList := TStringList.Create;
-	CharacterList := TStringList.Create;
+	CharacterList := TIntList32.Create;
 	CharaServerList := TStringList.Create;
 	ServerConfig := TServerOptions.Create('./ServerOptions.ini');
 	ServerConfig.Load;

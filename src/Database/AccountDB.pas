@@ -9,23 +9,22 @@ unit AccountDB;
 
 interface
 	uses
-		GameObjects,
-		Account,
-		Classes;
+		Account;
 
-		function FindAccount(Name : string) : TAccount;
+		function FindAccountByName(Name : string) : TAccount;
+		function FindAccountByID(ID : Cardinal) : TAccount;
 		procedure GetLastAccountIDAndCount;
 
 implementation
 uses
+	Classes,
 	SysUtils,
-	StrUtils,
 	Globals,
 	Math,
 	Console;
 
 (*------------------------------------------------------------------------------
-FindAccount
+FindAccountByName
 
 Locates an account and returns a TAccount object.
 Tries to find the object in memory first, then procedes to load basics from SQL.
@@ -33,7 +32,7 @@ Tries to find the object in memory first, then procedes to load basics from SQL.
 [2006/07/06] Tsusai - Fixed bug of not finding it in memory, with IndexofName
  not working for an odd reason....
 ------------------------------------------------------------------------------*)
-function FindAccount(Name : string) : TAccount;
+function FindAccountByName(Name : string) : TAccount;
 var
 	Success : boolean;
 	AnAccount : TAccount;
@@ -50,7 +49,45 @@ begin
 		end;
 	end;
 
-	SQLQueryResult := SQLConnection.query('SELECT * FROM login WHERE account_id = 100100;',true,Success);
+	SQLQueryResult := SQLConnection.query('SELECT * FROM login WHERE userid = "'+Name+'";',true,Success);
+	if Success and (SQLqueryResult.RowsCount = 1) then begin
+		MainProc.Console('Account found in chara server');
+		AnAccount := TAccount.Create;
+		AnAccount.ID := StrToInt(SQLQueryResult.FieldValue(0));
+		AnAccount.Username := SQlQueryResult.FieldValue(1);
+		AnAccount.Password := SQlQueryResult.FieldValue(2);
+		AnAccount.Gender   := SQLQueryResult.FieldValue(4)[0];
+		AnAccount.EMail    := SQLQueryResult.FieldValue(6);
+		AccountList.AddObject(AnAccount.Username, AnAccount);
+		Result := AnAccount;
+	end;
+end; (* func FindAccount
+------------------------------------------------------------------------------*)
+
+(*------------------------------------------------------------------------------
+FindAccountByID
+
+Locates an account and returns a TAccount object.
+Tries to find the object in memory first, then procedes to load basics from SQL.
+-----------------------------------------------------------------------------*)
+function FindAccountByID(ID : Cardinal) : TAccount;
+var
+	Success : boolean;
+	AnAccount : TAccount;
+	idx : integer;
+begin
+	Result := nil;
+	//Check Memory
+	if not Assigned(AccountList) then Accountlist := Tstringlist.Create;
+	for idx := 0 to AccountList.Count -1 do begin
+		if TAccount(AccountList.Objects[idx]).ID = ID then
+		begin
+			Result := TAccount(AccountList.Objects[idx]);
+			exit;
+		end;
+	end;
+
+	SQLQueryResult := SQLConnection.query('SELECT * FROM login WHERE account_id = "'+IntToStr(ID)+'";',true,Success);
 	if Success and (SQLqueryResult.RowsCount = 1) then begin
 		MainProc.Console('Account found in chara server');
 		AnAccount := TAccount.Create;

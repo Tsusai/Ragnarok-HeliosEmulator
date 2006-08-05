@@ -9,14 +9,14 @@ unit LoginProcesses;
 
 interface
 	uses
-		Account,
-		AccountDB,
 		IdTCPServer;
 
 		procedure ParseLogin(AThread: TIdPeerThread);
 
 implementation
 	uses
+		Account,
+		AccountDB,
 		Socket,
 		PacketTypes,
 		Globals,
@@ -107,7 +107,7 @@ Accepts incoming connections to the Login server and verifies the login data.
 				$0064: //Basic login packet
 					begin
 						UserName := BufferReadString(6,24,Buffer);
-						AnAccount := FindAccount(UserName);
+						AnAccount := FindAccountByName(UserName);
 						if Assigned(AnAccount) then begin
 							Password := BufferReadString(30,24,Buffer);
 							if AnAccount.Password = Password then

@@ -10,6 +10,7 @@ uses
 	CharaServerProcess in 'Character\CharaServerProcess.pas',
 	CharaServerTypes in 'Character\CharaServerTypes.pas',
 	Commands in 'Classes\Commands.pas',
+	GameGlobals in 'Common\GameGlobals.pas',
 	GameObjects in 'Database\GameObjects.pas',
 	Globals in 'Common\Globals.pas',
 	List32 in 'Common\3rdParty\List32.pas',
@@ -36,6 +37,7 @@ uses
 	CharaServerProcess in 'Character/CharaServerProcess.pas',
 	CharaServerTypes in 'Character/CharaServerTypes.pas',
 	Commands in 'Classes/Commands.pas',
+	GameGlobals in 'Common/GameGlobals.pas',
 	GameObjects in 'Database/GameObjects.pas',
 	Globals in 'Common/Globals.pas',
 	List32 in 'Common/3rdParty/List32.pas',
@@ -64,7 +66,7 @@ var
 	AnInput : string;
 	Command : TCommands;
 	Run : Boolean;
-	HeliosVersion : string = 'Helios 0.0.0.15';
+	HeliosVersion : string = 'Helios 0.0.0.16';
 begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;

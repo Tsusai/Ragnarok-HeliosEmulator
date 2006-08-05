@@ -14,8 +14,7 @@ implementation
 	uses
 		Classes,
 		SysUtils,
-		Console,
-		Globals;
+		Console;
 
 
 function TCommands.Parse(InputText : String) : Boolean;

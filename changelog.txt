@@ -1,3 +1,25 @@
+- Rev 16-
+[2006/08/05] - Tsusai - Overview : Character Server Fully Implemented...Big, because partial sucks.
+[2006/08/05] - Tsusai - GameGlobals : Added.
+[2006/08/05] - Tsusai - CharaServerProcess:
+ SendCharas : Completed.
+ CreateChara : Completed.
+ DeleteChara : Filled in dummy procedure with fully functional code.
+ ParseCharaServ : Updated DeleteChara Call.
+[2006/08/05] - Tsusai - Account - TAccount : Changed Characters to CharaID array.
+[2006/08/05] - Tsusai - Character
+ TParamBase : Removed.
+ TCharacter : All SQL related variables are properties.  Whenever any of these are written to, an internal
+              SaveTime Clock starts (Current + 5 min).  Invokes SQL save, then is reset. (why waste a save query
+                on a person sitting around Prontera all day long).
+              Added Load, Save, and remove SQL procedures.
+ Added GetCharacters to find a character from the internal list then sql.
+[2006/08/05] - Tsusai - Globals : CharacterList now an integer list.
+[2006/08/05] - Tsusai - AccountDB : Added FindAccountByID, and fixed the static setting in FindAccountByName.
+[2006/08/05] - Tsusai - LoginProcesses : Updated for AccountDB updates.
+[2006/08/05] - Tsusai - All other files: Uses cleaned up.
+-
+
 - Rev 15-
 [2006/07/11] - Tsusai - Overview : Forgot to SVN add SQL.pas
 -
