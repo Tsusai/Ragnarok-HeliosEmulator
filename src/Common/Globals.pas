@@ -54,26 +54,23 @@ var
 	Success : boolean;
 begin
 	Success := false;
-	SQLConnection := TMysqlClient.create;
-	SQLConnection.Host := 'localhost';
-	SQLConnection.User := 'root';
-	SQLConnection.Password := 'helios';
-	SQLConnection.Port     := 3306;
-	SQLConnection.Db := 'Helios';
+	if Not Assigned(SQLConnection) then
+	begin
+		SQLConnection := TMysqlClient.create;
+	end;
+	SQLConnection.Host := ServerConfig.MySQLHost;
+	SQLConnection.Port := ServerConfig.MySQLPort;
+	SQLConnection.Db   := ServerConfig.MySQLDB;
+	SQLConnection.User := ServerConfig.MySQLUser;
+	SQLConnection.Password := ServerConfig.MySQLPass;
 	SQLConnection.ConnectTimeout := 60;
 
 	MainProc.Console('  - Connecting to mySQL server.  Will abort after 60 seconds');
 	if SQLConnection.Connect then
 	begin
 		MainProc.Console(Format('  - SQL Connected to %s at port %d', [SQLConnection.Host, SQLConnection.Port]));
-		SQLQueryResult := SQLConnection.query('SELECT * FROM `char` c;',true,Success);
-		if Success then
-		begin
-			MainProc.Console('    - Test Query Success');
-			MainProc.Console('      - Returned Rows : ' + IntToStr(SQLQueryResult.RowsCount)); //total rows of info
-			MainProc.Console('      - Field Count   : ' + IntToStr(SQLQueryResult.FieldsCount)); //total fields
-			MainProc.Console('      - Chara Name    : ' + SQLQueryResult.FieldValue(3)); // gives name (even if blank)
-		end;
+		MainProc.Console('    Accounts   : ' + IntToStr(SQLConnection.query('SELECT * FROM `login`',true,Success).RowsCount));
+		MainProc.Console('    Characters : ' + IntToStr(SQLConnection.query('SELECT * FROM `char`',true,Success).RowsCount));
 	end else begin
 		MainProc.Console('*****Could not connect to mySQL database server.');
 		MainProc.Console('*****All incoming client connections will be refused.');
@@ -110,6 +107,7 @@ begin
 	ServerConfig.Save;
 	ServerConfig.Free;
 	CharaServerList.Free;
+	SQLConnection.close;
 	SQLConnection.Free;
 	SQLQueryResult.Free;
 end; (* proc DestroyGlobals

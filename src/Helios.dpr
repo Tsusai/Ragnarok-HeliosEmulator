@@ -16,7 +16,6 @@ uses
 	List32 in 'Common\3rdParty\List32.pas',
 	LoginProcesses in 'Login\LoginProcesses.pas',
 	PacketTypes in 'Common\PacketTypes.pas',
-	SaveDB in 'Database\SaveDB.pas',
 	ServerOptions in 'Config\ServerOptions.pas',
 	Socket in 'Common\Socket.pas',
 	SQL in 'Common\SQL.pas',
@@ -43,7 +42,6 @@ uses
 	List32 in 'Common/3rdParty/List32.pas',
 	LoginProcesses in 'Login/LoginProcesses.pas',
 	PacketTypes in 'Common/PacketTypes.pas',
-	SaveDB in 'Database/SaveDB.pas',
 	ServerOptions in 'Config/ServerOptions.pas',
 	Socket in 'Common/Socket.pas',
 	SQL in 'Common/SQL.pas',
@@ -66,7 +64,7 @@ var
 	AnInput : string;
 	Command : TCommands;
 	Run : Boolean;
-	HeliosVersion : string = 'Helios 0.0.0.16';
+	HeliosVersion : string = 'Helios 0.0.0.17';
 begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;

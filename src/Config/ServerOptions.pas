@@ -23,6 +23,12 @@ interface
 
 			fServerName : String;
 
+			fMySQLHost : string;
+			fMySQLPort : integer;
+			fMySQLDB   : string;
+			fMySQLUser : string;
+			fMySQLPass : string;
+
 			procedure SetLoginPort(Value : word);
 			procedure SetCharaPort(Value : word);
 			procedure SetZonePort(Value : word);
@@ -47,6 +53,13 @@ interface
 
 			//CharaOptions
 			property ServerName : String read fServerName write SetServerName;
+
+			//MySQL - Best to turn off the server BEFORE editing this stuff anywho.
+			property MySQLHost : string Read fMySQLHost;
+			property MySQLPort : integer read fMySQLPort;
+			property MySQLDB   : string Read fMySQLDB;
+			property MySQLUser : string Read fMySQLUser;
+			property MySQLPass : string Read fMySQLPass;
 			
 			//Public methods
 			procedure Load;
@@ -56,6 +69,7 @@ interface
 implementation
 	uses
 		Classes,
+		Globals,
 		SysUtils;
 
 	procedure TServerOptions.Load;
@@ -91,7 +105,27 @@ implementation
 				Section.Values['ServerName'] := 'Helios';
 			end;
 			
-			fServerName    := Section.Values['ServerName']
+			fServerName    := Section.Values['ServerName'];
+		end;
+
+		procedure LoadMySQL;
+		begin
+			ReadSectionValues('MySQL', Section);
+
+			if Section.Values['Host'] = '' then begin
+				Section.Values['Host'] := '127.0.0.1';
+			end;
+			fMySQLHost := Section.Values['Host'];
+			fMySQLPort := StrToIntDef(Section.Values['Port'], 3306);
+			if Section.Values['Database'] = '' then begin
+				Section.Values['Database'] := 'Helios';
+			end;
+			fMySQLDB := Section.Values['Database'];
+			if Section.Values['Username'] = '' then begin
+				Section.Values['Username'] := 'root';
+			end;
+			fMySQLUser := Section.Values['Username'];
+			fMySQLPass := Section.Values['Password'];
 		end;
 
 	begin
@@ -103,6 +137,7 @@ implementation
 		LoadCommunication;
 		LoadLoginOptions;
 		LoadCharaOptions;
+		LoadMySQL;
 
 		Section.Free;
 
@@ -119,6 +154,12 @@ implementation
 		WriteString('LoginOptions','EnableMF',BoolToStr(EnableMF));
 
 		WriteString('CharaOptions','ServerName',ServerName);
+
+		WriteString('MySQL','Host', MySQLHost);
+		WriteString('MySQL','Port', IntToStr(MySQLPort));
+		WriteString('MySQL','Database', MySQLDB);
+		WriteString('MySQL','Username', MySQLUser);
+		WriteString('MySQL','Password', MySQLPass);
 
 		UpdateFile;
 	end;

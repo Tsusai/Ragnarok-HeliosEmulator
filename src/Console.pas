@@ -36,7 +36,6 @@ uses
 	CharaServerTypes,
 	CharaServerProcess,
 	PacketTypes,
-	SaveDB,
 	Globals;
 
 procedure TMainProc.Console(Line : string);
@@ -77,13 +76,6 @@ begin
 		LocalCharaServ.ServerName := ServerConfig.ServerName;
 		LocalCharaServ.Port := CharaServer.DefaultPort;
 		CharaServerList.AddObject(LocalCharaServ.ServerName,LocalCharaServ);
-	end;
-
-	if LoginServer.Active then
-	begin
-		if not LoadSavedDatabase then begin  //changed to database object from functions - RaX
-			Success := FALSE;
-		end;
 	end;
 
 	if Success then
