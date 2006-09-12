@@ -1,3 +1,13 @@
+- Rev 18-
+[2006/08/21] - Tsusai - Overview : Tweaks, removal of some debug, credits file loading.
+[2006/08/21] - Tsusai - Added MadExcept to windows version.
+[2006/08/21] - Tsusai - CharaServerProcess - ParseCharaServ: Fixed loop structure (ReadFromStack).
+[2006/08/21] - Tsusai - Globals - ConnectToMySQL: Separated out into its own function.
+[2006/08/21] - Tsusai - Console - ThirdPartyCredits: Added. Reads credits file.
+[2006/08/21] - Tsusai - Console - MainProc.Startup: Cleaned up procedure.
+[2006/08/21] - Tsusai - Console - MainProc.ServerException: Finalized code.
+-
+
 - Rev 17-
 [2006/08/06] - Tsusai - SaveDB: Removed.
 [2006/08/06] - Tsusai - Notes\About running on linux.txt - Added (basically need zlib package installed).

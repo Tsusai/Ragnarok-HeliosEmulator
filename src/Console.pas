@@ -23,6 +23,8 @@ type TMainProc = class(TComponent)
 		procedure ServerException(AThread: TIdPeerThread;
 			AException: Exception);
 
+		procedure ThirdPartyCredits;
+
 		constructor Create(AOwner : TComponent); override;
 		destructor  Destroy; override;
 end;
@@ -32,6 +34,7 @@ var
 
 implementation
 uses
+	StrUtils,
 	LoginProcesses,
 	CharaServerTypes,
 	CharaServerProcess,
@@ -63,8 +66,6 @@ begin
 	CharaServer.Active := true;
 	//ZoneServer.Active := true;
 
-	Success := TRUE;
-
 	MainProc.Console('');
 
 	if CharaServer.Active then
@@ -78,6 +79,8 @@ begin
 		CharaServerList.AddObject(LocalCharaServ.ServerName,LocalCharaServ);
 	end;
 
+	Success := ConnectToMySQL;
+	ThirdPartyCredits; //Load external credits file.
 	if Success then
 	begin
 		Console('- Startup Success');
@@ -86,8 +89,8 @@ begin
 		Console('- Startup Failed');
 	end;
 
-	Console('------------------------------------');
-	Console('For a list of console commands, input "/help".');
+	MainProc.Console('  For a list of console commands, input "/help".');
+
 end;
 
 procedure TMainProc.Shutdown;
@@ -99,9 +102,11 @@ end;
 procedure TMainProc.ServerException(AThread: TIdPeerThread;
 	AException: Exception);
 begin
-	if AThread.Connection.Connected then begin
-		AThread.Connection.Disconnect; //On server exception, make sure client disconnects.
-  end;
+	if AnsiContainsStr(AException.Message, IntToStr(10053)) or
+		AnsiContainsStr(AException.Message, IntToStr(10054))
+	then begin
+		AThread.Connection.Disconnect;
+	end;
 end;
 
 procedure TMainProc.LoginServerConnect(AThread: TIdPeerThread);
@@ -120,6 +125,23 @@ end;
 procedure TMainProc.CharaServerExecute(AThread: TIdPeerThread);
 begin
 	ParseCharaServ(AThread);
+end;
+
+procedure TMainProc.ThirdPartyCredits;
+var
+	ThirdParty : TStringList;
+	idx : integer;
+begin
+	if FileExists(AppPath + '3rdParty.txt') then
+	begin
+		ThirdParty := TStringList.Create;
+		ThirdParty.LoadFromFile(AppPath + '3rdParty.txt');
+		for idx := 0 to ThirdParty.Count - 1 do
+		begin
+			Console('  '+ThirdParty.Strings[idx]);
+		end;
+		ThirdParty.Free;
+	end
 end;
 
 constructor TMainProc.Create(AOwner : TComponent);

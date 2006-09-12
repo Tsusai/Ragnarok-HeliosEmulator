@@ -373,9 +373,10 @@ var
 begin
 	if AThread.Connection.Connected then
 	begin
-		PacketLength := AThread.Connection.ReadFromStack;
-		if PacketLength >= 2 then
+		AThread.Connection.ReadFromStack(false,-1,false);
+		if AThread.Connection.InputBuffer.Size >= 2 then
 		begin
+			PacketLength := AThread.Connection.InputBuffer.Size;
 			AThread.Connection.ReadBuffer(ABuffer,PacketLength);
 			PacketID := BufferReadWord(0, ABuffer);
 			if (AThread.Data = nil) or not (AThread.Data is TThreadLink) then

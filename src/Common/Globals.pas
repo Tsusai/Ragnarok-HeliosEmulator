@@ -19,6 +19,7 @@ uses
 
 	procedure InitGlobals;
 	procedure DestroyGlobals;
+	function ConnectToMySQL : boolean;
 
 var
 	SQLConnection : TMySQLClient;
@@ -49,10 +50,11 @@ Connects the server to the MySQL table, creating the two main objects,
 [2006/07/06] Tsusai - Reanmed to ConnectToMySQL.
 ------------------------------------------------------------------------------*)
 { TODO 1 -cMySQL : Replace default values with INI loaded ones }
-procedure ConnectToMySQL;
+function ConnectToMySQL : boolean;
 var
 	Success : boolean;
 begin
+	Result := false;
 	Success := false;
 	if Not Assigned(SQLConnection) then
 	begin
@@ -69,8 +71,15 @@ begin
 	if SQLConnection.Connect then
 	begin
 		MainProc.Console(Format('  - SQL Connected to %s at port %d', [SQLConnection.Host, SQLConnection.Port]));
-		MainProc.Console('    Accounts   : ' + IntToStr(SQLConnection.query('SELECT * FROM `login`',true,Success).RowsCount));
-		MainProc.Console('    Characters : ' + IntToStr(SQLConnection.query('SELECT * FROM `char`',true,Success).RowsCount));
+		SQLQueryResult := SQLConnection.query('SELECT * FROM `char` c;',true,Success);
+		if Success then
+		begin
+			MainProc.Console('    - Test Query Success');
+			MainProc.Console('      - Returned Rows : ' + IntToStr(SQLQueryResult.RowsCount)); //total rows of info
+			MainProc.Console('      - Field Count   : ' + IntToStr(SQLQueryResult.FieldsCount)); //total fields
+			MainProc.Console('      - Chara Name    : ' + SQLQueryResult.FieldValue(3)); // gives name (even if blank)
+			Result := true;
+		end;
 	end else begin
 		MainProc.Console('*****Could not connect to mySQL database server.');
 		MainProc.Console('*****All incoming client connections will be refused.');
@@ -91,7 +100,6 @@ begin
 	CharaServerList := TStringList.Create;
 	ServerConfig := TServerOptions.Create('./ServerOptions.ini');
 	ServerConfig.Load;
-	ConnectToMySQL; //takes care of SQLConnection and SQLQueryResult
 end; (* proc InitGlobals
 ------------------------------------------------------------------------------*)
 

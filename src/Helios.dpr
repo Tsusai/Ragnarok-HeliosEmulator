@@ -4,6 +4,8 @@ program Helios;
 
 uses
 	{$IFDEF MSWINDOWS}
+	madExcept,
+  madLinkDisAsm,
 	AccountDB in 'Database\AccountDB.pas',
 	Account in 'Classes\Account.pas',
 	Character in 'Classes\Character.pas',
@@ -64,7 +66,7 @@ var
 	AnInput : string;
 	Command : TCommands;
 	Run : Boolean;
-	HeliosVersion : string = 'Helios 0.0.0.17';
+	HeliosVersion : string = 'Helios 0.0.0.18';
 begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;
@@ -74,7 +76,7 @@ begin
 
 	MainProc.Console('');
 	MainProc.Console(Format('- %s is starting...',[HeliosVersion]));
-	
+
 	MainProc.Startup; //Form Create replacement
 
 	{Begin Main Loop}
@@ -84,7 +86,6 @@ begin
 		Run := Command.Parse(AnInput);
 	end;
 	{End Main Loop}
-
 	Command.Free;
 	MainProc.Shutdown;
 	FreeAndNil(MainProc);
