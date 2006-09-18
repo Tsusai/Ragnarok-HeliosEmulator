@@ -12,6 +12,7 @@ uses
 	//IDE
 	Classes,
 	//Helios
+	Commands,
 	ServerOptions,
 	//3rd Party
 	List32,
@@ -19,9 +20,12 @@ uses
 
 	procedure InitGlobals;
 	procedure DestroyGlobals;
+	procedure TerminateApplication;
 	function ConnectToMySQL : boolean;
 
 var
+	HeliosVersion : string = 'Helios Ragnarok Server Version 0.0.0.19';
+	Command : TCommands;
 	SQLConnection : TMySQLClient;
 	SQLQueryResult : TMySQLResult;
 	CharaServerList : TStringList;
@@ -39,6 +43,7 @@ implementation
 		//IDE
 		SysUtils,
 		//Helios
+		WinLinux,
 		Console;
 
 (*------------------------------------------------------------------------------
@@ -65,9 +70,9 @@ begin
 	SQLConnection.Db   := ServerConfig.MySQLDB;
 	SQLConnection.User := ServerConfig.MySQLUser;
 	SQLConnection.Password := ServerConfig.MySQLPass;
-	SQLConnection.ConnectTimeout := 60;
+	SQLConnection.ConnectTimeout := 10;
 
-	MainProc.Console('  - Connecting to mySQL server.  Will abort after 60 seconds');
+	MainProc.Console(Format('  - Connecting to mySQL server.  Will abort after %d seconds',[SQLConnection.ConnectTimeout]));
 	if SQLConnection.Connect then
 	begin
 		MainProc.Console(Format('  - SQL Connected to %s at port %d', [SQLConnection.Host, SQLConnection.Port]));
@@ -115,10 +120,22 @@ begin
 	ServerConfig.Save;
 	ServerConfig.Free;
 	CharaServerList.Free;
-	SQLConnection.close;
+	if MainProc.SQLConnected then
+	begin
+		SQLConnection.Close;
+	end;
 	SQLConnection.Free;
 	SQLQueryResult.Free;
 end; (* proc DestroyGlobals
 ------------------------------------------------------------------------------*)
+
+procedure TerminateApplication;
+begin
+	KillTerminationCapturing;
+	Command.Free;
+	MainProc.Shutdown;
+	FreeAndNil(MainProc);
+	KillProcess;
+end;
 
 end.

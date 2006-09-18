@@ -7,9 +7,13 @@ uses
 	Classes;
 
 type TMainProc = class(TComponent)
+	public
 		LoginServer : TIdTCPServer;
 		CharaServer: TIdTCPServer;
 		ZoneServer: TIdTCPServer;
+
+		//Active : boolean;
+		SQLConnected : boolean;
 
 		procedure Console(Line : string);
 
@@ -39,6 +43,8 @@ uses
 	CharaServerTypes,
 	CharaServerProcess,
 	PacketTypes,
+	WinLinux,
+	TCPServerRoutines,
 	Globals;
 
 procedure TMainProc.Console(Line : string);
@@ -54,17 +60,18 @@ end;
 procedure TMainProc.Startup;
 var
 	LocalCharaServ : TCharaServ;
-	Success : Boolean;
 begin
 	AppPath  := ExtractFilePath(ParamStr(0));
 	InitGlobals;
 
+	SetupTerminationCapturing;
+
 	LoginServer.DefaultPort := ServerConfig.LoginPort;
 	CharaServer.DefaultPort := ServerConfig.CharaPort;;
 	ZoneServer.DefaultPort  := ServerConfig.ZonePort;
-	LoginServer.Active := true;
-	CharaServer.Active := true;
-	//ZoneServer.Active := true;
+	ActivateServer('Login',LoginServer);
+	ActivateServer('Character',CharaServer);
+	//ActivateServer('Zone',ZoneServer);
 
 	MainProc.Console('');
 
@@ -78,17 +85,14 @@ begin
 		LocalCharaServ.Port := CharaServer.DefaultPort;
 		CharaServerList.AddObject(LocalCharaServ.ServerName,LocalCharaServ);
 	end;
-
-	Success := ConnectToMySQL;
 	ThirdPartyCredits; //Load external credits file.
-	if Success then
+	if ConnectToMySQL then
 	begin
 		Console('- Startup Success');
 	end else
 	begin
 		Console('- Startup Failed');
 	end;
-
 	MainProc.Console('  For a list of console commands, input "/help".');
 
 end;
@@ -96,6 +100,9 @@ end;
 procedure TMainProc.Shutdown;
 begin
 	Console('- Helios is shutting down...');
+	DeActivateServer(LoginServer);
+	DeActivateServer(CharaServer);
+	DeActivateServer(ZoneServer);
 	DestroyGlobals;//Make sure globals are Free'd on Application exit.
 end;
 
@@ -160,6 +167,8 @@ begin
 	CharaServer.OnException := ServerException;
 
 	ZoneServer.OnException := ServerException;
+
+	SQLConnected := False;
 end;
 
 destructor  TMainProc.Destroy;

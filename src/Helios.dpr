@@ -1,11 +1,10 @@
 program Helios;
 
 {$APPTYPE CONSOLE}
-
 uses
 	{$IFDEF MSWINDOWS}
 	madExcept,
-  madLinkDisAsm,
+	madLinkDisAsm,
 	AccountDB in 'Database\AccountDB.pas',
 	Account in 'Classes\Account.pas',
 	Character in 'Classes\Character.pas',
@@ -21,6 +20,7 @@ uses
 	ServerOptions in 'Config\ServerOptions.pas',
 	Socket in 'Common\Socket.pas',
 	SQL in 'Common\SQL.pas',
+	TCPServerRoutines in 'Common\TCPServerRoutines.pas',
 	uMysqlClient in 'Common\3rdParty\SQL\uMysqlClient.pas',
 	uMysqlCT in 'Common\3rdParty\SQL\uMysqlCT.pas',
 	uMysqlErrors in 'Common\3rdParty\SQL\uMysqlErrors.pas',
@@ -47,6 +47,7 @@ uses
 	ServerOptions in 'Config/ServerOptions.pas',
 	Socket in 'Common/Socket.pas',
 	SQL in 'Common/SQL.pas',
+	TCPServerRoutines in 'Common/TCPServerRoutines.pas',
 	uMysqlClient in 'Common/3rdParty/SQL/uMysqlClient.pas',
 	uMysqlCT in 'Common/3rdParty/SQL/uMysqlCT.pas',
 	uMysqlErrors in 'Common/3rdParty/SQL/uMysqlErrors.pas',
@@ -64,15 +65,21 @@ uses
 
 var
 	AnInput : string;
-	Command : TCommands;
 	Run : Boolean;
-	HeliosVersion : string = 'Helios 0.0.0.18';
 begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;
 	Command := TCommands.Create;
 	MainProc := TMainProc.Create(nil); //Form replacement
 	Run := TRUE;
+
+	MainProc.Console('  _    _          _   _                ');
+	MainProc.Console(' | |  | |        | | (_)               ');
+	MainProc.Console(' | |__| |   ___  | |  _    ___    ___  ');
+	MainProc.Console(' |  __  |  / _ \ | | | |  / _ \  / __| ');
+	MainProc.Console(' | |  | | |  __/ | | | | | (_) | \__ \ ');
+	MainProc.Console(' |_|  |_|  \___| |_| |_|  \___/  |___/ ');
+
 
 	MainProc.Console('');
 	MainProc.Console(Format('- %s is starting...',[HeliosVersion]));
@@ -86,7 +93,5 @@ begin
 		Run := Command.Parse(AnInput);
 	end;
 	{End Main Loop}
-	Command.Free;
-	MainProc.Shutdown;
-	FreeAndNil(MainProc);
+	TerminateApplication;
 end.

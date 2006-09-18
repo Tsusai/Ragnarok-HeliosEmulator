@@ -1,7 +1,34 @@
+  _    _          _   _               
+ | |  | |        | | (_)              
+ | |__| |   ___  | |  _    ___    ___ 
+ |  __  |  / _ \ | | | |  / _ \  / __|
+ | |  | | |  __/ | | | | | (_) | \__ \
+ |_|  |_|  \___| |_| |_|  \___/  |___/
+                                      
+
+Ragnarok Emulator
+Developers & Contributers
+- Tsusai
+- RaX
+
+-------------------------------------------------------------------------------------------
+
+- Rev 19-
+[2006/09/17] - Tsusai - Overview : Fixed terminations, and added TCPServer activations and
+ disconnections learned from Prometheus.
+[2006/09/17] - Tsusai - WinLinux : Added Termination signal capturing, and also adding
+ manual process termination.
+[2006/09/17] - Tsusai - Globals : SQL timeout set to 10 seconds, Termination procedures 
+ added here.  Now houses the server version.
+[2006/09/17] - Tsusai - TCPServerRoutines : Added, helps with activation and deactivation.
+[2006/09/17] - Tsusai - Console : Minor tweaks to MainProc class.
+-
+
 - Rev 18-
 [2006/08/21] - Tsusai - Overview : Tweaks, removal of some debug, credits file loading.
 [2006/08/21] - Tsusai - Added MadExcept to windows version.
-[2006/08/21] - Tsusai - CharaServerProcess - ParseCharaServ: Fixed loop structure (ReadFromStack).
+[2006/08/21] - Tsusai - CharaServerProcess - ParseCharaServ: Fixed loop structure
+ (ReadFromStack).
 [2006/08/21] - Tsusai - Globals - ConnectToMySQL: Separated out into its own function.
 [2006/08/21] - Tsusai - Console - ThirdPartyCredits: Added. Reads credits file.
 [2006/08/21] - Tsusai - Console - MainProc.Startup: Cleaned up procedure.
@@ -10,14 +37,17 @@
 
 - Rev 17-
 [2006/08/06] - Tsusai - SaveDB: Removed.
-[2006/08/06] - Tsusai - Notes\About running on linux.txt - Added (basically need zlib package installed).
-[2006/08/06] - Tsusai - Globals : Retrieves mySQL connection details from ServerOptions.  Tells how many accounts  and characters there are on the server.
+[2006/08/06] - Tsusai - Notes\About running on linux.txt - Added (basically need zlib
+ package installed).
+[2006/08/06] - Tsusai - Globals : Retrieves mySQL connection details from ServerOptions.
+ Tells how many accounts  and characters there are on the server.
 [2006/08/06] - Tsusai - ServerOptions : Added mySQL information loading and saving.
 [2006/08/06] - Tsusai - Console : Removed SaveDB call.
 -
 
 - Rev 16-
-[2006/08/05] - Tsusai - Overview : Character Server Fully Implemented...Big, because partial sucks.
+[2006/08/05] - Tsusai - Overview : Character Server Fully Implemented...Big, because
+ partial sucks.
 [2006/08/05] - Tsusai - GameGlobals : Added.
 [2006/08/05] - Tsusai - CharaServerProcess:
  SendCharas : Completed.
@@ -27,13 +57,15 @@
 [2006/08/05] - Tsusai - Account - TAccount : Changed Characters to CharaID array.
 [2006/08/05] - Tsusai - Character
  TParamBase : Removed.
- TCharacter : All SQL related variables are properties.  Whenever any of these are written to, an internal
-              SaveTime Clock starts (Current + 5 min).  Invokes SQL save, then is reset. (why waste a save query
-                on a person sitting around Prontera all day long).
+ TCharacter : All SQL related variables are properties.  Whenever any of these are written
+	      to, an internal SaveTime Clock starts (Current + 5 min).  Invokes SQL save,
+	      then is reset. (why waste a save query on a person sitting around Prontera 
+	      all day long).
               Added Load, Save, and remove SQL procedures.
  Added GetCharacters to find a character from the internal list then sql.
 [2006/08/05] - Tsusai - Globals : CharacterList now an integer list.
-[2006/08/05] - Tsusai - AccountDB : Added FindAccountByID, and fixed the static setting in FindAccountByName.
+[2006/08/05] - Tsusai - AccountDB : Added FindAccountByID, and fixed the static setting in
+ FindAccountByName.
 [2006/08/05] - Tsusai - LoginProcesses : Updated for AccountDB updates.
 [2006/08/05] - Tsusai - All other files: Uses cleaned up.
 -
@@ -47,17 +79,20 @@
 [2006/07/11] - Tsusai - SQL : Added.  Get and Set integer and string utilites.
  SET : Needs a table, parameter, value, and ID key value.
  GET : Needs a table, parameter, and ID key value.
-[2006/07/11] - Tsusai - CharaServerProcess : Work on CreateChara.  Need to do further work on TCharacter
-[2006/07/11] - Tsusai - Character - TCharacter : Added most of the sql chara table variables as properties.  
- Also added a AddToSQL, which returns the new CharaID. (STILL NEEDS WORK)
+[2006/07/11] - Tsusai - CharaServerProcess : Work on CreateChara.  Need to do further work
+ on TCharacter.
+[2006/07/11] - Tsusai - Character - TCharacter : Added most of the sql chara table
+ variables as properties.  Also added a AddToSQL, which returns the new CharaID. (STILL 
+ NEEDS WORK)
 [2006/07/11] - Tsusai - Globals : Added uses description.
 [2006/07/11] - Tsusai - Socket : Added BufferReadByte.
 -
 
 - Rev 13-
 [2006/07/08] - RaX - Overview : Lucky 13...=)
-[2006/07/08] - RaX - Moved and renamed AccountTypes and CharacterTypes. AccountTypes in '\trunk\src\Classes\Account.pas'
- and CharacterTypes in '\trunk\src\Classes\Character.pas'. One Class per file is the name of the game.
+[2006/07/08] - RaX - Moved and renamed AccountTypes and CharacterTypes. AccountTypes in 
+ '\trunk\src\Classes\Account.pas' and CharacterTypes in '\trunk\src\Classes\Character.pas'.
+ One Class per file is the name of the game.
 -
 
 - Rev 12-
@@ -67,8 +102,8 @@
  CharaServerTypes, CharaServerProcess, AccountTypes, CharacterTypes, Globals, PacketTypes, 
  Socket*, ServerOptions*, Console, AccountDB, SaveDB.
  * = RaX to document
-[2006/07/08] - Tsusai - Helios.dpr : moved "Loading text" from Console here.  Contains the revision number.  
- Please remember to update when you commit.
+[2006/07/08] - Tsusai - Helios.dpr : moved "Loading text" from Console here.  Contains
+ the revision number.  Please remember to update when you commit.
 [2006/07/08] - Tsusai - GameObjects : removed duplicate TCharacter code.
 -
 
@@ -80,74 +115,86 @@
 
 - Rev 10-
 [2006/07/06] - Tsusai - Overview : CharacterServer Code and some bonus SQL code.
-[2006/07/06] - Tsusai - CharaServerPacker - SendCharas: SQL Query updated.  Code setup to return Zero
- characters at this time till TCharacter is developed further.
-[2006/07/06] - Tsusai - CharacterTypes - TCharacter: All properties that will be made will be using SQL to get and
- set data.  Basic retrieval code is now set in place, to be shared.  Write procedures to come.
-[2006/07/06] - Tsusai - Globals: Added CharacterList (not used yet).  Updated Console() to MainProc.Console()
- thus fixing broken rev 9.
-[2006/07/06] - Tsusai - Socket - WriteBuffer: Undid overload and added the type as a suffix (WriteBufferByte)
- Afraid of possible packet glitches, last thing I need to worry about.
-[2006/07/06] - Tsusai - AccountDB - FindAccount: Fixed searching engine.  Wouldn't find it if it already existed.
+[2006/07/06] - Tsusai - CharaServerPacker - SendCharas: SQL Query updated.  Code setup 
+ to return Zero characters at this time till TCharacter is developed further.
+[2006/07/06] - Tsusai - CharacterTypes - TCharacter: All properties that will be made will
+ be using SQL to get and set data.  Basic retrieval code is now set in place, to be shared.
+ Write procedures to come.
+[2006/07/06] - Tsusai - Globals: Added CharacterList (not used yet).  Updated Console() to
+ MainProc.Console() thus fixing broken rev 9.
+[2006/07/06] - Tsusai - Socket - WriteBuffer: Undid overload and added the type as a suffix
+ (WriteBufferByte) Afraid of possible packet glitches, last thing I need to worry about.
+[2006/07/06] - Tsusai - AccountDB - FindAccount: Fixed searching engine.  Wouldn't find it
+ if it already existed.
 [2006/07/06] - Tsusai - LoginProcesses: Updated WriteBuffer calls.
 -
 
 - Rev 9- Broken
 [2006/07/06] - Tsusai - Overview : Forgot to upload the sql file, fixes (thanks to Jbain)
 [2006/07/06] - Tsusai - NonSQLFiles : Writeln -> console() update.
-[2006/07/06] - Tsusai - uMySQLVio : _WIN_ conditionals changed to MSWINDOWS (Jbain pointed it out).
+[2006/07/06] - Tsusai - uMySQLVio : _WIN_ conditionals changed to MSWINDOWS (Jbain pointed
+ it out).
 -
 
 - Rev 8-
-[2006/07/06] - Tsusai - Overview : Phased out txt for the moment.  mySQL for now.  Using jA
-[2006/07/06] - Tsusai - helios.sql : jAthena sql info with test character and account.  Would like an
- aegis one since this would be designed to be an aegis emulator. *shrug*
-[2006/07/06] - Tsusai - AccountTypes : Modified Gender to be a char.  Once set, it modifies gendernum (0 or 1).
- Gender as a Char is M or F.
+[2006/07/06] - Tsusai - Overview : Phased out txt for the moment.  mySQL for now.  Using 
+ jA Database.
+[2006/07/06] - Tsusai - helios.sql : jAthena sql info with test character and account.
+ Would like an aegis one since this would be designed to be an aegis emulator. *shrug*
+[2006/07/06] - Tsusai - AccountTypes : Modified Gender to be a char.  Once set, it modifies
+ gendernum (0 or 1). Gender as a Char is M or F.
 [2006/07/06] - Tsusai - Globals : Moved SQL out of console to Globals.  Centralized.
-[2006/07/06] - Tsusai - Console : SQL Code removed.  Also, FIXED CharaServer OnExecute and OnConnect events.
- Also added The local character server.  Now shows up.
+[2006/07/06] - Tsusai - Console : SQL Code removed.  Also, FIXED CharaServer OnExecute and
+ OnConnect events. Also added The local character server.  Now shows up.
 [2006/07/06] - Tsusai - AccountDB : removed old txt code, now looks in either the 
-[2006/07/06] - Tsusai - Helios.dpr : removed "Command:" visual.  Goofs up with server messages.
+[2006/07/06] - Tsusai - Helios.dpr : removed "Command:" visual.  Goofs up with server
+ messages.
 [2006/07/06] - Tsusai - LoginProcesses : Replaced Gender with GenderNum (see above);
 -
 
 - Rev 7-
 [2006/07/05] - Tsusai - Overview:  Massive code update, mainly dealing with SQL integration.
 [2006/07/05] - Tsusai - Helios.dpr : added some units.
-[2006/07/05] - Tsusai - WinLinux: Added this unit to address ALL massive ifdef mswindows/linux.
- Currently controls the IP to ip cardinal type used for RO clients to connect to a specified server.
-[2006/07/05] - Tsusai - CharaServerTypes: Modified, IP is now a property.  Modifying it automatically
- updates IPCardinal.
-[2006/07/05] - Tsusai - Common\SQL (Folder) added SQL.  It is GPL, but at this time I have contacted
- the author and am asking permission.  If declined, project would be either without SQL or be GPL.
-[2006/07/05] - Tsusai - CharacterTypes: Added, basic TCharacter.  Eventually, EVERYTHING will be a property
- for instant SQL SELECT and UPDATE procedures.
-[2006/07/05] - Tsusai - PacketTypes: Added TThreadLink type, from indy prometheus prototype.  Helps link
- AThread.Data to actual TCharacter or TAccount.
-[2006/07/05] - Tsusai - Console: TThreadLink is now assigned to a connection thread upon character server
- connect.  Also Added BASIC SQL retrieval.
-[2006/07/05] - Tsusai - SaveDB: Killed a warning...I want to remove this after txt file load is redone so it
- is beautifully like SQL, with massive disk access (lol, probably do this like prommy).
+[2006/07/05] - Tsusai - WinLinux: Added this unit to address ALL massive ifdef
+ mswindows/linux. Currently controls the IP to ip cardinal type used for RO clients to
+ connect to a specified server.
+[2006/07/05] - Tsusai - CharaServerTypes: Modified, IP is now a property.  Modifying it
+ automatically updates IPCardinal.
+[2006/07/05] - Tsusai - Common\SQL (Folder) added SQL.  It is GPL, but at this time I have
+ contacted the author and am asking permission.  If declined, project would be either
+ without SQL or be GPL.
+[2006/07/05] - Tsusai - CharacterTypes: Added, basic TCharacter.  Eventually, EVERYTHING
+ will be a property for instant SQL SELECT and UPDATE procedures.
+[2006/07/05] - Tsusai - PacketTypes: Added TThreadLink type, from indy prometheus prototype.
+ Helps link AThread.Data to actual TCharacter or TAccount.
+[2006/07/05] - Tsusai - Console: TThreadLink is now assigned to a connection thread upon
+ character server connect.  Also Added BASIC SQL retrieval.
+[2006/07/05] - Tsusai - SaveDB: Killed a warning...I want to remove this after txt file
+ load is redone so it is beautifully like SQL, with massive disk access (lol, probably do
+ this like prommy).
 [2006/07/05] - Tsusai - LoginProcesses: Removed unneeded variables.
 -
 
 - Rev 6-
-[2006/07/04] - Tsusai - Overview: Redo of certain account handling, for easy future MySQL addon.
-[2006/07/04] - Tsusai - Database is now AccountDB at this time.  Object form removed, just procedures
- (why create memory for something only for procedures).  Redid load structure, so that it loads on the go.
+[2006/07/04] - Tsusai - Overview: Redo of certain account handling, for easy future MySQL
+ addon.
+[2006/07/04] - Tsusai - Database is now AccountDB at this time.  Object form removed,
+ just procedures (why create memory for something only for procedures).  Redid load 
+ structure, so that it loads on the go.
 [2006/07/04] - Tsusai - Console, Globals : Updated for above.
 [2006/07/04] - Tsusai - AccountTypes : Updated TAccount;
-[2006/07/04] - Tsusai - Commands: Removed /reload.  Rather have all DB setup before doing this.
+[2006/07/04] - Tsusai - Commands: Removed /reload.  Rather have all DB setup before doing
+ this.
 [2006/07/04] - Tsusai - LoginProcesses: Updated to call active account search.
-[2006/07/04] - Tsusai - GameObjects : added, contains TBeing and TCharacter (works in progress).
+[2006/07/04] - Tsusai - GameObjects : added, contains TBeing and TCharacter (works in 
+ progress).
 -
 
 - Rev 5-
-[2006/05/06] - RaX - Overview : stubbed Tdatabase/reorganized Tdatabase for upcoming changes
- to allow multiple database types to be used. Added CharaServerParse's Guts, a case statement
- based on Prometheus' charasel.pas No code was copied, however. Just the idea. I broke that up 
- originally anyways...=)
+[2006/05/06] - RaX - Overview : stubbed Tdatabase/reorganized Tdatabase for upcoming
+ changes to allow multiple database types to be used. Added CharaServerParse's Guts, a 
+ case statement based on Prometheus' charasel.pas No code was copied, however. Just the
+ idea. I broke that up originally anyways...=)
 [2006/05/06] - RaX - Database - Overwrote Create to initialize lists and load the database.
 [2006/05/06] - RaX - Globals - Moved AccountList into TDatabase as a public var.
 [2006/05/06] - RaX - Database - Changed how reload works to accomodate later database additions.
@@ -158,20 +205,21 @@ the code.
 -
 
 - Rev 4-
-[2006/05/08] - RaX - Overview : Added ServerName under new section "CharaOptions" in serveroptions.pas
-Made all INI options actually affect code...=)
-[2006/05/08] - RaX : ServerOptions.pas - Added SetServerName, fServerName, and LoadCharaOptions to do
- their respective tasks, exactly like similiarly named routines/vars.
-[2006/05/08] - RaX : Console.pas - Replaced hardcoded variables for server ports/ internal chara
- server name with their respective INI variables.
-[2006/05/08] - RaX : TODO:: Input validation on ini variables, making sure that ports are between
-1 and 32767, that IP's are valid, etc.
+[2006/05/08] - RaX - Overview : Added ServerName under new section "CharaOptions" in 
+ serveroptions.pas Made all INI options actually affect code...=)
+[2006/05/08] - RaX : ServerOptions.pas - Added SetServerName, fServerName, and
+ LoadCharaOptions to do their respective tasks, exactly like similiarly named routines/vars.
+[2006/05/08] - RaX : Console.pas - Replaced hardcoded variables for server ports/ internal
+ chara server name with their respective INI variables.
+[2006/05/08] - RaX : TODO:: Input validation on ini variables, making sure that ports are
+ between 1 and 32767, that IP's are valid, etc.
 -
 
 - Rev 3-
-[2006/05/06] - Tsusai - Overview : Updated Serveroptions to what RaX wants, an "OnChange" idea.
-[2006/05/06] - Tsusai - ServerOptions: Configred to work like prometheus, load what is available,
- save all ini options.
+[2006/05/06] - Tsusai - Overview : Updated Serveroptions to what RaX wants, an "OnChange"
+ idea.
+[2006/05/06] - Tsusai - ServerOptions: Configred to work like prometheus, load what is 
+ available, save all ini options.
 -
 
 - Rev 2-
@@ -182,7 +230,8 @@ Made all INI options actually affect code...=)
  class variables and  save, load, and writenewini as methods.
 [2006/05/06] - RaX - TServerOptions.Save() - saves ini to disk.
 [2006/05/06] - RaX - TServerOptions.Load() - Loads ini keys into variables.
-[2006/05/06] - RaX - TServerOptions.WriteNewINI() - Writes a new copy of the ini with default values.
+[2006/05/06] - RaX - TServerOptions.WriteNewINI() - Writes a new copy of the ini with
+ default values.
 -
 
 - Rev 1-
@@ -197,20 +246,23 @@ FROM OPENSVN.CSIE.ORG/TSUSAI/HELIOS
 [2006/05/05] - RaX : Moved Console commands back into TCommands class
 [2006/05/05] - RaX : Reorganized startup messages into an outline format.
 [2006/05/05] - RaX : Redid the main loop to allow TCommands.Exit to exit the loop.
-[2006/05/05] - RaX : Added check at the beginning of TCommands.Parse to see if the string was blank,
- if it was blank, it would not exexute the parsing routine.
-[2006/05/05] - RaX : Finally, I tested the changes. Everything checks out ok. There seems to be no memory leaks,
- and it seems to be uncrashable. Hopefully this will be a good building block for the other servers.
+[2006/05/05] - RaX : Added check at the beginning of TCommands.Parse to see if the string was
+ blank, if it was blank, it would not exexute the parsing routine.
+[2006/05/05] - RaX : Finally, I tested the changes. Everything checks out ok. There seems to 
+ be no memory leaks, and it seems to be uncrashable. Hopefully this will be a good building
+ block for the other servers.
 -
 
 - Rev 39-
-[2006/05/04] - Tsusai : The original bug problem was that i was using a byte type for the loop.
-  0 to -1 crashes with the range error, due to the fact byte type cannot be less than 0.  Fixed.
+[2006/05/04] - Tsusai : The original bug problem was that i was using a byte type for the
+ loop. 0 to -1 crashes with the range error, due to the fact byte type cannot be less than 0.
+  Fixed.
 -
 
 - Rev 38-
-[2006/05/04] - RaX : Bugfix :: If there aren't any charaservers in charaserverlist, there would be a range error in
-loginprocesses.pas - SendCharaServers. Fixed with condition checking if there is a charaserver in the list.
+[2006/05/04] - RaX : Bugfix :: If there aren't any charaservers in charaserverlist, there
+ would be a range error in loginprocesses.pas - SendCharaServers. Fixed with condition
+ checking if there is a charaserver in the list.
 -
 
 - Rev 37-
@@ -227,21 +279,24 @@ forgot changelog
 - Rev 35 -
 [2006/05/04] - Tsusai - GUI removal and reorganization to accomidate.
 	Helios.dpr : executes in a controlled loop to keep the application alive.
-	Console.pas : new console class of the application (MainProc).  Items from Commands.pas moved here
+	Console.pas : new console class of the application (MainProc).  Items from
+                      Commands.pas moved here
 	Commands.pas : removed
-	Socket.pas : removed tsocket class, but kept procedures.  Those procedures are enough, 
-	 don't need to create and destroy classes (memory) over and over just yet. not till we have
-         game objects in place.
+	Socket.pas : removed tsocket class, but kept procedures.  Those procedures are
+                     enough, don't need to create and destroy classes (memory) over and
+                     over just yet. not till we have game objects in place.
 	Database.pas : moved Reload here from Commands	
 -
 
 - Rev 34 -
-[2006/05/03] - RaX - Fixed bug from rev 29, AnAccount was being free'd after being added as an object to
- accountlist in Database.pas - LoadAccountInfo. This was also removing the object from accountlist.
+[2006/05/03] - RaX - Fixed bug from rev 29, AnAccount was being free'd after being added
+ as an object to accountlist in Database.pas - LoadAccountInfo. This was also removing the
+ object from accountlist.
 -
 
 - Rev 33 -
-[2006/05/03] - RaX - Removed login processes from Socket.pas ...for now...=) Moved Socket.pas into common.
+[2006/05/03] - RaX - Removed login processes from Socket.pas ...for now...=) Moved Socket.pas
+ into common.
 -
 
 - Rev 32 -
@@ -249,18 +304,19 @@ forgot changelog
 -
 
 - Rev 31 -
-[2006/05/03] - RaX - Moved all socket related code into socket class, renamed variables in all routines in socket.pas.
- Added command "/commands" to display available console commands.
+[2006/05/03] - RaX - Moved all socket related code into socket class, renamed variables in
+ all routines in socket.pas. Added command "/commands" to display available console commands.
 -
 
 - Rev 30 -
-[2006/05/03] - RaX - Added some more of the socket interface to the socket class, there's a bit more to go though.
- (SendBuffer was added, all Packet handling will be done by this class soon, and will make it
- easier to swap out sockets if need be).
+[2006/05/03] - RaX - Added some more of the socket interface to the socket class, there's a
+ bit more to go though. (SendBuffer was added, all Packet handling will be done by this class
+ soon, and will make it easier to swap out sockets if need be).
 -
 
 - Rev 29 -
-[2006/05/03] - RaX - Modified socket code to be accessed by a class, for flexibility. It's been tested and works.
+[2006/05/03] - RaX - Modified socket code to be accessed by a class, for flexibility. It's
+ been tested and works.
 -
 
 - Rev 1-28 - Tsusai
