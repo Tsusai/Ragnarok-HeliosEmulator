@@ -1,11 +1,25 @@
+//------------------------------------------------------------------------------
+//Console()				                                                         UNIT
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates each of our servers and enables them to accept connections.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 unit Console;
 
 interface
+
 uses
 	IdTCPServer,
 	SysUtils,
 	Classes;
 
+//------------------------------------------------------------------------------
+//TMainProc                                                               CLASS
+//------------------------------------------------------------------------------
 type TMainProc = class(TComponent)
 	public
 		LoginServer : TIdTCPServer;
@@ -47,16 +61,46 @@ uses
 	TCPServerRoutines,
 	Globals;
 
+//------------------------------------------------------------------------------
+//TMainProc.Console()                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Alias of WriteLn. Makes a bit more sense here =)
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TMainProc.Console(Line : string);
 begin
-	Writeln(Line);
-end;
+	WriteLn(Line);
+end;{TMainProc.Console}
 
+//------------------------------------------------------------------------------
+//TMainProc.LoginServerExecute()                                          EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//		 Starts the Internal Login server to process incoming connection attempts.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TMainProc.LoginServerExecute(AThread: TIdPeerThread);
 begin
 	ParseLogin(AThread);
-end;
+end;{TMainProc.LoginServerExecute}
 
+//------------------------------------------------------------------------------
+//TMainProc.StartUp()                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Initializes each server to it's default values, then it activates them.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TMainProc.Startup;
 var
 	LocalCharaServ : TCharaServ;
@@ -95,8 +139,18 @@ begin
 	end;
 	MainProc.Console('  For a list of console commands, input "/help".');
 
-end;
+end;{TMainProc.Startup}
 
+//------------------------------------------------------------------------------
+//TMainProc.Shutdown()                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gracefully disconnects clients, then calls Destroy Globals.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TMainProc.Shutdown;
 begin
 	Console('- Helios is shutting down...');
@@ -104,8 +158,19 @@ begin
 	DeActivateServer(CharaServer);
 	DeActivateServer(ZoneServer);
 	DestroyGlobals;//Make sure globals are Free'd on Application exit.
-end;
+end;{TMainProc.Shutdown}
 
+//------------------------------------------------------------------------------
+//TMainProc.ServerException()                                             EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			Handles Socket exceptions gracefully by outputting the exception message
+//    and then disconnecting the client.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TMainProc.ServerException(AThread: TIdPeerThread;
 	AException: Exception);
 begin
@@ -114,26 +179,68 @@ begin
 	then begin
 		AThread.Connection.Disconnect;
 	end;
-end;
+end;{TMainProc.ServerException}
 
+//------------------------------------------------------------------------------
+//TMainProc.LoginServerConnect()                                          EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			Event which is fired when a user attempts to connect to the login
+//    server. It writes information about the connection to the console.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TMainProc.LoginServerConnect(AThread: TIdPeerThread);
 begin
 	Console('Connection from ' + AThread.Connection.Socket.Binding.PeerIP);
-end;
+end;{TMainProc.LoginServerConnect}
 
+//------------------------------------------------------------------------------
+//TMainProc.CharaServerConnect()                                          EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			An event which fires when a user connects to the chara server.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TMainProc.CharaServerConnect(AThread: TIdPeerThread);
 var
 	Link : TThreadLink;
 begin
 	Link := TThreadLink.Create;
 	AThread.Data := Link;
-end;
+end;{TMainProc.CharaServerConnect}
 
+//------------------------------------------------------------------------------
+//TMainProc.CharaServerExecute()                                          EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			An event which fires when the server is started. It allows the server
+//    to accept incoming client connections.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TMainProc.CharaServerExecute(AThread: TIdPeerThread);
 begin
 	ParseCharaServ(AThread);
-end;
+end;{TMainProc.ChaServerExecute}
 
+//------------------------------------------------------------------------------
+//TMainProc.ThirdPartyCredits()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Writes the credits defined in thirdparty.txt to the console.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TMainProc.ThirdPartyCredits;
 var
 	ThirdParty : TStringList;
@@ -149,8 +256,18 @@ begin
 		end;
 		ThirdParty.Free;
 	end
-end;
+end;{TMainProc.ThirdPartyCredits}
 
+//------------------------------------------------------------------------------
+//TMainProc.Create()                                                CONSTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does-
+//			Initializes the servers and starts them.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 constructor TMainProc.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
@@ -169,8 +286,18 @@ begin
 	ZoneServer.OnException := ServerException;
 
 	SQLConnected := False;
-end;
+end;{TMainProc.Create}
 
+//------------------------------------------------------------------------------
+//TMainProc.Destroy()                                               DESTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does-
+//			Shutdown all servers and free em' up!
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 destructor  TMainProc.Destroy;
 begin
 	//MUST KILL COMPONENTS
@@ -179,10 +306,6 @@ begin
 	if Assigned(ZoneServer) then FreeAndNil(ZoneServer);
 
 	inherited Destroy;
-end;
+end;{TMainProc.Destroy}
 
-
-
-
-
-end.
+end{Console}.

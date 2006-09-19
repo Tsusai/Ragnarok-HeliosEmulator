@@ -13,6 +13,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 20-
+[2006/09/19] - RaX - Overview : Documented ./trunk/src/Console.pas
+[2006/09/19] - RaX - Added comment headers to the head of the document and over each routine.
+ Tell me what you think Tsu.
+-
+
 - Rev 19-
 [2006/09/17] - Tsusai - Overview : Fixed terminations, and added TCPServer activations and
  disconnections learned from Prometheus.
