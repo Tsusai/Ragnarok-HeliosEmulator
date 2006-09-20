@@ -1,22 +1,53 @@
+//------------------------------------------------------------------------------
+//Commands				                                                         UNIT
+//------------------------------------------------------------------------------
+//	What it does-
+//			This Unit was built to house the routines dealing with processing
+//    console commands.
+//
+//  Notes -
+//      RaX-The EXIT command simply returns FALSE in the parser. Look for it in
+//    Parse()
+//
+//	Changes -
+//		September 20th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 unit Commands;
 
 interface
-	type
-		TCommands = class
-			public
-				function Parse(InputText : String) : Boolean;
+type
+//------------------------------------------------------------------------------
+//TCommands                                                               CLASS
+//------------------------------------------------------------------------------
+  TCommands = class
+  public
+    function Parse(InputText : String) : Boolean;
 
-				function Help : String;
-				function Reload() : String;
-				function Restart() : String;
-    end;
+    function Help : String;
+    function Reload() : String;
+    function Restart() : String;
+  end;{TCommands}
+//------------------------------------------------------------------------------
 implementation
 	uses
 		Classes,
 		SysUtils,
 		Console;
 
-
+//------------------------------------------------------------------------------
+//TCommands.Parse()				                                             FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Parses InputText for commands.
+//
+//	Changes -
+//		September 20th, 2006 - RaX - Added Trim function before using InputText to
+//                                force commands even when whitespace is present
+//                                before it.
+//		September 20th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TCommands.Parse(InputText : String) : Boolean;
 var
 	StringIn  : TStringList;
@@ -30,7 +61,7 @@ begin
 		Error := ' ';
 		StringIn := TStringList.Create;
 		try
-			StringIn.DelimitedText := InputText;
+			StringIn.DelimitedText := Trim(InputText);
 			if StringIn.DelimitedText[1] = '/' then begin
 				Command := LowerCase(StringIn.Strings[0]);  //Gets the command text
 				Values := TStringList.Create;
@@ -65,8 +96,20 @@ begin
 			StringIn.Free;
 		end;
 	end;
-end;
+end;{TCommands.Parse}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TCommands.Help()				                                             FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Writes a list of commands to the console.
+//
+//	Changes -
+//		September 20th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TCommands.Help : String;
 begin
 	MainProc.Console('The available console commands are as follows...');
@@ -77,17 +120,44 @@ begin
 	MainProc.Console('/help - list all console commands');
 	MainProc.Console('--------------------------------------');
 	Result := '';
-end;
+end;{TCommands.Help}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TCommands.Help()				                                             FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Will(in the future) free up and reload the Databases.
+//
+//	Changes -
+//		September 20th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TCommands.Reload() : String;
 begin
 	//To be done when all DB is done.  One swoop kill
-end;
+end;{TCommands.Reload}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TCommands.Help()				                                             FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Writes a list of commands to the console.
+//
+//	Changes -
+//		September 20th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TCommands.Restart() : String;
 begin
 	MainProc.Shutdown;
 	MainProc.Startup;
 	Result := '';
-end;
-end.
+end;{TCommands.Restart}
+//------------------------------------------------------------------------------
+
+
+end{Commands}.

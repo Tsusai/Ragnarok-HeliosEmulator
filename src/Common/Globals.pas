@@ -21,22 +21,22 @@ uses
 	procedure InitGlobals;
 	procedure DestroyGlobals;
 	procedure TerminateApplication;
-	function ConnectToMySQL : boolean;
+	function  ConnectToMySQL : boolean;
 
 var
-	HeliosVersion : string = 'Helios Ragnarok Server Version 0.0.0.19';
-	Command : TCommands;
-	SQLConnection : TMySQLClient;
-	SQLQueryResult : TMySQLResult;
+	HeliosVersion   : string = 'Helios Ragnarok Server Version 0.0.0.21';
+	Command         : TCommands;
+	SQLConnection   : TMySQLClient;
+	SQLQueryResult  : TMySQLResult;
 	CharaServerList : TStringList;
-	AppPath : String;
+	AppPath         : String;
 
-	ServerConfig : TServerOptions;
+	ServerConfig    : TServerOptions;
 
-	AccountList : TStringList;
-	CharacterList : TIntList32;
+	AccountList     : TStringList;
+	CharacterList   : TIntList32;
 
-	LastAccountID : Integer;
+	LastAccountID   : Integer;
 
 implementation
 	uses

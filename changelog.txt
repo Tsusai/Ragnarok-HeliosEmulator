@@ -13,6 +13,15 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 21-
+[2006/09/20] - RaX - Overview : Documented ./trunk/src/Classes/Commands.pas and updated
+ Documentation in ./trunk/src/Console.pas. Slight indentation rework in Globals.
+[2006/09/20] - RaX - Added comment headers to the head of the document and over each routine.
+[2006/09/20] - RaX - Modified original doc plan to include a line below each routine as well
+ as a header above.
+[2006/09/19] - RaX - Re-indented a few variables in Globals.pas.
+-
+
 - Rev 20-
 [2006/09/19] - RaX - Overview : Documented ./trunk/src/Console.pas
 [2006/09/19] - RaX - Added comment headers to the head of the document and over each routine.

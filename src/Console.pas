@@ -2,7 +2,8 @@
 //Console()				                                                         UNIT
 //------------------------------------------------------------------------------
 //	What it does-
-//			Creates each of our servers and enables them to accept connections.
+//			This is the main process, it handles each server and the starting/
+//    stopping of each.
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
@@ -17,10 +18,11 @@ uses
 	SysUtils,
 	Classes;
 
+type
 //------------------------------------------------------------------------------
 //TMainProc                                                               CLASS
 //------------------------------------------------------------------------------
-type TMainProc = class(TComponent)
+  TMainProc = class(TComponent)
 	public
 		LoginServer : TIdTCPServer;
 		CharaServer: TIdTCPServer;
@@ -45,7 +47,8 @@ type TMainProc = class(TComponent)
 
 		constructor Create(AOwner : TComponent); override;
 		destructor  Destroy; override;
-end;
+  end;{TMainProc}
+//------------------------------------------------------------------------------
 
 var
 	MainProc : TMainProc;
@@ -75,6 +78,8 @@ procedure TMainProc.Console(Line : string);
 begin
 	WriteLn(Line);
 end;{TMainProc.Console}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //TMainProc.LoginServerExecute()                                          EVENT
@@ -90,6 +95,8 @@ procedure TMainProc.LoginServerExecute(AThread: TIdPeerThread);
 begin
 	ParseLogin(AThread);
 end;{TMainProc.LoginServerExecute}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //TMainProc.StartUp()                                                 PROCEDURE
@@ -140,6 +147,8 @@ begin
 	MainProc.Console('  For a list of console commands, input "/help".');
 
 end;{TMainProc.Startup}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //TMainProc.Shutdown()                                             PROCEDURE
@@ -159,6 +168,8 @@ begin
 	DeActivateServer(ZoneServer);
 	DestroyGlobals;//Make sure globals are Free'd on Application exit.
 end;{TMainProc.Shutdown}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //TMainProc.ServerException()                                             EVENT
@@ -180,6 +191,8 @@ begin
 		AThread.Connection.Disconnect;
 	end;
 end;{TMainProc.ServerException}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //TMainProc.LoginServerConnect()                                          EVENT
@@ -196,6 +209,8 @@ procedure TMainProc.LoginServerConnect(AThread: TIdPeerThread);
 begin
 	Console('Connection from ' + AThread.Connection.Socket.Binding.PeerIP);
 end;{TMainProc.LoginServerConnect}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //TMainProc.CharaServerConnect()                                          EVENT
@@ -214,6 +229,8 @@ begin
 	Link := TThreadLink.Create;
 	AThread.Data := Link;
 end;{TMainProc.CharaServerConnect}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //TMainProc.CharaServerExecute()                                          EVENT
@@ -230,6 +247,8 @@ procedure TMainProc.CharaServerExecute(AThread: TIdPeerThread);
 begin
 	ParseCharaServ(AThread);
 end;{TMainProc.ChaServerExecute}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //TMainProc.ThirdPartyCredits()                                       PROCEDURE
@@ -257,6 +276,8 @@ begin
 		ThirdParty.Free;
 	end
 end;{TMainProc.ThirdPartyCredits}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //TMainProc.Create()                                                CONSTRUCTOR
@@ -287,6 +308,8 @@ begin
 
 	SQLConnected := False;
 end;{TMainProc.Create}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //TMainProc.Destroy()                                               DESTRUCTOR
@@ -307,5 +330,7 @@ begin
 
 	inherited Destroy;
 end;{TMainProc.Destroy}
+//------------------------------------------------------------------------------
+
 
 end{Console}.
