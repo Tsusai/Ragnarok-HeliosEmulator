@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 23-
+[2006/09/21] - RaX - Forgot to upload Helios.DPR. Now remedied.
+-
+
 - Rev 22-
 [2006/09/21] - RaX - Overview : To avoid a 20 page long changelog entry, I documented
  everything that wasn't documented. We're glad you chose to shop at Helios. Thank you, and

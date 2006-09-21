@@ -24,7 +24,7 @@ uses
 	function  ConnectToMySQL : boolean;
 
 var
-	HeliosVersion   : string = 'Helios Ragnarok Server Version 0.0.0.22';
+	HeliosVersion   : string = 'Helios Ragnarok Server Version 0.0.0.23';
 	Command         : TCommands;
 	SQLConnection   : TMySQLClient;
 	SQLQueryResult  : TMySQLResult;

@@ -1,7 +1,26 @@
+//------------------------------------------------------------------------------
+//Helios			                                                         Program
+//------------------------------------------------------------------------------
+//	What it does-
+//			Helios is a cross-compatible Ragnarok Online Server Emulator.
+//  License -
+//        Real open source licensing. Meaning, take whatever you want, use it
+//     wherever and however you want, just give credit where it's due.
+//
+//	Changes -
+//		September 20th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 program Helios;
 
 {$APPTYPE CONSOLE}
 uses
+
+{*These definitions make it possible to step through programs in windows and
+compile for linux. at the same time*}
+//------------------------------------------------------------------------------
+//                            Windows Definitions
+//------------------------------------------------------------------------------
 	{$IFDEF MSWINDOWS}
 	madExcept,
 	madLinkDisAsm,
@@ -31,6 +50,9 @@ uses
 	WinLinux in 'Common\WinLinux.pas',
 	{$ENDIF}
 
+//------------------------------------------------------------------------------
+//                            Linux Definitions
+//------------------------------------------------------------------------------
 	{$IFDEF LINUX}
 	AccountDB in 'Database/AccountDB.pas',
 	Account in 'Classes/Account.pas',
@@ -57,12 +79,30 @@ uses
 	umysqlsha1 in 'Common/3rdParty/SQL/umysqlsha1.pas',
 	WinLinux in 'Common/WinLinux.pas',
 	{$ENDIF}
-
-
+//------------------------------------------------------------------------------
+//                              Definitions for both.
+//------------------------------------------------------------------------------
 	SysUtils,
 	Console in 'Console.pas';
+//------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//                            Helios Main Routine
+//  What it does -
+//        This main routine keeps the console window open until a server
+//    administrator sends it a command to shutdown.
+//
+//  Notes -
+//    -To keep Helios in a Form-like organization, we've created TMainProc,
+//      which replaces the Main Form.
+//    -HeliosVersion is located in Globals (only one place to change)
+//    -This routine contains the loop that keeps the application open. On
+//      termination of that loop, the program will shut down. Hence the return
+//      value of Command.Parse(AInput).
 
+//  Changes -
+//    September 21st - RaX - Created Header.
+//------------------------------------------------------------------------------
 var
 	AnInput : string;
 	Run : Boolean;
@@ -94,4 +134,4 @@ begin
 	end;
 	{End Main Loop}
 	TerminateApplication;
-end.
+end{Helios}.
