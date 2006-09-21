@@ -1,4 +1,14 @@
-//FOR RAX TO Document
+//------------------------------------------------------------------------------
+//ServerOptions	                                                         UNIT
+//------------------------------------------------------------------------------
+//	What it does-
+//			This unit is used to gain access to configuration variables loaded from
+//    ServerOptions.ini.
+//
+//	Changes -
+//		September 21st, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 unit ServerOptions;
 
 interface
@@ -10,6 +20,13 @@ interface
 		writing to protected variables to set. I'm all for the prometheus way,
 		save after multiple changes.  the properties update the ini file in memory,
 		just need to do a update file afterwards to "set in stone"}
+
+    //RaX - Agreed, that's how it's supposed to work. 5 months ago I was just
+    //  crazy...=) Remove these comments whenever.
+
+//------------------------------------------------------------------------------
+//TServerOptions	                                                        CLASS
+//------------------------------------------------------------------------------
 		TServerOptions = class(TMemIniFile)
 		private
 			fLoginPort : Word;
@@ -65,6 +82,7 @@ interface
 			procedure Load;
 			procedure Save;
 		end;
+//------------------------------------------------------------------------------
 
 implementation
 	uses
@@ -72,10 +90,25 @@ implementation
 		Globals,
 		SysUtils;
 
+//------------------------------------------------------------------------------
+//TServerOptions.Load()                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			This routine is called to load the ini file values from file itself.
+//    This routine contains multiple subroutines. Each one loads a different
+//    portion of the ini. All changes to said routines should be documented in
+//    THIS changes block.
+//
+//	Changes -
+//		September 21st, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure TServerOptions.Load;
 	var
 		Section    : TStringList;
-
+    //--------------------------------------------------------------------------
+    //LoadCommunication                                      SUB PROCEDURE
+    //--------------------------------------------------------------------------
 		procedure LoadCommunication;
 		begin
 			ReadSectionValues('Communication', Section);
@@ -89,14 +122,22 @@ implementation
 			fCharaPort   := StrToIntDef(Section.Values['CharaPort'], 6121);
 			fZonePort    := StrToIntDef(Section.Values['ZonePort'], 5121);
 
-		end;
+		end;{Subroutine LoadCommunication}
+    //--------------------------------------------------------------------------
 
+    //--------------------------------------------------------------------------
+    //LoadLoginOptions                                      SUB PROCEDURE
+    //--------------------------------------------------------------------------
 		procedure LoadLoginOptions;
 		begin
 			ReadSectionValues('LoginOptions', Section);
 			fEnableMF    := StrToBoolDef(Section.Values['EnableMF'] ,false);
-		end;
+		end;{Subroutine LoadLoginOptions}
+    //--------------------------------------------------------------------------
 
+    //--------------------------------------------------------------------------
+    //LoadCharaOptions                                      SUB PROCEDURE
+    //--------------------------------------------------------------------------
 		procedure LoadCharaOptions;
 		begin
 			ReadSectionValues('CharaOptions', Section);
@@ -106,8 +147,12 @@ implementation
 			end;
 			
 			fServerName    := Section.Values['ServerName'];
-		end;
+		end;{Subroutine LoadCharaOptions}
+    //--------------------------------------------------------------------------
 
+    //--------------------------------------------------------------------------
+    //LoadMySQL                                      SUB PROCEDURE
+    //--------------------------------------------------------------------------
 		procedure LoadMySQL;
 		begin
 			ReadSectionValues('MySQL', Section);
@@ -126,8 +171,8 @@ implementation
 			end;
 			fMySQLUser := Section.Values['Username'];
 			fMySQLPass := Section.Values['Password'];
-		end;
-
+		end;{Subroutine LoadMySQL}
+    //--------------------------------------------------------------------------
 	begin
 		Section    := TStringList.Create;
 
@@ -141,8 +186,20 @@ implementation
 
 		Section.Free;
 
-	end;
+	end;{TServerOptions.Load}
+//------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//TServerOptions.Save()                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			This routine saves all configuration values defined here to the .ini
+//    file.
+//
+//	Changes -
+//		September 21st, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure TServerOptions.Save;
 	begin
 		WriteString('Communication', 'LoginPort', IntToStr(LoginPort));
@@ -162,8 +219,21 @@ implementation
 		WriteString('MySQL','Password', MySQLPass);
 
 		UpdateFile;
-	end;
+	end;{TServerOptions.Save}
+//------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//TServerOptions.SetLoginPort()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Property Set Routine for LoginPort. Ensures that if the login port is
+//    changed for whatever reason, that it gets written to the .ini immediately.
+//    The same is true for all communication variables.
+//
+//	Changes -
+//		September 21st, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure TServerOptions.SetLoginPort(Value : word);
 	begin
 		if fLoginPort <> value then
@@ -171,8 +241,21 @@ implementation
 			fLoginPort := value;
 			WriteString('Communication', 'LoginPort', IntToStr(LoginPort));
 		end;
-	end;
+	end;{TServerOptions.SetLoginPort}
+//------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//TServerOptions.SetCharaPort()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Property Set Routine for CharaPort. Ensures that if the Chara port is
+//    changed for whatever reason, that it gets written to the .ini immediately.
+//    The same is true for all communication variables.
+//
+//	Changes -
+//		September 21st, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure TServerOptions.SetCharaPort(Value : word);
 	begin
 		if fCharaPort <> value then
@@ -180,8 +263,21 @@ implementation
 			fCharaPort := value;
 			WriteString('Communication', 'CharaPort', IntToStr(CharaPort));
 		end;
-	end;
+	end;{TServerOptions.SetCharaPort}
+//------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//TServerOptions.SetZonePort()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Property Set Routine for ZonePort. Ensures that if the zone port is
+//    changed for whatever reason, that it gets written to the .ini immediately.
+//    The same is true for all communication variables.
+//
+//	Changes -
+//		September 21st, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure TServerOptions.SetZonePort(Value : word);
 	begin
 		if fZonePort <> value then
@@ -189,8 +285,21 @@ implementation
 			fZonePort := value;
 			WriteString('Communication', 'ZonePort', IntToStr(ZonePort));
 		end;
-	end;
+	end;{TServerOptions.SetZonePort}
+//------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//TServerOptions.SetLAN_IP()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Property Set Routine for LAN_IP. Ensures that if the LAN IP is
+//    changed for whatever reason, that it gets written to the .ini immediately.
+//    The same is true for all communication variables.
+//
+//	Changes -
+//		September 21st, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure TServerOptions.SetLAN_IP(Value : string);
 	begin
 		if fLAN_IP <> value then
@@ -198,8 +307,21 @@ implementation
 			fLAN_IP := value;
 			WriteString('Communication', 'LAN_IP', LAN_IP);
 		end;
-	end;
+	end;{TServerOptions.SetLAN_IP}
+//------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//TServerOptions.SetWAN_IP()                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Property Set Routine for WAN_IP. Ensures that if the wan ip is
+//    changed for whatever reason, that it gets written to the .ini immediately.
+//    The same is true for all communication variables.
+//
+//	Changes -
+//		September 21st, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure TServerOptions.SetWAN_IP(Value : string);
 	begin
 		if fWAN_IP <> value then
@@ -207,8 +329,21 @@ implementation
 			fWAN_IP := value;
 			WriteString('Communication', 'WAN_IP', WAN_IP);
 		end;
-	end;
+	end;{TServerOptions.SetWAN_IP}
+//------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//TServerOptions.SetEnableMF()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Property Set Routine for EnableMF. Ensures that if _M/_F registration is
+//    changed for whatever reason, that it gets written to the .ini immediately.
+//    The same is true for all communication variables.
+//
+//	Changes -
+//		September 21st, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure TServerOptions.SetEnableMF(Value : boolean);
 	begin
 		if fEnableMF <> value then
@@ -216,8 +351,21 @@ implementation
 			fEnableMF := value;
 			WriteString('LoginOptions', 'EnableMF', BoolToStr(EnableMF));
 		end;
-	end;
+	end;{TServerOptions.SetEnableMF}
+//------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//TServerOptions.SetServerName()                                      PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Property Set Routine for ServerName. Ensures that if the server name is
+//    changed for whatever reason, that it gets written to the .ini immediately.
+//    The same is true for all communication variables.
+//
+//	Changes -
+//		September 21st, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure TServerOptions.SetServerName(Value : String);
 	begin
 		if fServerName <> Value then
@@ -225,6 +373,8 @@ implementation
 			fServerName := Value;
 			WriteString('CharaOptions', 'ServerName', ServerName);
 		end;
-	end;
+	end;{TServerOptions.SetServerName}
+//------------------------------------------------------------------------------
 
-end.
+
+end{ServerOptions}.

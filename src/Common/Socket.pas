@@ -36,7 +36,7 @@ uses
 	SysUtils;
 
 (*------------------------------------------------------------------------------
-INPUTTING DATA INTO THE BUFFER METHODS
+PUSHING DATA INTO THE BUFFER METHODS
 ------------------------------------------------------------------------------*)
 	//Socket Method WriteBuffer - Writes a Byte to the buffer.
 	procedure WriteBufferByte(Index:word; ByteIn:byte; var Buffer : TBuffer);

@@ -13,6 +13,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 22-
+[2006/09/21] - RaX - Overview : To avoid a 20 page long changelog entry, I documented
+ everything that wasn't documented. We're glad you chose to shop at Helios. Thank you, and
+ have a nice day.
+-
+
 - Rev 21-
 [2006/09/20] - RaX - Overview : Documented ./trunk/src/Classes/Commands.pas and updated
  Documentation in ./trunk/src/Console.pas. Slight indentation rework in Globals.
