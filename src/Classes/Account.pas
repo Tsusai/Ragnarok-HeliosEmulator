@@ -16,22 +16,22 @@ interface
 
 	type TAccount = class
 	private
-		fGender : Char;
+		fGender       : Char;
 		procedure SetGender(Value : Char);
 	public
 		ID : cardinal;
 		//Unicode
-		Username : string[24];
-		Password : string[24];
-		EMail    : string[24];
-		GenderNum : Byte; //0 or 1 for packet (F/M respectively)
-		Banned : boolean;
-		UnBanDateTime : string;
-		LastIP : string[15]; { TODO -oTsusai -cTAccount : Change to property }
-		LoginKey : array [1..2] of cardinal;
-		CharaID : array [0..8] of Cardinal;
+		Username        : string[24];
+		Password        : string[24];
+		EMail           : string[24];
+		GenderNum       : Byte; //0 or 1 for packet (F/M respectively)
+		Banned          : boolean;
+		UnBanDateTime   : string;
+		LastIP          : string[15]; { TODO -oTsusai -cTAccount : Change to property }
+		LoginKey        : array [1..2] of cardinal;
+		CharaID         : array [0..8] of Cardinal;
 
-		property Gender : Char read fGender write SetGender;
+		property Gender : Char  read  fGender write SetGender;
 
 	end;
 
@@ -49,8 +49,8 @@ begin
 		'M': GenderNum := 1;
 		'F': Gendernum := 0;
 		else begin
-			GenderNum := 0;
-			Value := 'F';
+			GenderNum :=  0;
+			Value     := 'F';
 		end;
 	end;
 	fGender := Value;

@@ -3,29 +3,29 @@ unit SQL;
 interface
 
 	function GetSQLDataStr(
-		Table : string;
-		ID : Cardinal;
-		Param : string
-	) : string;
+		Table     : String;
+		ID        : Cardinal;
+		Param     : String
+	) : String;
 
 	function GetSQLDataInt(
-		Table : string;
-		ID : Cardinal;
-		Param : string
+		Table     : String;
+		ID        : Cardinal;
+		Param     : String
 	) : Cardinal;
 
 	procedure SetSQLDataStr(
-		Table : string;
-		ID : Cardinal;
-		Param : string;
-		NewValue : string
+		Table     : String;
+		ID        : Cardinal;
+		Param     : String;
+		NewValue  : String
 	);
 
 	procedure SetSQLDataInt(
-		Table : string;
-		ID : Cardinal;
-		Param : string;
-		NewValue : Cardinal
+		Table     : String;
+		ID        : Cardinal;
+		Param     : String;
+		NewValue  : Cardinal
 	);
 
 implementation
@@ -37,10 +37,10 @@ uses
 	Globals;
 
 function GetSQLDataStr(
-	Table : string;
-	ID : Cardinal;
-	Param : string
-) : string;
+	Table : String;
+	ID    : Cardinal;
+	Param : String
+) : String;
 var
 	Success : Boolean;
 begin
@@ -48,7 +48,7 @@ begin
 	SQLQueryResult :=
 		SQLConnection.query(
 			Format('SELECT %s FROM `%s` WHERE char_id = %d;',[Param,Table,ID]),
-			true,Success
+			TRUE,Success
 		);
 	if Success and
 		(SQLQueryResult.FieldsCount = 1) and
@@ -59,9 +59,9 @@ begin
 end;
 
 function GetSQLDataInt(
-	Table : string;
-	ID : Cardinal;
-	Param : string
+	Table : String;
+	ID    : Cardinal;
+	Param : String
 ) : Cardinal;
 var
 	Success : Boolean;
@@ -70,7 +70,7 @@ begin
 	SQLQueryResult :=
 		SQLConnection.query(
 			Format('SELECT %s FROM `%s` WHERE char_id = %d;',[Param,Table,ID]),
-			true,Success
+			TRUE,Success
 		);
 	if Success and
 		(SQLQueryResult.FieldsCount = 1) and
@@ -82,13 +82,13 @@ begin
 end;
 
 procedure SetSQLDataStr(
-	Table : string;
-	ID : Cardinal;
-	Param : string;
-	NewValue : string
+	Table     : String;
+	ID        : Cardinal;
+	Param     : String;
+	NewValue  : String
 );
 var
-	Success : Boolean;
+	Success   : Boolean;
 begin
 	SQLConnection.query(
 		Format('UPDATE `%s` SET %s="%s" WHERE char_id = %d;',[Table,Param,NewValue,ID]),
@@ -96,10 +96,10 @@ begin
 end;
 
 procedure SetSQLDataInt(
-	Table : string;
-	ID : Cardinal;
-	Param : string;
-	NewValue : Cardinal
+	Table     : String;
+	ID        : Cardinal;
+	Param     : String;
+	NewValue  : Cardinal
 );
 var
 	Success : Boolean;

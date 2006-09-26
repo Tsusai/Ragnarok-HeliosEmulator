@@ -53,9 +53,9 @@ Upon successful authentication, this procedure sends the list of character
 ------------------------------------------------------------------------------*)
 	procedure SendCharacterServers(AnAccount : TAccount; AThread: TIdPeerThread);
 	var
-		Buffer : TBuffer;
-		Index : integer;
-		Size : cardinal;
+		Buffer  : TBuffer;
+		Index   : integer;
+		Size    : cardinal;
 	begin
 		//Packet Format...
 		//R 0069 <len>.w <login ID1>.l <account ID>.l <login ID2>.l ?.32B <sex>.B
@@ -89,12 +89,12 @@ Accepts incoming connections to the Login server and verifies the login data.
 ------------------------------------------------------------------------------*)
 	procedure ParseLogin(AThread: TIdPeerThread);
 	var
-		PLength : Integer;
-		Buffer : TBuffer;
-		UserName : String;
-		Password : String;
+		PLength   : Integer;
+		Buffer    : TBuffer;
+		UserName  : String;
+		Password  : String;
 		AnAccount : TAccount;
-		ID : Word;
+		ID        : Word;
 	begin
 		if AThread.Connection.Connected then
 		begin

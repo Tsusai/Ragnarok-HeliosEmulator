@@ -12,6 +12,10 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 24-
+[2006/09/26] - RaX - Re-indented half of the files...too many to count...non-code-affecting
+ change.
+-
 
 - Rev 23-
 [2006/09/21] - RaX - Forgot to upload Helios.DPR. Now remedied.

@@ -14,18 +14,21 @@ unit CharaServerTypes;
 interface
 type
 	TCharaServ = class
+  protected
+  //
 	private
-		fIP : widestring;
+		fIP           : widestring;
+
 		procedure SetIPCardinal(Value : widestring);
+
 	public
-		IPCardinal : cardinal;
-		Port : word;
-		ServerName : string;
-		OnlineUsers : word;
-		InternalServer : boolean;
+		IPCardinal    : cardinal;
+		Port          : word;
+		ServerName    : string;
+		OnlineUsers   : word;
+		InternalServer: boolean;
 
-
-		property IP : widestring read fIP write SetIPCardinal;
+		property IP   : widestring read fIP write SetIPCardinal;
 
 	end;
 
@@ -43,8 +46,8 @@ to call a function to go ahead and set the Cardinal form at any time.
 ------------------------------------------------------------------------------*)
 procedure TCharaServ.SetIPCardinal(Value : widestring);
 begin
-	IPCardinal := GetCardinalFromIPString(Value);
-	fIP := Value;
+	IPCardinal  := GetCardinalFromIPString(Value);
+	fIP         := Value;
 end; (*proc TCharaServ.SetIPCardinal
 ------------------------------------------------------------------------------*)
 

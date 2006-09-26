@@ -21,10 +21,11 @@ uses
 	procedure InitGlobals;
 	procedure DestroyGlobals;
 	procedure TerminateApplication;
-	function  ConnectToMySQL : boolean;
+  
+	function  ConnectToMySQL : Boolean;
 
 var
-	HeliosVersion   : string = 'Helios Ragnarok Server Version 0.0.0.23';
+	HeliosVersion   : String = 'Helios Ragnarok Server Version 0.0.0.24';
 	Command         : TCommands;
 	SQLConnection   : TMySQLClient;
 	SQLQueryResult  : TMySQLResult;
@@ -57,20 +58,20 @@ Connects the server to the MySQL table, creating the two main objects,
 { TODO 1 -cMySQL : Replace default values with INI loaded ones }
 function ConnectToMySQL : boolean;
 var
-	Success : boolean;
+	Success : Boolean;
 begin
-	Result := false;
-	Success := false;
+	Result  := FALSE;
+	Success := FALSE;
 	if Not Assigned(SQLConnection) then
 	begin
-		SQLConnection := TMysqlClient.create;
+		SQLConnection := TMySQLClient.Create;
 	end;
-	SQLConnection.Host := ServerConfig.MySQLHost;
-	SQLConnection.Port := ServerConfig.MySQLPort;
-	SQLConnection.Db   := ServerConfig.MySQLDB;
-	SQLConnection.User := ServerConfig.MySQLUser;
-	SQLConnection.Password := ServerConfig.MySQLPass;
-	SQLConnection.ConnectTimeout := 10;
+	SQLConnection.Host            := ServerConfig.MySQLHost;
+	SQLConnection.Port            := ServerConfig.MySQLPort;
+	SQLConnection.Db              := ServerConfig.MySQLDB;
+	SQLConnection.User            := ServerConfig.MySQLUser;
+	SQLConnection.Password        := ServerConfig.MySQLPass;
+	SQLConnection.ConnectTimeout  := 10;
 
 	MainProc.Console(Format('  - Connecting to mySQL server.  Will abort after %d seconds',[SQLConnection.ConnectTimeout]));
 	if SQLConnection.Connect then
@@ -100,10 +101,10 @@ Creates all needed global objects
 ------------------------------------------------------------------------------*)
 procedure InitGlobals;
 begin
-	AccountList := TStringList.Create;
-	CharacterList := TIntList32.Create;
+	AccountList     := TStringList.Create;
+	CharacterList   := TIntList32.Create;
 	CharaServerList := TStringList.Create;
-	ServerConfig := TServerOptions.Create('./ServerOptions.ini');
+	ServerConfig    := TServerOptions.Create('./ServerOptions.ini');
 	ServerConfig.Load;
 end; (* proc InitGlobals
 ------------------------------------------------------------------------------*)

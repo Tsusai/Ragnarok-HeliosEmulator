@@ -49,17 +49,17 @@ Upon validation, check database for any/all created characters.
 ------------------------------------------------------------------------------*)
 procedure SendCharas(AThread : TIdPeerThread; var ABuffer : TBuffer);
 var
-	AccountID : Cardinal;
-	Success : boolean;
-	AnAccount : TAccount;
+	AccountID   : Cardinal;
+	Success     : boolean;
+	AnAccount   : TAccount;
 	ReplyBuffer : TBuffer;
-	ACharacter : TCharacter;
-	idx : byte;
-	Count : byte;
-	PacketSize : Word;
-	CID : Cardinal;
-	Ver : byte;
-	CharaList : TIntList32;
+	ACharacter  : TCharacter;
+	idx         : byte;
+	Count       : byte;
+	PacketSize  : Word;
+	CID         : Cardinal;
+	Ver         : byte;
+	CharaList   : TIntList32;
 begin
 	Count := 0;
 	Ver := 24;
@@ -313,9 +313,9 @@ end;
 procedure DeleteChara(AThread : TIdPeerThread; var ABuffer : Tbuffer);
 var
 	CharacterID : Cardinal;
-	EmailOrID : string;
-	AnAccount : TAccount;
-	ACharacter : TCharacter;
+	EmailOrID   : string;
+	AnAccount   : TAccount;
+	ACharacter  : TCharacter;
 	ReplyBuffer : TBuffer;
 
 	procedure DeleteCharaError(const Error : byte);
@@ -366,10 +366,10 @@ Root procedure to handling client connections to the Character Server.
 	ReadFromStack and the looping of the parser }
 procedure ParseCharaServ(AThread : TIdPeerThread);
 var
-	PacketLength : Integer;
-	ABuffer : TBuffer;
-	PacketID : Word;
-	Link : TThreadLink;
+	PacketLength  : Integer;
+	ABuffer       : TBuffer;
+	PacketID      : Word;
+	Link          : TThreadLink;
 begin
 	if AThread.Connection.Connected then
 	begin

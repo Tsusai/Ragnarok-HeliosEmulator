@@ -39,7 +39,9 @@ implementation
 //TCommands.Parse()				                                             FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Parses InputText for commands.
+//			Parses InputText for commands. Returns a Boolean which determines
+//    whether or not the entire program should continue to run.
+//    (See Exit Command)
 //
 //	Changes -
 //		September 20th, 2006 - RaX - Added Trim function before using InputText to
@@ -58,29 +60,28 @@ var
 begin
 	Result := TRUE; //Assume the program will continue to run.
 	if InputText > '' then begin
-		Error := ' ';
-		StringIn := TStringList.Create;
+		StringIn  := TStringList.Create;
 		try
 			StringIn.DelimitedText := Trim(InputText);
 			if StringIn.DelimitedText[1] = '/' then begin
 				Command := LowerCase(StringIn.Strings[0]);  //Gets the command text
-				Values := TStringList.Create;
+				Values  := TStringList.Create;
 				try
 					for Index := 1 to StringIn.Count-1 do begin  //retrieves values after the command
 						Values.Add(StringIn.Strings[Index]);
 					end;
 					{Start Command Parser}
 					if Command = '/exit' then begin
-						Result := FALSE;
-						Error := '';
+						Result  := FALSE;
+						Error   := '';
 					end else if Command = '/reload' then begin
-						{if Assigned(ADatabase) then} Error := 'Reload not setup till all DB is done';//ADataBase.Reload;
+						Error   := 'Reload not setup till all DB is done';//ADataBase.Reload;
 					end else if Command = '/help' then begin
-						Error := Help;
+						Error   := Help;
 					end else if Command = '/restart' then begin
-						Error := Restart;
+						Error   := Restart;
 					end else begin
-						Error := Command + ' does not exist!';
+						Error   := Command + ' does not exist!';
 					end;
 					{End Command Parser}
 				finally  //Begin Cleanup

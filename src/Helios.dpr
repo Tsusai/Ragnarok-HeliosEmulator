@@ -22,6 +22,7 @@ compile for linux. at the same time*}
 //                            Windows Definitions
 //------------------------------------------------------------------------------
 	{$IFDEF MSWINDOWS}
+  SvcMgr,
 	madExcept,
 	madLinkDisAsm,
 	AccountDB in 'Database\AccountDB.pas',
@@ -105,7 +106,7 @@ compile for linux. at the same time*}
 //------------------------------------------------------------------------------
 var
 	AnInput : string;
-	Run : Boolean;
+	Run     : Boolean;
 begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;

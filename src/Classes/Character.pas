@@ -20,48 +20,48 @@ uses
 
 	type TCharacter = class
 	private
-		fCharacterNumber : byte;
-		fName      : string;
-		fJID       : Word;
-		fBaseLV    : Byte;
-		fJobLV     : Byte;
-		fBaseEXP   : Byte;
-		fJobEXP    : Byte;
-		fZeny      : Cardinal;
-		fParamBase : array[STR..LUK] of Byte;
-		fMaxHP     : Word;
-		fHP        : Word;
-		fMaxSP     : Word;
-		fSP        : Word;
-		fStatusPts : Word;
-		fSkillPts  : Word;
-		fOption    : Word;
-		fKarma     : Word;
-		fManner    : Word;
-		fPartyID   : Cardinal;
-		fGuildID   : Cardinal;
-		fPetID     : Cardinal;
-		fHair      : Word;
-		fHairColor : Word;
-		fClothesColor : Word;
-		fWeapon    : Word;
-		fShield    : Word;
-		fHeadTop   : Word;
-		fHeadMid   : Word;
-		fHeadBottom: Word;
-		fMap       : string;
-		fMapPt     : TPoint;
-		fSaveMap   : string;
-		fSaveMapPt : TPoint;
-		fPartnerID : Cardinal;
-		fParentID1 : Cardinal;
-		fParentID2 : Cardinal;
-		fBabyID    : Cardinal;
-		fOnline    : Byte;
-		fHomunID   : Cardinal;
+		fCharacterNumber  : Byte;
+		fName             : String;
+		fJID              : Word;
+		fBaseLV           : Byte;
+		fJobLV            : Byte;
+		fBaseEXP          : Byte;
+		fJobEXP           : Byte;
+		fZeny             : Cardinal;
+		fParamBase        : Array[STR..LUK] of Byte;
+		fMaxHP            : Word;
+		fHP               : Word;
+		fMaxSP            : Word;
+		fSP               : Word;
+		fStatusPts        : Word;
+		fSkillPts         : Word;
+		fOption           : Word;
+		fKarma            : Word;
+		fManner           : Word;
+		fPartyID          : Cardinal;
+		fGuildID          : Cardinal;
+		fPetID            : Cardinal;
+		fHair             : Word;
+		fHairColor        : Word;
+		fClothesColor     : Word;
+		fWeapon           : Word;
+		fShield           : Word;
+		fHeadTop          : Word;
+		fHeadMid          : Word;
+		fHeadBottom       : Word;
+		fMap              : String;
+		fMapPt            : TPoint;
+		fSaveMap          : String;
+		fSaveMapPt        : TPoint;
+		fPartnerID        : Cardinal;
+		fParentID1        : Cardinal;
+		fParentID2        : Cardinal;
+		fBabyID           : Cardinal;
+		fOnline           : Byte;
+		fHomunID          : Cardinal;
 
-		fDataChanged : boolean; //For timed save procedure to activate.
-		fTimeToSave  : TDateTime;
+		fDataChanged      : Boolean; //For timed save procedure to activate.
+		fTimeToSave       : TDateTime;
 
 		procedure SetSaveTime(Value : boolean);
 
@@ -181,57 +181,57 @@ Const
 	MinInterval   = 5; //Time set at 5 min
 begin
 	if Value and not fDataChanged then begin
-		fDataChanged := true;
-		fTimeToSave := ((Now * MinsPerDay) + MinInterval) / MinsPerDay;
+		fDataChanged  := TRUE;
+		fTimeToSave   := ((Now * MinsPerDay) + MinInterval) / MinsPerDay;
 	end;
 end;
 
 procedure TCharacter.SetCharaNum(Value : byte);
 begin
-	DataChanged := true;
-	fCharacterNumber := Value;
+	DataChanged       := TRUE;
+	fCharacterNumber  := Value;
 end;
 
 procedure TCharacter.SetName(Value : string);
 begin
-	DataChanged := true;
-	fName := Value;
+	DataChanged := TRUE;
+	fName       := Value;
 end;
 
 procedure TCharacter.SetClass(Value : Word);
 begin
-	DataChanged := true;
-	fJID := Value;
+	DataChanged := TRUE;
+	fJID        := Value;
 end;
 
 procedure TCharacter.SetBaseLV(Value : byte);
 begin
-	DataChanged := true;
-	fBaseLV := Value;
+	DataChanged := TRUE;
+	fBaseLV     := Value;
 end;
 
 procedure TCharacter.SetJobLV(Value : byte);
 begin
-	DataChanged := true;
-	fJobLV := Value;
+	DataChanged := TRUE;
+	fJobLV      := Value;
 end;
 
 procedure TCharacter.SetBaseEXP(Value : byte);
 begin
-	DataChanged := true;
-	fBaseEXP := Value;
+	DataChanged := TRUE;
+	fBaseEXP    := Value;
 end;
 
 procedure TCharacter.SetJobEXP(Value : byte);
 begin
-	DataChanged := true;
-	fJobEXP := Value;
+	DataChanged := TRUE;
+	fJobEXP     := Value;
 end;
 
 procedure TCharacter.SetZeny(Value : Cardinal);
 begin
-	DataChanged := true;
-	fZeny := Value;
+	DataChanged := TRUE;
+	fZeny       := Value;
 end;
 
 function TCharacter.GetBaseStats(Index : Byte) : Byte;
@@ -241,209 +241,209 @@ end;
 
 procedure TCharacter.SetBaseStats(Index, Value: Byte);
 begin
-	DataChanged := true;
+	DataChanged       := TRUE;
 	fParamBase[Index] := Value;
 end;
 
 procedure TCharacter.SetMaxHP(Value : word);
 begin
-	DataChanged := true;
-	fMaxHP := Value;
+	DataChanged := TRUE;
+	fMaxHP      := Value;
 end;
 
 procedure TCharacter.SetHP(Value : word);
 begin
-	DataChanged := true;
-	fHP := Value;
+	DataChanged := TRUE;
+	fHP         := Value;
 end;
 
 procedure TCharacter.SetMaxSP(Value : word);
 begin
-	DataChanged := true;
-	fMaxSP := Value;
+	DataChanged := TRUE;
+	fMaxSP      := Value;
 end;
 
 procedure TCharacter.SetSP(Value : word);
 begin
-	DataChanged := true;
-	fSP := Value;
+	DataChanged := TRUE;
+	fSP         := Value;
 end;
 
 procedure TCharacter.SetStatusPts(Value : Word);
 begin
-	DataChanged := true;
-	fStatusPts := Value;
+	DataChanged := TRUE;
+	fStatusPts  := Value;
 end;
 
 procedure TCharacter.SetSkillPts(Value : Word);
 begin
-	DataChanged := true;
-	fSkillPts := Value;
+	DataChanged := TRUE;
+	fSkillPts   := Value;
 end;
 
 procedure TCharacter.SetOption(Value : word);
 begin
-	DataChanged := true;
-	fOption := Value;
+	DataChanged := TRUE;
+	fOption     := Value;
 end;
 
 procedure TCharacter.SetKarma(Value : word);
 begin
-	DataChanged := true;
-	fKarma := Value;
+	DataChanged := TRUE;
+	fKarma      := Value;
 end;
 
 procedure TCharacter.SetManner(Value : word);
 begin
-	DataChanged := true;
-	fManner := Value;
+	DataChanged := TRUE;
+	fManner     := Value;
 end;
 
 procedure TCharacter.SetPartyID(Value : cardinal);
 begin
-	DataChanged := true;
-	fPartyID := Value;
+	DataChanged := TRUE;
+	fPartyID    := Value;
 end;
 
 procedure TCharacter.SetGuildID(Value : cardinal);
 begin
-	DataChanged := true;
-	fGuildID := Value;
+	DataChanged := TRUE;
+	fGuildID    := Value;
 end;
 
 procedure TCharacter.SetPetID(Value : cardinal);
 begin
-	DataChanged := true;
-	fPetID := Value;
+	DataChanged := TRUE;
+	fPetID      := Value;
 end;
 
 procedure TCharacter.SetHair(Value : word);
 begin
-	DataChanged := true;
-	fHair := Value;
+	DataChanged := TRUE;
+	fHair       := Value;
 end;
 
 procedure TCharacter.SetHairColor(Value : word);
 begin
-	DataChanged := true;
-	fHairColor := Value;
+	DataChanged := TRUE;
+	fHairColor  := Value;
 end;
 
 procedure TCharacter.SetClothesColor(Value : word);
 begin
-	DataChanged := true;
+	DataChanged   := TRUE;
 	fClothesColor := Value;
 end;
 
 procedure TCharacter.SetWeapon(Value : word);
 begin
-	DataChanged := true;
-	fWeapon := Value;
+	DataChanged := TRUE;
+	fWeapon     := Value;
 end;
 
 procedure TCharacter.SetShield(Value : word);
 begin
-	DataChanged := true;
-	fShield := Value;
+	DataChanged := TRUE;
+	fShield     := Value;
 end;
 
 procedure TCharacter.SetHeadTop(Value : word);
 begin
-	DataChanged := true;
-	fHeadTop := Value;
+	DataChanged := TRUE;
+	fHeadTop    := Value;
 end;
 
 procedure TCharacter.SetHeadMid(Value : word);
 begin
-	DataChanged := true;
-	fHeadMid := Value;
+	DataChanged := TRUE;
+	fHeadMid    := Value;
 end;
 
 procedure TCharacter.SetHeadBottom(Value : word);
 begin
-	DataChanged := true;
+	DataChanged := TRUE;
 	fHeadBottom := Value;
 end;
 
 procedure TCharacter.SetMap(Value : string);
 begin
-	DataChanged := true;
-	fMap := Value;
+	DataChanged := TRUE;
+	fMap        := Value;
 end;
 
 procedure TCharacter.SetMapPt(Value : TPoint);
 begin
-	DataChanged := true;
-	fMapPt := Value;
+	DataChanged := TRUE;
+	fMapPt      := Value;
 end;
 
 procedure TCharacter.SetSMap(Value : string);
 begin
-	DataChanged := true;
-	fSaveMap := Value;
+	DataChanged := TRUE;
+	fSaveMap    := Value;
 end;
 
 procedure TCharacter.SetSMapPt(Value : TPoint);
 begin
-	DataChanged := true;
-	fSaveMapPt := Value;
+	DataChanged := TRUE;
+	fSaveMapPt  := Value;
 end;
 
 procedure TCharacter.SetPartnerID(Value : Cardinal);
 begin
-	DataChanged := true;
-	fPartnerID := Value;
+	DataChanged := TRUE;
+	fPartnerID  := Value;
 end;
 
 procedure TCharacter.SetParentID1(Value : Cardinal);
 begin
-	DataChanged := true;
-	fParentID1 := Value;
+	DataChanged := TRUE;
+	fParentID1  := Value;
 end;
 
 procedure TCharacter.SetParentID2(Value : Cardinal);
 begin
-	DataChanged := true;
-	fParentID2 := Value;
+	DataChanged := TRUE;
+	fParentID2  := Value;
 end;
 
 procedure TCharacter.SetBabyID(Value : Cardinal);
 begin
-	DataChanged := true;
-	fBabyID := Value;
+	DataChanged := TRUE;
+	fBabyID     := Value;
 end;
 
 procedure TCharacter.SetOnline(Value : Byte);
 begin
-	DataChanged := true;
-	fOnline := Value;
+	DataChanged := TRUE;
+	fOnline     := Value;
 end;
 
 procedure TCharacter.SetHomunID(Value : Cardinal);
 begin
-	DataChanged := true;
-	fHomunID := Value;
+	DataChanged := TRUE;
+	fHomunID    := Value;
 end;
 
 function TCharacter.CreateInSQL(AID : Cardinal; NName : string) : boolean;
 var
 	Success : boolean;
 begin
-	Result := false;
+	Result := FALSE;
 	SQLConnection.query(
 		Format('INSERT INTO `char` (account_id, name) VALUES(%d, "%s");',
 		[AID,NName])
-	,true,Success);
+	,TRUE,Success);
 	if Success then
 	begin
 		SQLQueryResult :=
 				SQLConnection.query(
 				Format('SELECT char_id FROM `char` WHERE account_id = %d AND name = "%s";',
 				[AID,NName])
-			,true,Success);
+			,TRUE,Success);
 		if (SQLQueryResult.RowsCount = 1) then
 		begin
-			Result := true;
+			Result := TRUE;
 			CID := StrToInt(SQLQueryResult.FieldValue(0));
 			LoadFromSQL(CID);
 		end;
@@ -552,22 +552,22 @@ begin
 		fHomunID,
 		CID
 		]);
-	SQLConnection.Query(QueryString, false, Success);
+	SQLConnection.Query(QueryString, FALSE, Success);
 end;
 
 function TCharacter.LoadFromSQL(CharaID : Cardinal) : boolean;
 var
 	Success : Boolean;
 begin
-	Result := false;
+	Result := FALSE;
 	SQLQueryResult :=
 		SQLConnection.query(
 		Format('SELECT * FROM `char` WHERE char_id = %d;',
 			[CharaID])
-		,true,Success);
+		,TRUE,Success);
 	if (SQLQueryResult.RowsCount = 1) and (SQLQueryResult.FieldsCount = 48) then
 	begin
-		Result := true;
+		Result := TRUE;
 		CID              := StrToInt(SQLQueryResult.FieldValue(0));
 		ID               := StrToInt(SQLQueryResult.FieldValue(1));
 		Account          := FindAccountByID(ID);
@@ -629,12 +629,12 @@ function TCharacter.RemoveFromSQL : boolean;
 begin
 	SQLConnection.query(
 		Format('DELETE FROM `char` WHERE char_id=%d',[CID]),
-	false,Result);
+	FALSE,Result);
 end;
 
 function GetCharacters(CharID : Cardinal) : TCharacter;
 begin
-	Result := nil;
+	Result := NIL;
 	if CharacterList.IndexOf(CharID) > -1 then
 	begin
 		if TCharacter(CharacterList.IndexOfObject(CharID)).CID = CharID then
@@ -643,14 +643,14 @@ begin
 			Exit;
 		end;
 	end;
-	if Result = nil then
+	if Result = NIL then
 	begin
 		Result := TCharacter.Create;
 		if Result.LoadFromSQL(CharID) then
 		begin
 			CharacterList.AddObject(CharID,Result);
 		end;
-	end else Result := nil;
+	end else Result := NIL;
 end;
 
 end.
