@@ -23,9 +23,10 @@ uses
 	procedure TerminateApplication;
   
 	function  ConnectToMySQL : Boolean;
+	function  GetMD5(const Input : UTF8string) : UTF8String;
 
 var
-	HeliosVersion   : String = 'Helios Ragnarok Server Version 0.0.0.24';
+	HeliosVersion   : String = 'Helios Ragnarok Server Version 0.0.0.25';
 	Command         : TCommands;
 	SQLConnection   : TMySQLClient;
 	SQLQueryResult  : TMySQLResult;
@@ -45,7 +46,24 @@ implementation
 		SysUtils,
 		//Helios
 		WinLinux,
-		Console;
+		Console,
+		//3rd Party
+		IdHashMessageDigest;
+
+(*------------------------------------------------------------------------------
+GetMD5
+
+Hash a string
+
+[2006/09/24] Tsusai - Added
+------------------------------------------------------------------------------*)
+function GetMD5(const Input : UTF8string) : UTF8String;
+var
+	MD5Hash : TIdHashMessageDigest5;
+begin
+	MD5Hash := TIdHashMessageDigest5.Create;
+	Result := MD5Hash.AsHex(MD5Hash.HashValue(Input));
+end;
 
 (*------------------------------------------------------------------------------
 ConnectToMySQL
