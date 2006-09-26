@@ -18,14 +18,53 @@ type
 	TBufSize = 0..(High(Word) div 2);
 	TBuffer  = array[TBufSize] of Byte;
 	TCBuffer = array[TBufSize] of Char;
-
+	TReadPts = array of TBufSize;
 
 	TThreadLink = class
 		AccountLink : TAccount;
 		CharacterLink : TCharacter;
 	end;
 
+	Function ReadPoints(
+			Args : array of Word
+		) : TReadPts;
+
 implementation
+uses
+	Math;
+(*-----------------------------------------------------------------------------*
+Func ReadPoints
+
+--
+Overview:
+--
+TODO
+
+--
+Pre:
+	TODO
+Post:
+	TODO
+
+--
+Revisions:
+--
+[2005/07/10] CR - Added Comment Header
+[yyyy/mm/dd] <Author> - <Comment>
+*-----------------------------------------------------------------------------*)
+Function ReadPoints(
+		Args : array of Word
+	) : TReadPts;
+Var
+	Idx : Integer;
+Begin
+	SetLength(Result, Length(Args));
+	for Idx := Low(Args) to High(Args) do
+	begin
+		Result[Idx] := EnsureRange(Args[Idx], 0, High(TBufSize));
+	end;
+End; (* Func ReadPoints
+*-----------------------------------------------------------------------------*)
 
 end.
 

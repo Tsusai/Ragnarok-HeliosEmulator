@@ -87,7 +87,6 @@ interface
 implementation
 	uses
 		Classes,
-		Globals,
 		SysUtils;
 
 //------------------------------------------------------------------------------

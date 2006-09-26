@@ -114,6 +114,8 @@ uses
 		Speed : word; //Not in MySQL...odd...
 		Account : TAccount;
 
+		ClientVersion : byte;
+
 		property DataChanged : boolean  read fDataChanged write SetSaveTime;
 		//For timed save procedure to activate.
 

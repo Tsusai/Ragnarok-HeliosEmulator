@@ -11,7 +11,6 @@ interface
 
 implementation
 uses
-	Console,
 	Globals,
 	{$IFDEF MSWINDOWS}
 	Windows,

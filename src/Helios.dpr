@@ -22,7 +22,6 @@ compile for linux. at the same time*}
 //                            Windows Definitions
 //------------------------------------------------------------------------------
 	{$IFDEF MSWINDOWS}
-  SvcMgr,
 	madExcept,
 	madLinkDisAsm,
 	AccountDB in 'Database\AccountDB.pas',
@@ -31,6 +30,7 @@ compile for linux. at the same time*}
 	CharaServerProcess in 'Character\CharaServerProcess.pas',
 	CharaServerTypes in 'Character\CharaServerTypes.pas',
 	Commands in 'Classes\Commands.pas',
+	DatabaseTXT in 'Database\DatabaseTXT.pas',
 	GameGlobals in 'Common\GameGlobals.pas',
 	GameObjects in 'Database\GameObjects.pas',
 	Globals in 'Common\Globals.pas',
@@ -49,6 +49,8 @@ compile for linux. at the same time*}
 	uMysqlNewPassword in 'Common\3rdParty\SQL\uMysqlNewPassword.pas',
 	umysqlsha1 in 'Common\3rdParty\SQL\umysqlsha1.pas',
 	WinLinux in 'Common\WinLinux.pas',
+	ZoneCore in 'Zone\ZoneCore.pas',
+	ZoneRecv in 'Zone\ZoneRecv.pas',
 	{$ENDIF}
 
 //------------------------------------------------------------------------------
@@ -61,6 +63,7 @@ compile for linux. at the same time*}
 	CharaServerProcess in 'Character/CharaServerProcess.pas',
 	CharaServerTypes in 'Character/CharaServerTypes.pas',
 	Commands in 'Classes/Commands.pas',
+	DatabaseTXT in 'Database/DatabaseTXT.pas',
 	GameGlobals in 'Common/GameGlobals.pas',
 	GameObjects in 'Database/GameObjects.pas',
 	Globals in 'Common/Globals.pas',
@@ -79,6 +82,8 @@ compile for linux. at the same time*}
 	uMysqlNewPassword in 'Common/3rdParty/SQL/uMysqlNewPassword.pas',
 	umysqlsha1 in 'Common/3rdParty/SQL/umysqlsha1.pas',
 	WinLinux in 'Common/WinLinux.pas',
+	ZoneCore in 'Zone/ZoneCore.pas',
+	ZoneRecv in 'Zone/ZoneRecv.pas',
 	{$ENDIF}
 //------------------------------------------------------------------------------
 //                              Definitions for both.
