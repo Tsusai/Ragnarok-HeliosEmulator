@@ -12,6 +12,13 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 27-
+[2006/09/28] - RaX - ZoneCore - Started reorganization/re-documentation...
+ make things a little easier to understand for newbies to the codebase =)
+[2006/09/28] - RaX - ZoneCore - renamed variables, recased types, moved begins around.
+ placed ":" in their appropriate places when dealing with declarations.
+-
+
 - Rev 26-
 [2006/09/26] - Tsusai - Notes: Zone core uploaded. Non operational or called.
 [2006/09/26] - Tsusai - Character : Added ClientVersion to TCharacter.

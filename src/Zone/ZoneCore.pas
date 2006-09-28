@@ -72,40 +72,54 @@ packet - The integer packet id.
 [2006/03/11] Tsusai - Packet is now a word type, not a 0xHexString
 [2006/08/12] Tsusai - Updated for Indy.
 [2006/09/26] Tsusai - Imported to Helios
+[2006/09/28] RaX - Variables re-cased, moved "begins" to next line.
 ------------------------------------------------------------------------------*)
 function SearchPacketListing(
-	var AChara : TCharacter;
-	var AThread : TIdPeerThread;
-	var InBuffer : TBuffer;
-	const Ver :word;
-	const packet : word
-) :boolean;
+
+	var   AChara    : TCharacter;
+	var   AThread   : TIdPeerThread;
+	var   InBuffer  : TBuffer;
+
+	const Version   : Word;
+	const Packet    : Word
+
+) :Boolean;
 var
-	j : integer;
-	size : word;
+	Index : Integer;
+	Size  : Word;
 begin
 	Result := False;
-	for j := 0 to Length(CodeBase[Ver].Packet) - 1 do begin
-		with CodeBase[Ver].Packet[j] do begin
-			if (ID = packet) then begin
+
+	for Index := 0 to Length(CodeBase[Version].Packet) - 1 do
+  begin
+
+		with CodeBase[Version].Packet[Index] do
+    begin
+
+			if (ID = Packet) then
+      begin
+
 				//Ok so we found a matching packet ID, now to read our right length
 				if PLength <> -1 then
-					AThread.Connection.ReadBuffer(InBuffer[2], PLength - 2)
-				else begin
+        begin
+					AThread.Connection.ReadBuffer(InBuffer[2], PLength - 2);
+        end else
+        begin
 					//Usually our string messages, where the 2nd location is the
 					//size holder of the string
 					AThread.Connection.ReadBuffer(InBuffer[2], 2);
-					size := BufferReadWord(2, InBuffer);
-					AThread.Connection.ReadBuffer(InBuffer[4], size - 4);
+					Size := BufferReadWord(2, InBuffer);
+					AThread.Connection.ReadBuffer(InBuffer[4], Size - 4);
 				end;
+
 				//Execute the packet procedure, only one is runned because the other
 				//runs a dummy procedure
 				ExecCommand(AChara,ReadPoints);
 				ExecAvoidSelfCommand(AChara);
-				Result := true;
+				Result := True;
 			end;
 		end;
-		if Result then break;
+		if Result then break;//Breaks loop if packet found.
 	end;
 end;
 
@@ -135,24 +149,27 @@ Revisions:
  packetid now words.
 [2006/08/12] Tsusai - Updated for Indy.
 [2006/09/26] Tsusai - Imported to Helios
+[2006/09/28] RaX - Re-formatted, re-indented, renamed - PIdx to PacketIndex,
+  CIdx to ClientBaseIndex to signify our supported client database or packet_db.
 [yyyy/mm/dd] <Author> - <Comment>
 *-----------------------------------------------------------------------------*)
 Procedure ProcessZonePacket(AThread : TIdPeerThread);
 Var
-	Lth      : integer;
-	AChara   : TCharacter;
-	PacketID : Word;
-	CIdx     : word;
-	PIdx     : Integer;
-	Found    : Boolean;
-	ABuffer  : TBuffer;
+	Lth             : Integer;
+	AChara          : TCharacter;
+	ClientBaseIndex : Word; //Index of the packet in the packet(allowed client)
+                          //database (client-base).
+  PacketID        : Word; //The ID of a packet in said database.
+	PacketIndex     : Integer;
+	Found           : Boolean;
+	ABuffer         : TBuffer;
 Begin
-	AThread.Connection.ReadFromStack(false,-1,false);
+	AThread.Connection.ReadFromStack(False, -1, False);
 	while AThread.Connection.InputBuffer.Size >= 2 do
 	begin
 		Lth := AThread.Connection.InputBuffer.Size;
 		AThread.Connection.ReadBuffer(ABuffer[0], 2);
-		PacketID := BufferReadWord(0,ABuffer);
+		PacketID := BufferReadWord(0, ABuffer);
 		AChara := TThreadLink(AThread.Data).CharacterLink;
 
 		{if (AChara <> nil) and (Option_Packet_Out) then
@@ -163,17 +180,17 @@ Begin
 		Found := False;
 		if NOT Assigned(AChara) then
 		begin
-			for CIdx := (Length(CodeBase) -1) downto 0 do
-			begin //Go through all the codebases w/ packets
+			for ClientBaseIndex := (Length(CodeBase) -1) downto 0 do
+			begin //Go through all the client-bases w/ packets
 
-				for PIdx := 0 to Length(CodeBase[CIdx].Packet) - 1 do
-				begin //Search for the packet from this codebase
+				for PacketIndex := 0 to Length(CodeBase[ClientBaseIndex].Packet) - 1 do
+				begin //Search for the packet from this client-base
 
-					if (CodeBase[CIdx].Packet[PIdx].ID = PacketID) then
+					if (CodeBase[ClientBaseIndex].Packet[PacketIndex].ID = PacketID) then
 					begin
-						if (CodeBase[CIdx].Packet[PIdx].PLength = Lth) then
+						if (CodeBase[ClientBaseIndex].Packet[PacketIndex].PLength = Lth) then
 						begin
-							if (CodeBase[CIdx].Packet[PIdx].Command = 'wanttoconnection') then
+							if (CodeBase[ClientBaseIndex].Packet[PacketIndex].Command = 'wanttoconnection') then
 							begin
 								AThread.Connection.ReadBuffer(ABuffer[2], (Lth - 2)); //Get the rest of the packet info
 								//MapConnect(CIdx, AThread, CodeBase[CIdx].Packet[PIdx].ReadPoints);
@@ -195,7 +212,7 @@ Begin
 				//They can't get in, so prevent the rest of their useless packets from parsing
 				MainProc.Console('Someone with the IP '+
 					AThread.Connection.Socket.Binding.PeerIP +
-					' attempted to send a packet '+ IntToHex(packetID,4) +' with a length of ' + IntToStr(Lth));
+					' attempted to send a packet '+ IntToHex(packetID, 4) +' with a length of ' + IntToStr(Lth));
 				MainProc.Console('Reason for this response: Unsupported client or a bot attempted to connect.');
 				AThread.Connection.Disconnect;
 			end;
@@ -203,15 +220,15 @@ Begin
 		end else begin
 			if AChara.ClientVersion <> 0 then
 			begin
-				if not SearchPacketListing(AChara,AThread,ABuffer,AChara.ClientVersion,PacketID) then
+				if not SearchPacketListing(AChara, AThread, ABuffer, AChara.ClientVersion, PacketID) then
 				begin //look for
-					if NOT SearchPacketListing(AChara,AThread,ABuffer,0,PacketID) then
+					if NOT SearchPacketListing(AChara, AThread, ABuffer, 0, PacketID) then
 					begin
 						Exit; //try the older
 					end;
 				end;
 			end
-			else if NOT SearchPacketListing(AChara,AThread,ABuffer,0,PacketID) then
+			else if NOT SearchPacketListing(AChara, AThread, ABuffer, 0, PacketID) then
 			begin //since it's older, use that
 				Exit;
 			end;
