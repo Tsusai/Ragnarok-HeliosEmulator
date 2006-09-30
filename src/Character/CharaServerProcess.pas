@@ -20,8 +20,8 @@ implementation
 		SysUtils,
 		//Helios
 		Character,
+    Database,
 		Socket,
-		AccountDB,
 		Account,
 		PacketTypes,
 		GameGlobals,
@@ -60,9 +60,11 @@ var
 	CID         : Cardinal;
 	Ver         : byte;
 	CharaList   : TIntList32;
+  ADatabase   : TDatabase;
 begin
 	Count := 0;
 	Ver := 24;
+  ADatabase := CreateDatabase;
 	Success := false;
 	AccountID := BufferReadCardinal(2, ABuffer);
 	SQLQueryResult :=
@@ -72,7 +74,7 @@ begin
 	if Success then begin
 		if SQLqueryResult.RowsCount > 0 then
 		begin
-			AnAccount := FindAccountByName(SQLQueryResult.FieldValue(0));
+			AnAccount := ADatabase.GetAccount(SQLQueryResult.FieldValue(0));
 			if Assigned(AnAccount) then
 			begin
 				if AnAccount.ID = AccountID then
@@ -169,6 +171,7 @@ begin
 			end;
 		end;
 	end;
+  FreeAndNil(ADatabase);
 end; (* proc SendCharas
 ------------------------------------------------------------------------------*)
 

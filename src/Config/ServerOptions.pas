@@ -40,6 +40,8 @@ interface
 
 			fServerName : String;
 
+			fDatabaseType : Integer;
+
 			fMySQLHost : string;
 			fMySQLPort : integer;
 			fMySQLDB   : string;
@@ -57,6 +59,8 @@ interface
 
 			procedure SetServerName(Value : String);
 
+      procedure SetDatabaseType(Value : Integer);
+
 		public
 			//Communication
 			property LoginPort : Word read fLoginPort write SetLoginPort;
@@ -71,6 +75,7 @@ interface
 			//CharaOptions
 			property ServerName : String read fServerName write SetServerName;
 
+      property DatabaseType : Integer read fDatabaseType write SetDatabaseType;
 			//MySQL - Best to turn off the server BEFORE editing this stuff anywho.
 			property MySQLHost : string Read fMySQLHost;
 			property MySQLPort : integer read fMySQLPort;
@@ -120,6 +125,8 @@ implementation
 			fLoginPort   := StrToIntDef(Section.Values['LoginPort'], 6900);
 			fCharaPort   := StrToIntDef(Section.Values['CharaPort'], 6121);
 			fZonePort    := StrToIntDef(Section.Values['ZonePort'], 5121);
+
+			fDatabaseType:= StrToIntDef(Section.Values['DatabaseType'], 1);
 
 		end;{Subroutine LoadCommunication}
     //--------------------------------------------------------------------------
@@ -201,11 +208,12 @@ implementation
 //------------------------------------------------------------------------------
 	procedure TServerOptions.Save;
 	begin
-		WriteString('Communication', 'LoginPort', IntToStr(LoginPort));
-		WriteString('Communication', 'CharaPort', IntToStr(CharaPort));
-		WriteString('Communication', 'ZonePort',  IntToStr(ZonePort));
-		WriteString('Communication', 'WAN_IP',    WAN_IP);
-		WriteString('Communication', 'LAN_IP',    LAN_IP);
+		WriteString('Communication', 'LoginPort',   IntToStr(LoginPort));
+		WriteString('Communication', 'CharaPort',   IntToStr(CharaPort));
+		WriteString('Communication', 'ZonePort',    IntToStr(ZonePort));
+		WriteString('Communication', 'WAN_IP',      WAN_IP);
+		WriteString('Communication', 'LAN_IP',      LAN_IP);
+    WriteString('Communication', 'DatabaseType',IntToStr(DatabaseType));
 
 		WriteString('LoginOptions','EnableMF',BoolToStr(EnableMF));
 
@@ -373,6 +381,28 @@ implementation
 			WriteString('CharaOptions', 'ServerName', ServerName);
 		end;
 	end;{TServerOptions.SetServerName}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetDatabaseType()                                    PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Property Set Routine for DatabaseType.Ensures that if the server name is
+//    changed for whatever reason, that it gets written to the .ini immediately.
+//    The same is true for all communication variables.
+//
+//	Changes -
+//		September 29th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetDatabaseType(Value : Integer);
+	begin
+		if fDatabaseType <> Value then
+		begin
+			fDatabaseType := Value;
+			WriteString('Communication', 'DataaseType', IntToStr(DatabaseType));
+		end;
+	end;{TServerOptions.SetDatabaseType}
 //------------------------------------------------------------------------------
 
 

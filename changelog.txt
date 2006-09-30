@@ -12,6 +12,22 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 28-
+[2006/09/29] - RaX - Overview - HUGE CHANGE, finally added our plug and play database system.
+ this is, well, unique in RO emulators. The ability to swap between database types at the 
+ flip of a switch is handy, of course, but giving people more choices in databasing is
+ extremely useful.
+[2006/09/29] - RaX - Added Classes/Database/Database.pas
+[2006/09/29] - RaX - Added Classes/Database/MySQLDatabase.pas
+[2006/09/29] - RaX - Added Constants/DatabaseConstants.pas
+[2006/09/29] - RaX - changed LoginProcesses to use the new database system rather than
+ AccountDB.pas.
+[2006/09/29] - RaX - removed AccountDB.pas from the project, still on SVN for history.
+[2006/09/29] - RaX - Changed CharaServerProcesses to use the new database system.
+[2006/09/29] - RaX - Modified ServerOptions.pas to include a DatabaseType variable.
+ This variable determines which database Helios uses.
+-
+
 - Rev 27-
 [2006/09/28] - RaX - ZoneCore - Started reorganization/re-documentation...
  make things a little easier to understand for newbies to the codebase =)

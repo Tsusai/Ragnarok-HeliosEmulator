@@ -22,20 +22,22 @@ compile for linux. at the same time*}
 //                            Windows Definitions
 //------------------------------------------------------------------------------
 	{$IFDEF MSWINDOWS}
-	madExcept,
-	madLinkDisAsm,
-	AccountDB in 'Database\AccountDB.pas',
 	Account in 'Classes\Account.pas',
 	Character in 'Classes\Character.pas',
 	CharaServerProcess in 'Character\CharaServerProcess.pas',
 	CharaServerTypes in 'Character\CharaServerTypes.pas',
 	Commands in 'Classes\Commands.pas',
+  Database in 'Classes\Database\Database.pas',
+  DatabaseConstants in 'Constants\DatabaseConstants.pas',
+  MySQLDatabase in 'Classes\Database\MySQLDatabase.pas',
 	DatabaseTXT in 'Database\DatabaseTXT.pas',
 	GameGlobals in 'Common\GameGlobals.pas',
 	GameObjects in 'Database\GameObjects.pas',
 	Globals in 'Common\Globals.pas',
 	List32 in 'Common\3rdParty\List32.pas',
 	LoginProcesses in 'Login\LoginProcesses.pas',
+  madExcept,
+	madLinkDisAsm,
 	PacketTypes in 'Common\PacketTypes.pas',
 	ServerOptions in 'Config\ServerOptions.pas',
 	Socket in 'Common\Socket.pas',
@@ -57,12 +59,14 @@ compile for linux. at the same time*}
 //                            Linux Definitions
 //------------------------------------------------------------------------------
 	{$IFDEF LINUX}
-	AccountDB in 'Database/AccountDB.pas',
 	Account in 'Classes/Account.pas',
 	Character in 'Classes/Character.pas',
 	CharaServerProcess in 'Character/CharaServerProcess.pas',
 	CharaServerTypes in 'Character/CharaServerTypes.pas',
 	Commands in 'Classes/Commands.pas',
+  Database in 'Classes/Database/Database.pas',
+  DatabaseConstants in 'Constants/DatabaseConstants.pas',
+  MySQLDatabase in 'Classes/Database/MySQLDatabase.pas',
 	DatabaseTXT in 'Database/DatabaseTXT.pas',
 	GameGlobals in 'Common/GameGlobals.pas',
 	GameObjects in 'Database/GameObjects.pas',
@@ -110,9 +114,10 @@ compile for linux. at the same time*}
 //    September 21st - RaX - Created Header.
 //------------------------------------------------------------------------------
 var
-	AnInput : string;
-	Run     : Boolean;
+	AnInput   : string;
+	Run       : Boolean;
 begin
+
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;
 	Command := TCommands.Create;

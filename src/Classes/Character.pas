@@ -172,8 +172,8 @@ uses
 	//IDE
 	SysUtils,
 	//Helios
-	Globals,
-	AccountDB;
+  Database,
+	Globals;
 
 procedure TCharacter.SetSaveTime(Value : boolean);
 Const
@@ -560,8 +560,10 @@ end;
 function TCharacter.LoadFromSQL(CharaID : Cardinal) : boolean;
 var
 	Success : Boolean;
+  ADatabase : TDatabase;
 begin
 	Result := FALSE;
+  ADatabase := CreateDatabase;
 	SQLQueryResult :=
 		SQLConnection.query(
 		Format('SELECT * FROM `char` WHERE char_id = %d;',
@@ -572,7 +574,7 @@ begin
 		Result := TRUE;
 		CID              := StrToInt(SQLQueryResult.FieldValue(0));
 		ID               := StrToInt(SQLQueryResult.FieldValue(1));
-		Account          := FindAccountByID(ID);
+		Account          := ADatabase.GetAccount(ID);
 		fCharacterNumber := StrToInt(SQLQueryResult.FieldValue(2));
 		if fCharacterNumber < 9 then
 		begin
@@ -625,6 +627,7 @@ begin
 		fOnline          := StrToInt(SQLQueryResult.FieldValue(46));
 		fHomunID         := StrToInt(SQLQueryResult.FieldValue(47));
 	end;
+  FreeAndNil(ADatabase);
 end;
 
 function TCharacter.RemoveFromSQL : boolean;

@@ -16,7 +16,7 @@ interface
 implementation
 	uses
 		Account,
-		AccountDB,
+    Database,
 		Socket,
 		PacketTypes,
 		Globals,
@@ -95,6 +95,7 @@ Accepts incoming connections to the Login server and verifies the login data.
 		Password  : String;
 		AnAccount : TAccount;
 		ID        : Word;
+    ADatabase : TDatabase; //database interface object
 	begin
 		if AThread.Connection.Connected then
 		begin
@@ -107,7 +108,10 @@ Accepts incoming connections to the Login server and verifies the login data.
 				$0064: //Basic login packet
 					begin
 						UserName := BufferReadString(6,24,Buffer);
-						AnAccount := FindAccountByName(UserName);
+            //New database system added 09/29/06 - RaX
+            ADatabase := CreateDatabase;
+						AnAccount := ADatabase.GetAccount(UserName);
+            FreeAndNil(ADatabase);
 						if Assigned(AnAccount) then begin
 							Password := BufferReadString(30,24,Buffer);
 							if AnAccount.Password = Password then

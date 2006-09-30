@@ -26,7 +26,7 @@ uses
 	function  GetMD5(const Input : UTF8string) : UTF8String;
 
 var
-	HeliosVersion   : String = 'Helios Ragnarok Server Version 0.0.0.27';
+	HeliosVersion   : String = 'Helios Ragnarok Server Version 0.0.0.28';
 	Command         : TCommands;
 	SQLConnection   : TMySQLClient;
 	SQLQueryResult  : TMySQLResult;
