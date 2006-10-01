@@ -64,7 +64,7 @@ var
 begin
 	Count := 0;
 	Ver := 24;
-  ADatabase := CreateDatabase;
+  ADatabase := TDatabase.Create();
 	Success := false;
 	AccountID := BufferReadCardinal(2, ABuffer);
 	SQLQueryResult :=
@@ -74,7 +74,7 @@ begin
 	if Success then begin
 		if SQLqueryResult.RowsCount > 0 then
 		begin
-			AnAccount := ADatabase.GetAccount(SQLQueryResult.FieldValue(0));
+			AnAccount := ADatabase.AnInterface.GetAccount(SQLQueryResult.FieldValue(0));
 			if Assigned(AnAccount) then
 			begin
 				if AnAccount.ID = AccountID then

@@ -27,7 +27,8 @@ compile for linux. at the same time*}
 	CharaServerProcess in 'Character\CharaServerProcess.pas',
 	CharaServerTypes in 'Character\CharaServerTypes.pas',
 	Commands in 'Classes\Commands.pas',
-  Database in 'Classes\Database\Database.pas',
+  Database in 'Classes\Database.pas',
+  DatabaseTemplate in 'Classes\Database\DatabaseTemplate.pas',
   DatabaseConstants in 'Constants\DatabaseConstants.pas',
   MySQLDatabase in 'Classes\Database\MySQLDatabase.pas',
 	DatabaseTXT in 'Database\DatabaseTXT.pas',
@@ -64,7 +65,8 @@ compile for linux. at the same time*}
 	CharaServerProcess in 'Character/CharaServerProcess.pas',
 	CharaServerTypes in 'Character/CharaServerTypes.pas',
 	Commands in 'Classes/Commands.pas',
-  Database in 'Classes/Database/Database.pas',
+  Database in 'Classes/Database.pas',
+  DatabaseTemplate in 'Classes/Database/DatabaseTemplate.pas',
   DatabaseConstants in 'Constants/DatabaseConstants.pas',
   MySQLDatabase in 'Classes/Database/MySQLDatabase.pas',
 	DatabaseTXT in 'Database/DatabaseTXT.pas',
@@ -104,7 +106,9 @@ compile for linux. at the same time*}
 //
 //  Notes -
 //    -To keep Helios in a Form-like organization, we've created TMainProc,
-//      which replaces the Main Form.
+//      which replaces the Main Form. This also gives us the option to make
+//      Helios log to a file instead of the screen by keeping all of our visual
+//      related routines in one place =).
 //    -HeliosVersion is located in Globals (only one place to change)
 //    -This routine contains the loop that keeps the application open. On
 //      termination of that loop, the program will shut down. Hence the return

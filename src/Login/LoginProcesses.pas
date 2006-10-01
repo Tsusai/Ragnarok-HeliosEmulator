@@ -109,8 +109,8 @@ Accepts incoming connections to the Login server and verifies the login data.
 					begin
 						UserName := BufferReadString(6,24,Buffer);
             //New database system added 09/29/06 - RaX
-            ADatabase := CreateDatabase;
-						AnAccount := ADatabase.GetAccount(UserName);
+            ADatabase := TDatabase.Create();
+						AnAccount := ADatabase.AnInterface.GetAccount(UserName);
             FreeAndNil(ADatabase);
 						if Assigned(AnAccount) then begin
 							Password := BufferReadString(30,24,Buffer);

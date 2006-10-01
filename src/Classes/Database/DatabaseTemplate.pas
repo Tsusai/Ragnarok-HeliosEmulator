@@ -10,7 +10,7 @@
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-unit Database;
+unit DatabaseTemplate;
 
 interface
 uses
@@ -19,7 +19,7 @@ uses
   Classes;
 type
 //------------------------------------------------------------------------------
-//TDatabase			                                                           CLASS
+//TDatabaseTemplate			                                                           CLASS
 //------------------------------------------------------------------------------
 //	What it does-
 //			This is our parent class for database interfacing. Contains all database
@@ -29,7 +29,7 @@ type
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-  TDatabase = class(TObject)
+  TDatabaseTemplate = class(TObject)
   public
     Constructor Create();
     function GetAccount(ID    : Cardinal) : TAccount;overload;virtual;
@@ -42,13 +42,9 @@ type
 
   end;
 //------------------------------------------------------------------------------
-  function CreateDatabase() : TDatabase;
+  //function CreateDatabase() : TDatabase;
 
 implementation
-uses
-  DatabaseConstants,
-  Globals,
-  MySQLDatabase;
 
 //------------------------------------------------------------------------------
 //TDatabase	routines                                             Routine stubs
@@ -60,58 +56,34 @@ uses
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Constructor TDatabase.Create();
+Constructor TDatabaseTemplate.Create();
 begin
   inherited;
-  writeln('You have not yet configured your database');
-  writeln(' type or have mis-configured it.');
-  writeln(' HELIOS WILL NOT FUNCTION!!!');
 end;
 
-function TDatabase.GetAccount(ID: Cardinal) : TAccount;
+function TDatabaseTemplate.GetAccount(ID: Cardinal) : TAccount;
 begin
   Result := NIL;
 end;
 
-function TDatabase.GetAccount(Name : string) : TAccount;
+function TDatabaseTemplate.GetAccount(Name : string) : TAccount;
 begin
   Result := NIL;
 end;
 
 
-function TDatabase.GetChara(ID : Integer) : TCharacter;
+function TDatabaseTemplate.GetChara(ID : Integer) : TCharacter;
 begin
   Result := NIL;
 end;
 
-procedure TDatabase.SaveAccount(AnAccount: TAccount);
+procedure TDatabaseTemplate.SaveAccount(AnAccount: TAccount);
 begin
 
 end;
-procedure TDatabase.SaveChara(AChara : TCharacter);
+procedure TDatabaseTemplate.SaveChara(AChara : TCharacter);
 begin
 end;
 //------------------------------------------------------------------------------
-{END TDATABASE}
-
-//------------------------------------------------------------------------------
-//CreateDatabase                                                      Function
-//------------------------------------------------------------------------------
-//	What it does-
-//			Figures out which database to create.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-function CreateDatabase() : TDatabase;
-begin
-  Result := TDatabase.Create;
-  case ServerConfig.DatabaseType of
-    TEXT  : Writeln('Text Databasing is not implemented.');
-    MYSQL : Result := TMySQLDatabase.Create();
-  end;
-end;
-//------------------------------------------------------------------------------
-{END CREATEDATABASE}
+{END TDATABASETEMPLATE}
 end.

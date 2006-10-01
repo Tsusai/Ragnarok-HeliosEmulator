@@ -141,7 +141,7 @@ type
     property HadErrors : boolean read GetHadErrors;
     property LastRowRead : boolean read GetLastRowRead;
     constructor create(aMysql:TMysqlClient; aType:TResultType);
-    destructor destroy;override;
+    destructor Destroy;override;
     function FieldLenght(aIndex:longint):cardinal;
     function FieldValue(aIndex:longint):pchar;
     function FieldDef(aIndex:longint):PMysql_FieldDef;
@@ -276,7 +276,7 @@ type
     property SSLCaPath : string read fssl_capath write Setsslcapath;
     {$ENDIF}
     constructor create;
-    destructor destroy; override;
+    destructor Destroy; override;
     function connect(ahost:string; auser:string = ''; apasswd:string = ''; adb:string = ''; aport:cardinal = 3306; aunix_socket:string = ''; atrysocket:boolean = false; aclient_flag:longint = CLIENT_CAPABILITIES):boolean; overload;
     function connect:boolean; overload;
     function reconnect:boolean;

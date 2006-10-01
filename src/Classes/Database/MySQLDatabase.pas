@@ -13,7 +13,7 @@ unit MySQLDatabase;
 
 interface
 uses
-  Database,
+  DatabaseTemplate,
   Character,
   Account;
 type
@@ -28,7 +28,7 @@ type
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-  TMySQLDatabase = class(TDatabase)
+  TMySQLDatabase = class(TDatabaseTemplate)
   public
     function GetAccount(ID    : Cardinal) : TAccount;overload;override;
     function GetAccount(Name  : string) : TAccount;overload;override;

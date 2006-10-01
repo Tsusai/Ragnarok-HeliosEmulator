@@ -89,7 +89,7 @@ type
     property VIO_type : TEnumVioType read ftype;
     property NoTimeOut : Boolean read fNoTimeOut write SetNoTimeOut;
     constructor create;
-    destructor destroy; override;
+    destructor Destroy; override;
     function vio_read (buf:pointer; const sz:longint):longint;
     function vio_write (buf:pointer; size:longint):longint;
     function vio_blocking(onoff:boolean):longint;

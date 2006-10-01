@@ -12,6 +12,16 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 29-
+[2006/09/30] - RaX - Updated new database organization, removed CreateDatabase and created
+ a "wrapper" class for our Multi-database interface which, on create, decides what interface
+ to use.
+[2006/09/30] - RaX - Added - Classes/Database.pas
+[2006/09/30] - RaX - Renamed - Classes/Database/Database.pas to DatabaseTemplate.pas.
+[2006/09/30] - RaX - FIXED!!! - Random warnings from our umysql client, simply changed destroy
+ to Destroy.
+-
+
 - Rev 28-
 [2006/09/29] - RaX - Overview - HUGE CHANGE, finally added our plug and play database system.
  this is, well, unique in RO emulators. The ability to swap between database types at the 

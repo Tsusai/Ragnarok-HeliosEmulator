@@ -563,7 +563,7 @@ var
   ADatabase : TDatabase;
 begin
 	Result := FALSE;
-  ADatabase := CreateDatabase;
+  ADatabase := TDatabase.Create();
 	SQLQueryResult :=
 		SQLConnection.query(
 		Format('SELECT * FROM `char` WHERE char_id = %d;',
@@ -574,7 +574,7 @@ begin
 		Result := TRUE;
 		CID              := StrToInt(SQLQueryResult.FieldValue(0));
 		ID               := StrToInt(SQLQueryResult.FieldValue(1));
-		Account          := ADatabase.GetAccount(ID);
+		Account          := ADatabase.AnInterface.GetAccount(ID);
 		fCharacterNumber := StrToInt(SQLQueryResult.FieldValue(2));
 		if fCharacterNumber < 9 then
 		begin
