@@ -12,6 +12,17 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 30-
+[2006/10/01] - Tsusai - Overview: Continued work on RaX's plug and play database system.
+ Mainly delt with character database components.
+[2006/10/01] - Tsusai - Console : Local Character server now using WAN_IP, not 127.0.0.1
+[2006/10/01] - Tsusai - DatabaseTemplate/MySQLDatabase : Moved TCharacter SQL methods here
+ from Character.pas
+[2006/10/01] - Tsusai - CharaServerProcesses : Updated calls for the above changes.
+Note : Database units not organized...was busy with functionality.  Also, need to verify
+any use of TDatabase is cleaned up after we are done with it (FreeAndNil() or .Free).
+-
+
 - Rev 29-
 [2006/09/30] - RaX - Updated new database organization, removed CreateDatabase and created
  a "wrapper" class for our Multi-database interface which, on create, decides what interface

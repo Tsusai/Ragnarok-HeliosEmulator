@@ -105,7 +105,7 @@ begin
 									CID := CharaList.Integers[idx];
 									//THE GETCHARACTERS IS SCREWING UP THE QUERY RESULT
 									//STORE ALL FIELDS FIRST WITH TINTLIST32
-									ACharacter := GetCharacters(CID);
+									ACharacter := ADatabase.AnInterface.GetChara(CID);
 									SQLQueryResult.Next;
 									if not (ACharacter = nil) then
 									begin
@@ -202,6 +202,7 @@ var
 	ReplyBuffer: TBuffer;
 	idx        : byte;
 	TotalStatPt: byte;
+	ADatabase  : TDatabase;
 
 	procedure CreateCharaError(const Error : byte);
 	var
@@ -253,8 +254,10 @@ begin
 		end;
 		//Validated...Procede with creation
 		ACharacter := TCharacter.Create;
-		//Set a record in SQL for our new character
-		if ACharacter.CreateInSQL(Account.ID,CharaName) then
+		ADatabase  := TDatabase.Create;
+		//Set a record in Database for our new character
+		if ADatabase.AnInterface.CreateChara(
+			ACharacter,Account.ID,CharaName) then
 		begin
 			ACharacter.Name := CharaName;
 			ACharacter.Hair := HairStyle;
@@ -267,7 +270,7 @@ begin
 			ACharacter.ParamBase[DEX] := StatPoints[4];
 			ACharacter.ParamBase[LUK] := StatPoints[5];
 			//INSERT ANY OTHER CREATION CHANGES HERE!
-			ACharacter.SaveToSQL;
+			ADatabase.AnInterface.SaveChara(ACharacter);
 			with ACharacter do begin
 				WriteBufferWord(0, $006d,ReplyBuffer);
 				WriteBufferCardinal(2+  0, CID,ReplyBuffer);
@@ -307,6 +310,7 @@ begin
 			end;
 			AThread.Connection.WriteBuffer(ReplyBuffer, 108);
 		end;
+		ADatabase.Free;
 	end else
 	begin
 		CreateCharaError(INVALIDNAME);
@@ -320,6 +324,7 @@ var
 	AnAccount   : TAccount;
 	ACharacter  : TCharacter;
 	ReplyBuffer : TBuffer;
+	ADatabase   : TDatabase;
 
 	procedure DeleteCharaError(const Error : byte);
 	begin
@@ -329,10 +334,11 @@ var
 	end;
 
 begin
+	ADatabase := TDatabase.Create();
 	CharacterID := BufferReadCardinal(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TThreadLink(AThread.Data).AccountLink;
-	ACharacter := GetCharacters(CharacterID);
+	ACharacter := ADatabase.AnInterface.GetChara(CharacterID);
 	if (AnAccount.EMail = EmailOrID) and (ACharacter.Account = AnAccount) then
 	begin
 		if Assigned(ACharacter) then
@@ -341,10 +347,8 @@ begin
 			begin
 				if TCharacter(CharacterList.IndexOfObject(CharacterID)).CID = ACharacter.CID then
 				begin
-					if ACharacter.RemoveFromSQL then
+					if ADatabase.AnInterface.DeleteChara(ACharacter) then
 					begin
-						CharacterList.Delete(CharacterList.IndexOf(CharacterID));
-						AnAccount.CharaID[ACharacter.CharaNum] := 0;
 						WriteBufferWord(0, $006f, ReplyBuffer);
 						AThread.Connection.WriteBuffer(ReplyBuffer, 2);
 					end else DeleteCharaError(DELETEBADCHAR);
@@ -352,6 +356,7 @@ begin
 			end else DeleteCharaError(DELETEBADCHAR);
 		end else DeleteCharaError(DELETEBADCHAR);
 	end else DeleteCharaError(DELETEBADEMAIL);
+	ADatabase.Free;
 end;
 
 (*------------------------------------------------------------------------------

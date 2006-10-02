@@ -130,7 +130,7 @@ begin
 	begin
 		//Add local character server to the list
 		LocalCharaServ := TCharaServ.Create;
-		LocalCharaServ.IP := '127.0.0.1';
+		LocalCharaServ.IP := ServerConfig.WAN_IP;
 		LocalCharaServ.InternalServer := TRUE;
 		LocalCharaServ.ServerName := ServerConfig.ServerName;
 		LocalCharaServ.Port := CharaServer.DefaultPort;

@@ -14,7 +14,7 @@ unit DatabaseTemplate;
 
 interface
 uses
-  Character,
+	Character,
   Account,
   Classes;
 type
@@ -29,15 +29,23 @@ type
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-  TDatabaseTemplate = class(TObject)
-  public
+	TDatabaseTemplate = class(TObject)
+	public
     Constructor Create();
     function GetAccount(ID    : Cardinal) : TAccount;overload;virtual;
-    function GetAccount(Name  : string) : TAccount;overload;virtual;
-    function GetChara(  ID    : Integer)   : TCharacter;virtual;
+		function GetAccount(Name  : string) : TAccount;overload;virtual;
+		function CreateChara(
+			var ACharacter : TCharacter;
+			AID : Cardinal;
+			NName : string
+		) : boolean;virtual;
 
-    procedure SaveAccount(AnAccount : TAccount);
-    procedure SaveChara(AChara : TCharacter);
+		function LoadChara(CharaID : Cardinal) : TCharacter;virtual;
+		function GetChara( CharaID    : Cardinal)   : TCharacter;virtual;
+		function DeleteChara(var ACharacter : TCharacter) : boolean;virtual;
+
+		procedure SaveAccount(AnAccount : TAccount);virtual;
+		procedure SaveChara(AChara : TCharacter);virtual;
 
 
   end;
@@ -72,7 +80,7 @@ begin
 end;
 
 
-function TDatabaseTemplate.GetChara(ID : Integer) : TCharacter;
+function TDatabaseTemplate.GetChara(CharaID : Cardinal) : TCharacter;
 begin
   Result := NIL;
 end;
@@ -84,6 +92,26 @@ end;
 procedure TDatabaseTemplate.SaveChara(AChara : TCharacter);
 begin
 end;
+
+function TDatabaseTemplate.CreateChara(
+	var ACharacter : TCharacter;
+	AID : Cardinal;
+	NName : string
+) : boolean;
+begin
+	Result := false;
+end;
+
+function TDatabaseTemplate.LoadChara(CharaID : Cardinal) : TCharacter;
+begin
+	Result := nil;
+end;
+
+function TDatabaseTemplate.DeleteChara(var ACharacter : TCharacter) : boolean;
+begin
+	Result := false;
+end;
+
 //------------------------------------------------------------------------------
 {END TDATABASETEMPLATE}
 end.

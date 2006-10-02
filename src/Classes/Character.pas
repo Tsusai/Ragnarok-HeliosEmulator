@@ -63,8 +63,8 @@ uses
 		fDataChanged      : Boolean; //For timed save procedure to activate.
 		fTimeToSave       : TDateTime;
 
+	protected
 		procedure SetSaveTime(Value : boolean);
-
 
 		procedure SetCharaNum(Value : byte);
 		procedure SetName(Value : string);
@@ -115,7 +115,6 @@ uses
 		Account : TAccount;
 
 		ClientVersion : byte;
-
 		property DataChanged : boolean  read fDataChanged write SetSaveTime;
 		//For timed save procedure to activate.
 
@@ -159,13 +158,7 @@ uses
 		property Online    : Byte       read fOnline write SetOnline;
 		property HomunID   : Cardinal   read fHomunID write SetHomunID;
 
-		function CreateInSQL(AID : Cardinal; NName : string) : boolean;
-		function LoadFromSQL(CharaID : Cardinal) : boolean;
-		procedure SaveToSQL;
-		function RemoveFromSQL : boolean;
 	end;
-
-	function GetCharacters(CharID : Cardinal) : TCharacter;
 
 implementation
 uses
@@ -425,237 +418,6 @@ procedure TCharacter.SetHomunID(Value : Cardinal);
 begin
 	DataChanged := TRUE;
 	fHomunID    := Value;
-end;
-
-function TCharacter.CreateInSQL(AID : Cardinal; NName : string) : boolean;
-var
-	Success : boolean;
-begin
-	Result := FALSE;
-	SQLConnection.query(
-		Format('INSERT INTO `char` (account_id, name) VALUES(%d, "%s");',
-		[AID,NName])
-	,TRUE,Success);
-	if Success then
-	begin
-		SQLQueryResult :=
-				SQLConnection.query(
-				Format('SELECT char_id FROM `char` WHERE account_id = %d AND name = "%s";',
-				[AID,NName])
-			,TRUE,Success);
-		if (SQLQueryResult.RowsCount = 1) then
-		begin
-			Result := TRUE;
-			CID := StrToInt(SQLQueryResult.FieldValue(0));
-			LoadFromSQL(CID);
-		end;
-	end;
-end;
-
-procedure TCharacter.SaveToSQL;
-var
-	QueryString : string;
-	Success : boolean;
-begin
-	QueryString := Format('UPDATE `char` SET ' +
-		'char_num=%d, ' +
-		'name=''%s'', ' +
-		'class=%d, ' +
-		'base_level=%d, ' +
-		'job_level=%d, ' +
-		'base_exp=%d, ' +
-		'job_exp=%d, ' +
-		'zeny=%d, ' +
-		'str=%d, ' +
-		'agi=%d, ' +
-		'vit=%d, ' +
-		'`int`=%d, ' +  //needs to be in ` ` else MySQL thinks its an Integer type
-		'dex=%d, ' +
-		'luk=%d, ' +
-		'max_hp=%d, ' +
-		'hp=%d, ' +
-		'max_sp=%d, ' +
-		'sp=%d, ' +
-		'status_point=%d, ' +
-		'skill_point=%d, ' +
-		'`option`=%d, ' +  // see INT above
-		'karma=%d, ' +
-		'manner=%d, ' +
-		'party_id=%d, ' +
-		'guild_id=%d, ' +
-		'pet_id=%d, ' +
-		'hair=%d, ' +
-		'hair_color=%d, ' +
-		'clothes_color=%d, ' +
-		'weapon=%d, ' +
-		'shield=%d, ' +
-		'head_top=%d, ' +
-		'head_mid=%d, ' +
-		'head_bottom=%d, ' +
-		'last_map=''%s'', ' +
-		'last_x=%d, ' +
-		'last_y=%d, ' +
-		'save_map=''%s'', ' +
-		'save_x=%d, ' +
-		'save_y=%d, ' +
-		'partner_id=%d, ' +
-		'parent_id=%d, ' +
-		'parent_id2=%d, ' +
-		'baby_id=%d, ' +
-		'online=%d, ' +
-		'homun_id=%d ' +
-		'WHERE char_id=%d;',
-		[
-		fCharacterNumber,
-		fName,
-		fJID,
-		fBaseLV,
-		fJobLV,
-		fBaseEXP,
-		fJobEXP,
-		fZeny,
-		fParamBase[STR],
-		fParamBase[AGI],
-		fParamBase[VIT],
-		fParamBase[INT],
-		fParamBase[DEX],
-		fParamBase[LUK],
-		fMaxHP,
-		fHP,
-		fMaxSP,
-		fSP,
-		fStatusPts,
-		fSkillPts,
-		fOption,
-		fKarma,
-		fManner,
-		fPartyID,
-		fGuildID,
-		fPetID,
-		fHair,
-		fHairColor,
-		fClothesColor,
-		fWeapon,
-		fShield,
-		fHeadTop,
-		fHeadMid,
-		fHeadBottom,
-		fMap,
-		fMapPt.X,
-		fMapPt.Y,
-		fSaveMap,
-		fSaveMapPt.X,
-		fSaveMapPt.Y,
-		fPartnerID,
-		fParentID1,
-		fParentID2,
-		fBabyID,
-		fOnline,
-		fHomunID,
-		CID
-		]);
-	SQLConnection.Query(QueryString, FALSE, Success);
-end;
-
-function TCharacter.LoadFromSQL(CharaID : Cardinal) : boolean;
-var
-	Success : Boolean;
-  ADatabase : TDatabase;
-begin
-	Result := FALSE;
-  ADatabase := TDatabase.Create();
-	SQLQueryResult :=
-		SQLConnection.query(
-		Format('SELECT * FROM `char` WHERE char_id = %d;',
-			[CharaID])
-		,TRUE,Success);
-	if (SQLQueryResult.RowsCount = 1) and (SQLQueryResult.FieldsCount = 48) then
-	begin
-		Result := TRUE;
-		CID              := StrToInt(SQLQueryResult.FieldValue(0));
-		ID               := StrToInt(SQLQueryResult.FieldValue(1));
-		Account          := ADatabase.AnInterface.GetAccount(ID);
-		fCharacterNumber := StrToInt(SQLQueryResult.FieldValue(2));
-		if fCharacterNumber < 9 then
-		begin
-			//If its active, then attach to the player.
-			Account.CharaID[fCharacterNumber] := CID;
-		end;
-		fName            :=          SQLQueryResult.FieldValue(3);
-		fJID             := StrToInt(SQLQueryResult.FieldValue(4));
-		fBaseLV          := StrToInt(SQLQueryResult.FieldValue(5));
-		fJobLV           := StrToInt(SQLQueryResult.FieldValue(6));
-		fBaseEXP         := StrToInt(SQLQueryResult.FieldValue(7));
-		fJobEXP          := StrToInt(SQLQueryResult.FieldValue(8));
-		fZeny            := StrToInt(SQLQueryResult.FieldValue(9));
-		fParamBase[STR]  := StrToInt(SQLQueryResult.FieldValue(10));
-		fParamBase[AGI]  := StrToInt(SQLQueryResult.FieldValue(11));
-		fParamBase[VIT]  := StrToInt(SQLQueryResult.FieldValue(12));
-		fParamBase[INT]  := StrToInt(SQLQueryResult.FieldValue(13));
-		fParamBase[DEX]  := StrToInt(SQLQueryResult.FieldValue(14));
-		fParamBase[LUK]  := StrToInt(SQLQueryResult.FieldValue(15));
-		fMaxHP           := StrToInt(SQLQueryResult.FieldValue(16));
-		fHP              := StrToInt(SQLQueryResult.FieldValue(17));
-		fMaxSP           := StrToInt(SQLQueryResult.FieldValue(18));
-		fSP              := StrToInt(SQLQueryResult.FieldValue(19));
-		fStatusPts       := StrToInt(SQLQueryResult.FieldValue(20));
-		fSkillPts        := StrToInt(SQLQueryResult.FieldValue(21));
-		fOption          := StrToInt(SQLQueryResult.FieldValue(22));
-		fKarma           := StrToInt(SQLQueryResult.FieldValue(23));
-		fManner          := StrToInt(SQLQueryResult.FieldValue(24));
-		fPartyID         := StrToInt(SQLQueryResult.FieldValue(25));
-		fGuildID         := StrToInt(SQLQueryResult.FieldValue(26));
-		fPetID           := StrToInt(SQLQueryResult.FieldValue(27));
-		fHair            := StrToInt(SQLQueryResult.FieldValue(28));
-		fHairColor       := StrToInt(SQLQueryResult.FieldValue(29));
-		fClothesColor    := StrToInt(SQLQueryResult.FieldValue(30));
-		fWeapon          := StrToInt(SQLQueryResult.FieldValue(31));
-		fShield          := StrToInt(SQLQueryResult.FieldValue(32));
-		fHeadTop         := StrToInt(SQLQueryResult.FieldValue(33));
-		fHeadMid         := StrToInt(SQLQueryResult.FieldValue(34));
-		fHeadBottom      := StrToInt(SQLQueryResult.FieldValue(35));
-		fMap             :=          SQLQueryResult.FieldValue(36) ;
-		fMapPt.X         := StrToInt(SQLQueryResult.FieldValue(37));
-		fMapPt.Y         := StrToInt(SQLQueryResult.FieldValue(38));
-		fSaveMap         :=          SQLQueryResult.FieldValue(39) ;
-		fSaveMapPt.X     := StrToInt(SQLQueryResult.FieldValue(40));
-		fSaveMapPt.Y     := StrToInt(SQLQueryResult.FieldValue(41));
-		fPartnerID       := StrToInt(SQLQueryResult.FieldValue(42));
-		fParentID1       := StrToInt(SQLQueryResult.FieldValue(43));
-		fParentID2       := StrToInt(SQLQueryResult.FieldValue(44));
-		fBabyID          := StrToInt(SQLQueryResult.FieldValue(45));
-		fOnline          := StrToInt(SQLQueryResult.FieldValue(46));
-		fHomunID         := StrToInt(SQLQueryResult.FieldValue(47));
-	end;
-  FreeAndNil(ADatabase);
-end;
-
-function TCharacter.RemoveFromSQL : boolean;
-begin
-	SQLConnection.query(
-		Format('DELETE FROM `char` WHERE char_id=%d',[CID]),
-	FALSE,Result);
-end;
-
-function GetCharacters(CharID : Cardinal) : TCharacter;
-begin
-	Result := NIL;
-	if CharacterList.IndexOf(CharID) > -1 then
-	begin
-		if TCharacter(CharacterList.IndexOfObject(CharID)).CID = CharID then
-		begin
-			Result := TCharacter(CharacterList.IndexOfObject(CharID));
-			Exit;
-		end;
-	end;
-	if Result = NIL then
-	begin
-		Result := TCharacter.Create;
-		if Result.LoadFromSQL(CharID) then
-		begin
-			CharacterList.AddObject(CharID,Result);
-		end;
-	end else Result := NIL;
 end;
 
 end.
