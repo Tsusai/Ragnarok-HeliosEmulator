@@ -73,6 +73,7 @@ packet - The integer packet id.
 [2006/08/12] Tsusai - Updated for Indy.
 [2006/09/26] Tsusai - Imported to Helios
 [2006/09/28] RaX - Variables re-cased, moved "begins" to next line.
+[2006/10/04] Tsusai - Updated ExecCommand call
 ------------------------------------------------------------------------------*)
 function SearchPacketListing(
 
@@ -114,7 +115,7 @@ begin
 
 				//Execute the packet procedure, only one is runned because the other
 				//runs a dummy procedure
-				ExecCommand(AChara,ReadPoints);
+				ExecCommand(AChara,InBuffer,ReadPoints);
 				ExecAvoidSelfCommand(AChara);
 				Result := True;
 			end;

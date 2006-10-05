@@ -12,6 +12,16 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 31-
+[2006/10/04] - Tsusai - Overview: Patched ZoneCore after running into multithread problems
+ in Prometheus.
+[2006/10/04] - Tsusai - DatabaseTXT: Updated TPacketProc to recieve a passed packet buffer.
+[2006/10/04] - Tsusai - ZoneCore : Updated ExecCommand to pass the InBuffer to any zone
+ procedure.
+[2006/10/04] - Tsusai - ZoneRecv : Updated the NoCommand procedure to be compatable by the
+ above changes.
+-
+
 - Rev 30-
 [2006/10/01] - Tsusai - Overview: Continued work on RaX's plug and play database system.
  Mainly delt with character database components.

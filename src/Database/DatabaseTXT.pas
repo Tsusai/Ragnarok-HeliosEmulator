@@ -18,7 +18,7 @@ CodeBase[].PacketArray[].ExecAvoidSelfCommand - Special type: links to tchara av
 ------------------------------------------------------------------------------*)
 type
 	//The more usual of the zone procedures
-	TPacketProc = procedure (AChara : TCharacter; const ReadPts : TReadPts);
+	TPacketProc = procedure (AChara : TCharacter; RecvBuffer : TBuffer; const ReadPts : TReadPts);
 	//The Tchara, Avoidself packets.  About 3 exist
 	TAvoidSelfPacketProc = procedure (const AChara : TCharacter; const AvoidSelf : boolean = False);
 

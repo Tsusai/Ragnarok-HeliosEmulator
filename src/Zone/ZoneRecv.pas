@@ -7,6 +7,7 @@ uses
 
 	procedure NoCommand(
 			AChara : TCharacter;
+			RecvBuffer : TBuffer;
 		const
 			ReadPts : TReadPts
 		); overload;
@@ -22,6 +23,7 @@ implementation
 
 	Procedure NoCommand(
 			AChara  : TCharacter;
+			RecvBuffer : TBuffer;
 		const
 			ReadPts : TReadPts
 		);
