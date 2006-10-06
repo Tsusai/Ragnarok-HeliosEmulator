@@ -104,7 +104,7 @@ begin
     Sleep(Interval);//wait our specified time.
     if Assigned(OnTimer) then //if OnTimer is set
     begin
-      OnTimer(NIL);
+      Self.OnTimer(NIL);
     end;
   end;
 end;

@@ -12,6 +12,10 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 34-
+[2006/10/06] - RaX - Updated XTimer.pas to work with Delphi 7 (Self.Ontimer(); vs OnTimer());
+-
+
 - Rev 33-
 [2006/10/06] - RaX - Overview - stubbed out the save loop thread routines and built a timer
  for us to use.
