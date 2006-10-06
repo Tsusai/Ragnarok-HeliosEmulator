@@ -12,7 +12,20 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
-- Rev 32-
+- Rev 33-
+[2006/10/06] - RaX - Overview - stubbed out the save loop thread routines and built a timer
+ for us to use.
+[2006/10/06] - RaX - FIXED - Added CharaList.pas - forgot to last commit (sorry).
+[2006/10/06] - RaX - Added SaveTimer to MainProc, a threaded Timer I wrote.
+[2006/10/06] - RaX - Added TXTimer (Classes/XTimer.pas), a timer thread meant for the save.
+ loop.
+[2006/10/06] - RaX - Added TSaveLoop(Classes/SaveLoop.pas) - our Saving thread.
+[2006/10/06] - RaX - How it works - The Timer runs in background forever. At Interval ms,
+ it executes the saveloop, which runs outside of the execution path of both MainProc, and
+ the timer itself. After saving, the SaveLoop automatically free's itself.
+-
+
+- Rev 32- BROKEN
 [2006/10/06] - RaX - Finished implementation of the Database system and made it thread-safe
  (we now use a local, to the object instance, connection rather than the old global one.)
 [2006/10/06] - RaX - CharaServerProcess - ripped out lingering sql queries and moved them 

@@ -41,6 +41,7 @@ compile for linux. at the same time*}
   madExcept,
 	madLinkDisAsm,
 	PacketTypes in 'Common\PacketTypes.pas',
+  SaveLoop in 'Classes\SaveLoop.pas',
 	ServerOptions in 'Config\ServerOptions.pas',
 	Socket in 'Common\Socket.pas',
 	TCPServerRoutines in 'Common\TCPServerRoutines.pas',
@@ -52,6 +53,7 @@ compile for linux. at the same time*}
 	uMysqlNewPassword in 'Common\3rdParty\SQL\uMysqlNewPassword.pas',
 	umysqlsha1 in 'Common\3rdParty\SQL\umysqlsha1.pas',
 	WinLinux in 'Common\WinLinux.pas',
+  XTimer in 'Classes\XTimer.pas',
 	ZoneCore in 'Zone\ZoneCore.pas',
 	ZoneRecv in 'Zone\ZoneRecv.pas',
 	{$ENDIF}
@@ -77,6 +79,7 @@ compile for linux. at the same time*}
 	List32 in 'Common/3rdParty/List32.pas',
 	LoginProcesses in 'Login/LoginProcesses.pas',
 	PacketTypes in 'Common/PacketTypes.pas',
+  SaveLoop in 'Classes/SaveLoop.pas',
 	ServerOptions in 'Config/ServerOptions.pas',
 	Socket in 'Common/Socket.pas',
 	TCPServerRoutines in 'Common/TCPServerRoutines.pas',
@@ -88,6 +91,7 @@ compile for linux. at the same time*}
 	uMysqlNewPassword in 'Common/3rdParty/SQL/uMysqlNewPassword.pas',
 	umysqlsha1 in 'Common/3rdParty/SQL/umysqlsha1.pas',
 	WinLinux in 'Common/WinLinux.pas',
+  XTimer in 'Classes/XTimer.pas',
 	ZoneCore in 'Zone/ZoneCore.pas',
 	ZoneRecv in 'Zone/ZoneRecv.pas',
 	{$ENDIF}
