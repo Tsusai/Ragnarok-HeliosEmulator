@@ -24,6 +24,7 @@ compile for linux. at the same time*}
 	{$IFDEF MSWINDOWS}
 	Account in 'Classes\Account.pas',
 	Character in 'Classes\Character.pas',
+  CharaList in 'Classes\CharaList.pas',
 	CharaServerProcess in 'Character\CharaServerProcess.pas',
 	CharaServerTypes in 'Character\CharaServerTypes.pas',
 	Commands in 'Classes\Commands.pas',
@@ -42,7 +43,6 @@ compile for linux. at the same time*}
 	PacketTypes in 'Common\PacketTypes.pas',
 	ServerOptions in 'Config\ServerOptions.pas',
 	Socket in 'Common\Socket.pas',
-	SQL in 'Common\SQL.pas',
 	TCPServerRoutines in 'Common\TCPServerRoutines.pas',
 	uMysqlClient in 'Common\3rdParty\SQL\uMysqlClient.pas',
 	uMysqlCT in 'Common\3rdParty\SQL\uMysqlCT.pas',
@@ -62,6 +62,7 @@ compile for linux. at the same time*}
 	{$IFDEF LINUX}
 	Account in 'Classes/Account.pas',
 	Character in 'Classes/Character.pas',
+  CharaList in 'Classes/CharaList.pas',
 	CharaServerProcess in 'Character/CharaServerProcess.pas',
 	CharaServerTypes in 'Character/CharaServerTypes.pas',
 	Commands in 'Classes/Commands.pas',
@@ -78,7 +79,6 @@ compile for linux. at the same time*}
 	PacketTypes in 'Common/PacketTypes.pas',
 	ServerOptions in 'Config/ServerOptions.pas',
 	Socket in 'Common/Socket.pas',
-	SQL in 'Common/SQL.pas',
 	TCPServerRoutines in 'Common/TCPServerRoutines.pas',
 	uMysqlClient in 'Common/3rdParty/SQL/uMysqlClient.pas',
 	uMysqlCT in 'Common/3rdParty/SQL/uMysqlCT.pas',

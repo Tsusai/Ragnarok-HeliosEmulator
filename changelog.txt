@@ -12,6 +12,16 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 32-
+[2006/10/06] - RaX - Finished implementation of the Database system and made it thread-safe
+ (we now use a local, to the object instance, connection rather than the old global one.)
+[2006/10/06] - RaX - CharaServerProcess - ripped out lingering sql queries and moved them 
+ into the databaseing units, created CharaExists(overloaded) and GetAccountCharas to replace
+ them.
+[2006/10/06] - RaX - Removed old SQL.pas from project, still on SVN for posterities sake.
+[2006/10/06] - RaX - Removed SQLConnected from MainProc (console.pas).
+-
+
 - Rev 31-
 [2006/10/04] - Tsusai - Overview: Patched ZoneCore after running into multithread problems
  in Prometheus.

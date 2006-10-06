@@ -28,9 +28,6 @@ type
 		CharaServer: TIdTCPServer;
 		ZoneServer: TIdTCPServer;
 
-		//Active : boolean;
-		SQLConnected : boolean;
-
 		procedure Console(Line : string);
 
 		procedure Startup;
@@ -137,13 +134,8 @@ begin
 		CharaServerList.AddObject(LocalCharaServ.ServerName,LocalCharaServ);
 	end;
 	ThirdPartyCredits; //Load external credits file.
-	if ConnectToMySQL then
-	begin
-		Console('- Startup Success');
-	end else
-	begin
-		Console('- Startup Failed');
-	end;
+
+  Console('- Startup Success');
 	MainProc.Console('  For a list of console commands, input "/help".');
 
 end;{TMainProc.Startup}
@@ -306,7 +298,6 @@ begin
 
 	ZoneServer.OnException := ServerException;
 
-	SQLConnected := False;
 end;{TMainProc.Create}
 //------------------------------------------------------------------------------
 

@@ -21,15 +21,12 @@ uses
 	procedure InitGlobals;
 	procedure DestroyGlobals;
 	procedure TerminateApplication;
-  
-	function  ConnectToMySQL : Boolean;
+
 	function  GetMD5(const Input : UTF8string) : UTF8String;
 
 var
-	HeliosVersion   : String = 'Helios Ragnarok Server Version 0.0.0.31';
+	HeliosVersion   : String = 'Helios Ragnarok Server Version 0.0.0.32';
 	Command         : TCommands;
-	SQLConnection   : TMySQLClient;
-	SQLQueryResult  : TMySQLResult;
 	CharaServerList : TStringList;
 	AppPath         : String;
 
@@ -66,52 +63,6 @@ begin
 end;
 
 (*------------------------------------------------------------------------------
-ConnectToMySQL
-
-Connects the server to the MySQL table, creating the two main objects,
- SQLConnection and SQLQueryResult.
-
-[2006/07/06] Tsusai - Reanmed to ConnectToMySQL.
-------------------------------------------------------------------------------*)
-{ TODO 1 -cMySQL : Replace default values with INI loaded ones }
-function ConnectToMySQL : boolean;
-var
-	Success : Boolean;
-begin
-	Result  := FALSE;
-	Success := FALSE;
-	if Not Assigned(SQLConnection) then
-	begin
-		SQLConnection := TMySQLClient.Create;
-	end;
-	SQLConnection.Host            := ServerConfig.MySQLHost;
-	SQLConnection.Port            := ServerConfig.MySQLPort;
-	SQLConnection.Db              := ServerConfig.MySQLDB;
-	SQLConnection.User            := ServerConfig.MySQLUser;
-	SQLConnection.Password        := ServerConfig.MySQLPass;
-	SQLConnection.ConnectTimeout  := 10;
-
-	MainProc.Console(Format('  - Connecting to mySQL server.  Will abort after %d seconds',[SQLConnection.ConnectTimeout]));
-	if SQLConnection.Connect then
-	begin
-		MainProc.Console(Format('  - SQL Connected to %s at port %d', [SQLConnection.Host, SQLConnection.Port]));
-		SQLQueryResult := SQLConnection.query('SELECT * FROM `char` c;',true,Success);
-		if Success then
-		begin
-			MainProc.Console('    - Test Query Success');
-			MainProc.Console('      - Returned Rows : ' + IntToStr(SQLQueryResult.RowsCount)); //total rows of info
-			MainProc.Console('      - Field Count   : ' + IntToStr(SQLQueryResult.FieldsCount)); //total fields
-			MainProc.Console('      - Chara Name    : ' + SQLQueryResult.FieldValue(3)); // gives name (even if blank)
-			Result := true;
-		end;
-	end else begin
-		MainProc.Console('*****Could not connect to mySQL database server.');
-		MainProc.Console('*****All incoming client connections will be refused.');
-	end;
-end;
-
-
-(*------------------------------------------------------------------------------
 InitGlobals
 
 Creates all needed global objects
@@ -139,12 +90,6 @@ begin
 	ServerConfig.Save;
 	ServerConfig.Free;
 	CharaServerList.Free;
-	if MainProc.SQLConnected then
-	begin
-		SQLConnection.Close;
-	end;
-	SQLConnection.Free;
-	SQLQueryResult.Free;
 end; (* proc DestroyGlobals
 ------------------------------------------------------------------------------*)
 

@@ -16,7 +16,8 @@ interface
 uses
 	Character,
   Account,
-  Classes;
+  Classes,
+  CharaList;
 type
 //------------------------------------------------------------------------------
 //TDatabaseTemplate			                                                           CLASS
@@ -31,7 +32,8 @@ type
 //------------------------------------------------------------------------------
 	TDatabaseTemplate = class(TObject)
 	public
-    Constructor Create();
+    Constructor Create();virtual;
+    Destructor Destroy();override;
     function GetAccount(ID    : Cardinal) : TAccount;overload;virtual;
 		function GetAccount(Name  : string) : TAccount;overload;virtual;
 		function CreateChara(
@@ -40,14 +42,18 @@ type
 			NName : string
 		) : boolean;virtual;
 
+    function GetAccountCharas(AccountID : Cardinal) : TCharacterList;virtual;
 		function LoadChara(CharaID : Cardinal) : TCharacter;virtual;
 		function GetChara( CharaID    : Cardinal)   : TCharacter;virtual;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;virtual;
+    function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;virtual;
+    function CharaExists(Name : String) : Boolean;overload;virtual;
 
 		procedure SaveAccount(AnAccount : TAccount);virtual;
 		procedure SaveChara(AChara : TCharacter);virtual;
-
-
+  protected
+    procedure Connect();virtual;
+    procedure Disconnect();virtual;
   end;
 //------------------------------------------------------------------------------
   //function CreateDatabase() : TDatabase;
@@ -69,7 +75,25 @@ begin
   inherited;
 end;
 
+Destructor TDatabaseTemplate.Destroy();
+begin
+  inherited;
+end;
+
+procedure TDatabaseTemplate.Connect();
+begin
+end;
+
+procedure TDatabaseTemplate.Disconnect();
+begin
+end;
+
 function TDatabaseTemplate.GetAccount(ID: Cardinal) : TAccount;
+begin
+  Result := NIL;
+end;
+
+function TDatabaseTemplate.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
 begin
   Result := NIL;
 end;
@@ -83,6 +107,16 @@ end;
 function TDatabaseTemplate.GetChara(CharaID : Cardinal) : TCharacter;
 begin
   Result := NIL;
+end;
+
+function TDatabaseTemplate.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
+begin
+  Result := FALSE;
+end;
+
+function TDatabaseTemplate.CharaExists(Name : String) : Boolean;
+begin
+  Result := FALSE;
 end;
 
 procedure TDatabaseTemplate.SaveAccount(AnAccount: TAccount);
