@@ -17,8 +17,7 @@ uses
 	IdTCPServer,
 	SysUtils,
 	Classes,
-  XTimer,
-  SaveLoop;
+	SaveLoop;
 
 type
 //------------------------------------------------------------------------------
@@ -30,7 +29,7 @@ type
 		CharaServer: TIdTCPServer;
 		ZoneServer: TIdTCPServer;
 
-    SaveTimer : TXTimer;
+		SaveLoop : TSaveLoop;
 
 		procedure Console(Line : string);
 
@@ -45,8 +44,6 @@ type
 			AException: Exception);
 
 		procedure ThirdPartyCredits;
-
-    procedure StartSaveLoop(Sender : TObject);
 
 		constructor Create(AOwner : TComponent); override;
 		destructor  Destroy; override;
@@ -116,6 +113,9 @@ var
 	LocalCharaServ : TCharaServ;
 begin
 	AppPath  := ExtractFilePath(ParamStr(0));
+  SaveLoop := TSaveLoop.Create;
+  SaveLoop.Interval := 5000;
+
 	InitGlobals;
 
 	SetupTerminationCapturing;
@@ -144,27 +144,8 @@ begin
   Console('- Startup Success');
 	MainProc.Console('  For a list of console commands, input "/help".');
 
-  SaveTimer.Interval  := 15000;
-  SaveTimer.OnTimer   := StartSaveLoop;
-  SaveTimer.Enabled   := TRUE;
 end;{TMainProc.Startup}
 //------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-//TMainProc.StartSaveLoop()                                           PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Starts the Save Loop thread.
-//
-//	Changes -
-//		October 6th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-Procedure TMainProc.StartSaveLoop(Sender: TObject);
-begin
-  Console('DEBUG:: Saving...');
-  TSaveLoop.Create(FALSE);
-end;
 
 //------------------------------------------------------------------------------
 //TMainProc.Shutdown()                                             PROCEDURE
@@ -182,8 +163,6 @@ begin
 	DeActivateServer(LoginServer);
 	DeActivateServer(CharaServer);
 	DeActivateServer(ZoneServer);
-
-  SaveTimer.Enabled := FALSE;
 
 	DestroyGlobals;//Make sure globals are Free'd on Application exit.
 end;{TMainProc.Shutdown}
@@ -325,7 +304,6 @@ begin
 
 	ZoneServer.OnException := ServerException;
 
-  SaveTimer := TXTimer.Create();
 end;{TMainProc.Create}
 //------------------------------------------------------------------------------
 
@@ -347,7 +325,7 @@ begin
 	if Assigned(CharaServer) then FreeAndNil(CharaServer);
 	if Assigned(ZoneServer) then FreeAndNil(ZoneServer);
 
-  SaveTimer.Free;
+  SaveLoop.Terminate;
 
 	inherited Destroy;
 end;{TMainProc.Destroy}

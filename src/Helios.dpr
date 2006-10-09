@@ -53,7 +53,6 @@ compile for linux. at the same time*}
 	uMysqlNewPassword in 'Common\3rdParty\SQL\uMysqlNewPassword.pas',
 	umysqlsha1 in 'Common\3rdParty\SQL\umysqlsha1.pas',
 	WinLinux in 'Common\WinLinux.pas',
-  XTimer in 'Classes\XTimer.pas',
 	ZoneCore in 'Zone\ZoneCore.pas',
 	ZoneRecv in 'Zone\ZoneRecv.pas',
 	{$ENDIF}
@@ -91,7 +90,6 @@ compile for linux. at the same time*}
 	uMysqlNewPassword in 'Common/3rdParty/SQL/uMysqlNewPassword.pas',
 	umysqlsha1 in 'Common/3rdParty/SQL/umysqlsha1.pas',
 	WinLinux in 'Common/WinLinux.pas',
-  XTimer in 'Classes/XTimer.pas',
 	ZoneCore in 'Zone/ZoneCore.pas',
 	ZoneRecv in 'Zone/ZoneRecv.pas',
 	{$ENDIF}

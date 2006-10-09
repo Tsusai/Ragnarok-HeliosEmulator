@@ -1,17 +1,10 @@
 //------------------------------------------------------------------------------
-//SaveLoop				                                                         UNIT
+//XTimer				                                                         UNIT
 //------------------------------------------------------------------------------
 //	What it does-
-//			The Save Loop is a separate thread which handles routine saving every X
-//    seconds. Not only does it force a save every so often, but to make it
-//    more efficient, it only saves what needs saving from each character in the
-//    online character list based on timestamps. This unit interfaces directly
-//    with the Database object. Saves are forced in other areas of the code
-//    when certain events take place.
-//
-//  Notes -
-//    -  Saves should only occur when something changes. TDateTime related work.
-//
+//			This is a timer thread I made because all the rest were either strictly
+//    VCL, expensive, or didn't work. Executes our save procedures every
+//    Interval.
 //
 //	Changes -
 //		October 6th, 2006 - RaX - Created.
@@ -21,47 +14,71 @@ unit SaveLoop;
 
 interface
 uses
-  Classes;
-type
-//------------------------------------------------------------------------------
-//TCommands                                                               CLASS
-//------------------------------------------------------------------------------
-  TSaveLoop = class(TThread)
-    Constructor Create(CreateSuspended : Boolean);
-    Procedure Execute();override;
-  end;{TSaveLoop}
-//------------------------------------------------------------------------------
-implementation
-uses
-  Globals,
+  Classes,
   SysUtils,
-  Console;
+  SyncObjs;
+type
 
 //------------------------------------------------------------------------------
-//TSaveLoop.Create()				                                        CONSTRUCTOR
+//TSaveLoop                                                                CLASS
+//------------------------------------------------------------------------------
+  TSaveLoop = class(TThread)
+  private
+		fInterval : Cardinal;
+
+    Procedure   SetInterval(Value : Cardinal);
+    Function    GetInterval() : Cardinal;
+
+  public
+    Constructor Create();
+    Destructor  Destroy();override;
+
+    Procedure   Execute;override;
+
+    Property    Interval: Cardinal read GetInterval write SetInterval;
+  end;
+//------------------------------------------------------------------------------
+implementation
+
+//------------------------------------------------------------------------------
+//TSaveLoop.Create                                                   CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
-//			Initializes our thread object.
-//
+//			Initializes the TSaveLoop class.
 //
 //	Changes -
 //		October 6th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Constructor TSaveLoop.Create(CreateSuspended : Boolean);
+Constructor TSaveLoop.Create();
 begin
   FreeOnTerminate := TRUE;
-  inherited;
-end;{TSaveLoop.Create(CreateSuspended)}
+	inherited Create(FALSE);
+end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TSaveLoop.Execute()				                                        Procedure
+//TSaveLoop.Destroy                                                   DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
-//			This routine IS the thread execution path. Anything you wanna get done
-//    do right here.
+//			Destroys the TSaveLoop class.
 //
+//	Changes -
+//		October 6th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Destructor TSaveLoop.Destroy();
+begin
+	inherited Destroy;
+end;
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TSaveLoop.Execute                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Houses the actual execution code of this thread. Executes OnTimer every
+//    Interval.
 //
 //	Changes -
 //		October 6th, 2006 - RaX - Created.
@@ -70,10 +87,39 @@ end;{TSaveLoop.Create(CreateSuspended)}
 procedure TSaveLoop.Execute();
 begin
   inherited;
-  MainProc.Console('DEBUG:: SAVED!');
-  //Execute Saving routines here.
-  //
-end;{TSaveLoop.Execute()}
+	while NOT Terminated do
+	begin
+		Sleep(Interval);
+		writeln('Saving..');
+    //SaveLoop code here
+		writeln('Saved');
+	end;
+
+end;
 //------------------------------------------------------------------------------
 
-end{SaveLoop}.
+//------------------------------------------------------------------------------
+//TSaveLoop Property related routines                           Property Related
+//------------------------------------------------------------------------------
+//	What they do-
+//			They control the reading and writing to specific properties.
+//
+//	Changes -
+//		October 6th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Procedure TSaveLoop.SetInterval(Value: Cardinal);
+begin
+	fInterval := Value;
+end;
+
+Function TSaveLoop.GetInterval;
+var
+  Value : Cardinal;
+begin
+	Value := fInterval;
+	Result := Value;
+end;
+
+//------------------------------------------------------------------------------
+end.

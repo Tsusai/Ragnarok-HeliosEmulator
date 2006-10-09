@@ -12,6 +12,12 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 35-
+[2006/10/09] - RaX - Fixed my timer. It wasn't allowing console commands (for some unknown
+ reason). Removed XTimer, moved everything into SaveLoop...no more Enabled Property.
+ {Thank you Tsusai}
+-
+
 - Rev 34-
 [2006/10/06] - RaX - Updated XTimer.pas to work with Delphi 7 (Self.Ontimer(); vs OnTimer());
 -
