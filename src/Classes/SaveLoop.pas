@@ -34,12 +34,13 @@ type
     Destructor  Destroy();override;
 
     Procedure   Execute;override;
-
+    Procedure   Save();
     Property    Interval: Cardinal read GetInterval write SetInterval;
   end;
 //------------------------------------------------------------------------------
 implementation
-
+uses
+  Console;
 //------------------------------------------------------------------------------
 //TSaveLoop.Create                                                   CONSTRUCTOR
 //------------------------------------------------------------------------------
@@ -52,7 +53,6 @@ implementation
 //------------------------------------------------------------------------------
 Constructor TSaveLoop.Create();
 begin
-  FreeOnTerminate := TRUE;
 	inherited Create(FALSE);
 end;
 //------------------------------------------------------------------------------
@@ -90,11 +90,27 @@ begin
 	while NOT Terminated do
 	begin
 		Sleep(Interval);
-		writeln('Saving..');
-    //SaveLoop code here
-		writeln('Saved');
+    Save();
 	end;
 
+end;
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TSaveLoop.Save                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Saves all online characters.
+//
+//	Changes -
+//		October 6th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TSaveLoop.Save();
+begin
+  MainProc.Console('Saving...');
+  //Save code here
+  MainProc.Console('Saved!!!');
 end;
 //------------------------------------------------------------------------------
 

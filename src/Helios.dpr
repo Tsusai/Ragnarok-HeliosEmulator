@@ -113,22 +113,19 @@ compile for linux. at the same time*}
 //      related routines in one place =).
 //    -HeliosVersion is located in Globals (only one place to change)
 //    -This routine contains the loop that keeps the application open. On
-//      termination of that loop, the program will shut down. Hence the return
-//      value of Command.Parse(AInput).
+//      termination of that loop, the program will shut down.
 
 //  Changes -
 //    September 21st - RaX - Created Header.
 //------------------------------------------------------------------------------
 var
 	AnInput   : string;
-	Run       : Boolean;
 begin
 
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;
 	Command := TCommands.Create;
 	MainProc := TMainProc.Create(nil); //Form replacement
-	Run := TRUE;
 
 	MainProc.Console('  _    _          _   _                ');
 	MainProc.Console(' | |  | |        | | (_)               ');
@@ -145,10 +142,11 @@ begin
 
 	{Begin Main Loop}
 	{Must keep application alive!}
-	while Run do begin
+	while MainProc.Run do begin
 		ReadLn(AnInput);
-		Run := Command.Parse(AnInput);
+		Command.Parse(AnInput);
 	end;
 	{End Main Loop}
+
 	TerminateApplication;
 end{Helios}.

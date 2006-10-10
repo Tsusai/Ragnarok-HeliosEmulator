@@ -12,6 +12,15 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 36-
+[2006/10/10] - RaX - Code cleanup...
+[2006/10/10] - RaX - moved Run from Helios.dpr to MainProc as a property for organization.
+[2006/10/10] - RaX - Moved around save loop creates and destroys around in MainProc to make
+ it force a save before the loop shuts down and free and recreate on restart.
+[2006/10/10] - RaX - Added TSaveLoop.Save which will house the actual save code... to allow
+ forcing a full save by simply calling this procedure from outside the thread.
+-
+
 - Rev 35-
 [2006/10/09] - RaX - Fixed my timer. It wasn't allowing console commands (for some unknown
  reason). Removed XTimer, moved everything into SaveLoop...no more Enabled Property.

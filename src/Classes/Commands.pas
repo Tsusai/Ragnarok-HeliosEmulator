@@ -6,7 +6,7 @@
 //    console commands.
 //
 //  Notes -
-//      RaX-The EXIT command simply returns FALSE in the parser. Look for it in
+//      RaX-The EXIT command simply sets Run FALSE in the parser. Look for it in
 //    Parse()
 //
 //	Changes -
@@ -16,30 +16,33 @@
 unit Commands;
 
 interface
+
 type
 //------------------------------------------------------------------------------
 //TCommands                                                               CLASS
 //------------------------------------------------------------------------------
   TCommands = class
   public
-    function Parse(InputText : String) : Boolean;
+    Procedure Parse(InputText : String);
 
     function Help : String;
     function Reload() : String;
     function Restart() : String;
   end;{TCommands}
 //------------------------------------------------------------------------------
+
 implementation
+
 	uses
 		Classes,
 		SysUtils,
 		Console;
 
 //------------------------------------------------------------------------------
-//TCommands.Parse()				                                             FUNCTION
+//TCommands.Parse()				                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Parses InputText for commands. Returns a Boolean which determines
+//			Parses InputText for commands. Sets MainProc.Run which determines
 //    whether or not the entire program should continue to run.
 //    (See Exit Command)
 //
@@ -50,7 +53,7 @@ implementation
 //		September 20th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function TCommands.Parse(InputText : String) : Boolean;
+Procedure TCommands.Parse(InputText : String);
 var
 	StringIn  : TStringList;
 	Index     : Integer;
@@ -58,7 +61,6 @@ var
 	Values    : TStringList;
 	Error     : String;
 begin
-	Result := TRUE; //Assume the program will continue to run.
 	if InputText > '' then begin
 		StringIn  := TStringList.Create;
 		try
@@ -72,7 +74,7 @@ begin
 					end;
 					{Start Command Parser}
 					if Command = '/exit' then begin
-						Result  := FALSE;
+						MainProc.Run  := FALSE;
 						Error   := '';
 					end else if Command = '/reload' then begin
 						Error   := 'Reload not setup till all DB is done';//ADataBase.Reload;

@@ -25,11 +25,13 @@ type
 //------------------------------------------------------------------------------
   TMainProc = class(TComponent)
 	public
-		LoginServer : TIdTCPServer;
-		CharaServer: TIdTCPServer;
-		ZoneServer: TIdTCPServer;
+    Run         : Boolean;
 
-		SaveLoop : TSaveLoop;
+		LoginServer : TIdTCPServer;
+		CharaServer : TIdTCPServer;
+		ZoneServer  : TIdTCPServer;
+
+		SaveLoop    : TSaveLoop;
 
 		procedure Console(Line : string);
 
@@ -113,8 +115,6 @@ var
 	LocalCharaServ : TCharaServ;
 begin
 	AppPath  := ExtractFilePath(ParamStr(0));
-  SaveLoop := TSaveLoop.Create;
-  SaveLoop.Interval := 5000;
 
 	InitGlobals;
 
@@ -141,6 +141,11 @@ begin
 	end;
 	ThirdPartyCredits; //Load external credits file.
 
+  Run := TRUE;
+
+  SaveLoop := TSaveLoop.Create;
+  SaveLoop.Interval := 15000;//needs to be a configuration variable.
+
   Console('- Startup Success');
 	MainProc.Console('  For a list of console commands, input "/help".');
 
@@ -151,7 +156,8 @@ end;{TMainProc.Startup}
 //TMainProc.Shutdown()                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Gracefully disconnects clients, then calls Destroy Globals.
+//			Gracefully disconnects clients, Saves online characters,  then calls
+//    Destroy Globals.
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
@@ -160,11 +166,20 @@ end;{TMainProc.Startup}
 procedure TMainProc.Shutdown;
 begin
 	Console('- Helios is shutting down...');
+
+  //Terminate the save loop, force a save, and free it.
+  SaveLoop.Terminate;
+  SaveLoop.Save;
+  SaveLoop.Free;
+
+  //Disconnect clients.
 	DeActivateServer(LoginServer);
 	DeActivateServer(CharaServer);
 	DeActivateServer(ZoneServer);
 
-	DestroyGlobals;//Make sure globals are Free'd on Application exit.
+  //Make sure globals are Free'd on Application exit.
+	DestroyGlobals;
+
 end;{TMainProc.Shutdown}
 //------------------------------------------------------------------------------
 
@@ -260,16 +275,16 @@ end;{TMainProc.ChaServerExecute}
 //------------------------------------------------------------------------------
 procedure TMainProc.ThirdPartyCredits;
 var
-	ThirdParty : TStringList;
-	idx : integer;
+	ThirdParty  : TStringList;
+	LineIndex   : Integer;
 begin
 	if FileExists(AppPath + '3rdParty.txt') then
 	begin
 		ThirdParty := TStringList.Create;
 		ThirdParty.LoadFromFile(AppPath + '3rdParty.txt');
-		for idx := 0 to ThirdParty.Count - 1 do
+		for LineIndex := 0 to ThirdParty.Count - 1 do
 		begin
-			Console('  '+ThirdParty.Strings[idx]);
+			Console('  '+ThirdParty.Strings[LineIndex]);
 		end;
 		ThirdParty.Free;
 	end
@@ -321,11 +336,9 @@ end;{TMainProc.Create}
 destructor  TMainProc.Destroy;
 begin
 	//MUST KILL COMPONENTS
-	if Assigned(LoginServer) then FreeAndNil(LoginServer);
-	if Assigned(CharaServer) then FreeAndNil(CharaServer);
-	if Assigned(ZoneServer) then FreeAndNil(ZoneServer);
-
-  SaveLoop.Terminate;
+	if Assigned(LoginServer)  then FreeAndNil(LoginServer);
+	if Assigned(CharaServer)  then FreeAndNil(CharaServer);
+	if Assigned(ZoneServer)   then FreeAndNil(ZoneServer);
 
 	inherited Destroy;
 end;{TMainProc.Destroy}
