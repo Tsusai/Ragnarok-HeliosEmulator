@@ -12,6 +12,12 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 37-
+[2006/10/13] - Tsusai - Friday October 13th....Just as creepy as 06/06/06
+[2006/10/13] - Tsusai - LoginProcesses: Separated the validation code from ParseLogin, and
+ added MD5 client connection support.
+-
+
 - Rev 36-
 [2006/10/10] - RaX - Code cleanup...
 [2006/10/10] - RaX - moved Run from Helios.dpr to MainProc as a property for organization.

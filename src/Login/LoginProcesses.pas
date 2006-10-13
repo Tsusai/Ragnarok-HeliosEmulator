@@ -82,6 +82,59 @@ Upon successful authentication, this procedure sends the list of character
 	end; (* Proc SendCharacterServers
 ------------------------------------------------------------------------------*)
 
+(*
+*)
+
+	procedure ValidateLogin(
+		AThread: TIDPeerThread;
+		RecvBuffer : TBuffer;
+		const Username : String;
+		const Password : String;
+		MD5Key      : string = ''
+	);
+	var
+		AnAccount : TAccount;
+		ADatabase : TDatabase;
+		AccountPassword : string;
+	begin
+		//New database system added 09/29/06 - RaX
+		ADatabase := TDatabase.Create();
+		AnAccount := ADatabase.AnInterface.GetAccount(UserName);
+		FreeAndNil(ADatabase);
+		if Assigned(AnAccount) then begin
+			AccountPassword := AnAccount.Password;
+			if not(MD5Key = '') then AccountPassword := GetMD5(MD5Key + AccountPassword);
+			if AccountPassword = Password then
+			begin
+				AnAccount.LoginKey[1] := BufferReadCardinal(54,RecvBuffer);
+				AnAccount.LoginKey[2] := BufferReadCardinal(58,RecvBuffer);
+				AnAccount.LastIP := AThread.Connection.Socket.Binding.PeerIP;
+				SendCharacterServers(AnAccount,AThread);
+			end else begin
+				SendLoginError(AThread,LOGIN_INVALIDPASSWORD);
+			end;
+		end else begin
+			SendLoginError(AThread,LOGIN_UNREGISTERED);
+		end;
+	end;
+
+	function ReadMD5Password(
+		StartPos,
+		PLength : word;
+		Buffer : TBuffer
+	) : string;
+	var
+		idx : integer;
+	begin
+		Result := '';
+		//Read every byte, and convert that bite value into a hex string
+		//Attach all hexstrings together to make the MD5 hash string.
+		for idx := 0 to PLength-1 do
+		begin
+			Result := Result + IntToHex(BufferReadByte(StartPos+idx,Buffer),2);
+		end;
+	end;
+
 (*------------------------------------------------------------------------------
 ParseLogin
 
@@ -93,39 +146,45 @@ Accepts incoming connections to the Login server and verifies the login data.
 		Buffer    : TBuffer;
 		UserName  : String;
 		Password  : String;
-		AnAccount : TAccount;
 		ID        : Word;
-    ADatabase : TDatabase; //database interface object
+
 	begin
 		if AThread.Connection.Connected then
 		begin
-			PLength := AThread.Connection.ReadFromStack;
+			PLength := AThread.Connection.ReadFromStack(false,-1,false);
 			if PLength >= 2 then
 			begin
-				AThread.Connection.ReadBuffer(Buffer,PLength);
+				//Get ID
+				AThread.Connection.ReadBuffer(Buffer,2);
 				ID := BufferReadWord(0,Buffer);
 				Case ID of
-				$0064: //Basic login packet
+				$0064: //Basic login
 					begin
+						//Read the rest of the packet
+						AThread.Connection.ReadBuffer(Buffer[2],55-2);
 						UserName := BufferReadString(6,24,Buffer);
-            //New database system added 09/29/06 - RaX
-            ADatabase := TDatabase.Create();
-						AnAccount := ADatabase.AnInterface.GetAccount(UserName);
-            FreeAndNil(ADatabase);
-						if Assigned(AnAccount) then begin
-							Password := BufferReadString(30,24,Buffer);
-							if AnAccount.Password = Password then
-							begin
-								AnAccount.LoginKey[1] := BufferReadCardinal(54,Buffer);
-								AnAccount.LoginKey[2] := BufferReadCardinal(58,Buffer);
-								AnAccount.LastIP := AThread.Connection.Socket.Binding.PeerIP;
-								SendCharacterServers(AnAccount,AThread);
-							end else begin
-								SendLoginError(AThread,LOGIN_INVALIDPASSWORD);
-							end;
-						end else begin
-							SendLoginError(AThread,LOGIN_UNREGISTERED);
-						end;
+						Password := BufferReadString(30,24,Buffer);
+						ValidateLogin(AThread,Buffer,Username,Password);
+					end;
+				$01DB: //Client connected asking for md5 key to send a secure password
+					begin
+						WriteBufferWord(0,$01DC,Buffer);
+						WriteBufferWord(2,Length('ILoveHelios')+4,Buffer);
+						WriteBufferString(4,'ILoveHelios',Length('ILoveHelios'),Buffer);
+						AThread.Connection.WriteBuffer(Buffer,Length('ILoveHelios')+4);
+					end;
+				$01DD: //Recieve secure login details
+					begin
+						AThread.Connection.ReadBuffer(Buffer[2],47-2);
+						//AThread.Connection.InputBuffer.SaveToFile('c:\md5connection.txt');
+						UserName := BufferReadString(6,24,Buffer);
+						Password := ReadMD5Password(30,16,Buffer);
+						Writeln('Recieved Md5 hash: ' +  Password);
+						ValidateLogin(AThread,Buffer,Username,Password,'ILoveHelios');
+					end;
+				else
+					begin
+						WriteLn('Unknown Login Packet : ' + IntToHex(ID,4));
 					end;
 				end;
 			end;
