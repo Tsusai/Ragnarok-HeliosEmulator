@@ -10,9 +10,9 @@ unit CharaServerProcess;
 interface
 uses
 	//3rd Party
-	IdTCPServer;
+	IdContext;
 
-	procedure ParseCharaServ(AThread : TIdPeerThread);
+	procedure ParseCharaServ(AClient : TIdContext);
 
 implementation
 	uses
@@ -20,8 +20,8 @@ implementation
 		SysUtils,
 		//Helios
 		Character,
-    CharaList,
-    Database,
+		CharaList,
+		Database,
 		Socket,
 		Account,
 		PacketTypes,
@@ -48,7 +48,7 @@ Upon validation, check database for any/all created characters.
 
 [2006/07/06] Tsusai - Started work on changing dummy procedure to real procedure
 ------------------------------------------------------------------------------*)
-procedure SendCharas(AThread : TIdPeerThread; var ABuffer : TBuffer);
+procedure SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
 var
 	AccountID   : Cardinal;
 	AnAccount   : TAccount;
@@ -63,87 +63,87 @@ var
 begin
 	Count     := 0;
 	Ver       := 24;
-  ADatabase := TDatabase.Create();
+	ADatabase := TDatabase.Create();
 
 	AccountID := BufferReadCardinal(2, ABuffer);
-  AnAccount := ADatabase.AnInterface.GetAccount(AccountID);
+	AnAccount := ADatabase.AnInterface.GetAccount(AccountID);
 
-  if Assigned(AnAccount) then
-  begin
-    if AnAccount.ID = AccountID then
-    begin
-      if  (AnAccount.LoginKey[1] = BufferReadCardinal(6,  ABuffer)) and
-        (AnAccount.LoginKey[2] = BufferReadCardinal(10, ABuffer)) then
-      begin
-        //LINK the account to the client connection for the other procedures
-        TThreadLink(AThread.Data).AccountLink := AnAccount;
-        SendPadding(AThread); //Legacy padding
+	if Assigned(AnAccount) then
+	begin
+		if AnAccount.ID = AccountID then
+		begin
+			if  (AnAccount.LoginKey[1] = BufferReadCardinal(6,  ABuffer)) and
+				(AnAccount.LoginKey[2] = BufferReadCardinal(10, ABuffer)) then
+			begin
+				//LINK the account to the client connection for the other procedures
+				TThreadLink(AClient.Data).AccountLink := AnAccount;
+				SendPadding(AClient); //Legacy padding
 
-        ACharaList := ADatabase.AnInterface.GetAccountCharas(AccountID);
-        for Index := 0 to ACharaList.Count-1 do
-        begin
-          ACharacter := ACharaList.List[Index];
-          if not (ACharacter = NIL) then
-          begin
-            with ACharacter do
-            begin
-              FillChar(ReplyBuffer[Ver+(Count*106)], 106, 0);
+				ACharaList := ADatabase.AnInterface.GetAccountCharas(AccountID);
+				for Index := 0 to ACharaList.Count-1 do
+				begin
+					ACharacter := ACharaList.List[Index];
+					if not (ACharacter = NIL) then
+					begin
+						with ACharacter do
+						begin
+							FillChar(ReplyBuffer[Ver+(Count*106)], 106, 0);
 
-              WriteBufferCardinal(Ver+(Count*106)+  0, CID,ReplyBuffer);
-              WriteBufferCardinal(Ver+(Count*106)+  4, BaseEXP,ReplyBuffer);
-              WriteBufferCardinal(Ver+(Count*106)+  8, Zeny,ReplyBuffer);
-              WriteBufferCardinal(Ver+(Count*106)+ 12, JobEXP,ReplyBuffer);
-              WriteBufferCardinal(Ver+(Count*106)+ 16, JobLV,ReplyBuffer);
-              WriteBufferCardinal(Ver+(Count*106)+ 20, 0,ReplyBuffer);
-              WriteBufferCardinal(Ver+(Count*106)+ 24, 0,ReplyBuffer);
-              WriteBufferCardinal(Ver+(Count*106)+ 28, Option,ReplyBuffer);
-              WriteBufferCardinal(Ver+(Count*106)+ 32, Karma,ReplyBuffer);
-              WriteBufferCardinal(Ver+(Count*106)+ 36, Manner,ReplyBuffer);
+							WriteBufferCardinal(Ver+(Count*106)+  0, CID,ReplyBuffer);
+							WriteBufferCardinal(Ver+(Count*106)+  4, BaseEXP,ReplyBuffer);
+							WriteBufferCardinal(Ver+(Count*106)+  8, Zeny,ReplyBuffer);
+							WriteBufferCardinal(Ver+(Count*106)+ 12, JobEXP,ReplyBuffer);
+							WriteBufferCardinal(Ver+(Count*106)+ 16, JobLV,ReplyBuffer);
+							WriteBufferCardinal(Ver+(Count*106)+ 20, 0,ReplyBuffer);
+							WriteBufferCardinal(Ver+(Count*106)+ 24, 0,ReplyBuffer);
+							WriteBufferCardinal(Ver+(Count*106)+ 28, Option,ReplyBuffer);
+							WriteBufferCardinal(Ver+(Count*106)+ 32, Karma,ReplyBuffer);
+							WriteBufferCardinal(Ver+(Count*106)+ 36, Manner,ReplyBuffer);
 
-              WriteBufferWord(Ver+(Count*106)+ 40, StatusPts,ReplyBuffer);
-              WriteBufferWord(Ver+(Count*106)+ 42, HP,ReplyBuffer);
-              WriteBufferWord(Ver+(Count*106)+ 44, MAXHP,ReplyBuffer);
-              WriteBufferWord(Ver+(Count*106)+ 46, SP,ReplyBuffer);
-              WriteBufferWord(Ver+(Count*106)+ 48, MAXSP,ReplyBuffer);
-              WriteBufferWord(Ver+(Count*106)+ 50, Speed,ReplyBuffer);
-              WriteBufferWord(Ver+(Count*106)+ 52, JID,ReplyBuffer);
-              WriteBufferWord(Ver+(Count*106)+ 54, Hair,ReplyBuffer);
-              WriteBufferWord(Ver+(Count*106)+ 56, Weapon,ReplyBuffer);
-              WriteBufferWord(Ver+(Count*106)+ 58, BaseLV,ReplyBuffer);
-              WriteBufferWord(Ver+(Count*106)+ 60, SkillPts,ReplyBuffer);
-              WriteBufferWord(Ver+(Count*106)+ 62, HeadBottom,ReplyBuffer); //Head3
-              WriteBufferWord(Ver+(Count*106)+ 64, Shield,ReplyBuffer);
-              WriteBufferWord(Ver+(Count*106)+ 66, HeadTop,ReplyBuffer); //head1
-              WriteBufferWord(Ver+(Count*106)+ 68, HeadMid,ReplyBuffer); //head2
-              WriteBufferWord(Ver+(Count*106)+ 70, HairColor,ReplyBuffer);
-              WriteBufferWord(Ver+(Count*106)+ 72, ClothesColor,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 40, StatusPts,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 42, HP,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 44, MAXHP,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 46, SP,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 48, MAXSP,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 50, Speed,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 52, JID,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 54, Hair,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 56, Weapon,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 58, BaseLV,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 60, SkillPts,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 62, HeadBottom,ReplyBuffer); //Head3
+							WriteBufferWord(Ver+(Count*106)+ 64, Shield,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 66, HeadTop,ReplyBuffer); //head1
+							WriteBufferWord(Ver+(Count*106)+ 68, HeadMid,ReplyBuffer); //head2
+							WriteBufferWord(Ver+(Count*106)+ 70, HairColor,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 72, ClothesColor,ReplyBuffer);
 
-              WriteBufferString(Ver+(Count*106)+ 74, Name, 24,ReplyBuffer);
+							WriteBufferString(Ver+(Count*106)+ 74, Name, 24,ReplyBuffer);
 
-              WriteBufferByte(Ver+(Count*106)+98,  ParamBase[STR],ReplyBuffer);
-              WriteBufferByte(Ver+(Count*106)+99,  ParamBase[AGI],ReplyBuffer);
-              WriteBufferByte(Ver+(Count*106)+100, ParamBase[VIT],ReplyBuffer);
-              WriteBufferByte(Ver+(Count*106)+101, ParamBase[INT],ReplyBuffer);
-              WriteBufferByte(Ver+(Count*106)+102, ParamBase[DEX],ReplyBuffer);
-              WriteBufferByte(Ver+(Count*106)+103, ParamBase[LUK],ReplyBuffer);
+							WriteBufferByte(Ver+(Count*106)+98,  ParamBase[STR],ReplyBuffer);
+							WriteBufferByte(Ver+(Count*106)+99,  ParamBase[AGI],ReplyBuffer);
+							WriteBufferByte(Ver+(Count*106)+100, ParamBase[VIT],ReplyBuffer);
+							WriteBufferByte(Ver+(Count*106)+101, ParamBase[INT],ReplyBuffer);
+							WriteBufferByte(Ver+(Count*106)+102, ParamBase[DEX],ReplyBuffer);
+							WriteBufferByte(Ver+(Count*106)+103, ParamBase[LUK],ReplyBuffer);
 
-              WriteBufferByte(Ver+(Count*106)+104, CharaNum,ReplyBuffer);
-              WriteBufferByte(Ver+(Count*106)+105, 0,ReplyBuffer);
-              Inc(Count);
-            end;
-          end;
-          ACharaList.Free;
-        end;
-      end;
-      //size is (24 + (character count * 106))
-      PacketSize := (Ver + (Count * 106));
-      WriteBufferWord(0,$006b,ReplyBuffer); //header
-      WriteBufferWord(2,PacketSize,ReplyBuffer);
-      SendBuffer(AThread,ReplyBuffer,PacketSize);
-    end;
-  end;
+							WriteBufferByte(Ver+(Count*106)+104, CharaNum,ReplyBuffer);
+							WriteBufferByte(Ver+(Count*106)+105, 0,ReplyBuffer);
+							Inc(Count);
+						end;
+					end;
+					ACharaList.Free;
+				end;
+			end;
+			//size is (24 + (character count * 106))
+			PacketSize := (Ver + (Count * 106));
+			WriteBufferWord(0,$006b,ReplyBuffer); //header
+			WriteBufferWord(2,PacketSize,ReplyBuffer);
+			SendBuffer(AClient,ReplyBuffer,PacketSize);
+		end;
+	end;
 
-  FreeAndNil(ADatabase);
+	FreeAndNil(ADatabase);
 end; (* proc SendCharas
 ------------------------------------------------------------------------------*)
 
@@ -161,7 +161,10 @@ Creates and saves the character object
 
 [2006/07/06] Tsusai - Started work on changing dummy procedure to real procedure
 ------------------------------------------------------------------------------*)
-procedure CreateChara(AThread : TIdPeerThread; var ABuffer : TBuffer);
+procedure CreateChara(
+	AClient : TIdContext;
+	var ABuffer : TBuffer
+);
 var
 	CharaName  : string;
 	StatPoints : array [0..5] of byte;
@@ -174,7 +177,7 @@ var
 	idx        : byte;
 	TotalStatPt: byte;
 	ADatabase  : TDatabase;
-  Validated  : Boolean;
+	Validated  : Boolean;
 
 	procedure CreateCharaError(const Error : byte);
 	var
@@ -182,14 +185,14 @@ var
 	begin
 		WriteBufferWord(0, $006e, ReplyBuf);
 		WriteBufferByte(2, Error, ReplyBuf);
-		SendBuffer(AThread,ReplyBuf,3);
+		SendBuffer(AClient,ReplyBuf,3);
 	end;
 
 begin
-  ADatabase   := TDatabase.Create;
-  Validated   := TRUE; //Assume passes all checks.
+	ADatabase   := TDatabase.Create;
+	Validated   := TRUE; //Assume passes all checks.
 
-	Account     := TThreadLink(AThread.Data).AccountLink;
+	Account     := TThreadLink(AClient.Data).AccountLink;
 	CharaName   := BufferReadString(2,24,ABuffer);
 	SlotNum     := BufferReadByte(32,ABuffer);
 	HairColor   := BufferReadByte(33,ABuffer);
@@ -219,82 +222,85 @@ begin
 			Validated := FALSE;
 		end;
 
-    //Slot Check.
+		//Slot Check.
 		if ADatabase.AnInterface.CharaExists(Account.ID, SlotNum) then
 		begin
 			CreateCharaError(INVALIDMISC);
 			Validated := FALSE;
 		end;
 
-    //Did we pass all the checks?
-    if Validated then
-    begin
-		  //Validated...Procede with creation
-		  ACharacter := TCharacter.Create;
-		  //Set a record in Database for our new character
-		  if ADatabase.AnInterface.CreateChara(
-			  ACharacter,Account.ID,CharaName) then
-		  begin
-			  ACharacter.Name := CharaName;
-			  ACharacter.Hair := HairStyle;
-			  ACharacter.HairColor := HairColor;
-			  ACharacter.CharaNum := SlotNum;
-			  ACharacter.ParamBase[STR] := StatPoints[0];
-			  ACharacter.ParamBase[AGI] := StatPoints[1];
-			  ACharacter.ParamBase[VIT] := StatPoints[2];
-			  ACharacter.ParamBase[INT] := StatPoints[3];
-			  ACharacter.ParamBase[DEX] := StatPoints[4];
-			  ACharacter.ParamBase[LUK] := StatPoints[5];
-			  //INSERT ANY OTHER CREATION CHANGES HERE!
-			  ADatabase.AnInterface.SaveChara(ACharacter);
-			  with ACharacter do begin
-				  WriteBufferWord(0, $006d,ReplyBuffer);
-				  WriteBufferCardinal(2+  0, CID,ReplyBuffer);
-				  WriteBufferCardinal(2+  4, BaseEXP,ReplyBuffer);
-				  WriteBufferCardinal(2+  8, Zeny,ReplyBuffer);
-				  WriteBufferCardinal(2+ 12, JobEXP,ReplyBuffer);
-				  WriteBufferCardinal(2+ 16, JobLV,ReplyBuffer);
-				  WriteBufferCardinal(2+ 20, 0,ReplyBuffer);
-				  WriteBufferCardinal(2+ 24, 0,ReplyBuffer);
-				  WriteBufferCardinal(2+ 28, Option,ReplyBuffer);
-				  WriteBufferCardinal(2+ 32, Karma,ReplyBuffer);
-				  WriteBufferCardinal(2+ 36, Manner,ReplyBuffer);
-				  WriteBufferWord(2+ 40, StatusPts,ReplyBuffer);
-				  WriteBufferWord(2+ 42, HP,ReplyBuffer);
-				  WriteBufferWord(2+ 44, MAXHP,ReplyBuffer);
-				  WriteBufferWord(2+ 46, SP,ReplyBuffer);
-				  WriteBufferWord(2+ 48, MAXSP,ReplyBuffer);
-				  WriteBufferWord(2+ 50, Speed,ReplyBuffer);
-				  WriteBufferWord(2+ 52, JID,ReplyBuffer);
-				  WriteBufferWord(2+ 54, Hair,ReplyBuffer);
-				  WriteBufferWord(2+ 56, Weapon,ReplyBuffer);
-				  WriteBufferWord(2+ 58, BaseLV,ReplyBuffer);
-				  WriteBufferWord(2+ 60, SkillPts,ReplyBuffer);
-				  WriteBufferWord(2+ 62, HeadBottom,ReplyBuffer);
-				  WriteBufferWord(2+ 64, Shield,ReplyBuffer);
-				  WriteBufferWord(2+ 66, HeadTop,ReplyBuffer);
-				  WriteBufferWord(2+ 68, HeadMid,ReplyBuffer);
-				  WriteBufferWord(2+ 70, HairColor,ReplyBuffer);
-				  WriteBufferWord(2+ 72, ClothesColor,ReplyBuffer);
-				  WriteBufferString(2+ 74, Name, 24,ReplyBuffer);
-				  for idx := STR to LUK do
-				  begin
-					  WriteBufferByte(2+98+idx, ParamBase[idx],ReplyBuffer);
-				  end;
-				  WriteBufferByte(2+104, CharaNum,ReplyBuffer);
-				  WriteBufferByte(2+105, 0,ReplyBuffer);
-			  end;
-			  AThread.Connection.WriteBuffer(ReplyBuffer, 108);
-		  end;
-    end;
+		//Did we pass all the checks?
+		if Validated then
+		begin
+			//Validated...Procede with creation
+			ACharacter := TCharacter.Create;
+			//Set a record in Database for our new character
+			if ADatabase.AnInterface.CreateChara(
+				ACharacter,Account.ID,CharaName) then
+			begin
+				ACharacter.Name := CharaName;
+				ACharacter.Hair := HairStyle;
+				ACharacter.HairColor := HairColor;
+				ACharacter.CharaNum := SlotNum;
+				ACharacter.ParamBase[STR] := StatPoints[0];
+				ACharacter.ParamBase[AGI] := StatPoints[1];
+				ACharacter.ParamBase[VIT] := StatPoints[2];
+				ACharacter.ParamBase[INT] := StatPoints[3];
+				ACharacter.ParamBase[DEX] := StatPoints[4];
+				ACharacter.ParamBase[LUK] := StatPoints[5];
+				//INSERT ANY OTHER CREATION CHANGES HERE!
+				ADatabase.AnInterface.SaveChara(ACharacter);
+				with ACharacter do begin
+					WriteBufferWord(0, $006d,ReplyBuffer);
+					WriteBufferCardinal(2+  0, CID,ReplyBuffer);
+					WriteBufferCardinal(2+  4, BaseEXP,ReplyBuffer);
+					WriteBufferCardinal(2+  8, Zeny,ReplyBuffer);
+					WriteBufferCardinal(2+ 12, JobEXP,ReplyBuffer);
+					WriteBufferCardinal(2+ 16, JobLV,ReplyBuffer);
+					WriteBufferCardinal(2+ 20, 0,ReplyBuffer);
+					WriteBufferCardinal(2+ 24, 0,ReplyBuffer);
+					WriteBufferCardinal(2+ 28, Option,ReplyBuffer);
+					WriteBufferCardinal(2+ 32, Karma,ReplyBuffer);
+					WriteBufferCardinal(2+ 36, Manner,ReplyBuffer);
+					WriteBufferWord(2+ 40, StatusPts,ReplyBuffer);
+					WriteBufferWord(2+ 42, HP,ReplyBuffer);
+					WriteBufferWord(2+ 44, MAXHP,ReplyBuffer);
+					WriteBufferWord(2+ 46, SP,ReplyBuffer);
+					WriteBufferWord(2+ 48, MAXSP,ReplyBuffer);
+					WriteBufferWord(2+ 50, Speed,ReplyBuffer);
+					WriteBufferWord(2+ 52, JID,ReplyBuffer);
+					WriteBufferWord(2+ 54, Hair,ReplyBuffer);
+					WriteBufferWord(2+ 56, Weapon,ReplyBuffer);
+					WriteBufferWord(2+ 58, BaseLV,ReplyBuffer);
+					WriteBufferWord(2+ 60, SkillPts,ReplyBuffer);
+					WriteBufferWord(2+ 62, HeadBottom,ReplyBuffer);
+					WriteBufferWord(2+ 64, Shield,ReplyBuffer);
+					WriteBufferWord(2+ 66, HeadTop,ReplyBuffer);
+					WriteBufferWord(2+ 68, HeadMid,ReplyBuffer);
+					WriteBufferWord(2+ 70, HairColor,ReplyBuffer);
+					WriteBufferWord(2+ 72, ClothesColor,ReplyBuffer);
+					WriteBufferString(2+ 74, Name, 24,ReplyBuffer);
+					for idx := STR to LUK do
+					begin
+						WriteBufferByte(2+98+idx, ParamBase[idx],ReplyBuffer);
+					end;
+					WriteBufferByte(2+104, CharaNum,ReplyBuffer);
+					WriteBufferByte(2+105, 0,ReplyBuffer);
+				end;
+				SendBuffer(AClient,ReplyBuffer,108);
+			end;
+		end;
 	end else
 	begin
 		CreateCharaError(INVALIDNAME);
 	end;
-  ADatabase.Free;
+	ADatabase.Free;
 end;
 
-procedure DeleteChara(AThread : TIdPeerThread; var ABuffer : Tbuffer);
+procedure DeleteChara(
+	AClient : TIdContext;
+	var ABuffer : Tbuffer
+);
 var
 	CharacterID : Cardinal;
 	EmailOrID   : string;
@@ -307,14 +313,14 @@ var
 	begin
 		WriteBufferWord(0, $0070, ReplyBuffer);
 		WriteBufferByte(2, Error, ReplyBuffer);
-		AThread.Connection.WriteBuffer(ReplyBuffer,3);
+		SendBuffer(AClient,ReplyBuffer,3);
 	end;
 
 begin
 	ADatabase := TDatabase.Create();
 	CharacterID := BufferReadCardinal(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
-	AnAccount := TThreadLink(AThread.Data).AccountLink;
+	AnAccount := TThreadLink(AClient.Data).AccountLink;
 	ACharacter := ADatabase.AnInterface.GetChara(CharacterID);
 	if (AnAccount.EMail = EmailOrID) and (ACharacter.Account = AnAccount) then
 	begin
@@ -327,7 +333,7 @@ begin
 					if ADatabase.AnInterface.DeleteChara(ACharacter) then
 					begin
 						WriteBufferWord(0, $006f, ReplyBuffer);
-						AThread.Connection.WriteBuffer(ReplyBuffer, 2);
+						SendBuffer(AClient,ReplyBuffer, 2);
 					end else DeleteCharaError(DELETEBADCHAR);
 				end else DeleteCharaError(DELETEBADCHAR);
 			end else DeleteCharaError(DELETEBADCHAR);
@@ -349,34 +355,33 @@ Root procedure to handling client connections to the Character Server.
 { TODO -oTsusai -cCharacterServer :
 	Check against Prometheus Indy CharaServ prototype.  Must validate usage of
 	ReadFromStack and the looping of the parser }
-procedure ParseCharaServ(AThread : TIdPeerThread);
+procedure ParseCharaServ(AClient : TIdContext);
 var
 	PacketLength  : Integer;
 	ABuffer       : TBuffer;
 	PacketID      : Word;
 	Link          : TThreadLink;
 begin
-	if AThread.Connection.Connected then
+	if AClient.Connection.Connected then
 	begin
-		AThread.Connection.ReadFromStack(false,-1,false);
-		if AThread.Connection.InputBuffer.Size >= 2 then
+		while AClient.Connection.IOHandler.InputBuffer.Size >= 2 do
 		begin
-			PacketLength := AThread.Connection.InputBuffer.Size;
-			AThread.Connection.ReadBuffer(ABuffer,PacketLength);
+			PacketLength := AClient.Connection.IOHandler.InputBuffer.Size;
+			RecvBuffer(AClient,ABuffer,PacketLength);
 			PacketID := BufferReadWord(0, ABuffer);
-			if (AThread.Data = nil) or not (AThread.Data is TThreadLink) then
+			if (AClient.Data = nil) or not (AClient.Data is TThreadLink) then
 			begin
 				//Thread Data should have a TThreadLink object...if not, make one
 				Link := TThreadLink.Create;
-				AThread.Data := Link;
+				AClient.Data := Link;
 			end;
 			//First time connection from login needs to do 0x0065.  No exceptions.
-			if TThreadLink(AThread.Data).AccountLink = nil then
+			if TThreadLink(AClient.Data).AccountLink = nil then
 			begin
 				if PacketID = $0065 then
 				begin
 					//Verify login and send characters
-					SendCharas(AThread,ABuffer);
+					SendCharas(AClient,ABuffer);
 				end;
 			end else
 			begin
@@ -387,11 +392,11 @@ begin
 					end;
 				$0067: // Create New Character
 					begin
-						CreateChara(AThread,ABuffer);
+						CreateChara(AClient,ABuffer);
 					end;
 				$0068: // Request to Delete Character
 					begin
-						DeleteChara(AThread,ABuffer);
+						DeleteChara(AClient,ABuffer);
 					end;
 				end;
 			end;

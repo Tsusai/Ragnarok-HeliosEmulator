@@ -15,6 +15,7 @@ interface
 
 uses
 	IdTCPServer,
+	IdContext,
 	SysUtils,
 	Classes,
 	SaveLoop;
@@ -38,11 +39,11 @@ type
 		procedure Startup;
 		procedure Shutdown;
 
-		procedure LoginServerConnect(AThread: TIdPeerThread);
-		procedure LoginServerExecute(AThread: TIdPeerThread);
-		procedure CharaServerConnect(AThread: TIdPeerThread);
-		procedure CharaServerExecute(AThread: TIdPeerThread);
-		procedure ServerException(AThread: TIdPeerThread;
+		procedure LoginServerConnect(AConnection: TIdContext);
+		procedure LoginServerExecute(AConnection: TIdContext);
+		procedure CharaServerConnect(AConnection: TIdContext);
+		procedure CharaServerExecute(AConnection: TIdContext);
+		procedure ServerException(AConnection: TIdContext;
 			AException: Exception);
 
 		procedure ThirdPartyCredits;
@@ -93,9 +94,9 @@ end;{TMainProc.Console}
 //		September 19th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TMainProc.LoginServerExecute(AThread: TIdPeerThread);
+procedure TMainProc.LoginServerExecute(AConnection: TIdContext);
 begin
-	ParseLogin(AThread);
+	ParseLogin(AConnection);
 end;{TMainProc.LoginServerExecute}
 //------------------------------------------------------------------------------
 
@@ -195,13 +196,13 @@ end;{TMainProc.Shutdown}
 //		September 19th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TMainProc.ServerException(AThread: TIdPeerThread;
+procedure TMainProc.ServerException(AConnection: TIdContext;
 	AException: Exception);
 begin
 	if AnsiContainsStr(AException.Message, IntToStr(10053)) or
 		AnsiContainsStr(AException.Message, IntToStr(10054))
 	then begin
-		AThread.Connection.Disconnect;
+		AConnection.Connection.Disconnect;
 	end;
 end;{TMainProc.ServerException}
 //------------------------------------------------------------------------------
@@ -218,9 +219,9 @@ end;{TMainProc.ServerException}
 //		September 19th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TMainProc.LoginServerConnect(AThread: TIdPeerThread);
+procedure TMainProc.LoginServerConnect(AConnection: TIdContext);
 begin
-	Console('Connection from ' + AThread.Connection.Socket.Binding.PeerIP);
+	Console('Connection from ' + AConnection.Connection.Socket.Binding.PeerIP);
 end;{TMainProc.LoginServerConnect}
 //------------------------------------------------------------------------------
 
@@ -235,12 +236,12 @@ end;{TMainProc.LoginServerConnect}
 //		September 19th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TMainProc.CharaServerConnect(AThread: TIdPeerThread);
+procedure TMainProc.CharaServerConnect(AConnection: TIdContext);
 var
 	Link : TThreadLink;
 begin
 	Link := TThreadLink.Create;
-	AThread.Data := Link;
+	AConnection.Data := Link;
 end;{TMainProc.CharaServerConnect}
 //------------------------------------------------------------------------------
 
@@ -256,9 +257,9 @@ end;{TMainProc.CharaServerConnect}
 //		September 19th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TMainProc.CharaServerExecute(AThread: TIdPeerThread);
+procedure TMainProc.CharaServerExecute(AConnection: TIdContext);
 begin
-	ParseCharaServ(AThread);
+	ParseCharaServ(AConnection);
 end;{TMainProc.ChaServerExecute}
 //------------------------------------------------------------------------------
 

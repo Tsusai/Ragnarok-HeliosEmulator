@@ -12,6 +12,20 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 38-
+[2006/10/20] - Tsusai - Upgraded things to Indy 10. All old outstanding writebuffers now use
+ Socket.SendBuffer.
+[2006/10/20] - Tsusai - Console: Updated all TIdPeerThreads to TIdContext, and renamed
+ AThread to AConnection.
+[2006/10/20] - Tsusai - Socket: Updated SendPading to use SendBuffer.  SendBuffer now
+ converts OUR buffer to Indy bytebits to send out (it took 3 hours to get sending to work
+ right).  Also added a RecvBuffer, to handle recieving packets and putting them into a buffer.
+[2006/10/20] - Tsusai - TCPServerRoutines: Updated threads to contexts in DeactivateServer.
+[2006/10/20] - Tsusai - Login/Zone/Chara : Updated all peerthreads to contexts, removed
+ ReadFromStack, redid the input buffer size call, and implemented SendBuffer (if missing)
+ and RecvBuffer.
+-
+
 - Rev 37-
 [2006/10/13] - Tsusai - Friday October 13th....Just as creepy as 06/06/06
 [2006/10/13] - Tsusai - LoginProcesses: Separated the validation code from ParseLogin, and

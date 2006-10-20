@@ -9,9 +9,9 @@ unit LoginProcesses;
 
 interface
 	uses
-		IdTCPServer;
+		IdContext;
 
-		procedure ParseLogin(AThread: TIdPeerThread);
+		procedure ParseLogin(AClient: TIdContext);
 
 implementation
 	uses
@@ -20,7 +20,7 @@ implementation
 		Socket,
 		PacketTypes,
 		Globals,
-		SysUtils,
+		SysUtils,  idglobal,
 		CharaServerTypes;
 
 	const
@@ -35,13 +35,13 @@ SendLoginError
 If some detail was wrong with login, this sends the reply with the constant Error
 number (look at constants) to the client.
 ------------------------------------------------------------------------------*)
-	procedure SendLoginError(const AThread: TIdPeerThread; const Error : byte);
+	procedure SendLoginError(const AClient: TIdContext; const Error : byte);
 	var
 		Buffer : TBuffer;
 	begin
 		WriteBufferWord( 0, $006a, Buffer);
 		WriteBufferWord( 2, Error, Buffer);
-		SendBuffer(AThread, Buffer ,23);
+		SendBuffer(AClient, Buffer ,23);
 	end; (* proc SendLoginError
 ------------------------------------------------------------------------------*)
 
@@ -51,7 +51,7 @@ SendCharacterServers
 Upon successful authentication, this procedure sends the list of character
  servers to the client.
 ------------------------------------------------------------------------------*)
-	procedure SendCharacterServers(AnAccount : TAccount; AThread: TIdPeerThread);
+	procedure SendCharacterServers(AnAccount : TAccount; AClient: TIdContext);
 	var
 		Buffer  : TBuffer;
 		Index   : integer;
@@ -78,7 +78,7 @@ Upon successful authentication, this procedure sends the list of character
 			WriteBufferWord(75,0,Buffer);
 			WriteBufferWord(77,0,Buffer);
 		end;
-    SendBuffer(AThread, Buffer ,Size);
+    SendBuffer(AClient, Buffer ,Size);
 	end; (* Proc SendCharacterServers
 ------------------------------------------------------------------------------*)
 
@@ -86,7 +86,7 @@ Upon successful authentication, this procedure sends the list of character
 *)
 
 	procedure ValidateLogin(
-		AThread: TIDPeerThread;
+		AClient: TIdContext;
 		RecvBuffer : TBuffer;
 		const Username : String;
 		const Password : String;
@@ -108,13 +108,13 @@ Upon successful authentication, this procedure sends the list of character
 			begin
 				AnAccount.LoginKey[1] := BufferReadCardinal(54,RecvBuffer);
 				AnAccount.LoginKey[2] := BufferReadCardinal(58,RecvBuffer);
-				AnAccount.LastIP := AThread.Connection.Socket.Binding.PeerIP;
-				SendCharacterServers(AnAccount,AThread);
+				AnAccount.LastIP := AClient.Connection.Socket.Binding.PeerIP;
+				SendCharacterServers(AnAccount,AClient);
 			end else begin
-				SendLoginError(AThread,LOGIN_INVALIDPASSWORD);
+				SendLoginError(AClient,LOGIN_INVALIDPASSWORD);
 			end;
 		end else begin
-			SendLoginError(AThread,LOGIN_UNREGISTERED);
+			SendLoginError(AClient,LOGIN_UNREGISTERED);
 		end;
 	end;
 
@@ -140,47 +140,48 @@ ParseLogin
 
 Accepts incoming connections to the Login server and verifies the login data.
 ------------------------------------------------------------------------------*)
-	procedure ParseLogin(AThread: TIdPeerThread);
+	procedure ParseLogin(AClient: TIdContext);
 	var
 		PLength   : Integer;
 		Buffer    : TBuffer;
 		UserName  : String;
 		Password  : String;
 		ID        : Word;
+		RecvBytes : TIdBytes;  idx : integer;
 
 	begin
-		if AThread.Connection.Connected then
+		if AClient.Connection.Connected then
 		begin
-			PLength := AThread.Connection.ReadFromStack(false,-1,false);
-			if PLength >= 2 then
+			while AClient.Connection.IOHandler.InputBuffer.Size > 2 do
 			begin
+				PLength := AClient.Connection.IOHandler.InputBuffer.Size;
 				//Get ID
-				AThread.Connection.ReadBuffer(Buffer,2);
+				RecvBuffer(AClient,Buffer,2);
 				ID := BufferReadWord(0,Buffer);
 				Case ID of
 				$0064: //Basic login
 					begin
 						//Read the rest of the packet
-						AThread.Connection.ReadBuffer(Buffer[2],55-2);
+						RecvBuffer(AClient,Buffer[2],55-2);
 						UserName := BufferReadString(6,24,Buffer);
+						Writeln(Username);
 						Password := BufferReadString(30,24,Buffer);
-						ValidateLogin(AThread,Buffer,Username,Password);
+						ValidateLogin(AClient,Buffer,Username,Password);
 					end;
 				$01DB: //Client connected asking for md5 key to send a secure password
 					begin
 						WriteBufferWord(0,$01DC,Buffer);
 						WriteBufferWord(2,Length('ILoveHelios')+4,Buffer);
 						WriteBufferString(4,'ILoveHelios',Length('ILoveHelios'),Buffer);
-						AThread.Connection.WriteBuffer(Buffer,Length('ILoveHelios')+4);
+						SendBuffer(AClient,Buffer,Length('ILoveHelios')+4);
 					end;
 				$01DD: //Recieve secure login details
 					begin
-						AThread.Connection.ReadBuffer(Buffer[2],47-2);
-						//AThread.Connection.InputBuffer.SaveToFile('c:\md5connection.txt');
+						RecvBuffer(AClient,Buffer[2],47-2);
 						UserName := BufferReadString(6,24,Buffer);
 						Password := ReadMD5Password(30,16,Buffer);
 						Writeln('Recieved Md5 hash: ' +  Password);
-						ValidateLogin(AThread,Buffer,Username,Password,'ILoveHelios');
+						ValidateLogin(AClient,Buffer,Username,Password,'ILoveHelios');
 					end;
 				else
 					begin

@@ -13,7 +13,8 @@ uses
 	SysUtils,
 	Classes,
 	Console,
-	IdSocketHandle;
+	IdContext,
+	IdException;
 
 function ActivateServer(Name : string; var Server : TIdTCPServer) : boolean;
 Const
@@ -40,21 +41,20 @@ var
 begin
 	if AServer.Active then
 	begin
-		List := AServer.Threads.LockList;
+		List := AServer.Contexts.LockList;
 		try
 			for idx := 0 to List.Count - 1 do
 			begin
 				try
-					TIdPeerThread(List.Items[idx]).Connection.Disconnect;
+					TIdContext(List.Items[idx]).Connection.Disconnect;
 				except
 					on E: Exception do
 					begin
-						TIdPeerThread(List.Items[idx]).Stop;
 					end;
 				end;
 			end;
 		finally
-			AServer.Threads.UnlockList;
+			AServer.Contexts.UnlockList;
 		end;
 		//Sleep is needed else d/c Timeout exceptions will occur (multithreading)
 		Sleep(500);

@@ -34,10 +34,10 @@ interface
 uses
 	{Helios}
 	{3rd Party}
-	IdTCPServer
+	IdContext
 	;
 
-	procedure ProcessZonePacket(AThread : TIdPeerThread);
+	procedure ProcessZonePacket(AClient : TIdContext);
 
 
 implementation
@@ -78,7 +78,7 @@ packet - The integer packet id.
 function SearchPacketListing(
 
 	var   AChara    : TCharacter;
-	var   AThread   : TIdPeerThread;
+	var   AClient   : TIdContext;
 	var   InBuffer  : TBuffer;
 
 	const Version   : Word;
@@ -103,14 +103,14 @@ begin
 				//Ok so we found a matching packet ID, now to read our right length
 				if PLength <> -1 then
         begin
-					AThread.Connection.ReadBuffer(InBuffer[2], PLength - 2);
+					RecvBuffer(AClient,InBuffer[2], PLength - 2);
         end else
         begin
 					//Usually our string messages, where the 2nd location is the
 					//size holder of the string
-					AThread.Connection.ReadBuffer(InBuffer[2], 2);
+					RecvBuffer(AClient,InBuffer[2], 2);
 					Size := BufferReadWord(2, InBuffer);
-					AThread.Connection.ReadBuffer(InBuffer[4], Size - 4);
+					RecvBuffer(AClient,InBuffer[4], Size - 4);
 				end;
 
 				//Execute the packet procedure, only one is runned because the other
@@ -154,7 +154,7 @@ Revisions:
   CIdx to ClientBaseIndex to signify our supported client database or packet_db.
 [yyyy/mm/dd] <Author> - <Comment>
 *-----------------------------------------------------------------------------*)
-Procedure ProcessZonePacket(AThread : TIdPeerThread);
+Procedure ProcessZonePacket(AClient : TIdContext);
 Var
 	Lth             : Integer;
 	AChara          : TCharacter;
@@ -165,13 +165,12 @@ Var
 	Found           : Boolean;
 	ABuffer         : TBuffer;
 Begin
-	AThread.Connection.ReadFromStack(False, -1, False);
-	while AThread.Connection.InputBuffer.Size >= 2 do
+	while AClient.Connection.IOHandler.InputBuffer.Size >= 2 do
 	begin
-		Lth := AThread.Connection.InputBuffer.Size;
-		AThread.Connection.ReadBuffer(ABuffer[0], 2);
+		Lth := AClient.Connection.IOHandler.InputBuffer.Size;
+		RecvBuffer(AClient,ABuffer[0], 2);
 		PacketID := BufferReadWord(0, ABuffer);
-		AChara := TThreadLink(AThread.Data).CharacterLink;
+		AChara := TThreadLink(AClient.Data).CharacterLink;
 
 		{if (AChara <> nil) and (Option_Packet_Out) then
 		begin
@@ -193,8 +192,8 @@ Begin
 						begin
 							if (CodeBase[ClientBaseIndex].Packet[PacketIndex].Command = 'wanttoconnection') then
 							begin
-								AThread.Connection.ReadBuffer(ABuffer[2], (Lth - 2)); //Get the rest of the packet info
-								//MapConnect(CIdx, AThread, CodeBase[CIdx].Packet[PIdx].ReadPoints);
+								RecvBuffer(AClient, ABuffer[2], (Lth - 2)); //Get the rest of the packet info
+								//MapConnect(CIdx, AClient, CodeBase[CIdx].Packet[PIdx].ReadPoints);
 								Found := True;
 								Break;
 							end;
@@ -212,24 +211,24 @@ Begin
 			begin
 				//They can't get in, so prevent the rest of their useless packets from parsing
 				MainProc.Console('Someone with the IP '+
-					AThread.Connection.Socket.Binding.PeerIP +
+					AClient.Connection.Socket.Binding.PeerIP +
 					' attempted to send a packet '+ IntToHex(packetID, 4) +' with a length of ' + IntToStr(Lth));
 				MainProc.Console('Reason for this response: Unsupported client or a bot attempted to connect.');
-				AThread.Connection.Disconnect;
+				AClient.Connection.Disconnect;
 			end;
 
 		end else begin
 			if AChara.ClientVersion <> 0 then
 			begin
-				if not SearchPacketListing(AChara, AThread, ABuffer, AChara.ClientVersion, PacketID) then
+				if not SearchPacketListing(AChara, AClient, ABuffer, AChara.ClientVersion, PacketID) then
 				begin //look for
-					if NOT SearchPacketListing(AChara, AThread, ABuffer, 0, PacketID) then
+					if NOT SearchPacketListing(AChara, AClient, ABuffer, 0, PacketID) then
 					begin
 						Exit; //try the older
 					end;
 				end;
 			end
-			else if NOT SearchPacketListing(AChara, AThread, ABuffer, 0, PacketID) then
+			else if NOT SearchPacketListing(AChara, AClient, ABuffer, 0, PacketID) then
 			begin //since it's older, use that
 				Exit;
 			end;

@@ -14,7 +14,7 @@ uses
 	//Helios
 	PacketTypes,
 	//3rd Party
-	IdTCPServer;
+	IdContext;
 
 	procedure WriteBufferByte(Index:word; ByteIn:byte; var Buffer : TBuffer);
 	procedure WriteBufferWord(Index:word; WordIn:word; var Buffer : TBuffer);
@@ -26,14 +26,17 @@ uses
 	function BufferReadCardinal(Index:word; var Buffer : TBuffer) : cardinal;
 	function BufferReadString(Index:word; Count:word; Buffer : TBuffer) : string;
 
-	procedure SendPadding(AThread : TIdPeerThread);
+	procedure SendPadding(AClient : TIdContext);
 
-	procedure SendBuffer(AThread : TIdPeerThread; Buffer : TBuffer; Size : Cardinal);
+	procedure SendBuffer(AClient : TIdContext; Buffer : TBuffer; Size : Cardinal);
+	procedure RecvBuffer(AClient : TIdContext; var Buffer; Size : Cardinal);
 
 implementation
 uses
 	//IDE
-	SysUtils;
+	SysUtils,
+	IdGlobal,
+	Classes;
 
 (*------------------------------------------------------------------------------
 PUSHING DATA INTO THE BUFFER METHODS
@@ -120,18 +123,30 @@ PREMADE SENDING OF BUFFER TO CLIENT
 ------------------------------------------------------------------------------*)
 	//Padding Packet,
 	//used for antibot/antihack upon charaserv and mapserv connections
-	procedure SendPadding(AThread : TIdPeerThread);
+	procedure SendPadding(AClient : TIdContext);
 	var
 		ABuf : TBuffer;
 	begin
 		WriteBufferCardinal(0,$00000000,ABuf);
-		AThread.Connection.WriteBuffer(ABuf,4);
+		SendBuffer(AClient,ABuf,4);
 	end;
 
 	//Socket Method SendBuffer - Writes the buffer to the socket.
-	procedure SendBuffer(AThread : TIdPeerThread; Buffer : TBuffer; Size : Cardinal);
+	procedure SendBuffer(AClient : TIdContext; Buffer : TBuffer; Size : Cardinal);
+	var
+		SendBytes : TIdBytes;
 	begin
-		AThread.Connection.WriteBuffer(Buffer,Size);
+		SendBytes := RawToBytes(Buffer,Size);
+		AClient.Connection.IOHandler.Write(SendBytes);
 	end;
 
+
+	//Socket Method SendBuffer - Writes the buffer to the socket.
+	procedure RecvBuffer(AClient : TIdContext; var Buffer; Size : Cardinal);
+	var
+		RecvBytes : TIdBytes;
+	begin
+		AClient.Connection.IOHandler.ReadBytes(RecvBytes,Size);
+		BytesToRaw(RecvBytes,Buffer,Size);
+	end;
 end.
