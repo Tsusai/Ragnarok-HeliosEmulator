@@ -1,0 +1,11 @@
+
+-------------------------------------------------
+Project Helios proudly makes use of the following
+open source software libraries...
+
+uMySQLClient, by Cristian Nicola - GNU Licensed, 
+ we are using it under the Spoof Clause.
+
+List32, Copyright 2001, Gary Darby, Intellitech
+ Systems Inc., www.DelphiForFun.org
+-------------------------------------------------

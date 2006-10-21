@@ -12,6 +12,16 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 39-
+[2006/10/21] - RaX - Re-Added XTimer.pas (it works correctly now, and better!) changed over
+ SaveLoop.pas into what it was supposed to be, the save thread only, executed by XTimer.
+ XTimer is now a reuseable timer with a real resolution of 1ms ...the defining element is
+ assembly....go me. Will be updated to really get accurate time down to the clock speed of
+ the processor (faster the clock speed, the more accurate the timer).
+[2006/10/21] - RaX - Added our license to the header of Helios.dpr.
+[2006/10/21] - RaX - Added ThirdParty.txt contents. Basic, but effective.
+-
+
 - Rev 38-
 [2006/10/20] - Tsusai - Upgraded things to Indy 10. All old outstanding writebuffers now use
  Socket.SendBuffer.

@@ -18,7 +18,8 @@ uses
 	IdContext,
 	SysUtils,
 	Classes,
-	SaveLoop;
+	XTimer,
+  SaveThread;
 
 type
 //------------------------------------------------------------------------------
@@ -32,7 +33,9 @@ type
 		CharaServer : TIdTCPServer;
 		ZoneServer  : TIdTCPServer;
 
-		SaveLoop    : TSaveLoop;
+		SaveTimer   : TXTimer;
+
+    procedure ForceSave(Sender : TObject);
 
 		procedure Console(Line : string);
 
@@ -83,6 +86,20 @@ begin
 end;{TMainProc.Console}
 //------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//TMainProc.ForceSave()                                             Procedure
+//------------------------------------------------------------------------------
+//	What it does-
+//			Executes the save thread
+//
+//	Changes -
+//		October 21st, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+procedure TMainProc.ForceSave(Sender : Tobject);
+begin
+  TSaveThread.Create;
+end;{TMainProc.CharaServerConnect}
 
 //------------------------------------------------------------------------------
 //TMainProc.LoginServerExecute()                                          EVENT
@@ -144,8 +161,10 @@ begin
 
   Run := TRUE;
 
-  SaveLoop := TSaveLoop.Create;
-  SaveLoop.Interval := 15000;//needs to be a configuration variable.
+  SaveTimer := TXTimer.Create;
+  SaveTimer.Interval := 15;//needs to be a configuration variable.
+  SaveTimer.OnTimer  := ForceSave;
+  SaveTimer.Enabled  := TRUE;
 
   Console('- Startup Success');
 	MainProc.Console('  For a list of console commands, input "/help".');
@@ -169,9 +188,10 @@ begin
 	Console('- Helios is shutting down...');
 
   //Terminate the save loop, force a save, and free it.
-  SaveLoop.Terminate;
-  SaveLoop.Save;
-  SaveLoop.Free;
+  SaveTimer.Enabled := FALSE;
+  SaveTimer.Free;
+
+  ForceSave(NIL);
 
   //Disconnect clients.
 	DeActivateServer(LoginServer);

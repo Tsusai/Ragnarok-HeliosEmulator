@@ -2,10 +2,44 @@
 //Helios			                                                         Program
 //------------------------------------------------------------------------------
 //	What it does-
-//			Helios is a cross-compatible Ragnarok Online Server Emulator.
+//			Helios is a cross-compatible(Windows & Linux), multi-threaded,
+//    multi-database, Ragnarok Online Server Emulator.
+//
 //  License -
-//        Real open source licensing. Meaning, take whatever you want, use it
-//     wherever and however you want, just give credit where it's due.
+//------------------------------------------------------------------------------
+//                 Project Helios - Copyright (c) 2005-2006
+//
+//    Contributors(A-Z) -
+//        Matthew Mazanec (Tsusai)
+//        Robert Ditthardt (RaX)
+//
+//    All rights reserved.
+//
+//    Redistribution and use in source and binary forms, with or without
+//    modification, are permitted provided that the following conditions are
+//    met:
+//
+//    		* Redistributions of source code must retain the above copyright
+//    			notice, this list of conditions and the following disclaimer.
+//    		* Redistributions in binary form must reproduce the above copyright
+//    			notice, this list of conditions and the following disclaimer in the
+//    			documentation and/or other materials provided with the distribution.
+//    		* Neither the name of Project Helios nor the names of its contributors
+//    			may be used to endorse or promote products derived from this
+//    			software without specific prior written permission.
+//
+//    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+//    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+//    TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+//    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+//    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+//    EXEMPLARY, OR CONSEQUENTIAL DAMAGES(INCLUDING, BUT NOT LIMITED TO,
+//    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+//    PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+//    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT(INCLUDING
+//    NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+//    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//------------------------------------------------------------------------------
 //
 //	Changes -
 //		September 20th, 2006 - RaX - Created Header.
@@ -41,7 +75,7 @@ compile for linux. at the same time*}
   madExcept,
 	madLinkDisAsm,
 	PacketTypes in 'Common\PacketTypes.pas',
-  SaveLoop in 'Classes\SaveLoop.pas',
+  SaveThread in 'Classes\SaveThread.pas',
 	ServerOptions in 'Config\ServerOptions.pas',
 	Socket in 'Common\Socket.pas',
 	TCPServerRoutines in 'Common\TCPServerRoutines.pas',
@@ -53,6 +87,7 @@ compile for linux. at the same time*}
 	uMysqlNewPassword in 'Common\3rdParty\SQL\uMysqlNewPassword.pas',
 	umysqlsha1 in 'Common\3rdParty\SQL\umysqlsha1.pas',
 	WinLinux in 'Common\WinLinux.pas',
+  XTimer in 'Classes\XTimer.pas',
 	ZoneCore in 'Zone\ZoneCore.pas',
 	ZoneRecv in 'Zone\ZoneRecv.pas',
 	{$ENDIF}
@@ -78,7 +113,7 @@ compile for linux. at the same time*}
 	List32 in 'Common/3rdParty/List32.pas',
 	LoginProcesses in 'Login/LoginProcesses.pas',
 	PacketTypes in 'Common/PacketTypes.pas',
-  SaveLoop in 'Classes/SaveLoop.pas',
+  SaveThread in 'Classes/SaveThread.pas',
 	ServerOptions in 'Config/ServerOptions.pas',
 	Socket in 'Common/Socket.pas',
 	TCPServerRoutines in 'Common/TCPServerRoutines.pas',
@@ -90,6 +125,7 @@ compile for linux. at the same time*}
 	uMysqlNewPassword in 'Common/3rdParty/SQL/uMysqlNewPassword.pas',
 	umysqlsha1 in 'Common/3rdParty/SQL/umysqlsha1.pas',
 	WinLinux in 'Common/WinLinux.pas',
+  XTimer in 'Classes/XTimer.pas',
 	ZoneCore in 'Zone/ZoneCore.pas',
 	ZoneRecv in 'Zone/ZoneRecv.pas',
 	{$ENDIF}
