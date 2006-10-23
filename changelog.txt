@@ -12,6 +12,11 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 41-
+[2006/10/23] - RaX - Random cleanup in LoginProcess, removed unused variables and function
+ calls from our former Indy9 socket.
+-
+
 - Rev 40-
 [2006/10/23] - RaX - Updated XTimer to have a Resolution property which is defined by constants
  to reflect the accuracy fo the timer, between nanoseconds and seconds. XTimer is now much

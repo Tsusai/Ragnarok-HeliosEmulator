@@ -142,19 +142,19 @@ Accepts incoming connections to the Login server and verifies the login data.
 ------------------------------------------------------------------------------*)
 	procedure ParseLogin(AClient: TIdContext);
 	var
-		PLength   : Integer;
+		//PLength   : Integer;
 		Buffer    : TBuffer;
 		UserName  : String;
 		Password  : String;
 		ID        : Word;
-		RecvBytes : TIdBytes;  idx : integer;
+		//RecvBytes : TIdBytes;
 
 	begin
 		if AClient.Connection.Connected then
 		begin
 			while AClient.Connection.IOHandler.InputBuffer.Size > 2 do
 			begin
-				PLength := AClient.Connection.IOHandler.InputBuffer.Size;
+				//PLength := AClient.Connection.IOHandler.InputBuffer.Size;
 				//Get ID
 				RecvBuffer(AClient,Buffer,2);
 				ID := BufferReadWord(0,Buffer);

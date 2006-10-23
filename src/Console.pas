@@ -139,7 +139,7 @@ begin
 	SetupTerminationCapturing;
 
 	LoginServer.DefaultPort := ServerConfig.LoginPort;
-	CharaServer.DefaultPort := ServerConfig.CharaPort;;
+	CharaServer.DefaultPort := ServerConfig.CharaPort;
 	ZoneServer.DefaultPort  := ServerConfig.ZonePort;
 	ActivateServer('Login',LoginServer);
 	ActivateServer('Character',CharaServer);
