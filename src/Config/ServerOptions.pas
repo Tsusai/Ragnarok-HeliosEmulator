@@ -24,6 +24,10 @@ interface
     //RaX - Agreed, that's how it's supposed to work. 5 months ago I was just
     //  crazy...=) Remove these comments whenever.
 
+TSaveLoopConfig = record
+  Enabled     : Boolean;
+  Interval    : Int64;
+end;
 //------------------------------------------------------------------------------
 //TServerOptions	                                                        CLASS
 //------------------------------------------------------------------------------
@@ -62,6 +66,7 @@ interface
       procedure SetDatabaseType(Value : Integer);
 
 		public
+      SaveLoop  : TSaveLoopConfig;
 			//Communication
 			property LoginPort : Word read fLoginPort write SetLoginPort;
 			property CharaPort : Word read fCharaPort write SetCharaPort;
@@ -76,13 +81,14 @@ interface
 			property ServerName : String read fServerName write SetServerName;
 
       property DatabaseType : Integer read fDatabaseType write SetDatabaseType;
+
 			//MySQL - Best to turn off the server BEFORE editing this stuff anywho.
 			property MySQLHost : string Read fMySQLHost;
 			property MySQLPort : integer read fMySQLPort;
 			property MySQLDB   : string Read fMySQLDB;
 			property MySQLUser : string Read fMySQLUser;
 			property MySQLPass : string Read fMySQLPass;
-			
+
 			//Public methods
 			procedure Load;
 			procedure Save;
@@ -126,7 +132,7 @@ implementation
 			fCharaPort   := StrToIntDef(Section.Values['CharaPort'], 6121);
 			fZonePort    := StrToIntDef(Section.Values['ZonePort'], 5121);
 
-			fDatabaseType:= StrToIntDef(Section.Values['DatabaseType'], 1);
+      fDatabaseType:= StrToIntDef(Section.Values['DatabaseType'], 1);
 
 		end;{Subroutine LoadCommunication}
     //--------------------------------------------------------------------------
@@ -179,6 +185,18 @@ implementation
 			fMySQLPass := Section.Values['Password'];
 		end;{Subroutine LoadMySQL}
     //--------------------------------------------------------------------------
+
+    //--------------------------------------------------------------------------
+    //LoadMisc                                      SUB PROCEDURE
+    //--------------------------------------------------------------------------
+		procedure LoadMisc;
+		begin
+			ReadSectionValues('Misc', Section);
+
+			SaveLoop.Enabled  := StrToBoolDef(Section.Values['SaveLoop-Enabled'], TRUE);
+      SaveLoop.Interval := StrToInt64Def(Section.Values['SaveLoop-Interval'], 60000);
+		end;{Subroutine LoadMySQL}
+    //--------------------------------------------------------------------------
 	begin
 		Section    := TStringList.Create;
 
@@ -189,6 +207,7 @@ implementation
 		LoadLoginOptions;
 		LoadCharaOptions;
 		LoadMySQL;
+    LoadMisc;
 
 		Section.Free;
 
@@ -224,6 +243,9 @@ implementation
 		WriteString('MySQL','Database', MySQLDB);
 		WriteString('MySQL','Username', MySQLUser);
 		WriteString('MySQL','Password', MySQLPass);
+
+    WriteString('Misc', 'SaveLoop-Enabled', BoolToStr(SaveLoop.Enabled));
+    WriteString('Misc', 'SaveLoop-Interval', IntToStr(SaveLoop.Interval));
 
 		UpdateFile;
 	end;{TServerOptions.Save}

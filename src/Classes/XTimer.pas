@@ -15,6 +15,14 @@ interface
 uses
   Classes,
   Types;
+
+const
+  XT_NANO   = 1000000000;
+  XT_MICRO  = 1000000;
+  XT_MILLI  = 1000;
+  XT_CENTI  = 100;
+  XT_SECOND = 1;
+
 type
 
 //------------------------------------------------------------------------------
@@ -24,9 +32,10 @@ type
   private
     function RdTSC : Int64;
   public
-    Interval    : Cardinal;
+    Interval    : Int64;
     OnTimer     : TNotifyEvent;
     Enabled     : Boolean;
+    Resolution  : Int64;
     Constructor Create();
     Destructor  Destroy();override;
 
@@ -48,8 +57,9 @@ uses
 //------------------------------------------------------------------------------
 Constructor TXTimer.Create();
 begin
-  Interval    := 60;
+  Interval    := 1000;
   Enabled     := FALSE;
+  Resolution  := XT_MILLI;
 	inherited Create(FALSE);
 end;
 //------------------------------------------------------------------------------
@@ -104,8 +114,11 @@ var
   EndCycles       : Int64;
   CyclesSinceStart: Int64;
   EndLoop         : Boolean;
+  InterAtRes      : Real;
 begin
   inherited;
+  //use all available clock cycles for calculating frequency.
+  Priority := tpHighest;
   EndLoop := FALSE;
   CyclesSinceStart := 1;
   //get clock cycle count at start
@@ -114,12 +127,16 @@ begin
   sleep(1000);
   //get ending clock cycles
   EndCycles := RdTSC;
+  //set priority back to normal.
+  Priority := tpNormal;
   //solve out how many have passed, which is our frequency.
-  Frequency := EndCycles - StartCycles;
+  Frequency := (EndCycles - StartCycles);
   //makes sure we can enable and disable this as much as we want without the
   //thread terminating on us.
   while NOT Terminated do
   begin
+    //figure out how many clock cycles it takes per interval.
+    InterAtRes := (Frequency DIV Resolution) * Interval;
     //while we're enabled keep track of cycles
 	  while Enabled do
 	  begin
@@ -133,10 +150,10 @@ begin
         end else
         begin
           //get cycles since start for each iteration
-          CyclesSinceStart := RdTSC-StartCycles;
+          CyclesSinceStart := RdTSC;
         end;
       //until we pass the interval
-      until ((CyclesSinceStart DIV Frequency) >= Interval) OR EndLoop;
+      until ((CyclesSinceStart-StartCycles) >= InterAtRes) OR EndLoop;
       //if our ontimer event exists, we execute it.
       if Assigned(OnTimer) AND NOT EndLoop then
       begin

@@ -12,6 +12,14 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 40-
+[2006/10/23] - RaX - Updated XTimer to have a Resolution property which is defined by constants
+ to reflect the accuracy fo the timer, between nanoseconds and seconds. XTimer is now much
+ more accurate than before as well.
+[2006/10/23] - RaX - Added variables to ServerConfig to enable/disable and set the interval
+ for the Save Loop.
+-
+
 - Rev 39-
 [2006/10/21] - RaX - Re-Added XTimer.pas (it works correctly now, and better!) changed over
  SaveLoop.pas into what it was supposed to be, the save thread only, executed by XTimer.

@@ -161,10 +161,14 @@ begin
 
   Run := TRUE;
 
-  SaveTimer := TXTimer.Create;
-  SaveTimer.Interval := 15;//needs to be a configuration variable.
-  SaveTimer.OnTimer  := ForceSave;
-  SaveTimer.Enabled  := TRUE;
+  if ServerConfig.SaveLoop.Enabled then
+  begin
+    SaveTimer := TXTimer.Create;
+    SaveTimer.Resolution := XT_SECOND;
+    SaveTimer.Interval := ServerConfig.SaveLoop.Interval;//needs to be a configuration variable.
+    SaveTimer.OnTimer  := ForceSave;
+    SaveTimer.Enabled  := TRUE;
+  end;
 
   Console('- Startup Success');
 	MainProc.Console('  For a list of console commands, input "/help".');
@@ -187,11 +191,13 @@ procedure TMainProc.Shutdown;
 begin
 	Console('- Helios is shutting down...');
 
-  //Terminate the save loop, force a save, and free it.
-  SaveTimer.Enabled := FALSE;
-  SaveTimer.Free;
-
-  ForceSave(NIL);
+  if Assigned(SaveTimer) then
+  begin
+    //Terminate the save loop, force a save, and free it.
+    SaveTimer.Enabled := FALSE;
+    SaveTimer.Free;
+    ForceSave(NIL);
+  end;
 
   //Disconnect clients.
 	DeActivateServer(LoginServer);
