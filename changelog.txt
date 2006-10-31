@@ -12,6 +12,14 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+
+- Rev 42-
+[2006/10/30] - RaX - Added Classes/Map.Pas - our TMap map class. Stubbed, only contains our
+ pathfinding algorithm for now. The Pathfinder is a "floodfill" or "wave" search that finds
+ the shortest path between 2 points by flooding the graph with tracers that keep track of
+ where they've been. The first one to reach the end's path is the shortest path.
+-
+
 - Rev 41-
 [2006/10/23] - RaX - Random cleanup in LoginProcess, removed unused variables and function
  calls from our former Indy9 socket.
