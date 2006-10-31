@@ -12,6 +12,13 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 43-
+[2006/10/31] - RaX - Modified Map.pas - GetPath to return a TPointList instead of an Array
+[2006/10/31] - RaX - moved constant CHAR_CLICKAREA to implementation,
+ created Directions constant array of tpoints which contains the distance to go from the
+ starting point to get the point in said direction.
+[2006/10/31] - RaX - changed TMap.Graph to an array of array of TPoint.
+-
 
 - Rev 42-
 [2006/10/30] - RaX - Added Classes/Map.Pas - our TMap map class. Stubbed, only contains our

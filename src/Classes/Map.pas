@@ -12,7 +12,8 @@ unit Map;
 interface
 
 uses
-	Types;
+	Types,
+  PointList;
 
 type
   //graph related types
@@ -20,16 +21,12 @@ type
     Attribute : Byte;
   end;
 
-  TXAxis = array of TCell;
-
-  TGraph = array of TXAxis;
-
-  TPath = array of TPoint;
+  TGraph = array of array of TCell;
 
   //flood types
 	TFloodItem = record
 		Position : TPoint;
-		Path : TPath;
+		Path : array of TPoint;
     PathLength : Integer;
 	end;
 
@@ -48,14 +45,16 @@ type
   published
     Constructor Create();
     Destructor Destroy();override;
-    Function GetPath(StartPoint : TPoint; EndPoint : TPoint) : TPath;
+    Function GetPath(StartPoint : TPoint; EndPoint : TPoint) : TPointList;
   end;
 //------------------------------------------------------------------------------
 
+implementation
+
 const
   CHAR_CLICKAREA = 16;//the distance away a character can click from itself
-
-implementation
+  //this array holds the possible directions from a point.
+  Directions : array[0..7] of TPoint = ((X:0;Y:1),(X:1;Y:1),(X:1;Y:0),(X:1;Y:-1),(X:0;Y:-1),(X:-1;Y:-1),(X:-1;Y:0),(X:-1;Y:1));
 
 //------------------------------------------------------------------------------
 //TMap.Create()
@@ -100,11 +99,11 @@ end;
 //  Changes -
 //    October 30th, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-function TMap.GetPath(StartPoint : TPoint; EndPoint : TPoint) : TPath;
+function TMap.GetPath(StartPoint : TPoint; EndPoint : TPoint) : TPointList;
 var
 	Done		          : Boolean;
   AnArea            : TGraph;
-	APath		          : TPath;
+	APath		          : TPointList;
 	AFloodList	      : TFloodList;
   AFloodListLength  : Integer;
 	AFloodItem	      : TFloodItem;
@@ -127,11 +126,13 @@ begin
      ((StartPoint.Y + CHAR_CLICKAREA) <= EndPoint.Y) OR
      ((StartPoint.Y - CHAR_CLICKAREA) > EndPoint.Y) then
   begin
+    Result := TPointList.Create;
     Exit;
   end;
 
   //initialize variables
 	Done		      := FALSE;
+  APath         := TPointList.Create;
 
   //copy our map's graph
   AnArea := copy(Graph);
@@ -141,27 +142,6 @@ begin
   end;
   XMax          := Length(AnArea);
   YMax          := Length(AnArea[0]);
-
-
-
-	//build directions array
-  SetLength(Directions, 8);
-  Directions[0].X := 0;//north
-	Directions[0].Y := 1;
-	Directions[1].X := 1;//northeast
-	Directions[1].Y := 1;
-	Directions[2].X := 1;//east
-	Directions[2].Y := 0;
-	Directions[3].X := 1;//southeast
-	Directions[3].Y := -1;
-	Directions[4].X := 0;//south
-	Directions[4].Y := -1;
-	Directions[5].X := -1;//southwest
-	Directions[5].Y := -1;
-	Directions[6].X := -1;//west
-	Directions[6].Y := 0;
-	Directions[7].X := -1;//northwest
-	Directions[7].Y := 1;
 
   //initialize our first flood item
 	AFloodItem.Position:= StartPoint;
@@ -219,7 +199,7 @@ begin
             if (NewFloodItem.Position.X = EndPoint.X) AND (NewFloodItem.Position.Y = EndPoint.Y) then
             begin
               //congratulations, we've done it.
-              APath := NewFloodItem.Path;
+              APath.Assign(NewFloodItem.Path);
               Done  := TRUE;
             end
           end;
