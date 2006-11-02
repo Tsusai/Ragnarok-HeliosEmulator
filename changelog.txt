@@ -12,6 +12,12 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 45-
+[2006/11/02] - RaX - Updated ThirdParty.txt to include Indy. Also, corrected mistakes made
+ by yours truly in the umysqlclient credits. "There is no Spoof", you could say. Updated to
+ "Part 10" of the GNU license.
+-
+
 - Rev 44-
 [2006/11/01] - RaX - Map.pas - Implemented Tsusai's changed to GetPath which include, but
  are not limited to, the following...

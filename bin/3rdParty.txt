@@ -3,9 +3,26 @@
 Project Helios proudly makes use of the following
 open source software libraries...
 
+Internet Direct Version 10 - www.IndyProject.org
+ Special thanks to Atozed Software - 
+ www.Atozed.com - for making deployment of Indy
+ easier in older versions of Delphi with their
+ installers.
+
 uMySQLClient, by Cristian Nicola - GNU Licensed, 
- we are using it under the Spoof Clause.
+ we are using it under part 10 of the License
+ which states...
+ "10. If you wish to incorporate parts of the
+  Program into other free programs whose
+  distribution conditions are different, write to
+  the author to ask for permission."
+ -We have written, have permission to use his
+  MySQL client libraries, and we also thank him
+  for providing us with a great, free, cross-
+  compatible alternative Borland's integrated
+  products (DBExpress).
 
 List32, Copyright 2001, Gary Darby, Intellitech
  Systems Inc., www.DelphiForFun.org
+ 
 -------------------------------------------------
