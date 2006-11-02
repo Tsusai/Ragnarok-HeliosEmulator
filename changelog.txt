@@ -12,6 +12,17 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 44-
+[2006/11/01] - RaX - Map.pas - Implemented Tsusai's changed to GetPath which include, but
+ are not limited to, the following...
+	GetPath changed to a boolean function with APath as a parameter passed by address.
+	Addition of IsBlocked to check for passability versus a multi-line condition.
+[2006/11/01] - RaX - Map.pas - Added GetArea, a private method of TMap which creates a
+ search area based on our constant CHAR_CLICKAREA distance away from the starting point.
+[2006/11/02] - RaX - moved CHAR_CLICKAREA into Constants/GameConstants.pas.
+[2006/11/02] - RaX - Added GameConstants.pas.
+-
+
 - Rev 43-
 [2006/10/31] - RaX - Modified Map.pas - GetPath to return a TPointList instead of an Array
 [2006/10/31] - RaX - moved constant CHAR_CLICKAREA to implementation,
