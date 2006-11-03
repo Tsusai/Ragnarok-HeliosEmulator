@@ -164,7 +164,6 @@ begin
   if ServerConfig.SaveLoop.Enabled then
   begin
     SaveTimer := TXTimer.Create;
-    SaveTimer.Resolution := XT_SECOND;
     SaveTimer.Interval := ServerConfig.SaveLoop.Interval;//needs to be a configuration variable.
     SaveTimer.OnTimer  := ForceSave;
     SaveTimer.Enabled  := TRUE;

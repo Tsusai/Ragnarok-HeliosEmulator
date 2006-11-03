@@ -16,26 +16,16 @@ uses
   Classes,
   Types;
 
-const
-  XT_NANO   = 1000000000;
-  XT_MICRO  = 1000000;
-  XT_MILLI  = 1000;
-  XT_CENTI  = 100;
-  XT_SECOND = 1;
-
 type
 
 //------------------------------------------------------------------------------
 //TXTimer                                                                CLASS
 //------------------------------------------------------------------------------
   TXTimer = class(TThread)
-  private
-    function RdTSC : Int64;
   public
     Interval    : Int64;
     OnTimer     : TNotifyEvent;
     Enabled     : Boolean;
-    Resolution  : Int64;
     Constructor Create();
     Destructor  Destroy();override;
 
@@ -57,9 +47,8 @@ uses
 //------------------------------------------------------------------------------
 Constructor TXTimer.Create();
 begin
-  Interval    := 1000;
+  Interval    := 60;
   Enabled     := FALSE;
-  Resolution  := XT_MILLI;
 	inherited Create(FALSE);
 end;
 //------------------------------------------------------------------------------
@@ -81,22 +70,6 @@ end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TXTimer.RdTSC                                                       Function
-//------------------------------------------------------------------------------
-//	What it does-
-//			Gets the amount of clock cycles executed since power up.
-//
-//	Changes -
-//		October 6th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-function TXTimer.RdTSC : int64;
-asm
-  db   $0f, $31
-end;
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
 //TSaveLoop.Execute                                                     PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
@@ -109,51 +82,31 @@ end;
 //------------------------------------------------------------------------------
 procedure TXTimer.Execute();
 var
-  Frequency       : Int64;
-  StartCycles     : Int64;
-  EndCycles       : Int64;
-  CyclesSinceStart: Int64;
-  EndLoop         : Boolean;
-  InterAtRes      : Real;
+  EndLoop   : Boolean;
+  Index     : Integer;
 begin
   inherited;
-  //use all available clock cycles for calculating frequency.
-  Priority := tpHighest;
   EndLoop := FALSE;
-  CyclesSinceStart := 1;
-  //get clock cycle count at start
-  StartCycles := RdTSC;
-  //sleep for 1 second
-  sleep(1000);
-  //get ending clock cycles
-  EndCycles := RdTSC;
-  //set priority back to normal.
-  Priority := tpNormal;
-  //solve out how many have passed, which is our frequency.
-  Frequency := (EndCycles - StartCycles);
+
+  Priority := TpLowest;
   //makes sure we can enable and disable this as much as we want without the
   //thread terminating on us.
   while NOT Terminated do
   begin
-    //figure out how many clock cycles it takes per interval.
-    InterAtRes := (Frequency DIV Resolution) * Interval;
     //while we're enabled keep track of cycles
 	  while Enabled do
 	  begin
-      //get new start cycles - fixes instant execution after disable/enable.
-      StartCycles := RdTSC;
-      repeat
-        //if we're still enabled... - fixes hang until loop finishes.
-        if NOT Enabled then
+      for Index := 1 to (Interval*10) do
+      begin
+        if Enabled AND NOT Terminated then
         begin
-          EndLoop := TRUE;
+          Sleep(100);
         end else
         begin
-          //get cycles since start for each iteration
-          CyclesSinceStart := RdTSC;
+          EndLoop := TRUE;
+          break;
         end;
-      //until we pass the interval
-      until ((CyclesSinceStart-StartCycles) >= InterAtRes) OR EndLoop;
+      end;
       //if our ontimer event exists, we execute it.
       if Assigned(OnTimer) AND NOT EndLoop then
       begin

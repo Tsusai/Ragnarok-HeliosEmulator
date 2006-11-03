@@ -12,6 +12,14 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 46-
+[2006/11/03] - RaX - Rewrote XTimer to fix problems with processors that modulate their
+ clock speed. Changed resolution to seconds. We can't have lower resolutions until I figure
+ out a better timer, so for now, we have seconds.
+[2006/11/03] - RaX - Changed ini loading to load default 60 for SaveTimer.Interval.
+[2006/11/03] - RaX - Changed Console.Pas to accomodate our new changes.
+-
+
 - Rev 45-
 [2006/11/02] - RaX - Updated ThirdParty.txt to include Indy. Also, corrected mistakes made
  by yours truly in the umysqlclient credits. "There is no Spoof", you could say. Updated to

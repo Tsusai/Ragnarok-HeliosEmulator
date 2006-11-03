@@ -194,7 +194,7 @@ implementation
 			ReadSectionValues('Misc', Section);
 
 			SaveLoop.Enabled  := StrToBoolDef(Section.Values['SaveLoop-Enabled'], TRUE);
-      SaveLoop.Interval := StrToInt64Def(Section.Values['SaveLoop-Interval'], 60000);
+      SaveLoop.Interval := StrToInt64Def(Section.Values['SaveLoop-Interval'], 60);
 		end;{Subroutine LoadMySQL}
     //--------------------------------------------------------------------------
 	begin
