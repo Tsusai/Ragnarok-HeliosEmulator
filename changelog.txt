@@ -12,6 +12,16 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 47-
+[2006/11/06] - Tsusai - Merged GameGlobals into GameConstants, and updated any/all units
+ that used to call GameGlobals.
+ out a better timer, so for now, we have seconds.
+[2006/11/06] - Tsusai - Updated 3rdParty.txt to mention we are using uMySQL** under MySQL's
+ FLOSS exception.
+[2006/11/06] - Tsusai - Extracted the version string to its own unit, to keep revisions to
+ Globals separate.
+-
+
 - Rev 46-
 [2006/11/03] - RaX - Rewrote XTimer to fix problems with processors that modulate their
  clock speed. Changed resolution to seconds. We can't have lower resolutions until I figure

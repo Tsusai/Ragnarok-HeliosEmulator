@@ -25,7 +25,7 @@ implementation
 		Socket,
 		Account,
 		PacketTypes,
-		GameGlobals,
+		GameConstants,
 		Globals,
 		//3rd
 		List32;
@@ -406,6 +406,7 @@ end; (*Proc ParseCharaServ
 ------------------------------------------------------------------------------*)
 
 end.
+
 
 
 

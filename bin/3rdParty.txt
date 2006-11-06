@@ -21,6 +21,9 @@ uMySQLClient, by Cristian Nicola - GNU Licensed,
   for providing us with a great, free, cross-
   compatible alternative Borland's integrated
   products (DBExpress).
+ -Also MySQL allows us to use derivatives of 
+  their software (uMySQLClient) under the use
+  of their FLOSS Exceptions
 
 List32, Copyright 2001, Gary Darby, Intellitech
  Systems Inc., www.DelphiForFun.org

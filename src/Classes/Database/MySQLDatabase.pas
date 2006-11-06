@@ -65,7 +65,7 @@ type
 implementation
 	uses
 		Types,
-		GameGlobals,
+		GameConstants,
 		Globals,
     Console,
     SysUtils,

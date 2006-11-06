@@ -16,7 +16,7 @@ uses
 	Types,
 	//Helios
 	Account,
-	GameGlobals;
+	GameConstants;
 
 	type TCharacter = class
 	private

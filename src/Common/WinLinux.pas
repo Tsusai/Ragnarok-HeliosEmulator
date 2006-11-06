@@ -11,6 +11,7 @@ interface
 
 implementation
 uses
+	Version,
 	Globals,
 	{$IFDEF MSWINDOWS}
 	Windows,
