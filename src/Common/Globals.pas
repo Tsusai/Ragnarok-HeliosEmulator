@@ -23,6 +23,7 @@ uses
 	procedure TerminateApplication;
 
 	function  GetMD5(const Input : UTF8string) : UTF8String;
+	function  MakeRNDString(Count: Integer): string;
 
 var
 	Command         : TCommands;
@@ -99,6 +100,20 @@ begin
 	MainProc.Shutdown;
 	FreeAndNil(MainProc);
 	KillProcess;
+end;
+
+function MakeRNDString(Count: Integer): string;
+const
+	chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/';
+var
+	i, x: integer;
+begin
+	Result := '';
+	for i := 1 to Count do
+	begin
+		x := Length(chars) - Random(Length(chars));
+		Result := Result + chars[x];
+	end;
 end;
 
 end.

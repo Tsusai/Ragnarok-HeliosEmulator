@@ -143,7 +143,7 @@ begin
 		end;
 	end;
 
-	FreeAndNil(ADatabase);
+	ADatabase.Free;
 end; (* proc SendCharas
 ------------------------------------------------------------------------------*)
 

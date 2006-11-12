@@ -25,6 +25,10 @@ type
 		CharacterLink : TCharacter;
 	end;
 
+	TMD5String = class
+		Key : string;
+	end;
+
 	Function ReadPoints(
 			Args : array of Word
 		) : TReadPts;

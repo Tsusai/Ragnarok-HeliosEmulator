@@ -20,7 +20,7 @@ implementation
 		Socket,
 		PacketTypes,
 		Globals,
-		SysUtils,  idglobal,
+		SysUtils,
 		CharaServerTypes;
 
 	const
@@ -89,20 +89,24 @@ Upon successful authentication, this procedure sends the list of character
 		AClient: TIdContext;
 		RecvBuffer : TBuffer;
 		const Username : String;
-		const Password : String;
-		MD5Key      : string = ''
+		const Password : String
 	);
 	var
 		AnAccount : TAccount;
 		ADatabase : TDatabase;
 		AccountPassword : string;
+		MD5Key    : string;
 	begin
 		//New database system added 09/29/06 - RaX
 		ADatabase := TDatabase.Create();
 		AnAccount := ADatabase.AnInterface.GetAccount(UserName);
-		FreeAndNil(ADatabase);
+		ADatabase.Free;
 		if Assigned(AnAccount) then begin
 			AccountPassword := AnAccount.Password;
+			if (AClient.Data is TMD5String) then
+			begin
+				MD5Key := TMD5String(AClient.Data).Key;
+			end;
 			if not(MD5Key = '') then AccountPassword := GetMD5(MD5Key + AccountPassword);
 			if AccountPassword = Password then
 			begin
@@ -142,52 +146,48 @@ Accepts incoming connections to the Login server and verifies the login data.
 ------------------------------------------------------------------------------*)
 	procedure ParseLogin(AClient: TIdContext);
 	var
-		//PLength   : Integer;
 		Buffer    : TBuffer;
 		UserName  : String;
 		Password  : String;
 		ID        : Word;
-		//RecvBytes : TIdBytes;
+		MD5Len    : Integer;
+		MD5Key    : TMD5String;
 
 	begin
-		if AClient.Connection.Connected then
-		begin
-			while AClient.Connection.IOHandler.InputBuffer.Size > 2 do
+		//Get ID
+		RecvBuffer(AClient,Buffer,2);
+		ID := BufferReadWord(0,Buffer);
+		Case ID of
+		$0064: //Basic login
 			begin
-				//PLength := AClient.Connection.IOHandler.InputBuffer.Size;
-				//Get ID
-				RecvBuffer(AClient,Buffer,2);
-				ID := BufferReadWord(0,Buffer);
-				Case ID of
-				$0064: //Basic login
-					begin
-						//Read the rest of the packet
-						RecvBuffer(AClient,Buffer[2],55-2);
-						UserName := BufferReadString(6,24,Buffer);
-						Writeln(Username);
-						Password := BufferReadString(30,24,Buffer);
-						ValidateLogin(AClient,Buffer,Username,Password);
-					end;
-				$01DB: //Client connected asking for md5 key to send a secure password
-					begin
-						WriteBufferWord(0,$01DC,Buffer);
-						WriteBufferWord(2,Length('ILoveHelios')+4,Buffer);
-						WriteBufferString(4,'ILoveHelios',Length('ILoveHelios'),Buffer);
-						SendBuffer(AClient,Buffer,Length('ILoveHelios')+4);
-					end;
-				$01DD: //Recieve secure login details
-					begin
-						RecvBuffer(AClient,Buffer[2],47-2);
-						UserName := BufferReadString(6,24,Buffer);
-						Password := ReadMD5Password(30,16,Buffer);
-						Writeln('Recieved Md5 hash: ' +  Password);
-						ValidateLogin(AClient,Buffer,Username,Password,'ILoveHelios');
-					end;
-				else
-					begin
-						WriteLn('Unknown Login Packet : ' + IntToHex(ID,4));
-					end;
-				end;
+				//Read the rest of the packet
+				RecvBuffer(AClient,Buffer[2],55-2);
+				UserName := BufferReadString(6,24,Buffer);
+				Password := BufferReadString(30,24,Buffer);
+				ValidateLogin(AClient,Buffer,Username,Password);
+			end;
+		$01DB: //Client connected asking for md5 key to send a secure password
+			begin
+				MD5Key       := TMD5String.Create;
+				MD5Key.Key   := MakeRNDString( Random(10)+1 );
+				MD5Len       := Length(MD5Key.Key);
+				AClient.Data := MD5Key;
+				WriteBufferWord(0,$01DC,Buffer);
+				WriteBufferWord(2,MD5Len+4,Buffer);
+				WriteBufferString(4,MD5Key.Key,MD5Len,Buffer);
+				SendBuffer(AClient,Buffer,MD5Len+4);
+			end;
+		$01DD: //Recieve secure login details
+			begin
+				RecvBuffer(AClient,Buffer[2],47-2);
+				UserName := BufferReadString(6,24,Buffer);
+				Password := ReadMD5Password(30,16,Buffer);
+				Writeln('Recieved Md5 hash: ' +  Password);
+				ValidateLogin(AClient,Buffer,Username,Password);
+			end;
+		else
+			begin
+				WriteLn('Unknown Login Packet : ' + IntToHex(ID,4));
 			end;
 		end;
 	end;  (* Proc SendCharacterServers

@@ -17,6 +17,8 @@ If you still aren't convince the legality of using this...I'm still allowed to
 use it because it was written on paper verbatum before use, so I still own the
 copyright, besides, no one sues the author for copyright infringing his own work
 
+- Tsusai
+
 --
 Revisions:
 --
@@ -92,20 +94,20 @@ begin
 	Result := False;
 
 	for Index := 0 to Length(CodeBase[Version].Packet) - 1 do
-  begin
+	begin
 
 		with CodeBase[Version].Packet[Index] do
-    begin
+		begin
 
 			if (ID = Packet) then
-      begin
+			begin
 
 				//Ok so we found a matching packet ID, now to read our right length
 				if PLength <> -1 then
-        begin
+				begin
 					RecvBuffer(AClient,InBuffer[2], PLength - 2);
-        end else
-        begin
+				end else
+				begin
 					//Usually our string messages, where the 2nd location is the
 					//size holder of the string
 					RecvBuffer(AClient,InBuffer[2], 2);
@@ -151,7 +153,7 @@ Revisions:
 [2006/08/12] Tsusai - Updated for Indy.
 [2006/09/26] Tsusai - Imported to Helios
 [2006/09/28] RaX - Re-formatted, re-indented, renamed - PIdx to PacketIndex,
-  CIdx to ClientBaseIndex to signify our supported client database or packet_db.
+	CIdx to ClientBaseIndex to signify our supported client database or packet_db.
 [yyyy/mm/dd] <Author> - <Comment>
 *-----------------------------------------------------------------------------*)
 Procedure ProcessZonePacket(AClient : TIdContext);
@@ -159,8 +161,8 @@ Var
 	Lth             : Integer;
 	AChara          : TCharacter;
 	ClientBaseIndex : Word; //Index of the packet in the packet(allowed client)
-                          //database (client-base).
-  PacketID        : Word; //The ID of a packet in said database.
+													//database (client-base).
+	PacketID        : Word; //The ID of a packet in said database.
 	PacketIndex     : Integer;
 	Found           : Boolean;
 	ABuffer         : TBuffer;

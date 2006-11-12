@@ -19,15 +19,15 @@ uses
 	SysUtils,
 	Classes,
 	XTimer,
-  SaveThread;
+	SaveThread;
 
 type
 //------------------------------------------------------------------------------
 //TMainProc                                                               CLASS
 //------------------------------------------------------------------------------
-  TMainProc = class(TComponent)
+	TMainProc = class(TComponent)
 	public
-    Run         : Boolean;
+		Run         : Boolean;
 
 		LoginServer : TIdTCPServer;
 		CharaServer : TIdTCPServer;
@@ -35,7 +35,7 @@ type
 
 		SaveTimer   : TXTimer;
 
-    procedure ForceSave(Sender : TObject);
+		procedure ForceSave(Sender : TObject);
 
 		procedure Console(Line : string);
 
@@ -53,7 +53,7 @@ type
 
 		constructor Create(AOwner : TComponent); override;
 		destructor  Destroy; override;
-  end;{TMainProc}
+	end;{TMainProc}
 //------------------------------------------------------------------------------
 
 var
@@ -98,7 +98,7 @@ end;{TMainProc.Console}
 //------------------------------------------------------------------------------
 procedure TMainProc.ForceSave(Sender : Tobject);
 begin
-  TSaveThread.Create;
+	TSaveThread.Create;
 end;{TMainProc.CharaServerConnect}
 
 //------------------------------------------------------------------------------
@@ -159,17 +159,17 @@ begin
 	end;
 	ThirdPartyCredits; //Load external credits file.
 
-  Run := TRUE;
+	Run := TRUE;
 
-  if ServerConfig.SaveLoop.Enabled then
-  begin
-    SaveTimer := TXTimer.Create;
-    SaveTimer.Interval := ServerConfig.SaveLoop.Interval;//needs to be a configuration variable.
-    SaveTimer.OnTimer  := ForceSave;
-    SaveTimer.Enabled  := TRUE;
-  end;
+	if ServerConfig.SaveLoop.Enabled then
+	begin
+		SaveTimer := TXTimer.Create;
+		SaveTimer.Interval := ServerConfig.SaveLoop.Interval;//needs to be a configuration variable.
+		SaveTimer.OnTimer  := ForceSave;
+		SaveTimer.Enabled  := TRUE;
+	end;
 
-  Console('- Startup Success');
+	Console('- Startup Success');
 	MainProc.Console('  For a list of console commands, input "/help".');
 
 end;{TMainProc.Startup}
@@ -190,20 +190,20 @@ procedure TMainProc.Shutdown;
 begin
 	Console('- Helios is shutting down...');
 
-  if Assigned(SaveTimer) then
-  begin
-    //Terminate the save loop, force a save, and free it.
-    SaveTimer.Enabled := FALSE;
-    SaveTimer.Free;
-    ForceSave(NIL);
-  end;
+	if Assigned(SaveTimer) then
+	begin
+		//Terminate the save loop, force a save, and free it.
+		SaveTimer.Enabled := FALSE;
+		SaveTimer.Free;
+		ForceSave(NIL);
+	end;
 
-  //Disconnect clients.
+	//Disconnect clients.
 	DeActivateServer(LoginServer);
 	DeActivateServer(CharaServer);
 	DeActivateServer(ZoneServer);
 
-  //Make sure globals are Free'd on Application exit.
+	//Make sure globals are Free'd on Application exit.
 	DestroyGlobals;
 
 end;{TMainProc.Shutdown}

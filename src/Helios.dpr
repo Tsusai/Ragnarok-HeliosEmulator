@@ -27,6 +27,10 @@
 //    		* Neither the name of Project Helios nor the names of its contributors
 //    			may be used to endorse or promote products derived from this
 //    			software without specific prior written permission.
+//    		* Use of original code in any COMMERCIAL item, not limited to programs
+//    			in other programming or human languages, derivatives, and anything
+//    			your head can think of on how to make money off our code, is
+//    			PROHIBITED WITHOUT EXPLICIT PERMISSION FROM THE AUTHORS.
 //
 //    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 //    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
@@ -43,6 +47,7 @@
 //
 //	Changes -
 //		September 20th, 2006 - RaX - Created Header.
+//		November  11th, 2006 - Tsusai - Updated License.
 //
 //------------------------------------------------------------------------------
 program Helios;

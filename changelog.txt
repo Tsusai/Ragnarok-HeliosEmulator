@@ -12,6 +12,20 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 48-
+[2006/11/11] - Tsusai - BUGFIX (God I did not want to see one of these...).  Removed the
+ usage of FreeAndNil(ADatabase); that RaX implemented.  Replaced with ADatabase.Free;  Odd
+ thing was that once a person logged into character server, it would no longer accept any
+ more connections.
+[2006/11/11] - Tsusai - ZoneCore & Console - Reindented.
+[2006/11/11] - Tsusai - Globals - MakeRNDString added, generates a random string based on 
+ what length we want.
+[2006/11/11] - Tsusai - PacketTypes - Added a TMd5String type to attach to our login client
+ information.
+[2006/11/11] - Tsusai - LoginProcesses - Implemented TMD5String and attached to the login
+ client info, and stored the randomly generated key in it (ONLY WHEN MD5 CONNECTIONS ARE USED)
+-
+
 - Rev 47-
 [2006/11/06] - Tsusai - Merged GameGlobals into GameConstants, and updated any/all units
  that used to call GameGlobals.
