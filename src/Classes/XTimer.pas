@@ -13,28 +13,29 @@ unit XTimer;
 
 interface
 uses
-  Classes,
-  Types;
+	Classes,
+	Types;
 
 type
 
 //------------------------------------------------------------------------------
 //TXTimer                                                                CLASS
 //------------------------------------------------------------------------------
-  TXTimer = class(TThread)
-  public
-    Interval    : Int64;
-    OnTimer     : TNotifyEvent;
-    Enabled     : Boolean;
-    Constructor Create();
-    Destructor  Destroy();override;
+	TXTimer = class(TThread)
+	public
+		Interval    : Int64;
+		OnTimer     : TNotifyEvent;
+		Enabled     : Boolean;
+		Constructor Create();
+		Destructor  Destroy();override;
 
-    Procedure   Execute;override;
-  end;
+		Procedure   Execute;override;
+	end;
 //------------------------------------------------------------------------------
 implementation
 uses
-  SysUtils;
+	SysUtils,
+	WinLinux;
 //------------------------------------------------------------------------------
 //TSaveLoop.Create                                                   CONSTRUCTOR
 //------------------------------------------------------------------------------
@@ -47,8 +48,8 @@ uses
 //------------------------------------------------------------------------------
 Constructor TXTimer.Create();
 begin
-  Interval    := 60;
-  Enabled     := FALSE;
+	Interval    := 60;
+	Enabled     := FALSE;
 	inherited Create(FALSE);
 end;
 //------------------------------------------------------------------------------
@@ -82,40 +83,40 @@ end;
 //------------------------------------------------------------------------------
 procedure TXTimer.Execute();
 var
-  EndLoop   : Boolean;
-  Index     : Integer;
+	EndLoop   : Boolean;
+	Index     : Integer;
 begin
-  inherited;
-  EndLoop := FALSE;
+	inherited;
+	EndLoop := FALSE;
 
-  Priority := TpLowest;
-  //makes sure we can enable and disable this as much as we want without the
-  //thread terminating on us.
-  while NOT Terminated do
-  begin
-    //while we're enabled keep track of cycles
-	  while Enabled do
-	  begin
-      for Index := 1 to (Interval*10) do
-      begin
-        if Enabled AND NOT Terminated then
-        begin
-          Sleep(100);
-        end else
-        begin
-          EndLoop := TRUE;
-          break;
-        end;
-      end;
-      //if our ontimer event exists, we execute it.
-      if Assigned(OnTimer) AND NOT EndLoop then
-      begin
-        self.OnTimer(NIL);
-      end;
-      //we reset the endloop variable for the next iteration.
-      EndLoop := FALSE;
-	  end;
-  end;
+	Priority := PriorityLow;//TpLowest;
+	//makes sure we can enable and disable this as much as we want without the
+	//thread terminating on us.
+	while NOT Terminated do
+	begin
+		//while we're enabled keep track of cycles
+		while Enabled do
+		begin
+			for Index := 1 to (Interval*10) do
+			begin
+				if Enabled AND NOT Terminated then
+				begin
+					Sleep(100);
+				end else
+				begin
+					EndLoop := TRUE;
+					break;
+				end;
+			end;
+			//if our ontimer event exists, we execute it.
+			if Assigned(OnTimer) AND NOT EndLoop then
+			begin
+				self.OnTimer(NIL);
+			end;
+			//we reset the endloop variable for the next iteration.
+			EndLoop := FALSE;
+		end;
+	end;
 
 end;
 //------------------------------------------------------------------------------

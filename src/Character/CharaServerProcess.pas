@@ -351,16 +351,13 @@ Root procedure to handling client connections to the Character Server.
  minimum.
 
 [2006/07/06] Tsusai - Added TThreadLink check for security
+[2006/11/11] Tsusai - Realized the Link var was not necessary.
 ------------------------------------------------------------------------------*)
-{ TODO -oTsusai -cCharacterServer :
-	Check against Prometheus Indy CharaServ prototype.  Must validate usage of
-	ReadFromStack and the looping of the parser }
 procedure ParseCharaServ(AClient : TIdContext);
 var
 	PacketLength  : Integer;
 	ABuffer       : TBuffer;
 	PacketID      : Word;
-	Link          : TThreadLink;
 begin
 	if AClient.Connection.Connected then
 	begin
@@ -372,8 +369,7 @@ begin
 			if (AClient.Data = nil) or not (AClient.Data is TThreadLink) then
 			begin
 				//Thread Data should have a TThreadLink object...if not, make one
-				Link := TThreadLink.Create;
-				AClient.Data := Link;
+				AClient.Data := TThreadlink.Create;
 			end;
 			//First time connection from login needs to do 0x0065.  No exceptions.
 			if TThreadLink(AClient.Data).AccountLink = nil then

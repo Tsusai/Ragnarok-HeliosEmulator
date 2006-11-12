@@ -2,24 +2,35 @@
 unit WinLinux;
 
 interface
+uses
+	{$IFDEF LINUX}
+	Libc,
+	{$ENDIF}
+	Classes;
 
 	function GetCardinalFromIPString(IPString : string) : Cardinal;
 	procedure SetupTerminationCapturing;
 	procedure KillTerminationCapturing;
 	procedure KillProcess;
 
+	const
+		{$IFDEF MSWINDOWS}
+		PriorityLow = tpLowest;
+		{$ENDIF}
+		{$IFDEF LINUX}
+		PriorityLow = PRIO_MIN;
+		{$ENDIF}
+
 
 implementation
 uses
-	Version,
-	Globals,
 	{$IFDEF MSWINDOWS}
 	Windows,
-	Winsock;
+	Winsock,
 	{$ENDIF}
-	{$IFDEF LINUX}
-	Libc;
-	{$ENDIF}
+	Version,
+	Globals;
+
 
 	function GetCardinalFromIPString(IPString : string) : Cardinal;
 	begin

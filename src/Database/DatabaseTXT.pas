@@ -95,11 +95,11 @@ Var
 	PacketInfo : TStringList;
 	ReadPtInfo : TStringList;
 Begin
-	if FileExists(AppPath + 'database\packet_db.txt') then
+	if FileExists(AppPath + 'Database/packet_db.txt') then
 	begin
 		//load the packet_db file
 		packet_db := TStringList.Create;
-		packet_db.LoadFromFile(AppPath + 'database\packet_db.txt');
+		packet_db.LoadFromFile(AppPath + 'Database/packet_db.txt');
 
 		CB := 0;
 		PK := 0;

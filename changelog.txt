@@ -12,6 +12,19 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 49-
+[2006/11/12] - Tsusai - Console : Cleaned up some uses, removed TThreadLink variable, not 
+ needed, added Zone Server OnConnect & OnExecute events.
+[2006/11/12] - Tsusai - CharaServerProcess - ParseCharaServ : Removed TThreadLink variable,
+ not needed.
+[2006/11/12] - Tsusai - WinLinux : Added a PriorityLow global constant.  Windows has tpLowest
+ while Linux is an integer (PRIO_MIN).
+[2006/11/12] - Tsusai - XTimer - TXTimer.Execute : Priority is now set to PriorityLow
+ constant. (Exisiting was not cross compilable)
+[2006/11/12] - Tsusai - DatabaseTXT - Load_PacketDB : Updated the FileExist paths, database
+ is now Database (case issue) and the \ in the path is now a / (pathing issue).
+-
+
 - Rev 48-
 [2006/11/11] - Tsusai - BUGFIX (God I did not want to see one of these...).  Removed the
  usage of FreeAndNil(ADatabase); that RaX implemented.  Replaced with ADatabase.Free;  Odd

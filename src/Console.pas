@@ -46,6 +46,9 @@ type
 		procedure LoginServerExecute(AConnection: TIdContext);
 		procedure CharaServerConnect(AConnection: TIdContext);
 		procedure CharaServerExecute(AConnection: TIdContext);
+		procedure ZoneServerConnect (AConnection: TIdContext);
+		procedure ZoneServerExecute (AConnection: TIdContext);
+
 		procedure ServerException(AConnection: TIdContext;
 			AException: Exception);
 
@@ -61,14 +64,19 @@ var
 
 implementation
 uses
+	{Internal}
 	StrUtils,
-	LoginProcesses,
-	CharaServerTypes,
+	{Helios}
 	CharaServerProcess,
+	CharaServerTypes,
+	Globals,
+	LoginProcesses,
 	PacketTypes,
-	WinLinux,
 	TCPServerRoutines,
-	Globals;
+	WinLinux,
+	ZoneCore
+	{Third Party}
+	;
 
 //------------------------------------------------------------------------------
 //TMainProc.Console()                                                 PROCEDURE
@@ -143,7 +151,7 @@ begin
 	ZoneServer.DefaultPort  := ServerConfig.ZonePort;
 	ActivateServer('Login',LoginServer);
 	ActivateServer('Character',CharaServer);
-	//ActivateServer('Zone',ZoneServer);
+	ActivateServer('Zone',ZoneServer);
 
 	MainProc.Console('');
 
@@ -170,7 +178,7 @@ begin
 	end;
 
 	Console('- Startup Success');
-	MainProc.Console('  For a list of console commands, input "/help".');
+	Console('  For a list of console commands, input "/help".');
 
 end;{TMainProc.Startup}
 //------------------------------------------------------------------------------
@@ -259,14 +267,12 @@ end;{TMainProc.LoginServerConnect}
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
+//		November  11th, 2006 - Tsusai - Removed Link variable, not needed.
 //
 //------------------------------------------------------------------------------
 procedure TMainProc.CharaServerConnect(AConnection: TIdContext);
-var
-	Link : TThreadLink;
 begin
-	Link := TThreadLink.Create;
-	AConnection.Data := Link;
+	AConnection.Data := TThreadLink.Create;
 end;{TMainProc.CharaServerConnect}
 //------------------------------------------------------------------------------
 
@@ -288,6 +294,40 @@ begin
 end;{TMainProc.ChaServerExecute}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TMainProc.ZoneServerConnect()                                           EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			An event which fires when a user connects to the Zone Server.
+//
+//	Changes -
+//		November 11th, 2006 - Tsusai - Created.
+//
+//------------------------------------------------------------------------------
+procedure TMainProc.ZoneServerConnect(AConnection: TIdContext);
+begin
+	AConnection.Data := TThreadLink.Create;
+end;{TMainProc.ZoneServerConnect}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//TMainProc.ZoneServerExecute()                                          EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			An event which fires when the server is started. It allows the server
+//    to accept incoming client connections.
+//
+//	Changes -
+//		November 11th, 2006 - Tsusai - Created.
+//
+//------------------------------------------------------------------------------
+procedure TMainProc.ZoneServerExecute(AConnection: TIdContext);
+begin
+	ProcessZonePacket(AConnection);
+end;{TMainProc.ZoneServerExecute}
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //TMainProc.ThirdPartyCredits()                                       PROCEDURE
@@ -343,6 +383,8 @@ begin
 	CharaServer.OnExecute := CharaServerExecute;
 	CharaServer.OnException := ServerException;
 
+	ZoneServer.OnConnect  := ZoneServerConnect;
+	ZoneServer.OnExecute  := ZoneServerExecute;
 	ZoneServer.OnException := ServerException;
 
 end;{TMainProc.Create}
