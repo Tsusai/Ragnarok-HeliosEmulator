@@ -11,6 +11,8 @@ unit Socket;
 
 interface
 uses
+	//IDE
+	Types,
 	//Helios
 	PacketTypes,
 	//3rd Party
@@ -20,6 +22,13 @@ uses
 	procedure WriteBufferWord(Index:word; WordIn:word; var Buffer : TBuffer);
 	procedure WriteBufferCardinal(Index:word; CardinalIn:cardinal; var Buffer : TBuffer);
 	procedure WriteBufferString(Index:word; StringIn:string; Count:word; var Buffer : TBuffer);
+	procedure WriteBufferPointAndDirection(
+		index:word;
+		xy:TPoint;
+		var Buffer : TBuffer;
+		Dir:byte = 0
+	);
+
 
 	function BufferReadByte(Index:word; var Buffer : TBuffer) : byte;
 	function BufferReadWord(Index:word; var Buffer : TBuffer) : word;
@@ -33,11 +42,11 @@ uses
 
 implementation
 uses
-	//IDE
+	{IDE}
+	Classes,
 	SysUtils,
-	IdGlobal,
-	Classes;
-
+	{Third Party}
+	IdGlobal;
 (*------------------------------------------------------------------------------
 PUSHING DATA INTO THE BUFFER METHODS
 ------------------------------------------------------------------------------*)
@@ -80,6 +89,26 @@ PUSHING DATA INTO THE BUFFER METHODS
 		end;
 	end;
 
+	procedure WriteBufferPointAndDirection(
+		index:word;
+		xy:TPoint;
+		var Buffer : TBuffer;
+		Dir:byte = 0
+	);
+	var
+		l   :cardinal;
+		ByteArray  :array[1..3] of byte;
+	begin
+		l := (((xy.X and $3ff) shl 14) or ((xy.Y and $3ff) shl 4));
+		Move(l, ByteArray[1], 3);
+		ByteArray[3] := ByteArray[1];
+		ByteArray[1] := ByteArray[2];
+		ByteArray[2] := ByteArray[3];
+		ByteArray[2] := (ByteArray[2] or (Dir and $f));
+		Move(ByteArray[1], Buffer[index], 3);
+	End; (* Proc WriteBufferPointAndDirection
+*-----------------------------------------------------------------------------*)
+
 (*------------------------------------------------------------------------------
 READING DATA FROM THE BUFFER METHODS
 ------------------------------------------------------------------------------*)
@@ -117,7 +146,6 @@ READING DATA FROM THE BUFFER METHODS
 		Result := StringOut;
 	end;
 
-
 (*------------------------------------------------------------------------------
 PREMADE SENDING OF BUFFER TO CLIENT
 ------------------------------------------------------------------------------*)
@@ -141,7 +169,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 	end;
 
 
-	//Socket Method SendBuffer - Writes the buffer to the socket.
+	//Socket Method RecvBuffer - Reads the buffer from the socket.
 	procedure RecvBuffer(AClient : TIdContext; var Buffer; Size : Cardinal);
 	var
 		RecvBytes : TIdBytes;

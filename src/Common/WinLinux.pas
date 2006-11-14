@@ -12,6 +12,7 @@ uses
 	procedure SetupTerminationCapturing;
 	procedure KillTerminationCapturing;
 	procedure KillProcess;
+	function GetTick : Cardinal;
 
 	const
 		{$IFDEF MSWINDOWS}
@@ -26,6 +27,7 @@ implementation
 uses
 	{$IFDEF MSWINDOWS}
 	Windows,
+	MMSystem,
 	Winsock,
 	{$ENDIF}
 	Version,
@@ -78,6 +80,21 @@ uses
 		{$ENDIF}
 		{$IFDEF LINUX}
 		kill(getpid,3);
+		{$ENDIF}
+	end;
+
+	function GetTick : cardinal;
+	{$IFDEF LINUX}
+	var
+		LinuxInfo : TSysInfo;
+	{$ENDIF}
+	begin
+		{$IFDEF MSWINDOWS}
+		Result := timegettime();
+		{$ENDIF}
+    {$IFDEF LINUX}
+		sysinfo(LinuxInfo);
+		Result := LinuxInfo.uptime;
 		{$ENDIF}
 	end;
 

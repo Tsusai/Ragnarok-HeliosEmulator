@@ -162,9 +162,9 @@ Begin
 				ExecCommand := NoCommand;
 				ExecAvoidSelfCommand := NoCommand;
 				//Find the right procedure to assign to the database
-				{if Command = 'loadendack' then begin
-					ExecCommand := DisplayMap;
-				end else if Command = 'ticksend' then begin
+				if Command = 'loadendack' then begin
+					ExecCommand := ShowMap;
+				end ;{else if Command = 'ticksend' then begin
 					ExecCommand := Tick;
 				end else if Command = 'walktoxy' then begin
 					ExecCommand := CharacterWalk;

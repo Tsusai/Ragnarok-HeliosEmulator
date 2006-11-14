@@ -100,7 +100,6 @@ Upon successful authentication, this procedure sends the list of character
 		//New database system added 09/29/06 - RaX
 		ADatabase := TDatabase.Create();
 		AnAccount := ADatabase.AnInterface.GetAccount(UserName);
-		ADatabase.Free;
 		if Assigned(AnAccount) then begin
 			AccountPassword := AnAccount.Password;
 			if (AClient.Data is TMD5String) then
@@ -110,9 +109,12 @@ Upon successful authentication, this procedure sends the list of character
 			if not(MD5Key = '') then AccountPassword := GetMD5(MD5Key + AccountPassword);
 			if AccountPassword = Password then
 			begin
-				AnAccount.LoginKey[1] := BufferReadCardinal(54,RecvBuffer);
-				AnAccount.LoginKey[2] := BufferReadCardinal(58,RecvBuffer);
+				AnAccount.LoginKey[1] := Random($7FFFFFFF) + 1;
+				AnAccount.LoginKey[2] := Random($7FFFFFFF) + 1;
 				AnAccount.LastIP := AClient.Connection.Socket.Binding.PeerIP;
+				AnAccount.LastLoginTime := Now;
+				Inc(AnAccount.LoginCount);
+				ADatabase.AnInterface.SaveAccount(AnAccount);
 				SendCharacterServers(AnAccount,AClient);
 			end else begin
 				SendLoginError(AClient,LOGIN_INVALIDPASSWORD);
@@ -120,6 +122,7 @@ Upon successful authentication, this procedure sends the list of character
 		end else begin
 			SendLoginError(AClient,LOGIN_UNREGISTERED);
 		end;
+		ADatabase.Free;
 	end;
 
 	function ReadMD5Password(

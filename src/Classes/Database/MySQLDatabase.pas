@@ -13,10 +13,10 @@ unit MySQLDatabase;
 
 interface
 uses
-  DatabaseTemplate,
+	DatabaseTemplate,
 	Character,
-  CharaList,
-  Account,
+	CharaList,
+	Account,
 	uMysqlClient;
 type
 //------------------------------------------------------------------------------
@@ -30,15 +30,17 @@ type
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-  TMySQLDatabase = class(TDatabaseTemplate)
-  public
-    Connection   : TMySQLClient;
+	TMySQLDatabase = class(TDatabaseTemplate)
+	private
+		Connection   : TMySQLClient;
+	public
 
-    Constructor Create();override;
-    Destructor Destroy();override;
+
+		Constructor Create(UseGameDatabase : boolean); reintroduce; overload;
+		Destructor Destroy();override;
 
 		function GetAccount(ID    : Cardinal) : TAccount;overload;override;
-    function GetAccount(Name  : string) : TAccount;overload;override;
+		function GetAccount(Name  : string) : TAccount;overload;override;
 
 		function CreateChara(
 			var ACharacter : TCharacter;
@@ -46,20 +48,25 @@ type
 			NName : string
 		) : boolean;override;
 
-    function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
+		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
 		function LoadChara(CharaID : Cardinal) : TCharacter;override;
 		function GetChara(CharaID : Cardinal) : TCharacter;override;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
-    function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;override;
-    function CharaExists(Name : String) : Boolean;overload;override;
+		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;override;
+		function CharaExists(Name : String) : Boolean;overload;override;
 
 		procedure SaveAccount(AnAccount : TAccount);override;
 		procedure SaveChara(AChara : TCharacter);override;
 
-  protected
-    procedure Connect();override;
-    procedure Disconnect();override;
-  end;
+	protected
+		procedure Connect(UseGameDatabase : Boolean); reintroduce;overload;
+		function SendQuery(
+			const QString : string;
+			StoreResult : boolean;
+			var ExecutedOK : boolean
+		) : TMySQLResult;
+		procedure Disconnect();override;
+	end;
 //------------------------------------------------------------------------------
 
 implementation
@@ -67,9 +74,9 @@ implementation
 		Types,
 		GameConstants,
 		Globals,
-    Console,
-    SysUtils,
-    Classes;
+		Console,
+		SysUtils,
+		Classes;
 //------------------------------------------------------------------------------
 //TMySQLDatabase.Create()                                          CONSTRUCTOR
 //------------------------------------------------------------------------------
@@ -78,12 +85,13 @@ implementation
 //
 //	Changes -
 //		October 5th, 2006 - RaX - Created.
+//		November 13th, 2006 - Tsusai - create inherit comes first.
 //
 //------------------------------------------------------------------------------
-Constructor TMySQLDatabase.Create();
+Constructor TMySQLDatabase.Create(UseGameDatabase : boolean);
 begin
-  Connect;
-  inherited;
+	inherited Create;
+	Connect(UseGameDatabase);
 end;
 //------------------------------------------------------------------------------
 
@@ -99,8 +107,8 @@ end;
 //------------------------------------------------------------------------------
 Destructor TMySQLDatabase.Destroy();
 begin
-  Disconnect;
-  inherited;
+	Disconnect;
+	inherited;
 end;
 //------------------------------------------------------------------------------
 
@@ -114,30 +122,53 @@ end;
 //		October 5th, 2006 - RaX - Moved here from globals.
 //
 //------------------------------------------------------------------------------
-Procedure TMySQLDatabase.Connect();
+Procedure TMySQLDatabase.Connect(UseGameDatabase : boolean);
 begin
 	if Not Assigned(Connection) then
 	begin
 		Connection := TMySQLClient.Create;
 	end;
-  if NOT Connection.Connected then
-  begin
-           
-	  Connection.Host            := ServerConfig.MySQLHost;
-	  Connection.Port            := ServerConfig.MySQLPort;
-	  Connection.Db              := ServerConfig.MySQLDB;
-	  Connection.User            := ServerConfig.MySQLUser;
-	  Connection.Password        := ServerConfig.MySQLPass;
-	  Connection.ConnectTimeout  := 10;
+	if NOT Connection.Connected then
+	begin
+		if Not UseGameDatabase then //Access the Common database
+		begin
+			Connection.Host            := ServerConfig.MySQLCommonHost;
+			Connection.Port            := ServerConfig.MySQLCommonPort;
+			Connection.Db              := ServerConfig.MySQLCommonDB;
+			Connection.User            := ServerConfig.MySQLCommonUser;
+			Connection.Password        := ServerConfig.MySQLCommonPass;
+		end else //Access the Game database
+		begin
+			Connection.Host            := ServerConfig.MySQLGameHost;
+			Connection.Port            := ServerConfig.MySQLGamePort;
+			Connection.Db              := ServerConfig.MySQLGameDB;
+			Connection.User            := ServerConfig.MySQLGameUser;
+			Connection.Password        := ServerConfig.MySQLGamePass;
+		end;
+	end;
 
-	  if NOT Connection.Connect then
-    begin
-		  MainProc.Console('*****Could not connect to mySQL database server.');
-	  end;
-    
-  end;
+	Connection.ConnectTimeout  := 10;
+
+	if NOT Connection.Connect then
+	begin
+		MainProc.Console('*****Could not connect to mySQL database server.');
+	end;
+
 end;
 //------------------------------------------------------------------------------
+
+function TMySQLDatabase.SendQuery(
+	const QString : string;
+	StoreResult : boolean;
+	var ExecutedOK : boolean
+) : TMySQLResult;
+begin
+	Result := Connection.query(QString,StoreResult,ExecutedOK);
+	if not ExecutedOK then
+	begin
+		MainProc.Console('MySQL Query error: ' + QString);
+	end;
+end;
 
 //------------------------------------------------------------------------------
 //TMySQLDatabase.Disconnect()                                         Procedure
@@ -151,12 +182,32 @@ end;
 //------------------------------------------------------------------------------
 Procedure TMySQLDatabase.Disconnect();
 begin
-  if Connection.Connected then
-  begin
-    Connection.close;
-  end;
+	if Connection.Connected then
+	begin
+		Connection.close;
+	end;
 end;
 //------------------------------------------------------------------------------
+
+procedure SetAccount(
+	var AnAccount : TAccount;
+	var QueryResult : TMySQLResult
+);
+begin
+	AnAccount := TAccount.Create;
+	AnAccount.ID          := StrToInt(QueryResult.FieldValue(0));
+	AnAccount.Username    := QueryResult.FieldValue(1);
+	AnAccount.Password    := QueryResult.FieldValue(2);
+	//Tsusai - For Gender, we need to return the first char, thats
+	//why there is a [0]
+	AnAccount.Gender      := QueryResult.FieldValue(4)[0];
+	AnAccount.LoginCount  := StrToIntDef(QueryResult.FieldValue(5),0);
+	AnAccount.EMail       := QueryResult.FieldValue(6);
+	AnAccount.LoginKey[1] := StrToIntDef(QueryResult.FieldValue(7),0);
+	AnAccount.LoginKey[1] := StrToIntDef(QueryResult.FieldValue(8),0);
+	AnAccount.Level       := StrToIntDef(QueryResult.FieldValue(9),0);
+	AnAccount.LastIP      := QueryResult.FieldValue(12);
+end;
 
 //------------------------------------------------------------------------------
 //TMySQLDatabase.GetAccount()                               OVERLOADED FUNCTION
@@ -167,17 +218,19 @@ end;
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
+//													set the data
 //
 //------------------------------------------------------------------------------
 function TMySQLDatabase.GetAccount(ID: Cardinal) : TAccount;
 var
 	Success     : Boolean;
 	AnAccount   : TAccount;
-  Index       : Integer;
-  QueryResult : TMySQLResult;
+	Index       : Integer;
+	QueryResult : TMySQLResult;
 begin
-  Result := NIL;
-  //Check Memory
+	Result := NIL;
+	//Check Memory
 	if not Assigned(AccountList) then Accountlist := TStringlist.Create;
 	for Index := 0 to AccountList.Count -1 do begin
 		if TAccount(AccountList.Objects[Index]).ID = ID then
@@ -187,19 +240,14 @@ begin
 		end;
 	end;
 
-  QueryResult := Connection.query('SELECT * FROM login WHERE account_id = "'+IntToStr(ID)+'";',true,Success);
+	QueryResult := SendQuery('SELECT * FROM login WHERE account_id = "'+IntToStr(ID)+'";',true,Success);
 	if Success and (QueryResult.RowsCount = 1) then begin
 		MainProc.Console('Account found in chara server');
-		AnAccount := TAccount.Create;
-		AnAccount.ID := StrToInt(QueryResult.FieldValue(0));
-		AnAccount.Username := QueryResult.FieldValue(1);
-		AnAccount.Password := QueryResult.FieldValue(2);
-		AnAccount.Gender   := QueryResult.FieldValue(4)[0];
-		AnAccount.EMail    := QueryResult.FieldValue(6);
-    AccountList.AddObject(AnAccount.Username, AnAccount);
+		SetAccount(AnAccount,QueryResult);
+		AccountList.AddObject(AnAccount.Username, AnAccount);
 		Result := AnAccount;
 	end;
-  if Assigned(QueryResult) then QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------
 
@@ -213,17 +261,19 @@ end;
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
+//													set the data
 //
 //------------------------------------------------------------------------------
 function TMySQLDatabase.GetAccount(Name : string) : TAccount;
 var
 	Success     : Boolean;
 	AnAccount   : TAccount;
-  Index       : Integer;
-  QueryResult : TMySQLResult;
+	Index       : Integer;
+	QueryResult : TMySQLResult;
 begin
-  Result := NIL;
-  //Check Memory
+	Result := NIL;
+	//Check Memory
 	if not Assigned(AccountList) then Accountlist := TStringlist.Create;
 	for Index := 0 to AccountList.Count -1 do begin
 		if TAccount(AccountList.Objects[Index]).Username = Name then
@@ -233,19 +283,14 @@ begin
 		end;
 	end;
 
-  QueryResult := Connection.query('SELECT * FROM login WHERE userid = "'+Name+'";',true,Success);
+	QueryResult := SendQuery('SELECT * FROM login WHERE userid = "'+Name+'";',true,Success);
 	if Success and (QueryResult.RowsCount = 1) then begin
 		MainProc.Console('Account found in chara server');
-		AnAccount := TAccount.Create;
-		AnAccount.ID := StrToInt(QueryResult.FieldValue(0));
-		AnAccount.Username := QueryResult.FieldValue(1);
-		AnAccount.Password := QueryResult.FieldValue(2);
-		AnAccount.Gender   := QueryResult.FieldValue(4)[0];
-		AnAccount.EMail    := QueryResult.FieldValue(6);
-    AccountList.AddObject(AnAccount.Username, AnAccount);
+		SetAccount(AnAccount,QueryResult);
+		AccountList.AddObject(AnAccount.Username, AnAccount);
 		Result := AnAccount;
 	end;
-  if Assigned(QueryResult) then QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------
 
@@ -294,32 +339,32 @@ end;
 //------------------------------------------------------------------------------
 function TMySQLDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
 var
-  QueryResult     : TMySQLResult;
-  Success         : Boolean;
-  ACharacterList  : TCharacterList;
-  Index           : Integer;
+	QueryResult     : TMySQLResult;
+	Success         : Boolean;
+	ACharacterList  : TCharacterList;
+	Index           : Integer;
 begin
-  Result := NIL;
-  ACharacterList := TCharacterList.Create;
-  QueryResult := Connection.query(
-    Format('SELECT char_id FROM `char` WHERE account_id = %d and char_num < 9;',
-    [AccountID]),TRUE,Success);
-  if Success then
-  begin
-    if QueryResult.RowsCount > 0 then
-    begin
-      for Index := 0 to QueryResult.RowsCount - 1 do
-      begin
-        ACharacterList.Add(GetChara(StrToInt(QueryResult.FieldValue(0))));
-        if Index < QueryResult.RowsCount then
-        begin
-          QueryResult.Next;
-        end;
+	Result := NIL;
+	ACharacterList := TCharacterList.Create;
+	QueryResult := SendQuery(
+		Format('SELECT char_id FROM `char` WHERE account_id = %d and char_num < 9;',
+		[AccountID]),TRUE,Success);
+	if Success then
+	begin
+		if QueryResult.RowsCount > 0 then
+		begin
+			for Index := 0 to QueryResult.RowsCount - 1 do
+			begin
+				ACharacterList.Add(GetChara(StrToInt(QueryResult.FieldValue(0))));
+				if Index < QueryResult.RowsCount then
+				begin
+					QueryResult.Next;
+				end;
 
-      end;
-      Result := ACharacterList;
-    end;
-  end;
+			end;
+			Result := ACharacterList;
+		end;
+	end;
 end;
 //-----------------------------------------------------------------------------
 
@@ -335,25 +380,25 @@ end;
 //------------------------------------------------------------------------------
 function TMySQLDatabase.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
 var
-  QueryResult : TMySQLResult;
-  Success     : Boolean;
+	QueryResult : TMySQLResult;
+	Success     : Boolean;
 begin
-  QueryResult :=
-			Connection.query(
+	QueryResult :=
+			SendQuery(
 			Format('SELECT * FROM `char` WHERE char_num = %d and account_id = %d',[Slot, AccountID]),true, Success);
-  if Success then
-  begin
-    if QueryResult.RowsCount > 0 then
-    begin
-      Result := TRUE;
-    end else
-    begin
-      Result := FALSE;
-    end;
-  end else
-  begin
-    Result := FALSE;
-  end;
+	if Success then
+	begin
+		if QueryResult.RowsCount > 0 then
+		begin
+			Result := TRUE;
+		end else
+		begin
+			Result := FALSE;
+		end;
+	end else
+	begin
+		Result := FALSE;
+	end;
 end;
 //------------------------------------------------------------------------------
 
@@ -369,29 +414,26 @@ end;
 //------------------------------------------------------------------------------
 function TMySQLDatabase.CharaExists(Name : String) : Boolean;
 var
-  QueryResult : TMySQLResult;
-  Success     : Boolean;
+	QueryResult : TMySQLResult;
+	Success     : Boolean;
 begin
-  QueryResult :=
-			Connection.query(
+	QueryResult :=
+			SendQuery(
 			Format('SELECT name FROM `char` WHERE name = "%s"',[Name]),true,Success);
-  if Success then
-  begin
-    if QueryResult.RowsCount > 0 then
-    begin
-      Result := TRUE;
-    end else
-    begin
-      Result := FALSE;
-    end;
-  end else
-  begin
-    Result := FALSE;
-  end;
+	if Success then
+	begin
+		if QueryResult.RowsCount > 0 then
+		begin
+			Result := TRUE;
+		end else
+		begin
+			Result := FALSE;
+		end;
+	end else
+	begin
+		Result := FALSE;
+	end;
 end;
- {SQLQueryResult :=
-		SQLConnection.query(
-		}
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
@@ -405,7 +447,42 @@ end;
 //
 //------------------------------------------------------------------------------
 procedure TMySQLDatabase.SaveAccount(AnAccount: TAccount);
+const
+	BaseString =
+		'UPDATE login SET '+
+		'userid=''%s'', ' +
+		'user_pass=''%s'', ' +
+		'lastlogin=%d, ' +
+		'sex=''%s'', ' +
+		'logincount=%d, ' +
+		'email=''%s'', ' +
+		'loginkey1=%d, ' +
+		'loginkey2=%d, ' +
+		'last_ip=''%s'' ' +
+		'WHERE account_id=%d;';
+var
+	Success : boolean;
+	QueryString : string;
 begin
+	QueryString :=
+		Format(BaseString,
+			[AnAccount.Username,
+			 AnAccount.Password,
+			 StrToInt64(
+				 FormatDateTime('yyyymmddhhmmss',AnAccount.LastLoginTime)),
+			 AnAccount.Gender,
+			 AnAccount.LoginCount,
+			 AnAccount.EMail,
+			 AnAccount.LoginKey[1],
+			 AnAccount.LoginKey[2],
+			 AnAccount.LastIP,
+			 AnAccount.ID]
+		);
+	SendQuery(QueryString, FALSE, Success);
+	if not Success then
+	begin
+		Writeln('Account save failed : ' + Querystring);
+	end;
 
 end;
 //------------------------------------------------------------------------------
@@ -526,7 +603,7 @@ begin
 			CID
 			]);
 	end;
-	Connection.Query(QueryString, FALSE, Success);
+	SendQuery(QueryString, FALSE, Success);
 end;
 //------------------------------------------------------------------------------
 
@@ -537,17 +614,17 @@ function TMySQLDatabase.CreateChara(
 ) : boolean;
 var
 	Success     : boolean;
-  QueryResult : TMySQLResult;
+	QueryResult : TMySQLResult;
 begin
 	Result := FALSE;
-	Connection.query(
+	SendQuery(
 		Format('INSERT INTO `char` (account_id, name) VALUES(%d, "%s");',
 		[AID,NName])
 	,TRUE,Success);
 	if Success then
 	begin
 		QueryResult :=
-				Connection.query(
+				SendQuery(
 				Format('SELECT char_id FROM `char` WHERE account_id = %d AND name = "%s";',
 				[AID,NName])
 			,TRUE,Success);
@@ -556,7 +633,7 @@ begin
 			ACharacter := GetChara(StrToInt(QueryResult.FieldValue(0)));
 			Result := Assigned(ACharacter);
 		end;
-    if Assigned(QueryResult) then QueryResult.Free;
+		if Assigned(QueryResult) then QueryResult.Free;
 	end;
 end;
 
@@ -564,10 +641,10 @@ function TMySQLDatabase.LoadChara(CharaID : Cardinal) : TCharacter;
 var
 	Success     : Boolean;
 	APoint      : TPoint;
-  QueryResult : TMySQLResult;
+	QueryResult : TMySQLResult;
 begin
 	QueryResult :=
-		Connection.query(
+		SendQuery(
 		Format('SELECT * FROM `char` WHERE char_id = %d;',
 			[CharaID])
 		,TRUE,Success);
@@ -636,12 +713,12 @@ begin
 			DataChanged := false;
 		end;
 	end else Result := nil;
-  if Assigned(QueryResult) then QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;
 
 function TMySQLDatabase.DeleteChara(var ACharacter : TCharacter) : boolean;
 begin
-	Connection.query(
+	SendQuery(
 		Format('DELETE FROM `char` WHERE char_id=%d',[ACharacter.CID]),
 		FALSE,Result
 	);

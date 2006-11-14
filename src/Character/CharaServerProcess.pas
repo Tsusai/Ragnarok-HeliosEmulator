@@ -58,15 +58,17 @@ var
 	Count       : Byte;
 	PacketSize  : Word;
 	Ver         : Byte;
-  ADatabase   : TDatabase;
+	ACommonDatabase  : TDatabase;
+	AGameDatabase  : TDatabase;
   ACharaList  : TCharacterList;
 begin
 	Count     := 0;
 	Ver       := 24;
-	ADatabase := TDatabase.Create();
+	ACommonDatabase := TDatabase.Create;
+	AGameDatabase := TDatabase.Create(true);
 
 	AccountID := BufferReadCardinal(2, ABuffer);
-	AnAccount := ADatabase.AnInterface.GetAccount(AccountID);
+	AnAccount := ACommonDatabase.AnInterface.GetAccount(AccountID);
 
 	if Assigned(AnAccount) then
 	begin
@@ -79,7 +81,7 @@ begin
 				TThreadLink(AClient.Data).AccountLink := AnAccount;
 				SendPadding(AClient); //Legacy padding
 
-				ACharaList := ADatabase.AnInterface.GetAccountCharas(AccountID);
+				ACharaList := ACommonDatabase.AnInterface.GetAccountCharas(AccountID);
 				for Index := 0 to ACharaList.Count-1 do
 				begin
 					ACharacter := ACharaList.List[Index];
@@ -143,7 +145,8 @@ begin
 		end;
 	end;
 
-	ADatabase.Free;
+	ACommonDatabase.Free;
+	AGameDatabase.Free;
 end; (* proc SendCharas
 ------------------------------------------------------------------------------*)
 
@@ -189,7 +192,7 @@ var
 	end;
 
 begin
-	ADatabase   := TDatabase.Create;
+	ADatabase   := TDatabase.Create(true);
 	Validated   := TRUE; //Assume passes all checks.
 
 	Account     := TThreadLink(AClient.Data).AccountLink;
@@ -317,7 +320,7 @@ var
 	end;
 
 begin
-	ADatabase := TDatabase.Create();
+	ADatabase := TDatabase.Create(true);
 	CharacterID := BufferReadCardinal(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TThreadLink(AClient.Data).AccountLink;

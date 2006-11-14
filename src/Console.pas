@@ -140,6 +140,7 @@ procedure TMainProc.Startup;
 var
 	LocalCharaServ : TCharaServ;
 begin
+	ThirdPartyCredits; //Load external credits file.
 	AppPath  := ExtractFilePath(ParamStr(0));
 
 	InitGlobals;
@@ -149,7 +150,7 @@ begin
 	LoginServer.DefaultPort := ServerConfig.LoginPort;
 	CharaServer.DefaultPort := ServerConfig.CharaPort;
 	ZoneServer.DefaultPort  := ServerConfig.ZonePort;
-	ActivateServer('Login',LoginServer);
+	if ServerConfig.LoginActive then ActivateServer('Login',LoginServer);
 	ActivateServer('Character',CharaServer);
 	ActivateServer('Zone',ZoneServer);
 
@@ -165,7 +166,6 @@ begin
 		LocalCharaServ.Port := CharaServer.DefaultPort;
 		CharaServerList.AddObject(LocalCharaServ.ServerName,LocalCharaServ);
 	end;
-	ThirdPartyCredits; //Load external credits file.
 
 	Run := TRUE;
 

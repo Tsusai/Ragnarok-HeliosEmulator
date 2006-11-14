@@ -32,9 +32,9 @@ type
 //------------------------------------------------------------------------------
 	TDatabaseTemplate = class(TObject)
 	public
-    Constructor Create();virtual;
-    Destructor Destroy();override;
-    function GetAccount(ID    : Cardinal) : TAccount;overload;virtual;
+		Constructor Create(); virtual;
+		Destructor Destroy();override;
+		function GetAccount(ID    : Cardinal) : TAccount;overload;virtual;
 		function GetAccount(Name  : string) : TAccount;overload;virtual;
 		function CreateChara(
 			var ACharacter : TCharacter;
@@ -52,8 +52,8 @@ type
 		procedure SaveAccount(AnAccount : TAccount);virtual;
 		procedure SaveChara(AChara : TCharacter);virtual;
   protected
-    procedure Connect();virtual;
-    procedure Disconnect();virtual;
+		procedure Connect();virtual;
+		procedure Disconnect();virtual;
   end;
 //------------------------------------------------------------------------------
   //function CreateDatabase() : TDatabase;
@@ -72,12 +72,12 @@ implementation
 //------------------------------------------------------------------------------
 Constructor TDatabaseTemplate.Create();
 begin
-  inherited;
+	inherited;
 end;
 
 Destructor TDatabaseTemplate.Destroy();
 begin
-  inherited;
+	inherited;
 end;
 
 procedure TDatabaseTemplate.Connect();
@@ -90,12 +90,12 @@ end;
 
 function TDatabaseTemplate.GetAccount(ID: Cardinal) : TAccount;
 begin
-  Result := NIL;
+	Result := NIL;
 end;
 
 function TDatabaseTemplate.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
 begin
-  Result := NIL;
+	Result := NIL;
 end;
 
 function TDatabaseTemplate.GetAccount(Name : string) : TAccount;

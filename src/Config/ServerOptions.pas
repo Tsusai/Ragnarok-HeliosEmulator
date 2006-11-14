@@ -7,6 +7,8 @@
 //
 //	Changes -
 //		September 21st, 2006 - RaX - Created Header.
+//		November 13th, 2006 - Tsusai - Added new options, covering the dual 
+//		 databases, and rearangements.
 //
 //------------------------------------------------------------------------------
 unit ServerOptions;
@@ -40,17 +42,24 @@ end;
 			fWAN_IP    : string;
 			fLAN_IP    : string;
 
+			fLoginActive : boolean;
 			fEnableMF  : Boolean;
 
 			fServerName : String;
 
 			fDatabaseType : Integer;
 
-			fMySQLHost : string;
-			fMySQLPort : integer;
-			fMySQLDB   : string;
-			fMySQLUser : string;
-			fMySQLPass : string;
+			fMySQLCommonHost : string;
+			fMySQLCommonPort : integer;
+			fMySQLCommonDB   : string;
+			fMySQLCommonUser : string;
+			fMySQLCommonPass : string;
+
+			fMySQLGameHost : string;
+			fMySQLGamePort : integer;
+			fMySQLGameDB   : string;
+			fMySQLGameUser : string;
+			fMySQLGamePass : string;
 
 			procedure SetLoginPort(Value : word);
 			procedure SetCharaPort(Value : word);
@@ -68,26 +77,34 @@ end;
 		public
       SaveLoop  : TSaveLoopConfig;
 			//Communication
-			property LoginPort : Word read fLoginPort write SetLoginPort;
-			property CharaPort : Word read fCharaPort write SetCharaPort;
 			property ZonePort  : Word read fZonePort  write SetZonePort;
-
 			property LAN_IP : string read fLAN_IP write SetLAN_IP;
 			property WAN_IP : string read fWAN_IP write SetWAN_IP;
+			property DatabaseType : Integer read fDatabaseType write SetDatabaseType;
+
 			//LoginOptions
 			property EnableMF : boolean read fEnableMF write SetEnableMF;
+			property LoginPort : Word read fLoginPort write SetLoginPort;
+			property LoginActive : boolean read fLoginActive;
 
 			//CharaOptions
 			property ServerName : String read fServerName write SetServerName;
-
-      property DatabaseType : Integer read fDatabaseType write SetDatabaseType;
+			property CharaPort : Word read fCharaPort write SetCharaPort;
 
 			//MySQL - Best to turn off the server BEFORE editing this stuff anywho.
-			property MySQLHost : string Read fMySQLHost;
-			property MySQLPort : integer read fMySQLPort;
-			property MySQLDB   : string Read fMySQLDB;
-			property MySQLUser : string Read fMySQLUser;
-			property MySQLPass : string Read fMySQLPass;
+			//Common Information Database
+			property MySQLCommonHost : string Read fMySQLCommonHost;
+			property MySQLCommonPort : integer read fMySQLCommonPort;
+			property MySQLCommonDB   : string Read fMySQLCommonDB;
+			property MySQLCommonUser : string Read fMySQLCommonUser;
+			property MySQLCommonPass : string Read fMySQLCommonPass;
+
+			//Game Specific Database
+			property MySQLGameHost : string Read fMySQLGameHost;
+			property MySQLGamePort : integer read fMySQLGamePort;
+			property MySQLGameDB   : string Read fMySQLGameDB;
+			property MySQLGameUser : string Read fMySQLGameUser;
+			property MySQLGamePass : string Read fMySQLGamePass;
 
 			//Public methods
 			procedure Load;
@@ -128,11 +145,9 @@ implementation
 			if Section.Values['LAN_IP'] = '' then fLAN_IP := '127.0.0.1'
 			else fLAN_IP := Section.Values['LAN_IP'];
 
-			fLoginPort   := StrToIntDef(Section.Values['LoginPort'], 6900);
-			fCharaPort   := StrToIntDef(Section.Values['CharaPort'], 6121);
 			fZonePort    := StrToIntDef(Section.Values['ZonePort'], 5121);
 
-      fDatabaseType:= StrToIntDef(Section.Values['DatabaseType'], 1);
+			fDatabaseType:= StrToIntDef(Section.Values['DatabaseType'], 1);
 
 		end;{Subroutine LoadCommunication}
     //--------------------------------------------------------------------------
@@ -142,8 +157,10 @@ implementation
     //--------------------------------------------------------------------------
 		procedure LoadLoginOptions;
 		begin
-			ReadSectionValues('LoginOptions', Section);
+			ReadSectionValues('LoginServer', Section);
 			fEnableMF    := StrToBoolDef(Section.Values['EnableMF'] ,false);
+			fLoginActive := StrToBoolDef(Section.Values['Active'] ,true);
+			fLoginPort   := StrToIntDef(Section.Values['Port'], 6900);
 		end;{Subroutine LoadLoginOptions}
     //--------------------------------------------------------------------------
 
@@ -152,13 +169,14 @@ implementation
     //--------------------------------------------------------------------------
 		procedure LoadCharaOptions;
 		begin
-			ReadSectionValues('CharaOptions', Section);
+			ReadSectionValues('CharacterServer', Section);
 
 			if Section.Values['ServerName'] = '' then begin
 				Section.Values['ServerName'] := 'Helios';
 			end;
 			
 			fServerName    := Section.Values['ServerName'];
+			fCharaPort     := StrToIntDef(Section.Values['Port'], 6121);
 		end;{Subroutine LoadCharaOptions}
     //--------------------------------------------------------------------------
 
@@ -169,20 +187,38 @@ implementation
 		begin
 			ReadSectionValues('MySQL', Section);
 
-			if Section.Values['Host'] = '' then begin
-				Section.Values['Host'] := '127.0.0.1';
+			//Accounts
+			if Section.Values['Common_Host'] = '' then begin
+				Section.Values['Common_Host'] := '127.0.0.1';
 			end;
-			fMySQLHost := Section.Values['Host'];
-			fMySQLPort := StrToIntDef(Section.Values['Port'], 3306);
-			if Section.Values['Database'] = '' then begin
-				Section.Values['Database'] := 'Helios';
+			fMySQLCommonHost := Section.Values['Common_Host'];
+			fMySQLCommonPort := StrToIntDef(Section.Values['Common_Port'], 3306);
+			if Section.Values['Common_Database'] = '' then begin
+				Section.Values['Common_Database'] := 'Helios';
 			end;
-			fMySQLDB := Section.Values['Database'];
-			if Section.Values['Username'] = '' then begin
-				Section.Values['Username'] := 'root';
+			fMySQLCommonDB := Section.Values['Common_Database'];
+			if Section.Values['Common_Username'] = '' then begin
+				Section.Values['Common_Username'] := 'root';
 			end;
-			fMySQLUser := Section.Values['Username'];
-			fMySQLPass := Section.Values['Password'];
+			fMySQLCommonUser := Section.Values['Common_Username'];
+			fMySQLCommonPass := Section.Values['Common_Password'];
+
+			//Gameserver stuff
+			if Section.Values['Game_Host'] = '' then begin
+				Section.Values['Game_Host'] := '127.0.0.1';
+			end;
+			fMySQLGameHost := Section.Values['Game_Host'];
+			fMySQLGamePort := StrToIntDef(Section.Values['Game_Port'], 3306);
+			if Section.Values['Game_Database'] = '' then begin
+				Section.Values['Game_Database'] := 'Helios';
+			end;
+			fMySQLGameDB := Section.Values['Game_Database'];
+			if Section.Values['Game_Username'] = '' then begin
+				Section.Values['Game_Username'] := 'root';
+			end;
+			fMySQLGameUser := Section.Values['Game_Username'];
+			fMySQLGamePass := Section.Values['Game_Password'];
+
 		end;{Subroutine LoadMySQL}
     //--------------------------------------------------------------------------
 
@@ -227,22 +263,30 @@ implementation
 //------------------------------------------------------------------------------
 	procedure TServerOptions.Save;
 	begin
-		WriteString('Communication', 'LoginPort',   IntToStr(LoginPort));
-		WriteString('Communication', 'CharaPort',   IntToStr(CharaPort));
+
+
 		WriteString('Communication', 'ZonePort',    IntToStr(ZonePort));
 		WriteString('Communication', 'WAN_IP',      WAN_IP);
 		WriteString('Communication', 'LAN_IP',      LAN_IP);
     WriteString('Communication', 'DatabaseType',IntToStr(DatabaseType));
 
 		WriteString('LoginOptions','EnableMF',BoolToStr(EnableMF));
+		WriteString('LoginOptions','Port',IntToStr(LoginPort));
 
 		WriteString('CharaOptions','ServerName',ServerName);
+		WriteString('CharaOptions','Port', IntToStr(CharaPort));
 
-		WriteString('MySQL','Host', MySQLHost);
-		WriteString('MySQL','Port', IntToStr(MySQLPort));
-		WriteString('MySQL','Database', MySQLDB);
-		WriteString('MySQL','Username', MySQLUser);
-		WriteString('MySQL','Password', MySQLPass);
+		WriteString('MySQL','Common_Host', MySQLCommonHost);
+		WriteString('MySQL','Common_Port', IntToStr(MySQLCommonPort));
+		WriteString('MySQL','Common_Database', MySQLCommonDB);
+		WriteString('MySQL','Common_Username', MySQLCommonUser);
+		WriteString('MySQL','Common_Password', MySQLCommonPass);
+
+		WriteString('MySQL','Game_Host', MySQLGameHost);
+		WriteString('MySQL','Game_Port', IntToStr(MySQLGamePort));
+		WriteString('MySQL','Game_Database', MySQLGameDB);
+		WriteString('MySQL','Game_Username', MySQLGameUser);
+		WriteString('MySQL','Game_Password', MySQLGamePass);
 
     WriteString('Misc', 'SaveLoop-Enabled', BoolToStr(SaveLoop.Enabled));
     WriteString('Misc', 'SaveLoop-Interval', IntToStr(SaveLoop.Interval));

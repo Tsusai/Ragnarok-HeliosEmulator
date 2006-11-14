@@ -30,6 +30,9 @@ interface
 		LastIP          : string[15]; { TODO -oTsusai -cTAccount : Change to property }
 		LoginKey        : array [1..2] of cardinal;
 		CharaID         : array [0..8] of Cardinal;
+		LoginCount      : Integer;
+		LastLoginTime   : TDateTime;
+		Level           : Byte;
 
 		property Gender : Char  read  fGender write SetGender;
 

@@ -16,7 +16,9 @@ uses
 	Types,
 	//Helios
 	Account,
-	GameConstants;
+	GameConstants,
+	//Third Party
+	IdContext;
 
 	type TCharacter = class
 	private
@@ -115,6 +117,8 @@ uses
 		Account : TAccount;
 
 		ClientVersion : byte;
+		ClientInfo : TIdContext;
+
 		property DataChanged : boolean  read fDataChanged write SetSaveTime;
 		//For timed save procedure to activate.
 
@@ -157,6 +161,8 @@ uses
 		property BabyID    : Cardinal   read fBabyID write SetBabyID;
 		property Online    : Byte       read fOnline write SetOnline;
 		property HomunID   : Cardinal   read fHomunID write SetHomunID;
+
+		procedure CalcMaxHP;
 
 	end;
 
@@ -418,6 +424,10 @@ procedure TCharacter.SetHomunID(Value : Cardinal);
 begin
 	DataChanged := TRUE;
 	fHomunID    := Value;
+end;
+
+procedure TCharacter.CalcMaxHP;
+begin
 end;
 
 end.
