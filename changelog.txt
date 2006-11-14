@@ -12,6 +12,32 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 51- Forgot Changelog
+
+- Rev 50-
+[2006/11/13] - Tsusai - Notes/Overview : Addins, and added more multiserver support (not done)
+[2006/11/13] - Tsusai - ServerOptions - Reorganized and split the mysql database into 2,
+ a common and a game specific.
+[2006/11/13] - Tsusai - WinLinux - Added a GetTick command.  Unsure if the linux version
+ works proper.
+[2006/11/13] - Tsusai - DatabaseTemplate - Reindented.
+[2006/11/13] - Tsusai - Database - TDatabase.Create : Now gets an optional parameter, to
+ tell the optional mysql database which connection to make (Common database, or Game Database)
+[2006/11/13] - Tsusai - Account - Added LoginCount, LastLoginTime, and Level to TAccount.
+[2006/11/13] - Tsusai - CharaServerProcesses - Updated any TDatabase creations to make sure
+ the right database is accessed.
+[2006/11/13] - Tsusai - MySQLDatabase - TMySQLDatabase : Placed "Connection" into private,
+ Overrode Create and Connect method to take a boolean flag for which database to use. Added
+ a SendQuery (use just like query).  If a Query actually fails to execute, a visual error
+ will happen and the query pasted to the console.
+[2006/11/13] - Tsusai - Socket - Added WriteBufferPointAndDirection and fixed SendBuffer's
+ description.
+[2006/11/13] - Tsusai - Console - TMainProc.Startup : Added conditional to activate the
+ login server.  Moved ThirdPartyCredits procedure call to the top of the routine.
+[2006/11/13] - Tsusai - LoginProcesses - ValidateLogin : Fixed the LoginKey assignments,
+ and saved.
+-
+
 - Rev 49-
 [2006/11/12] - Tsusai - Console : Cleaned up some uses, removed TThreadLink variable, not 
  needed, added Zone Server OnConnect & OnExecute events.
