@@ -12,6 +12,29 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 52-
+[2006/11/14] - Tsusai - Notes/Overview: Restructure of the mysql database.
+[2006/11/14] - Tsusai - Added Database/packet_db.txt
+[2006/11/14] - Tsusai - Updated Bin/SQL Files/helios.sql to HeliosSQL_rev51.sql with the 
+ restructured database.  I recommend deleting the old one and regenerating a new 
+ ServerOptions.ini for this.
+[2006/11/14] - Tsusai - CharaServerProcess - SendCharas: Fixed bug where Index would do a
+ ERangeError, because of 0 characters being returned.  Also fixed a database call that was
+ calling the wrong database (was trying to do a query in the common database, and not in 
+ the game database).
+[2006/11/14] - Tsusai - Account - TAccount : Added a ConnectUntil datetime field, updated
+ Banned to a datetime.  Added various methods and functions to make checking these easier.
+[2006/11/14] - Tsusai - Database - Removed all Writeln and replaced with MainProc.Console
+[2006/11/14] - Tsusai - DatabaseTemplate/MySQLDatabase - GetAccountBanAndConnectTime : Added.
+[2006/11/14] - Tsusai - MySQLDatabase - All query statements updated to table restructures.
+[2006/11/14] - Tsusai - Globals - Added ConvertMySQLTime to convert the time string from
+ MySQL to a TDateTime.  If given a 0000-00-00 00:00:00 (which is impossible to convert), it
+ uses the lowest possible TDateTime (like january 1900).
+[2006/11/14] - Tsusai - ServerOptions - Updated default Database names.
+[2006/11/14] - Tsusai - LoginProcesses - Replaced Writeln, and added banned and connectuntil
+ checks with properly added response codes.
+-
+
 - Rev 51- Forgot Changelog
 
 - Rev 50-

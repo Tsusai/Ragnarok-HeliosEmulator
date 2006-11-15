@@ -39,6 +39,7 @@ type
 implementation
 
 uses
+	Console,
 	Globals,
 	DatabaseConstants,
 	MySQLDatabase;
@@ -69,7 +70,7 @@ begin
 	case DatabaseType of
 		TEXT ://1    Helios Text Database
 			begin
-				writeln('Helios Text Database not implemented yet');
+				MainProc.Console('Helios Text Database not implemented yet');
 				AnInterface := TDatabaseTemplate.Create;
 			end;
 
@@ -79,8 +80,8 @@ begin
 			end;
 
 		else begin //anything else
-			writeln('DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
-			writeln('     See ServerOptions.ini for configuration options.');
+			MainProc.Console('DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
+			MainProc.Console('     See ServerOptions.ini for configuration options.');
 		end;
 	end;
 end;

@@ -42,6 +42,8 @@ type
 		function GetAccount(ID    : Cardinal) : TAccount;overload;override;
 		function GetAccount(Name  : string) : TAccount;overload;override;
 
+		procedure GetAccountBanAndConnectTime(var AnAccount : TAccount); override;
+
 		function CreateChara(
 			var ACharacter : TCharacter;
 			AID : Cardinal;
@@ -209,6 +211,7 @@ begin
 	AnAccount.LastIP      := QueryResult.FieldValue(12);
 end;
 
+
 //------------------------------------------------------------------------------
 //TMySQLDatabase.GetAccount()                               OVERLOADED FUNCTION
 //------------------------------------------------------------------------------
@@ -236,17 +239,22 @@ begin
 		if TAccount(AccountList.Objects[Index]).ID = ID then
 		begin
 			Result := TAccount(AccountList.Objects[Index]);
-			exit;
+			break;
 		end;
 	end;
 
-	QueryResult := SendQuery('SELECT * FROM login WHERE account_id = "'+IntToStr(ID)+'";',true,Success);
+	QueryResult := SendQuery('SELECT * FROM accounts WHERE account_id = "'+IntToStr(ID)+'";',true,Success);
 	if Success and (QueryResult.RowsCount = 1) then begin
-		MainProc.Console('Account found in chara server');
-		SetAccount(AnAccount,QueryResult);
-		AccountList.AddObject(AnAccount.Username, AnAccount);
-		Result := AnAccount;
+		if Not Assigned(Result) then
+		begin
+			SetAccount(AnAccount,QueryResult);
+			AccountList.AddObject(AnAccount.Username, AnAccount);
+			Result := AnAccount;
+		end;
+		Result.ConnectUntil := ConvertMySQLTime(QueryResult.FieldValue(11));
+		Result.Bantime      := ConvertMySQLTime(QueryResult.FieldValue(14));
 	end;
+
 	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------
@@ -279,17 +287,22 @@ begin
 		if TAccount(AccountList.Objects[Index]).Username = Name then
 		begin
 			Result := TAccount(AccountList.Objects[Index]);
-			exit;
+			break;
 		end;
 	end;
 
-	QueryResult := SendQuery('SELECT * FROM login WHERE userid = "'+Name+'";',true,Success);
+	QueryResult := SendQuery('SELECT * FROM accounts WHERE userid = "'+Name+'";',true,Success);
 	if Success and (QueryResult.RowsCount = 1) then begin
-		MainProc.Console('Account found in chara server');
-		SetAccount(AnAccount,QueryResult);
-		AccountList.AddObject(AnAccount.Username, AnAccount);
-		Result := AnAccount;
+		if Not Assigned(Result) then
+		begin
+			SetAccount(AnAccount,QueryResult);
+			AccountList.AddObject(AnAccount.Username, AnAccount);
+			Result := AnAccount;
+		end;
+		Result.ConnectUntil := ConvertMySQLTime(QueryResult.FieldValue(11));
+		Result.Bantime      := ConvertMySQLTime(QueryResult.FieldValue(14));
 	end;
+
 	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------
@@ -344,10 +357,9 @@ var
 	ACharacterList  : TCharacterList;
 	Index           : Integer;
 begin
-	Result := NIL;
 	ACharacterList := TCharacterList.Create;
 	QueryResult := SendQuery(
-		Format('SELECT char_id FROM `char` WHERE account_id = %d and char_num < 9;',
+		Format('SELECT char_id FROM characters WHERE account_id = %d and char_num < 9;',
 		[AccountID]),TRUE,Success);
 	if Success then
 	begin
@@ -360,11 +372,10 @@ begin
 				begin
 					QueryResult.Next;
 				end;
-
 			end;
-			Result := ACharacterList;
 		end;
 	end;
+	Result := ACharacterList;
 end;
 //-----------------------------------------------------------------------------
 
@@ -385,7 +396,7 @@ var
 begin
 	QueryResult :=
 			SendQuery(
-			Format('SELECT * FROM `char` WHERE char_num = %d and account_id = %d',[Slot, AccountID]),true, Success);
+			Format('SELECT * FROM characters WHERE char_num = %d and account_id = %d',[Slot, AccountID]),true, Success);
 	if Success then
 	begin
 		if QueryResult.RowsCount > 0 then
@@ -419,7 +430,7 @@ var
 begin
 	QueryResult :=
 			SendQuery(
-			Format('SELECT name FROM `char` WHERE name = "%s"',[Name]),true,Success);
+			Format('SELECT name FROM characters WHERE name = "%s"',[Name]),true,Success);
 	if Success then
 	begin
 		if QueryResult.RowsCount > 0 then
@@ -449,7 +460,7 @@ end;
 procedure TMySQLDatabase.SaveAccount(AnAccount: TAccount);
 const
 	BaseString =
-		'UPDATE login SET '+
+		'UPDATE accounts SET '+
 		'userid=''%s'', ' +
 		'user_pass=''%s'', ' +
 		'lastlogin=%d, ' +
@@ -458,6 +469,8 @@ const
 		'email=''%s'', ' +
 		'loginkey1=%d, ' +
 		'loginkey2=%d, ' +
+		'connect_until=%d, ' +
+		'ban_until=%d, ' +
 		'last_ip=''%s'' ' +
 		'WHERE account_id=%d;';
 var
@@ -475,15 +488,14 @@ begin
 			 AnAccount.EMail,
 			 AnAccount.LoginKey[1],
 			 AnAccount.LoginKey[2],
+			 StrToInt64(
+				 FormatDateTime('yyyymmddhhmmss',AnAccount.ConnectUntil)),
+			 StrToInt64(
+				 FormatDateTime('yyyymmddhhmmss',AnAccount.Bantime)),
 			 AnAccount.LastIP,
 			 AnAccount.ID]
 		);
 	SendQuery(QueryString, FALSE, Success);
-	if not Success then
-	begin
-		Writeln('Account save failed : ' + Querystring);
-	end;
-
 end;
 //------------------------------------------------------------------------------
 
@@ -505,7 +517,7 @@ var
 begin
 	with AChara do
 	begin
-		QueryString := Format('UPDATE `char` SET ' +
+		QueryString := Format('UPDATE character SET ' +
 			'char_num=%d, ' +
 			'name=''%s'', ' +
 			'class=%d, ' +
@@ -514,19 +526,19 @@ begin
 			'base_exp=%d, ' +
 			'job_exp=%d, ' +
 			'zeny=%d, ' +
-			'str=%d, ' +
-			'agi=%d, ' +
-			'vit=%d, ' +
-			'`int`=%d, ' +  //needs to be in ` ` else MySQL thinks its an Integer type
-			'dex=%d, ' +
-			'luk=%d, ' +
+			'p_str=%d, ' +
+			'p_agi=%d, ' +
+			'p_vit=%d, ' +
+			'p_int=%d, ' +  //needs to be in ` ` else MySQL thinks its an Integer type
+			'p_dex=%d, ' +
+			'p_luk=%d, ' +
 			'max_hp=%d, ' +
 			'hp=%d, ' +
 			'max_sp=%d, ' +
 			'sp=%d, ' +
 			'status_point=%d, ' +
 			'skill_point=%d, ' +
-			'`option`=%d, ' +  // see INT above
+			'options=%d, ' +  // see INT above
 			'karma=%d, ' +
 			'manner=%d, ' +
 			'party_id=%d, ' +
@@ -618,14 +630,14 @@ var
 begin
 	Result := FALSE;
 	SendQuery(
-		Format('INSERT INTO `char` (account_id, name) VALUES(%d, "%s");',
+		Format('INSERT INTO character (account_id, name) VALUES(%d, "%s");',
 		[AID,NName])
 	,TRUE,Success);
 	if Success then
 	begin
 		QueryResult :=
 				SendQuery(
-				Format('SELECT char_id FROM `char` WHERE account_id = %d AND name = "%s";',
+				Format('SELECT char_id FROM characters WHERE account_id = %d AND name = "%s";',
 				[AID,NName])
 			,TRUE,Success);
 		if (QueryResult.RowsCount = 1) then
@@ -645,7 +657,7 @@ var
 begin
 	QueryResult :=
 		SendQuery(
-		Format('SELECT * FROM `char` WHERE char_id = %d;',
+		Format('SELECT * FROM characters WHERE char_id = %d;',
 			[CharaID])
 		,TRUE,Success);
 	if (QueryResult.RowsCount = 1) and (QueryResult.FieldsCount = 48) then
@@ -719,7 +731,7 @@ end;
 function TMySQLDatabase.DeleteChara(var ACharacter : TCharacter) : boolean;
 begin
 	SendQuery(
-		Format('DELETE FROM `char` WHERE char_id=%d',[ACharacter.CID]),
+		Format('DELETE FROM characters WHERE char_id=%d',[ACharacter.CID]),
 		FALSE,Result
 	);
 
@@ -731,6 +743,12 @@ begin
 		ACharacter.Account.CharaID[ACharacter.CharaNum] := 0;
 		ACharacter.Free;
 	end;
+end;
+
+procedure TMySQLDatabase.GetAccountBanAndConnectTime(var AnAccount : TAccount);
+begin
+	//Bleh...might as well RELOAD.
+	AnAccount := Self.GetAccount(AnAccount.ID);
 end;
 
 {END MYSQLDATABASE}

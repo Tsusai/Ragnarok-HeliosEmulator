@@ -16,17 +16,20 @@ interface
 implementation
 	uses
 		Account,
-    Database,
+		Database,
 		Socket,
 		PacketTypes,
 		Globals,
 		SysUtils,
+		Console,
 		CharaServerTypes;
 
 	const
 		//ERROR REPLY CONSTANTS
 		LOGIN_UNREGISTERED    = 0;
 		LOGIN_INVALIDPASSWORD = 1;
+		LOGIN_BANNED          = 4;
+		LOGIN_TIMEUP          = 2;
 		//LOGIN_SERVERFULL =  ;
 
 (*------------------------------------------------------------------------------
@@ -78,7 +81,8 @@ Upon successful authentication, this procedure sends the list of character
 			WriteBufferWord(75,0,Buffer);
 			WriteBufferWord(77,0,Buffer);
 		end;
-    SendBuffer(AClient, Buffer ,Size);
+		SendBuffer(AClient, Buffer ,Size);
+
 	end; (* Proc SendCharacterServers
 ------------------------------------------------------------------------------*)
 
@@ -109,13 +113,23 @@ Upon successful authentication, this procedure sends the list of character
 			if not(MD5Key = '') then AccountPassword := GetMD5(MD5Key + AccountPassword);
 			if AccountPassword = Password then
 			begin
-				AnAccount.LoginKey[1] := Random($7FFFFFFF) + 1;
-				AnAccount.LoginKey[2] := Random($7FFFFFFF) + 1;
-				AnAccount.LastIP := AClient.Connection.Socket.Binding.PeerIP;
-				AnAccount.LastLoginTime := Now;
-				Inc(AnAccount.LoginCount);
-				ADatabase.AnInterface.SaveAccount(AnAccount);
-				SendCharacterServers(AnAccount,AClient);
+				if not AnAccount.IsBanned then
+				begin
+					if not AnAccount.GameTimeUp then
+					begin
+						AnAccount.LoginKey[1] := Random($7FFFFFFF) + 1;
+						AnAccount.LoginKey[2] := Random($7FFFFFFF) + 1;
+						AnAccount.LastIP := AClient.Connection.Socket.Binding.PeerIP;
+						AnAccount.LastLoginTime := Now;
+						Inc(AnAccount.LoginCount);
+						ADatabase.AnInterface.SaveAccount(AnAccount);
+						SendCharacterServers(AnAccount,AClient);
+					end else begin
+						SendLoginError(AClient,LOGIN_TIMEUP);
+					end;
+				end else begin
+				SendLoginError(AClient,LOGIN_BANNED);
+				end;
 			end else begin
 				SendLoginError(AClient,LOGIN_INVALIDPASSWORD);
 			end;
@@ -185,12 +199,11 @@ Accepts incoming connections to the Login server and verifies the login data.
 				RecvBuffer(AClient,Buffer[2],47-2);
 				UserName := BufferReadString(6,24,Buffer);
 				Password := ReadMD5Password(30,16,Buffer);
-				Writeln('Recieved Md5 hash: ' +  Password);
 				ValidateLogin(AClient,Buffer,Username,Password);
 			end;
 		else
 			begin
-				WriteLn('Unknown Login Packet : ' + IntToHex(ID,4));
+				MainProc.Console('Unknown Login Packet : ' + IntToHex(ID,4));
 			end;
 		end;
 	end;  (* Proc SendCharacterServers

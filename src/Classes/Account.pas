@@ -18,6 +18,8 @@ interface
 	private
 		fGender       : Char;
 		procedure SetGender(Value : Char);
+		function  GetBanned : boolean;
+		function  GetConnectUntilTime : boolean;
 	public
 		ID : cardinal;
 		//Unicode
@@ -25,20 +27,31 @@ interface
 		Password        : string[24];
 		EMail           : string[24];
 		GenderNum       : Byte; //0 or 1 for packet (F/M respectively)
-		Banned          : boolean;
+		Bantime         : TDateTime;
 		UnBanDateTime   : string;
-		LastIP          : string[15]; { TODO -oTsusai -cTAccount : Change to property }
+		LastIP          : string[15];
 		LoginKey        : array [1..2] of cardinal;
 		CharaID         : array [0..8] of Cardinal;
 		LoginCount      : Integer;
 		LastLoginTime   : TDateTime;
 		Level           : Byte;
+		ConnectUntil    : TDateTime;
 
 		property Gender : Char  read  fGender write SetGender;
+		property IsBanned : boolean read GetBanned;
+		property GameTimeUp  : boolean read GetConnectUntilTime;
+
+		procedure SetBannedTime(TimeString : string);
+		procedure SetConnectUntilTime(TimeString : string);
 
 	end;
 
 implementation
+uses
+	SysUtils,
+
+	Database,
+	Globals;
 
 (*------------------------------------------------------------------------------
 TAccount.SetGender
@@ -60,5 +73,57 @@ begin
 end; (* proc TAccount.SetGender
 ------------------------------------------------------------------------------*)
 
+function TAccount.GetBanned : boolean;
+var
+	ADatabase : TDatabase;
+begin
+	ADatabase := TDatabase.Create();
+	ADatabase.AnInterface.GetAccountBanAndConnectTime(Self);
+	if Now > BanTime then
+	begin
+		Result := false;
+	end else
+	begin
+		Result := true;
+	end;
+	ADatabase.Free;
+end;
+
+procedure TAccount.SetBannedTime(TimeString : string);
+var
+	ADatabase : TDatabase;
+begin
+	Self.Bantime := ConvertMySQLTime(TimeString);
+	ADatabase := TDatabase.Create();
+	ADatabase.AnInterface.SaveAccount(self);
+	ADatabase.Free;
+end;
+
+function TAccount.GetConnectUntilTime : boolean;
+var
+	ADatabase : TDatabase;
+begin
+	ADatabase := TDatabase.Create();
+	ADatabase.AnInterface.GetAccountBanAndConnectTime(Self);
+	if Now > ConnectUntil then
+	begin
+		Result := true;
+	end else
+	begin
+		Result := false;
+	end;
+	ADatabase.Free;
+end;
+
+procedure TAccount.SetConnectUntilTime(TimeString : string);
+var
+	ADatabase : TDatabase;
+begin
+	Self.Bantime := ConvertMySQLTime(TimeString);
+	ADatabase := TDatabase.Create();
+	ADatabase.AnInterface.SaveAccount(self);
+	ADatabase.Free;
+end;
+
+
 end.
- 

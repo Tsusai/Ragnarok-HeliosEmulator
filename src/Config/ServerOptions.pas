@@ -194,7 +194,7 @@ implementation
 			fMySQLCommonHost := Section.Values['Common_Host'];
 			fMySQLCommonPort := StrToIntDef(Section.Values['Common_Port'], 3306);
 			if Section.Values['Common_Database'] = '' then begin
-				Section.Values['Common_Database'] := 'Helios';
+				Section.Values['Common_Database'] := 'HeliosCommon';
 			end;
 			fMySQLCommonDB := Section.Values['Common_Database'];
 			if Section.Values['Common_Username'] = '' then begin
@@ -210,7 +210,7 @@ implementation
 			fMySQLGameHost := Section.Values['Game_Host'];
 			fMySQLGamePort := StrToIntDef(Section.Values['Game_Port'], 3306);
 			if Section.Values['Game_Database'] = '' then begin
-				Section.Values['Game_Database'] := 'Helios';
+				Section.Values['Game_Database'] := 'HeliosGame';
 			end;
 			fMySQLGameDB := Section.Values['Game_Database'];
 			if Section.Values['Game_Username'] = '' then begin

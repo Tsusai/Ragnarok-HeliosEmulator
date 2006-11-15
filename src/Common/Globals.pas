@@ -24,6 +24,7 @@ uses
 
 	function  GetMD5(const Input : UTF8string) : UTF8String;
 	function  MakeRNDString(Count: Integer): string;
+	function  ConvertMySQLTime(DateString: string) : TDateTime;
 
 var
 	Command         : TCommands;
@@ -40,6 +41,7 @@ var
 implementation
 	uses
 		//IDE
+		DateUtils,
 		SysUtils,
 		//Helios
 		WinLinux,
@@ -113,6 +115,27 @@ begin
 	begin
 		x := Length(chars) - Random(Length(chars));
 		Result := Result + chars[x];
+	end;
+end;
+
+function ConvertMySQLTime(DateString: string) : TDateTime;
+var
+	Year, Month, Day, Hour, Min, Sec : word;
+	Code : integer;
+begin
+	Result := 2;   //01 Jan 1900
+	if Length(DateString) = 19 then
+	begin
+		if not (DateString = '0000-00-00 00:00:00') then
+		begin
+			Val(copy(DateString, 1, 4), Year, Code);
+			Val(copy(DateString, 6, 2), Month, Code);
+			Val(copy(DateString, 9, 2), Day, Code);
+			Val(copy(DateString, 12, 2), Hour, Code);
+			Val(copy(DateString, 15, 2), Min, Code);
+			Val(copy(DateString, 18, 2), Sec, Code);
+			Result := EncodeDateTime(Year, Month, Day, Hour, Min, Sec, 0);
+		end;
 	end;
 end;
 

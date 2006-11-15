@@ -54,7 +54,7 @@ var
 	AnAccount   : TAccount;
 	ReplyBuffer : TBuffer;
 	ACharacter  : TCharacter;
-	Index       : Byte;
+	Index       : integer;
 	Count       : Byte;
 	PacketSize  : Word;
 	Ver         : Byte;
@@ -81,7 +81,7 @@ begin
 				TThreadLink(AClient.Data).AccountLink := AnAccount;
 				SendPadding(AClient); //Legacy padding
 
-				ACharaList := ACommonDatabase.AnInterface.GetAccountCharas(AccountID);
+				ACharaList := AGameDatabase.AnInterface.GetAccountCharas(AccountID);
 				for Index := 0 to ACharaList.Count-1 do
 				begin
 					ACharacter := ACharaList.List[Index];
