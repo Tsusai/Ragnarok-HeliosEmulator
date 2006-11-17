@@ -12,6 +12,12 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+
+- Rev 53-
+[2006/11/17] - RaX - added getting the closest path to the destination to our pathing
+ algorithm.
+-
+
 - Rev 52-
 [2006/11/14] - Tsusai - Notes/Overview: Restructure of the mysql database.
 [2006/11/14] - Tsusai - Added Database/packet_db.txt

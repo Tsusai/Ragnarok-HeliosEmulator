@@ -215,6 +215,7 @@ var
   NewFloodList			: TFloodList;
 	NewFloodListLength: Integer;
 	AFloodItem				: TFloodItem;
+	ClosestPath				: TFloodItem;
 	NewFloodItem			: TFloodItem;
 	APoint						: TPoint;
 	Index							: Integer;
@@ -247,6 +248,9 @@ begin
 	//initialize our first flood item
 	AFloodItem.Position:= StartPoint;
 	AFloodItem.PathLength := 0;
+
+	//initialize our closest path
+	ClosestPath := AFloodItem;
 
 	//initialize our flood lists
 	AFloodListLength := 1;
@@ -300,7 +304,12 @@ begin
 							APath.Assign(NewFloodItem.Path);
 							Result  := TRUE;
 							Exit;
-						end
+						end else
+						if (abs(NewFloodItem.Position.X-EndPoint.X)+abs(NewFloodItem.Position.Y-EndPoint.Y)) <
+							 (abs(ClosestPath.Position.X-EndPoint.X)+abs(ClosestPath.Position.Y-EndPoint.Y)) then
+						begin
+							ClosestPath := NewFloodItem;
+            end;
 					end;
 				end;
 				//start propagating our next flood item in the next direction.
@@ -313,6 +322,11 @@ begin
 		AFloodList := NewFloodList;
 		AFloodListLength := NewFloodListLength;
 	end;
+	//use closest path
+	if Result = FALSE then
+	begin
+		APath.Assign(ClosestPath.Path);
+  end;
 end;
 //------------------------------------------------------------------------------
 
