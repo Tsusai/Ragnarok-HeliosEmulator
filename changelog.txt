@@ -13,6 +13,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 54-
+[2006/11/27] - Tsusai - Notes/Overview: Fixed USES in the following units
+ CharaServerProcesses, Character, CharaList, DatabaseTemplate, XTimer, List32, uMysql*,
+ Globals, Socket, Console, ZoneCore, ZoneRecv, ZoneSend.
+[2006/11/27] - Tsusai - Added ZoneSend, which sends out replies so far for the zone.
+[2006/11/27] - Tsusai - ZoneRecv - Added MapConnect which handles zone connection validation.
+-
+
 - Rev 53-
 [2006/11/17] - RaX - added getting the closest path to the destination to our pathing
  algorithm.

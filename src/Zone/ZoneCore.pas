@@ -45,7 +45,6 @@ uses
 implementation
 uses
 	{VCL/RTL}
-	Classes,
 	SysUtils,
 	{Helios}
 	Character,
@@ -195,7 +194,11 @@ Begin
 							if (CodeBase[ClientBaseIndex].Packet[PacketIndex].Command = 'wanttoconnection') then
 							begin
 								RecvBuffer(AClient, ABuffer[2], (Lth - 2)); //Get the rest of the packet info
-								//MapConnect(CIdx, AClient, CodeBase[CIdx].Packet[PIdx].ReadPoints);
+								MapConnect(ClientBaseIndex,
+									AClient,
+									ABuffer,
+									CodeBase[ClientBaseIndex].Packet[PacketIndex].ReadPoints
+								);
 								Found := True;
 								Break;
 							end;

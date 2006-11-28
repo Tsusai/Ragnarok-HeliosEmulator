@@ -12,12 +12,14 @@ TIntList32: based on TIntList. changed int64 to cardinal, added IndexOfObject.
 TList32: based on TList. added IndexOfObject.
 
 [2005/12/10] CR - Added compile directives to suppress warnings for some warning
-  generating code in this library we use for the Prometheus Project.
+	generating code in this library we use for the Prometheus Project.
+[2006/11/27] Tsusai - Cleaned up Uses usage.
 }
 
 interface
 
-uses classes, sysconst, sysutils;
+uses
+	Classes;
 
 const
 	maxlistsize =maxint div 32;
@@ -92,7 +94,8 @@ Type
   end;
 
 implementation
-
+uses
+	SysUtils;
 
 { TIntList32 }
 

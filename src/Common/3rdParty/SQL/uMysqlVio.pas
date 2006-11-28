@@ -43,6 +43,9 @@ receiving lengthy legal documents to sign. The sources are provided
 for free but without warranty of any kind.  The library has been
 entirely written by Cristian Nicola after libmysql of MYSQL AB.
 --------------------------------------------------------------------------------}
+{Helios Changes
+	[2006/11/27] Tsusai - Fixed USES.
+}
 unit uMysqlVio;
 ////////////////////////////////////////////////////////////////////////////////
 // VIO = Virtual Input Output
@@ -54,7 +57,8 @@ interface
 {$I mysqlinc.inc}
 
 uses
-  {$IFDEF MSWINDOWS}windows, {$ENDIF}sysutils, uMysqlErrors, uMysqlCT {$IFDEF HAVE_SSL},uMysqlSSL{$ENDIF};
+	{$IFDEF HAVE_SSL}uMysqlSSL,{$ENDIF}
+	uMysqlCT;
 
 type
   TMysqlVio = class (TObject)
@@ -104,6 +108,9 @@ type
 
 ////////////////////////////////////////////////////////////////////////////////
 implementation
+Uses
+	sysutils,
+	uMysqlErrors;
 ////////////////////////////////////////////////////////////////////////////////
 
 const

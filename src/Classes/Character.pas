@@ -169,10 +169,9 @@ uses
 implementation
 uses
 	//IDE
-	SysUtils,
+	SysUtils
 	//Helios
-  Database,
-	Globals;
+	;
 
 procedure TCharacter.SetSaveTime(Value : boolean);
 Const

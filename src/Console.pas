@@ -18,8 +18,7 @@ uses
 	IdContext,
 	SysUtils,
 	Classes,
-	XTimer,
-	SaveThread;
+	XTimer;
 
 type
 //------------------------------------------------------------------------------
@@ -72,6 +71,7 @@ uses
 	Globals,
 	LoginProcesses,
 	PacketTypes,
+	SaveThread,
 	TCPServerRoutines,
 	WinLinux,
 	ZoneCore

@@ -15,9 +15,8 @@ unit DatabaseTemplate;
 interface
 uses
 	Character,
-  Account,
-  Classes,
-  CharaList;
+	Account,
+	CharaList;
 type
 //------------------------------------------------------------------------------
 //TDatabaseTemplate			                                                           CLASS
@@ -43,21 +42,21 @@ type
 			NName : string
 		) : boolean;virtual;
 
-    function GetAccountCharas(AccountID : Cardinal) : TCharacterList;virtual;
+		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;virtual;
 		function LoadChara(CharaID : Cardinal) : TCharacter;virtual;
 		function GetChara( CharaID    : Cardinal)   : TCharacter;virtual;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;virtual;
-    function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;virtual;
-    function CharaExists(Name : String) : Boolean;overload;virtual;
+		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;virtual;
+		function CharaExists(Name : String) : Boolean;overload;virtual;
 
 		procedure SaveAccount(AnAccount : TAccount);virtual;
 		procedure SaveChara(AChara : TCharacter);virtual;
-  protected
+	protected
 		procedure Connect();virtual;
 		procedure Disconnect();virtual;
-  end;
+	end;
 //------------------------------------------------------------------------------
-  //function CreateDatabase() : TDatabase;
+	//function CreateDatabase() : TDatabase;
 
 implementation
 
@@ -101,23 +100,23 @@ end;
 
 function TDatabaseTemplate.GetAccount(Name : string) : TAccount;
 begin
-  Result := NIL;
+	Result := NIL;
 end;
 
 
 function TDatabaseTemplate.GetChara(CharaID : Cardinal) : TCharacter;
 begin
-  Result := NIL;
+	Result := NIL;
 end;
 
 function TDatabaseTemplate.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
 begin
-  Result := FALSE;
+	Result := FALSE;
 end;
 
 function TDatabaseTemplate.CharaExists(Name : String) : Boolean;
 begin
-  Result := FALSE;
+	Result := FALSE;
 end;
 
 procedure TDatabaseTemplate.SaveAccount(AnAccount: TAccount);

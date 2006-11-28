@@ -13,8 +13,7 @@ unit XTimer;
 
 interface
 uses
-	Classes,
-	Types;
+	Classes;
 
 type
 

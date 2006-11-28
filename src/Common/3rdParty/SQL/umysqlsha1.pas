@@ -43,13 +43,13 @@ receiving lengthy legal documents to sign. The sources are provided
 for free but without warranty of any kind.  The library has been
 entirely written by Cristian Nicola after libmysql of MYSQL AB.
 --------------------------------------------------------------------------------}
+{Helios Changes
+	[2007/11/27] Tsusai - Fixed USES
+}
 {$Q-}{$R-}
 unit umysqlsha1;
 
 interface
-
-uses
-  sysutils;
 
 const
   ctSHA1HashSize = 20;

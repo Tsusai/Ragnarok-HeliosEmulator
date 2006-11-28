@@ -43,6 +43,9 @@ receiving lengthy legal documents to sign. The sources are provided
 for free but without warranty of any kind.  The library has been
 entirely written by Cristian Nicola after libmysql of MYSQL AB.
 --------------------------------------------------------------------------------}
+{Helios Changes
+	[2006/11/27] Tsusai - Cleaned up USES.
+}
 unit uMysqlClient;
 ////////////////////////////////////////////////////////////////////////////////
 // This is the main unit and it defines:
@@ -54,8 +57,10 @@ interface
 {$I mysqlinc.inc}
 
 uses
-  sysutils, uMysqlCT, uMysqlErrors, uMysqlNet {$IFDEF HAVE_SSL}, uMysqlSSL{$ENDIF},
-  uMysqlNewPassword, SyncObjs;
+	uMysqlCT,
+	uMysqlNet,
+	{$IFDEF HAVE_SSL}uMysqlSSL,{$ENDIF}
+	SyncObjs;
 
 type
   PCardinal = ^Cardinal;
@@ -302,6 +307,10 @@ type
   end;
 
 implementation
+Uses
+	SysUtils,
+	uMysqlErrors,
+	uMysqlNewPassword;
 
 type
   //internal array of pchar

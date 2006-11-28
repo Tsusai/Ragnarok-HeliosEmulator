@@ -43,6 +43,10 @@ receiving lengthy legal documents to sign. The sources are provided
 for free but without warranty of any kind.  The library has been
 entirely written by Cristian Nicola after libmysql of MYSQL AB.
 --------------------------------------------------------------------------------}
+{Helios Changes
+	[2006/11/27] Tsusai - Cleaned up USES.
+}
+
 unit uMysqlNet;
 ////////////////////////////////////////////////////////////////////////////////
 // Net structure it is responsible of packing/unpacking packets
@@ -55,7 +59,8 @@ interface
 {$I mysqlinc.inc}
 
 uses
-  sysutils, uMysqlErrors, uMysqlCT, uMysqlVio;
+	uMysqlCT,
+	uMysqlVio;
 
 type
   TMysqlNet = class (TObject)
@@ -115,6 +120,9 @@ type
 
 ////////////////////////////////////////////////////////////////////////////////
 implementation
+Uses
+	SysUtils,
+	uMysqlErrors;
 ////////////////////////////////////////////////////////////////////////////////
 
 {$IFDEF HAVE_COMPRESS}

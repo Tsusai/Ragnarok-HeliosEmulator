@@ -17,7 +17,6 @@ uses
 implementation
 	uses
 		//IDE
-		SysUtils,
 		//Helios
 		Character,
 		CharaList,

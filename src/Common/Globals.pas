@@ -15,8 +15,7 @@ uses
 	Commands,
 	ServerOptions,
 	//3rd Party
-	List32,
-	uMysqlClient;
+	List32;
 
 	procedure InitGlobals;
 	procedure DestroyGlobals;

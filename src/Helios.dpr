@@ -10,7 +10,7 @@
 //                 Project Helios - Copyright (c) 2005-2006
 //
 //    Contributors(A-Z) -
-//        Matthew Mazanec (Tsusai)
+//        Matthew Mazanec (Tsusai - tsusai at gmail dot com)
 //        Robert Ditthardt (RaX)
 //
 //    All rights reserved.
@@ -27,7 +27,7 @@
 //    		* Neither the name of Project Helios nor the names of its contributors
 //    			may be used to endorse or promote products derived from this
 //    			software without specific prior written permission.
-//    		* Use of original code in any COMMERCIAL item, not limited to programs
+//    		* Redistributions in any COMMERCIAL form, not limited to programs
 //    			in other programming or human languages, derivatives, and anything
 //    			your head can think of on how to make money off our code, is
 //    			PROHIBITED WITHOUT EXPLICIT PERMISSION FROM THE AUTHORS.
@@ -56,7 +56,7 @@ program Helios;
 uses
 
 {*These definitions make it possible to step through programs in windows and
-compile for linux. at the same time*}
+compile for linux, at the same time*}
 //------------------------------------------------------------------------------
 //                            Windows Definitions
 //------------------------------------------------------------------------------
@@ -70,7 +70,6 @@ compile for linux. at the same time*}
 	Database in 'Classes\Database.pas',
 	DatabaseTemplate in 'Classes\Database\DatabaseTemplate.pas',
 	DatabaseConstants in 'Constants\DatabaseConstants.pas',
-	MySQLDatabase in 'Classes\Database\MySQLDatabase.pas',
 	DatabaseTXT in 'Database\DatabaseTXT.pas',
 	GameConstants in 'Constants\GameConstants.pas',
 	GameObjects in 'Database\GameObjects.pas',
@@ -80,6 +79,7 @@ compile for linux. at the same time*}
 	madExcept,
 	madLinkDisAsm,
 	Map in 'Classes\Map.pas',
+	MySQLDatabase in 'Classes\Database\MySQLDatabase.pas',
 	PacketTypes in 'Common\PacketTypes.pas',
 	PointList in 'Classes\PointList.pas',
 	SaveThread in 'Classes\SaveThread.pas',
@@ -90,14 +90,15 @@ compile for linux. at the same time*}
 	uMysqlCT in 'Common\3rdParty\SQL\uMysqlCT.pas',
 	uMysqlErrors in 'Common\3rdParty\SQL\uMysqlErrors.pas',
 	uMysqlNet in 'Common\3rdParty\SQL\uMysqlNet.pas',
-	uMysqlVio in 'Common\3rdParty\SQL\uMysqlVio.pas',
 	uMysqlNewPassword in 'Common\3rdParty\SQL\uMysqlNewPassword.pas',
 	umysqlsha1 in 'Common\3rdParty\SQL\umysqlsha1.pas',
+	uMysqlVio in 'Common\3rdParty\SQL\uMysqlVio.pas',
 	Version in 'Common\Version.pas',
 	WinLinux in 'Common\WinLinux.pas',
- 	XTimer in 'Classes\XTimer.pas',
+	XTimer in 'Classes\XTimer.pas',
 	ZoneCore in 'Zone\ZoneCore.pas',
 	ZoneRecv in 'Zone\ZoneRecv.pas',
+	ZoneSend in 'Zone\ZoneSend.pas',
 	{$ENDIF}
 
 //------------------------------------------------------------------------------
@@ -113,7 +114,6 @@ compile for linux. at the same time*}
 	Database in 'Classes/Database.pas',
 	DatabaseTemplate in 'Classes/Database/DatabaseTemplate.pas',
 	DatabaseConstants in 'Constants/DatabaseConstants.pas',
-	MySQLDatabase in 'Classes/Database/MySQLDatabase.pas',
 	DatabaseTXT in 'Database/DatabaseTXT.pas',
 	GameConstants in 'Constants/GameConstants.pas',
 	GameObjects in 'Database/GameObjects.pas',
@@ -121,6 +121,7 @@ compile for linux. at the same time*}
 	List32 in 'Common/3rdParty/List32.pas',
 	LoginProcesses in 'Login/LoginProcesses.pas',
 	Map in 'Classes/Map.pas',
+	MySQLDatabase in 'Classes/Database/MySQLDatabase.pas',
 	PacketTypes in 'Common/PacketTypes.pas',
 	PointList in 'Classes/PointList.pas',
 	SaveThread in 'Classes/SaveThread.pas',
@@ -131,14 +132,15 @@ compile for linux. at the same time*}
 	uMysqlCT in 'Common/3rdParty/SQL/uMysqlCT.pas',
 	uMysqlErrors in 'Common/3rdParty/SQL/uMysqlErrors.pas',
 	uMysqlNet in 'Common/3rdParty/SQL/uMysqlNet.pas',
-	uMysqlVio in 'Common/3rdParty/SQL/uMysqlVio.pas',
 	uMysqlNewPassword in 'Common/3rdParty/SQL/uMysqlNewPassword.pas',
 	umysqlsha1 in 'Common/3rdParty/SQL/umysqlsha1.pas',
+	uMysqlVio in 'Common/3rdParty/SQL/uMysqlVio.pas',
 	Version in 'Common/Version.pas',
 	WinLinux in 'Common/WinLinux.pas',
 	XTimer in 'Classes/XTimer.pas',
 	ZoneCore in 'Zone/ZoneCore.pas',
 	ZoneRecv in 'Zone/ZoneRecv.pas',
+	ZoneSend in 'Zone/ZoneSend.pas',
 	{$ENDIF}
 //------------------------------------------------------------------------------
 //                              Definitions for both.

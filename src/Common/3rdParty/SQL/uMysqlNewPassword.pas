@@ -43,13 +43,13 @@ receiving lengthy legal documents to sign. The sources are provided
 for free but without warranty of any kind.  The library has been
 entirely written by Cristian Nicola after libmysql of MYSQL AB.
 --------------------------------------------------------------------------------}
+{Helios Changes
+	[2006/11/27] Tsusai - Fixed USES
+}
 
 unit uMysqlNewPassword;
 
 interface
-
-uses
-  umysqlsha1, sysutils;
 
 procedure password_hash_stage1(const ato:pchar; const password:pchar);
 procedure password_hash_stage2(ato:pchar; const salt:pchar);
@@ -61,6 +61,9 @@ procedure newscramble(_to:pchar; _message:pchar; password:pchar);
 function mysql_scramble( pass:string; hashseed:string):pchar;
 
 implementation
+uses
+	umysqlsha1,
+	sysutils;
 
 type
   TMySalt = record

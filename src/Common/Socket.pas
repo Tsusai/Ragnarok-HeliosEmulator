@@ -43,7 +43,6 @@ uses
 implementation
 uses
 	{IDE}
-	Classes,
 	SysUtils,
 	{Third Party}
 	IdGlobal;
@@ -97,15 +96,15 @@ PUSHING DATA INTO THE BUFFER METHODS
 	);
 	var
 		l   :cardinal;
-		ByteArray  :array[1..3] of byte;
+		ByteArray  :array[0..3] of byte;
 	begin
 		l := (((xy.X and $3ff) shl 14) or ((xy.Y and $3ff) shl 4));
-		Move(l, ByteArray[1], 3);
-		ByteArray[3] := ByteArray[1];
-		ByteArray[1] := ByteArray[2];
+		Move(l, ByteArray[0], 3);
+		ByteArray[3] := ByteArray[0];
+		ByteArray[0] := ByteArray[2];
 		ByteArray[2] := ByteArray[3];
 		ByteArray[2] := (ByteArray[2] or (Dir and $f));
-		Move(ByteArray[1], Buffer[index], 3);
+		Move(ByteArray[0], Buffer[index], 3);
 	End; (* Proc WriteBufferPointAndDirection
 *-----------------------------------------------------------------------------*)
 
