@@ -146,62 +146,6 @@ LOCK TABLES `loginlog` WRITE;
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `loginlog` ENABLE KEYS */;
 
---
--- Table structure for table `ragsrvinfo`
---
-
-DROP TABLE IF EXISTS `ragsrvinfo`;
-CREATE TABLE `ragsrvinfo` (
-  `index` int(11) NOT NULL default '0',
-  `name` varchar(255) NOT NULL default '',
-  `exp` int(11) NOT NULL default '0',
-  `jexp` int(11) NOT NULL default '0',
-  `drop` int(11) NOT NULL default '0',
-  `motd` varchar(255) NOT NULL default ''
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `ragsrvinfo`
---
-
-
-/*!40000 ALTER TABLE `ragsrvinfo` DISABLE KEYS */;
-LOCK TABLES `ragsrvinfo` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `ragsrvinfo` ENABLE KEYS */;
-
---
--- Table structure for table `storage`
---
-
-DROP TABLE IF EXISTS `storage`;
-CREATE TABLE `storage` (
-  `id` bigint(20) unsigned NOT NULL auto_increment,
-  `account_id` int(11) NOT NULL default '0',
-  `nameid` int(11) NOT NULL default '0',
-  `amount` int(11) NOT NULL default '0',
-  `equip` mediumint(8) unsigned NOT NULL default '0',
-  `identify` smallint(6) NOT NULL default '0',
-  `refine` tinyint(3) unsigned NOT NULL default '0',
-  `attribute` tinyint(4) NOT NULL default '0',
-  `card0` int(11) NOT NULL default '0',
-  `card1` int(11) NOT NULL default '0',
-  `card2` int(11) NOT NULL default '0',
-  `card3` int(11) NOT NULL default '0',
-  `broken` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `account_id` (`account_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `storage`
---
-
-
-/*!40000 ALTER TABLE `storage` DISABLE KEYS */;
-LOCK TABLES `storage` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `storage` ENABLE KEYS */;
 
 --
 -- Current Database: `heliosgame`
@@ -788,6 +732,30 @@ UNLOCK TABLES;
 /*!40000 ALTER TABLE `pet` ENABLE KEYS */;
 
 --
+-- Table structure for table `ragsrvinfo`
+--
+
+DROP TABLE IF EXISTS `ragsrvinfo`;
+CREATE TABLE `ragsrvinfo` (
+  `index` int(11) NOT NULL default '0',
+  `name` varchar(255) NOT NULL default '',
+  `exp` int(11) NOT NULL default '0',
+  `jexp` int(11) NOT NULL default '0',
+  `drop` int(11) NOT NULL default '0',
+  `motd` varchar(255) NOT NULL default ''
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `ragsrvinfo`
+--
+
+
+/*!40000 ALTER TABLE `ragsrvinfo` DISABLE KEYS */;
+LOCK TABLES `ragsrvinfo` WRITE;
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `ragsrvinfo` ENABLE KEYS */;
+
+--
 -- Table structure for table `skill`
 --
 
@@ -831,6 +799,40 @@ LOCK TABLES `sstatus` WRITE;
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `sstatus` ENABLE KEYS */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+--
+-- Table structure for table `storage`
+--
+
+DROP TABLE IF EXISTS `storage`;
+CREATE TABLE `storage` (
+  `id` bigint(20) unsigned NOT NULL auto_increment,
+  `account_id` int(11) NOT NULL default '0',
+  `nameid` int(11) NOT NULL default '0',
+  `amount` int(11) NOT NULL default '0',
+  `equip` mediumint(8) unsigned NOT NULL default '0',
+  `identify` smallint(6) NOT NULL default '0',
+  `refine` tinyint(3) unsigned NOT NULL default '0',
+  `attribute` tinyint(4) NOT NULL default '0',
+  `card0` int(11) NOT NULL default '0',
+  `card1` int(11) NOT NULL default '0',
+  `card2` int(11) NOT NULL default '0',
+  `card3` int(11) NOT NULL default '0',
+  `broken` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `account_id` (`account_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `storage`
+--
+
+
+/*!40000 ALTER TABLE `storage` DISABLE KEYS */;
+LOCK TABLES `storage` WRITE;
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `storage` ENABLE KEYS */;
+
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

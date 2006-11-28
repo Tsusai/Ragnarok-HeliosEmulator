@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 55-
+[2006/11/27] - Tsusai - Updated the SQL file again. Storage and Ragsvrinfo should be game
+ were not game related, as a mistake on my part.
+-
+
 - Rev 54-
 [2006/11/27] - Tsusai - Notes/Overview: Fixed USES in the following units
  CharaServerProcesses, Character, CharaList, DatabaseTemplate, XTimer, List32, uMysql*,
