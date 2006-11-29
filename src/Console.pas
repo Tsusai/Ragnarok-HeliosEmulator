@@ -15,6 +15,7 @@ interface
 
 uses
 	IdTCPServer,
+	IdTCPClient,
 	IdContext,
 	SysUtils,
 	Classes,
@@ -31,6 +32,11 @@ type
 		LoginServer : TIdTCPServer;
 		CharaServer : TIdTCPServer;
 		ZoneServer  : TIdTCPServer;
+		InterServer : TIdTCPServer;
+
+		CharaToLoginClient : TIdTCPClient;
+		ZoneToCharaClient  : TIdTCPClient;
+		ZoneToInterClient  : TIdTCPClient;
 
 		SaveTimer   : TXTimer;
 
@@ -47,7 +53,8 @@ type
 		procedure CharaServerExecute(AConnection: TIdContext);
 		procedure ZoneServerConnect (AConnection: TIdContext);
 		procedure ZoneServerExecute (AConnection: TIdContext);
-
+		procedure InterServerConnect(AConnection: TIdContext);
+		procedure InterServerExecute(AConnection: TIdContext);
 		procedure ServerException(AConnection: TIdContext;
 			AException: Exception);
 
@@ -150,14 +157,36 @@ begin
 	LoginServer.DefaultPort := ServerConfig.LoginPort;
 	CharaServer.DefaultPort := ServerConfig.CharaPort;
 	ZoneServer.DefaultPort  := ServerConfig.ZonePort;
-	if ServerConfig.LoginActive then ActivateServer('Login',LoginServer);
-	ActivateServer('Character',CharaServer);
-	ActivateServer('Zone',ZoneServer);
+	InterServer.DefaultPort := ServerConfig.InterPort;
+
+	if ServerConfig.LoginEnabled then
+	begin
+		ActivateServer('Login',LoginServer);
+	end;
+  //NOTE: Prior 
+	if ServerConfig.CharaEnabled then
+	begin
+		ActivateServer('Character',CharaServer);
+		ActivateClient(CharaToLoginClient);
+	end;
+
+	if ServerConfig.InterEnabled then
+	begin
+		ActivateServer('Inter', InterServer);
+	end;
+
+	if ServerConfig.ZoneEnabled then
+	begin
+		ActivateServer('Zone',ZoneServer);
+		ActivateClient(ZoneToCharaClient);
+		ActivateClient(ZoneToInterClient);
+	end;
 
 	MainProc.Console('');
 
 	if CharaServer.Active then
 	begin
+		//REMOVE SOON!!!
 		//Add local character server to the list
 		LocalCharaServ := TCharaServ.Create;
 		LocalCharaServ.IP := ServerConfig.WAN_IP;
@@ -168,14 +197,6 @@ begin
 	end;
 
 	Run := TRUE;
-
-	if ServerConfig.SaveLoop.Enabled then
-	begin
-		SaveTimer := TXTimer.Create;
-		SaveTimer.Interval := ServerConfig.SaveLoop.Interval;//needs to be a configuration variable.
-		SaveTimer.OnTimer  := ForceSave;
-		SaveTimer.Enabled  := TRUE;
-	end;
 
 	Console('- Startup Success');
 	Console('  For a list of console commands, input "/help".');
@@ -198,18 +219,16 @@ procedure TMainProc.Shutdown;
 begin
 	Console('- Helios is shutting down...');
 
-	if Assigned(SaveTimer) then
-	begin
-		//Terminate the save loop, force a save, and free it.
-		SaveTimer.Enabled := FALSE;
-		SaveTimer.Free;
-		ForceSave(NIL);
-	end;
-
 	//Disconnect clients.
 	DeActivateServer(LoginServer);
 	DeActivateServer(CharaServer);
 	DeActivateServer(ZoneServer);
+	DeActivateServer(InterServer);
+
+	//Deactivate interserver relations
+	CharaToLoginClient.Disconnect;
+	ZoneToCharaClient.Disconnect;
+	ZoneToInterClient.Disconnect;
 
 	//Make sure globals are Free'd on Application exit.
 	DestroyGlobals;
@@ -330,6 +349,39 @@ end;{TMainProc.ZoneServerExecute}
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+//TMainProc.InterServerConnect()                                           EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			An event which fires when a user connects to the Inter Server.
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TMainProc.InterServerConnect(AConnection: TIdContext);
+begin
+	//inter server connect code here
+end;{TMainProc.ZoneServerConnect}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TMainProc.InterServerExecute()                                          EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			An event which fires when the server is started. It allows the server
+//    to accept incoming client connections.
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TMainProc.InterServerExecute(AConnection: TIdContext);
+begin
+	//add packet parser here
+end;{TMainProc.InterServerExecute}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 //TMainProc.ThirdPartyCredits()                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
@@ -371,9 +423,14 @@ end;{TMainProc.ThirdPartyCredits}
 constructor TMainProc.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
-	LoginServer := TIdTCPServer.Create(nil);
-	CharaServer := TIdTCPServer.Create(nil);
-	ZoneServer  := TIdTCPServer.Create(nil);
+	LoginServer := TIdTCPServer.Create;
+	CharaServer := TIdTCPServer.Create;
+	ZoneServer  := TIdTCPServer.Create;
+	InterServer := TIdTCPServer.Create;
+
+	CharaToLoginClient := TIdTCPClient.Create;
+	ZoneToCharaClient  := TIdTCPClient.Create;
+	ZoneToInterClient  := TIdTCPClient.Create;
 
 	LoginServer.OnExecute := LoginServerExecute;
 	LoginServer.OnConnect := LoginServerConnect;
@@ -386,6 +443,10 @@ begin
 	ZoneServer.OnConnect  := ZoneServerConnect;
 	ZoneServer.OnExecute  := ZoneServerExecute;
 	ZoneServer.OnException := ServerException;
+
+	InterServer.OnConnect  := InterServerConnect;
+	InterServer.OnExecute  := InterServerExecute;
+	InterServer.OnException := ServerException;
 
 end;{TMainProc.Create}
 //------------------------------------------------------------------------------
@@ -407,6 +468,11 @@ begin
 	if Assigned(LoginServer)  then FreeAndNil(LoginServer);
 	if Assigned(CharaServer)  then FreeAndNil(CharaServer);
 	if Assigned(ZoneServer)   then FreeAndNil(ZoneServer);
+	if Assigned(InterServer)  then FreeAndNil(InterServer);
+
+	if Assigned(CharaToLoginClient)  then FreeAndNil(CharaToLoginClient);
+	if Assigned(ZoneToCharaClient)   then FreeAndNil(ZoneToCharaClient);
+	if Assigned(ZoneToInterClient)   then FreeAndNil(ZoneToInterClient);
 
 	inherited Destroy;
 end;{TMainProc.Destroy}

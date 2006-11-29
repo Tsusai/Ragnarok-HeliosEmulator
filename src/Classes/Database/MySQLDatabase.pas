@@ -134,18 +134,18 @@ begin
 	begin
 		if Not UseGameDatabase then //Access the Common database
 		begin
-			Connection.Host            := ServerConfig.MySQLCommonHost;
-			Connection.Port            := ServerConfig.MySQLCommonPort;
-			Connection.Db              := ServerConfig.MySQLCommonDB;
-			Connection.User            := ServerConfig.MySQLCommonUser;
-			Connection.Password        := ServerConfig.MySQLCommonPass;
+			Connection.Host            := ServerConfig.CommonHost;
+			Connection.Port            := ServerConfig.CommonPort;
+			Connection.Db              := ServerConfig.CommonDB;
+			Connection.User            := ServerConfig.CommonUser;
+			Connection.Password        := ServerConfig.CommonPass;
 		end else //Access the Game database
 		begin
-			Connection.Host            := ServerConfig.MySQLGameHost;
-			Connection.Port            := ServerConfig.MySQLGamePort;
-			Connection.Db              := ServerConfig.MySQLGameDB;
-			Connection.User            := ServerConfig.MySQLGameUser;
-			Connection.Password        := ServerConfig.MySQLGamePass;
+			Connection.Host            := ServerConfig.GameHost;
+			Connection.Port            := ServerConfig.GamePort;
+			Connection.Db              := ServerConfig.GameDB;
+			Connection.User            := ServerConfig.GameUser;
+			Connection.Password        := ServerConfig.GamePass;
 		end;
 	end;
 

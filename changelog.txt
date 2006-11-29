@@ -13,6 +13,15 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 56-
+[2006/11/29] - RaX - Implemented stubbed out Inter Server and added appropriate configuration
+ variables for enabling/disabling the zone, chara, and inter servers. Also, uncommented Tsusai's
+ Zone implementation code. Added ActivateClient and DeActivateClient to TCPServerRoutines.
+ Renamed ServerOptions configuration section "MySQL" to "Database" and changed code appropriately.
+ Added stubbed connect and execute routines for inter server component.
+ Implemented and uncommented inter communication clients.
+-
+
 - Rev 55-
 [2006/11/27] - Tsusai - Updated the SQL file again. Storage and Ragsvrinfo should be game
  were not game related, as a mistake on my part.

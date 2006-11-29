@@ -18,18 +18,7 @@ interface
 		IniFiles;
 
 	type
-		{Tsusai [05/06/06]: No existing ini file needed nor pre creation to read
-		writing to protected variables to set. I'm all for the prometheus way,
-		save after multiple changes.  the properties update the ini file in memory,
-		just need to do a update file afterwards to "set in stone"}
 
-    //RaX - Agreed, that's how it's supposed to work. 5 months ago I was just
-    //  crazy...=) Remove these comments whenever.
-
-TSaveLoopConfig = record
-  Enabled     : Boolean;
-  Interval    : Int64;
-end;
 //------------------------------------------------------------------------------
 //TServerOptions	                                                        CLASS
 //------------------------------------------------------------------------------
@@ -38,33 +27,38 @@ end;
 			fLoginPort : Word;
 			fCharaPort : Word;
 			fZonePort  : Word;
+			fInterPort : Word;
 
 			fWAN_IP    : string;
 			fLAN_IP    : string;
 
-			fLoginActive : boolean;
+			fLoginEnabled : boolean;
+			fCharaEnabled : boolean;
+			fZoneEnabled : boolean;
+			fInterEnabled : boolean;
+
 			fEnableMF  : Boolean;
 
 			fServerName : String;
 
 			fDatabaseType : Integer;
 
-			fMySQLCommonHost : string;
-			fMySQLCommonPort : integer;
-			fMySQLCommonDB   : string;
-			fMySQLCommonUser : string;
-			fMySQLCommonPass : string;
+			fCommonHost : string;
+			fCommonPort : integer;
+			fCommonDB   : string;
+			fCommonUser : string;
+			fCommonPass : string;
 
-			fMySQLGameHost : string;
-			fMySQLGamePort : integer;
-			fMySQLGameDB   : string;
-			fMySQLGameUser : string;
-			fMySQLGamePass : string;
+			fGameHost : string;
+			fGamePort : integer;
+			fGameDB   : string;
+			fGameUser : string;
+			fGamePass : string;
 
 			procedure SetLoginPort(Value : word);
 			procedure SetCharaPort(Value : word);
 			procedure SetZonePort(Value : word);
-
+			procedure SetInterPort(Value : Word);
 			procedure SetLAN_IP(Value : string);
 			procedure SetWAN_IP(Value : string);
 
@@ -75,9 +69,7 @@ end;
       procedure SetDatabaseType(Value : Integer);
 
 		public
-      SaveLoop  : TSaveLoopConfig;
 			//Communication
-			property ZonePort  : Word read fZonePort  write SetZonePort;
 			property LAN_IP : string read fLAN_IP write SetLAN_IP;
 			property WAN_IP : string read fWAN_IP write SetWAN_IP;
 			property DatabaseType : Integer read fDatabaseType write SetDatabaseType;
@@ -85,26 +77,35 @@ end;
 			//LoginOptions
 			property EnableMF : boolean read fEnableMF write SetEnableMF;
 			property LoginPort : Word read fLoginPort write SetLoginPort;
-			property LoginActive : boolean read fLoginActive;
+			property LoginEnabled : boolean read fLoginEnabled;
 
 			//CharaOptions
 			property ServerName : String read fServerName write SetServerName;
 			property CharaPort : Word read fCharaPort write SetCharaPort;
+			property CharaEnabled : boolean read fCharaEnabled;
+
+			//ZoneOptions
+			property ZonePort  : Word read fZonePort  write SetZonePort;
+			property ZoneEnabled : boolean read fZoneEnabled;
+
+			//InterOptions
+			property InterPort  : Word read fInterPort  write SetInterPort;
+			property InterEnabled : boolean read fInterEnabled;
 
 			//MySQL - Best to turn off the server BEFORE editing this stuff anywho.
 			//Common Information Database
-			property MySQLCommonHost : string Read fMySQLCommonHost;
-			property MySQLCommonPort : integer read fMySQLCommonPort;
-			property MySQLCommonDB   : string Read fMySQLCommonDB;
-			property MySQLCommonUser : string Read fMySQLCommonUser;
-			property MySQLCommonPass : string Read fMySQLCommonPass;
+			property CommonHost : string Read fCommonHost;
+			property CommonPort : integer read fCommonPort;
+			property CommonDB   : string Read fCommonDB;
+			property CommonUser : string Read fCommonUser;
+			property CommonPass : string Read fCommonPass;
 
 			//Game Specific Database
-			property MySQLGameHost : string Read fMySQLGameHost;
-			property MySQLGamePort : integer read fMySQLGamePort;
-			property MySQLGameDB   : string Read fMySQLGameDB;
-			property MySQLGameUser : string Read fMySQLGameUser;
-			property MySQLGamePass : string Read fMySQLGamePass;
+			property GameHost : string Read fGameHost;
+			property GamePort : integer read fGamePort;
+			property GameDB   : string Read fGameDB;
+			property GameUser : string Read fGameUser;
+			property GamePass : string Read fGamePass;
 
 			//Public methods
 			procedure Load;
@@ -159,14 +160,14 @@ implementation
 		begin
 			ReadSectionValues('LoginServer', Section);
 			fEnableMF    := StrToBoolDef(Section.Values['EnableMF'] ,false);
-			fLoginActive := StrToBoolDef(Section.Values['Active'] ,true);
+			fLoginEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
 			fLoginPort   := StrToIntDef(Section.Values['Port'], 6900);
 		end;{Subroutine LoadLoginOptions}
     //--------------------------------------------------------------------------
 
-    //--------------------------------------------------------------------------
-    //LoadCharaOptions                                      SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadCharaOptions                                      SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadCharaOptions;
 		begin
 			ReadSectionValues('CharacterServer', Section);
@@ -174,65 +175,77 @@ implementation
 			if Section.Values['ServerName'] = '' then begin
 				Section.Values['ServerName'] := 'Helios';
 			end;
-			
+			fCharaEnabled  := StrToBoolDef(Section.Values['Enabled'], TRUE);
 			fServerName    := Section.Values['ServerName'];
 			fCharaPort     := StrToIntDef(Section.Values['Port'], 6121);
 		end;{Subroutine LoadCharaOptions}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadZoneOptions                                      SUB PROCEDURE
+		//--------------------------------------------------------------------------
+		procedure LoadZoneOptions;
+		begin
+			ReadSectionValues('ZoneServer', Section);
+
+			fZoneEnabled  := StrToBoolDef(Section.Values['Enabled'], TRUE);
+			fZonePort     := StrToIntDef(Section.Values['Port'], 5121);
+		end;{Subroutine LoadZoneOptions}
+		//--------------------------------------------------------------------------
+
+		//--------------------------------------------------------------------------
+		//LoadInterOptions                                      SUB PROCEDURE
+		//--------------------------------------------------------------------------
+		procedure LoadInterOptions;
+		begin
+			ReadSectionValues('InterServer', Section);
+
+			fInterEnabled  := StrToBoolDef(Section.Values['Enabled'], TRUE);
+			fInterPort     := StrToIntDef(Section.Values['Port'], 4000);
+		end;{Subroutine LoadInterOptions}
+		//--------------------------------------------------------------------------
+
+		//--------------------------------------------------------------------------
     //LoadMySQL                                      SUB PROCEDURE
     //--------------------------------------------------------------------------
 		procedure LoadMySQL;
 		begin
-			ReadSectionValues('MySQL', Section);
+			ReadSectionValues('Database', Section);
 
 			//Accounts
 			if Section.Values['Common_Host'] = '' then begin
 				Section.Values['Common_Host'] := '127.0.0.1';
 			end;
-			fMySQLCommonHost := Section.Values['Common_Host'];
-			fMySQLCommonPort := StrToIntDef(Section.Values['Common_Port'], 3306);
+			fCommonHost := Section.Values['Common_Host'];
+			fCommonPort := StrToIntDef(Section.Values['Common_Port'], 3306);
 			if Section.Values['Common_Database'] = '' then begin
 				Section.Values['Common_Database'] := 'HeliosCommon';
 			end;
-			fMySQLCommonDB := Section.Values['Common_Database'];
+			fCommonDB := Section.Values['Common_Database'];
 			if Section.Values['Common_Username'] = '' then begin
 				Section.Values['Common_Username'] := 'root';
 			end;
-			fMySQLCommonUser := Section.Values['Common_Username'];
-			fMySQLCommonPass := Section.Values['Common_Password'];
+			fCommonUser := Section.Values['Common_Username'];
+			fCommonPass := Section.Values['Common_Password'];
 
 			//Gameserver stuff
 			if Section.Values['Game_Host'] = '' then begin
 				Section.Values['Game_Host'] := '127.0.0.1';
 			end;
-			fMySQLGameHost := Section.Values['Game_Host'];
-			fMySQLGamePort := StrToIntDef(Section.Values['Game_Port'], 3306);
+			fGameHost := Section.Values['Game_Host'];
+			fGamePort := StrToIntDef(Section.Values['Game_Port'], 3306);
 			if Section.Values['Game_Database'] = '' then begin
 				Section.Values['Game_Database'] := 'HeliosGame';
 			end;
-			fMySQLGameDB := Section.Values['Game_Database'];
+			fGameDB := Section.Values['Game_Database'];
 			if Section.Values['Game_Username'] = '' then begin
 				Section.Values['Game_Username'] := 'root';
 			end;
-			fMySQLGameUser := Section.Values['Game_Username'];
-			fMySQLGamePass := Section.Values['Game_Password'];
+			fGameUser := Section.Values['Game_Username'];
+			fGamePass := Section.Values['Game_Password'];
 
 		end;{Subroutine LoadMySQL}
-    //--------------------------------------------------------------------------
-
-    //--------------------------------------------------------------------------
-    //LoadMisc                                      SUB PROCEDURE
-    //--------------------------------------------------------------------------
-		procedure LoadMisc;
-		begin
-			ReadSectionValues('Misc', Section);
-
-			SaveLoop.Enabled  := StrToBoolDef(Section.Values['SaveLoop-Enabled'], TRUE);
-      SaveLoop.Interval := StrToInt64Def(Section.Values['SaveLoop-Interval'], 60);
-		end;{Subroutine LoadMySQL}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 	begin
 		Section    := TStringList.Create;
 
@@ -242,9 +255,9 @@ implementation
 		LoadCommunication;
 		LoadLoginOptions;
 		LoadCharaOptions;
+		LoadZoneOptions;
+		LoadInterOptions;
 		LoadMySQL;
-    LoadMisc;
-
 		Section.Free;
 
 	end;{TServerOptions.Load}
@@ -272,24 +285,29 @@ implementation
 
 		WriteString('LoginOptions','EnableMF',BoolToStr(EnableMF));
 		WriteString('LoginOptions','Port',IntToStr(LoginPort));
+		WriteString('LoginOptions','Enabled',BoolToStr(LoginEnabled));
 
 		WriteString('CharaOptions','ServerName',ServerName);
 		WriteString('CharaOptions','Port', IntToStr(CharaPort));
+		WriteString('CharaOptions','Enabled',BoolToStr(CharaEnabled));
 
-		WriteString('MySQL','Common_Host', MySQLCommonHost);
-		WriteString('MySQL','Common_Port', IntToStr(MySQLCommonPort));
-		WriteString('MySQL','Common_Database', MySQLCommonDB);
-		WriteString('MySQL','Common_Username', MySQLCommonUser);
-		WriteString('MySQL','Common_Password', MySQLCommonPass);
+		WriteString('ZoneOptions','Port', IntToStr(ZonePort));
+		WriteString('ZoneOptions','Enabled',BoolToStr(ZoneEnabled));
 
-		WriteString('MySQL','Game_Host', MySQLGameHost);
-		WriteString('MySQL','Game_Port', IntToStr(MySQLGamePort));
-		WriteString('MySQL','Game_Database', MySQLGameDB);
-		WriteString('MySQL','Game_Username', MySQLGameUser);
-		WriteString('MySQL','Game_Password', MySQLGamePass);
+		WriteString('InterOptions','Port', IntToStr(InterPort));
+		WriteString('InterOptions','Enabled',BoolToStr(InterEnabled));
 
-    WriteString('Misc', 'SaveLoop-Enabled', BoolToStr(SaveLoop.Enabled));
-    WriteString('Misc', 'SaveLoop-Interval', IntToStr(SaveLoop.Interval));
+		WriteString('Database','Common_Host', CommonHost);
+		WriteString('Database','Common_Port', IntToStr(CommonPort));
+		WriteString('Database','Common_Database', CommonDB);
+		WriteString('Database','Common_Username', CommonUser);
+		WriteString('Database','Common_Password', CommonPass);
+
+		WriteString('Database','Game_Host', GameHost);
+		WriteString('Database','Game_Port', IntToStr(GamePort));
+		WriteString('Database','Game_Database', GameDB);
+		WriteString('Database','Game_Username', GameUser);
+		WriteString('Database','Game_Password', GamePass);
 
 		UpdateFile;
 	end;{TServerOptions.Save}
@@ -359,6 +377,28 @@ implementation
 			WriteString('Communication', 'ZonePort', IntToStr(ZonePort));
 		end;
 	end;{TServerOptions.SetZonePort}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetInterPort()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Property Set Routine for InterPort. Ensures that if the inter port is
+//    changed for whatever reason, that it gets written to the .ini immediately.
+//    The same is true for all communication variables.
+//
+//	Changes -
+//		September 21st, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetInterPort(Value : word);
+	begin
+		if fInterPort <> value then
+		begin
+			fInterPort := value;
+			WriteString('Communication', 'InterPort', IntToStr(InterPort));
+		end;
+	end;{TServerOptions.SetInterPort}
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
