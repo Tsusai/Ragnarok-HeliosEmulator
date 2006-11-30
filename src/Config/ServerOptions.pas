@@ -24,76 +24,124 @@ interface
 //------------------------------------------------------------------------------
 		TServerOptions = class(TMemIniFile)
 		private
-			fLoginPort : Word;
-			fCharaPort : Word;
-			fZonePort  : Word;
-			fInterPort : Word;
-
-			fWAN_IP    : string;
-			fLAN_IP    : string;
-
+//Login Config
+			fLoginPort		: Word;
 			fLoginEnabled : boolean;
+			fLoginWANIP		: String;
+			fLoginLANIP		: String;
+			fEnableMF			: Boolean;
+
+//Chara Config
+			fCharaPort		: Word;
 			fCharaEnabled : boolean;
-			fZoneEnabled : boolean;
+			fCharaWANIP		: String;
+			fCharaLANIP		: String;
+			fLoginComIP		: String;
+			fLoginComPort : Word;
+			fServerName		: String;
+
+//Zone Config
+			fZonePort			: Word;
+			fZoneEnabled	: boolean;
+			fZoneWANIP		: String;
+			fZoneLANIP		: String;
+			fInterComIP 	: String;
+			fInterComPort : Word;
+			fCharaComIP		: String;
+			fCharaComPort	: Word;
+
+//Inter Config
+			fInterPort 		: Word;
 			fInterEnabled : boolean;
+			fInterWANIP 	: String;
+			fInterLANIP 	: String;
 
-			fEnableMF  : Boolean;
-
-			fServerName : String;
-
+//Database Config
 			fDatabaseType : Integer;
 
-			fCommonHost : string;
-			fCommonPort : integer;
-			fCommonDB   : string;
-			fCommonUser : string;
-			fCommonPass : string;
+			fCommonHost 	: string;
+			fCommonPort 	: integer;
+			fCommonDB   	: string;
+			fCommonUser 	: string;
+			fCommonPass 	: string;
 
-			fGameHost : string;
-			fGamePort : integer;
-			fGameDB   : string;
-			fGameUser : string;
-			fGamePass : string;
+			fGameHost 		: string;
+			fGamePort 		: integer;
+			fGameDB   		: string;
+			fGameUser 		: string;
+			fGamePass 		: string;
 
-			procedure SetLoginPort(Value : word);
-			procedure SetCharaPort(Value : word);
-			procedure SetZonePort(Value : word);
-			procedure SetInterPort(Value : Word);
-			procedure SetLAN_IP(Value : string);
-			procedure SetWAN_IP(Value : string);
+//Gets/Sets
+//Login Related
+			procedure SetLoginPort(Value : Word);
+			procedure SetLoginWANIP(Value : String);
+			procedure SetLoginLANIP(Value : String);
+			procedure SetEnableMF(Value : Boolean);
 
-			procedure SetEnableMF(Value : boolean);
-
+//Character Related
+			procedure SetCharaPort(Value : Word);
+			procedure SetCharaWANIP(Value : String);
+			procedure SetCharaLANIP(Value : String);
+			procedure SetLoginComIP(Value : String);
+			procedure SetLoginComPort(Value : Word);
 			procedure SetServerName(Value : String);
 
-      procedure SetDatabaseType(Value : Integer);
+//Zone Related
+			procedure SetZonePort(Value : Word);
+			procedure SetZoneWANIP(Value : String);
+			procedure SetZoneLANIP(Value : String);
+			procedure SetCharaComIP(Value : String);
+			procedure SetCharaComPort(Value : Word);
+			procedure SetInterComIP(Value : String);
+			procedure SetInterComPort(Value : Word);
+
+//Inter Related
+			procedure SetInterPort(Value : Word);
+			procedure SetInterWANIP(Value : String);
+			procedure SetInterLANIP(Value : String);
+
+//Database Related
+			procedure SetDatabaseType(Value : Integer);
 
 		public
 			//Communication
-			property LAN_IP : string read fLAN_IP write SetLAN_IP;
-			property WAN_IP : string read fWAN_IP write SetWAN_IP;
-			property DatabaseType : Integer read fDatabaseType write SetDatabaseType;
 
 			//LoginOptions
 			property EnableMF : boolean read fEnableMF write SetEnableMF;
 			property LoginPort : Word read fLoginPort write SetLoginPort;
 			property LoginEnabled : boolean read fLoginEnabled;
+			property LoginWANIP : String read fLoginWANIP write SetLoginWANIP;
+			property LoginLANIP : String read fLoginLANIP write SetLoginLANIP;
 
 			//CharaOptions
 			property ServerName : String read fServerName write SetServerName;
 			property CharaPort : Word read fCharaPort write SetCharaPort;
 			property CharaEnabled : boolean read fCharaEnabled;
+			property CharaWANIP : String read fCharaWANIP write SetCharaWANIP;
+			property CharaLANIP : String read fCharaLANIP write SetCharaLANIP;
+			property LoginComIP : String read fLoginComIP write SetLoginComIP;
+			property LoginComPort : Word read fLoginComPort write SetLoginComPort;
 
 			//ZoneOptions
 			property ZonePort  : Word read fZonePort  write SetZonePort;
 			property ZoneEnabled : boolean read fZoneEnabled;
+			property ZoneLANIP : String read fZoneLANIP write SetZoneLANIP;
+			property ZoneWANIP : String read fZoneWANIP write SetZoneWANIP;
+			property CharaComIP : String read fCharaComIP write SetCharaComIP;
+			property CharaComPort : Word read fCharaComPort write SetCharaComPort;
+			property InterComIP : String read fInterComIP write SetInterComIP;
+			property InterComPort : Word read fInterComPort write SetInterComPort;
 
 			//InterOptions
 			property InterPort  : Word read fInterPort  write SetInterPort;
 			property InterEnabled : boolean read fInterEnabled;
+			property InterWANIP : String read fInterWANIP write SetInterWANIP;
+			property InterLANIP : String read fInterLANIP write SetInterLANIP;
 
-			//MySQL - Best to turn off the server BEFORE editing this stuff anywho.
+			//Database - Best to turn off the server BEFORE editing this stuff anywho.
 			//Common Information Database
+
+			property DatabaseType : Integer read fDatabaseType write SetDatabaseType;
 			property CommonHost : string Read fCommonHost;
 			property CommonPort : integer read fCommonPort;
 			property CommonDB   : string Read fCommonDB;
@@ -134,34 +182,29 @@ implementation
 	procedure TServerOptions.Load;
 	var
 		Section    : TStringList;
-    //--------------------------------------------------------------------------
-    //LoadCommunication                                      SUB PROCEDURE
-    //--------------------------------------------------------------------------
-		procedure LoadCommunication;
-		begin
-			ReadSectionValues('Communication', Section);
-
-			fWAN_IP      := Section.Values['WAN_IP'];
-
-			if Section.Values['LAN_IP'] = '' then fLAN_IP := '127.0.0.1'
-			else fLAN_IP := Section.Values['LAN_IP'];
-
-			fZonePort    := StrToIntDef(Section.Values['ZonePort'], 5121);
-
-			fDatabaseType:= StrToIntDef(Section.Values['DatabaseType'], 1);
-
-		end;{Subroutine LoadCommunication}
-    //--------------------------------------------------------------------------
 
     //--------------------------------------------------------------------------
     //LoadLoginOptions                                      SUB PROCEDURE
     //--------------------------------------------------------------------------
 		procedure LoadLoginOptions;
 		begin
-			ReadSectionValues('LoginServer', Section);
+			ReadSectionValues('Login', Section);
 			fEnableMF    := StrToBoolDef(Section.Values['EnableMF'] ,false);
 			fLoginEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
 			fLoginPort   := StrToIntDef(Section.Values['Port'], 6900);
+
+			if Section.Values['WANIP'] = '' then
+			begin
+				Section.Values['WANIP']			:= '127.0.0.1';
+			end;
+			fLoginWANIP			:= Section.Values['WANIP'];
+
+			if Section.Values['LANIP'] = '' then
+			begin
+				Section.Values['LANIP']			:= '127.0.0.1';
+			end;
+			fLoginLANIP			:= Section.Values['LANIP'];
+
 		end;{Subroutine LoadLoginOptions}
     //--------------------------------------------------------------------------
 
@@ -170,14 +213,33 @@ implementation
 		//--------------------------------------------------------------------------
 		procedure LoadCharaOptions;
 		begin
-			ReadSectionValues('CharacterServer', Section);
+			ReadSectionValues('Chara', Section);
 
 			if Section.Values['ServerName'] = '' then begin
 				Section.Values['ServerName'] := 'Helios';
 			end;
-			fCharaEnabled  := StrToBoolDef(Section.Values['Enabled'], TRUE);
-			fServerName    := Section.Values['ServerName'];
-			fCharaPort     := StrToIntDef(Section.Values['Port'], 6121);
+			fCharaEnabled		:= StrToBoolDef(Section.Values['Enabled'], TRUE);
+			fServerName			:= Section.Values['ServerName'];
+			fCharaPort			:= StrToIntDef(Section.Values['Port'], 6121);
+			fLoginComPort		:= StrToIntDef(Section.Values['LoginPort'], 6900);
+
+			if Section.Values['WANIP'] = '' then
+			begin
+				Section.Values['WANIP']			:= '127.0.0.1';
+			end;
+			fCharaWANIP			:= Section.Values['WANIP'];
+
+			if Section.Values['LANIP'] = '' then
+			begin
+				Section.Values['LANIP']			:= '127.0.0.1';
+			end;
+			fCharaLANIP			:= Section.Values['LANIP'];
+
+			if Section.Values['LoginIP'] = '' then
+			begin
+				Section.Values['LoginIP']			:= '127.0.0.1';
+			end;
+			fLoginComIP			:= Section.Values['LoginIP'];
 		end;{Subroutine LoadCharaOptions}
 		//--------------------------------------------------------------------------
 
@@ -186,10 +248,38 @@ implementation
 		//--------------------------------------------------------------------------
 		procedure LoadZoneOptions;
 		begin
-			ReadSectionValues('ZoneServer', Section);
+			ReadSectionValues('Zone', Section);
 
 			fZoneEnabled  := StrToBoolDef(Section.Values['Enabled'], TRUE);
 			fZonePort     := StrToIntDef(Section.Values['Port'], 5121);
+			fCharaComPort		:= StrToIntDef(Section.Values['CharaPort'], 6121);
+			fInterComPort		:= StrToIntDef(Section.Values['InterPort'], 4000);
+
+			if Section.Values['WANIP'] = '' then
+			begin
+				Section.Values['WANIP']			:= '127.0.0.1';
+			end;
+			fZoneWANIP			:= Section.Values['WANIP'];
+
+			if Section.Values['LANIP'] = '' then
+			begin
+				Section.Values['LANIP']			:= '127.0.0.1';
+			end;
+			fZoneLANIP			:= Section.Values['LANIP'];
+
+
+			if Section.Values['CharaIP'] = '' then
+			begin
+				Section.Values['CharaIP']			:= '127.0.0.1';
+			end;
+			fCharaComIP			:= Section.Values['CharaIP'];
+
+
+			if Section.Values['InterIP'] = '' then
+			begin
+				Section.Values['InterIP']			:= '127.0.0.1';
+			end;
+			fInterComIP			:= Section.Values['InterIP'];
 		end;{Subroutine LoadZoneOptions}
 		//--------------------------------------------------------------------------
 
@@ -198,19 +288,33 @@ implementation
 		//--------------------------------------------------------------------------
 		procedure LoadInterOptions;
 		begin
-			ReadSectionValues('InterServer', Section);
+			ReadSectionValues('Inter', Section);
 
 			fInterEnabled  := StrToBoolDef(Section.Values['Enabled'], TRUE);
 			fInterPort     := StrToIntDef(Section.Values['Port'], 4000);
+
+			if Section.Values['WANIP'] = '' then
+			begin
+				Section.Values['WANIP']			:= '127.0.0.1';
+			end;
+			fInterWANIP			:= Section.Values['WANIP'];
+
+			if Section.Values['LANIP'] = '' then
+			begin
+				Section.Values['LANIP']			:= '127.0.0.1';
+			end;
+			fInterLANIP			:= Section.Values['LANIP'];
 		end;{Subroutine LoadInterOptions}
 		//--------------------------------------------------------------------------
 
 		//--------------------------------------------------------------------------
-    //LoadMySQL                                      SUB PROCEDURE
+		//LoadDatabase                                      SUB PROCEDURE
     //--------------------------------------------------------------------------
-		procedure LoadMySQL;
+		procedure LoadDatabase;
 		begin
 			ReadSectionValues('Database', Section);
+
+			fDatabaseType := StrToIntDef(Section.Values['Type'], 1);
 
 			//Accounts
 			if Section.Values['Common_Host'] = '' then begin
@@ -252,12 +356,11 @@ implementation
 		Section.QuoteChar := '"';
 		Section.Delimiter := ',';
 
-		LoadCommunication;
 		LoadLoginOptions;
 		LoadCharaOptions;
 		LoadZoneOptions;
 		LoadInterOptions;
-		LoadMySQL;
+		LoadDatabase;
 		Section.Free;
 
 	end;{TServerOptions.Load}
@@ -276,27 +379,35 @@ implementation
 //------------------------------------------------------------------------------
 	procedure TServerOptions.Save;
 	begin
+		WriteString('Login','Enabled',BoolToStr(LoginEnabled));
+		WriteString('Login','WANIP',LoginWANIP);
+		WriteString('Login','LANIP',LoginLANIP);
+		WriteString('Login','Port',IntToStr(LoginPort));
+		WriteString('Login','EnableMF',BoolToStr(EnableMF));
 
+		WriteString('Chara','Enabled',BoolToStr(CharaEnabled));
+		WriteString('Chara','WANIP',CharaWANIP);
+		WriteString('Chara','LANIP',CharaLANIP);
+		WriteString('Chara','Port', IntToStr(CharaPort));
+		WriteString('Chara','LoginIP',LoginComIP);
+		WriteString('Chara','LoginPort',IntToStr(LoginComPort));
+		WriteString('Chara','ServerName',ServerName);
 
-		WriteString('Communication', 'ZonePort',    IntToStr(ZonePort));
-		WriteString('Communication', 'WAN_IP',      WAN_IP);
-		WriteString('Communication', 'LAN_IP',      LAN_IP);
-    WriteString('Communication', 'DatabaseType',IntToStr(DatabaseType));
+		WriteString('Zone','Enabled',BoolToStr(ZoneEnabled));
+		WriteString('Zone','WANIP',ZoneWANIP);
+		WriteString('Zone','LANIP',ZoneLANIP);
+		WriteString('Zone','Port', IntToStr(ZonePort));
+		WriteString('Zone','CharaIP',CharaComIP);
+		WriteString('Zone','CharaPort',IntToStr(CharaComPort));
+		WriteString('Zone','InterIP',InterComIP);
+		WriteString('Zone','InterPort',IntToStr(InterComPort));
 
-		WriteString('LoginOptions','EnableMF',BoolToStr(EnableMF));
-		WriteString('LoginOptions','Port',IntToStr(LoginPort));
-		WriteString('LoginOptions','Enabled',BoolToStr(LoginEnabled));
+		WriteString('Inter','Enabled',BoolToStr(InterEnabled));
+		WriteString('Inter','WANIP',InterWANIP);
+		WriteString('Inter','LANIP',InterLANIP);
+		WriteString('Inter','Port', IntToStr(InterPort));
 
-		WriteString('CharaOptions','ServerName',ServerName);
-		WriteString('CharaOptions','Port', IntToStr(CharaPort));
-		WriteString('CharaOptions','Enabled',BoolToStr(CharaEnabled));
-
-		WriteString('ZoneOptions','Port', IntToStr(ZonePort));
-		WriteString('ZoneOptions','Enabled',BoolToStr(ZoneEnabled));
-
-		WriteString('InterOptions','Port', IntToStr(InterPort));
-		WriteString('InterOptions','Enabled',BoolToStr(InterEnabled));
-
+		WriteString('Database', 'Type',IntToStr(DatabaseType));
 		WriteString('Database','Common_Host', CommonHost);
 		WriteString('Database','Common_Port', IntToStr(CommonPort));
 		WriteString('Database','Common_Database', CommonDB);
@@ -327,12 +438,278 @@ implementation
 //------------------------------------------------------------------------------
 	procedure TServerOptions.SetLoginPort(Value : word);
 	begin
-		if fLoginPort <> value then
+		if fLoginPort <> Value then
 		begin
-			fLoginPort := value;
-			WriteString('Communication', 'LoginPort', IntToStr(LoginPort));
+			fLoginPort := Value;
+			WriteString('Login', 'Port', IntToStr(LoginPort));
 		end;
 	end;{TServerOptions.SetLoginPort}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetLoginWANIP()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetLoginWANIP(Value : String);
+	begin
+		if fLoginWANIP <> Value then
+		begin
+			fLoginWANIP := Value;
+			WriteString('Login', 'WANIP', LoginWANIP);
+		end;
+	end;{TServerOptions.SetLoginWANIP}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetLoginLANIP()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetLoginLANIP(Value : String);
+	begin
+		if fLoginWANIP <> Value then
+		begin
+			fLoginWANIP := Value;
+			WriteString('Login', 'LANIP', LoginLANIP);
+		end;
+	end;{TServerOptions.SetLoginLANIP}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetCharaWANIP()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetCharaWANIP(Value : String);
+	begin
+		if fCharaWANIP <> Value then
+		begin
+			fCharaWANIP := Value;
+			WriteString('Chara', 'WANIP', CharaWANIP);
+		end;
+	end;{TServerOptions.SetCharaWANIP}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetCharaLANIP()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetCharaLANIP(Value : String);
+	begin
+		if fCharaWANIP <> Value then
+		begin
+			fCharaWANIP := Value;
+			WriteString('Chara', 'LANIP', CharaLANIP);
+		end;
+	end;{TServerOptions.SetCharaLANIP}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetZoneWANIP()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetZoneWANIP(Value : String);
+	begin
+		if fZoneWANIP <> Value then
+		begin
+			fZoneWANIP := Value;
+			WriteString('Zone', 'WANIP', ZoneWANIP);
+		end;
+	end;{TServerOptions.SetZoneWANIP}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetZoneLANIP()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetZoneLANIP(Value : String);
+	begin
+		if fZoneWANIP <> Value then
+		begin
+			fZoneWANIP := Value;
+			WriteString('Zone', 'LANIP', ZoneLANIP);
+		end;
+	end;{TServerOptions.SetLoginLANIP}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetInterWANIP()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetInterWANIP(Value : String);
+	begin
+		if fInterWANIP <> Value then
+		begin
+			fInterWANIP := Value;
+			WriteString('Inter', 'WANIP', InterWANIP);
+		end;
+	end;{TServerOptions.SetInterWANIP}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetInterLANIP()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetInterLANIP(Value : String);
+	begin
+		if fInterWANIP <> Value then
+		begin
+			fInterWANIP := Value;
+			WriteString('Inter', 'LANIP', InterLANIP);
+		end;
+	end;{TServerOptions.SetInterLANIP}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetLoginComPort()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetLoginComPort(Value : Word);
+	begin
+		if fLoginComPort <> Value then
+		begin
+			fLoginComPort := Value;
+			WriteString('Chara', 'LoginPort', IntToStr(LoginComPort));
+		end;
+	end;{TServerOptions.SetLoginComPort}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetLoginComIP()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetLoginComIP(Value : String);
+	begin
+		if fLoginComIP <> Value then
+		begin
+			fLoginComIP := Value;
+			WriteString('Chara', 'LoginIP', LoginComIP);
+		end;
+	end;{TServerOptions.SetLoginComIP}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetCharaComPort()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetCharaComPort(Value : Word);
+	begin
+		if fCharaComPort <> Value then
+		begin
+			fCharaComPort := Value;
+			WriteString('Zone', 'CharaPort', IntToStr(CharaComPort));
+		end;
+	end;{TServerOptions.SetCharaComPort}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetCharaComIP()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetCharaComIP(Value : String);
+	begin
+		if fCharaComIP <> Value then
+		begin
+			fCharaComIP := Value;
+			WriteString('Zone', 'CharaIP', CharaComIP);
+		end;
+	end;{TServerOptions.SetCharaComIP}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetInterComPort()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetInterComPort(Value : Word);
+	begin
+		if fInterComPort <> Value then
+		begin
+			fInterComPort := Value;
+			WriteString('Zone', 'InterPort', IntToStr(InterComPort));
+		end;
+	end;{TServerOptions.SetInterComPort}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TServerOptions.SetInterComIP()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		November 29th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TServerOptions.SetInterComIP(Value : String);
+	begin
+		if fInterComIP <> Value then
+		begin
+			fInterComIP := Value;
+			WriteString('Zone', 'InterIP', InterComIP);
+		end;
+	end;{TServerOptions.SetInterComIP}
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
@@ -352,7 +729,7 @@ implementation
 		if fCharaPort <> value then
 		begin
 			fCharaPort := value;
-			WriteString('Communication', 'CharaPort', IntToStr(CharaPort));
+			WriteString('Chara', 'Port', IntToStr(CharaPort));
 		end;
 	end;{TServerOptions.SetCharaPort}
 //------------------------------------------------------------------------------
@@ -374,7 +751,7 @@ implementation
 		if fZonePort <> value then
 		begin
 			fZonePort := value;
-			WriteString('Communication', 'ZonePort', IntToStr(ZonePort));
+			WriteString('Zone', 'Port', IntToStr(ZonePort));
 		end;
 	end;{TServerOptions.SetZonePort}
 //------------------------------------------------------------------------------
@@ -396,53 +773,9 @@ implementation
 		if fInterPort <> value then
 		begin
 			fInterPort := value;
-			WriteString('Communication', 'InterPort', IntToStr(InterPort));
+			WriteString('Inter', 'Port', IntToStr(InterPort));
 		end;
 	end;{TServerOptions.SetInterPort}
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-//TServerOptions.SetLAN_IP()                                       PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Property Set Routine for LAN_IP. Ensures that if the LAN IP is
-//    changed for whatever reason, that it gets written to the .ini immediately.
-//    The same is true for all communication variables.
-//
-//	Changes -
-//		September 21st, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-	procedure TServerOptions.SetLAN_IP(Value : string);
-	begin
-		if fLAN_IP <> value then
-		begin
-			fLAN_IP := value;
-			WriteString('Communication', 'LAN_IP', LAN_IP);
-		end;
-	end;{TServerOptions.SetLAN_IP}
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-//TServerOptions.SetWAN_IP()                                        PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Property Set Routine for WAN_IP. Ensures that if the wan ip is
-//    changed for whatever reason, that it gets written to the .ini immediately.
-//    The same is true for all communication variables.
-//
-//	Changes -
-//		September 21st, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-	procedure TServerOptions.SetWAN_IP(Value : string);
-	begin
-		if fWAN_IP <> value then
-		begin
-			fWAN_IP := value;
-			WriteString('Communication', 'WAN_IP', WAN_IP);
-		end;
-	end;{TServerOptions.SetWAN_IP}
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
@@ -462,7 +795,7 @@ implementation
 		if fEnableMF <> value then
 		begin
 			fEnableMF := value;
-			WriteString('LoginOptions', 'EnableMF', BoolToStr(EnableMF));
+			WriteString('Login', 'EnableMF', BoolToStr(EnableMF));
 		end;
 	end;{TServerOptions.SetEnableMF}
 //------------------------------------------------------------------------------
@@ -484,7 +817,7 @@ implementation
 		if fServerName <> Value then
 		begin
 			fServerName := Value;
-			WriteString('CharaOptions', 'ServerName', ServerName);
+			WriteString('Chara', 'ServerName', ServerName);
 		end;
 	end;{TServerOptions.SetServerName}
 //------------------------------------------------------------------------------
@@ -506,7 +839,7 @@ implementation
 		if fDatabaseType <> Value then
 		begin
 			fDatabaseType := Value;
-			WriteString('Communication', 'DataaseType', IntToStr(DatabaseType));
+			WriteString('Database', 'DatabaseType', IntToStr(DatabaseType));
 		end;
 	end;{TServerOptions.SetDatabaseType}
 //------------------------------------------------------------------------------

@@ -154,29 +154,29 @@ begin
 
 	SetupTerminationCapturing;
 
-	LoginServer.DefaultPort := ServerConfig.LoginPort;
-	CharaServer.DefaultPort := ServerConfig.CharaPort;
-	ZoneServer.DefaultPort  := ServerConfig.ZonePort;
-	InterServer.DefaultPort := ServerConfig.InterPort;
-
+//Start Enabled Servers
 	if ServerConfig.LoginEnabled then
 	begin
+		LoginServer.DefaultPort := ServerConfig.LoginPort;
 		ActivateServer('Login',LoginServer);
 	end;
-  //NOTE: Prior 
+	//NOTE: Prior
 	if ServerConfig.CharaEnabled then
 	begin
+		CharaServer.DefaultPort := ServerConfig.CharaPort;
 		ActivateServer('Character',CharaServer);
 		ActivateClient(CharaToLoginClient);
 	end;
 
 	if ServerConfig.InterEnabled then
 	begin
+		InterServer.DefaultPort := ServerConfig.InterPort;
 		ActivateServer('Inter', InterServer);
 	end;
 
 	if ServerConfig.ZoneEnabled then
 	begin
+		ZoneServer.DefaultPort  := ServerConfig.ZonePort;
 		ActivateServer('Zone',ZoneServer);
 		ActivateClient(ZoneToCharaClient);
 		ActivateClient(ZoneToInterClient);
@@ -189,7 +189,7 @@ begin
 		//REMOVE SOON!!!
 		//Add local character server to the list
 		LocalCharaServ := TCharaServ.Create;
-		LocalCharaServ.IP := ServerConfig.WAN_IP;
+		LocalCharaServ.IP := ServerConfig.CharaWANIP;
 		LocalCharaServ.InternalServer := TRUE;
 		LocalCharaServ.ServerName := ServerConfig.ServerName;
 		LocalCharaServ.Port := CharaServer.DefaultPort;

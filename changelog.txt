@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 57-
+[2006/11/29] - RaX - Added a few new configuration options to ServerOptions.ini and reorganized
+ it to suit. (LAN IPs, WAN IPs, Ports, etc.) Removed Communication completely.
+-
+
 - Rev 56-
 [2006/11/29] - RaX - Implemented stubbed out Inter Server and added appropriate configuration
  variables for enabling/disabling the zone, chara, and inter servers. Also, uncommented Tsusai's
