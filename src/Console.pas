@@ -219,16 +219,17 @@ procedure TMainProc.Shutdown;
 begin
 	Console('- Helios is shutting down...');
 
+	//Deactivate interserver relations
+	DeActivateClient(CharaToLoginClient);
+	DeActivateClient(ZoneToCharaClient);
+	DeActivateClient(ZoneToInterClient);
+	
 	//Disconnect clients.
 	DeActivateServer(LoginServer);
 	DeActivateServer(CharaServer);
 	DeActivateServer(ZoneServer);
 	DeActivateServer(InterServer);
 
-	//Deactivate interserver relations
-	CharaToLoginClient.Disconnect;
-	ZoneToCharaClient.Disconnect;
-	ZoneToInterClient.Disconnect;
 
 	//Make sure globals are Free'd on Application exit.
 	DestroyGlobals;

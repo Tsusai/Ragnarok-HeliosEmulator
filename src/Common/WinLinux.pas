@@ -9,6 +9,7 @@ uses
 	Classes;
 
 	function GetCardinalFromIPString(IPString : string) : Cardinal;
+	function GetIPStringFromHostname(Hostname : String) : String;
 	procedure SetupTerminationCapturing;
 	procedure KillTerminationCapturing;
 	procedure KillProcess;
@@ -30,6 +31,7 @@ uses
 	MMSystem,
 	Winsock,
 	{$ENDIF}
+	SysUtils,
 	Version,
 	Globals;
 
@@ -37,6 +39,24 @@ uses
 	function GetCardinalFromIPString(IPString : string) : Cardinal;
 	begin
 		Result := Cardinal(inet_addr(PChar(IPString)));
+	end;
+
+	function GetIPStringFromHostname(Hostname : string) : string;
+	var
+		h: PHostEnt;
+	begin
+		h := gethostbyname(PChar(Hostname));
+		if h <> nil then
+		begin
+			with h^ do
+			begin
+				Result := format('%d.%d.%d.%d', [ord(h_addr^[0]), ord(h_addr^[1]),
+						ord(h_addr^[2]), ord(h_addr^[3])]);
+			end;
+		end else
+		begin
+			Result := '0.0.0.0'
+		end;
 	end;
 
 	{$IFDEF MSWINDOWS}

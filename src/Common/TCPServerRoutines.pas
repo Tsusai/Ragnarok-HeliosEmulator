@@ -23,12 +23,17 @@ function ActivateServer(Name : string; var AServer : TIdTCPServer) : boolean;
 Const
 	PORT_ERR =
 		'The %s port (%d) is in use.  Please correct and restart.';
+	LOADING =
+		'  **Activating %s Server Component';
+	LOADED =
+		'  --%s Server Component Now Running';
 begin
 	if not Assigned(AServer) then
 	begin
 		AServer := TIdTCPServer.Create;
 	end;
 	Result := true;
+	MainProc.Console(Format(LOADING, [Name]));
 	try
 		AServer.Active := True;
 	except
@@ -39,6 +44,7 @@ begin
 			Exit;
 		end;
 	end;
+	MainProc.Console(Format(LOADED, [Name]));
 end;
 
 procedure DeActivateServer(var AServer : TIdTCPServer);
@@ -76,9 +82,6 @@ begin
 end;
 
 function ActivateClient(var AClient : TIdTCPClient) : boolean;
-Const
-	PORT_ERR =
-		'The %s port (%d) is in use.  Please correct and restart.';
 begin
 	if not Assigned(AClient) then
 	begin

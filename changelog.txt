@@ -13,6 +13,16 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 58-
+[2006/12/06] - Tsusai - Notes/Overview: Random tweaks to things.
+[2006/12/06] - Tsusai - CharaServerTypes - widestring->string conversions. Not needed
+[2006/12/06] - Tsusai - TCPServerRoutines - ActivateServer: Added more constants.
+[2006/12/06] - Tsusai - WinLinux - Widesting->String conversion, added 
+ GetIPStringFromHostname (DNS RESOLVING IN!!!!!)
+[2006/12/06] - Tsusai - Console - TMainProc.Shutdown - Made interserver communication client
+ components disconnect first, then servers.
+-
+
 - Rev 57-
 [2006/11/29] - RaX - Added a few new configuration options to ServerOptions.ini and reorganized
  it to suit. (LAN IPs, WAN IPs, Ports, etc.) Removed Communication completely.

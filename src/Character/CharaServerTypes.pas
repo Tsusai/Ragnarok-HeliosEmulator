@@ -17,9 +17,9 @@ type
   protected
   //
 	private
-		fIP           : widestring;
+		fIP           : string;
 
-		procedure SetIPCardinal(Value : widestring);
+		procedure SetIPCardinal(Value : string);
 
 	public
 		IPCardinal    : cardinal;
@@ -28,7 +28,7 @@ type
 		OnlineUsers   : word;
 		InternalServer: boolean;
 
-		property IP   : widestring read fIP write SetIPCardinal;
+		property IP   : string read fIP write SetIPCardinal;
 
 	end;
 
@@ -44,10 +44,10 @@ The Ragnarok client does not connect to a server using the plain x.x.x.x IP
 string format.  It uses a cardinal form.  Making the IP a property, we are able
 to call a function to go ahead and set the Cardinal form at any time.
 ------------------------------------------------------------------------------*)
-procedure TCharaServ.SetIPCardinal(Value : widestring);
+procedure TCharaServ.SetIPCardinal(Value : string);
 begin
-	IPCardinal  := GetCardinalFromIPString(Value);
-	fIP         := Value;
+	fIP         := GetIPStringFromHostname(Value);
+	IPCardinal  := GetCardinalFromIPString(fIP);
 end; (*proc TCharaServ.SetIPCardinal
 ------------------------------------------------------------------------------*)
 
