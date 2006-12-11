@@ -51,6 +51,10 @@ type
 
 		procedure SaveAccount(AnAccount : TAccount);virtual;
 		procedure SaveChara(AChara : TCharacter);virtual;
+
+		Function GetBaseHP(ACharacter : TCharacter) : Cardinal;virtual;
+		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;virtual;
+
 	protected
 		procedure Connect();virtual;
 		procedure Disconnect();virtual;
@@ -151,6 +155,15 @@ begin
 	//No change.
 end;
 
+Function TDatabaseTemplate.GetBaseHP(ACharacter : TCharacter) : Cardinal;
+begin
+	Result := 0;
+end;
+
+Function TDatabaseTemplate.GetBaseSP(ACharacter : TCharacter) : Cardinal;
+begin
+	Result := 0;
+end;
 //------------------------------------------------------------------------------
 {END TDATABASETEMPLATE}
 end.

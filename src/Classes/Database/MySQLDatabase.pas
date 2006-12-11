@@ -60,6 +60,8 @@ type
 		procedure SaveAccount(AnAccount : TAccount);override;
 		procedure SaveChara(AChara : TCharacter);override;
 
+		Function GetBaseHP(ACharacter : TCharacter) : Cardinal;override;
+		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;override;
 	protected
 		procedure Connect(UseGameDatabase : Boolean); reintroduce;overload;
 		function SendQuery(
@@ -751,5 +753,38 @@ begin
 	AnAccount := Self.GetAccount(AnAccount.ID);
 end;
 
+Function TMySQLDatabase.GetBaseHP(ACharacter : TCharacter) : Cardinal;
+var
+	Success     : Boolean;
+	QueryResult : TMySQLResult;
+begin
+	QueryResult :=
+		SendQuery(
+		Format('SELECT * FROM hp WHERE level = %d, job = %s ;',
+			[ACharacter.BaseLV,ACharacter.JID])
+		,TRUE,Success);
+	if (QueryResult.RowsCount = 1) and (QueryResult.FieldsCount = 48) then
+	begin
+			Result              := StrToInt(QueryResult.FieldValue(0));
+	end else Result := 0;
+	if Assigned(QueryResult) then QueryResult.Free;
+end;
+
+Function TMySQLDatabase.GetBaseSP(ACharacter : TCharacter) : Cardinal;
+var
+	Success     : Boolean;
+	QueryResult : TMySQLResult;
+begin
+	QueryResult :=
+		SendQuery(
+		Format('SELECT * FROM sp WHERE level = %d, job = %s ;',
+			[ACharacter.BaseLV,ACharacter.JID])
+		,TRUE,Success);
+	if (QueryResult.RowsCount = 1) and (QueryResult.FieldsCount = 48) then
+	begin
+			Result              := StrToInt(QueryResult.FieldValue(0));
+	end else Result := 0;
+	if Assigned(QueryResult) then QueryResult.Free;
+end;
 {END MYSQLDATABASE}
 end.
