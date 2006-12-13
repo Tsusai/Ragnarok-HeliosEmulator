@@ -1,0 +1,5 @@
+Tsusai
+December 13 2006
+
+Useless units removed, variants fixed, and all hints and warnings eliminated
+Now cross compilable
