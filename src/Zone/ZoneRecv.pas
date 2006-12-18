@@ -40,6 +40,7 @@ uses
 implementation
 uses
 	Account,
+  Console,
 	Database,
 	Socket,
 	ZoneSend;
@@ -77,7 +78,6 @@ uses
 		CharacterID : Cardinal;
 		ValidateIDs : array[1..2] of Cardinal;
 		Gender      : Byte;
-		ADatabase   : TDatabase;
 		AnAccount   : TAccount;
 		ACharacter  : TCharacter;
 	begin
@@ -87,11 +87,9 @@ uses
 		ValidateIDs[2] := BufferReadCardinal(ReadPts[3], Buffer);
 		Gender         := BufferReadByte    (ReadPts[4], Buffer);
 
-		ADatabase  := TDatabase.Create();
-		AnAccount  := ADatabase.AnInterface.GetAccount(AccountID);
-		// reinitiallize and connect to the game database
-		ADatabase  := TDatabase.Create(true);
-		ACharacter := ADatabase.AnInterface.GetChara(CharacterID);
+		AnAccount  := MainProc.ACommonDatabase.AnInterface.GetAccount(AccountID);
+  //use global game database
+		ACharacter := MainProc.AGameDatabase.AnInterface.GetChara(CharacterID);
 
 		if Assigned(AnAccount) and Assigned(ACharacter) then
 		begin

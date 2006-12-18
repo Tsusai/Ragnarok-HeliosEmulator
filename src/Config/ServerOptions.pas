@@ -27,8 +27,6 @@ interface
 //Login Config
 			fLoginPort		: Word;
 			fLoginEnabled : boolean;
-			fLoginWANIP		: String;
-			fLoginLANIP		: String;
 			fEnableMF			: Boolean;
 
 //Chara Config
@@ -74,8 +72,6 @@ interface
 //Gets/Sets
 //Login Related
 			procedure SetLoginPort(Value : Word);
-			procedure SetLoginWANIP(Value : String);
-			procedure SetLoginLANIP(Value : String);
 			procedure SetEnableMF(Value : Boolean);
 
 //Character Related
@@ -110,8 +106,6 @@ interface
 			property EnableMF : boolean read fEnableMF write SetEnableMF;
 			property LoginPort : Word read fLoginPort write SetLoginPort;
 			property LoginEnabled : boolean read fLoginEnabled;
-			property LoginWANIP : String read fLoginWANIP write SetLoginWANIP;
-			property LoginLANIP : String read fLoginLANIP write SetLoginLANIP;
 
 			//CharaOptions
 			property ServerName : String read fServerName write SetServerName;
@@ -192,18 +186,6 @@ implementation
 			fEnableMF    := StrToBoolDef(Section.Values['EnableMF'] ,false);
 			fLoginEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
 			fLoginPort   := StrToIntDef(Section.Values['Port'], 6900);
-
-			if Section.Values['WANIP'] = '' then
-			begin
-				Section.Values['WANIP']			:= '127.0.0.1';
-			end;
-			fLoginWANIP			:= Section.Values['WANIP'];
-
-			if Section.Values['LANIP'] = '' then
-			begin
-				Section.Values['LANIP']			:= '127.0.0.1';
-			end;
-			fLoginLANIP			:= Section.Values['LANIP'];
 
 		end;{Subroutine LoadLoginOptions}
     //--------------------------------------------------------------------------
@@ -323,7 +305,7 @@ implementation
 			fCommonHost := Section.Values['Common_Host'];
 			fCommonPort := StrToIntDef(Section.Values['Common_Port'], 3306);
 			if Section.Values['Common_Database'] = '' then begin
-				Section.Values['Common_Database'] := 'HeliosCommon';
+				Section.Values['Common_Database'] := 'helioscommon';
 			end;
 			fCommonDB := Section.Values['Common_Database'];
 			if Section.Values['Common_Username'] = '' then begin
@@ -339,7 +321,7 @@ implementation
 			fGameHost := Section.Values['Game_Host'];
 			fGamePort := StrToIntDef(Section.Values['Game_Port'], 3306);
 			if Section.Values['Game_Database'] = '' then begin
-				Section.Values['Game_Database'] := 'HeliosGame';
+				Section.Values['Game_Database'] := 'heliosgame';
 			end;
 			fGameDB := Section.Values['Game_Database'];
 			if Section.Values['Game_Username'] = '' then begin
@@ -380,8 +362,6 @@ implementation
 	procedure TServerOptions.Save;
 	begin
 		WriteString('Login','Enabled',BoolToStr(LoginEnabled));
-		WriteString('Login','WANIP',LoginWANIP);
-		WriteString('Login','LANIP',LoginLANIP);
 		WriteString('Login','Port',IntToStr(LoginPort));
 		WriteString('Login','EnableMF',BoolToStr(EnableMF));
 
@@ -444,44 +424,6 @@ implementation
 			WriteString('Login', 'Port', IntToStr(LoginPort));
 		end;
 	end;{TServerOptions.SetLoginPort}
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-//TServerOptions.SetLoginWANIP()                                       PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//
-//	Changes -
-//		November 29th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-	procedure TServerOptions.SetLoginWANIP(Value : String);
-	begin
-		if fLoginWANIP <> Value then
-		begin
-			fLoginWANIP := Value;
-			WriteString('Login', 'WANIP', LoginWANIP);
-		end;
-	end;{TServerOptions.SetLoginWANIP}
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-//TServerOptions.SetLoginLANIP()                                       PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//
-//	Changes -
-//		November 29th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-	procedure TServerOptions.SetLoginLANIP(Value : String);
-	begin
-		if fLoginWANIP <> Value then
-		begin
-			fLoginWANIP := Value;
-			WriteString('Login', 'LANIP', LoginLANIP);
-		end;
-	end;{TServerOptions.SetLoginLANIP}
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------

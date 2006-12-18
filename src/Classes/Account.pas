@@ -49,7 +49,7 @@ interface
 implementation
 uses
 	SysUtils,
-
+  Console,
 	Database,
 	Globals;
 
@@ -74,11 +74,8 @@ end; (* proc TAccount.SetGender
 ------------------------------------------------------------------------------*)
 
 function TAccount.GetBanned : boolean;
-var
-	ADatabase : TDatabase;
 begin
-	ADatabase := TDatabase.Create();
-	ADatabase.AnInterface.GetAccountBanAndConnectTime(Self);
+	MainProc.ACommonDatabase.AnInterface.GetAccountBanAndConnectTime(Self);
 	if Now > BanTime then
 	begin
 		Result := false;
@@ -86,25 +83,17 @@ begin
 	begin
 		Result := true;
 	end;
-	ADatabase.Free;
 end;
 
 procedure TAccount.SetBannedTime(TimeString : string);
-var
-	ADatabase : TDatabase;
 begin
 	Self.Bantime := ConvertMySQLTime(TimeString);
-	ADatabase := TDatabase.Create();
-	ADatabase.AnInterface.SaveAccount(self);
-	ADatabase.Free;
+	MainProc.ACommonDatabase.AnInterface.SaveAccount(self);
 end;
 
 function TAccount.GetConnectUntilTime : boolean;
-var
-	ADatabase : TDatabase;
 begin
-	ADatabase := TDatabase.Create();
-	ADatabase.AnInterface.GetAccountBanAndConnectTime(Self);
+	MainProc.ACommonDatabase.AnInterface.GetAccountBanAndConnectTime(Self);
 	if Now > ConnectUntil then
 	begin
 		Result := true;
@@ -112,17 +101,12 @@ begin
 	begin
 		Result := false;
 	end;
-	ADatabase.Free;
 end;
 
 procedure TAccount.SetConnectUntilTime(TimeString : string);
-var
-	ADatabase : TDatabase;
 begin
 	Self.Bantime := ConvertMySQLTime(TimeString);
-	ADatabase := TDatabase.Create();
-	ADatabase.AnInterface.SaveAccount(self);
-	ADatabase.Free;
+	MainProc.ACommonDatabase.AnInterface.SaveAccount(self);
 end;
 
 

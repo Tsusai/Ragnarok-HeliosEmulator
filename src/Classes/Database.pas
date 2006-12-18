@@ -42,7 +42,8 @@ uses
 	Console,
 	Globals,
 	DatabaseConstants,
-	MySQLDatabase;
+	MySQLDatabase,
+	JanSQLDatabase;
 
 //------------------------------------------------------------------------------
 //TDatabase.Create()			                                               CONSTRUCTOR
@@ -70,8 +71,7 @@ begin
 	case DatabaseType of
 		TEXT ://1    Helios Text Database
 			begin
-				MainProc.Console('Helios Text Database not implemented yet');
-				AnInterface := TDatabaseTemplate.Create;
+				AnInterface := TJanSQLDatabase.Create;
 			end;
 
 		MYSQL://2

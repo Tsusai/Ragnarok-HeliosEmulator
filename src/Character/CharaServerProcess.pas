@@ -18,6 +18,7 @@ implementation
 	uses
 		//IDE
 		//Helios
+    Console,
 		Character,
 		CharaList,
 		Database,
@@ -57,17 +58,13 @@ var
 	Count       : Byte;
 	PacketSize  : Word;
 	Ver         : Byte;
-	ACommonDatabase  : TDatabase;
-	AGameDatabase  : TDatabase;
   ACharaList  : TCharacterList;
 begin
 	Count     := 0;
 	Ver       := 24;
-	ACommonDatabase := TDatabase.Create;
-	AGameDatabase := TDatabase.Create(true);
 
 	AccountID := BufferReadCardinal(2, ABuffer);
-	AnAccount := ACommonDatabase.AnInterface.GetAccount(AccountID);
+	AnAccount := MainProc.ACommonDatabase.AnInterface.GetAccount(AccountID);
 
 	if Assigned(AnAccount) then
 	begin
@@ -80,7 +77,7 @@ begin
 				TThreadLink(AClient.Data).AccountLink := AnAccount;
 				SendPadding(AClient); //Legacy padding
 
-				ACharaList := AGameDatabase.AnInterface.GetAccountCharas(AccountID);
+				ACharaList := MainProc.AGameDatabase.AnInterface.GetAccountCharas(AccountID);
 				for Index := 0 to ACharaList.Count-1 do
 				begin
 					ACharacter := ACharaList.List[Index];
@@ -143,9 +140,6 @@ begin
 			SendBuffer(AClient,ReplyBuffer,PacketSize);
 		end;
 	end;
-
-	ACommonDatabase.Free;
-	AGameDatabase.Free;
 end; (* proc SendCharas
 ------------------------------------------------------------------------------*)
 
@@ -178,7 +172,6 @@ var
 	ReplyBuffer: TBuffer;
 	idx        : byte;
 	TotalStatPt: byte;
-	ADatabase  : TDatabase;
 	Validated  : Boolean;
 
 	procedure CreateCharaError(const Error : byte);
@@ -191,7 +184,6 @@ var
 	end;
 
 begin
-	ADatabase   := TDatabase.Create(true);
 	Validated   := TRUE; //Assume passes all checks.
 
 	Account     := TThreadLink(AClient.Data).AccountLink;
@@ -203,7 +195,7 @@ begin
 	TotalStatPt := 0;
 
 	//Name Check.
-	if NOT ADatabase.AnInterface.CharaExists(CharaName) then
+	if NOT MainProc.AGameDatabase.AnInterface.CharaExists(CharaName) then
 	begin
 		//Stat Point check.
 		for idx := 0 to 5 do begin
@@ -225,7 +217,7 @@ begin
 		end;
 
 		//Slot Check.
-		if ADatabase.AnInterface.CharaExists(Account.ID, SlotNum) then
+		if MainProc.AGameDatabase.AnInterface.CharaExists(Account.ID, SlotNum) then
 		begin
 			CreateCharaError(INVALIDMISC);
 			Validated := FALSE;
@@ -237,7 +229,7 @@ begin
 			//Validated...Procede with creation
 			ACharacter := TCharacter.Create;
 			//Set a record in Database for our new character
-			if ADatabase.AnInterface.CreateChara(
+			if MainProc.AGameDatabase.AnInterface.CreateChara(
 				ACharacter,Account.ID,CharaName) then
 			begin
 				ACharacter.Name := CharaName;
@@ -251,7 +243,7 @@ begin
 				ACharacter.ParamBase[DEX] := StatPoints[4];
 				ACharacter.ParamBase[LUK] := StatPoints[5];
 				//INSERT ANY OTHER CREATION CHANGES HERE!
-				ADatabase.AnInterface.SaveChara(ACharacter);
+				MainProc.AGameDatabase.AnInterface.SaveChara(ACharacter);
 				with ACharacter do begin
 					WriteBufferWord(0, $006d,ReplyBuffer);
 					WriteBufferCardinal(2+  0, CID,ReplyBuffer);
@@ -296,7 +288,6 @@ begin
 	begin
 		CreateCharaError(INVALIDNAME);
 	end;
-	ADatabase.Free;
 end;
 
 procedure DeleteChara(
@@ -309,7 +300,6 @@ var
 	AnAccount   : TAccount;
 	ACharacter  : TCharacter;
 	ReplyBuffer : TBuffer;
-	ADatabase   : TDatabase;
 
 	procedure DeleteCharaError(const Error : byte);
 	begin
@@ -319,11 +309,10 @@ var
 	end;
 
 begin
-	ADatabase := TDatabase.Create(true);
 	CharacterID := BufferReadCardinal(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TThreadLink(AClient.Data).AccountLink;
-	ACharacter := ADatabase.AnInterface.GetChara(CharacterID);
+	ACharacter := MainProc.AGameDatabase.AnInterface.GetChara(CharacterID);
 	if (AnAccount.EMail = EmailOrID) and (ACharacter.Account = AnAccount) then
 	begin
 		if Assigned(ACharacter) then
@@ -332,7 +321,7 @@ begin
 			begin
 				if TCharacter(CharacterList.IndexOfObject(CharacterID)).CID = ACharacter.CID then
 				begin
-					if ADatabase.AnInterface.DeleteChara(ACharacter) then
+					if MainProc.AGameDatabase.AnInterface.DeleteChara(ACharacter) then
 					begin
 						WriteBufferWord(0, $006f, ReplyBuffer);
 						SendBuffer(AClient,ReplyBuffer, 2);
@@ -341,7 +330,6 @@ begin
 			end else DeleteCharaError(DELETEBADCHAR);
 		end else DeleteCharaError(DELETEBADCHAR);
 	end else DeleteCharaError(DELETEBADEMAIL);
-	ADatabase.Free;
 end;
 
 (*------------------------------------------------------------------------------

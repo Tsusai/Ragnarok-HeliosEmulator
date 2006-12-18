@@ -54,7 +54,6 @@ program Helios;
 
 {$APPTYPE CONSOLE}
 uses
-
 {*These definitions make it possible to step through programs in windows and
 compile for linux, at the same time*}
 //------------------------------------------------------------------------------
@@ -76,14 +75,15 @@ compile for linux, at the same time*}
 	Globals in 'Common\Globals.pas',
 	janSQL in 'Common\3rdParty\JanSQL\janSQL.pas',
 	janSQLExpression2 in 'Common\3rdParty\JanSQL\janSQLExpression2.pas',
+	JanSQLDatabase in 'Classes\Database\JanSQLDatabase.pas',
 	janSQLStrings in 'Common\3rdParty\JanSQL\janSQLStrings.pas',
 	janSQLTokenizer in 'Common\3rdParty\JanSQL\janSQLTokenizer.pas',
 	mwStringHashList in 'Common\3rdParty\JanSQL\mwStringHashList.pas',
 	List32 in 'Common\3rdParty\List32.pas',
 	LoginProcesses in 'Login\LoginProcesses.pas',
+	Map in 'Classes\Map.pas',
 	madExcept,
 	madLinkDisAsm,
-	Map in 'Classes\Map.pas',
 	MySQLDatabase in 'Classes\Database\MySQLDatabase.pas',
 	PacketTypes in 'Common\PacketTypes.pas',
 	PointList in 'Classes\PointList.pas',
@@ -125,6 +125,7 @@ compile for linux, at the same time*}
 	Globals in 'Common/Globals.pas',
 	janSQL in 'Common/3rdParty/JanSQL/janSQL.pas',
 	janSQLExpression2 in 'Common/3rdParty/JanSQL/janSQLExpression2.pas',
+  JanSQLDatabase in 'Classes/Database/JanSQLDatabase.pas',
 	janSQLStrings in 'Common/3rdParty/JanSQL/janSQLStrings.pas',
 	janSQLTokenizer in 'Common/3rdParty/JanSQL/janSQLTokenizer.pas',
 	mwStringHashList in 'Common/3rdParty/JanSQL/mwStringHashList.pas',
@@ -181,7 +182,7 @@ var
 	AnInput   : string;
 begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
-	Randomize;
+	Randomize;     AnInput := '0'; AnInput := IntToStr (1 div StrToInt(AnInput));
 	Command := TCommands.Create;
 	MainProc := TMainProc.Create(nil); //Form replacement
 

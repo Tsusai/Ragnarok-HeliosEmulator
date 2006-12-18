@@ -78,8 +78,8 @@ type
     function getValue: variant;
     procedure SetFieldIndex(const Value: integer);
   public
-    constructor create;
-    destructor  destroy;override;
+    constructor Create;
+    destructor  Destroy;override;
     property expression:string read Fexpression write Setexpression;
     property name:string read Fname write Setname;
     property value:variant read getValue;
@@ -94,8 +94,8 @@ type
     function getField(index: integer): TjanSQLCalcField;
     function getFieldNames: string;
   public
-    constructor create;
-    destructor  destroy;override;
+    constructor Create;
+    destructor  Destroy;override;
     procedure ClearFields;
     function  AddField:TjanSQLCalcField;
     property FieldNames:string read getFieldNames;
@@ -141,8 +141,8 @@ type
     procedure Setcounter(const Value: integer);
     procedure ClearFields;
   public
-    constructor create;
-    destructor  destroy; override;
+    constructor Create;
+    destructor  Destroy; override;
     procedure AddField(value:string);
     function DeleteField(index:integer):boolean;
     property row:string read getrow write setrow;
@@ -154,15 +154,15 @@ type
   TjanRecordList=class(TList)
   private
   public
-    destructor  destroy; override;
+    destructor  Destroy; override;
     procedure   Clear; override;
     procedure  delete(index:integer);
   end;
 
   TjanRecordSetList=class(TStringList)
   public
-    destructor  destroy; override;
-    procedure delete(index:integer);override;
+    destructor  Destroy; override;
+    procedure Delete(index:integer);override;
   end;
 
   TjanRecordSet=class(TObject)
@@ -191,8 +191,8 @@ type
     procedure Setalias(const Value: string);
     procedure Setintermediate(const Value: boolean);
   public
-    constructor create;
-    destructor  destroy; override;
+    constructor Create;
+    destructor  Destroy; override;
     function LoadFromFile(filename:string):boolean;
     procedure SaveToFile(filename:string);
     function AddRecord:integer;
@@ -230,8 +230,8 @@ type
     function getParser: TjanSQLExpression2;
   protected
   public
-    constructor create;
-    destructor  destroy;override;
+    constructor Create;
+    destructor  Destroy;override;
     property Engine:TjanSQL read FEngine write SetEngine;
     property Tokens[index:integer]:TToken read GetToken;
     property Parser:TjanSQLExpression2 read getParser;
@@ -299,8 +299,8 @@ type
     function SQLConnect(query:TjanSQLQuery;aline:string):integer;
   public
     { Public declarations }
-    constructor create;
-    destructor  destroy; override;
+    constructor Create;
+    destructor  Destroy; override;
     function SQLDirect(value:string):integer;
     function ReleaseRecordset(arecordset:integer):boolean;
     function Error:string;

@@ -13,6 +13,21 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 61-
+[2006/12/16] - Tsusai - Notes/Overview: MySQL queries fixed, Login server information covering
+ the IPs removed.  They aren't needed.
+[2006/12/16] - RaX - Notes/Overview: (All RaX entries by Tsusai) MainProc now holds the
+ database connections, instead of creating on the fly.
+[2006/12/16] - Tsusai - MySQLDatabaseTemplate : Corrected queries.  One error was trying to
+ access a character table (its characters) and another was running a query to access information
+ in the common database, from within game database connection.
+[2006/12/16] - Tsusai - ServerOptions - Removed Login server IPS
+[2006/12/16] - Tsusai - Merged RaX's changes.
+[2006/12/16] - RaX - Added JanSQLDatabase, controls TXT database system.
+[2006/12/16] - RaX - Removed on the fly database connections, replacing with a one connecter
+ per database variable in MainProc object.
+-
+
 - Rev 60-
 [2006/12/13] - Tsusai - Notes/Overview: JanSQL committed, its a TXT SQL system.
 [2006/12/13] - Tsusai - Added JanSQL folder and added into project.

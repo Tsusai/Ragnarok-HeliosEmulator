@@ -19,7 +19,7 @@ uses
 	IdContext,
 	SysUtils,
 	Classes,
-	XTimer;
+  Database;
 
 type
 //------------------------------------------------------------------------------
@@ -34,11 +34,12 @@ type
 		ZoneServer  : TIdTCPServer;
 		InterServer : TIdTCPServer;
 
+    AGameDatabase      : TDatabase;
+    ACommonDatabase    : TDatabase;
+
 		CharaToLoginClient : TIdTCPClient;
 		ZoneToCharaClient  : TIdTCPClient;
 		ZoneToInterClient  : TIdTCPClient;
-
-		SaveTimer   : TXTimer;
 
 		procedure ForceSave(Sender : TObject);
 
@@ -154,6 +155,10 @@ begin
 
 	SetupTerminationCapturing;
 
+  //Create Database Objects
+  ACommonDatabase := TDatabase.Create(FALSE);
+  AGameDatabase   := TDatabase.Create(TRUE);
+
 //Start Enabled Servers
 	if ServerConfig.LoginEnabled then
 	begin
@@ -223,13 +228,16 @@ begin
 	DeActivateClient(CharaToLoginClient);
 	DeActivateClient(ZoneToCharaClient);
 	DeActivateClient(ZoneToInterClient);
-	
+
 	//Disconnect clients.
 	DeActivateServer(LoginServer);
 	DeActivateServer(CharaServer);
 	DeActivateServer(ZoneServer);
 	DeActivateServer(InterServer);
 
+  //Free Databases
+  ACommonDatabase.Free;
+  AGameDatabase.Free;
 
 	//Make sure globals are Free'd on Application exit.
 	DestroyGlobals;
