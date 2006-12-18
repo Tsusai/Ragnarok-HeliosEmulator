@@ -19,7 +19,11 @@ uses
 	IdContext,
 	SysUtils,
 	Classes,
-  Database;
+  Database,
+  LoginServer,
+  CharacterServer,
+  InterServer,
+  ZoneServer;
 
 type
 //------------------------------------------------------------------------------
@@ -29,33 +33,19 @@ type
 	public
 		Run         : Boolean;
 
-		LoginServer : TIdTCPServer;
-		CharaServer : TIdTCPServer;
-		ZoneServer  : TIdTCPServer;
-		InterServer : TIdTCPServer;
+		LoginServer : TLoginServer;
+		CharacterServer : TCharacterServer;
+		ZoneServer  : TZoneServer;
+		InterServer : TInterServer;
 
     AGameDatabase      : TDatabase;
     ACommonDatabase    : TDatabase;
-
-		CharaToLoginClient : TIdTCPClient;
-		ZoneToCharaClient  : TIdTCPClient;
-		ZoneToInterClient  : TIdTCPClient;
-
-		procedure ForceSave(Sender : TObject);
 
 		procedure Console(Line : string);
 
 		procedure Startup;
 		procedure Shutdown;
 
-		procedure LoginServerConnect(AConnection: TIdContext);
-		procedure LoginServerExecute(AConnection: TIdContext);
-		procedure CharaServerConnect(AConnection: TIdContext);
-		procedure CharaServerExecute(AConnection: TIdContext);
-		procedure ZoneServerConnect (AConnection: TIdContext);
-		procedure ZoneServerExecute (AConnection: TIdContext);
-		procedure InterServerConnect(AConnection: TIdContext);
-		procedure InterServerExecute(AConnection: TIdContext);
 		procedure ServerException(AConnection: TIdContext;
 			AException: Exception);
 
@@ -74,10 +64,7 @@ uses
 	{Internal}
 	StrUtils,
 	{Helios}
-	CharaServerProcess,
-	CharaServerTypes,
 	Globals,
-	LoginProcesses,
 	PacketTypes,
 	SaveThread,
 	TCPServerRoutines,
@@ -102,37 +89,6 @@ begin
 end;{TMainProc.Console}
 //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-//TMainProc.ForceSave()                                             Procedure
-//------------------------------------------------------------------------------
-//	What it does-
-//			Executes the save thread
-//
-//	Changes -
-//		October 21st, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TMainProc.ForceSave(Sender : Tobject);
-begin
-	TSaveThread.Create;
-end;{TMainProc.CharaServerConnect}
-
-//------------------------------------------------------------------------------
-//TMainProc.LoginServerExecute()                                          EVENT
-//------------------------------------------------------------------------------
-//	What it does-
-//		 Starts the Internal Login server to process incoming connection attempts.
-//
-//	Changes -
-//		September 19th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TMainProc.LoginServerExecute(AConnection: TIdContext);
-begin
-	ParseLogin(AConnection);
-end;{TMainProc.LoginServerExecute}
-//------------------------------------------------------------------------------
-
 
 //------------------------------------------------------------------------------
 //TMainProc.StartUp()                                                 PROCEDURE
@@ -145,8 +101,6 @@ end;{TMainProc.LoginServerExecute}
 //
 //------------------------------------------------------------------------------
 procedure TMainProc.Startup;
-var
-	LocalCharaServ : TCharaServ;
 begin
 	ThirdPartyCredits; //Load external credits file.
 	AppPath  := ExtractFilePath(ParamStr(0));
@@ -159,47 +113,41 @@ begin
   ACommonDatabase := TDatabase.Create(FALSE);
   AGameDatabase   := TDatabase.Create(TRUE);
 
-//Start Enabled Servers
+//Start and create Enabled Servers
 	if ServerConfig.LoginEnabled then
 	begin
-		LoginServer.DefaultPort := ServerConfig.LoginPort;
-		ActivateServer('Login',LoginServer);
+    LoginServer      := TLoginServer.Create;
+		LoginServer.Port := ServerConfig.LoginPort;
+    LoginServer.Start;
 	end;
 	//NOTE: Prior
 	if ServerConfig.CharaEnabled then
 	begin
-		CharaServer.DefaultPort := ServerConfig.CharaPort;
-		ActivateServer('Character',CharaServer);
-		ActivateClient(CharaToLoginClient);
+    CharacterServer             := TCharacterServer.Create;
+    CharacterServer.Port        := ServerConfig.CharaPort;
+    CharacterServer.IP          := ServerConfig.CharaWANIP;
+    CharacterServer.ServerName  := ServerConfig.ServerName;
+		CharacterServer.Start;
+    CharaServerList.AddObject(CharacterServer.ServerName,CharacterServer);
 	end;
 
 	if ServerConfig.InterEnabled then
 	begin
-		InterServer.DefaultPort := ServerConfig.InterPort;
-		ActivateServer('Inter', InterServer);
+    InterServer       := TInterServer.Create;
+		InterServer.Port  := ServerConfig.InterPort;
+    InterServer.IP    := ServerConfig.InterWANIP;
+		InterServer.Start;
 	end;
 
 	if ServerConfig.ZoneEnabled then
 	begin
-		ZoneServer.DefaultPort  := ServerConfig.ZonePort;
-		ActivateServer('Zone',ZoneServer);
-		ActivateClient(ZoneToCharaClient);
-		ActivateClient(ZoneToInterClient);
+    ZoneServer       := TZoneServer.Create;
+		ZoneServer.Port  := ServerConfig.ZonePort;
+    ZoneServer.IP    := ServerConfig.ZoneWANIP;
+    ZoneServer.Start;
 	end;
 
 	MainProc.Console('');
-
-	if CharaServer.Active then
-	begin
-		//REMOVE SOON!!!
-		//Add local character server to the list
-		LocalCharaServ := TCharaServ.Create;
-		LocalCharaServ.IP := ServerConfig.CharaWANIP;
-		LocalCharaServ.InternalServer := TRUE;
-		LocalCharaServ.ServerName := ServerConfig.ServerName;
-		LocalCharaServ.Port := CharaServer.DefaultPort;
-		CharaServerList.AddObject(LocalCharaServ.ServerName,LocalCharaServ);
-	end;
 
 	Run := TRUE;
 
@@ -224,16 +172,30 @@ procedure TMainProc.Shutdown;
 begin
 	Console('- Helios is shutting down...');
 
-	//Deactivate interserver relations
-	DeActivateClient(CharaToLoginClient);
-	DeActivateClient(ZoneToCharaClient);
-	DeActivateClient(ZoneToInterClient);
-
 	//Disconnect clients.
-	DeActivateServer(LoginServer);
-	DeActivateServer(CharaServer);
-	DeActivateServer(ZoneServer);
-	DeActivateServer(InterServer);
+	if Assigned(LoginServer) then
+	begin
+    LoginServer.Stop;
+    LoginServer.Free;
+	end;
+	//NOTE: Prior
+	if Assigned(CharacterServer) then
+	begin
+    CharacterServer.Stop;
+    CharacterServer.Free;
+	end;
+
+	if Assigned(InterServer) then
+	begin
+    InterServer.Stop;
+    InterServer.Free;
+	end;
+
+	if Assigned(ZoneServer) then
+	begin
+    ZoneServer.Stop;
+    ZoneServer.Free;
+	end;
 
   //Free Databases
   ACommonDatabase.Free;
@@ -268,127 +230,6 @@ begin
 end;{TMainProc.ServerException}
 //------------------------------------------------------------------------------
 
-
-//------------------------------------------------------------------------------
-//TMainProc.LoginServerConnect()                                          EVENT
-//------------------------------------------------------------------------------
-//	What it does-
-//			Event which is fired when a user attempts to connect to the login
-//    server. It writes information about the connection to the console.
-//
-//	Changes -
-//		September 19th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TMainProc.LoginServerConnect(AConnection: TIdContext);
-begin
-	Console('Connection from ' + AConnection.Connection.Socket.Binding.PeerIP);
-end;{TMainProc.LoginServerConnect}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TMainProc.CharaServerConnect()                                          EVENT
-//------------------------------------------------------------------------------
-//	What it does-
-//			An event which fires when a user connects to the chara server.
-//
-//	Changes -
-//		September 19th, 2006 - RaX - Created Header.
-//		November  11th, 2006 - Tsusai - Removed Link variable, not needed.
-//
-//------------------------------------------------------------------------------
-procedure TMainProc.CharaServerConnect(AConnection: TIdContext);
-begin
-	AConnection.Data := TThreadLink.Create;
-end;{TMainProc.CharaServerConnect}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TMainProc.CharaServerExecute()                                          EVENT
-//------------------------------------------------------------------------------
-//	What it does-
-//			An event which fires when the server is started. It allows the server
-//    to accept incoming client connections.
-//
-//	Changes -
-//		September 19th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TMainProc.CharaServerExecute(AConnection: TIdContext);
-begin
-	ParseCharaServ(AConnection);
-end;{TMainProc.ChaServerExecute}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TMainProc.ZoneServerConnect()                                           EVENT
-//------------------------------------------------------------------------------
-//	What it does-
-//			An event which fires when a user connects to the Zone Server.
-//
-//	Changes -
-//		November 11th, 2006 - Tsusai - Created.
-//
-//------------------------------------------------------------------------------
-procedure TMainProc.ZoneServerConnect(AConnection: TIdContext);
-begin
-	AConnection.Data := TThreadLink.Create;
-end;{TMainProc.ZoneServerConnect}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TMainProc.ZoneServerExecute()                                          EVENT
-//------------------------------------------------------------------------------
-//	What it does-
-//			An event which fires when the server is started. It allows the server
-//    to accept incoming client connections.
-//
-//	Changes -
-//		November 11th, 2006 - Tsusai - Created.
-//
-//------------------------------------------------------------------------------
-procedure TMainProc.ZoneServerExecute(AConnection: TIdContext);
-begin
-	ProcessZonePacket(AConnection);
-end;{TMainProc.ZoneServerExecute}
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-//TMainProc.InterServerConnect()                                           EVENT
-//------------------------------------------------------------------------------
-//	What it does-
-//			An event which fires when a user connects to the Inter Server.
-//
-//	Changes -
-//		November 29th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-procedure TMainProc.InterServerConnect(AConnection: TIdContext);
-begin
-	//inter server connect code here
-end;{TMainProc.ZoneServerConnect}
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-//TMainProc.InterServerExecute()                                          EVENT
-//------------------------------------------------------------------------------
-//	What it does-
-//			An event which fires when the server is started. It allows the server
-//    to accept incoming client connections.
-//
-//	Changes -
-//		November 29th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-procedure TMainProc.InterServerExecute(AConnection: TIdContext);
-begin
-	//add packet parser here
-end;{TMainProc.InterServerExecute}
-//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //TMainProc.ThirdPartyCredits()                                       PROCEDURE
@@ -432,31 +273,6 @@ end;{TMainProc.ThirdPartyCredits}
 constructor TMainProc.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
-	LoginServer := TIdTCPServer.Create;
-	CharaServer := TIdTCPServer.Create;
-	ZoneServer  := TIdTCPServer.Create;
-	InterServer := TIdTCPServer.Create;
-
-	CharaToLoginClient := TIdTCPClient.Create;
-	ZoneToCharaClient  := TIdTCPClient.Create;
-	ZoneToInterClient  := TIdTCPClient.Create;
-
-	LoginServer.OnExecute := LoginServerExecute;
-	LoginServer.OnConnect := LoginServerConnect;
-	LoginServer.OnException := ServerException;
-
-	CharaServer.OnConnect := CharaServerConnect;
-	CharaServer.OnExecute := CharaServerExecute;
-	CharaServer.OnException := ServerException;
-
-	ZoneServer.OnConnect  := ZoneServerConnect;
-	ZoneServer.OnExecute  := ZoneServerExecute;
-	ZoneServer.OnException := ServerException;
-
-	InterServer.OnConnect  := InterServerConnect;
-	InterServer.OnExecute  := InterServerExecute;
-	InterServer.OnException := ServerException;
-
 end;{TMainProc.Create}
 //------------------------------------------------------------------------------
 
@@ -473,16 +289,6 @@ end;{TMainProc.Create}
 //------------------------------------------------------------------------------
 destructor  TMainProc.Destroy;
 begin
-	//MUST KILL COMPONENTS
-	if Assigned(LoginServer)  then FreeAndNil(LoginServer);
-	if Assigned(CharaServer)  then FreeAndNil(CharaServer);
-	if Assigned(ZoneServer)   then FreeAndNil(ZoneServer);
-	if Assigned(InterServer)  then FreeAndNil(InterServer);
-
-	if Assigned(CharaToLoginClient)  then FreeAndNil(CharaToLoginClient);
-	if Assigned(ZoneToCharaClient)   then FreeAndNil(ZoneToCharaClient);
-	if Assigned(ZoneToInterClient)   then FreeAndNil(ZoneToInterClient);
-
 	inherited Destroy;
 end;{TMainProc.Destroy}
 //------------------------------------------------------------------------------

@@ -564,7 +564,7 @@ var
 begin
 	with AChara do
 	begin
-		QueryString := Format('UPDATE character SET ' +
+		QueryString := Format('UPDATE characters SET ' +
 			'char_num=%d, ' +
 			'name=''%s'', ' +
 			'class=%d, ' +
@@ -688,7 +688,7 @@ var
 begin
 	Result := FALSE;
 	SendQuery(
-		Format('INSERT INTO character (account_id, name) VALUES(%d, "%s");',
+		Format('INSERT INTO characters (account_id, name) VALUES(%d, "%s");',
 		[AID,NName])
 	,TRUE,Success);
 	if Success then

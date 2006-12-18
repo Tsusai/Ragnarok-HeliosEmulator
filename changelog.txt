@@ -12,6 +12,12 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 64-
+[2006/12/17] - RaX - Moved all servers into classes located in Classes/Servers/
+[2006/12/17] - RaX - Reorganized Console.pas to accomodate changes made to servers.
+[2006/12/17] - RaX - Redid startup/shutdown procedures to create and free the servers
+ dynamically based on which are enabled.
+-
 
 - Rev 63-
 [2006/12/17] - Tsusai - Notes/Overview: Added _M/_F login parsing.  This only works when

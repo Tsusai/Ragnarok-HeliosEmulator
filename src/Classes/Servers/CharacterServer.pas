@@ -1,45 +1,179 @@
 //------------------------------------------------------------------------------
-//CharaServerProcess			                                                UNIT
+//CharacterServer			                                                UNIT
 //------------------------------------------------------------------------------
 //	What it does-
-//			Handles all client communication here.
+//      The Character Server Class.
+//    An object type that contains all information about a character server
+//    This unit is to help for future design of multi server communication IF
+//    the user were to want to do so.  Else, it would act as an all-in-one.
+//	  Only one type in this unit for the time being.
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-unit CharaServerProcess;
+unit CharacterServer;
 
 interface
 uses
-	//3rd Party
-	IdContext;
+  IdTCPServer,
+  IdTCPClient,
+  IdContext,
+  PacketTypes;
+type
+//------------------------------------------------------------------------------
+//TCharacterServer                                                        CLASS
+//------------------------------------------------------------------------------
+	TCharacterServer = class
+  protected
+  //
+	private
+		fIP             : String;
+    fPort           : Word;
+    TCPServer       : TIdTCPServer;
+    ToLoginTCPClient: TIdTCPClient;
+		Procedure SetIPCardinal(Value : string);
+		Procedure OnExecute(AConnection: TIdContext);
 
-	procedure ParseCharaServ(AClient : TIdContext);
+    procedure ParseCharaServ(AClient : TIdContext);
+    procedure SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
+    procedure SendCharaToMap();
+    procedure CreateChara(AClient : TIdContext; var ABuffer : TBuffer);
+    procedure DeleteChara(AClient : TIdContext; var ABuffer : Tbuffer);
+
+    Procedure SetPort(Value : Word);
+
+	public
+		IPCardinal    : Cardinal;
+		ServerName    : String;
+		OnlineUsers   : Word;
+
+		property IP   : string read fIP write SetIPCardinal;
+    property Port : Word read fPort write SetPort;
+
+    Constructor Create();
+    Destructor  Destroy();Override;
+    Procedure   Start();
+    Procedure   Stop();
+	end;
+//------------------------------------------------------------------------------
+
 
 implementation
-	uses
-		//IDE
-		//Helios
-    Console,
-		Character,
-		CharaList,
-		Database,
-		Socket,
-		Account,
-		PacketTypes,
-		GameConstants,
-		Globals,
-		//3rd
-		List32;
-
+uses
+	//Helios
+	WinLinux,
+  Console,
+  Character,
+  CharaList,
+  Database,
+  Socket,
+  Account,
+  GameConstants,
+  Globals,
+  TCPServerRoutines,
+  //3rd
+  List32;
 
 const
 	INVALIDNAME = 0;
 	INVALIDMISC = 2;
 	DELETEBADCHAR = 0;
 	DELETEBADEMAIL = 1;
-	
+
+//------------------------------------------------------------------------------
+//Create  ()                                                        CONSTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does-
+//			Initializes our character server
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Constructor TCharacterServer.Create;
+begin
+  TCPServer := TIdTCPServer.Create;
+
+  TCPServer.OnExecute   := OnExecute;
+	TCPServer.OnException := MainProc.ServerException;
+end;{Create}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Destroy()                                                        DESTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does-
+//			Destroys our character server
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Destructor TCharacterServer.Destroy;
+begin
+  TCPServer.Free;
+  ToLoginTCPClient.Free;
+end;{Destroy}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//OnExecute()                                                             EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			An event which fires when the server is started. It allows the server
+//    to accept incoming client connections.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+procedure TCharacterServer.OnExecute(AConnection: TIdContext);
+begin
+	ParseCharaServ(AConnection);
+end;{OnExecute}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Start()                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		 Enables the character server to accept incoming connections
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TCharacterServer.Start();
+begin
+  TCPServer.DefaultPort := ServerConfig.CharaPort;
+  ActivateServer('Character',TCPServer);
+  ActivateClient(ToLoginTCPClient);
+end;{Start}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Stop()                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		 Stops the character server from accepting incoming connections
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TCharacterServer.Stop();
+begin
+  DeActivateServer(TCPServer);
+  DeActivateClient(ToLoginTCPClient);
+end;{Start}
+//------------------------------------------------------------------------------
+
+
 //------------------------------------------------------------------------------
 //SendCharas			                                                    PROCEDURE
 //------------------------------------------------------------------------------
@@ -54,7 +188,7 @@ const
 //      procedure.
 //
 //------------------------------------------------------------------------------
-procedure SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
+procedure TCharacterServer.SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
 var
 	AccountID   : Cardinal;
 	AnAccount   : TAccount;
@@ -146,7 +280,7 @@ begin
 			SendBuffer(AClient,ReplyBuffer,PacketSize);
 		end;
 	end;
-end; //proc SendCharas
+end; //SendCharas
 //------------------------------------------------------------------------------
 
 
@@ -161,7 +295,7 @@ end; //proc SendCharas
 //		December 17th, 2006 - RaX - Created Header. - Stubbed for later use.
 //
 //------------------------------------------------------------------------------
-procedure SendCharaToMap();
+procedure TCharacterServer.SendCharaToMap();
 begin
 
 end;
@@ -181,7 +315,7 @@ end;
 //      procedure.
 //
 //------------------------------------------------------------------------------
-procedure CreateChara(
+procedure TCharacterServer.CreateChara(
 	AClient : TIdContext;
 	var ABuffer : TBuffer
 );
@@ -326,7 +460,7 @@ end;//CreateChara
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure DeleteChara(
+procedure TCharacterServer.DeleteChara(
 	AClient : TIdContext;
 	var ABuffer : Tbuffer
 );
@@ -383,7 +517,7 @@ end;//DeleteChara
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure ParseCharaServ(AClient : TIdContext);
+procedure TCharacterServer.ParseCharaServ(AClient : TIdContext);
 var
 	PacketLength  : Integer;
 	ABuffer       : TBuffer;
@@ -431,9 +565,44 @@ begin
 end; //Proc ParseCharaServ
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetIPCardinal   			                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      The Ragnarok client does not connect to a server using the plain x.x.x.x
+//    IP string format.  It uses a cardinal form.  Making the IP a property, we
+//    are able to call a function to go ahead and set the Cardinal form at any
+//    time.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+procedure TCharacterServer.SetIPCardinal(Value : string);
+begin
+	fIP         := GetIPStringFromHostname(Value);
+	IPCardinal  := GetCardinalFromIPString(fIP);
+end; //proc SetIPCardinal
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetPort                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the internal fPort variable to the value specified. Also sets the
+//    TCPServer's port.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TCharacterServer.SetPort(Value : Word);
+begin
+  fPort := Value;
+  TCPServer.DefaultPort := Value;
+end;//SetPort
+//------------------------------------------------------------------------------
+
 end.
-
-
-
-
-

@@ -1,42 +1,190 @@
 //------------------------------------------------------------------------------
-//LoginProcesses    			                                                UNIT
+//LoginServer			                                                UNIT
 //------------------------------------------------------------------------------
 //	What it does-
-//			The login Server.  Handles all client communication here.
+//      The Login Server Class.
+//    An object type that contains all information about a login server
+//    This unit is to help for future design of multi server communication IF
+//    the user were to want to do so.  Else, it would act as an all-in-one.
+//	  Only one type in this unit for the time being.
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-unit LoginProcesses;
+unit LoginServer;
 
 interface
-	uses
-		IdContext;
+uses
+  IdTCPServer,
+  IdContext,
+  PacketTypes,
+  Account;
+type
+//------------------------------------------------------------------------------
+//TLoginServer                                                            CLASS
+//------------------------------------------------------------------------------
+	TLoginServer = class
+  protected
+  //
+	private
+    fPort         : Word;
+    TCPServer     : TIdTCPServer;
+    Procedure OnExecute(AConnection: TIdContext);
+    Procedure OnConnect(AConnection: TIdContext);
 
-		procedure ParseLogin(AClient: TIdContext);
+    Procedure ParseLogin(AClient: TIdContext);
+    Procedure SendLoginError(const AClient: TIdContext; const Error : byte);
+    Procedure SendCharacterServers(AnAccount : TAccount; AClient: TIdContext);
+    Procedure ParseMF(var Username : string; Password : string);
+    Procedure ValidateLogin(AClient: TIdContext; RecvBuffer : TBuffer;
+                            Username : String;Password : String);
+    Function  ReadMD5Password(StartPos,PLength : word;Buffer : TBuffer) : string;
+
+    Procedure SetPort(Value : Word);
+
+	public
+    Property Port : Word read fPort write SetPort;
+
+    Constructor Create();
+    Destructor  Destroy();override;
+    Procedure   Start();
+    Procedure   Stop();
+	end;
+//------------------------------------------------------------------------------
+
 
 implementation
-	uses
-		StrUtils,
+uses
+	//Helios
+	WinLinux,
 
-		Account,
-		Database,
-		Socket,
-		PacketTypes,
-		Globals,
-		SysUtils,
-		Console,
-		ServerOptions,
-		CharaServerTypes;
+  CharacterServer,
+  Database,
+  Globals,
+  Socket,
+  StrUtils,
+  SysUtils,
+  Console,
+  ServerOptions,
+  TCPServerRoutines;
 
-	const
-		//ERROR REPLY CONSTANTS
-		LOGIN_UNREGISTERED    = 0;
-		LOGIN_INVALIDPASSWORD = 1;
-		LOGIN_BANNED          = 4;
-		LOGIN_TIMEUP          = 2;
-		//LOGIN_SERVERFULL =  ;
+const
+//ERROR REPLY CONSTANTS
+  LOGIN_UNREGISTERED    = 0;
+  LOGIN_INVALIDPASSWORD = 1;
+  LOGIN_BANNED          = 4;
+  LOGIN_TIMEUP          = 2;
+  //LOGIN_SERVERFULL =  ;
+
+//------------------------------------------------------------------------------
+//Create()                                                          CONSTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does-
+//		 Initializes our Login Server
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Constructor TLoginServer.Create();
+begin
+  Inherited;
+	TCPServer := TIdTCPServer.Create;
+
+  TCPServer.OnExecute   := OnExecute;
+	TCPServer.OnConnect   := OnConnect;
+	TCPServer.OnException := MainProc.ServerException;
+end;{Create}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Destroy()                                                          DESTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does-
+//		 Destroys our Login Server
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Destructor TLoginServer.Destroy();
+begin
+  TCPServer.Free();
+  Inherited;
+end;{Destroy}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Start()                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		 Enables the login server to accept incoming connections
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TLoginServer.Start();
+begin
+  ActivateServer('Login',TCPServer);
+end;{Start}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Stop()                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		 Stops the login server from accepting incoming connections
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TLoginServer.Stop();
+begin
+  DeActivateServer(TCPServer);
+end;{Start}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//OnExecute()                                                             EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//		 Processes a connection.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+procedure TLoginServer.OnExecute(AConnection: TIdContext);
+begin
+	ParseLogin(AConnection);
+end;{OnExecute}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//OnConnect()                                          EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			Event which is fired when a user attempts to connect to the login
+//    server. It writes information about the connection to the console.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+procedure TLoginServer.OnConnect(AConnection: TIdContext);
+begin
+	MainProc.Console('Connection from ' + AConnection.Connection.Socket.Binding.PeerIP);
+end;{LoginServerConnect}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //SendLoginError   			                                              PROCEDURE
@@ -49,7 +197,7 @@ implementation
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-	procedure SendLoginError(const AClient: TIdContext; const Error : byte);
+	procedure TLoginServer.SendLoginError(const AClient: TIdContext; const Error : byte);
 	var
 		Buffer : TBuffer;
 	begin
@@ -71,7 +219,7 @@ implementation
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-	procedure SendCharacterServers(AnAccount : TAccount; AClient: TIdContext);
+	procedure TLoginServer.SendCharacterServers(AnAccount : TAccount; AClient: TIdContext);
 	var
 		Buffer  : TBuffer;
 		Index   : integer;
@@ -91,10 +239,10 @@ implementation
 		WriteBufferWord(44, 0, Buffer);
 		WriteBufferByte(46,AnAccount.GenderNum,Buffer);
 		for Index := 0 to CharaServerList.Count - 1 do begin
-			WriteBufferCardinal(47,TCharaServ(CharaServerList.Objects[Index]).IPCardinal,Buffer);
-			WriteBufferWord(51,TCharaServ(CharaServerList.Objects[Index]).Port,Buffer);
-			WriteBufferString(53+Index*32,TCharaServ(CharaServerList.Objects[Index]).ServerName,20,Buffer);
-			WriteBufferWord(73+Index*32,TCharaServ(CharaServerList.Objects[Index]).OnlineUsers,Buffer);
+			WriteBufferCardinal(47,TCharacterServer(CharaServerList.Objects[Index]).IPCardinal,Buffer);
+			WriteBufferWord(51,TCharacterServer(CharaServerList.Objects[Index]).Port,Buffer);
+			WriteBufferString(53+Index*32,TCharacterServer(CharaServerList.Objects[Index]).ServerName,20,Buffer);
+			WriteBufferWord(73+Index*32,TCharacterServer(CharaServerList.Objects[Index]).OnlineUsers,Buffer);
 			WriteBufferWord(75,0,Buffer);
 			WriteBufferWord(77,0,Buffer);
 		end;
@@ -103,7 +251,7 @@ implementation
 	end; // Proc SendCharacterServers
 //------------------------------------------------------------------------------
 
-	procedure ParseMF(var Username : string; Password : string);
+	procedure TLoginServer.ParseMF(var Username : string; Password : string);
 	var
 		GenderStr  : string;
 	begin
@@ -135,7 +283,7 @@ implementation
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-	procedure ValidateLogin(
+	procedure TLoginServer.ValidateLogin(
 		AClient: TIdContext;
 		RecvBuffer : TBuffer;
 		Username : String;
@@ -206,7 +354,7 @@ implementation
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-	function ReadMD5Password(
+	function TLoginServer.ReadMD5Password(
 		StartPos,
 		PLength : word;
 		Buffer : TBuffer
@@ -236,7 +384,7 @@ implementation
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-	procedure ParseLogin(AClient: TIdContext);
+	procedure TLoginServer.ParseLogin(AClient: TIdContext);
 	var
 		Buffer    : TBuffer;
 		UserName  : String;
@@ -285,4 +433,21 @@ implementation
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//SetPort                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the internal fPort variable to the value specified. Also sets the
+//    TCPServer's port.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TLoginServer.SetPort(Value : Word);
+begin
+  fPort := Value;
+  TCPServer.DefaultPort := Value;
+end;//SetPort
+//------------------------------------------------------------------------------
 end.
