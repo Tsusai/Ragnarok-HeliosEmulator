@@ -46,7 +46,7 @@ uses
 	JanSQLDatabase;
 
 //------------------------------------------------------------------------------
-//TDatabase.Create()			                                               CONSTRUCTOR
+//TDatabase.Create()			                                          CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Figures out which database interface we're using.
@@ -71,7 +71,7 @@ begin
 	case DatabaseType of
 		TEXT ://1    Helios Text Database
 			begin
-				AnInterface := TJanSQLDatabase.Create;
+				AnInterface := TJanSQLDatabase.Create(UseGameDatabase);
 			end;
 
 		MYSQL://2

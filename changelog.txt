@@ -13,7 +13,16 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
-- Rev 61-
+- Rev 62-
+[2006/12/17] - RaX - Updated headers in MySQLDatabase.pas, JanSQLDatabase.pas,
+ CharaServerProcess.pas, LoginServerProcess.pas, CharaServerTypes.pas.
+[2006/12/17] - RaX - Removed DIV by 0 forced error in helios.dpr.
+[2006/12/17] - RaX - Added checking for a valid database in JanSQLDatabase.pas - Connect().
+[2006/12/17] - RaX - Removed hints in turbo delphi about functions not being expanded by
+ adding an ifdef to the uses of JanSQL.pas and JanSQLExpressions.pas.
+-
+
+- Rev 61- Broken, someone who's name rhymes with  forgot to remove his EDIVBY0 =)
 [2006/12/16] - Tsusai - Notes/Overview: MySQL queries fixed, Login server information covering
  the IPs removed.  They aren't needed.
 [2006/12/16] - RaX - Notes/Overview: (All RaX entries by Tsusai) MainProc now holds the

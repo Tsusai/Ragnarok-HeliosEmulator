@@ -314,6 +314,13 @@ type
 
 implementation
 Uses
+{$IFDEF MSWINDOWS}
+Windows,
+{$ENDIF}
+{$IFDEF LINUX}
+Types,
+Libc,
+{$ENDIF}
   Variants,
   SysUtils,
   janSQLstrings;

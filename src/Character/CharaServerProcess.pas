@@ -1,10 +1,13 @@
-(*------------------------------------------------------------------------------
-CharaServerProcess
-RaX/Tsusai 2006
-
-Description:
- The Character Server.  Handles all client communication here.
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//CharaServerProcess			                                                UNIT
+//------------------------------------------------------------------------------
+//	What it does-
+//			Handles all client communication here.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 unit CharaServerProcess;
 
 interface
@@ -37,17 +40,20 @@ const
 	DELETEBADCHAR = 0;
 	DELETEBADEMAIL = 1;
 	
-
-(*------------------------------------------------------------------------------
-SendCharas
-
-Verifies the new connection by checking the account ID which is recieved and
- the two random keys generated during login.
-
-Upon validation, check database for any/all created characters.
-
-[2006/07/06] Tsusai - Started work on changing dummy procedure to real procedure
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//SendCharas			                                                    PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      Verifies the new connection by checking the account ID which is recieved
+//    and the two random keys generated during login. Upon validation, check
+//    database for any/all created characters.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//    July 6th, 2006 - Tsusai - Started work on changing dummy procedure to real
+//      procedure.
+//
+//------------------------------------------------------------------------------
 procedure SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
 var
 	AccountID   : Cardinal;
@@ -140,23 +146,41 @@ begin
 			SendBuffer(AClient,ReplyBuffer,PacketSize);
 		end;
 	end;
-end; (* proc SendCharas
-------------------------------------------------------------------------------*)
+end; //proc SendCharas
+//------------------------------------------------------------------------------
 
-// SendCharaToMap - RaX - Stubbed for later use.
+
+//------------------------------------------------------------------------------
+//SendCharaToMap	                                                    PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      Refers a character to whatever map server is handling the map that the
+//    character is on.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header. - Stubbed for later use.
+//
+//------------------------------------------------------------------------------
 procedure SendCharaToMap();
 begin
 
 end;
+//------------------------------------------------------------------------------
 
-(*------------------------------------------------------------------------------
-CreateChara
 
-Is called after creating a character in the client.
-Creates and saves the character object
-
-[2006/07/06] Tsusai - Started work on changing dummy procedure to real procedure
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//CreateChara			                                                    PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      Is called after creating a character in the client.
+//    Creates and saves the character object
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//    July 6th, 2006 - Tsusai - Started work on changing dummy procedure to real
+//      procedure.
+//
+//------------------------------------------------------------------------------
 procedure CreateChara(
 	AClient : TIdContext;
 	var ABuffer : TBuffer
@@ -288,8 +312,20 @@ begin
 	begin
 		CreateCharaError(INVALIDNAME);
 	end;
-end;
+end;//CreateChara
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//DeleteChara                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//        Delete's a character after client request and criteria are met
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure DeleteChara(
 	AClient : TIdContext;
 	var ABuffer : Tbuffer
@@ -330,19 +366,23 @@ begin
 			end else DeleteCharaError(DELETEBADCHAR);
 		end else DeleteCharaError(DELETEBADCHAR);
 	end else DeleteCharaError(DELETEBADEMAIL);
-end;
+end;//DeleteChara
+//------------------------------------------------------------------------------
 
-(*------------------------------------------------------------------------------
-ParseCharaServ
 
-Root procedure to handling client connections to the Character Server.
- Incoming connections do not have a valid TThreadLink.AccountLink, so
- we check for that, and then assign as needed.  Keeps the various checks to a
- minimum.
-
-[2006/07/06] Tsusai - Added TThreadLink check for security
-[2006/11/11] Tsusai - Realized the Link var was not necessary.
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//ParseCharaServ                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//        Root procedure to handling client connections to the Character Server.
+//    Incoming connections do not have a valid TThreadLink.AccountLink, so
+//    we check for that, and then assign as needed.  Keeps the various checks to
+//    a minimum.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure ParseCharaServ(AClient : TIdContext);
 var
 	PacketLength  : Integer;
@@ -388,8 +428,8 @@ begin
 			end;
 		end;
 	end;
-end; (*Proc ParseCharaServ
-------------------------------------------------------------------------------*)
+end; //Proc ParseCharaServ
+//------------------------------------------------------------------------------
 
 end.
 

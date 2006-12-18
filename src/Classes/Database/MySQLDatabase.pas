@@ -193,6 +193,17 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TMySQLDatabase.SetAccount()                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Builds a taccount object from a query result.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure SetAccount(
 	var AnAccount : TAccount;
 	var QueryResult : TMySQLResult
@@ -212,6 +223,7 @@ begin
 	AnAccount.Level       := StrToIntDef(QueryResult.FieldValue(9),0);
 	AnAccount.LastIP      := QueryResult.FieldValue(12);
 end;
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
@@ -342,6 +354,7 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 //TMySQLDatabase.GetAccountCharas()                                   FUNCTION
 //------------------------------------------------------------------------------
@@ -381,6 +394,7 @@ begin
 end;
 //-----------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 //TMySQLDatabase.CharaExists()                                         FUNCTION
 //------------------------------------------------------------------------------
@@ -415,6 +429,7 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 //TMySQLDatabase.CharaExists()                                         FUNCTION
 //------------------------------------------------------------------------------
@@ -448,6 +463,7 @@ begin
 	end;
 end;
 //------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //TMySQLDatabase.SaveAccount()                                     Procedure
@@ -621,6 +637,17 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TMySQLDatabase.CreateChara()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Create's a character in teh database.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TMySQLDatabase.CreateChara(
 	var ACharacter : TCharacter;
 	AID : Cardinal;
@@ -650,7 +677,19 @@ begin
 		if Assigned(QueryResult) then QueryResult.Free;
 	end;
 end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TMySQLDatabase.LoadChara()                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets a Character from the database.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TMySQLDatabase.LoadChara(CharaID : Cardinal) : TCharacter;
 var
 	Success     : Boolean;
@@ -729,7 +768,19 @@ begin
 	end else Result := nil;
 	if Assigned(QueryResult) then QueryResult.Free;
 end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TMySQLDatabase.DeleteChara()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Deletes a character from the database.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TMySQLDatabase.DeleteChara(var ACharacter : TCharacter) : boolean;
 begin
 	SendQuery(
@@ -746,13 +797,37 @@ begin
 		ACharacter.Free;
 	end;
 end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TMySQLDatabase.GetAccountBanAndConnectTime()                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets an account's ban and connect time.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TMySQLDatabase.GetAccountBanAndConnectTime(var AnAccount : TAccount);
 begin
 	//Bleh...might as well RELOAD.
 	AnAccount := Self.GetAccount(AnAccount.ID);
 end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TMySQLDatabase.GetBaseHP()                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets a characters basehp.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 Function TMySQLDatabase.GetBaseHP(ACharacter : TCharacter) : Cardinal;
 var
 	Success     : Boolean;
@@ -769,7 +844,19 @@ begin
 	end else Result := 0;
 	if Assigned(QueryResult) then QueryResult.Free;
 end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TMySQLDatabase.GetBaseSP()                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets a characters basesp.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 Function TMySQLDatabase.GetBaseSP(ACharacter : TCharacter) : Cardinal;
 var
 	Success     : Boolean;
@@ -786,5 +873,7 @@ begin
 	end else Result := 0;
 	if Assigned(QueryResult) then QueryResult.Free;
 end;
+//------------------------------------------------------------------------------
+
 {END MYSQLDATABASE}
 end.

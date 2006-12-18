@@ -82,8 +82,8 @@ compile for linux, at the same time*}
 	List32 in 'Common\3rdParty\List32.pas',
 	LoginProcesses in 'Login\LoginProcesses.pas',
 	Map in 'Classes\Map.pas',
-	madExcept,
-	madLinkDisAsm,
+	//madExcept,
+	//madLinkDisAsm,
 	MySQLDatabase in 'Classes\Database\MySQLDatabase.pas',
 	PacketTypes in 'Common\PacketTypes.pas',
 	PointList in 'Classes\PointList.pas',
@@ -182,7 +182,7 @@ var
 	AnInput   : string;
 begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
-	Randomize;     AnInput := '0'; AnInput := IntToStr (1 div StrToInt(AnInput));
+	Randomize;
 	Command := TCommands.Create;
 	MainProc := TMainProc.Create(nil); //Form replacement
 

@@ -1,10 +1,13 @@
-(*------------------------------------------------------------------------------
-LoginProcesses
-Tsusai 2006
-
-Description:
- The login Server.  Handles all client communication here.
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//LoginProcesses    			                                                UNIT
+//------------------------------------------------------------------------------
+//	What it does-
+//			The login Server.  Handles all client communication here.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 unit LoginProcesses;
 
 interface
@@ -32,12 +35,17 @@ implementation
 		LOGIN_TIMEUP          = 2;
 		//LOGIN_SERVERFULL =  ;
 
-(*------------------------------------------------------------------------------
-SendLoginError
-
-If some detail was wrong with login, this sends the reply with the constant Error
-number (look at constants) to the client.
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//SendLoginError   			                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			If some detail was wrong with login, this sends the reply with the
+//    constant Error number (look at constants) to the client.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure SendLoginError(const AClient: TIdContext; const Error : byte);
 	var
 		Buffer : TBuffer;
@@ -45,15 +53,21 @@ number (look at constants) to the client.
 		WriteBufferWord( 0, $006a, Buffer);
 		WriteBufferWord( 2, Error, Buffer);
 		SendBuffer(AClient, Buffer ,23);
-	end; (* proc SendLoginError
-------------------------------------------------------------------------------*)
+	end; // proc SendLoginError
+//------------------------------------------------------------------------------
 
-(*------------------------------------------------------------------------------
-SendCharacterServers
 
-Upon successful authentication, this procedure sends the list of character
- servers to the client.
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//SendCharacterServers                                                PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Upon successful authentication, this procedure sends the list of
+//    character servers to the client.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure SendCharacterServers(AnAccount : TAccount; AClient: TIdContext);
 	var
 		Buffer  : TBuffer;
@@ -83,12 +97,21 @@ Upon successful authentication, this procedure sends the list of character
 		end;
 		SendBuffer(AClient, Buffer ,Size);
 
-	end; (* Proc SendCharacterServers
-------------------------------------------------------------------------------*)
+	end; // Proc SendCharacterServers
+//------------------------------------------------------------------------------
 
-(*
-*)
 
+//------------------------------------------------------------------------------
+//ValidateLogin                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Checks a clients authentication information against the database. On
+//    authentication success, it sends the client a list of character servers.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure ValidateLogin(
 		AClient: TIdContext;
 		RecvBuffer : TBuffer;
@@ -134,8 +157,20 @@ Upon successful authentication, this procedure sends the list of character
 		end else begin
 			SendLoginError(AClient,LOGIN_UNREGISTERED);
 		end;
-	end;
+	end;//ValidateLogin
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ReadMD5Password                                                     FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Get's an md5 password as a string.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	function ReadMD5Password(
 		StartPos,
 		PLength : word;
@@ -151,13 +186,21 @@ Upon successful authentication, this procedure sends the list of character
 		begin
 			Result := Result + IntToHex(BufferReadByte(StartPos+idx,Buffer),2);
 		end;
-	end;
+	end;//ReadMD5Password
+//------------------------------------------------------------------------------
 
-(*------------------------------------------------------------------------------
-ParseLogin
 
-Accepts incoming connections to the Login server and verifies the login data.
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//ParseLogin                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Accepts incoming connections to the Login server and verifies the login
+//    data.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure ParseLogin(AClient: TIdContext);
 	var
 		Buffer    : TBuffer;
@@ -203,8 +246,8 @@ Accepts incoming connections to the Login server and verifies the login data.
 				MainProc.Console('Unknown Login Packet : ' + IntToHex(ID,4));
 			end;
 		end;
-	end;  (* Proc SendCharacterServers
-------------------------------------------------------------------------------*)
+	end;  // Proc SendCharacterServers
+//------------------------------------------------------------------------------
 
 
 end.

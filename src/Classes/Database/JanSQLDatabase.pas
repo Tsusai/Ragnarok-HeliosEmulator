@@ -128,6 +128,9 @@ Procedure TJanSQLDatabase.Connect(UseGameDatabase : boolean);
 var
   ResultIdentifier : Integer;
 begin
+
+  ResultIdentifier := 0;
+
 	if Not Assigned(Database) then
 	begin
 		Database := TJanSQL.Create;
@@ -135,10 +138,26 @@ begin
 
   if Not UseGameDatabase then //Access the Common database
   begin
-    ResultIdentifier := Database.SQLDirect('connect to '+ServerConfig.CommonHost);
+    if FileExists(ServerConfig.CommonHost) then
+    begin
+      ResultIdentifier := Database.SQLDirect('connect to '''+ServerConfig.CommonHost+'''');
+    end else
+    begin
+      MainProc.Console('');
+      MainProc.Console('The database at '+ServerConfig.CommonHost+' does not exist!');
+      MainProc.Console('Please ensure that you have correctly configured your ini file');
+    end;
 	end else //Access the Game database
   begin
-    ResultIdentifier := Database.SQLDirect('connect to '+ServerConfig.GameHost);
+    if FileExists(ServerConfig.GameHost) then
+    begin
+      ResultIdentifier := Database.SQLDirect('connect to '+ServerConfig.GameHost);
+    end else
+    begin
+      MainProc.Console('');
+      MainProc.Console('The database at '+ServerConfig.GameHost+' does not exist!');
+      MainProc.Console('Please ensure that you have correctly configured your ini file');
+    end;
   end;
 
 	if ResultIdentifier = 0 then
@@ -149,6 +168,17 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TJanSQLDatabase.SendQuery()                                          Function
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sends a query to the jansql object.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TJanSQLDatabase.SendQuery(
 	const QString : string
 ) : TJanRecordSet;
@@ -165,8 +195,20 @@ begin
   begin
     Result := Database.RecordSets[ResultIdentifier];
   end;
-end;
+end;//SendQuery
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TJanSQLDatabase.SetAccount()                                        Procedure
+//------------------------------------------------------------------------------
+//	What it does-
+//			Builds a taccount object from a query result.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure SetAccount(
 	var AnAccount : TAccount;
 	var QueryResult : TJanRecordSet
@@ -185,7 +227,8 @@ begin
 	AnAccount.LoginKey[1] := StrToIntDef(QueryResult.records[0].fields[8].value,0);
 	AnAccount.Level       := StrToIntDef(QueryResult.records[0].fields[9].value,0);
 	AnAccount.LastIP      := QueryResult.records[0].fields[12].value;
-end;
+end;//SetAccount
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
@@ -450,10 +493,10 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.SaveChara()                                     Procedure
+//TJanSQLDatabase.SaveChara()                                        Procedure
 //------------------------------------------------------------------------------
 //	What it does-
-//			Doesn't do anything yet.
+//			saves a TCharacter to the database
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
@@ -564,9 +607,20 @@ begin
 			]);
 	end;
 	SendQuery(QueryString);
-end;
+end;//SaveChara
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TJanSQLDatabase.CreateChara()                                       Function
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates a character in the database. Also, adds it to the charalist.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TJanSQLDatabase.CreateChara(
 	var ACharacter : TCharacter;
 	AID : Cardinal;
@@ -589,8 +643,19 @@ begin
     Result := Assigned(ACharacter);
   end;
   if Assigned(QueryResult) then QueryResult.Free;
-end;
+end;//CreateChara
+//------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//TJanSQLDatabase.LoadChara()                                        FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Loads a character from the database.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TJanSQLDatabase.LoadChara(CharaID : Cardinal) : TCharacter;
 var
 	APoint      : TPoint;
@@ -666,8 +731,20 @@ begin
 		end;
 	end else Result := nil;
 	if Assigned(QueryResult) then QueryResult.Free;
-end;
+end;//LoadChara
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TJanSQLDatabase.DeleteChara()                                        FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Deletes a character from the database.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TJanSQLDatabase.DeleteChara(var ACharacter : TCharacter) : boolean;
 begin
 	SendQuery(
@@ -679,14 +756,37 @@ begin
 		ACharacter.Account.CharaID[ACharacter.CharaNum] := 0;
 		ACharacter.Free;
     Result := TRUE;
-end;
+end;//DeleteChara
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TJanSQLDatabase.GetAccountBanAndConnectTime()                       Procedure
+//------------------------------------------------------------------------------
+//	What it does-
+//			Builds a taccount object from a query result.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TJanSQLDatabase.GetAccountBanAndConnectTime(var AnAccount : TAccount);
 begin
 	//Bleh...might as well RELOAD.
 	AnAccount := Self.GetAccount(AnAccount.ID);
-end;
+end;//GetAccountBanAndConnectTime
+//------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//TJanSQLDatabase.GetBaseHP()                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets a characters basehp.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 Function TJanSQLDatabase.GetBaseHP(ACharacter : TCharacter) : Cardinal;
 var
 	QueryResult : TJanRecordSet;
@@ -700,8 +800,20 @@ begin
 			Result              := StrToInt(QueryResult.Records[0].Fields[0].value);
 	end else Result := 0;
 	if Assigned(QueryResult) then QueryResult.Free;
-end;
+end;//GetBaseHP
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TJanSQLDatabase.GetBaseSP()                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets a characters basesp.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 Function TJanSQLDatabase.GetBaseSP(ACharacter : TCharacter) : Cardinal;
 var
 	QueryResult : TJanRecordSet;
@@ -715,6 +827,8 @@ begin
 			Result              := StrToInt(QueryResult.Records[0].Fields[0].Value);
 	end else Result := 0;
 	if Assigned(QueryResult) then QueryResult.Free;
-end;
+end;//GetBaseSP
+//------------------------------------------------------------------------------
+
 {END JanSQLDatabase}
 end.
