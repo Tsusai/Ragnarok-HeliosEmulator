@@ -42,12 +42,19 @@ type
 			NName : string
 		) : boolean;virtual;
 
+		procedure CreateAccount(
+			const Username : string;
+			const Password : string;
+			const GenderChar : char
+		); virtual;
+
 		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;virtual;
 		function LoadChara(CharaID : Cardinal) : TCharacter;virtual;
 		function GetChara( CharaID    : Cardinal)   : TCharacter;virtual;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;virtual;
 		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;virtual;
 		function CharaExists(Name : String) : Boolean;overload;virtual;
+		function AccountExists(UserName : String) : Boolean;virtual;
 
 		procedure SaveAccount(AnAccount : TAccount);virtual;
 		procedure SaveChara(AChara : TCharacter);virtual;
@@ -123,10 +130,15 @@ begin
 	Result := FALSE;
 end;
 
+function TDatabaseTemplate.AccountExists(UserName : String) : Boolean;
+begin
+	Result := FALSE;
+end;
+
 procedure TDatabaseTemplate.SaveAccount(AnAccount: TAccount);
 begin
-
 end;
+
 procedure TDatabaseTemplate.SaveChara(AChara : TCharacter);
 begin
 end;
@@ -138,6 +150,14 @@ function TDatabaseTemplate.CreateChara(
 ) : boolean;
 begin
 	Result := false;
+end;
+
+procedure TDatabaseTemplate.CreateAccount(
+	const Username : string;
+	const Password : string;
+	const GenderChar : char
+);
+begin
 end;
 
 function TDatabaseTemplate.LoadChara(CharaID : Cardinal) : TCharacter;

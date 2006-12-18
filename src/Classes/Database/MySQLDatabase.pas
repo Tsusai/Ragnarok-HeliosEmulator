@@ -50,12 +50,19 @@ type
 			NName : string
 		) : boolean;override;
 
+		procedure CreateAccount(
+			const Username : string;
+			const Password : string;
+			const GenderChar : char
+		); override;
+
 		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
 		function LoadChara(CharaID : Cardinal) : TCharacter;override;
 		function GetChara(CharaID : Cardinal) : TCharacter;override;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
 		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;override;
 		function CharaExists(Name : String) : Boolean;overload;override;
+		function AccountExists(UserName : String) : Boolean;override;
 
 		procedure SaveAccount(AnAccount : TAccount);override;
 		procedure SaveChara(AChara : TCharacter);override;
@@ -464,6 +471,28 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+function TMySQLDatabase.AccountExists(UserName : String) : Boolean;
+var
+	QueryResult : TMySQLResult;
+	Success : boolean;
+begin
+	QueryResult :=
+		SendQuery(
+			Format('SELECT userid FROM accounts WHERE userid = "%s"',[UserName]),true,Success);
+	if Success then
+	begin
+		if QueryResult.RowsCount > 0 then
+		begin
+			Result := TRUE;
+		end else
+		begin
+			Result := FALSE;
+		end;
+	end else
+	begin
+		Result := FALSE;
+	end;
+end;
 
 //------------------------------------------------------------------------------
 //TMySQLDatabase.SaveAccount()                                     Procedure
@@ -679,6 +708,19 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+procedure TMySQLDatabase.CreateAccount(
+	const Username : string;
+	const Password : string;
+	const GenderChar : char
+);
+var
+	Success : boolean;
+begin
+	SendQuery(
+		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES("%s", "%s", "%s");',
+		[Username,Password,GenderChar])
+	,TRUE,Success);
+end;
 
 //------------------------------------------------------------------------------
 //TMySQLDatabase.LoadChara()                                         PROCEDURE

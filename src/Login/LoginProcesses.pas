@@ -18,6 +18,8 @@ interface
 
 implementation
 	uses
+		StrUtils,
+
 		Account,
 		Database,
 		Socket,
@@ -25,6 +27,7 @@ implementation
 		Globals,
 		SysUtils,
 		Console,
+		ServerOptions,
 		CharaServerTypes;
 
 	const
@@ -100,6 +103,26 @@ implementation
 	end; // Proc SendCharacterServers
 //------------------------------------------------------------------------------
 
+	procedure ParseMF(var Username : string; Password : string);
+	var
+		GenderStr  : string;
+	begin
+		GenderStr := Uppercase(AnsiRightStr(Username,2)); {get _M or _F and cap it}
+		if (GenderStr = '_M') or
+		(GenderStr = '_F') then
+		begin
+			//Trim the MF off because people forget to take it off.
+			Username := AnsiLeftStr(Username,Length(Username)-2);
+			//Check to see if the account already exists.
+			if NOT MainProc.ACommonDatabase.AnInterface.AccountExists(Username) then
+			begin
+				//Create the account.
+				MainProc.ACommonDatabase.AnInterface.CreateAccount(
+					Username,Password,GenderStr[2]
+				);
+			end;
+		end;
+	end;
 
 //------------------------------------------------------------------------------
 //ValidateLogin                                                       PROCEDURE
@@ -115,23 +138,35 @@ implementation
 	procedure ValidateLogin(
 		AClient: TIdContext;
 		RecvBuffer : TBuffer;
-		const Username : String;
-		const Password : String
+		Username : String;
+		Password : String
 	);
 	var
 		AnAccount : TAccount;
 		AccountPassword : string;
 		MD5Key    : string;
 	begin
+		MD5Key := '';
 		//New database system added 09/29/06 - RaX
+		if (AClient.Data is TMD5String) then
+		begin
+			MD5Key := TMD5String(AClient.Data).Key;
+		end;
+
+		//If MF enabled, and NO MD5KEY LOGIN, parse _M/_F
+		if ServerConfig.EnableMF and
+		(MD5Key = '') then
+		begin
+			ParseMF(Username,Password);
+		end;
+
 		AnAccount := MainProc.ACommonDatabase.AnInterface.GetAccount(UserName);
 		if Assigned(AnAccount) then begin
 			AccountPassword := AnAccount.Password;
-			if (AClient.Data is TMD5String) then
+			if not(MD5Key = '') then
 			begin
-				MD5Key := TMD5String(AClient.Data).Key;
+				AccountPassword := GetMD5(MD5Key + AccountPassword);
 			end;
-			if not(MD5Key = '') then AccountPassword := GetMD5(MD5Key + AccountPassword);
 			if AccountPassword = Password then
 			begin
 				if not AnAccount.IsBanned then

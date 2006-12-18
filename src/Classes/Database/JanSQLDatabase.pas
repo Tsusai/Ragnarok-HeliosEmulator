@@ -51,6 +51,12 @@ TJanSQLResult = array of array of String;
 			NName : string
 		) : boolean;override;
 
+		procedure CreateAccount(
+			const Username : string;
+			const Password : string;
+			const GenderChar : char
+		); override;
+
 		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
 		function LoadChara(CharaID : Cardinal) : TCharacter;override;
 		function GetChara(CharaID : Cardinal) : TCharacter;override;
@@ -633,18 +639,29 @@ begin
 	SendQuery(
 		Format('INSERT INTO characters (account_id, name) VALUES(%d, "%s");',
 		[AID,NName]));
-  QueryResult :=
-    SendQuery(
-    Format('SELECT char_id FROM characters WHERE account_id = %d AND name = "%s";',
-    [AID,NName]));
-  if (QueryResult.RecordCount = 1) then
-  begin
-    ACharacter := GetChara(StrToInt(QueryResult.Records[0].Fields[0].value));
-    Result := Assigned(ACharacter);
-  end;
-  if Assigned(QueryResult) then QueryResult.Free;
+	QueryResult :=
+		SendQuery(
+		Format('SELECT char_id FROM characters WHERE account_id = %d AND name = "%s";',
+		[AID,NName]));
+	if (QueryResult.RecordCount = 1) then
+	begin
+		ACharacter := GetChara(StrToInt(QueryResult.Records[0].Fields[0].value));
+		Result := Assigned(ACharacter);
+	end;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//CreateChara
 //------------------------------------------------------------------------------
+
+procedure TJanSQLDatabase.CreateAccount(
+	const Username : string;
+	const Password : string;
+	const GenderChar : char
+);
+begin
+	SendQuery(
+		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES("%s", "%s", "%s");',
+		[Username,Password,GenderChar]));
+end;
 
 //------------------------------------------------------------------------------
 //TJanSQLDatabase.LoadChara()                                        FUNCTION

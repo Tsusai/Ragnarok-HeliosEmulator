@@ -13,6 +13,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 63-
+[2006/12/17] - Tsusai - Notes/Overview: Added _M/_F login parsing.  This only works when
+ using a basic login and not a encrypted login.
+[2006/12/17] - Tsusai - LoginServerProcess: Added ParseMF to parse the _M/_F.
+[2006/12/17] - Tsusai - **DatabaseTempate: Added CreateAccount and AccountExists
+ procedures and functions.
+-
+
 - Rev 62-
 [2006/12/17] - RaX - Updated headers in MySQLDatabase.pas, JanSQLDatabase.pas,
  CharaServerProcess.pas, LoginServerProcess.pas, CharaServerTypes.pas.
@@ -23,17 +31,17 @@ Developers & Contributers
 -
 
 - Rev 61- Broken, someone who's name rhymes with  forgot to remove his EDIVBY0 =)
-[2006/12/16] - Tsusai - Notes/Overview: MySQL queries fixed, Login server information covering
+[2006/12/17] - Tsusai - Notes/Overview: MySQL queries fixed, Login server information covering
  the IPs removed.  They aren't needed.
-[2006/12/16] - RaX - Notes/Overview: (All RaX entries by Tsusai) MainProc now holds the
+[2006/12/17] - RaX - Notes/Overview: (All RaX entries by Tsusai) MainProc now holds the
  database connections, instead of creating on the fly.
-[2006/12/16] - Tsusai - MySQLDatabaseTemplate : Corrected queries.  One error was trying to
+[2006/12/17] - Tsusai - MySQLDatabaseTemplate : Corrected queries.  One error was trying to
  access a character table (its characters) and another was running a query to access information
  in the common database, from within game database connection.
-[2006/12/16] - Tsusai - ServerOptions - Removed Login server IPS
-[2006/12/16] - Tsusai - Merged RaX's changes.
-[2006/12/16] - RaX - Added JanSQLDatabase, controls TXT database system.
-[2006/12/16] - RaX - Removed on the fly database connections, replacing with a one connecter
+[2006/12/17] - Tsusai - ServerOptions - Removed Login server IPS
+[2006/12/17] - Tsusai - Merged RaX's changes.
+[2006/12/17] - RaX - Added JanSQLDatabase, controls TXT database system.
+[2006/12/17] - RaX - Removed on the fly database connections, replacing with a one connecter
  per database variable in MainProc object.
 -
 
