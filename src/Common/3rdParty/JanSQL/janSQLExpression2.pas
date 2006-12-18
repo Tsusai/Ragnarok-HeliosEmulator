@@ -65,21 +65,14 @@ type
     FInFix:TList;
     FPostFix:TList;
     FStack:TList;
-    Fsource: string;
+		Fsource: string;
     VStack:array[0..100] of variant;
 		SP:integer;
-    SL:integer; // source length
-		{FToken:string;
-		FTokenKind:TTokenKind;
-		FTokenValue:variant;
-    FTokenOperator:TTokenOperator;
-    FTokenLevel:integer;
-    FTokenExpression:string;}
+		SL:integer; // source length
     FPC:integer;
     FonGetVariable: TVariableEvent;
     procedure Setsource(const Value: string);
     function Parse:boolean;
-		//procedure AddToken;
     procedure ClearInfix;
     procedure ClearPostFix;
     procedure ClearStack;
@@ -158,13 +151,6 @@ type
 
 implementation
 Uses
-{$IFDEF MSWINDOWS}
-Windows,
-{$ENDIF}
-{$IFDEF LINUX}
-Types,
-Libc,
-{$ENDIF}
   SysUtils,
   Math,
   janSQLStrings,
@@ -173,20 +159,6 @@ Libc,
 
 { TjanSQLExpression2 }
 
-
-{procedure TjanSQLExpression2.AddToken;
-var
-  tok:TToken;
-begin
-  tok:=TToken.Create;
-  tok.name:=FToken;
-  tok.tokenkind:=FTokenKind;
-  tok.value:=FTokenValue;
-  tok.operator:=FTokenOperator;
-  tok.level:=FtokenLevel;
-  tok.expression:=FTokenExpression;
-  FInFix.Add(tok);
-end;}
 
 procedure TjanSQLExpression2.Clear;
 begin
@@ -310,8 +282,8 @@ When INPUT becomes empty pop any remaining operators from STACK and enqueue them
 function TjanSQLExpression2.FlushStackToPostFix: boolean;
 begin
   while (FStack.count<>0) and (TToken(Fstack[FStack.count-1]).tokenkind<>tkOpen) do
-		StackToPostFix;
-	result:=FStack.count=0;
+    StackToPostFix;
+  result:=FStack.count=0;
 end;
 
 constructor TjanSQLExpression2.Create;
@@ -380,8 +352,8 @@ begin
 	clear;
 	tokenizer:=TjanSQLTokenizer.create;
 	try
-    result:=Tokenizer.Tokenize(FSource,FInfix);
-  finally
+		result:=Tokenizer.Tokenize(FSource,FInfix);
+	finally
 		tokenizer.free;
   end;
 end;
@@ -669,7 +641,7 @@ var
 begin
 	Result := false;
   s1:=v1;
-  s2:=v2;
+	s2:=v2;
   if posstr('%',s1)=0 then begin
     result:=ansisametext(s1,s2)
   end
@@ -1037,22 +1009,23 @@ procedure TjanSQLExpression2.procIsNumeric;
 var
   v1:variant;
   s1:string;
-  //d1:extended;
+  d1:extended;
 begin
-	v1:=runpop;
-	s1:=v1;
-	try
-		//d1:=strtofloat(s1);
-		runpush(true)
-	except
-		runpush(false)
-	end;
+  v1:=runpop;
+  s1:=v1;
+  try
+		d1:=strtofloat(s1);
+    runpush(true)
+  except
+    runpush(false)
+  end;
 end;
 
 procedure TjanSQLExpression2.procIsDate;
 var
   v1:variant;
-	s1:string;
+  s1:string;
+
 begin
   v1:=runpop;
   s1:=v1;

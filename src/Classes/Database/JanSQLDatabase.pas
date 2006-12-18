@@ -17,7 +17,7 @@ uses
 	Character,
 	CharaList,
 	Account,
-	JanSQL;
+	janSQL;
 type
 
 TJanSQLResult = array of array of String;
