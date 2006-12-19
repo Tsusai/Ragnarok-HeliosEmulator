@@ -46,6 +46,9 @@ unit janSQLExpression2;
 interface
 
 uses
+  {$IFDEF MSWINDOWS}
+  Windows,
+  {$ENDIF}
   Classes,
   janSQLTokenizer;
 

@@ -243,6 +243,7 @@ begin
       inc(idx);
     end;
     if isKeyword(Ftoken) then begin
+      {$Hints Off}
       result:=true;
     end
     else if lowercase(FToken)='or' then begin
@@ -685,7 +686,7 @@ function TjanSQLTokenizer.getsubExpression: boolean;
 var
   tmp:string;
   b:boolean;
-  i,c,L:integer;
+  i,c:integer;
   tokenizer:TjanSQLTokenizer;
   sublist:TList;
   handled:boolean;
@@ -733,9 +734,9 @@ begin
     end;
     exit;
   end;
+  tokenizer:=TjanSQLTokenizer.create;
   try
     sublist:=TList.create;
-    tokenizer:=TjanSQLTokenizer.create;
     b:=tokenizer.Tokenize(tmp,sublist);
   finally
     tokenizer.free;

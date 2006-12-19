@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 67-
+[2006/12/18] - RaX - Suppressed hints and warnings in jansql using compiler directives.
+[2006/12/18] - RaX - Moved server classes into their respective folders in the src root.
+-
+
 - Rev 66-
 [2006/12/18] - Tsusai - Notes/Oveview: JanSQL (TXT reading) debugged.
 [2006/12/18] - Tsusai - JanSQLDatabase/MySQLDatabase : Cleaned up ****Exists routines.  
