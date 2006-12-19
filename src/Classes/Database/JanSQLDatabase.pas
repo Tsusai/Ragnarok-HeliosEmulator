@@ -34,7 +34,7 @@ TJanSQLResult = array of array of String;
 //------------------------------------------------------------------------------
 	TJanSQLDatabase = class(TDatabaseTemplate)
 	private
-    Database : TjanSQL;
+		Database : TjanSQL;
 	public
 
 		Constructor Create(UseGameDatabase : boolean); reintroduce; overload;
@@ -63,6 +63,7 @@ TJanSQLResult = array of array of String;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
 		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;override;
 		function CharaExists(Name : String) : Boolean;overload;override;
+		function AccountExists(UserName : String) : Boolean;override;
 
 		procedure SaveAccount(AnAccount : TAccount);override;
 		procedure SaveChara(AChara : TCharacter);override;
@@ -128,47 +129,51 @@ end;
 //
 //	Changes -
 //		October 5th, 2006 - RaX - Moved here from globals.
+//		December 18th, 2006 - Tsusai - Modified the connect to actually...connect
+//			Also FileExists doesn't work for directories, its DirectoryExists
 //
 //------------------------------------------------------------------------------
 Procedure TJanSQLDatabase.Connect(UseGameDatabase : boolean);
 var
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
+const ConnectQuery = 'Connect to ''%s''';
 begin
 
-  ResultIdentifier := 0;
+	ResultIdentifier := 0;
 
 	if Not Assigned(Database) then
 	begin
 		Database := TJanSQL.Create;
 	end;
 
-  if Not UseGameDatabase then //Access the Common database
-  begin
-    if FileExists(ServerConfig.CommonHost) then
-    begin
-      ResultIdentifier := Database.SQLDirect('connect to '''+ServerConfig.CommonHost+'''');
-    end else
-    begin
-      MainProc.Console('');
-      MainProc.Console('The database at '+ServerConfig.CommonHost+' does not exist!');
-      MainProc.Console('Please ensure that you have correctly configured your ini file');
-    end;
+	if Not UseGameDatabase then //Access the Common database
+	begin
+		if DirectoryExists(ServerConfig.CommonHost) then
+		begin
+			ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[ServerConfig.CommonHost]));
+		end else
+		begin
+			MainProc.Console('');
+			MainProc.Console('The database at '+ServerConfig.CommonHost+' does not exist!');
+			MainProc.Console('Please ensure that you have correctly configured your ini file');
+		end;
 	end else //Access the Game database
-  begin
-    if FileExists(ServerConfig.GameHost) then
-    begin
-      ResultIdentifier := Database.SQLDirect('connect to '+ServerConfig.GameHost);
-    end else
-    begin
-      MainProc.Console('');
-      MainProc.Console('The database at '+ServerConfig.GameHost+' does not exist!');
-      MainProc.Console('Please ensure that you have correctly configured your ini file');
-    end;
-  end;
+	begin
+		if DirectoryExists(ServerConfig.GameHost) then
+		begin
+			ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[ServerConfig.GameHost]));
+		end else
+		begin
+			MainProc.Console('');
+			MainProc.Console('The database at '+ServerConfig.GameHost+' does not exist!');
+			MainProc.Console('Please ensure that you have correctly configured your ini file');
+		end;
+	end;
 
 	if ResultIdentifier = 0 then
 	begin
-		MainProc.Console('*****Could not open text database.');
+		MainProc.Console('*****Could not open text database. Error : ' + Database.Error);
+		MainProc.Console(ServerConfig.GameHost);
 	end;
 
 end;
@@ -183,24 +188,26 @@ end;
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		December 18th, 2006 - Tsusai - Would not return a blank set if query failed
+//			to return anything, only a nil pointer that would cause issues when read.
 //
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.SendQuery(
 	const QString : string
 ) : TJanRecordSet;
 var
-  ResultIdentifier : Integer;
-
+	ResultIdentifier : Integer;
 begin
-  Result := nil;
+	//Must create a blank set at least!
+	Result := TJanRecordSet.Create;
 	ResultIdentifier := Database.SQLDirect(QString);
 	if ResultIdentifier = 0 then
 	begin
 		MainProc.Console('Text Query error: ' + QString);
 	end else
-  begin
-    Result := Database.RecordSets[ResultIdentifier];
-  end;
+	begin
+		Result := Database.RecordSets[ResultIdentifier];
+	end;
 end;//SendQuery
 //------------------------------------------------------------------------------
 
@@ -248,6 +255,7 @@ end;//SetAccount
 //		September 29th, 2006 - RaX - Created.
 //		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
 //													set the data
+//		December 18th, 2006 - Tsusai - Corrected query string syntax
 //
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.GetAccount(ID: Cardinal) : TAccount;
@@ -267,8 +275,8 @@ begin
 		end;
 	end;
 
-  QueryResult := SendQuery(
-		Format('SELECT * FROM accounts WHERE account_id = ''' + '%d' + ''';',
+	QueryResult := SendQuery(
+		Format('SELECT * FROM accounts WHERE account_id = %d',
 		[ID]));
 	if (QueryResult.recordcount = 1) then begin
 		if Not Assigned(Result) then
@@ -297,6 +305,7 @@ end;
 //		September 29th, 2006 - RaX - Created.
 //		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
 //													set the data
+//		December 18th, 2006 - Tsusai - Corrected query syntax
 //
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.GetAccount(Name : string) : TAccount;
@@ -316,7 +325,7 @@ begin
 		end;
 	end;
 
-	QueryResult := SendQuery('SELECT * FROM accounts WHERE userid = "'+Name+'";');
+	QueryResult := SendQuery('SELECT * FROM accounts WHERE userid = '+Name+';');
 	if(QueryResult.RecordCount = 1) then begin
 		if Not Assigned(Result) then
 		begin
@@ -373,6 +382,7 @@ end;
 //
 //	Changes -
 //		October 5th, 2006 - RaX - Created.
+//		December 18th, 2006 - Tsusai - QueryResult now freed.
 //
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
@@ -385,14 +395,15 @@ begin
 	QueryResult := SendQuery(
 		Format('SELECT char_id FROM characters WHERE account_id = %d and char_num < 9;',
 		[AccountID]));
-  if QueryResult.RecordCount > 0 then
+	if QueryResult.RecordCount > 0 then
   begin
     for Index := 0 to QueryResult.RecordCount - 1 do
     begin
-      ACharacterList.Add(GetChara(StrToInt(QueryResult.Records[Index].Fields[0].value)));
+			ACharacterList.Add(GetChara(StrToInt(QueryResult.Records[Index].Fields[0].value)));
     end;
   end;
 	Result := ACharacterList;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //-----------------------------------------------------------------------------
 
@@ -404,20 +415,18 @@ end;
 //
 //	Changes -
 //		October 6th, 2006 - RaX - Created.
+//		December 18th, 2006 - Tsusai - Result simplified, freed queryresult.
 //
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
 var
 	QueryResult : TJanRecordSet;
 begin
-  Result := FALSE;
 	QueryResult :=
 			SendQuery(
 			Format('SELECT * FROM characters WHERE char_num = %d and account_id = %d',[Slot, AccountID]));
-  if QueryResult.RecordCount > 0 then
-  begin
-    Result := TRUE;
-  end;
+	Result := (QueryResult.RecordCount > 0);
+	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------
 
@@ -429,22 +438,31 @@ end;
 //
 //	Changes -
 //		October 6th, 2006 - RaX - Created.
+//		December 18th, 2006 - Tsusai - Simplified Result, freed query result
 //
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.CharaExists(Name : String) : Boolean;
 var
 	QueryResult : TJanRecordSet;
 begin
-  Result := FALSE;
 	QueryResult :=
 			SendQuery(
-			Format('SELECT name FROM characters WHERE name = "%s"',[Name]));
-  if QueryResult.RecordCount > 0 then
-  begin
-    Result := TRUE;
-  end;
+			Format('SELECT name FROM characters WHERE name = %s',[Name]));
+	Result := (QueryResult.RecordCount > 0);
+	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------
+
+function TJanSQLDatabase.AccountExists(UserName : String) : Boolean;
+var
+	QueryResult : TJanRecordSet;
+begin
+	QueryResult :=
+		SendQuery(
+			Format('SELECT userid FROM accounts WHERE userid = ''%s''',[UserName]));
+	Result := (QueryResult.recordcount > 0);
+	if Assigned(QueryResult) then QueryResult.Free;
+end;
 
 //------------------------------------------------------------------------------
 //TJanSQLDatabase.SaveAccount()                                     Procedure
@@ -625,6 +643,7 @@ end;//SaveChara
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		December 18th, 2006 - Tsusai - Fixed query syntax
 //
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.CreateChara(
@@ -637,11 +656,11 @@ var
 begin
 	Result := FALSE;
 	SendQuery(
-		Format('INSERT INTO characters (account_id, name) VALUES(%d, "%s");',
+		Format('INSERT INTO characters (account_id, name) VALUES(%d, %s);',
 		[AID,NName]));
 	QueryResult :=
 		SendQuery(
-		Format('SELECT char_id FROM characters WHERE account_id = %d AND name = "%s";',
+		Format('SELECT char_id FROM characters WHERE account_id = %d AND name = %s;',
 		[AID,NName]));
 	if (QueryResult.RecordCount = 1) then
 	begin
@@ -659,7 +678,7 @@ procedure TJanSQLDatabase.CreateAccount(
 );
 begin
 	SendQuery(
-		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES("%s", "%s", "%s");',
+		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(%s, %s, %s);',
 		[Username,Password,GenderChar]));
 end;
 

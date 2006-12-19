@@ -132,9 +132,9 @@ type
     FonSubExpression: TSubExpressionEvent;
     procedure AddToken(list:TList);
     function GetToken: boolean;
-		//function IsKeyWord(value: string): boolean;
+    function IsKeyWord(value: string): boolean;
     function IsFunction(value: string): boolean;
-		//function LookAhead(var index:integer):string;
+    function LookAhead(var index:integer):string;
     function getTokenCount: integer;
     function getsubExpression:boolean;
     procedure SetonSubExpression(const Value: TSubExpressionEvent);
@@ -242,11 +242,10 @@ begin
       FToken:=FToken+Fsource[idx];
       inc(idx);
     end;
-		{if isKeyword(Ftoken) then begin
-			result:=true;
-		end
-		else }
-		if lowercase(FToken)='or' then begin
+    if isKeyword(Ftoken) then begin
+      result:=true;
+    end
+    else if lowercase(FToken)='or' then begin
         FTokenKind:=tkOperator;
         FTokenLevel:=0;
         FTokenOperator:=toOr;
@@ -552,7 +551,7 @@ begin
   result:=FList.count;
 end;
 
-{function TjanSQLTokenizer.IsKeyWord(value: string): boolean;
+function TjanSQLTokenizer.IsKeyWord(value: string): boolean;
 var
   tmp:string;
   i:integer;
@@ -680,13 +679,13 @@ begin
     FtokenKind:=tkKeyword;
     FtokenLevel:=0;
   end;
-end;}
+end;
 
 function TjanSQLTokenizer.getsubExpression: boolean;
 var
   tmp:string;
-	b:boolean;
-  i,c:integer;
+  b:boolean;
+  i,c,L:integer;
   tokenizer:TjanSQLTokenizer;
   sublist:TList;
   handled:boolean;
@@ -733,12 +732,12 @@ begin
       end;
     end;
     exit;
-	end;
-	tokenizer:=TjanSQLTokenizer.create;
-	try
-		sublist:=TList.create;
-		b:=tokenizer.Tokenize(tmp,sublist);
-	finally
+  end;
+  try
+    sublist:=TList.create;
+    tokenizer:=TjanSQLTokenizer.create;
+    b:=tokenizer.Tokenize(tmp,sublist);
+  finally
     tokenizer.free;
   end;
   if not b then begin
@@ -770,7 +769,7 @@ begin
 end;
 // some sql clauses consist of 2 wordes
 // eg GROUP BY
-{function TjanSQLTokenizer.LookAhead(var index:integer): string;
+function TjanSQLTokenizer.LookAhead(var index:integer): string;
 var
   i:integer;
   tmp:string;
@@ -791,7 +790,7 @@ begin
   else if Fsource[i]=' ' then
     result:=tmp;
   index:=i;
-end;}
+end;
 
 { TToken }
 

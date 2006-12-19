@@ -74,7 +74,15 @@ begin
 	AccountList     := TStringList.Create;
 	CharacterList   := TIntList32.Create;
 	CharaServerList := TStringList.Create;
-	ServerConfig    := TServerOptions.Create('./ServerOptions.ini');
+	if ParamCount = 0 then
+	begin
+		ServerConfig    := TServerOptions.Create('./ServerOptions.ini');
+	end else
+	if ParamCount = 1 then
+	begin
+		MainProc.Console('USING REMOTE INI : ' + ParamStr(1));
+		ServerConfig    := TServerOptions.Create('./' + ParamStr(1));
+	end;
 	ServerConfig.Load;
 end; (* proc InitGlobals
 ------------------------------------------------------------------------------*)

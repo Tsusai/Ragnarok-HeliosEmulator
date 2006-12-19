@@ -370,6 +370,7 @@ end;
 //
 //	Changes -
 //		October 5th, 2006 - RaX - Created.
+//		December 18th, 2006 - Tsusai - Freed result.
 //
 //------------------------------------------------------------------------------
 function TMySQLDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
@@ -398,6 +399,7 @@ begin
 		end;
 	end;
 	Result := ACharacterList;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //-----------------------------------------------------------------------------
 
@@ -410,6 +412,7 @@ end;
 //
 //	Changes -
 //		October 6th, 2006 - RaX - Created.
+//		December 18th, 2006 - Tsusai - Simplified Result, freed Queryresult
 //
 //------------------------------------------------------------------------------
 function TMySQLDatabase.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
@@ -417,22 +420,15 @@ var
 	QueryResult : TMySQLResult;
 	Success     : Boolean;
 begin
+	Result := false;
 	QueryResult :=
 			SendQuery(
 			Format('SELECT * FROM characters WHERE char_num = %d and account_id = %d',[Slot, AccountID]),true, Success);
 	if Success then
 	begin
-		if QueryResult.RowsCount > 0 then
-		begin
-			Result := TRUE;
-		end else
-		begin
-			Result := FALSE;
-		end;
-	end else
-	begin
-		Result := FALSE;
+		Result := (QueryResult.RowsCount > 0);
 	end;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------
 
@@ -445,6 +441,7 @@ end;
 //
 //	Changes -
 //		October 6th, 2006 - RaX - Created.
+//		December 18th, 2006 - Tsusai - Simplified Result, freed queryresult
 //
 //------------------------------------------------------------------------------
 function TMySQLDatabase.CharaExists(Name : String) : Boolean;
@@ -452,22 +449,15 @@ var
 	QueryResult : TMySQLResult;
 	Success     : Boolean;
 begin
+	Result := false;
 	QueryResult :=
 			SendQuery(
 			Format('SELECT name FROM characters WHERE name = "%s"',[Name]),true,Success);
 	if Success then
 	begin
-		if QueryResult.RowsCount > 0 then
-		begin
-			Result := TRUE;
-		end else
-		begin
-			Result := FALSE;
-		end;
-	end else
-	begin
-		Result := FALSE;
+		Result := (QueryResult.RowsCount > 0);
 	end;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------
 
@@ -476,22 +466,16 @@ var
 	QueryResult : TMySQLResult;
 	Success : boolean;
 begin
+	Result := false;
 	QueryResult :=
 		SendQuery(
 			Format('SELECT userid FROM accounts WHERE userid = "%s"',[UserName]),true,Success);
 	if Success then
 	begin
-		if QueryResult.RowsCount > 0 then
-		begin
-			Result := TRUE;
-		end else
-		begin
-			Result := FALSE;
-		end;
-	end else
-	begin
-		Result := FALSE;
+		Result := (QueryResult.RowsCount > 0);
 	end;
+
+	if Assigned(QueryResult) then QueryResult.Free;
 end;
 
 //------------------------------------------------------------------------------
