@@ -102,7 +102,6 @@ compile for linux, at the same time*}
 	WinLinux in 'Common\WinLinux.pas',
 	XTimer in 'Classes\XTimer.pas',
   ZoneServer in 'Zone\ZoneServer.pas',
-	ZoneCore in 'Zone\ZoneCore.pas',
 	ZoneRecv in 'Zone\ZoneRecv.pas',
 	ZoneSend in 'Zone\ZoneSend.pas',
 	{$ENDIF}
@@ -151,7 +150,6 @@ compile for linux, at the same time*}
 	WinLinux in 'Common/WinLinux.pas',
 	XTimer in 'Classes/XTimer.pas',
   ZoneServer in 'Zone/ZoneServer.pas',
-	ZoneCore in 'Zone/ZoneCore.pas',
 	ZoneRecv in 'Zone/ZoneRecv.pas',
 	ZoneSend in 'Zone/ZoneSend.pas',
 	{$ENDIF}

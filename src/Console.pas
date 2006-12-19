@@ -68,8 +68,7 @@ uses
 	PacketTypes,
 	SaveThread,
 	TCPServerRoutines,
-	WinLinux,
-	ZoneCore
+	WinLinux
 	{Third Party}
 	;
 
