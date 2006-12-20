@@ -49,7 +49,7 @@ interface
 implementation
 uses
 	SysUtils,
-  Console,
+	Console,
 	Database,
 	Globals;
 
@@ -76,7 +76,8 @@ end; (* proc TAccount.SetGender
 function TAccount.GetBanned : boolean;
 begin
 	MainProc.ACommonDatabase.AnInterface.GetAccountBanAndConnectTime(Self);
-	if Now > BanTime then
+	//Now would somehow corrupt after someone tries a _M/_F on MD5 Connection
+	if SysUtils.Now > BanTime then
 	begin
 		Result := false;
 	end else
@@ -94,7 +95,8 @@ end;
 function TAccount.GetConnectUntilTime : boolean;
 begin
 	MainProc.ACommonDatabase.AnInterface.GetAccountBanAndConnectTime(Self);
-	if Now > ConnectUntil then
+	//Now would somehow corrupt after someone tries a _M/_F on MD5 Connection
+	if SysUtils.Now > ConnectUntil then
 	begin
 		Result := true;
 	end else
