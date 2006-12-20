@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 70-
+[2006/12/19] - Tsusai - Oopsie.  Didn't know my runtime debug parameters were saving. Removed
+-
+
 - Rev 69-
 [2006/12/19] - Tsusai - Heh...69.                     Sorry..couldn't help myself
 [2006/12/19] - Tsusai - Accounts: For some reason if a person attempted to login with the mf 

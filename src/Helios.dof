@@ -100,7 +100,7 @@ Conditionals=madExcept
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=JanINI.ini
+RunParams=
 HostApplication=
 Launcher=
 UseLauncher=0
