@@ -85,7 +85,8 @@ implementation
 		Globals,
 		Console,
 		SysUtils,
-		Classes;
+		Classes,
+    Math;
 
 
 //------------------------------------------------------------------------------
@@ -138,8 +139,11 @@ end;
 procedure TJanSQLDatabase.Disconnect;
 begin
 	//This tells it to save all infomation, since everything happens in memory
-	SendQuery('COMMIT');
-  if Assigned(Database) then Database.Free;
+  if Assigned(Database) then
+  begin
+	  SendQuery('COMMIT');
+    Database.Free;
+  end;
 end;
 //------------------------------------------------------------------------------
 
@@ -222,9 +226,10 @@ function TJanSQLDatabase.SendQuery(
 ) : Integer;
 begin
 	Result := Database.SQLDirect(QString);
-	if Result = 0 then
+	if (Result = 0) AND (Database.Error <> 'SELECT FROM: no records') then
 	begin
 		MainProc.Console('Text Query error: ' + QString);
+    MainProc.Console(Database.Error);
 	end;
 end;//SendQuery
 //------------------------------------------------------------------------------
@@ -346,7 +351,7 @@ begin
 		end;
 	end;
 
-	ResultIdentifier := SendQuery('SELECT * FROM accounts WHERE userid = '+Name+';');
+	ResultIdentifier := SendQuery('SELECT * FROM accounts WHERE userid = '+Name);
   QueryResult := Database.RecordSets[ResultIdentifier];
 
 	if(QueryResult.RecordCount = 1) then begin
@@ -417,18 +422,21 @@ var
 begin
 	ACharacterList := TCharacterList.Create;
 	ResultIdentifier := SendQuery(
-		Format('SELECT char_id FROM characters WHERE account_id = %d and char_num < 9;',
+		Format('SELECT char_id FROM characters WHERE account_id = %d and char_num < 9',
 		[AccountID]));
-  QueryResult := Database.RecordSets[ResultIdentifier];
-	if QueryResult.RecordCount > 0 then
+  if ResultIdentifier > 0 then
   begin
-    for Index := 0 to QueryResult.RecordCount - 1 do
+    QueryResult := Database.RecordSets[ResultIdentifier];
+	  if QueryResult.RecordCount > 0 then
     begin
-			ACharacterList.Add(GetChara(StrToInt(QueryResult.Records[Index].Fields[0].value)));
+      for Index := 0 to QueryResult.RecordCount - 1 do
+      begin
+			  ACharacterList.Add(GetChara(StrToInt(QueryResult.Records[Index].Fields[0].value)));
+      end;
     end;
+ 	  Database.ReleaseRecordset(ResultIdentifier);
   end;
-	Result := ACharacterList;
-	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+  Result := ACharacterList;
 end;
 //-----------------------------------------------------------------------------
 
@@ -445,15 +453,19 @@ end;
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
 var
-	QueryResult : TJanRecordSet;
   ResultIdentifier : Integer;
 begin
 	ResultIdentifier :=
 			SendQuery(
 			Format('SELECT * FROM characters WHERE char_num = %d and account_id = %d',[Slot, AccountID]));
-  QueryResult := Database.RecordSets[ResultIdentifier];
-	Result := (QueryResult.RecordCount > 0);
-	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+  if ResultIdentifier > 0 then
+  begin
+    Result := TRUE;
+    Database.ReleaseRecordset(ResultIdentifier);
+  end else
+  begin
+    Result := FALSE;
+  end;
 end;
 //------------------------------------------------------------------------------
 
@@ -470,15 +482,19 @@ end;
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.CharaExists(Name : String) : Boolean;
 var
-	QueryResult : TJanRecordSet;
   ResultIdentifier : Integer;
 begin
 	ResultIdentifier :=
 			SendQuery(
 			Format('SELECT name FROM characters WHERE name = %s',[Name]));
-  QueryResult := Database.RecordSets[ResultIdentifier];
-	Result := (QueryResult.RecordCount > 0);
-  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+  if ResultIdentifier > 0 then
+  begin
+    Result := TRUE;
+    Database.ReleaseRecordset(ResultIdentifier);
+  end else
+  begin
+    Result := FALSE;
+  end;
 end;
 //------------------------------------------------------------------------------
 
@@ -520,7 +536,7 @@ const
 		'connect_until=%s, ' +
 		'ban_until=%s, ' +
 		'last_ip=''%s'' ' +
-		'WHERE account_id=%d;';
+		'WHERE account_id=%d';
 var
 	QueryString : string;
   ResultIdentifier : Integer;
@@ -610,7 +626,7 @@ begin
 			'baby_id=%d, ' +
 			'online=%d, ' +
 			'homun_id=%d ' +
-			'WHERE char_id=%d;',
+			'WHERE char_id=%d',
 			[
 			CharaNum,
 			Name,
@@ -686,15 +702,32 @@ function TJanSQLDatabase.CreateChara(
 var
 	QueryResult : TJanRecordSet;
   ResultIdentifier : Integer;
+  CharacterID : Integer;
+  Index : Integer;
 begin
 	Result := FALSE;
+  ResultIdentifier := SendQuery('SELECT char_id FROM characters');
+  CharacterID := 1;
+  if ResultIdentifier > 0 then
+  begin
+    QueryResult := Database.RecordSets[ResultIdentifier];
+    for Index := 0 to QueryResult.recordcount - 1 do
+    begin
+      CharacterID := Max(CharacterID, QueryResult.records[Index].fields[0].value);
+    end;
+    inc(CharacterID);
+
+    CharacterID := StrToInt(QueryResult.records[QueryResult.recordcount-1].fields[0].value) + 1;
+    MainProc.Console(intToStr(CharacterID));
+  end;
+
 	ResultIdentifier := SendQuery(
-		Format('INSERT INTO characters (account_id, name) VALUES(%d, %s);',
-		[AID,NName]));
+		Format('INSERT INTO characters (char_id, account_id, name) VALUES(%d, %d, ''%s'')',
+		[CharacterID, AID,NName]));
   if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 	ResultIdentifier :=
 		SendQuery(
-		Format('SELECT char_id FROM characters WHERE account_id = %d AND name = %s;',
+		Format('SELECT char_id FROM characters WHERE account_id = %d AND name = ''%s''',
 		[AID,NName]));
   QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
@@ -716,7 +749,7 @@ var
 begin
 
 	ResultIdentifier := SendQuery(
-		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(%s, %s, %s);',
+		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(%s, %s, %s)',
 		[Username,Password,GenderChar]));
   if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
@@ -739,7 +772,7 @@ var
 begin
 	ResultIdentifier :=
 		SendQuery(
-		Format('SELECT * FROM characters WHERE char_id = %d;',
+		Format('SELECT * FROM characters WHERE char_id = %d',
 			[CharaID]));
   QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) and (QueryResult.fieldcount = 48) then
@@ -747,62 +780,62 @@ begin
 		with Result do
 		begin
 			Result           := TCharacter.Create;
-			CID              := StrToInt(QueryResult.Records[0].Fields[0].Value);
-			ID               := StrToInt(QueryResult.Records[0].Fields[1].Value);
+			CID              := StrToIntDef(QueryResult.Records[0].Fields[0].Value, 0);
+			ID               := StrToIntDef(QueryResult.Records[0].Fields[1].Value, 0);
 			Account          := MainProc.ACommonDatabase.AnInterface.GetAccount(ID);
-			CharaNum         := StrToInt(QueryResult.Records[0].Fields[2].Value);
+			CharaNum         := StrToIntDef(QueryResult.Records[0].Fields[2].Value, 0);
 			if CharaNum < 9 then
 			begin
 				//If its active, then attach to the player.
 				Account.CharaID[CharaNum] := CID;
 			end;
 			Name            :=          QueryResult.Records[0].Fields[3].Value;
-			JID             := StrToInt(QueryResult.Records[0].Fields[4].Value);
-			BaseLV          := StrToInt(QueryResult.Records[0].Fields[5].Value);
-			JobLV           := StrToInt(QueryResult.Records[0].Fields[6].Value);
-			BaseEXP         := StrToInt(QueryResult.Records[0].Fields[7].Value);
-			JobEXP          := StrToInt(QueryResult.Records[0].Fields[8].Value);
-			Zeny            := StrToInt(QueryResult.Records[0].Fields[9].Value);
-			ParamBase[STR]  := StrToInt(QueryResult.Records[0].Fields[10].Value);
-			ParamBase[AGI]  := StrToInt(QueryResult.Records[0].Fields[11].Value);
-			ParamBase[VIT]  := StrToInt(QueryResult.Records[0].Fields[12].Value);
-			ParamBase[INT]  := StrToInt(QueryResult.Records[0].Fields[13].Value);
-			ParamBase[DEX]  := StrToInt(QueryResult.Records[0].Fields[14].Value);
-			ParamBase[LUK]  := StrToInt(QueryResult.Records[0].Fields[15].Value);
-			MaxHP           := StrToInt(QueryResult.Records[0].Fields[16].Value);
-			HP              := StrToInt(QueryResult.Records[0].Fields[17].Value);
-			MaxSP           := StrToInt(QueryResult.Records[0].Fields[18].Value);
-			SP              := StrToInt(QueryResult.Records[0].Fields[19].Value);
-			StatusPts       := StrToInt(QueryResult.Records[0].Fields[20].Value);
-			SkillPts        := StrToInt(QueryResult.Records[0].Fields[21].Value);
-			Option          := StrToInt(QueryResult.Records[0].Fields[22].Value);
-			Karma           := StrToInt(QueryResult.Records[0].Fields[23].Value);
-			Manner          := StrToInt(QueryResult.Records[0].Fields[24].Value);
-			PartyID         := StrToInt(QueryResult.Records[0].Fields[25].Value);
-			GuildID         := StrToInt(QueryResult.Records[0].Fields[26].Value);
-			PetID           := StrToInt(QueryResult.Records[0].Fields[27].Value);
-			Hair            := StrToInt(QueryResult.Records[0].Fields[28].Value);
-			HairColor       := StrToInt(QueryResult.Records[0].Fields[29].Value);
-			ClothesColor    := StrToInt(QueryResult.Records[0].Fields[30].Value);
-			Weapon          := StrToInt(QueryResult.Records[0].Fields[31].Value);
-			Shield          := StrToInt(QueryResult.Records[0].Fields[32].Value);
-			HeadTop         := StrToInt(QueryResult.Records[0].Fields[33].Value);
-			HeadMid         := StrToInt(QueryResult.Records[0].Fields[34].Value);
-			HeadBottom      := StrToInt(QueryResult.Records[0].Fields[35].Value);
+			JID             := StrToIntDef(QueryResult.Records[0].Fields[4].Value, 0);
+			BaseLV          := StrToIntDef(QueryResult.Records[0].Fields[5].Value, 0);
+			JobLV           := StrToIntDef(QueryResult.Records[0].Fields[6].Value, 0);
+			BaseEXP         := StrToIntDef(QueryResult.Records[0].Fields[7].Value, 0);
+			JobEXP          := StrToIntDef(QueryResult.Records[0].Fields[8].Value, 0);
+			Zeny            := StrToIntDef(QueryResult.Records[0].Fields[9].Value, 0);
+			ParamBase[STR]  := StrToIntDef(QueryResult.Records[0].Fields[10].Value, 0);
+			ParamBase[AGI]  := StrToIntDef(QueryResult.Records[0].Fields[11].Value, 0);
+			ParamBase[VIT]  := StrToIntDef(QueryResult.Records[0].Fields[12].Value, 0);
+			ParamBase[INT]  := StrToIntDef(QueryResult.Records[0].Fields[13].Value, 0);
+			ParamBase[DEX]  := StrToIntDef(QueryResult.Records[0].Fields[14].Value, 0);
+			ParamBase[LUK]  := StrToIntDef(QueryResult.Records[0].Fields[15].Value, 0);
+			MaxHP           := StrToIntDef(QueryResult.Records[0].Fields[16].Value, 0);
+			HP              := StrToIntDef(QueryResult.Records[0].Fields[17].Value, 0);
+			MaxSP           := StrToIntDef(QueryResult.Records[0].Fields[18].Value, 0);
+			SP              := StrToIntDef(QueryResult.Records[0].Fields[19].Value, 0);
+			StatusPts       := StrToIntDef(QueryResult.Records[0].Fields[20].Value, 0);
+			SkillPts        := StrToIntDef(QueryResult.Records[0].Fields[21].Value, 0);
+			Option          := StrToIntDef(QueryResult.Records[0].Fields[22].Value, 0);
+			Karma           := StrToIntDef(QueryResult.Records[0].Fields[23].Value, 0);
+			Manner          := StrToIntDef(QueryResult.Records[0].Fields[24].Value, 0);
+			PartyID         := StrToIntDef(QueryResult.Records[0].Fields[25].Value, 0);
+			GuildID         := StrToIntDef(QueryResult.Records[0].Fields[26].Value, 0);
+			PetID           := StrToIntDef(QueryResult.Records[0].Fields[27].Value, 0);
+			Hair            := StrToIntDef(QueryResult.Records[0].Fields[28].Value, 0);
+			HairColor       := StrToIntDef(QueryResult.Records[0].Fields[29].Value, 0);
+			ClothesColor    := StrToIntDef(QueryResult.Records[0].Fields[30].Value, 0);
+			Weapon          := StrToIntDef(QueryResult.Records[0].Fields[31].Value, 0);
+			Shield          := StrToIntDef(QueryResult.Records[0].Fields[32].Value, 0);
+			HeadTop         := StrToIntDef(QueryResult.Records[0].Fields[33].Value, 0);
+			HeadMid         := StrToIntDef(QueryResult.Records[0].Fields[34].Value, 0);
+			HeadBottom      := StrToIntDef(QueryResult.Records[0].Fields[35].Value, 0);
 			Map             :=          QueryResult.Records[0].Fields[36].Value ;
-				APoint.X      := StrToInt(QueryResult.Records[0].Fields[37].Value);
-				APoint.Y      := StrToInt(QueryResult.Records[0].Fields[38].Value);
+				APoint.X      := StrToIntDef(QueryResult.Records[0].Fields[37].Value, 0);
+				APoint.Y      := StrToIntDef(QueryResult.Records[0].Fields[38].Value, 0);
 			Point           := APoint;
 			SaveMap         :=          QueryResult.Records[0].Fields[39].Value ;
-				APoint.X      := StrToInt(QueryResult.Records[0].Fields[40].Value);
-				APoint.Y      := StrToInt(QueryResult.Records[0].Fields[41].Value);
+				APoint.X      := StrToIntDef(QueryResult.Records[0].Fields[40].Value, 0);
+				APoint.Y      := StrToIntDef(QueryResult.Records[0].Fields[41].Value, 0);
 			SavePoint       := APoint;
-			PartnerID       := StrToInt(QueryResult.Records[0].Fields[42].Value);
-			ParentID1       := StrToInt(QueryResult.Records[0].Fields[43].Value);
-			ParentID2       := StrToInt(QueryResult.Records[0].Fields[44].Value);
-			BabyID          := StrToInt(QueryResult.Records[0].Fields[45].Value);
-			Online          := StrToInt(QueryResult.Records[0].Fields[46].Value);
-			HomunID         := StrToInt(QueryResult.Records[0].Fields[47].Value);
+			PartnerID       := StrToIntDef(QueryResult.Records[0].Fields[42].Value, 0);
+			ParentID1       := StrToIntDef(QueryResult.Records[0].Fields[43].Value, 0);
+			ParentID2       := StrToIntDef(QueryResult.Records[0].Fields[44].Value, 0);
+			BabyID          := StrToIntDef(QueryResult.Records[0].Fields[45].Value, 0);
+			Online          := StrToIntDef(QueryResult.Records[0].Fields[46].Value, 0);
+			HomunID         := StrToIntDef(QueryResult.Records[0].Fields[47].Value, 0);
 			//Do not start the save timer caused by modifying everything else.
 			DataChanged := false;
 		end;
@@ -881,7 +914,7 @@ var
 begin
 	ResultIdentifier :=
 		SendQuery(
-		Format('SELECT * FROM hp WHERE level = %d, job = %s ;',
+		Format('SELECT * FROM hp WHERE level = %d, job = %s',
 			[ACharacter.BaseLV,ACharacter.JID]));
   QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
@@ -910,7 +943,7 @@ var
 begin
 	ResultIdentifier :=
 		SendQuery(
-		Format('SELECT * FROM sp WHERE level = %d, job = %s ;',
+		Format('SELECT * FROM sp WHERE level = %d, job = %s',
 			[ACharacter.BaseLV,ACharacter.JID]));
   QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then

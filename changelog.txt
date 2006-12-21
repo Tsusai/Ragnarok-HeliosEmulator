@@ -13,6 +13,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 74-
+[2006/12/21] - RaX - Updated JanSQLDatabase queries to work with jansql. (JanSQLDatabase)
+[2006/12/21] - RaX - Changed StrToInt to StrToIntDef with a default of 0 in LoadChara
+ because JanSQL doesn't support default values or typing for that matter.
+[2006/12/21] - RaX - Added calculations for the next available ID to CreateChara, see above
+ for details as to why.
+-
+
 - Rev 73-
 [2006/12/21] - Tsusai - Notes/Overview: Renamed unit Socket to BufferIO.  All applicable 
  files were updated.
