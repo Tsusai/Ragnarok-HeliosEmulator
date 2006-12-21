@@ -70,7 +70,7 @@ type
 		Function GetBaseHP(ACharacter : TCharacter) : Cardinal;override;
 		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;override;
 	protected
-		procedure Connect(UseGameDatabase : Boolean); reintroduce;overload;
+		procedure Connect(UseGameDatabase : Boolean); override;
 		function SendQuery(
 			const QString : string;
 			StoreResult : boolean;
@@ -494,14 +494,14 @@ const
 		'UPDATE accounts SET '+
 		'userid=''%s'', ' +
 		'user_pass=''%s'', ' +
-		'lastlogin=%d, ' +
+		'lastlogin=%s, ' +
 		'sex=''%s'', ' +
 		'logincount=%d, ' +
 		'email=''%s'', ' +
 		'loginkey1=%d, ' +
 		'loginkey2=%d, ' +
-		'connect_until=%d, ' +
-		'ban_until=%d, ' +
+		'connect_until=%s, ' +
+		'ban_until=%s, ' +
 		'last_ip=''%s'' ' +
 		'WHERE account_id=%d;';
 var
@@ -512,17 +512,14 @@ begin
 		Format(BaseString,
 			[AnAccount.Username,
 			 AnAccount.Password,
-			 StrToInt64(
-				 FormatDateTime('yyyymmddhhmmss',AnAccount.LastLoginTime)),
+			 FormatDateTime('yyyymmddhhmmss',AnAccount.LastLoginTime),
 			 AnAccount.Gender,
 			 AnAccount.LoginCount,
 			 AnAccount.EMail,
 			 AnAccount.LoginKey[1],
 			 AnAccount.LoginKey[2],
-			 StrToInt64(
-				 FormatDateTime('yyyymmddhhmmss',AnAccount.ConnectUntil)),
-			 StrToInt64(
-				 FormatDateTime('yyyymmddhhmmss',AnAccount.Bantime)),
+			 FormatDateTime('yyyymmddhhmmss',AnAccount.ConnectUntil),
+			 FormatDateTime('yyyymmddhhmmss',AnAccount.Bantime),
 			 AnAccount.LastIP,
 			 AnAccount.ID]
 		);

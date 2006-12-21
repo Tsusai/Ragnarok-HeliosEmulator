@@ -13,6 +13,19 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 71-
+[2006/12/20] - Tsusai - Notes/Overview: Updates to database system.
+[2006/12/20] - Tsusai - DatabaseTemplate: Modified CONNECT to use out current standard
+ parameters, instead of using reintroduces and overrides in the children classes.
+[2006/12/20] - Tsusai - MySQLDatabase & JanSQLDatabase - SaveAccount: Removed StrToInt64
+ conversions of dates.  Just strings now.
+[2006/12/20] - Tsusai - JanSQLDatabase - SaveAccount: Fixed how the dates are stored back
+ into the database. This caused problems of the same account trying to reconnect, and bad
+ times being read when logging BACK in.
+[2006/12/20] - Tsusai - JanSQLDatabase: Added Disconnect method, which calls the commit
+ query to save the database.
+-
+
 - Rev 70-
 [2006/12/19] - Tsusai - Oopsie.  Didn't know my runtime debug parameters were saving. Removed
 -

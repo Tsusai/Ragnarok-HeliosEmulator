@@ -63,7 +63,7 @@ type
 		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;virtual;
 
 	protected
-		procedure Connect();virtual;
+		procedure Connect(UseGameDatabase : Boolean); virtual;
 		procedure Disconnect();virtual;
 	end;
 //------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ begin
 	inherited;
 end;
 
-procedure TDatabaseTemplate.Connect();
+procedure TDatabaseTemplate.Connect(UseGameDatabase : Boolean); 
 begin
 end;
 

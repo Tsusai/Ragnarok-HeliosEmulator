@@ -18,9 +18,7 @@ uses
 	CharaList,
 	Account,
 	janSQL;
-type
 
-TJanSQLResult = array of array of String;
 //------------------------------------------------------------------------------
 //TJanSQLDatabase			                                                           CLASS
 //------------------------------------------------------------------------------
@@ -32,6 +30,7 @@ TJanSQLResult = array of array of String;
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
+type
 	TJanSQLDatabase = class(TDatabaseTemplate)
 	private
 		Database : TjanSQL;
@@ -71,7 +70,8 @@ TJanSQLResult = array of array of String;
 		Function GetBaseHP(ACharacter : TCharacter) : Cardinal;override;
 		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;override;
 	protected
-		procedure Connect(UseGameDatabase : Boolean); reintroduce;overload;
+		procedure Connect(UseGameDatabase : Boolean); override;
+		procedure Disconnect; override;
 		function SendQuery(
 			const QString : string
 		) : TJanRecordSet;
@@ -121,6 +121,11 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+procedure TJanSQLDatabase.Disconnect;
+begin
+	//This tells it to save all infomation, since everything happens in memory
+	SendQuery('COMMIT');
+end;
 //------------------------------------------------------------------------------
 //TJanSQLDatabase.Connect()                                            Procedure
 //------------------------------------------------------------------------------
@@ -480,14 +485,14 @@ const
 		'UPDATE accounts SET '+
 		'userid=''%s'', ' +
 		'user_pass=''%s'', ' +
-		'lastlogin=%d, ' +
+		'lastlogin=%s, ' +
 		'sex=''%s'', ' +
 		'logincount=%d, ' +
 		'email=''%s'', ' +
 		'loginkey1=%d, ' +
 		'loginkey2=%d, ' +
-		'connect_until=%d, ' +
-		'ban_until=%d, ' +
+		'connect_until=%s, ' +
+		'ban_until=%s, ' +
 		'last_ip=''%s'' ' +
 		'WHERE account_id=%d;';
 var
@@ -497,17 +502,14 @@ begin
 		Format(BaseString,
 			[AnAccount.Username,
 			 AnAccount.Password,
-			 StrToInt64(
-				 FormatDateTime('yyyymmddhhmmss',AnAccount.LastLoginTime)),
+			 FormatDateTime('yyyy-mm-dd hh:mm:ss',AnAccount.LastLoginTime),
 			 AnAccount.Gender,
 			 AnAccount.LoginCount,
 			 AnAccount.EMail,
 			 AnAccount.LoginKey[1],
 			 AnAccount.LoginKey[2],
-			 StrToInt64(
-				 FormatDateTime('yyyymmddhhmmss',AnAccount.ConnectUntil)),
-			 StrToInt64(
-				 FormatDateTime('yyyymmddhhmmss',AnAccount.Bantime)),
+			 FormatDateTime('yyyy-mm-dd hh:mm:ss',AnAccount.ConnectUntil),
+			 FormatDateTime('yyyy-mm-dd hh:mm:ss',AnAccount.Bantime),
 			 AnAccount.LastIP,
 			 AnAccount.ID]
 		);
