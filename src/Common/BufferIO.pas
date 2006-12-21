@@ -7,7 +7,7 @@ Description:
 	out of a databuffer.  Everything here is self explanitory and should not be
 	changed anytime soon.
 ------------------------------------------------------------------------------*)
-unit Socket;
+unit BufferIO;
 
 interface
 uses

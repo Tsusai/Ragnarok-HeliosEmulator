@@ -13,8 +13,8 @@ uses
 
 implementation
 uses
+	BufferIO,
 	PacketTypes,
-	Socket,
 	WinLinux;
 
 	procedure ZoneSendMapConnectReply(ACharacter : TCharacter);

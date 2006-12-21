@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 73-
+[2006/12/21] - Tsusai - Notes/Overview: Renamed unit Socket to BufferIO.  All applicable 
+ files were updated.
+-
 
 - Rev 72-
 [2006/12/21] - RaX - Modified JanSQLDatabase.pas to use resultidentifier numbers to access
