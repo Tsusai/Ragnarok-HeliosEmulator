@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 75-
+[2006/12/21] - RaX - Removed Deprecated units AccountDB, SQL, and SaveThread. Leaving
+ XTimer in case we need a timer.
+-
+
 - Rev 74-
 [2006/12/21] - RaX - Updated JanSQLDatabase queries to work with jansql. (JanSQLDatabase)
 [2006/12/21] - RaX - Changed StrToInt to StrToIntDef with a default of 0 in LoadChara
