@@ -1,0 +1,1 @@
+guild_id;opposition;alliance_id;name

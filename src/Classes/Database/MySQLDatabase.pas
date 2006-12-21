@@ -834,9 +834,15 @@ end;
 //
 //------------------------------------------------------------------------------
 procedure TMySQLDatabase.GetAccountBanAndConnectTime(var AnAccount : TAccount);
+var
+  Success     : Boolean;
+  QueryResult : TMySQLResult;
 begin
-	//Bleh...might as well RELOAD.
-	AnAccount := Self.GetAccount(AnAccount.ID);
+  QueryResult := SendQuery(
+		Format('SELECT connect_until, ban_until FROM accounts WHERE account_id=%d',[AnAccount.ID]),true,Success);
+  AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.FieldValue(0));
+  AnAccount.BanTime := ConvertMySQLTime(QueryResult.FieldValue(1));
+  if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------
 

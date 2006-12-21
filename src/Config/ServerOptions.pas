@@ -297,10 +297,9 @@ implementation
 			ReadSectionValues('Database', Section);
 
 			fDatabaseType := StrToIntDef(Section.Values['Type'], 1);
-
 			//Accounts
 			if Section.Values['Common_Host'] = '' then begin
-				Section.Values['Common_Host'] := '127.0.0.1';
+				Section.Values['Common_Host'] := './save';
 			end;
 			fCommonHost := Section.Values['Common_Host'];
 			fCommonPort := StrToIntDef(Section.Values['Common_Port'], 3306);
@@ -316,7 +315,7 @@ implementation
 
 			//Gameserver stuff
 			if Section.Values['Game_Host'] = '' then begin
-				Section.Values['Game_Host'] := '127.0.0.1';
+				Section.Values['Game_Host'] := './save';
 			end;
 			fGameHost := Section.Values['Game_Host'];
 			fGamePort := StrToIntDef(Section.Values['Game_Port'], 3306);

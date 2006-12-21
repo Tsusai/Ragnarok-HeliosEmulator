@@ -1,0 +1,1 @@
+memo_id;char_id;map;x;y

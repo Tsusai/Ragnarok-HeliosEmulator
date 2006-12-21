@@ -110,7 +110,7 @@ compile for linux, at the same time*}
 //                            Linux Definitions
 //------------------------------------------------------------------------------
 	{$IFDEF LINUX}
-	Account in 'Classes/Account.pas',
+	Account in 'Classes/Account.pas', 
 	Character in 'Classes/Character.pas',
 	CharaList in 'Classes/CharaList.pas',
   CharacterServer in 'Character/CharacterServer.pas',

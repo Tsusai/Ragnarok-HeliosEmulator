@@ -74,7 +74,7 @@ type
 		procedure Disconnect; override;
 		function SendQuery(
 			const QString : string
-		) : TJanRecordSet;
+		) : Integer;
 	end;
 //------------------------------------------------------------------------------
 
@@ -86,6 +86,8 @@ implementation
 		Console,
 		SysUtils,
 		Classes;
+
+
 //------------------------------------------------------------------------------
 //TJanSQLDatabase.Create()                                          CONSTRUCTOR
 //------------------------------------------------------------------------------
@@ -104,6 +106,7 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 //TJanSQLDatabase.Destroy()                                          DESTRUCTOR
 //------------------------------------------------------------------------------
@@ -121,11 +124,26 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TJanSQLDatabase.Disconnect()                                        Procedure
+//------------------------------------------------------------------------------
+//	What it does-
+//			Destroys the TEXT Connection.
+//
+//	Changes -
+//		December 21st, 2006 - RaX - Created
+//
+//------------------------------------------------------------------------------
 procedure TJanSQLDatabase.Disconnect;
 begin
 	//This tells it to save all infomation, since everything happens in memory
 	SendQuery('COMMIT');
+  if Assigned(Database) then Database.Free;
 end;
+//------------------------------------------------------------------------------
+
+
 //------------------------------------------------------------------------------
 //TJanSQLDatabase.Connect()                                            Procedure
 //------------------------------------------------------------------------------
@@ -179,8 +197,10 @@ begin
 	begin
 		MainProc.Console('*****Could not open text database. Error : ' + Database.Error);
 		MainProc.Console(ServerConfig.GameHost);
-	end;
-
+	end else
+  begin
+    Database.ReleaseRecordset(ResultIdentifier);
+  end;
 end;
 //------------------------------------------------------------------------------
 
@@ -199,19 +219,12 @@ end;
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.SendQuery(
 	const QString : string
-) : TJanRecordSet;
-var
-	ResultIdentifier : Integer;
+) : Integer;
 begin
-	//Must create a blank set at least!
-	Result := TJanRecordSet.Create;
-	ResultIdentifier := Database.SQLDirect(QString);
-	if ResultIdentifier = 0 then
+	Result := Database.SQLDirect(QString);
+	if Result = 0 then
 	begin
 		MainProc.Console('Text Query error: ' + QString);
-	end else
-	begin
-		Result := Database.RecordSets[ResultIdentifier];
 	end;
 end;//SendQuery
 //------------------------------------------------------------------------------
@@ -268,6 +281,7 @@ var
 	AnAccount   : TAccount;
 	Index       : Integer;
 	QueryResult : TJanRecordSet;
+  ResultIdentifier : Integer;
 begin
 	Result := NIL;
 	//Check Memory
@@ -280,9 +294,10 @@ begin
 		end;
 	end;
 
-	QueryResult := SendQuery(
+	ResultIdentifier := SendQuery(
 		Format('SELECT * FROM accounts WHERE account_id = %d',
 		[ID]));
+  QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.recordcount = 1) then begin
 		if Not Assigned(Result) then
 		begin
@@ -294,7 +309,7 @@ begin
 		Result.Bantime      := ConvertMySQLTime(QueryResult.records[0].fields[14].value);
 	end;
 
-	if Assigned(QueryResult) then QueryResult.Free;
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 //------------------------------------------------------------------------------
 
@@ -318,6 +333,7 @@ var
 	AnAccount   : TAccount;
 	Index       : Integer;
 	QueryResult : TJanRecordSet;
+  ResultIdentifier : Integer;
 begin
 	Result := NIL;
 	//Check Memory
@@ -330,7 +346,9 @@ begin
 		end;
 	end;
 
-	QueryResult := SendQuery('SELECT * FROM accounts WHERE userid = '+Name+';');
+	ResultIdentifier := SendQuery('SELECT * FROM accounts WHERE userid = '+Name+';');
+  QueryResult := Database.RecordSets[ResultIdentifier];
+
 	if(QueryResult.RecordCount = 1) then begin
 		if Not Assigned(Result) then
 		begin
@@ -342,7 +360,7 @@ begin
 		Result.Bantime      := ConvertMySQLTime(QueryResult.records[0].fields[14].value);
 	end;
 
-	if Assigned(QueryResult) then QueryResult.Free;
+  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 //------------------------------------------------------------------------------
 
@@ -395,11 +413,13 @@ var
 	QueryResult     : TJanRecordSet;
 	ACharacterList  : TCharacterList;
 	Index           : Integer;
+  ResultIdentifier : Integer;
 begin
 	ACharacterList := TCharacterList.Create;
-	QueryResult := SendQuery(
+	ResultIdentifier := SendQuery(
 		Format('SELECT char_id FROM characters WHERE account_id = %d and char_num < 9;',
 		[AccountID]));
+  QueryResult := Database.RecordSets[ResultIdentifier];
 	if QueryResult.RecordCount > 0 then
   begin
     for Index := 0 to QueryResult.RecordCount - 1 do
@@ -408,7 +428,7 @@ begin
     end;
   end;
 	Result := ACharacterList;
-	if Assigned(QueryResult) then QueryResult.Free;
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 //-----------------------------------------------------------------------------
 
@@ -426,12 +446,14 @@ end;
 function TJanSQLDatabase.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
 var
 	QueryResult : TJanRecordSet;
+  ResultIdentifier : Integer;
 begin
-	QueryResult :=
+	ResultIdentifier :=
 			SendQuery(
 			Format('SELECT * FROM characters WHERE char_num = %d and account_id = %d',[Slot, AccountID]));
+  QueryResult := Database.RecordSets[ResultIdentifier];
 	Result := (QueryResult.RecordCount > 0);
-	if Assigned(QueryResult) then QueryResult.Free;
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 //------------------------------------------------------------------------------
 
@@ -449,24 +471,28 @@ end;
 function TJanSQLDatabase.CharaExists(Name : String) : Boolean;
 var
 	QueryResult : TJanRecordSet;
+  ResultIdentifier : Integer;
 begin
-	QueryResult :=
+	ResultIdentifier :=
 			SendQuery(
 			Format('SELECT name FROM characters WHERE name = %s',[Name]));
+  QueryResult := Database.RecordSets[ResultIdentifier];
 	Result := (QueryResult.RecordCount > 0);
-	if Assigned(QueryResult) then QueryResult.Free;
+  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 //------------------------------------------------------------------------------
 
 function TJanSQLDatabase.AccountExists(UserName : String) : Boolean;
 var
 	QueryResult : TJanRecordSet;
+  ResultIdentifier : Integer;
 begin
-	QueryResult :=
+	ResultIdentifier :=
 		SendQuery(
 			Format('SELECT userid FROM accounts WHERE userid = ''%s''',[UserName]));
+  QueryResult := Database.RecordSets[ResultIdentifier];
 	Result := (QueryResult.recordcount > 0);
-	if Assigned(QueryResult) then QueryResult.Free;
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 
 //------------------------------------------------------------------------------
@@ -497,6 +523,7 @@ const
 		'WHERE account_id=%d;';
 var
 	QueryString : string;
+  ResultIdentifier : Integer;
 begin
 	QueryString :=
 		Format(BaseString,
@@ -513,7 +540,8 @@ begin
 			 AnAccount.LastIP,
 			 AnAccount.ID]
 		);
-	SendQuery(QueryString);
+	ResultIdentifier := SendQuery(QueryString);
+  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 //------------------------------------------------------------------------------
 
@@ -531,6 +559,7 @@ end;
 procedure TJanSQLDatabase.SaveChara(AChara : TCharacter);
 var
 	QueryString : string;
+  ResultIdentifier : Integer;
 begin
 	with AChara do
 	begin
@@ -632,7 +661,8 @@ begin
 			CID
 			]);
 	end;
-	SendQuery(QueryString);
+	ResultIdentifier := SendQuery(QueryString);
+  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//SaveChara
 //------------------------------------------------------------------------------
 
@@ -655,21 +685,24 @@ function TJanSQLDatabase.CreateChara(
 ) : boolean;
 var
 	QueryResult : TJanRecordSet;
+  ResultIdentifier : Integer;
 begin
 	Result := FALSE;
-	SendQuery(
+	ResultIdentifier := SendQuery(
 		Format('INSERT INTO characters (account_id, name) VALUES(%d, %s);',
 		[AID,NName]));
-	QueryResult :=
+  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+	ResultIdentifier :=
 		SendQuery(
 		Format('SELECT char_id FROM characters WHERE account_id = %d AND name = %s;',
 		[AID,NName]));
+  QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
 	begin
 		ACharacter := GetChara(StrToInt(QueryResult.Records[0].Fields[0].value));
 		Result := Assigned(ACharacter);
 	end;
-	if Assigned(QueryResult) then QueryResult.Free;
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//CreateChara
 //------------------------------------------------------------------------------
 
@@ -678,10 +711,14 @@ procedure TJanSQLDatabase.CreateAccount(
 	const Password : string;
 	const GenderChar : char
 );
+var
+  ResultIdentifier : Integer;
 begin
-	SendQuery(
+
+	ResultIdentifier := SendQuery(
 		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(%s, %s, %s);',
 		[Username,Password,GenderChar]));
+  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 
 //------------------------------------------------------------------------------
@@ -698,11 +735,13 @@ function TJanSQLDatabase.LoadChara(CharaID : Cardinal) : TCharacter;
 var
 	APoint      : TPoint;
 	QueryResult : TJanRecordSet;
+  ResultIdentifier : Integer;
 begin
-	QueryResult :=
+	ResultIdentifier :=
 		SendQuery(
 		Format('SELECT * FROM characters WHERE char_id = %d;',
 			[CharaID]));
+  QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) and (QueryResult.fieldcount = 48) then
 	begin
 		with Result do
@@ -768,7 +807,7 @@ begin
 			DataChanged := false;
 		end;
 	end else Result := nil;
-	if Assigned(QueryResult) then QueryResult.Free;
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//LoadChara
 //------------------------------------------------------------------------------
 
@@ -784,8 +823,10 @@ end;//LoadChara
 //
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.DeleteChara(var ACharacter : TCharacter) : boolean;
+var
+  ResultIdentifier : Integer;
 begin
-	SendQuery(
+	ResultIdentifier := SendQuery(
 		Format('DELETE FROM characters WHERE char_id=%d',[ACharacter.CID]));
 
 		CharacterList.Delete(
@@ -794,6 +835,7 @@ begin
 		ACharacter.Account.CharaID[ACharacter.CharaNum] := 0;
 		ACharacter.Free;
     Result := TRUE;
+  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//DeleteChara
 //------------------------------------------------------------------------------
 
@@ -809,9 +851,16 @@ end;//DeleteChara
 //
 //------------------------------------------------------------------------------
 procedure TJanSQLDatabase.GetAccountBanAndConnectTime(var AnAccount : TAccount);
+var
+  ResultIdentifier : Integer;
+  QueryResult : TJanRecordSet;
 begin
-	//Bleh...might as well RELOAD.
-	AnAccount := Self.GetAccount(AnAccount.ID);
+  ResultIdentifier := SendQuery(
+		Format('SELECT connect_until, ban_until FROM accounts WHERE account_id=%d',[AnAccount.ID]));
+  QueryResult := Database.RecordSets[ResultIdentifier];
+  AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.records[0].fields[0].Value);
+  AnAccount.Bantime := ConvertMySQLTime(QueryResult.records[0].fields[1].Value);
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetAccountBanAndConnectTime
 //------------------------------------------------------------------------------
 
@@ -828,16 +877,18 @@ end;//GetAccountBanAndConnectTime
 Function TJanSQLDatabase.GetBaseHP(ACharacter : TCharacter) : Cardinal;
 var
 	QueryResult : TJanRecordSet;
+  ResultIdentifier : Integer;
 begin
-	QueryResult :=
+	ResultIdentifier :=
 		SendQuery(
 		Format('SELECT * FROM hp WHERE level = %d, job = %s ;',
 			[ACharacter.BaseLV,ACharacter.JID]));
+  QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
 	begin
 			Result              := StrToInt(QueryResult.Records[0].Fields[0].value);
 	end else Result := 0;
-	if Assigned(QueryResult) then QueryResult.Free;
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetBaseHP
 //------------------------------------------------------------------------------
 
@@ -855,16 +906,18 @@ end;//GetBaseHP
 Function TJanSQLDatabase.GetBaseSP(ACharacter : TCharacter) : Cardinal;
 var
 	QueryResult : TJanRecordSet;
+  ResultIdentifier : Integer;
 begin
-	QueryResult :=
+	ResultIdentifier :=
 		SendQuery(
 		Format('SELECT * FROM sp WHERE level = %d, job = %s ;',
 			[ACharacter.BaseLV,ACharacter.JID]));
+  QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
 	begin
 			Result              := StrToInt(QueryResult.Records[0].Fields[0].Value);
 	end else Result := 0;
-	if Assigned(QueryResult) then QueryResult.Free;
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetBaseSP
 //------------------------------------------------------------------------------
 

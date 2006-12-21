@@ -31,15 +31,15 @@ type
 //------------------------------------------------------------------------------
 	TMainProc = class(TComponent)
 	public
-		Run         : Boolean;
+		Run : Boolean;
 
-		LoginServer : TLoginServer;
+		LoginServer 		: TLoginServer;
 		CharacterServer : TCharacterServer;
-		ZoneServer  : TZoneServer;
-		InterServer : TInterServer;
+		ZoneServer  		: TZoneServer;
+		InterServer 		: TInterServer;
 
-    AGameDatabase      : TDatabase;
-    ACommonDatabase    : TDatabase;
+		AGameDatabase		: TDatabase;
+		ACommonDatabase	: TDatabase;
 
 		procedure Console(Line : string);
 
@@ -254,7 +254,7 @@ begin
 			Console('  '+ThirdParty.Strings[LineIndex]);
 		end;
 		ThirdParty.Free;
-	end
+	end;
 end;{TMainProc.ThirdPartyCredits}
 //------------------------------------------------------------------------------
 
