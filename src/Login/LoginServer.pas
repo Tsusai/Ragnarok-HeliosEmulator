@@ -18,6 +18,7 @@ interface
 uses
   IdTCPServer,
   IdContext,
+  IdSys,
   PacketTypes,
   Account;
 type
@@ -32,6 +33,8 @@ type
     TCPServer     : TIdTCPServer;
     Procedure OnExecute(AConnection: TIdContext);
     Procedure OnConnect(AConnection: TIdContext);
+    Procedure OnException(AConnection: TIdContext;
+      AException: Exception);
 
     Procedure ParseLogin(AClient: TIdContext);
     Procedure SendLoginError(const AClient: TIdContext; const Error : byte);
@@ -93,7 +96,7 @@ begin
 
   TCPServer.OnExecute   := OnExecute;
 	TCPServer.OnConnect   := OnConnect;
-	TCPServer.OnException := MainProc.ServerException;
+	TCPServer.OnException := OnException;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -182,6 +185,29 @@ procedure TLoginServer.OnConnect(AConnection: TIdContext);
 begin
 	MainProc.Console('Connection from ' + AConnection.Connection.Socket.Binding.PeerIP);
 end;{LoginServerConnect}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//OnException                                                             EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			Handles Socket exceptions gracefully by outputting the exception message
+//    and then disconnecting the client.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+procedure TLoginServer.OnException(AConnection: TIdContext;
+	AException: Exception);
+begin
+	if AnsiContainsStr(AException.Message, IntToStr(10053)) or
+		AnsiContainsStr(AException.Message, IntToStr(10054))
+	then begin
+		AConnection.Connection.Disconnect;
+	end;
+end;{OnException}
 //------------------------------------------------------------------------------
 
 

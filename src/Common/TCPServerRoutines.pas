@@ -1,9 +1,22 @@
+//------------------------------------------------------------------------------
+//TCPServerRoutines                                                        UNIT
+//------------------------------------------------------------------------------
+//	What it does-
+//			Holds our Common Server Routines.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 unit TCPServerRoutines;
 
 interface
 uses
 	IdTCPServer,
-	IdTCPClient;
+	IdTCPClient,
+	IdContext,
+	IdException,
+  IdSys;
 
 	function ActivateServer(Name : string; var AServer : TIdTCPServer) : Boolean;
 	procedure DeActivateServer(var AServer : TIdTCPServer);
@@ -14,11 +27,20 @@ uses
 implementation
 uses
 	SysUtils,
+  StrUtils,
 	Classes,
-	Console,
-	IdContext,
-	IdException;
+	Console;
 
+//------------------------------------------------------------------------------
+//ActivateServer                                                       FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Activates a TCP server.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function ActivateServer(Name : string; var AServer : TIdTCPServer) : boolean;
 Const
 	PORT_ERR =
@@ -45,8 +67,20 @@ begin
 		end;
 	end;
 	MainProc.Console(Format(LOADED, [Name]));
-end;
+end;{ActivateServer}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//DeActivateServer                                                    PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Deactivates a server.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure DeActivateServer(var AServer : TIdTCPServer);
 var
 	List : TList;
@@ -79,8 +113,20 @@ begin
 		end;
 		AServer.Bindings.Clear;
 	end;
-end;
+end;{DeActivateServer}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ActivateClient                                                       FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Activates a client.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function ActivateClient(var AClient : TIdTCPClient) : boolean;
 begin
 	if not Assigned(AClient) then
@@ -88,8 +134,20 @@ begin
 		AClient := TIdTCPClient.Create;
 	end;
 	Result := true;
-end;
+end;{ActivateClient}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//DeactivateClient                                                     FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Deactivates a client.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure DeActivateClient(var AClient : TIdTCPClient);
 begin
 	If Assigned(AClient) then
@@ -99,5 +157,6 @@ begin
 			AClient.Disconnect;
 		end;
 	end;
-end;
+end;{DeActivateClient}
+//------------------------------------------------------------------------------
 end.

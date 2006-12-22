@@ -1,13 +1,13 @@
-(*------------------------------------------------------------------------------
-Class Character
-Tsusai July 2006
-
-Description:
- Basic character object.
-
-[2006/07/08] RaX - Moved into the 'Classes' Directory and renamed to
- 'Character.pas'. One class per file is the name of the game.
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//Character                                                                UNIT
+//------------------------------------------------------------------------------
+//	What it does-
+//			Holds our TCharacter Class
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 unit Character;
 
 interface
@@ -20,6 +20,9 @@ uses
 	//Third Party
 	IdContext;
 
+//------------------------------------------------------------------------------
+//TCharacter                                                          PROCEDURE
+//------------------------------------------------------------------------------
 	type TCharacter = class
 	private
 		fCharacterNumber  : Byte;
@@ -164,7 +167,8 @@ uses
 
 		procedure CalcMaxHP;
 
-	end;
+	end;{TCharacter}
+//------------------------------------------------------------------------------
 
 implementation
 uses
@@ -173,6 +177,16 @@ uses
 	//Helios
 	;
 
+//------------------------------------------------------------------------------
+//SetSaveTime                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the last time the character was saved to the database.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetSaveTime(Value : boolean);
 Const
 	HoursPerDay   = 24;
@@ -184,249 +198,778 @@ begin
 		fDataChanged  := TRUE;
 		fTimeToSave   := ((Now * MinsPerDay) + MinInterval) / MinsPerDay;
 	end;
-end;
+end;{SetSaveTime}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetCharaNum                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the CharaNum to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetCharaNum(Value : byte);
 begin
 	DataChanged       := TRUE;
 	fCharacterNumber  := Value;
-end;
+end;{SetCharaNum}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetName                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Name to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetName(Value : string);
 begin
 	DataChanged := TRUE;
 	fName       := Value;
-end;
+end;{SetName}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetClass                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Class to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetClass(Value : Word);
 begin
 	DataChanged := TRUE;
 	fJID        := Value;
-end;
+end;{SetClass}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetBaseLV                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the BaseLV  to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetBaseLV(Value : byte);
 begin
 	DataChanged := TRUE;
 	fBaseLV     := Value;
-end;
+end;{SetBaseLV}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetJobLV                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Name to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetJobLV(Value : byte);
 begin
 	DataChanged := TRUE;
 	fJobLV      := Value;
-end;
+end;{SetJobLV}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetBaseEXP                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the BaseEXP to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetBaseEXP(Value : byte);
 begin
 	DataChanged := TRUE;
 	fBaseEXP    := Value;
-end;
+end;{SetBaseEXP}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetJobEXP                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets JobEXP to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetJobEXP(Value : byte);
 begin
 	DataChanged := TRUE;
 	fJobEXP     := Value;
-end;
+end;{SetJobEXP}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetZeny                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Zeny to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetZeny(Value : Cardinal);
 begin
 	DataChanged := TRUE;
 	fZeny       := Value;
-end;
+end;{SetZeny}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetBaseStats                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets the base stat at Index.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TCharacter.GetBaseStats(Index : Byte) : Byte;
 begin
 	Result := fParamBase[Index];
-end;
+end;{GetBaseStats}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetBaseStats                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets Base Stat at Index to Value.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetBaseStats(Index, Value: Byte);
 begin
 	DataChanged       := TRUE;
 	fParamBase[Index] := Value;
-end;
+end;{SetBaseStats}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetMaxHP                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the MaxHP to Value.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetMaxHP(Value : word);
 begin
 	DataChanged := TRUE;
 	fMaxHP      := Value;
-end;
+end;{SetMaxHP}
+//------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//SetHP                                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the HP to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetHP(Value : word);
 begin
 	DataChanged := TRUE;
 	fHP         := Value;
-end;
+end;{SetHP}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetMaxSP                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the MaxSP to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetMaxSP(Value : word);
 begin
 	DataChanged := TRUE;
 	fMaxSP      := Value;
-end;
+end;{SetMaxSP}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetName                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the SP to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetSP(Value : word);
 begin
 	DataChanged := TRUE;
 	fSP         := Value;
-end;
+end;{SetSP}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetStatusPts                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the StatusPoints to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetStatusPts(Value : Word);
 begin
 	DataChanged := TRUE;
 	fStatusPts  := Value;
-end;
+end;{SetStatusPts}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetSkillPts                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the SkillPoints to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetSkillPts(Value : Word);
 begin
 	DataChanged := TRUE;
 	fSkillPts   := Value;
-end;
+end;{SetSkillPts}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetOption                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Option to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetOption(Value : word);
 begin
 	DataChanged := TRUE;
 	fOption     := Value;
-end;
+end;{SetOption}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetKarma                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Karma to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetKarma(Value : word);
 begin
 	DataChanged := TRUE;
 	fKarma      := Value;
-end;
+end;{SetName}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetManner                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Manner to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetManner(Value : word);
 begin
 	DataChanged := TRUE;
 	fManner     := Value;
-end;
+end;{SetManner}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetPartyID                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the PartyID to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetPartyID(Value : cardinal);
 begin
 	DataChanged := TRUE;
 	fPartyID    := Value;
-end;
+end;{SetPartyID}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetGuildID                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the GuildID to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetGuildID(Value : cardinal);
 begin
 	DataChanged := TRUE;
 	fGuildID    := Value;
-end;
+end;{SetGuildID}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetPetID                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the PetID to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetPetID(Value : cardinal);
 begin
 	DataChanged := TRUE;
 	fPetID      := Value;
-end;
+end;{SetPetID}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetHair                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Hair to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetHair(Value : word);
 begin
 	DataChanged := TRUE;
 	fHair       := Value;
-end;
+end;{SetHair}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetHairColor                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the HairColor to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetHairColor(Value : word);
 begin
 	DataChanged := TRUE;
 	fHairColor  := Value;
-end;
+end;{SetHairColor}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetClothesColor                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the ClothesColor to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetClothesColor(Value : word);
 begin
 	DataChanged   := TRUE;
 	fClothesColor := Value;
-end;
+end;{SetClothesColor}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetWeapon                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Weapon to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetWeapon(Value : word);
 begin
 	DataChanged := TRUE;
 	fWeapon     := Value;
-end;
+end;{SetWeapon}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetShield                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Shield to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetShield(Value : word);
 begin
 	DataChanged := TRUE;
 	fShield     := Value;
-end;
+end;{SetShield}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetHeadTop                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the HeadTop to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetHeadTop(Value : word);
 begin
 	DataChanged := TRUE;
 	fHeadTop    := Value;
-end;
+end;{SetHeadTop}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetHeadMid                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the HeadMid to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetHeadMid(Value : word);
 begin
 	DataChanged := TRUE;
 	fHeadMid    := Value;
-end;
+end;{SetHeadMid}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetHeadBottom                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the HeadBottom to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetHeadBottom(Value : word);
 begin
 	DataChanged := TRUE;
 	fHeadBottom := Value;
-end;
+end;{SetHeadBottom}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetMap                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Map to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetMap(Value : string);
 begin
 	DataChanged := TRUE;
 	fMap        := Value;
-end;
+end;{SetMap}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetMapPt                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the MapPt to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetMapPt(Value : TPoint);
 begin
 	DataChanged := TRUE;
 	fMapPt      := Value;
-end;
+end;{SetMapPt}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetSMap                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the SMap(SaveMap) to Value. Also, lets our object know that data
+//    has changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetSMap(Value : string);
 begin
 	DataChanged := TRUE;
 	fSaveMap    := Value;
-end;
+end;{SetSMap}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetSMapPt                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the SMapPt to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetSMapPt(Value : TPoint);
 begin
 	DataChanged := TRUE;
 	fSaveMapPt  := Value;
-end;
+end;{SetSMapPt}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetPartnerID                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the PartnerID to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetPartnerID(Value : Cardinal);
 begin
 	DataChanged := TRUE;
 	fPartnerID  := Value;
-end;
+end;{SetPartnerID}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetParentID                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the ParentID to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetParentID1(Value : Cardinal);
 begin
 	DataChanged := TRUE;
 	fParentID1  := Value;
-end;
+end;{SetParentID}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetParentID2                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the ParentID2 to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetParentID2(Value : Cardinal);
 begin
 	DataChanged := TRUE;
 	fParentID2  := Value;
-end;
+end;{SetParentID2}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetBabyID                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the BabyID to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetBabyID(Value : Cardinal);
 begin
 	DataChanged := TRUE;
 	fBabyID     := Value;
-end;
+end;{SetBabyID}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetOnline                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Online to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetOnline(Value : Byte);
 begin
 	DataChanged := TRUE;
 	fOnline     := Value;
-end;
+end;{SetOnline}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetHomunID                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the HomunID to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetHomunID(Value : Cardinal);
 begin
 	DataChanged := TRUE;
 	fHomunID    := Value;
-end;
+end;{SetHomunID}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//CalcMaxHP                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Calculates teh character's Maximum HP.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxHP;
 begin
-end;
+end;{CalcMaxHP}
+//------------------------------------------------------------------------------
 
 end.

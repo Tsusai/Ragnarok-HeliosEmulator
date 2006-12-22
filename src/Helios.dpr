@@ -61,9 +61,8 @@ compile for linux, at the same time*}
 //------------------------------------------------------------------------------
 	{$IFDEF MSWINDOWS}
 	Account in 'Classes\Account.pas',
-	BufferIO in 'Common/BufferIO.pas',
+	BufferIO in 'Common\BufferIO.pas',
 	Character in 'Classes\Character.pas',
-	CharaList in 'Classes\CharaList.pas',
 	CharacterServer in 'Character\CharacterServer.pas',
 	Commands in 'Classes\Commands.pas',
 	Database in 'Classes\Database.pas',
@@ -112,7 +111,6 @@ compile for linux, at the same time*}
 	Account in 'Classes/Account.pas', 
 	BufferIO in 'Common/BufferIO.pas',
 	Character in 'Classes/Character.pas',
-	CharaList in 'Classes/CharaList.pas',
 	CharacterServer in 'Character/CharacterServer.pas',
 	Commands in 'Classes/Commands.pas',
 	Database in 'Classes/Database.pas',
@@ -169,7 +167,7 @@ compile for linux, at the same time*}
 //      which replaces the Main Form. This also gives us the option to make
 //      Helios log to a file instead of the screen by keeping all of our visual
 //      related routines in one place =).
-//    -HeliosVersion is located in Globals (only one place to change)
+//    -HeliosVersion is located in Version (only one place to change)
 //    -This routine contains the loop that keeps the application open. On
 //      termination of that loop, the program will shut down.
 

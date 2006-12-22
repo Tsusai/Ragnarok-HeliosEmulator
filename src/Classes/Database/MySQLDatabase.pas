@@ -15,7 +15,7 @@ interface
 uses
 	DatabaseTemplate,
 	Character,
-	CharaList,
+	List32,
 	Account,
 	uMysqlClient;
 type
@@ -56,7 +56,7 @@ type
 			const GenderChar : char
 		); override;
 
-		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
+		function GetAccountCharas(AccountID : Cardinal) : TIntList32;override;
 		function LoadChara(CharaID : Cardinal) : TCharacter;override;
 		function GetChara(CharaID : Cardinal) : TCharacter;override;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
@@ -373,14 +373,13 @@ end;
 //		December 18th, 2006 - Tsusai - Freed result.
 //
 //------------------------------------------------------------------------------
-function TMySQLDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
+function TMySQLDatabase.GetAccountCharas(AccountID : Cardinal) : TIntList32;
 var
 	QueryResult     : TMySQLResult;
 	Success         : Boolean;
-	ACharacterList  : TCharacterList;
 	Index           : Integer;
 begin
-	ACharacterList := TCharacterList.Create;
+	Result := TIntList32.Create;
 	QueryResult := SendQuery(
 		Format('SELECT char_id FROM characters WHERE account_id = %d and char_num < 9;',
 		[AccountID]),TRUE,Success);
@@ -390,7 +389,7 @@ begin
 		begin
 			for Index := 0 to QueryResult.RowsCount - 1 do
 			begin
-				ACharacterList.Add(GetChara(StrToInt(QueryResult.FieldValue(0))));
+				Result.AddObject(Index, GetChara(StrToInt(QueryResult.FieldValue(0))));
 				if Index < QueryResult.RowsCount then
 				begin
 					QueryResult.Next;
@@ -398,7 +397,6 @@ begin
 			end;
 		end;
 	end;
-	Result := ACharacterList;
 	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //-----------------------------------------------------------------------------
@@ -816,6 +814,7 @@ begin
 		CharacterList.Delete(
 			CharacterList.IndexOf(ACharacter.CID)
 		);
+    ACharacter.Free;
 	end;
 end;
 //------------------------------------------------------------------------------

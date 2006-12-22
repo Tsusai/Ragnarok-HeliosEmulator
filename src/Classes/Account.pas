@@ -1,19 +1,20 @@
-(*------------------------------------------------------------------------------
-Account
-Tsusai July 2006
-
-Description:
- The TAccount object and needed properties.
-
-[2006/07/08] Tsusai - TCharacter is now in CharacterTypes, adjusted units as
- needed.
-[2006/07/08] RaX - Moved to 'Classes' Directory and renamed to 'Account.pas'.
- One class per file is the name of the game.
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//Account                                                                  UNIT
+//------------------------------------------------------------------------------
+//	What it does-
+//			This holds the Account class.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 unit Account;
 
 interface
 
+//------------------------------------------------------------------------------
+//TACCOUNT                                                                CLASS
+//------------------------------------------------------------------------------
 	type TAccount = class
 	private
 		fGender       : Char;
@@ -44,7 +45,9 @@ interface
 		procedure SetBannedTime(TimeString : string);
 		procedure SetConnectUntilTime(TimeString : string);
 
-	end;
+	end;{TAccount}
+//------------------------------------------------------------------------------
+
 
 implementation
 uses
@@ -53,12 +56,17 @@ uses
 	Database,
 	Globals;
 
-(*------------------------------------------------------------------------------
-TAccount.SetGender
-
-Takes the Char from the SQL table (M or F) and figures out what to set GenderNum
- at.
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//SetGender                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Takes the Char from the SQL table (M or F) and figures out what to set
+//    GenderNum at.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TAccount.SetGender(Value : Char);
 begin
 	case Value of
@@ -70,9 +78,20 @@ begin
 		end;
 	end;
 	fGender := Value;
-end; (* proc TAccount.SetGender
-------------------------------------------------------------------------------*)
+end; {SetGender}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetBanned                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Checks to see if the account is banned.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TAccount.GetBanned : boolean;
 begin
 	MainProc.ACommonDatabase.AnInterface.GetAccountBanAndConnectTime(Self);
@@ -84,14 +103,38 @@ begin
 	begin
 		Result := true;
 	end;
-end;
+end;{GetBanned}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetBannedTime                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the time that a user will be banned until
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TAccount.SetBannedTime(TimeString : string);
 begin
 	Self.Bantime := ConvertMySQLTime(TimeString);
 	MainProc.ACommonDatabase.AnInterface.SaveAccount(self);
-end;
+end;{SetBannedTime}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetConnectUntilTime                                                  FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets the connectuntil time from the database.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TAccount.GetConnectUntilTime : boolean;
 begin
 	MainProc.ACommonDatabase.AnInterface.GetAccountBanAndConnectTime(Self);
@@ -104,12 +147,25 @@ begin
 		Result := false;
 	end;
 end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetConnectUntilTime                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Saves the connectuntil time to the database.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TAccount.SetConnectUntilTime(TimeString : string);
 begin
-	Self.Bantime := ConvertMySQLTime(TimeString);
+	Self.ConnectUntil := ConvertMySQLTime(TimeString);
 	MainProc.ACommonDatabase.AnInterface.SaveAccount(self);
-end;
+end;{SetConnectUntilTime}
+//------------------------------------------------------------------------------
 
 
 end.

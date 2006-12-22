@@ -15,7 +15,7 @@ interface
 uses
 	DatabaseTemplate,
 	Character,
-	CharaList,
+	List32,
 	Account,
 	janSQL;
 
@@ -56,7 +56,7 @@ type
 			const GenderChar : char
 		); override;
 
-		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
+		function GetAccountCharas(AccountID : Cardinal) : TIntList32;override;
 		function LoadChara(CharaID : Cardinal) : TCharacter;override;
 		function GetChara(CharaID : Cardinal) : TCharacter;override;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
@@ -413,14 +413,13 @@ end;
 //		December 18th, 2006 - Tsusai - QueryResult now freed.
 //
 //------------------------------------------------------------------------------
-function TJanSQLDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
+function TJanSQLDatabase.GetAccountCharas(AccountID : Cardinal) : TIntList32;
 var
 	QueryResult     : TJanRecordSet;
-	ACharacterList  : TCharacterList;
 	Index           : Integer;
   ResultIdentifier : Integer;
 begin
-	ACharacterList := TCharacterList.Create;
+	Result := TIntList32.Create;
 	ResultIdentifier := SendQuery(
 		Format('SELECT char_id FROM characters WHERE account_id = %d and char_num < 9',
 		[AccountID]));
@@ -431,12 +430,11 @@ begin
     begin
       for Index := 0 to QueryResult.RecordCount - 1 do
       begin
-			  ACharacterList.Add(GetChara(StrToInt(QueryResult.Records[Index].Fields[0].value)));
+			  Result.AddObject(Index,GetChara(StrToInt(QueryResult.Records[Index].Fields[0].value)));
       end;
     end;
  	  Database.ReleaseRecordset(ResultIdentifier);
   end;
-  Result := ACharacterList;
 end;
 //-----------------------------------------------------------------------------
 
@@ -865,6 +863,7 @@ begin
 		CharacterList.Delete(
 			CharacterList.IndexOf(ACharacter.CID)
 		);
+    ACharacter.Free;
     Result := TRUE;
   if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//DeleteChara

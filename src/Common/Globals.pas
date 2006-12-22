@@ -1,10 +1,13 @@
-(*------------------------------------------------------------------------------
-Globals
-Tsusai July 2006
-
-Description:
- Contains almost all Global variables and lists for the entire project
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//Globals                                                                  UNIT
+//------------------------------------------------------------------------------
+//	What it does-
+//			Makes a random string of length Count.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 unit Globals;
 
 interface
@@ -17,6 +20,7 @@ uses
 	//3rd Party
 	List32;
 
+
 	procedure InitGlobals;
 	procedure DestroyGlobals;
 	procedure TerminateApplication;
@@ -25,6 +29,9 @@ uses
 	function  MakeRNDString(Count: Integer): string;
 	function  ConvertMySQLTime(DateString: string) : TDateTime;
 
+//------------------------------------------------------------------------------
+//                              Global Variables
+//------------------------------------------------------------------------------
 var
 	Command         : TCommands;
 	CharaServerList : TStringList;
@@ -36,6 +43,8 @@ var
 	CharacterList   : TIntList32;
 
 	LastAccountID   : Integer;
+//------------------------------------------------------------------------------
+
 
 implementation
 	uses
@@ -48,27 +57,36 @@ implementation
 		//3rd Party
 		IdHashMessageDigest;
 
-(*------------------------------------------------------------------------------
-GetMD5
-
-Hash a string
-
-[2006/09/24] Tsusai - Added
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//GetMD5                                                               FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates a MD5 Hash from a string.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function GetMD5(const Input : UTF8string) : UTF8String;
 var
 	MD5Hash : TIdHashMessageDigest5;
 begin
 	MD5Hash := TIdHashMessageDigest5.Create;
 	Result := MD5Hash.AsHex(MD5Hash.HashValue(Input));
-end;
+end;{GetMD5}
+//------------------------------------------------------------------------------
 
-(*------------------------------------------------------------------------------
-InitGlobals
 
-Creates all needed global objects
-
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//InitGlobals                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Initializes our global variables.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure InitGlobals;
 begin
 	AccountList     := TStringList.Create;
@@ -84,14 +102,20 @@ begin
 		ServerConfig    := TServerOptions.Create('./' + ParamStr(1));
 	end;
 	ServerConfig.Load;
-end; (* proc InitGlobals
-------------------------------------------------------------------------------*)
+end; {InitGlobals}
+//------------------------------------------------------------------------------
 
-(*------------------------------------------------------------------------------
-DestroyGlobals
 
-Frees all global objects
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//DestroyGlobals                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Free's up our Globals variables.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure DestroyGlobals;
 begin
 	AccountList.Free;
@@ -99,9 +123,20 @@ begin
 	ServerConfig.Save;
 	ServerConfig.Free;
 	CharaServerList.Free;
-end; (* proc DestroyGlobals
-------------------------------------------------------------------------------*)
+end;{DestroyGlobals}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TerminateApplication                                                PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Kills our main process and free's it.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TerminateApplication;
 begin
 	KillTerminationCapturing;
@@ -109,8 +144,20 @@ begin
 	MainProc.Shutdown;
 	FreeAndNil(MainProc);
 	KillProcess;
-end;
+end;{TerminateApplication}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//MakeRNDString                                                       FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Makes a random string of length Count.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function MakeRNDString(Count: Integer): string;
 const
 	chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/';
@@ -123,8 +170,20 @@ begin
 		x := Length(chars) - Random(Length(chars));
 		Result := Result + chars[x];
 	end;
-end;
+end;{MakeRNDString}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ConvertMySQLTime                                                     FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Converts a MySQL Formatted Time into a TDateTime.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function ConvertMySQLTime(DateString: string) : TDateTime;
 var
 	Year, Month, Day, Hour, Min, Sec : word;
@@ -144,6 +203,7 @@ begin
 			Result := EncodeDateTime(Year, Month, Day, Hour, Min, Sec, 0);
 		end;
 	end;
-end;
+end;{ConvertMySQLTime}
+//------------------------------------------------------------------------------
 
 end.

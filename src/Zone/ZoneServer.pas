@@ -16,6 +16,7 @@ uses
   IdTCPServer,
   IdTCPClient,
   IdContext,
+  IdSys,
   PacketTypes,
   Character;
 
@@ -33,6 +34,8 @@ type
 
     Procedure OnExecute(AConnection: TIdContext);
     Procedure OnConnect(AConnection: TIdContext);
+    Procedure OnException(AConnection: TIdContext;
+      AException: Exception);
 
     procedure ProcessZonePacket(AClient : TIdContext);
     function  SearchPacketListing(var AChara : TCharacter; var AClient : TIdContext;
@@ -62,7 +65,6 @@ uses
 	BufferIO,
 	WinLinux,
   Console,
-  CharaList,
   Database,
   DatabaseTXT,
   Account,
@@ -71,6 +73,7 @@ uses
   TCPServerRoutines,
   ZoneRecv,
   //3rd
+  StrUtils,
   SysUtils,
   List32;
 
@@ -92,7 +95,7 @@ begin
 
   TCPServer.OnConnect   := OnConnect;
   TCPServer.OnExecute   := OnExecute;
-	TCPServer.OnException := MainProc.ServerException;
+	TCPServer.OnException := OnException;
 
 end;{Create}
 //------------------------------------------------------------------------------
@@ -149,6 +152,29 @@ procedure TZoneServer.OnConnect(AConnection: TIdContext);
 begin
 	AConnection.Data := TThreadLink.Create;
 end;{OnConnect}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//OnException                                                             EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			Handles Socket exceptions gracefully by outputting the exception message
+//    and then disconnecting the client.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+procedure TZoneServer.OnException(AConnection: TIdContext;
+	AException: Exception);
+begin
+	if AnsiContainsStr(AException.Message, IntToStr(10053)) or
+		AnsiContainsStr(AException.Message, IntToStr(10054))
+	then begin
+		AConnection.Connection.Disconnect;
+	end;
+end;{OnException}
 //------------------------------------------------------------------------------
 
 

@@ -14,9 +14,6 @@ unit Console;
 interface
 
 uses
-	IdTCPServer,
-	IdTCPClient,
-	IdContext,
 	SysUtils,
 	Classes,
   Database,
@@ -26,6 +23,7 @@ uses
   ZoneServer;
 
 type
+
 //------------------------------------------------------------------------------
 //TMainProc                                                               CLASS
 //------------------------------------------------------------------------------
@@ -46,9 +44,6 @@ type
 		procedure Startup;
 		procedure Shutdown;
 
-		procedure ServerException(AConnection: TIdContext;
-			AException: Exception);
-
 		procedure ThirdPartyCredits;
 
 		constructor Create(AOwner : TComponent); override;
@@ -56,17 +51,19 @@ type
 	end;{TMainProc}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//                            Published Variables
+//------------------------------------------------------------------------------
 var
 	MainProc : TMainProc;
+//------------------------------------------------------------------------------
+
 
 implementation
 uses
-	{Internal}
-	StrUtils,
 	{Helios}
 	Globals,
-	PacketTypes,
-	TCPServerRoutines,
 	WinLinux
 	{Third Party}
 	;
@@ -155,6 +152,7 @@ begin
 end;{TMainProc.Startup}
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 //TMainProc.Shutdown()                                             PROCEDURE
 //------------------------------------------------------------------------------
@@ -203,29 +201,6 @@ begin
 	DestroyGlobals;
 
 end;{TMainProc.Shutdown}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TMainProc.ServerException()                                             EVENT
-//------------------------------------------------------------------------------
-//	What it does-
-//			Handles Socket exceptions gracefully by outputting the exception message
-//    and then disconnecting the client.
-//
-//	Changes -
-//		September 19th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TMainProc.ServerException(AConnection: TIdContext;
-	AException: Exception);
-begin
-	if AnsiContainsStr(AException.Message, IntToStr(10053)) or
-		AnsiContainsStr(AException.Message, IntToStr(10054))
-	then begin
-		AConnection.Connection.Disconnect;
-	end;
-end;{TMainProc.ServerException}
 //------------------------------------------------------------------------------
 
 

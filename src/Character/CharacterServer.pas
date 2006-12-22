@@ -19,6 +19,7 @@ uses
   IdTCPServer,
   IdTCPClient,
   IdContext,
+  IdSys,
   PacketTypes;
 type
 //------------------------------------------------------------------------------
@@ -34,6 +35,8 @@ type
     ToLoginTCPClient: TIdTCPClient;
 		Procedure SetIPCardinal(Value : string);
 		Procedure OnExecute(AConnection: TIdContext);
+    Procedure OnException(AConnection: TIdContext;
+      AException: Exception);
 
     procedure ParseCharaServ(AClient : TIdContext);
     procedure SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
@@ -66,13 +69,14 @@ uses
 	WinLinux,
   Console,
   Character,
-  CharaList,
 	Database,
   Account,
   GameConstants,
   Globals,
   TCPServerRoutines,
   //3rd
+  SysUtils,
+  StrUtils,
   List32;
 
 const
@@ -94,9 +98,8 @@ const
 Constructor TCharacterServer.Create;
 begin
   TCPServer := TIdTCPServer.Create;
-
   TCPServer.OnExecute   := OnExecute;
-	TCPServer.OnException := MainProc.ServerException;
+	TCPServer.OnException := OnException;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -134,6 +137,29 @@ procedure TCharacterServer.OnExecute(AConnection: TIdContext);
 begin
 	ParseCharaServ(AConnection);
 end;{OnExecute}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//OnException                                                             EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			Handles Socket exceptions gracefully by outputting the exception message
+//    and then disconnecting the client.
+//
+//	Changes -
+//		September 19th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+procedure TCharacterServer.OnException(AConnection: TIdContext;
+	AException: Exception);
+begin
+	if AnsiContainsStr(AException.Message, IntToStr(10053)) or
+		AnsiContainsStr(AException.Message, IntToStr(10054))
+	then begin
+		AConnection.Connection.Disconnect;
+	end;
+end;{OnException}
 //------------------------------------------------------------------------------
 
 
@@ -198,7 +224,7 @@ var
 	Count       : Byte;
 	PacketSize  : Word;
 	Ver         : Byte;
-  ACharaList  : TCharacterList;
+  ACharaList  : TIntList32;
 begin
 	Count     := 0;
 	Ver       := 24;
@@ -220,7 +246,7 @@ begin
 				ACharaList := MainProc.AGameDatabase.AnInterface.GetAccountCharas(AccountID);
 				for Index := 0 to ACharaList.Count-1 do
 				begin
-					ACharacter := ACharaList.List[Index];
+					ACharacter := TCharacter(ACharaList.Objects[Index]);
 					if not (ACharacter = NIL) then
 					begin
 						with ACharacter do
@@ -280,7 +306,7 @@ begin
 			SendBuffer(AClient,ReplyBuffer,PacketSize);
 		end;
 	end;
-end; //SendCharas
+end; {SendCharas}
 //------------------------------------------------------------------------------
 
 
@@ -298,7 +324,7 @@ end; //SendCharas
 procedure TCharacterServer.SendCharaToMap();
 begin
 
-end;
+end;{SendToMap}
 //------------------------------------------------------------------------------
 
 
@@ -311,8 +337,8 @@ end;
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
-//    July 6th, 2006 - Tsusai - Started work on changing dummy procedure to real
-//      procedure.
+//    July      6th, 2006 - Tsusai - Started work on changing dummy procedure to
+//      real procedure.
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.CreateChara(
@@ -446,7 +472,7 @@ begin
 	begin
 		CreateCharaError(INVALIDNAME);
 	end;
-end;//CreateChara
+end;{CreateChara}
 //------------------------------------------------------------------------------
 
 
@@ -500,7 +526,7 @@ begin
 			end else DeleteCharaError(DELETEBADCHAR);
 		end else DeleteCharaError(DELETEBADCHAR);
 	end else DeleteCharaError(DELETEBADEMAIL);
-end;//DeleteChara
+end;{DeleteChara}
 //------------------------------------------------------------------------------
 
 
@@ -562,7 +588,7 @@ begin
 			end;
 		end;
 	end;
-end; //Proc ParseCharaServ
+end; {ParseCharaServ}
 //------------------------------------------------------------------------------
 
 
@@ -583,7 +609,7 @@ procedure TCharacterServer.SetIPCardinal(Value : string);
 begin
 	fIP         := GetIPStringFromHostname(Value);
 	IPCardinal  := GetCardinalFromIPString(fIP);
-end; //proc SetIPCardinal
+end; {SetIPCardinal}
 //------------------------------------------------------------------------------
 
 
@@ -602,7 +628,7 @@ Procedure TCharacterServer.SetPort(Value : Word);
 begin
   fPort := Value;
   TCPServer.DefaultPort := Value;
-end;//SetPort
+end;{SetPort}
 //------------------------------------------------------------------------------
 
 end.

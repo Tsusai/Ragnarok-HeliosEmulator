@@ -1,4 +1,14 @@
-//special ifdef unit....keeps rest of code clean
+//------------------------------------------------------------------------------
+//WinLinux                                                                 UNIT
+//------------------------------------------------------------------------------
+//	What it does-
+//			This keeps our code clean. Certain operating systems need certain
+//    things.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 unit WinLinux;
 
 interface
@@ -35,12 +45,33 @@ uses
 	Version,
 	Globals;
 
-
+//------------------------------------------------------------------------------
+//GetCardinalFromIPString                                              FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets a cardinal IP value from an IP in string form.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	function GetCardinalFromIPString(IPString : string) : Cardinal;
 	begin
 		Result := Cardinal(inet_addr(PChar(IPString)));
 	end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetIPStringFromHostname                                              FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Returns an IP from a hostname.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	function GetIPStringFromHostname(Hostname : string) : string;
 	var
 		h: PHostEnt;
@@ -58,7 +89,20 @@ uses
 			Result := '0.0.0.0'
 		end;
 	end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ConProc                                                              STDCALL
+//------------------------------------------------------------------------------
+//	What it does-
+//			Checks to see if windows is trying to terminate Helios, if it is it
+//    shuts itself down.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	{$IFDEF MSWINDOWS}
 	function ConProc(CtrlType : DWord) : Bool; stdcall; far;
 	begin
@@ -70,9 +114,22 @@ uses
 				TerminateApplication;
 			end;
 		Result := true;
-	end;
+	end;{ConProc}
 	{$ENDIF}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetupTerminationCapturing                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets us up to shutdown helios normally when windows or linux tries to
+//    kill it.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure SetupTerminationCapturing;
 	begin
 		{$IFDEF MSWINDOWS}
@@ -84,15 +141,39 @@ uses
 		Signal(SIGTERM,@TerminateApplication);
 		Signal(SIGKILL,@TerminateApplication);
 		{$ENDIF}
-	end;
+	end;{SetupTerminationCapturing}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//KillTerminationCapturing                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Removes termination capturing from our executeable.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure KillTerminationCapturing;
 	begin
 		{$IFDEF MSWINDOWS}
 		SetConsoleCtrlHandler(@ConProc,False);
 		{$ENDIF}
-	end;
+	end;{KillTerminationCapturing}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//KillProcess                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Kills the Helios Process.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure KillProcess;
 	begin
 		{$IFDEF MSWINDOWS}
@@ -101,8 +182,20 @@ uses
 		{$IFDEF LINUX}
 		kill(getpid,3);
 		{$ENDIF}
-	end;
+	end;{KillProcess}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetTick                                                              FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets current time in milliseconds since system start.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	function GetTick : cardinal;
 	{$IFDEF LINUX}
 	var
@@ -116,6 +209,7 @@ uses
 		sysinfo(LinuxInfo);
 		Result := LinuxInfo.uptime;
 		{$ENDIF}
-	end;
+	end;{GetTick}
+  //----------------------------------------------------------------------------
 
 end.

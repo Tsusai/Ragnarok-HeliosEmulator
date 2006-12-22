@@ -13,6 +13,13 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 77-
+[2006/12/22] - RaX - Confusion on my part, NOW the characterlist bug is fixed with no leaks
+[2006/12/22] - RaX - Updated headers in all files.
+[2006/12/22] - RaX - Moved ServerException into each of the server classes.
+[2006/12/22] - RaX - Cleaned up uses in Console.pas.
+-
+
 - Rev 76-
 [2006/12/21] - RaX - Fixed CharacterList Corruption bug. We were free'ing ACharacter after
  it was already free'd in CharacterList.Delete which caused a crash.(JanSQLDatabase,
