@@ -816,8 +816,6 @@ begin
 		CharacterList.Delete(
 			CharacterList.IndexOf(ACharacter.CID)
 		);
-		ACharacter.Account.CharaID[ACharacter.CharaNum] := 0;
-		ACharacter.Free;
 	end;
 end;
 //------------------------------------------------------------------------------

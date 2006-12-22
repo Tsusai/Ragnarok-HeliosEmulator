@@ -865,8 +865,6 @@ begin
 		CharacterList.Delete(
 			CharacterList.IndexOf(ACharacter.CID)
 		);
-		ACharacter.Account.CharaID[ACharacter.CharaNum] := 0;
-		ACharacter.Free;
     Result := TRUE;
   if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//DeleteChara
