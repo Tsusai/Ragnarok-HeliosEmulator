@@ -4,7 +4,7 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 
 -Tsusai Aug 6, 2006
 
-//packet_db.txt “¯‚¶”Ô†‚ÌƒpƒPƒbƒg‚ÍŒã‚Ì‚Åã‘‚«‚³‚ê‚é‚Ì‚Å•ÏX‚Ì‚ ‚Á‚½ƒpƒPƒbƒg‚Íˆê”Ô‰º‚É’Ç‰Á‚·‚ê‚Î‚æ‚¢‚Å‚·
+//packet_db.txt “¯‚¶”Ô†‚ÌƒpƒPƒbƒg‚ÍŒã‚Ì‚Åã‘‚«‚³‚ê‚é‚Ì‚Å•ÏX‚Ì‚ ‚Á‚½ƒpƒPƒbƒg‚Íˆê”Ô‰º‚É’Ç‰Á‚·‚ê‚Î‚æ‚¢‚Å‚·
 //ŒÃ‚¢ƒpƒPƒbƒg‚Åg‚¢‚½‚¢ê‡‚ÍV‚µ‚¢’è‹`‚ğíœ‚·‚é‚©ƒRƒƒ“ƒgƒAƒEƒg‚·‚ê‚Î‚æ‚¢‚Å‚·
 0x0064,55
 0x0065,17
@@ -534,7 +534,7 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x0272,44
 0x0273,30
 0x0274,8
-
+ 
 //2005-06-28aSakexe
 0x009b,32,wanttoconnection,9:15:23:27:31
 0x0089,13,ticksend,9
@@ -554,7 +554,7 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x0072,34,useskilltoid,6:17:30
 0x007e,113,useskilltopos,12:15:18:31:33
 0x0113,33,useskilltopos,12:15:18:31
-
+ 
 //2005-11-29aSakexe
 0x023f,2,refleshmailbox,0
 0x0241,6,readmail,2
@@ -563,8 +563,8 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x0246,4,mailwinopen,2
 0x0247,8,sendmailsetappend,2,4
 0x0248,-1,sendmail,2:4:28:69
-
-//2006-04-04aSakexe by blackhole89
+ 
+//2006-04-03aSakexe by blackhole89
 //fix&add: lkm and thanks free report some error
 0x0072,26,useskilltoid,11:18:22
 0x007e,120,useskilltopos,5:15:29:38:40
@@ -583,6 +583,54 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x0113,40,useskilltopos,5:15:29:38
 0x0190,18,actionrequest,7:17
 0x0193,2,closekafra,0
-
+ 
+//2006-06-07aSakexe
+0x025F,6
+0x0260,6
+0x0261,11
+0x0262,11
+0x0263,11
+0x0264,14
+0x0265,20
+0x0266,30
+0x0267,4
+0x0268,4
+0x0269,4
+0x026A,4
+0x026B,4
+0x026C,4
+0x026D,4
+0x026F,2
+0x0270,2
+0x0271,40
+0x0272,44
+0x0273,30
+0x0274,8
+0x0277,84
+0x0278,2
+0x0279,2
+0x027A,-1
+ 
 //2006-07-03aSakexe
-0x027c,60
+0x027D,62
+0x027B,14
+0x027C,60
+ 
+//2006-07-24aSakexe
+0x027E,-1
+ 
+//2006-08-07aSakexe
+0x025B,6
+ 
+//2006-09-18aSakexe
+0x0284,14
+0x0281,4
+0x0282,284
+0x0280,12
+0x0285,6
+0x0286,4
+0x027F,8
+0x0283,6
+ 
+//2006-10-17aSakexe
+0x028A,18

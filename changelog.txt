@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 79 -
+[2006/12/23] - RaX - Added Updated jAthena Packet_db. Fully updated.
+-
+
 - Rev 78 -
 [2006/12/22] - RaX - Added GetPacketLength to TCPServerRoutines.
 -
