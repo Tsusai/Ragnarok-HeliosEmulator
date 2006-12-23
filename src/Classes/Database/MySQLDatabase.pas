@@ -15,7 +15,7 @@ interface
 uses
 	DatabaseTemplate,
 	Character,
-	List32,
+	CharaList,
 	Account,
 	uMysqlClient;
 type
@@ -56,7 +56,7 @@ type
 			const GenderChar : char
 		); override;
 
-		function GetAccountCharas(AccountID : Cardinal) : TIntList32;override;
+		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
 		function LoadChara(CharaID : Cardinal) : TCharacter;override;
 		function GetChara(CharaID : Cardinal) : TCharacter;override;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
@@ -264,7 +264,7 @@ begin
 		end;
 	end;
 
-	QueryResult := SendQuery('SELECT * FROM accounts WHERE account_id = "'+IntToStr(ID)+'";',true,Success);
+	QueryResult := SendQuery('SELECT * FROM accounts WHERE account_id = '''+IntToStr(ID)+'''',true,Success);
 	if Success and (QueryResult.RowsCount = 1) then begin
 		if Not Assigned(Result) then
 		begin
@@ -312,7 +312,7 @@ begin
 		end;
 	end;
 
-	QueryResult := SendQuery('SELECT * FROM accounts WHERE userid = "'+Name+'";',true,Success);
+	QueryResult := SendQuery('SELECT * FROM accounts WHERE userid = '''+Name+'''',true,Success);
 	if Success and (QueryResult.RowsCount = 1) then begin
 		if Not Assigned(Result) then
 		begin
@@ -340,13 +340,16 @@ end;
 //
 //------------------------------------------------------------------------------
 function TMySQLDatabase.GetChara(CharaID : Cardinal) : TCharacter;
+var
+  CharacterIndex : Integer;
 begin
 	Result := NIL;
-	if CharacterList.IndexOf(CharaID) > -1 then
+  CharacterIndex := CharacterList.IndexOf(CharaID);
+	if CharacterIndex > -1 then
 	begin
-		if TCharacter(CharacterList.IndexOfObject(CharaID)).CID = CharaID then
+		if CharacterList.Items[CharacterIndex].CID = CharaID then
 		begin
-			Result := TCharacter(CharacterList.IndexOfObject(CharaID));
+			Result := CharacterList.Items[CharacterIndex];
 			Exit;
 		end;
 	end;
@@ -355,7 +358,7 @@ begin
 		Result := LoadChara(CharaID);
 		if Assigned(Result) then
 		begin
-			CharacterList.AddObject(CharaID,Result);
+			CharacterList.Add(Result);
 		end;
 	end else Result := NIL;
 end;
@@ -373,15 +376,15 @@ end;
 //		December 18th, 2006 - Tsusai - Freed result.
 //
 //------------------------------------------------------------------------------
-function TMySQLDatabase.GetAccountCharas(AccountID : Cardinal) : TIntList32;
+function TMySQLDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
 var
 	QueryResult     : TMySQLResult;
 	Success         : Boolean;
 	Index           : Integer;
 begin
-	Result := TIntList32.Create;
+	Result := TCharacterList.Create(FALSE);
 	QueryResult := SendQuery(
-		Format('SELECT char_id FROM characters WHERE account_id = %d and char_num < 9;',
+		Format('SELECT char_id FROM characters WHERE account_id = %d and char_num < 9',
 		[AccountID]),TRUE,Success);
 	if Success then
 	begin
@@ -389,7 +392,7 @@ begin
 		begin
 			for Index := 0 to QueryResult.RowsCount - 1 do
 			begin
-				Result.AddObject(Index, GetChara(StrToInt(QueryResult.FieldValue(0))));
+				Result.Add(GetChara(StrToInt(QueryResult.FieldValue(0))));
 				if Index < QueryResult.RowsCount then
 				begin
 					QueryResult.Next;
@@ -421,7 +424,7 @@ begin
 	Result := false;
 	QueryResult :=
 			SendQuery(
-			Format('SELECT * FROM characters WHERE char_num = %d and account_id = %d',[Slot, AccountID]),true, Success);
+			Format('SELECT char_id FROM characters WHERE char_num = %d and account_id = %d',[Slot, AccountID]),true, Success);
 	if Success then
 	begin
 		Result := (QueryResult.RowsCount > 0);
@@ -450,7 +453,7 @@ begin
 	Result := false;
 	QueryResult :=
 			SendQuery(
-			Format('SELECT name FROM characters WHERE name = "%s"',[Name]),true,Success);
+			Format('SELECT char_id FROM characters WHERE name = ''%s''',[Name]),true,Success);
 	if Success then
 	begin
 		Result := (QueryResult.RowsCount > 0);
@@ -467,7 +470,7 @@ begin
 	Result := false;
 	QueryResult :=
 		SendQuery(
-			Format('SELECT userid FROM accounts WHERE userid = "%s"',[UserName]),true,Success);
+			Format('SELECT userid FROM accounts WHERE userid = ''%s''',[UserName]),true,Success);
 	if Success then
 	begin
 		Result := (QueryResult.RowsCount > 0);
@@ -667,14 +670,14 @@ var
 begin
 	Result := FALSE;
 	SendQuery(
-		Format('INSERT INTO characters (account_id, name) VALUES(%d, "%s");',
+		Format('INSERT INTO characters (account_id, name) VALUES(%d, ''%s'')',
 		[AID,NName])
 	,TRUE,Success);
 	if Success then
 	begin
 		QueryResult :=
 				SendQuery(
-				Format('SELECT char_id FROM characters WHERE account_id = %d AND name = "%s";',
+				Format('SELECT char_id FROM characters WHERE account_id = %d AND name = ''%s''',
 				[AID,NName])
 			,TRUE,Success);
 		if (QueryResult.RowsCount = 1) then
@@ -696,7 +699,7 @@ var
 	Success : boolean;
 begin
 	SendQuery(
-		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES("%s", "%s", "%s");',
+		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(''%s'', ''%s'', ''%s'')',
 		[Username,Password,GenderChar])
 	,TRUE,Success);
 end;
@@ -814,7 +817,6 @@ begin
 		CharacterList.Delete(
 			CharacterList.IndexOf(ACharacter.CID)
 		);
-    ACharacter.Free;
 	end;
 end;
 //------------------------------------------------------------------------------
@@ -861,7 +863,7 @@ var
 begin
 	QueryResult :=
 		SendQuery(
-		Format('SELECT * FROM hp WHERE level = %d, job = %s ;',
+		Format('SELECT * FROM hp WHERE level = %d, job = ''%s''',
 			[ACharacter.BaseLV,ACharacter.JID])
 		,TRUE,Success);
 	if (QueryResult.RowsCount = 1) and (QueryResult.FieldsCount = 48) then
@@ -890,7 +892,7 @@ var
 begin
 	QueryResult :=
 		SendQuery(
-		Format('SELECT * FROM sp WHERE level = %d, job = %s ;',
+		Format('SELECT * FROM sp WHERE level = %d, job = ''%s''',
 			[ACharacter.BaseLV,ACharacter.JID])
 		,TRUE,Success);
 	if (QueryResult.RowsCount = 1) and (QueryResult.FieldsCount = 48) then

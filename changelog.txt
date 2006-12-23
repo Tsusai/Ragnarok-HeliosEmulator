@@ -13,6 +13,21 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 81 -
+[2006/12/23] - RaX - Notes/Overview - Implemented new FASTER character list and fixed a bug
+ in JanSQLDatabase.
+[2006/12/23] - RaX - Added CharaList.pas, a low level TCharacterList which is as fast as it
+ gets I believe.
+[2006/12/23] - RaX - Updated CharaExists both overloads in JanSQLDatabase.pas. Both weren't
+ looking at the record count, only at the result identifier, and if there are records to be
+ found, Jan returns an identifier, which is why it worked with no characters in the
+ database =)
+[2006/12/23] - RaX - Changed Globals to use a TCharacterList instead of a TIntList32 as the
+ global characterlist.
+[2006/12/23] - RaX - Changed CharacterServer to use the new characterlist.
+[2006/12/23] - RaX - Changed JanSQL + MySQL + DatabaseTemplate to use the new list.
+-
+
 - Rev 80 -
 [2006/12/23] - Muad_Dib - Added new jobs (ninja, gunslinger, xmas suit) to GameConstants.
 -

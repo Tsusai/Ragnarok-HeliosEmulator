@@ -17,8 +17,8 @@ uses
 	//Helios
 	Commands,
 	ServerOptions,
-	//3rd Party
-	List32;
+  CharaList
+  ;
 
 
 	procedure InitGlobals;
@@ -40,7 +40,7 @@ var
 	ServerConfig    : TServerOptions;
 
 	AccountList     : TStringList;
-	CharacterList   : TIntList32;
+	CharacterList   : TCharacterList;
 
 	LastAccountID   : Integer;
 //------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ end;{GetMD5}
 procedure InitGlobals;
 begin
 	AccountList     := TStringList.Create;
-	CharacterList   := TIntList32.Create;
+	CharacterList   := TCharacterList.Create(True);
 	CharaServerList := TStringList.Create;
 	if ParamCount = 0 then
 	begin

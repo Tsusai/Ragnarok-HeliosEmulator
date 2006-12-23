@@ -16,7 +16,7 @@ interface
 uses
 	Character,
 	Account,
-	List32;
+	CharaList;
 type
 //------------------------------------------------------------------------------
 //TDatabaseTemplate			                                                           CLASS
@@ -48,7 +48,7 @@ type
 			const GenderChar : char
 		); virtual;
 
-		function GetAccountCharas(AccountID : Cardinal) : TIntList32;virtual;
+		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;virtual;
 		function LoadChara(CharaID : Cardinal) : TCharacter;virtual;
 		function GetChara( CharaID    : Cardinal)   : TCharacter;virtual;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;virtual;
@@ -104,7 +104,7 @@ begin
 	Result := NIL;
 end;
 
-function TDatabaseTemplate.GetAccountCharas(AccountID : Cardinal) : TIntList32;
+function TDatabaseTemplate.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
 begin
 	Result := NIL;
 end;

@@ -15,7 +15,7 @@ interface
 uses
 	DatabaseTemplate,
 	Character,
-	List32,
+	CharaList,
 	Account,
 	janSQL;
 
@@ -56,7 +56,7 @@ type
 			const GenderChar : char
 		); override;
 
-		function GetAccountCharas(AccountID : Cardinal) : TIntList32;override;
+		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
 		function LoadChara(CharaID : Cardinal) : TCharacter;override;
 		function GetChara(CharaID : Cardinal) : TCharacter;override;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
@@ -381,13 +381,16 @@ end;
 //
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.GetChara(CharaID : Cardinal) : TCharacter;
+var
+  CharacterIndex : Integer;
 begin
 	Result := NIL;
-	if CharacterList.IndexOf(CharaID) > -1 then
+  CharacterIndex := CharacterList.IndexOf(CharaID);
+	if CharacterIndex > -1 then
 	begin
-		if TCharacter(CharacterList.IndexOfObject(CharaID)).CID = CharaID then
+		if CharacterList.Items[CharacterIndex].CID = CharaID then
 		begin
-			Result := TCharacter(CharacterList.IndexOfObject(CharaID));
+			Result := CharacterList.Items[CharacterIndex];
 			Exit;
 		end;
 	end;
@@ -396,7 +399,7 @@ begin
 		Result := LoadChara(CharaID);
 		if Assigned(Result) then
 		begin
-			CharacterList.AddObject(CharaID,Result);
+			CharacterList.Add(Result);
 		end;
 	end else Result := NIL;
 end;
@@ -413,13 +416,13 @@ end;
 //		December 18th, 2006 - Tsusai - QueryResult now freed.
 //
 //------------------------------------------------------------------------------
-function TJanSQLDatabase.GetAccountCharas(AccountID : Cardinal) : TIntList32;
+function TJanSQLDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
 var
 	QueryResult     : TJanRecordSet;
 	Index           : Integer;
   ResultIdentifier : Integer;
 begin
-	Result := TIntList32.Create;
+	Result := TCharacterList.Create(FALSE);
 	ResultIdentifier := SendQuery(
 		Format('SELECT char_id FROM characters WHERE account_id = %d and char_num < 9',
 		[AccountID]));
@@ -430,7 +433,7 @@ begin
     begin
       for Index := 0 to QueryResult.RecordCount - 1 do
       begin
-			  Result.AddObject(Index,GetChara(StrToInt(QueryResult.Records[Index].Fields[0].value)));
+			  Result.Add(GetChara(StrToInt(QueryResult.Records[Index].Fields[0].value)));
       end;
     end;
  	  Database.ReleaseRecordset(ResultIdentifier);
@@ -453,16 +456,17 @@ function TJanSQLDatabase.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Bo
 var
   ResultIdentifier : Integer;
 begin
+  Result := FALSE;
 	ResultIdentifier :=
 			SendQuery(
-			Format('SELECT * FROM characters WHERE char_num = %d and account_id = %d',[Slot, AccountID]));
+			Format('SELECT char_id FROM characters WHERE char_num = %d and account_id = %d',[Slot, AccountID]));
   if ResultIdentifier > 0 then
   begin
-    Result := TRUE;
+    if Database.RecordSets[ResultIdentifier].recordcount > 0 then
+    begin
+      Result := TRUE;
+    end;
     Database.ReleaseRecordset(ResultIdentifier);
-  end else
-  begin
-    Result := FALSE;
   end;
 end;
 //------------------------------------------------------------------------------
@@ -482,16 +486,17 @@ function TJanSQLDatabase.CharaExists(Name : String) : Boolean;
 var
   ResultIdentifier : Integer;
 begin
+  Result := FALSE;
 	ResultIdentifier :=
 			SendQuery(
-			Format('SELECT name FROM characters WHERE name = %s',[Name]));
+			Format('SELECT char_id FROM characters WHERE name = ''%s''',[Name]));
   if ResultIdentifier > 0 then
   begin
-    Result := TRUE;
+    if Database.RecordSets[ResultIdentifier].recordcount > 0 then
+    begin
+      Result := TRUE;
+    end;
     Database.ReleaseRecordset(ResultIdentifier);
-  end else
-  begin
-    Result := FALSE;
   end;
 end;
 //------------------------------------------------------------------------------
@@ -716,7 +721,6 @@ begin
     inc(CharacterID);
 
     CharacterID := StrToInt(QueryResult.records[QueryResult.recordcount-1].fields[0].value) + 1;
-    MainProc.Console(intToStr(CharacterID));
   end;
 
 	ResultIdentifier := SendQuery(
@@ -860,10 +864,7 @@ begin
 	ResultIdentifier := SendQuery(
 		Format('DELETE FROM characters WHERE char_id=%d',[ACharacter.CID]));
 
-		CharacterList.Delete(
-			CharacterList.IndexOf(ACharacter.CID)
-		);
-    ACharacter.Free;
+		CharacterList.Delete(CharacterList.IndexOf(ACharacter.CID));
     Result := TRUE;
   if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//DeleteChara

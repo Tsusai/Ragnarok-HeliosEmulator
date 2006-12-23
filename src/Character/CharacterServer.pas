@@ -77,7 +77,7 @@ uses
   //3rd
   SysUtils,
   StrUtils,
-  List32;
+  CharaList;
 
 const
 	INVALIDNAME = 0;
@@ -224,7 +224,7 @@ var
 	Count       : Byte;
 	PacketSize  : Word;
 	Ver         : Byte;
-  ACharaList  : TIntList32;
+  ACharaList  : TCharacterList;
 begin
 	Count     := 0;
 	Ver       := 24;
@@ -246,7 +246,7 @@ begin
 				ACharaList := MainProc.AGameDatabase.AnInterface.GetAccountCharas(AccountID);
 				for Index := 0 to ACharaList.Count-1 do
 				begin
-					ACharacter := TCharacter(ACharaList.Objects[Index]);
+					ACharacter := ACharaList.Items[Index];
 					if not (ACharacter = NIL) then
 					begin
 						with ACharacter do
@@ -296,8 +296,8 @@ begin
 							Inc(Count);
 						end;
 					end;
-					ACharaList.Free;
 				end;
+        ACharaList.Free;
 			end;
 			//size is (24 + (character count * 106))
 			PacketSize := (Ver + (Count * 106));
@@ -496,6 +496,7 @@ var
 	AnAccount   : TAccount;
 	ACharacter  : TCharacter;
 	ReplyBuffer : TBuffer;
+  CharacterIndex : Integer;
 
 	procedure DeleteCharaError(const Error : byte);
 	begin
@@ -509,13 +510,15 @@ begin
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TThreadLink(AClient.Data).AccountLink;
 	ACharacter := MainProc.AGameDatabase.AnInterface.GetChara(CharacterID);
-	if (AnAccount.EMail = EmailOrID) and (ACharacter.Account = AnAccount) then
-	begin
-		if Assigned(ACharacter) then
-		begin
-			if CharacterList.IndexOf(CharacterID) > -1 then
+
+  if Assigned(ACharacter) then
+  begin
+    if (AnAccount.EMail = EmailOrID) and (ACharacter.Account = AnAccount) then
+	  begin
+      CharacterIndex := CharacterList.IndexOf(CharacterID);
+			if CharacterIndex > -1 then
 			begin
-				if TCharacter(CharacterList.IndexOfObject(CharacterID)).CID = ACharacter.CID then
+				if CharacterList.Items[CharacterIndex].CID = ACharacter.CID then
 				begin
 					if MainProc.AGameDatabase.AnInterface.DeleteChara(ACharacter) then
 					begin
@@ -524,8 +527,8 @@ begin
 					end else DeleteCharaError(DELETEBADCHAR);
 				end else DeleteCharaError(DELETEBADCHAR);
 			end else DeleteCharaError(DELETEBADCHAR);
-		end else DeleteCharaError(DELETEBADCHAR);
-	end else DeleteCharaError(DELETEBADEMAIL);
+	  end else DeleteCharaError(DELETEBADEMAIL);
+  end else DeleteCharaError(DELETEBADCHAR);
 end;{DeleteChara}
 //------------------------------------------------------------------------------
 
