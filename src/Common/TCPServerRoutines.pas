@@ -24,12 +24,15 @@ uses
 	function ActivateClient(var AClient : TIdTCPClient) : Boolean;
 	procedure DeActivateClient(var AClient : TIdTCPClient);
 
+  Function GetPacketLength(ID : Word; Version : Integer = 0) : Integer;
+  
 implementation
 uses
 	SysUtils,
   StrUtils,
 	Classes,
-	Console;
+	Console,
+  DatabaseTXT;
 
 //------------------------------------------------------------------------------
 //ActivateServer                                                       FUNCTION
@@ -158,5 +161,34 @@ begin
 		end;
 	end;
 end;{DeActivateClient}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetPacketLength                                                      FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets the length of a packet specified by ID for version Version
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function GetPacketLength(ID : Word; Version : Integer = 0) : Integer;
+var
+  Index           : Integer;
+  CodebaseLength  : Integer;
+begin
+  Result := -1;
+  CodebaseLength := Length(Codebase[Version].Packet);
+  for Index := 0 to CodebaseLength - 1 do
+  begin
+    if Codebase[Version].Packet[Index].ID = ID then
+    begin
+      Result := Codebase[Version].Packet[Index].PLength;
+      Exit;
+    end;
+  end;  
+end;{GetPacketLength}
 //------------------------------------------------------------------------------
 end.
