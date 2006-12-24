@@ -513,21 +513,24 @@ begin
 
   if Assigned(ACharacter) then
   begin
-    if (AnAccount.EMail = EmailOrID) and (ACharacter.Account = AnAccount) then
-	  begin
-      CharacterIndex := CharacterList.IndexOf(CharacterID);
-			if CharacterIndex > -1 then
-			begin
-				if CharacterList.Items[CharacterIndex].CID = ACharacter.CID then
-				begin
-					if MainProc.AGameDatabase.AnInterface.DeleteChara(ACharacter) then
-					begin
-						WriteBufferWord(0, $006f, ReplyBuffer);
-						SendBuffer(AClient,ReplyBuffer, 2);
-					end else DeleteCharaError(DELETEBADCHAR);
-				end else DeleteCharaError(DELETEBADCHAR);
-			end else DeleteCharaError(DELETEBADCHAR);
-	  end else DeleteCharaError(DELETEBADEMAIL);
+    if ACharacter.Account = AnAccount then
+    begin
+      if AnAccount.EMail = EmailOrID then
+	    begin
+        CharacterIndex := CharacterList.IndexOf(CharacterID);
+			  if CharacterIndex > -1 then
+			  begin
+				  if CharacterList.Items[CharacterIndex].CID = ACharacter.CID then
+				  begin
+					  if MainProc.AGameDatabase.AnInterface.DeleteChara(ACharacter) then
+					  begin
+						  WriteBufferWord(0, $006f, ReplyBuffer);
+						  SendBuffer(AClient,ReplyBuffer, 2);
+					  end else DeleteCharaError(DELETEBADCHAR);
+				  end else DeleteCharaError(DELETEBADCHAR);
+			  end else DeleteCharaError(DELETEBADCHAR);
+      end else DeleteCharaError(DELETEBADEMAIL);
+    end else DeleteCharaError(DELETEBADCHAR);
   end else DeleteCharaError(DELETEBADCHAR);
 end;{DeleteChara}
 //------------------------------------------------------------------------------
