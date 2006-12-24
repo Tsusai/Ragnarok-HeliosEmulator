@@ -29,8 +29,6 @@ unit mwStringHashList;
 
 interface
 
-uses Classes, SysUtils;
-
 var
   mwHashTable: array[#0..#255] of byte;
   mwInsensitiveHashTable: array[#0..#255] of Byte;
@@ -46,7 +44,7 @@ type
     constructor Create(aString: string; anId, anExId: Integer);
   end;
 
-  PHashPointerList = ^THashPointerList;
+	PHashPointerList = ^THashPointerList;
   THashPointerList = array[1..1] of TObject;
 
   TmwBaseStringHashList = class(TObject)
@@ -80,7 +78,7 @@ type
     fSecondaryHash: TmwStringHash;
     fCompare: TmwStringHashCompare;
   public
-    constructor Create(Primary, Secondary: TmwStringHash; aCompare: TmwStringHashCompare);
+		constructor Create(Primary, Secondary: TmwStringHash; aCompare: TmwStringHashCompare);
     procedure AddString(aString: string; anId, anExId: Integer);
     function Hash(const S: string; var anId: Integer; var anExId: Integer): Boolean;
     function HashEX(const S: string; var anId: Integer; var anExId: Integer; HashValue: Integer): Boolean;
@@ -101,6 +99,8 @@ function HashSecondaryTwo(const aString: string): Integer;
 procedure InitTables;
 
 implementation
+uses
+	SysUtils;
 
 procedure InitTables;
 var

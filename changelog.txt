@@ -13,6 +13,53 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 83 -
+[2006/12/24] - Tsusai - Notes/Overview: Unfortnately a large commit.  This commit includes
+ the ability to finally start linking 2 exes together, at the characterserver level.  Thats
+ right, running two copies correctly, can result in having two servers listed at the server
+ selection menu after login.  Also many Uses have been cleaned up.
+[2006/12/24] - Tsusai - Added the following units: CharacterServerInfo, CharaLoginPackets,
+ and CommClient.
+[2006/12/24] - Tsusai - CharacterServerInfo : Contains a type that houses information on a
+ Character Server, such as WAN/LAN IPs, port, Servername, and online users.  These are stored
+ in a list that is read from when someone logs in, and is sent a list.
+[2006/12/24] - Tsusai - CharaLoginPackets : Contain all Outgoing routines at the moment.
+[2006/12/24] - Tsusai - CommClient : Contains a Indy TCP Client descendant, which controls
+ a generated thread.  The thread checks for connection and tries to connect every 30 seconds.
+ It also figures out if there is data available and passes it on as a OnRecieve event.
+[2006/12/24] - Tsusai - InterServer, ZoneServer : Turned off their built in clients for now.
+[2006/12/24] - Tsusai - Console : Removed static list entry for the character servers 
+ (our workaround until this was done).
+[2006/12/24] - Tsusai - TCPServerRoutines (NEEDS RENAMING NOW) : Replaced all TIdTCPClients
+ with TInterClient, and updated Activate/Deactivate Client as needed.  Also removed crap out
+ of DeactivateServer for now.  I think we won't suffer that problem we did in Prometheus.
+[2006/12/24] - Tsusai - PacketTypes : Added TCharaServerLink type which is used in LoginServer.
+[2006/12/24] - Tsusai - Globals : Removed UTF8String (its still just string), Cleaned up uses,
+ removed CharacterServerList (now private in LoginServer as it should be). Added IncMinute and
+ IncSecond routines.
+[2006/12/24] - Tsusai - BufferIO : Added WriteBufferMD5String to write the bytes as they are
+ into buffer, and ReadBufferMD5 to read the bytes directly from the buffer.  Overloaded
+ SendBuffer and RecvBuffer to accept TInterClient as a passed parameter.  Fixed
+ BufferReadString's parameters.
+[2006/12/24] - Tsusai - mwStringHashList : Fixed Uses.
+[2006/12/24] - Tsusai - Character - SetSaveTime: Uses IncMinute from Globals now.
+[2006/12/24] - Tsusai - LoginServer - Cleaned uses, Removed OnExecute Event, tied
+ ParseLoginServer directly to it.  Added OnDiscconect method, to remove character server 
+ information from the list if that particular client disconnected. CharaServerList has been
+ moved here and is a private field. Removed ReadMD5Password (in BufferIO now).  Updated
+ parameters of ValidateLogin and SendLoginError. Added VerifyCharaServer to validate
+ (static validate for now).  Fixed the packet indexes and loop for SendCharacterServers.
+ Added Parsing of charaserv client packets to ParseLogin.  Will be fined tuned in a later
+ commit.
+[2006/12/24] - Tsusai - CharacterServer : Removed anything having to do with the translation
+ of IP/Hostname strings into cardinals. Added CharaToLoginClient, and events for it (OnConnected
+ and OnRecieve). Removed CharacterServer.OnExecute, using ParseCharaServ directly. Added the 
+ setting of Host/Port of the CharaToLoginClient in .Start for now.  Also removed the While
+ from ParseCharaServer, not needed.
+[2006/12/24] - Tsusai - Added Packet documentation for Chara<->login communications to Notes
+[2006/12/24] - Tsusai - Removed Subdirectories in obj, not needed.
+-
+
 - Rev 82 -
 [2006/12/23] - RaX - Reordered Character Deletion Errors in CharacterServer due to some
  weird error messages.

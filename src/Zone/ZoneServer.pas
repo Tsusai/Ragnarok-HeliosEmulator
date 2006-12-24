@@ -16,7 +16,7 @@ uses
   IdTCPServer,
   IdTCPClient,
   IdContext,
-  IdSys,
+	SysUtils,
   PacketTypes,
   Character;
 
@@ -64,18 +64,13 @@ uses
 	//Helios
 	BufferIO,
 	WinLinux,
-  Console,
-  Database,
-  DatabaseTXT,
-  Account,
-  GameConstants,
-  Globals,
-  TCPServerRoutines,
-  ZoneRecv,
-  //3rd
-  StrUtils,
-  SysUtils,
-  List32;
+	Console,
+	DatabaseTXT,
+	Globals,
+	TCPServerRoutines,
+	ZoneRecv,
+	//3rd
+	StrUtils;
 
 //------------------------------------------------------------------------------
 //Create  ()                                                        CONSTRUCTOR
@@ -192,8 +187,8 @@ Procedure TZoneServer.Start();
 begin
   TCPServer.DefaultPort := ServerConfig.ZonePort;
   ActivateServer('Zone',TCPServer);
-  ActivateClient(ToCharaTCPClient);
-  ActivateClient(ToInterTCPClient);
+	//ActivateClient(ToCharaTCPClient);
+	//ActivateClient(ToInterTCPClient);
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -211,8 +206,8 @@ end;{Start}
 Procedure TZoneServer.Stop();
 begin
   DeActivateServer(TCPServer);
-  DeActivateClient(ToCharaTCPClient);
-  DeActivateClient(ToInterTCPClient);
+	//DeActivateClient(ToCharaTCPClient);
+  //DeActivateClient(ToInterTCPClient);
 end;{Start}
 //------------------------------------------------------------------------------
 

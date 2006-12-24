@@ -13,26 +13,25 @@ unit TCPServerRoutines;
 interface
 uses
 	IdTCPServer,
-	IdTCPClient,
-	IdContext,
-	IdException,
-  IdSys;
+	CommClient;
 
 	function ActivateServer(Name : string; var AServer : TIdTCPServer) : Boolean;
 	procedure DeActivateServer(var AServer : TIdTCPServer);
 
-	function ActivateClient(var AClient : TIdTCPClient) : Boolean;
-	procedure DeActivateClient(var AClient : TIdTCPClient);
+	function ActivateClient(var AClient : TInterClient) : Boolean;
+	procedure DeActivateClient(var AClient : TInterClient);
 
   Function GetPacketLength(ID : Word; Version : Integer = 0) : Integer;
   
 implementation
 uses
 	SysUtils,
-  StrUtils,
+	StrUtils,
+	IdException,
+	IdContext,
 	Classes,
 	Console,
-  DatabaseTXT;
+	DatabaseTXT;
 
 //------------------------------------------------------------------------------
 //ActivateServer                                                       FUNCTION
@@ -85,40 +84,17 @@ end;{ActivateServer}
 //
 //------------------------------------------------------------------------------
 procedure DeActivateServer(var AServer : TIdTCPServer);
-var
-	List : TList;
-	idx : integer;
 begin
 	If Assigned(AServer) then
 	begin
 		if AServer.Active then
 		begin
-			List := AServer.Contexts.LockList;
-			try
-				for idx := 0 to List.Count - 1 do
-				begin
-					try
-						TIdContext(List.Items[idx]).Connection.Disconnect;
-					except
-						on E: Exception do
-						begin
-						end;
-					end;
-				end;
-			finally
-				AServer.Contexts.UnlockList;
-			end;
-			//Sleep is needed else d/c Timeout exceptions will occur (multithreading)
-			Sleep(500);
-			{[2006/09/08] Tsusai - Reduced to 500 miliseconds, from 5 whole ones
-				it does work on my server, not sure on a whole bunch of them}
 			AServer.Active := false;
 		end;
 		AServer.Bindings.Clear;
 	end;
 end;{DeActivateServer}
 //------------------------------------------------------------------------------
-
 
 //------------------------------------------------------------------------------
 //ActivateClient                                                       FUNCTION
@@ -130,12 +106,13 @@ end;{DeActivateServer}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function ActivateClient(var AClient : TIdTCPClient) : boolean;
+function ActivateClient(var AClient : TInterClient) : boolean;
 begin
 	if not Assigned(AClient) then
 	begin
-		AClient := TIdTCPClient.Create;
+		AClient := TInterClient.Create;
 	end;
+	AClient.Active := true;
 	Result := true;
 end;{ActivateClient}
 //------------------------------------------------------------------------------
@@ -151,14 +128,11 @@ end;{ActivateClient}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure DeActivateClient(var AClient : TIdTCPClient);
+procedure DeActivateClient(var AClient : TInterClient);
 begin
 	If Assigned(AClient) then
 	begin
-		if AClient.Connected then
-		begin
-			AClient.Disconnect;
-		end;
+		AClient.Active := false;
 	end;
 end;{DeActivateClient}
 //------------------------------------------------------------------------------
@@ -177,18 +151,33 @@ end;{DeActivateClient}
 Function GetPacketLength(ID : Word; Version : Integer = 0) : Integer;
 var
   Index           : Integer;
-  CodebaseLength  : Integer;
+	CodebaseLength  : Integer;
+	Found : boolean;
 begin
-  Result := -1;
-  CodebaseLength := Length(Codebase[Version].Packet);
-  for Index := 0 to CodebaseLength - 1 do
-  begin
-    if Codebase[Version].Packet[Index].ID = ID then
-    begin
-      Result := Codebase[Version].Packet[Index].PLength;
-      Exit;
-    end;
-  end;  
+	Result := 0;
+	Found := false;
+	CodebaseLength := Length(Codebase[Version].Packet);
+	for Index := 0 to CodebaseLength - 1 do
+	begin
+		if Codebase[Version].Packet[Index].ID = ID then
+		begin
+			Result := Codebase[Version].Packet[Index].PLength;
+			Found := true;
+			break;
+		end;
+	end;
+	if not Found and not (Version = 0) then
+	begin
+		CodebaseLength := Length(Codebase[0].Packet);
+		for Index := 0 to CodebaseLength - 1 do
+		begin
+			if Codebase[0].Packet[Index].ID = ID then
+			begin
+				Result := Codebase[0].Packet[Index].PLength;
+				break;
+			end;
+		end;
+	end;
 end;{GetPacketLength}
 //------------------------------------------------------------------------------
 end.

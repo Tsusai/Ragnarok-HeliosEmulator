@@ -173,8 +173,9 @@ uses
 implementation
 uses
 	//IDE
-	SysUtils
+	SysUtils,
 	//Helios
+	Globals
 	;
 
 //------------------------------------------------------------------------------
@@ -188,15 +189,10 @@ uses
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.SetSaveTime(Value : boolean);
-Const
-	HoursPerDay   = 24;
-	MinsPerHour   = 60;
-	MinsPerDay    = HoursPerDay * MinsPerHour;
-	MinInterval   = 5; //Time set at 5 min
 begin
 	if Value and not fDataChanged then begin
 		fDataChanged  := TRUE;
-		fTimeToSave   := ((Now * MinsPerDay) + MinInterval) / MinsPerDay;
+		fTimeToSave   := IncMinute(Now,5);
 	end;
 end;{SetSaveTime}
 //------------------------------------------------------------------------------

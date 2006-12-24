@@ -16,8 +16,7 @@ uses
   IdTCPServer,
   IdTCPClient,
   IdContext,
-  IdSys,
-  PacketTypes;
+	SysUtils;
 
 type
 	TInterServer = class
@@ -51,25 +50,18 @@ type
     Constructor Create();
     Destructor  Destroy();Override;
     Procedure   Start();
-    Procedure   Stop();
-  end;
+		Procedure   Stop();
+	end;
 implementation
 
 uses
 	//Helios
-	BufferIO,
 	WinLinux,
-	Console,
-	Character,
-  Database,
-  Account,
-  GameConstants,
-  Globals,
-  TCPServerRoutines,
-  //3rd
-  SysUtils,
-  StrUtils,
-  List32;
+	Database,
+	Globals,
+	TCPServerRoutines,
+	//3rd
+	StrUtils;
 
 //------------------------------------------------------------------------------
 //Create  ()                                                        CONSTRUCTOR
@@ -183,7 +175,7 @@ Procedure TInterServer.Start();
 begin
   TCPServer.DefaultPort := ServerConfig.InterPort;
   ActivateServer('Inter',TCPServer);
-  ActivateClient(ToZoneTCPClient);
+	//ActivateClient(ToZoneTCPClient);
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -201,7 +193,7 @@ end;{Start}
 Procedure TInterServer.Stop();
 begin
   DeActivateServer(TCPServer);
-  DeActivateClient(ToZoneTCPClient);
+  //DeActivateClient(ToZoneTCPClient);
 end;{Start}
 //------------------------------------------------------------------------------
 

@@ -1,8 +1,7 @@
 //------------------------------------------------------------------------------
 //Globals                                                                  UNIT
 //------------------------------------------------------------------------------
-//	What it does-
-//			Makes a random string of length Count.
+//
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
@@ -25,16 +24,17 @@ uses
 	procedure DestroyGlobals;
 	procedure TerminateApplication;
 
-	function  GetMD5(const Input : UTF8string) : UTF8String;
+	function  GetMD5(const Input : string) : string;
 	function  MakeRNDString(Count: Integer): string;
 	function  ConvertMySQLTime(DateString: string) : TDateTime;
+	function IncSecond(const AValue: TDateTime; const ANumberOfSeconds: Int64): TDateTime;
+	function IncMinute(const AValue: TDateTime; const ANumberOfMinutes: Int64): TDateTime;
 
 //------------------------------------------------------------------------------
 //                              Global Variables
 //------------------------------------------------------------------------------
 var
 	Command         : TCommands;
-	CharaServerList : TStringList;
 	AppPath         : String;
 
 	ServerConfig    : TServerOptions;
@@ -57,6 +57,11 @@ implementation
 		//3rd Party
 		IdHashMessageDigest;
 
+Const
+	HoursPerDay   = 24;
+	MinsPerHour   = 60;
+	MinsPerDay    = HoursPerDay * MinsPerHour;
+
 //------------------------------------------------------------------------------
 //GetMD5                                                               FUNCTION
 //------------------------------------------------------------------------------
@@ -67,7 +72,7 @@ implementation
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function GetMD5(const Input : UTF8string) : UTF8String;
+function GetMD5(const Input : string) : String;
 var
 	MD5Hash : TIdHashMessageDigest5;
 begin
@@ -91,7 +96,6 @@ procedure InitGlobals;
 begin
 	AccountList     := TStringList.Create;
 	CharacterList   := TCharacterList.Create(True);
-	CharaServerList := TStringList.Create;
 	if ParamCount = 0 then
 	begin
 		ServerConfig    := TServerOptions.Create('./ServerOptions.ini');
@@ -122,7 +126,6 @@ begin
 	CharacterList.Free;
 	ServerConfig.Save;
 	ServerConfig.Free;
-	CharaServerList.Free;
 end;{DestroyGlobals}
 //------------------------------------------------------------------------------
 
@@ -205,5 +208,17 @@ begin
 	end;
 end;{ConvertMySQLTime}
 //------------------------------------------------------------------------------
+
+function IncSecond(const AValue: TDateTime;
+	const ANumberOfSeconds: Int64): TDateTime;
+begin
+	Result := ((AValue * SecsPerDay) + ANumberOfSeconds) / SecsPerDay;
+end;
+
+function IncMinute(const AValue: TDateTime;
+	const ANumberOfMinutes: Int64): TDateTime;
+begin
+  Result := ((AValue * MinsPerDay) + ANumberOfMinutes) / MinsPerDay;
+end;
 
 end.

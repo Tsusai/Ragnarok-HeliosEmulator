@@ -17,9 +17,9 @@ unit CharacterServer;
 interface
 uses
   IdTCPServer,
-  IdTCPClient,
   IdContext,
-  IdSys,
+	CommClient,
+	SysUtils,
   PacketTypes;
 type
 //------------------------------------------------------------------------------
@@ -29,14 +29,15 @@ type
   protected
   //
 	private
-		fIP             : String;
-    fPort           : Word;
+		fWANPort           : Word;
     TCPServer       : TIdTCPServer;
-    ToLoginTCPClient: TIdTCPClient;
-		Procedure SetIPCardinal(Value : string);
-		Procedure OnExecute(AConnection: TIdContext);
+		CharaToLoginClient : TInterClient;
+
     Procedure OnException(AConnection: TIdContext;
       AException: Exception);
+
+		procedure LoginClientOnConnect(Sender : TObject);
+		procedure LoginClientRead(AClient : TInterClient);
 
     procedure ParseCharaServ(AClient : TIdContext);
     procedure SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
@@ -47,14 +48,13 @@ type
     Procedure SetPort(Value : Word);
 
 	public
-		IPCardinal    : Cardinal;
 		ServerName    : String;
 		OnlineUsers   : Word;
+		WANIP : string;
+		LANIP : string;
+		property WANPort : Word read fWANPort write SetPort;
 
-		property IP   : string read fIP write SetIPCardinal;
-    property Port : Word read fPort write SetPort;
-
-    Constructor Create();
+		Constructor Create();
     Destructor  Destroy();Override;
     Procedure   Start();
     Procedure   Stop();
@@ -65,18 +65,17 @@ type
 implementation
 uses
 	//Helios
+	CharaLoginPackets,
 	BufferIO,
-	WinLinux,
   Console,
   Character,
 	Database,
   Account,
-  GameConstants,
+	GameConstants,
   Globals,
   TCPServerRoutines,
   //3rd
-  SysUtils,
-  StrUtils,
+	StrUtils,
   CharaList;
 
 const
@@ -98,8 +97,14 @@ const
 Constructor TCharacterServer.Create;
 begin
   TCPServer := TIdTCPServer.Create;
-  TCPServer.OnExecute   := OnExecute;
+	TCPServer.OnExecute   := ParseCharaServ;
 	TCPServer.OnException := OnException;
+
+	CharaToLoginClient := TInterClient.Create;
+
+	CharaToLoginClient.OnConnected := LoginClientOnConnect;
+	CharaToLoginClient.OnRecieve := LoginClientRead;
+
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -117,28 +122,9 @@ end;{Create}
 Destructor TCharacterServer.Destroy;
 begin
   TCPServer.Free;
-  ToLoginTCPClient.Free;
+	CharaToLoginClient.Free;
 end;{Destroy}
 //------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//OnExecute()                                                             EVENT
-//------------------------------------------------------------------------------
-//	What it does-
-//			An event which fires when the server is started. It allows the server
-//    to accept incoming client connections.
-//
-//	Changes -
-//		September 19th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TCharacterServer.OnExecute(AConnection: TIdContext);
-begin
-	ParseCharaServ(AConnection);
-end;{OnExecute}
-//------------------------------------------------------------------------------
-
 
 //------------------------------------------------------------------------------
 //OnException                                                             EVENT
@@ -175,9 +161,13 @@ end;{OnException}
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.Start();
 begin
-  TCPServer.DefaultPort := ServerConfig.CharaPort;
-  ActivateServer('Character',TCPServer);
-  ActivateClient(ToLoginTCPClient);
+	TCPServer.DefaultPort := ServerConfig.CharaPort;
+	ActivateServer('Character',TCPServer);
+	WANIP := ServerConfig.CharaWANIP;
+	LANIP := ServerConfig.CharaLANIP;
+	CharaToLoginClient.Host := ServerConfig.LoginComIP;
+	CharaToLoginClient.Port := ServerConfig.LoginComPort;
+	ActivateClient(CharaToLoginClient);
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -194,11 +184,34 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.Stop();
 begin
-  DeActivateServer(TCPServer);
-  DeActivateClient(ToLoginTCPClient);
+	DeActivateServer(TCPServer);
+	DeActivateClient(CharaToLoginClient);
 end;{Start}
 //------------------------------------------------------------------------------
 
+procedure TCharacterServer.LoginClientOnConnect(Sender : TObject);
+begin
+	ValidateWithLoginServer(CharaToLoginClient,Self);
+end;
+
+procedure TCharacterServer.LoginClientRead(AClient : TInterClient);
+var
+	ABuffer : TBuffer;
+	PacketID : Word;
+begin
+	RecvBuffer(AClient,ABuffer,2);
+	PacketID := BufferReadWord(0,ABuffer);
+	case PacketID of
+	$2001:
+		begin
+			RecvBuffer(AClient,ABuffer[2],1);
+			SendWANIP(CharaToLoginClient,Self);
+			SendLANIP(CharaToLoginClient,Self);
+			SendOnlineUsers(CharaToLoginClient,Self);
+		end;
+	end;
+
+end;
 
 //------------------------------------------------------------------------------
 //SendCharas			                                                    PROCEDURE
@@ -551,16 +564,12 @@ end;{DeleteChara}
 //------------------------------------------------------------------------------
 procedure TCharacterServer.ParseCharaServ(AClient : TIdContext);
 var
-	PacketLength  : Integer;
 	ABuffer       : TBuffer;
 	PacketID      : Word;
 begin
 	if AClient.Connection.Connected then
 	begin
-		while AClient.Connection.IOHandler.InputBuffer.Size >= 2 do
-		begin
-			PacketLength := AClient.Connection.IOHandler.InputBuffer.Size;
-			RecvBuffer(AClient,ABuffer,PacketLength);
+		RecvBuffer(AClient,ABuffer,2);
 			PacketID := BufferReadWord(0, ABuffer);
 			if (AClient.Data = nil) or not (AClient.Data is TThreadLink) then
 			begin
@@ -573,6 +582,7 @@ begin
 				if PacketID = $0065 then
 				begin
 					//Verify login and send characters
+				RecvBuffer(AClient,ABuffer[2],17-2);
 					SendCharas(AClient,ABuffer);
 				end;
 			end else
@@ -580,45 +590,27 @@ begin
 				case PacketID of
 				$0066: // Character Selected -- Refer Client to Map Server
 					begin
+					RecvBuffer(AClient,ABuffer[2],3-2);
 						SendCharaToMap();
 					end;
 				$0067: // Create New Character
 					begin
+					RecvBuffer(AClient,ABuffer[2],37-2);
 						CreateChara(AClient,ABuffer);
 					end;
 				$0068: // Request to Delete Character
 					begin
+					RecvBuffer(AClient,ABuffer[2],46-2);
 						DeleteChara(AClient,ABuffer);
 					end;
 				end;
 			end;
 		end;
-	end;
 end; {ParseCharaServ}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetIPCardinal   			                                             PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//      The Ragnarok client does not connect to a server using the plain x.x.x.x
-//    IP string format.  It uses a cardinal form.  Making the IP a property, we
-//    are able to call a function to go ahead and set the Cardinal form at any
-//    time.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TCharacterServer.SetIPCardinal(Value : string);
-begin
-	fIP         := GetIPStringFromHostname(Value);
-	IPCardinal  := GetCardinalFromIPString(fIP);
-end; {SetIPCardinal}
-//------------------------------------------------------------------------------
-
-
 //------------------------------------------------------------------------------
 //SetPort                                                          PROCEDURE
 //------------------------------------------------------------------------------
@@ -632,7 +624,7 @@ end; {SetIPCardinal}
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.SetPort(Value : Word);
 begin
-  fPort := Value;
+  fWANPort := Value;
   TCPServer.DefaultPort := Value;
 end;{SetPort}
 //------------------------------------------------------------------------------

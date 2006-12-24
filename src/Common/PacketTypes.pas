@@ -12,7 +12,8 @@ unit PacketTypes;
 interface
 uses
 	Account,
-	Character;
+	Character,
+	CharacterServerInfo;
 
 type
 	TBufSize = 0..(High(Word) div 2);
@@ -23,6 +24,10 @@ type
 	TThreadLink = class
 		AccountLink : TAccount;
 		CharacterLink : TCharacter;
+	end;
+
+	TCharaServerLink = class
+		Info : TCharaServerInfo;
 	end;
 
 	TMD5String = class
@@ -36,6 +41,7 @@ type
 implementation
 uses
 	Math;
+
 (*-----------------------------------------------------------------------------*
 Func ReadPoints
 

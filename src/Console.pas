@@ -14,11 +14,10 @@ unit Console;
 interface
 
 uses
-	SysUtils,
 	Classes,
   Database,
   LoginServer,
-  CharacterServer,
+	CharacterServer,
   InterServer,
   ZoneServer;
 
@@ -62,8 +61,10 @@ var
 
 implementation
 uses
+	SysUtils,
 	{Helios}
 	Globals,
+	CharacterServerInfo,
 	WinLinux
 	{Third Party}
 	;
@@ -104,31 +105,29 @@ begin
 
 	SetupTerminationCapturing;
 
-  //Create Database Objects
-  ACommonDatabase := TDatabase.Create(FALSE);
-  AGameDatabase   := TDatabase.Create(TRUE);
+	//Create Database Objects
+	ACommonDatabase := TDatabase.Create(FALSE);
+	AGameDatabase   := TDatabase.Create(TRUE);
 
 //Start and create Enabled Servers
 	if ServerConfig.LoginEnabled then
 	begin
-    LoginServer      := TLoginServer.Create;
+		LoginServer      := TLoginServer.Create;
 		LoginServer.Port := ServerConfig.LoginPort;
-    LoginServer.Start;
+		LoginServer.Start;
 	end;
 	//NOTE: Prior
 	if ServerConfig.CharaEnabled then
 	begin
-    CharacterServer             := TCharacterServer.Create;
-    CharacterServer.Port        := ServerConfig.CharaPort;
-    CharacterServer.IP          := ServerConfig.CharaWANIP;
-    CharacterServer.ServerName  := ServerConfig.ServerName;
+		CharacterServer  := TCharacterServer.Create;
+		CharacterServer.WANPort     := ServerConfig.CharaPort;
+		CharacterServer.ServerName  := ServerConfig.ServerName;
 		CharacterServer.Start;
-    CharaServerList.AddObject(CharacterServer.ServerName,CharacterServer);
 	end;
 
 	if ServerConfig.InterEnabled then
 	begin
-    InterServer       := TInterServer.Create;
+		InterServer       := TInterServer.Create;
 		InterServer.Port  := ServerConfig.InterPort;
     InterServer.IP    := ServerConfig.InterWANIP;
 		InterServer.Start;
