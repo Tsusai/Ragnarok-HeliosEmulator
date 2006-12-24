@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 84 -
+[2006/12/24] - RaX - Added default values to TCharacters in CreateChara(CharacterServer).
+-
+
 - Rev 83 -
 [2006/12/24] - Tsusai - Notes/Overview: Unfortnately a large commit.  This commit includes
  the ability to finally start linking 2 exes together, at the characterserver level.  Thats

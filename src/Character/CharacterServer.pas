@@ -429,16 +429,52 @@ begin
 			if MainProc.AGameDatabase.AnInterface.CreateChara(
 				ACharacter,Account.ID,CharaName) then
 			begin
-				ACharacter.Name := CharaName;
-				ACharacter.Hair := HairStyle;
-				ACharacter.HairColor := HairColor;
-				ACharacter.CharaNum := SlotNum;
+				ACharacter.Name           := CharaName;
+				ACharacter.CharaNum       := SlotNum;
+        ACharacter.BaseLV         := 1;
+        ACharacter.JobLV          := 1;
+        ACharacter.JID            := 0;
+        ACharacter.Speed          := 50;
+        ACharacter.Zeny           := 0;
 				ACharacter.ParamBase[STR] := StatPoints[0];
 				ACharacter.ParamBase[AGI] := StatPoints[1];
 				ACharacter.ParamBase[VIT] := StatPoints[2];
 				ACharacter.ParamBase[INT] := StatPoints[3];
 				ACharacter.ParamBase[DEX] := StatPoints[4];
 				ACharacter.ParamBase[LUK] := StatPoints[5];
+        ACharacter.MaxHP          := 0;//need to calculate HP/SP values here.
+        ACharacter.MaxSP          := 0;
+        ACharacter.HP             := 0;
+        ACharacter.SP             := 0;
+        ACharacter.StatusPts      := 0;
+        ACharacter.SkillPts       := 0;
+        ACharacter.Option         := 0;
+        ACharacter.Karma          := 0;
+        ACharacter.Manner         := 0;
+        ACharacter.PartyID        := 0;
+        ACharacter.GuildID        := 0;
+        ACharacter.PetID          := 0;
+        ACharacter.Hair           := HairStyle;
+        ACharacter.HairColor      := HairColor;
+        ACharacter.ClothesColor   := 0;
+        ACharacter.Weapon         := 0;
+        ACharacter.Shield         := 0;
+        ACharacter.HeadTop        := 0;
+        ACharacter.HeadMid        := 0;
+        ACharacter.HeadBottom     := 0;
+        ACharacter.Map            := 'prontera';
+        //ACharacter.Point.X        := 156;
+        //ACharacter.Point.Y        := 180;
+        ACharacter.SaveMap        := 'prontera';
+        //ACharacter.SavePoint.X    := 156;
+        //ACharacter.SavePoint.Y    := 180;
+        ACharacter.PartnerID      := 0;
+        ACharacter.ParentID1      := 0;
+        ACharacter.ParentID2      := 0;
+        ACharacter.BabyID         := 0;
+        ACharacter.Online         := 0;
+        ACharacter.HomunID        := 0;
+
 				//INSERT ANY OTHER CREATION CHANGES HERE!
 				MainProc.AGameDatabase.AnInterface.SaveChara(ACharacter);
 				with ACharacter do begin
