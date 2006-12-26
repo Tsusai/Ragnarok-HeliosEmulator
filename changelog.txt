@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 85 -
+[2006/12/26] - RaX - Oops, forgot to remove some code from a previous method of getting a
+ new character's id in JanSQLDatabase. CreateChara.
+-
+
 - Rev 84 -
 [2006/12/24] - RaX - Added default values to TCharacters in CreateChara(CharacterServer).
 -

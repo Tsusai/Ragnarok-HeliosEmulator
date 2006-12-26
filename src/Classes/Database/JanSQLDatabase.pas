@@ -719,8 +719,6 @@ begin
       CharacterID := Max(CharacterID, QueryResult.records[Index].fields[0].value);
     end;
     inc(CharacterID);
-
-    CharacterID := StrToInt(QueryResult.records[QueryResult.recordcount-1].fields[0].value) + 1;
   end;
 
 	ResultIdentifier := SendQuery(
