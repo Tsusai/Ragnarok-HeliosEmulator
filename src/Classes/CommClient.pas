@@ -52,18 +52,18 @@ uses
 			Sleep(1);
 			if FClient.Active then
 			begin
-				if (Now > FClient.ReconnectTime) and
-					(FClient.Connected = false) then
-				begin
-					try
+				try
+					if (Now > FClient.ReconnectTime) and
+						(FClient.Connected = false) then
+					begin
 						FClient.Connect;
-					except
-						on E:EIdSocketError do
-						begin
-							MainProc.Console('Character Server failed to connect to login server.');
-							MainProc.Console('Retrying in 30 seconds.');
-							FClient.ReconnectTime := IncSecond(Now,30);
-						end;
+					end;
+				except
+					on E:EIdSocketError do
+					begin
+						MainProc.Console('Character Server failed to connect to login server.');
+						MainProc.Console('Retrying in 30 seconds.');
+						FClient.ReconnectTime := IncSecond(Now,30);
 					end;
 				end;
 				//READ CHECK

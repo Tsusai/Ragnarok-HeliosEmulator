@@ -35,7 +35,7 @@ type
 		Destructor Destroy();override;
 		function GetAccount(ID    : Cardinal) : TAccount;overload;virtual;
 		function GetAccount(Name  : string) : TAccount;overload;virtual;
-		procedure GetAccountBanAndConnectTime(var AnAccount : TAccount);virtual;
+		procedure RefreshAccountData(var AnAccount : TAccount);virtual;
 		function CreateChara(
 			var ACharacter : TCharacter;
 			AID : Cardinal;
@@ -170,7 +170,7 @@ begin
 	Result := false;
 end;
 
-procedure TDatabaseTemplate.GetAccountBanAndConnectTime(var AnAccount : TAccount);
+procedure TDatabaseTemplate.RefreshAccountData(var AnAccount : TAccount);
 begin
 	//No change.
 end;

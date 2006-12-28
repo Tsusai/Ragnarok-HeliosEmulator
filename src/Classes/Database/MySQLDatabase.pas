@@ -42,7 +42,7 @@ type
 		function GetAccount(ID    : Cardinal) : TAccount;overload;override;
 		function GetAccount(Name  : string) : TAccount;overload;override;
 
-		procedure GetAccountBanAndConnectTime(var AnAccount : TAccount); override;
+		procedure RefreshAccountData(var AnAccount : TAccount); override;
 
 		function CreateChara(
 			var ACharacter : TCharacter;
@@ -209,6 +209,7 @@ end;
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		December 27th, 2006 - Tsusai - Fixed login key and gender char reading
 //
 //------------------------------------------------------------------------------
 procedure SetAccount(
@@ -221,14 +222,16 @@ begin
 	AnAccount.Username    := QueryResult.FieldValue(1);
 	AnAccount.Password    := QueryResult.FieldValue(2);
 	//Tsusai - For Gender, we need to return the first char, thats
-	//why there is a [0]
-	AnAccount.Gender      := QueryResult.FieldValue(4)[0];
-	AnAccount.LoginCount  := StrToIntDef(QueryResult.FieldValue(5),0);
-	AnAccount.EMail       := QueryResult.FieldValue(6);
-	AnAccount.LoginKey[1] := StrToIntDef(QueryResult.FieldValue(7),0);
-	AnAccount.LoginKey[1] := StrToIntDef(QueryResult.FieldValue(8),0);
-	AnAccount.Level       := StrToIntDef(QueryResult.FieldValue(9),0);
-	AnAccount.LastIP      := QueryResult.FieldValue(12);
+	//why there is a [1]
+	AnAccount.Gender       := QueryResult.FieldValue(4)[1];
+	AnAccount.LoginCount   := StrToIntDef(QueryResult.FieldValue(5),0);
+	AnAccount.EMail        := QueryResult.FieldValue(6);
+	AnAccount.LoginKey[1]  := StrToIntDef(QueryResult.FieldValue(7),0);
+	AnAccount.LoginKey[2]  := StrToIntDef(QueryResult.FieldValue(8),0);
+	AnAccount.Level        := StrToIntDef(QueryResult.FieldValue(9),0);
+	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.FieldValue(11));
+	AnAccount.LastIP       := QueryResult.FieldValue(12);
+	AnAccount.Bantime      := ConvertMySQLTime(QueryResult.FieldValue(14));
 end;
 //------------------------------------------------------------------------------
 
@@ -244,6 +247,7 @@ end;
 //		September 29th, 2006 - RaX - Created.
 //		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
 //													set the data
+//		December 27th, 2006 - Tsusai - Reorganized
 //
 //------------------------------------------------------------------------------
 function TMySQLDatabase.GetAccount(ID: Cardinal) : TAccount;
@@ -264,19 +268,23 @@ begin
 		end;
 	end;
 
-	QueryResult := SendQuery('SELECT * FROM accounts WHERE account_id = '''+IntToStr(ID)+'''',true,Success);
-	if Success and (QueryResult.RowsCount = 1) then begin
-		if Not Assigned(Result) then
-		begin
-			SetAccount(AnAccount,QueryResult);
-			AccountList.AddObject(AnAccount.Username, AnAccount);
-			Result := AnAccount;
+	if Assigned(Result) then
+	begin
+		RefreshAccountData(Result);
+	end else
+	begin
+		QueryResult := SendQuery('SELECT * FROM accounts WHERE account_id = '''+IntToStr(ID)+'''',true,Success);
+		if Success and (QueryResult.RowsCount = 1) then begin
+			if Not Assigned(Result) then
+			begin
+				SetAccount(AnAccount,QueryResult);
+				AccountList.AddObject(AnAccount.Username, AnAccount);
+				Result := AnAccount;
+			end;
 		end;
-		Result.ConnectUntil := ConvertMySQLTime(QueryResult.FieldValue(11));
-		Result.Bantime      := ConvertMySQLTime(QueryResult.FieldValue(14));
+		if Assigned(QueryResult) then QueryResult.Free;
 	end;
 
-	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------
 
@@ -292,6 +300,7 @@ end;
 //		September 29th, 2006 - RaX - Created.
 //		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
 //													set the data
+//		December 27th, 2006 - Tsusai - Reorganized
 //
 //------------------------------------------------------------------------------
 function TMySQLDatabase.GetAccount(Name : string) : TAccount;
@@ -312,19 +321,23 @@ begin
 		end;
 	end;
 
-	QueryResult := SendQuery('SELECT * FROM accounts WHERE userid = '''+Name+'''',true,Success);
-	if Success and (QueryResult.RowsCount = 1) then begin
-		if Not Assigned(Result) then
-		begin
-			SetAccount(AnAccount,QueryResult);
-			AccountList.AddObject(AnAccount.Username, AnAccount);
-			Result := AnAccount;
+	if Assigned(Result) then
+	begin
+		RefreshAccountData(Result);
+	end else
+	begin
+		QueryResult := SendQuery('SELECT * FROM accounts WHERE userid = '''+Name+'''',true,Success);
+		if Success and (QueryResult.RowsCount = 1) then begin
+			if Not Assigned(Result) then
+			begin
+				SetAccount(AnAccount,QueryResult);
+				AccountList.AddObject(AnAccount.Username, AnAccount);
+				Result := AnAccount;
+			end;
 		end;
-		Result.ConnectUntil := ConvertMySQLTime(QueryResult.FieldValue(11));
-		Result.Bantime      := ConvertMySQLTime(QueryResult.FieldValue(14));
+		if Assigned(QueryResult) then QueryResult.Free;
 	end;
 
-	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------
 
@@ -732,7 +745,6 @@ begin
 			Result           := TCharacter.Create;
 			CID              := StrToInt(QueryResult.FieldValue(0));
 			ID               := StrToInt(QueryResult.FieldValue(1));
-			Account          := MainProc.ACommonDatabase.AnInterface.GetAccount(ID);
 			CharaNum         := StrToInt(QueryResult.FieldValue(2));
 			if CharaNum < 9 then
 			begin
@@ -823,24 +835,28 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLDatabase.GetAccountBanAndConnectTime()                       PROCEDURE
+//TMySQLDatabase.RefreshAccountData()                                PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Gets an account's ban and connect time.
+//
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		December 27th, 2006 - Tsusai - Remade, now gets all needed account data
+//			regardless
 //
 //------------------------------------------------------------------------------
-procedure TMySQLDatabase.GetAccountBanAndConnectTime(var AnAccount : TAccount);
+procedure TMySQLDatabase.RefreshAccountData(var AnAccount : TAccount);
 var
-  Success     : Boolean;
-  QueryResult : TMySQLResult;
+	Success     : Boolean;
+	QueryResult : TMySQLResult;
 begin
-  QueryResult := SendQuery(
-		Format('SELECT connect_until, ban_until FROM accounts WHERE account_id=%d',[AnAccount.ID]),true,Success);
-  AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.FieldValue(0));
-  AnAccount.BanTime := ConvertMySQLTime(QueryResult.FieldValue(1));
+	QueryResult := SendQuery(
+		Format('SELECT loginkey1, loginkey2, connect_until, ban_until FROM accounts WHERE account_id=%d',[AnAccount.ID]),true,Success);
+	AnAccount.LoginKey[1]  := StrToIntDef(QueryResult.FieldValue(0),0);
+	AnAccount.LoginKey[2]  := StrToIntDef(QueryResult.FieldValue(1),0);
+	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.FieldValue(2));
+	AnAccount.BanTime := ConvertMySQLTime(QueryResult.FieldValue(3));
   if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------

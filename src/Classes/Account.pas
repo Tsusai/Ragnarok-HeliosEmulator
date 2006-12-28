@@ -90,19 +90,12 @@ end; {SetGender}
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		December 27th, 2006 - Tsusai - Removed SQL call, simplified
 //
 //------------------------------------------------------------------------------
 function TAccount.GetBanned : boolean;
 begin
-	MainProc.ACommonDatabase.AnInterface.GetAccountBanAndConnectTime(Self);
-	//Now would somehow corrupt after someone tries a _M/_F on MD5 Connection
-	if SysUtils.Now > BanTime then
-	begin
-		Result := false;
-	end else
-	begin
-		Result := true;
-	end;
+	Result := (BanTime > Now);
 end;{GetBanned}
 //------------------------------------------------------------------------------
 
@@ -133,19 +126,12 @@ end;{SetBannedTime}
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		December 27th, 2006 - Tsusai - Removed SQL call, simplified
 //
 //------------------------------------------------------------------------------
 function TAccount.GetConnectUntilTime : boolean;
 begin
-	MainProc.ACommonDatabase.AnInterface.GetAccountBanAndConnectTime(Self);
-	//Now would somehow corrupt after someone tries a _M/_F on MD5 Connection
-	if SysUtils.Now > ConnectUntil then
-	begin
-		Result := true;
-	end else
-	begin
-		Result := false;
-	end;
+	Result := (Now > ConnectUntil);
 end;
 //------------------------------------------------------------------------------
 

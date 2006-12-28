@@ -42,7 +42,7 @@ type
 		function GetAccount(ID    : Cardinal) : TAccount;overload;override;
 		function GetAccount(Name  : string) : TAccount;overload;override;
 
-		procedure GetAccountBanAndConnectTime(var AnAccount : TAccount); override;
+		procedure RefreshAccountData(var AnAccount : TAccount); override;
 
 		function CreateChara(
 			var ACharacter : TCharacter;
@@ -243,6 +243,7 @@ end;//SendQuery
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		December 27th, 2006 - Tsusai - Fixed login key and gender char reading
 //
 //------------------------------------------------------------------------------
 procedure SetAccount(
@@ -252,17 +253,19 @@ procedure SetAccount(
 begin
 	AnAccount := TAccount.Create;
 	AnAccount.ID          := StrToInt(QueryResult.records[0].fields[0].value);
-	AnAccount.Username    := QueryResult.records[0].fields[1].value;
-	AnAccount.Password    := QueryResult.records[0].fields[2].value;
+	AnAccount.Username     := QueryResult.records[0].fields[1].value;
+	AnAccount.Password     := QueryResult.records[0].fields[2].value;
 	//Tsusai - For Gender, we need to return the first char, thats
-	//why there is a [0]
-	AnAccount.Gender      := String(QueryResult.records[0].fields[4].value)[1];
-	AnAccount.LoginCount  := StrToIntDef(QueryResult.records[0].fields[5].value,0);
-	AnAccount.EMail       := QueryResult.records[0].fields[6].value;
-	AnAccount.LoginKey[1] := StrToIntDef(QueryResult.records[0].fields[7].value,0);
-	AnAccount.LoginKey[1] := StrToIntDef(QueryResult.records[0].fields[8].value,0);
-	AnAccount.Level       := StrToIntDef(QueryResult.records[0].fields[9].value,0);
-	AnAccount.LastIP      := QueryResult.records[0].fields[12].value;
+	//why there is a [1]
+	AnAccount.Gender       := String(QueryResult.records[0].fields[4].value)[1];
+	AnAccount.LoginCount   := StrToIntDef(QueryResult.records[0].fields[5].value,0);
+	AnAccount.EMail        := QueryResult.records[0].fields[6].value;
+	AnAccount.LoginKey[1]  := StrToIntDef(QueryResult.records[0].fields[7].value,0);
+	AnAccount.LoginKey[2]  := StrToIntDef(QueryResult.records[0].fields[8].value,0);
+	AnAccount.Level        := StrToIntDef(QueryResult.records[0].fields[9].value,0);
+	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.records[0].fields[11].value);
+	AnAccount.LastIP       := QueryResult.records[0].fields[12].value;
+	AnAccount.Bantime      := ConvertMySQLTime(QueryResult.records[0].fields[14].value);
 end;//SetAccount
 //------------------------------------------------------------------------------
 
@@ -279,6 +282,7 @@ end;//SetAccount
 //		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
 //													set the data
 //		December 18th, 2006 - Tsusai - Corrected query string syntax
+//		December 27th, 2006 - Tsusai - Reorganized
 //
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.GetAccount(ID: Cardinal) : TAccount;
@@ -286,7 +290,7 @@ var
 	AnAccount   : TAccount;
 	Index       : Integer;
 	QueryResult : TJanRecordSet;
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
 begin
 	Result := NIL;
 	//Check Memory
@@ -299,22 +303,24 @@ begin
 		end;
 	end;
 
-	ResultIdentifier := SendQuery(
-		Format('SELECT * FROM accounts WHERE account_id = %d',
-		[ID]));
-  QueryResult := Database.RecordSets[ResultIdentifier];
-	if (QueryResult.recordcount = 1) then begin
-		if Not Assigned(Result) then
-		begin
-			SetAccount(AnAccount,QueryResult);
-			AccountList.AddObject(AnAccount.Username, AnAccount);
-			Result := AnAccount;
+	if Assigned(Result) then
+	begin
+		RefreshAccountData(Result);
+	end else
+	begin
+		ResultIdentifier := SendQuery(
+		Format('SELECT * FROM accounts WHERE account_id = %d', [ID]));
+		QueryResult := Database.RecordSets[ResultIdentifier];
+		if (QueryResult.recordcount = 1) then begin
+			if Not Assigned(Result) then
+			begin
+				SetAccount(AnAccount,QueryResult);
+				AccountList.AddObject(AnAccount.Username, AnAccount);
+				Result := AnAccount;
+			end;
 		end;
-		Result.ConnectUntil := ConvertMySQLTime(QueryResult.records[0].fields[11].value);
-		Result.Bantime      := ConvertMySQLTime(QueryResult.records[0].fields[14].value);
+		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 	end;
-
-	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 //------------------------------------------------------------------------------
 
@@ -331,6 +337,7 @@ end;
 //		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
 //													set the data
 //		December 18th, 2006 - Tsusai - Corrected query syntax
+//		December 27th, 2006 - Tsusai - Reorganized
 //
 //------------------------------------------------------------------------------
 function TJanSQLDatabase.GetAccount(Name : string) : TAccount;
@@ -351,21 +358,24 @@ begin
 		end;
 	end;
 
-	ResultIdentifier := SendQuery('SELECT * FROM accounts WHERE userid = '+Name);
-  QueryResult := Database.RecordSets[ResultIdentifier];
-
-	if(QueryResult.RecordCount = 1) then begin
-		if Not Assigned(Result) then
-		begin
-			SetAccount(AnAccount,QueryResult);
-			AccountList.AddObject(AnAccount.Username, AnAccount);
-			Result := AnAccount;
+	if Assigned(Result) then
+	begin
+		RefreshAccountData(Result);
+	end else
+	begin
+		ResultIdentifier := SendQuery('SELECT * FROM accounts WHERE userid = '+Name);
+		QueryResult := Database.RecordSets[ResultIdentifier];
+		if (QueryResult.recordcount = 1) then begin
+			if Not Assigned(Result) then
+			begin
+				SetAccount(AnAccount,QueryResult);
+				AccountList.AddObject(AnAccount.Username, AnAccount);
+				Result := AnAccount;
+			end;
 		end;
-		Result.ConnectUntil := ConvertMySQLTime(QueryResult.records[0].fields[11].value);
-		Result.Bantime      := ConvertMySQLTime(QueryResult.records[0].fields[14].value);
+		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 	end;
 
-  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 //------------------------------------------------------------------------------
 
@@ -782,7 +792,6 @@ begin
 			Result           := TCharacter.Create;
 			CID              := StrToIntDef(QueryResult.Records[0].Fields[0].Value, 0);
 			ID               := StrToIntDef(QueryResult.Records[0].Fields[1].Value, 0);
-			Account          := MainProc.ACommonDatabase.AnInterface.GetAccount(ID);
 			CharaNum         := StrToIntDef(QueryResult.Records[0].Fields[2].Value, 0);
 			if CharaNum < 9 then
 			begin
@@ -870,25 +879,31 @@ end;//DeleteChara
 
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.GetAccountBanAndConnectTime()                       Procedure
+//TJanSQLDatabase.RefreshAccountData()                                 Procedure
 //------------------------------------------------------------------------------
 //	What it does-
-//			Builds a taccount object from a query result.
+//			Retrieves all needed data regardless of if its in memory or not.
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		December 27th, 2006 - Tsusai - Remade, now gets all needed account data
+//			regardless
 //
 //------------------------------------------------------------------------------
-procedure TJanSQLDatabase.GetAccountBanAndConnectTime(var AnAccount : TAccount);
+procedure TJanSQLDatabase.RefreshAccountData(var AnAccount : TAccount);
 var
-  ResultIdentifier : Integer;
-  QueryResult : TJanRecordSet;
+	ResultIdentifier : Integer;
+	QueryResult : TJanRecordSet;
 begin
-  ResultIdentifier := SendQuery(
-		Format('SELECT connect_until, ban_until FROM accounts WHERE account_id=%d',[AnAccount.ID]));
-  QueryResult := Database.RecordSets[ResultIdentifier];
-  AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.records[0].fields[0].Value);
-  AnAccount.Bantime := ConvertMySQLTime(QueryResult.records[0].fields[1].Value);
+	ResultIdentifier := SendQuery(
+		Format('SELECT loginkey1, loginkey2, connect_until, ban_until FROM accounts WHERE account_id=%d',[AnAccount.ID]));
+	QueryResult := Database.RecordSets[ResultIdentifier];
+
+	AnAccount.LoginKey[1]  := StrToIntDef(QueryResult.records[0].fields[0].Value,0);
+	AnAccount.LoginKey[2]  := StrToIntDef(QueryResult.records[0].fields[1].Value,0);
+	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.records[0].fields[2].Value);
+	AnAccount.Bantime := ConvertMySQLTime(QueryResult.records[0].fields[3].Value);
+
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetAccountBanAndConnectTime
 //------------------------------------------------------------------------------

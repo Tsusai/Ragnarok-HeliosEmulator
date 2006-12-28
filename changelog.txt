@@ -13,6 +13,20 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 86 -
+[2006/12/27] - Tsusai - Notes/Overview: More updates to the multi character server coding,
+ mainly side effect bugfixes.
+[2006/12/27] - Tsusai - Account - GetBanned and GetConnectTime: Removed the SQL calls,
+ and simplied.
+[2006/12/27] - Tsusai - CommClient - TClientThread.Execute: tweaked the try/except field.
+[2006/12/27] - Tsusai - MySQLDatabase, JanSQLDatabase, DatabaseTemplate: Changed
+ GetAccountBanAndConnectTime to RefreshAccountData.
+[2006/12/27] - Tsusai - MySQLDatabase, JanSQLDatabase : Fixed GenderChar and LoginKey
+ reading in SetAccount, modified GetAccount (both types) to be more efficient, and
+ read the new RefreshAccountData that is required. RefreshAccountData reads the ban and
+ connect (play) time, and the login keys.
+-
+
 - Rev 85 -
 [2006/12/26] - RaX - Oops, forgot to remove some code from a previous method of getting a
  new character's id in JanSQLDatabase. CreateChara.
