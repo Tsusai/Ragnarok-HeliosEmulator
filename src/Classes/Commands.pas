@@ -16,6 +16,8 @@
 unit Commands;
 
 interface
+uses
+  Classes;
 
 type
 //------------------------------------------------------------------------------
@@ -28,15 +30,21 @@ type
     function Help : String;
     function Reload() : String;
     function Restart() : String;
+    function Start(Values : TStringList) : String;
+    function Stop(Values : TStringList) : String;
   end;{TCommands}
 //------------------------------------------------------------------------------
 
 implementation
 
 	uses
-		Classes,
 		SysUtils,
-		Console;
+		Console,
+    LoginServer,
+    CharacterServer,
+    InterServer,
+    ZoneServer,
+    Globals;
 
 //------------------------------------------------------------------------------
 //TCommands.Parse()				                                           PROCEDURE
@@ -73,16 +81,32 @@ begin
 						Values.Add(StringIn.Strings[Index]);
 					end;
 					{Start Command Parser}
-					if Command = '/exit' then begin
+					if Command = '/exit' then
+          begin
 						MainProc.Run  := FALSE;
 						Error   := '';
-					end else if Command = '/reload' then begin
+					end else
+          if Command = '/reload' then
+          begin
 						Error   := 'Reload not setup till all DB is done';//ADataBase.Reload;
-					end else if Command = '/help' then begin
+					end else
+          if Command = '/help' then
+          begin
 						Error   := Help;
-					end else if Command = '/restart' then begin
+					end else
+          if Command = '/restart' then
+          begin
 						Error   := Restart;
-					end else begin
+					end else
+          if Command = '/start' then
+          begin
+            Error   := Start(Values);
+          end else
+          if Command = '/stop' then
+          begin
+            Error   := Stop(Values);
+          end else
+          begin
 						Error   := Command + ' does not exist!';
 					end;
 					{End Command Parser}
@@ -128,7 +152,7 @@ end;{TCommands.Help}
 
 
 //------------------------------------------------------------------------------
-//TCommands.Help()				                                             FUNCTION
+//TCommands.Reload()				                                          FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Will(in the future) free up and reload the Databases.
@@ -145,7 +169,7 @@ end;{TCommands.Reload}
 
 
 //------------------------------------------------------------------------------
-//TCommands.Help()				                                             FUNCTION
+//TCommands.Restart() 		                                             FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Writes a list of commands to the console.
@@ -163,4 +187,157 @@ end;{TCommands.Restart}
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//TCommands.Start() 		                                             FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Starts a server.
+//
+//	Changes -
+//		September 20th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+function TCommands.Start(Values :  TStringList) : String;
+begin
+  if Values.Count > 0 then
+  begin
+    Values[0] := LowerCase(Values[0]);
+    if Values[0] = 'login' then
+    begin
+      if NOT Assigned(MainProc.LoginServer) then
+      begin
+        MainProc.LoginServer := TLoginServer.Create;
+        MainProc.LoginServer.Port := ServerConfig.LoginPort;
+        MainProc.LoginServer.Start;
+      end else
+      begin
+        Result := 'Login Server already started';
+      end;
+    end else
+    if Values[0] = 'character' then
+    begin
+      if NOT Assigned(MainProc.CharacterServer) then
+      begin
+        MainProc.CharacterServer              := TCharacterServer.Create;
+        MainProc.CharacterServer.WANPort      := ServerConfig.CharaPort;
+        MainProc.CharacterServer.ServerName   := ServerConfig.ServerName;
+        MainProc.CharacterServer.Start;
+      end else
+      begin
+        Result := 'Character Server already started';
+      end;
+    end else
+    if Values[0] = 'inter' then
+    begin
+      if NOT Assigned(MainProc.InterServer) then
+      begin
+        MainProc.InterServer              := TInterServer.Create;
+        MainProc.InterServer.Port         := ServerConfig.InterPort;
+        MainProc.InterServer.IP           := ServerConfig.InterWANIP;
+        MainProc.InterServer.Start;
+      end else
+      begin
+        Result := 'Inter Server already started';
+      end;
+    end else
+    if Values[0] = 'zone' then
+    begin
+      if NOT Assigned(MainProc.ZoneServer) then
+      begin
+        MainProc.ZoneServer       := TZoneServer.Create;
+		    MainProc.ZoneServer.Port  := ServerConfig.ZonePort;
+        MainProc.ZoneServer.IP    := ServerConfig.ZoneWANIP;
+        MainProc.ZoneServer.Start;
+      end else
+      begin
+        Result := 'Zone Server already started';
+      end;
+    end else
+    begin
+      Result := Values[0] + ' is not a valid server';
+    end;
+  end else
+  begin
+    //display help for Start()
+    MainProc.Console('Using /Start...');
+    MainProc.Console('"/Start <ServerName>" - starts <ServerName>');
+    MainProc.Console('ServerName can be "Login", "Character", "Zone", or "Inter"');
+  end;
+
+end;{Start}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//TCommands.Stop() 		                                                 FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Stops a server.
+//
+//	Changes -
+//		September 20th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+function TCommands.Stop(Values :  TStringList) : String;
+begin
+  if Values.Count > 0 then
+  begin
+    Values[0] := LowerCase(Values[0]);
+    if Values[0] = 'login' then
+    begin
+      if Assigned(MainProc.LoginServer) then
+      begin
+        MainProc.LoginServer.Stop;
+        FreeAndNil(MainProc.LoginServer);
+      end else
+      begin
+        Result := 'Login Server is already stopped.';
+      end;
+    end else
+    if Values[0] = 'character' then
+    begin
+      if Assigned(MainProc.CharacterServer) then
+      begin
+        MainProc.CharacterServer.Stop;
+        FreeAndNil(MainProc.CharacterServer);
+      end else
+      begin
+        Result := 'Character Server is already stopped.';
+      end;
+    end else
+    if Values[0] = 'inter' then
+    begin
+      if Assigned(MainProc.InterServer) then
+      begin
+        MainProc.InterServer.Stop;
+        FreeAndNil(MainProc.InterServer);
+      end else
+      begin
+        Result := 'Inter Server is already stopped.';
+      end;
+    end else
+    if Values[0] = 'zone' then
+    begin
+      if Assigned(MainProc.ZoneServer) then
+      begin
+        MainProc.ZoneServer.Stop;
+        FreeAndNil(MainProc.ZoneServer);
+      end else
+      begin
+        Result := 'Zone Server is already stopped.';
+      end;
+    end else
+    begin
+      Result := Values[0] + ' is not a valid server name';
+    end;
+  end else
+  begin
+    //display help for Stop()
+    MainProc.Console('Using /Stop...');
+    MainProc.Console('"/Stop <ServerName>" - stops <ServerName>');
+    MainProc.Console('ServerName can be "Login", "Character", "Zone", or "Inter"');
+  end;
+
+end;{Stop}
+//------------------------------------------------------------------------------
 end.

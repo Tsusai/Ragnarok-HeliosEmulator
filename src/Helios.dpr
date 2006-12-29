@@ -11,7 +11,7 @@
 //
 //    Contributors(A-Z) -
 //        Matthew Mazanec (Tsusai - tsusai at gmail dot com)
-//        Robert Ditthardt (RaX)
+//        Robert Ditthardt (RaX - onerax at gmail dot com)
 //
 //    All rights reserved.
 //
