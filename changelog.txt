@@ -13,7 +13,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
-- Rev 87 -
+- Rev 88 -
+[2006/12/28] - Tsusai - Forgot to put back the Account field in the LoadChara in both existing
+ database calls.
+-
+
+- Rev 87 - 
 [2006/12/28] - RaX - Added the 12/28 client to our packet_db.
 -
 

@@ -745,6 +745,7 @@ begin
 			Result           := TCharacter.Create;
 			CID              := StrToInt(QueryResult.FieldValue(0));
 			ID               := StrToInt(QueryResult.FieldValue(1));
+			Account          := MainProc.ACommonDatabase.AnInterface.GetAccount(ID);
 			CharaNum         := StrToInt(QueryResult.FieldValue(2));
 			if CharaNum < 9 then
 			begin
