@@ -18,7 +18,8 @@ uses
   IdContext,
 	SysUtils,
   PacketTypes,
-  Character;
+  Character,
+  Database;
 
 type
 	TZoneServer = class
@@ -50,6 +51,9 @@ type
 		ServerName    : String;
 		OnlineUsers   : Word;
 
+    AGameDatabase : TDatabase;
+    ACommonDatabase : TDatabase;
+    
 		property IP   : string read fIP write SetIPCardinal;
     property Port : Word read fPort write SetPort;
 
@@ -84,6 +88,9 @@ uses
 //------------------------------------------------------------------------------
 Constructor TZoneServer.Create;
 begin
+  ACommonDatabase := TDatabase.Create(FALSE);
+  AGameDatabase   := TDatabase.Create(TRUE);
+
   TCPServer := TIdTCPServer.Create;
   ToCharaTCPClient := TIdTCPClient.Create;
   ToInterTCPClient := TIdTCPClient.Create;
@@ -108,6 +115,8 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TZoneServer.Destroy;
 begin
+  ACommonDatabase.Free;
+  AGameDatabase.Free;
   TCPServer.Free;
   ToCharaTCPClient.Free;
   ToInterTCPClient.Free;

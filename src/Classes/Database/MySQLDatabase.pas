@@ -745,13 +745,7 @@ begin
 			Result           := TCharacter.Create;
 			CID              := StrToInt(QueryResult.FieldValue(0));
 			ID               := StrToInt(QueryResult.FieldValue(1));
-			Account          := MainProc.ACommonDatabase.AnInterface.GetAccount(ID);
 			CharaNum         := StrToInt(QueryResult.FieldValue(2));
-			if CharaNum < 9 then
-			begin
-				//If its active, then attach to the player.
-				Account.CharaID[CharaNum] := CID;
-			end;
 			Name            :=          QueryResult.FieldValue(3);
 			JID             := StrToInt(QueryResult.FieldValue(4));
 			BaseLV          := StrToInt(QueryResult.FieldValue(5));

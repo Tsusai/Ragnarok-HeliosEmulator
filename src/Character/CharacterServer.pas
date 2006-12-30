@@ -20,7 +20,8 @@ uses
   IdContext,
 	CommClient,
 	SysUtils,
-  PacketTypes;
+  PacketTypes,
+  Database;
 type
 //------------------------------------------------------------------------------
 //TCharacterServer                                                        CLASS
@@ -32,6 +33,9 @@ type
 		fWANPort           : Word;
     TCPServer       : TIdTCPServer;
 		CharaToLoginClient : TInterClient;
+
+    ACommonDatabase : TDatabase;
+    AGameDatabase   : TDatabase;
 
     Procedure OnException(AConnection: TIdContext;
       AException: Exception);
@@ -67,16 +71,15 @@ uses
 	//Helios
 	CharaLoginPackets,
 	BufferIO,
-  Console,
   Character,
-	Database,
   Account,
 	GameConstants,
   Globals,
   TCPServerRoutines,
   //3rd
 	StrUtils,
-  CharaList;
+  CharaList,
+  Console;
 
 const
 	INVALIDNAME = 0;
@@ -96,6 +99,9 @@ const
 //------------------------------------------------------------------------------
 Constructor TCharacterServer.Create;
 begin
+  ACommonDatabase := TDatabase.Create(FALSE);
+  AGameDatabase   := TDatabase.Create(TRUE);
+
   TCPServer := TIdTCPServer.Create;
 	TCPServer.OnExecute   := ParseCharaServ;
 	TCPServer.OnException := OnException;
@@ -121,6 +127,9 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TCharacterServer.Destroy;
 begin
+  ACommonDatabase.Free;
+  AGameDatabase.Free;
+
   TCPServer.Free;
 	CharaToLoginClient.Free;
 end;{Destroy}
@@ -241,9 +250,8 @@ var
 begin
 	Count     := 0;
 	Ver       := 24;
-
 	AccountID := BufferReadCardinal(2, ABuffer);
-	AnAccount := MainProc.ACommonDatabase.AnInterface.GetAccount(AccountID);
+	AnAccount := ACommonDatabase.AnInterface.GetAccount(AccountID);
 
 	if Assigned(AnAccount) then
 	begin
@@ -256,10 +264,12 @@ begin
 				TThreadLink(AClient.Data).AccountLink := AnAccount;
 				SendPadding(AClient); //Legacy padding
 
-				ACharaList := MainProc.AGameDatabase.AnInterface.GetAccountCharas(AccountID);
+				ACharaList := AGameDatabase.AnInterface.GetAccountCharas(AccountID);
 				for Index := 0 to ACharaList.Count-1 do
 				begin
 					ACharacter := ACharaList.Items[Index];
+          ACharacter.Account := AnAccount;
+          AnAccount.CharaID[ACharacter.CharaNum] := ACharacter.CID;
 					if not (ACharacter = NIL) then
 					begin
 						with ACharacter do
@@ -392,7 +402,7 @@ begin
 	TotalStatPt := 0;
 
 	//Name Check.
-	if NOT MainProc.AGameDatabase.AnInterface.CharaExists(CharaName) then
+	if NOT AGameDatabase.AnInterface.CharaExists(CharaName) then
 	begin
 		//Stat Point check.
 		for idx := 0 to 5 do begin
@@ -414,7 +424,7 @@ begin
 		end;
 
 		//Slot Check.
-		if MainProc.AGameDatabase.AnInterface.CharaExists(Account.ID, SlotNum) then
+		if AGameDatabase.AnInterface.CharaExists(Account.ID, SlotNum) then
 		begin
 			CreateCharaError(INVALIDMISC);
 			Validated := FALSE;
@@ -426,11 +436,17 @@ begin
 			//Validated...Procede with creation
 			ACharacter := TCharacter.Create;
 			//Set a record in Database for our new character
-			if MainProc.AGameDatabase.AnInterface.CreateChara(
+			if AGameDatabase.AnInterface.CreateChara(
 				ACharacter,Account.ID,CharaName) then
 			begin
 				ACharacter.Name           := CharaName;
 				ACharacter.CharaNum       := SlotNum;
+        ACharacter.Account        := Account;
+        if ACharacter.CharaNum < 9 then
+			  begin
+				  //If its active, then attach to the player.
+				  ACharacter.Account.CharaID[ACharacter.CharaNum] := ACharacter.CID;
+			  end;
         ACharacter.BaseLV         := 1;
         ACharacter.JobLV          := 1;
         ACharacter.JID            := 0;
@@ -476,7 +492,7 @@ begin
         ACharacter.HomunID        := 0;
 
 				//INSERT ANY OTHER CREATION CHANGES HERE!
-				MainProc.AGameDatabase.AnInterface.SaveChara(ACharacter);
+				AGameDatabase.AnInterface.SaveChara(ACharacter);
 				with ACharacter do begin
 					WriteBufferWord(0, $006d,ReplyBuffer);
 					WriteBufferCardinal(2+  0, CID,ReplyBuffer);
@@ -558,7 +574,7 @@ begin
 	CharacterID := BufferReadCardinal(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TThreadLink(AClient.Data).AccountLink;
-	ACharacter := MainProc.AGameDatabase.AnInterface.GetChara(CharacterID);
+	ACharacter := AGameDatabase.AnInterface.GetChara(CharacterID);
 
   if Assigned(ACharacter) then
   begin
@@ -571,7 +587,7 @@ begin
 			  begin
 				  if CharacterList.Items[CharacterIndex].CID = ACharacter.CID then
 				  begin
-					  if MainProc.AGameDatabase.AnInterface.DeleteChara(ACharacter) then
+					  if AGameDatabase.AnInterface.DeleteChara(ACharacter) then
 					  begin
 						  WriteBufferWord(0, $006f, ReplyBuffer);
 						  SendBuffer(AClient,ReplyBuffer, 2);

@@ -21,7 +21,8 @@ uses
 	PacketTypes,
 	Classes,
 	SysUtils,
-	Account;
+	Account,
+  Database;
 
 type
 //------------------------------------------------------------------------------
@@ -34,6 +35,8 @@ type
 		fPort         : Word;
 		TCPServer     : TIdTCPServer;
 		fCharaServerList : TStringList;
+
+    ACommonDatabase : TDatabase;
 
 		Procedure OnConnect(AConnection: TIdContext);
 		Procedure OnDisconnect(AConnection: TIdContext);
@@ -77,7 +80,6 @@ uses
 	Globals,
 	BufferIO,
 	CharacterServerInfo,
-	Database,
 	StrUtils,
 	Console,
 	ServerOptions,
@@ -104,6 +106,9 @@ const
 Constructor TLoginServer.Create();
 begin
 	Inherited;
+
+  ACommonDatabase := TDatabase.Create(FALSE);
+
 	TCPServer := TIdTCPServer.Create;
 
 	TCPServer.OnExecute   := ParseLogin;
@@ -128,6 +133,7 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TLoginServer.Destroy();
 begin
+  ACommonDatabase.Free;
 	TCPServer.Free;
 	fCharaServerList.Free;
 	Inherited;
@@ -310,10 +316,10 @@ end;{OnException}
 			//Trim the MF off because people forget to take it off.
 			Username := AnsiLeftStr(Username,Length(Username)-2);
 			//Check to see if the account already exists.
-			if NOT MainProc.ACommonDatabase.AnInterface.AccountExists(Username) then
+			if NOT ACommonDatabase.AnInterface.AccountExists(Username) then
 			begin
 				//Create the account.
-				MainProc.ACommonDatabase.AnInterface.CreateAccount(
+				ACommonDatabase.AnInterface.CreateAccount(
 					Username,Password,GenderStr[2]
 				);
 			end;
@@ -357,7 +363,7 @@ end;{OnException}
 			ParseMF(Username,Password);
 		end;
 
-		AnAccount := MainProc.ACommonDatabase.AnInterface.GetAccount(UserName);
+		AnAccount := ACommonDatabase.AnInterface.GetAccount(UserName);
 		if Assigned(AnAccount) then begin
 			AccountPassword := AnAccount.Password;
 			if not(MD5Key = '') then
@@ -375,7 +381,7 @@ end;{OnException}
 						AnAccount.LastIP := AClient.Connection.Socket.Binding.PeerIP;
 						AnAccount.LastLoginTime := Now;
 						Inc(AnAccount.LoginCount);
-						MainProc.ACommonDatabase.AnInterface.SaveAccount(AnAccount);
+						ACommonDatabase.AnInterface.SaveAccount(AnAccount);
 						SendCharacterServers(AnAccount,AClient);
 					end else begin
 						SendLoginError(AClient,LOGIN_TIMEUP);

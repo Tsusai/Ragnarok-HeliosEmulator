@@ -113,7 +113,7 @@ end;{GetBanned}
 procedure TAccount.SetBannedTime(TimeString : string);
 begin
 	Self.Bantime := ConvertMySQLTime(TimeString);
-	MainProc.ACommonDatabase.AnInterface.SaveAccount(self);
+	MainProc.ZoneServer.ACommonDatabase.AnInterface.SaveAccount(self);
 end;{SetBannedTime}
 //------------------------------------------------------------------------------
 
@@ -149,7 +149,7 @@ end;
 procedure TAccount.SetConnectUntilTime(TimeString : string);
 begin
 	Self.ConnectUntil := ConvertMySQLTime(TimeString);
-	MainProc.ACommonDatabase.AnInterface.SaveAccount(self);
+	MainProc.ZoneServer.ACommonDatabase.AnInterface.SaveAccount(self);
 end;{SetConnectUntilTime}
 //------------------------------------------------------------------------------
 

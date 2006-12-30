@@ -35,9 +35,6 @@ type
 		ZoneServer  		: TZoneServer;
 		InterServer 		: TInterServer;
 
-		AGameDatabase		: TDatabase;
-		ACommonDatabase	: TDatabase;
-
 		procedure Console(Line : string);
 
 		procedure Startup;
@@ -108,10 +105,6 @@ begin
 //Start and create Enabled Servers
 	if ServerConfig.LoginEnabled then
 	begin
-    if NOT Assigned(ACommonDatabase) then
-    begin
-      ACommonDatabase := TDatabase.Create(FALSE);
-    end;
 		LoginServer      := TLoginServer.Create;
 		LoginServer.Port := ServerConfig.LoginPort;
 		LoginServer.Start;
@@ -119,14 +112,6 @@ begin
 	//NOTE: Prior
 	if ServerConfig.CharaEnabled then
 	begin
-    if NOT Assigned(ACommonDatabase) then
-    begin
-      ACommonDatabase := TDatabase.Create(FALSE);
-    end;
-    if NOT Assigned(AGameDatabase) then
-    begin
-      AGameDatabase := TDatabase.Create(TRUE);
-    end;
 		CharacterServer  := TCharacterServer.Create;
 		CharacterServer.WANPort     := ServerConfig.CharaPort;
 		CharacterServer.ServerName  := ServerConfig.ServerName;
@@ -143,10 +128,6 @@ begin
 
 	if ServerConfig.ZoneEnabled then
 	begin
-    if NOT Assigned(AGameDatabase) then
-    begin
-      AGameDatabase := TDatabase.Create(TRUE);
-    end;
     ZoneServer       := TZoneServer.Create;
 		ZoneServer.Port  := ServerConfig.ZonePort;
     ZoneServer.IP    := ServerConfig.ZoneWANIP;
@@ -203,17 +184,6 @@ begin
     ZoneServer.Stop;
     ZoneServer.Free;
 	end;
-
-  //Free Databases
-  if Assigned(ACommonDatabase) then
-  begin
-    ACommonDatabase.Free;
-  end;
-
-  if Assigned(AGameDatabase) then
-  begin
-    AGameDatabase.Free;
-  end;
 
 	//Make sure globals are Free'd on Application exit.
 	DestroyGlobals;
