@@ -13,6 +13,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 91 -
+[2007/01/02] - RaX - Thanks to research done by Tsusai, our text database works with
+ multiple exes.
+[2007/01/02] - RaX - Changed JanSQLDatabase to save and release after each update/insert/
+ delete and just release after each select, this causes the text database to reload itself
+ before queries, allowing real-time data changes in a text database =o.
+-
+
 - Rev 90 -
 [2006/12/30] - RaX - Pretty much redid the database reorganization of the last commit.
  Moved Databases to be a private entity of each server. Zone is the exception, multiple

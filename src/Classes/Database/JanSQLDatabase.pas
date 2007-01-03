@@ -319,6 +319,7 @@ begin
 				Result := AnAccount;
 			end;
 		end;
+    SendQuery('RELEASE accounts');
 		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 	end;
 end;
@@ -373,6 +374,7 @@ begin
 				Result := AnAccount;
 			end;
 		end;
+    SendQuery('RELEASE accounts');
 		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 	end;
 
@@ -446,6 +448,7 @@ begin
 			  Result.Add(GetChara(StrToInt(QueryResult.Records[Index].Fields[0].value)));
       end;
     end;
+    SendQuery('RELEASE characters');
  	  Database.ReleaseRecordset(ResultIdentifier);
   end;
 end;
@@ -476,6 +479,7 @@ begin
     begin
       Result := TRUE;
     end;
+    SendQuery('RELEASE characters');
     Database.ReleaseRecordset(ResultIdentifier);
   end;
 end;
@@ -506,6 +510,7 @@ begin
     begin
       Result := TRUE;
     end;
+    SendQuery('RELEASE characters');
     Database.ReleaseRecordset(ResultIdentifier);
   end;
 end;
@@ -521,6 +526,7 @@ begin
 			Format('SELECT userid FROM accounts WHERE userid = ''%s''',[UserName]));
   QueryResult := Database.RecordSets[ResultIdentifier];
 	Result := (QueryResult.recordcount > 0);
+  SendQuery('RELEASE accounts');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 
@@ -570,6 +576,8 @@ begin
 			 AnAccount.ID]
 		);
 	ResultIdentifier := SendQuery(QueryString);
+  SendQuery('SAVE accounts');
+  SendQuery('RELEASE accounts');
   if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 //------------------------------------------------------------------------------
@@ -691,6 +699,8 @@ begin
 			]);
 	end;
 	ResultIdentifier := SendQuery(QueryString);
+  SendQuery('SAVE characters');
+  SendQuery('RELEASE characters');
   if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//SaveChara
 //------------------------------------------------------------------------------
@@ -745,6 +755,8 @@ begin
 		ACharacter := GetChara(StrToInt(QueryResult.Records[0].Fields[0].value));
 		Result := Assigned(ACharacter);
 	end;
+  SendQuery('SAVE characters');
+  SendQuery('RELEASE characters');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//CreateChara
 //------------------------------------------------------------------------------
@@ -761,6 +773,8 @@ begin
 	ResultIdentifier := SendQuery(
 		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(%s, %s, %s)',
 		[Username,Password,GenderChar]));
+  SendQuery('SAVE accounts');
+  SendQuery('RELEASE accounts');
   if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 
@@ -849,6 +863,7 @@ begin
 			DataChanged := false;
 		end;
 	end else Result := nil;
+  SendQuery('RELEASE characters');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//LoadChara
 //------------------------------------------------------------------------------
@@ -873,6 +888,8 @@ begin
 
 		CharacterList.Delete(CharacterList.IndexOf(ACharacter.CID));
     Result := TRUE;
+    SendQuery('SAVE characters');
+    SendQuery('RELEASE characters');
   if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//DeleteChara
 //------------------------------------------------------------------------------
@@ -903,7 +920,7 @@ begin
 	AnAccount.LoginKey[2]  := StrToIntDef(QueryResult.records[0].fields[1].Value,0);
 	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.records[0].fields[2].Value);
 	AnAccount.Bantime := ConvertMySQLTime(QueryResult.records[0].fields[3].Value);
-
+  SendQuery('RELEASE accounts');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetAccountBanAndConnectTime
 //------------------------------------------------------------------------------
@@ -932,6 +949,7 @@ begin
 	begin
 			Result              := StrToInt(QueryResult.Records[0].Fields[0].value);
 	end else Result := 0;
+  SendQuery('RELEASE hp');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetBaseHP
 //------------------------------------------------------------------------------
@@ -961,6 +979,7 @@ begin
 	begin
 			Result              := StrToInt(QueryResult.Records[0].Fields[0].Value);
 	end else Result := 0;
+  SendQuery('RELEASE sp');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetBaseSP
 //------------------------------------------------------------------------------
