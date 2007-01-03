@@ -411,7 +411,7 @@ end;{OnException}
 	begin
 		Validated := false;
 		//TODO : Fix the check here
-		if Password = GetMD5('helioscserver') then
+		if Password = GetMD5(ServerConfig.LoginKey) then
 		begin
 			Validated := true;
 		end;
@@ -424,7 +424,6 @@ end;{OnException}
 			CServerInfo.WANPort := Port;
 			AClient.Data := TCharaServerLink.Create;
 			TCharaServerLink(AClient.Data).Info := CServerInfo;
-			//note..the list should probably own this object
 			fCharaServerList.AddObject(ServerName,CServerInfo);
 		end;
 		SendValidateFlag(AClient,Validated);

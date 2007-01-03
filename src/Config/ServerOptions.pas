@@ -27,6 +27,7 @@ interface
 //Login Config
 			fLoginPort		: Word;
 			fLoginEnabled : boolean;
+      fLoginKey     : String;
 			fEnableMF			: Boolean;
 
 //Chara Config
@@ -34,8 +35,11 @@ interface
 			fCharaEnabled : boolean;
 			fCharaWANIP		: String;
 			fCharaLANIP		: String;
+
 			fLoginComIP		: String;
 			fLoginComPort : Word;
+      fLoginComKey  : String;
+
 			fServerName		: String;
 
 //Zone Config
@@ -106,6 +110,7 @@ interface
 			property EnableMF : boolean read fEnableMF write SetEnableMF;
 			property LoginPort : Word read fLoginPort write SetLoginPort;
 			property LoginEnabled : boolean read fLoginEnabled;
+      property LoginKey     : String read fLoginKey;
 
 			//CharaOptions
 			property ServerName : String read fServerName write SetServerName;
@@ -115,6 +120,7 @@ interface
 			property CharaLANIP : String read fCharaLANIP write SetCharaLANIP;
 			property LoginComIP : String read fLoginComIP write SetLoginComIP;
 			property LoginComPort : Word read fLoginComPort write SetLoginComPort;
+      property LoginComKey  : String read fLoginComKey;
 
 			//ZoneOptions
 			property ZonePort  : Word read fZonePort  write SetZonePort;
@@ -186,6 +192,7 @@ implementation
 			fEnableMF    := StrToBoolDef(Section.Values['EnableMF'] ,false);
 			fLoginEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
 			fLoginPort   := StrToIntDef(Section.Values['Port'], 6900);
+      fLoginKey    := Section.Values['Key'];
 
 		end;{Subroutine LoadLoginOptions}
     //--------------------------------------------------------------------------
@@ -204,6 +211,7 @@ implementation
 			fServerName			:= Section.Values['ServerName'];
 			fCharaPort			:= StrToIntDef(Section.Values['Port'], 6121);
 			fLoginComPort		:= StrToIntDef(Section.Values['LoginPort'], 6900);
+      fLoginComKey    := Section.Values['LoginKey'];
 
 			if Section.Values['WANIP'] = '' then
 			begin
@@ -363,6 +371,7 @@ implementation
 		WriteString('Login','Enabled',BoolToStr(LoginEnabled));
 		WriteString('Login','Port',IntToStr(LoginPort));
 		WriteString('Login','EnableMF',BoolToStr(EnableMF));
+    WriteString('Login','Key',LoginKey);
 
 		WriteString('Chara','Enabled',BoolToStr(CharaEnabled));
 		WriteString('Chara','WANIP',CharaWANIP);
@@ -370,6 +379,7 @@ implementation
 		WriteString('Chara','Port', IntToStr(CharaPort));
 		WriteString('Chara','LoginIP',LoginComIP);
 		WriteString('Chara','LoginPort',IntToStr(LoginComPort));
+    WriteString('Chara','LoginKey',LoginComKey);
 		WriteString('Chara','ServerName',ServerName);
 
 		WriteString('Zone','Enabled',BoolToStr(ZoneEnabled));

@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 92 -
+[2007/01/03] - RaX - Added 2 ini entries, [Login] - Key and [Chara] - LoginKey. Now we can
+ specify the password used to communicate between the login and character servers.
+-
+
 - Rev 91 -
 [2007/01/02] - RaX - Thanks to research done by Tsusai, our text database works with
  multiple exes.
