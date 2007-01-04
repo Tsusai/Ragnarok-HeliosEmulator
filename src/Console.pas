@@ -99,7 +99,6 @@ begin
 	AppPath  := ExtractFilePath(ParamStr(0));
 
 	InitGlobals;
-
 	SetupTerminationCapturing;
 
 //Start and create Enabled Servers
@@ -140,6 +139,7 @@ begin
 
 	Console('- Startup Success');
 	Console('  For a list of console commands, input "/help".');
+	Console('');
 
 end;{TMainProc.Startup}
 //------------------------------------------------------------------------------

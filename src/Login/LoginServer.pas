@@ -22,21 +22,21 @@ uses
 	Classes,
 	SysUtils,
 	Account,
-  Database;
+	Database;
 
 type
 //------------------------------------------------------------------------------
 //TLoginServer                                                            CLASS
 //------------------------------------------------------------------------------
 	TLoginServer = class
-  protected
-  //
+	protected
+	//
 	private
 		fPort         : Word;
 		TCPServer     : TIdTCPServer;
 		fCharaServerList : TStringList;
 
-    ACommonDatabase : TDatabase;
+		ACommonDatabase : TDatabase;
 
 		Procedure OnConnect(AConnection: TIdContext);
 		Procedure OnDisconnect(AConnection: TIdContext);
@@ -65,7 +65,7 @@ type
 	public
 		Property Port : Word read fPort write SetPort;
 
-    Constructor Create();
+		Constructor Create();
 		Destructor  Destroy();override;
 		Procedure   Start();
 		Procedure   Stop();
@@ -87,11 +87,11 @@ uses
 
 const
 //ERROR REPLY CONSTANTS
-  LOGIN_UNREGISTERED    = 0;
-  LOGIN_INVALIDPASSWORD = 1;
-  LOGIN_BANNED          = 4;
-  LOGIN_TIMEUP          = 2;
-  //LOGIN_SERVERFULL =  ;
+	LOGIN_UNREGISTERED    = 0;
+	LOGIN_INVALIDPASSWORD = 1;
+	LOGIN_BANNED          = 4;
+	LOGIN_TIMEUP          = 2;
+	//LOGIN_SERVERFULL =  ;
 
 //------------------------------------------------------------------------------
 //Create()                                                          CONSTRUCTOR
@@ -107,7 +107,7 @@ Constructor TLoginServer.Create();
 begin
 	Inherited;
 
-  ACommonDatabase := TDatabase.Create(FALSE);
+	ACommonDatabase := TDatabase.Create(FALSE);
 
 	TCPServer := TIdTCPServer.Create;
 
@@ -133,7 +133,7 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TLoginServer.Destroy();
 begin
-  ACommonDatabase.Free;
+	ACommonDatabase.Free;
 	TCPServer.Free;
 	fCharaServerList.Free;
 	Inherited;
@@ -170,7 +170,7 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TLoginServer.Stop();
 begin
-  DeActivateServer(TCPServer);
+	DeActivateServer('Login', TCPServer);
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -249,7 +249,7 @@ end;{OnException}
 	begin
 		WriteBufferWord( 0, $006a, Buffer);
 		WriteBufferWord( 2, Error, Buffer);
-		SendBuffer(AClient, Buffer ,23);
+		SendBuffer(AClient, Buffer ,GetPacketLength($006a));
 	end; // proc SendLoginError
 //------------------------------------------------------------------------------
 
@@ -299,7 +299,7 @@ end;{OnException}
 		begin
 			WriteBufferWord(0,$0081,Buffer);
 			WriteBufferByte(2,1,Buffer); //01 Server Closed
-			SendBuffer(AClient, Buffer, 3);
+			SendBuffer(AClient, Buffer, GetPacketLength($0081));
 		end;
 
 	end; // Proc SendCharacterServers
@@ -335,6 +335,7 @@ end;{OnException}
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		January 3rd, 2006 - Tsusai - Added console messages.
 //
 //------------------------------------------------------------------------------
 	procedure TLoginServer.ValidateLogin(
@@ -348,9 +349,9 @@ end;{OnException}
 		AccountPassword : string;
 		MD5Key    : string;
 	begin
-		MainProc.Console('Client connection from ' + AClient.Connection.Socket.Binding.PeerIP);
+		MainProc.Console('Login Server: RO Client connection from ' + AClient.Connection.Socket.Binding.PeerIP);
 		MD5Key := '';
-		//New database system added 09/29/06 - RaX
+
 		if (AClient.Data is TMD5String) then
 		begin
 			MD5Key := TMD5String(AClient.Data).Key;
@@ -398,6 +399,8 @@ end;{OnException}
 	end;//ValidateLogin
 //------------------------------------------------------------------------------
 
+	//		January 3rd, 2006 - Tsusai - Added console messages.
+	// Add header please kthxbai
 	procedure TLoginServer.VerifyCharaServer(
 		AClient: TIdContext;
 		InBuffer : TBuffer;
@@ -410,13 +413,14 @@ end;{OnException}
 		CServerInfo : TCharaServerInfo;
 	begin
 		Validated := false;
-		//TODO : Fix the check here
+		MainProc.Console('Login Server: Reading Character Server connection from ' + AClient.Connection.Socket.Binding.PeerIP);
 		if Password = GetMD5(ServerConfig.LoginKey) then
 		begin
 			Validated := true;
 		end;
 		if Validated then
 		begin
+			MainProc.Console('Login Server: Character Server connection validated.');
 			Servername := BufferReadString(18,24,InBuffer);
 			Port := BufferReadWord(42,InBuffer);
 			CServerInfo := TCharaServerInfo.Create;
@@ -425,6 +429,9 @@ end;{OnException}
 			AClient.Data := TCharaServerLink.Create;
 			TCharaServerLink(AClient.Data).Info := CServerInfo;
 			fCharaServerList.AddObject(ServerName,CServerInfo);
+		end else
+		begin
+			MainProc.Console('Login Server: Character Server failed verification.');
 		end;
 		SendValidateFlag(AClient,Validated);
 	end;
@@ -439,6 +446,7 @@ end;{OnException}
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		January 3rd, 2006 - Tsusai - Added console messages.
 //
 //------------------------------------------------------------------------------
 	procedure TLoginServer.ParseLogin(AClient: TIdContext);
@@ -450,7 +458,6 @@ end;{OnException}
 		MD5Len    : Integer;
 		MD5Key    : TMD5String;
 		Size      : Word;
-
 	begin
 		//Get ID
 		RecvBuffer(AClient,Buffer,2);
@@ -459,7 +466,7 @@ end;{OnException}
 		$0064: //Basic login
 			begin
 				//Read the rest of the packet
-				RecvBuffer(AClient,Buffer[2],55-2);
+				RecvBuffer(AClient,Buffer[2],GetPacketLength($0064)-2);
 				UserName := BufferReadString(6,24,Buffer);
 				Password := BufferReadString(30,24,Buffer);
 				ValidateLogin(AClient,Buffer,Username,Password);
@@ -477,15 +484,14 @@ end;{OnException}
 			end;
 		$01DD: //Recieve secure login details
 			begin
-				RecvBuffer(AClient,Buffer[2],47-2);
+				RecvBuffer(AClient,Buffer[2],GetPacketLength($01DD)-2);
 				UserName := BufferReadString(6,24,Buffer);
 				Password := BufferReadMD5(30,Buffer);
 				ValidateLogin(AClient,Buffer,Username,Password);
 			end;
 		$2000:
 			begin
-				RecvBuffer(AClient,Buffer[2],44-2);
-				MainProc.Console('Connection by CharaServer from ' + AClient.Connection.Socket.Binding.PeerIP);
+				RecvBuffer(AClient,Buffer[2],GetPacketLength($2000)-2);
 				Password := BufferReadMD5(2,Buffer);
 				VerifyCharaServer(AClient,Buffer,Password);
 			end;
@@ -497,6 +503,7 @@ end;{OnException}
 					Size := BufferReadWord(2,Buffer);
 					RecvBuffer(AClient,Buffer[4],Size-4);
 					TCharaServerLink(AClient.Data).Info.WANIP := BufferReadString(4,Size-4,Buffer);
+					MainProc.Console('Login Server: Recieved updated Character Server WANIP.');
 				end;
 			end;
 		$2003:
@@ -507,20 +514,21 @@ end;{OnException}
 					Size := BufferReadWord(2,Buffer);
 					RecvBuffer(AClient,Buffer[4],Size-4);
 					TCharaServerLink(AClient.Data).Info.LANIP := BufferReadString(4,Size-4,Buffer);
+					MainProc.Console('Login Server: Recieved updated Character Server LANIP.');
 				end;
 			end;
 		$2004:
 			begin
 				if AClient.Data is TCharaServerLink then
 				begin
-					RecvBuffer(AClient,Buffer[2],2);
-					Size := BufferReadWord(2,Buffer);
-					TCharaServerLink(AClient.Data).Info.OnlineUsers := size;
+					RecvBuffer(AClient,Buffer[2],GetPacketLength($2004)-2);
+					TCharaServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,Buffer);
+					MainProc.Console('Login Server: Recieved updated Character Server Online Users.');
 				end;
 			end;
 		else
 			begin
-				MainProc.Console('Unknown Login Packet : ' + IntToHex(ID,4));
+				MainProc.Console('Login Server: Unknown Login Packet : ' + IntToHex(ID,4));
 			end;
 		end;
 	end;  // Proc SendCharacterServers
@@ -540,8 +548,8 @@ end;{OnException}
 //------------------------------------------------------------------------------
 Procedure TLoginServer.SetPort(Value : Word);
 begin
-  fPort := Value;
-  TCPServer.DefaultPort := Value;
+	fPort := Value;
+	TCPServer.DefaultPort := Value;
 end;//SetPort
 //------------------------------------------------------------------------------
 end.

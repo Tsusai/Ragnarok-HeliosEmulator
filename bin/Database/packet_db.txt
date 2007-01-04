@@ -4,6 +4,14 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 
 -Tsusai Aug 6, 2006
 
+//HELIOS SPECIFIC SERVER COMMUNICATION PACKETS HERE
+0x2000,44
+0x2001,3
+0x2002,-1
+0x2003,-1
+0x2004,4
+
+//RO PACKETS
 //packet_db.txt “¯‚¶”Ô†‚ÌƒpƒPƒbƒg‚ÍŒã‚Ì‚Åã‘‚«‚³‚ê‚é‚Ì‚Å•ÏX‚Ì‚ ‚Á‚½ƒpƒPƒbƒg‚Íˆê”Ô‰º‚É’Ç‰Á‚·‚ê‚Î‚æ‚¢‚Å‚·
 //ŒÃ‚¢ƒpƒPƒbƒg‚ÅŽg‚¢‚½‚¢ê‡‚ÍV‚µ‚¢’è‹`‚ðíœ‚·‚é‚©ƒRƒƒ“ƒgƒAƒEƒg‚·‚ê‚Î‚æ‚¢‚Å‚·
 0x0064,55

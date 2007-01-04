@@ -1,0 +1,2886 @@
+------------------------------------------------------------------
+
+client_packet_en.txt
+
+Author: Colus @ #weiss, others (see credits)
+
+Description: This document is an attempt to translate the most
+recent client_packet.txt documentation from the Japanese Athena
+dev team.  As they add new packets and information, I will try to
+keep the document up to date.  Where things change or fall out of
+date, I will attempt to correct them (corrections and advice on
+translations are welcome).
+
+Version History:
+
+2003/12/31: Initial revision of this documentation.
+            Based on client_packet.txt of 2003/12/15.
+
+2004/01/04: Added bit more formatting on the packet length table.
+            Packet 019d added.
+            Japanese devs did some reordering that matches mine. :)
+            Added some info on 011f v. 01c9.
+            Based on client_packet.txt of 2004/01/01.
+
+2004/01/17: Added more info on some packets for item creation and
+            equipment graphics (to accomodate Pharmacy).
+
+2004/01/23: Added 012a, corrected some 0119 values.
+
+2004/03/01: Updated 0189 definition.
+
+2004/03/19: Added 01ee, 01ef, 01f0 packet information.
+
+2004/04/21: A new new packets and corrections/additions.  Oatmeal
+            also added a few extra effects at some point.  Based on
+            client_packet.txt of 2004/04/20.
+
+2004/06/25: Lots of additions (note especially the first packets over
+            x200.)  Definitely compare to the last version to see
+            what's been added.  Based on client_packet.txt of
+	    2004/06/21.
+
+2004/12/14: More packets from jA 1071 client_packet.txt Not Translated,
+	    new packets and some comments.
+
+Credits:
+
+- The Japanese Athena dev team, for providing the original list.
+
+- My interest in translating the current version was based on the
+work of a previous, unknown (to me) translator whose work appeared
+in the release of Fusion Weiss 1.2.0.6.  Most of the first packets
+(up to about the time of Comodo changes) were translated to some
+extent by this person, and I merely tried to clean up and
+confirm those initial translations.  My thanks to them.
+
+Questions, Problems:
+
+Contact me in the Weiss IRC channel.
+
+------------------------------------------------------------------
+
+    0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+
+#0x0000
+   10,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+#0x0040
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0, 55, 17,  3, 37, 46, -1, 23, -1,  3,108,  3,  2,
+    3, 28, 19, 11,  3, -1,  9,  5, 54, 53, 58, 60, 41,  2,  6,  6,
+#0x0080
+    7,  3,  2,  2,  2,  5, 16, 12, 10,  7, 29, 23, -1, -1, -1,  0,
+    7, 22, 28,  2,  6, 30, -1, -1,  3, -1, -1,  5,  9, 17, 17,  6,
+   23,  6,  6, -1, -1, -1, -1,  8,  7,  6,  7,  4,  7,  0, -1,  6,
+    8,  8,  3,  3, -1,  6,  6, -1,  7,  6,  2,  5,  6, 44,  5,  3,
+#0x00C0
+    7,  2,  6,  8,  6,  7, -1, -1, -1, -1,  3,  3,  6,  6,  2, 27,
+    3,  4,  4,  2, -1, -1,  3, -1,  6, 14,  3, -1, 28, 29, -1, -1,
+   30, 30, 26,  2,  6, 26,  3,  3,  8, 19,  5,  2,  3,  2,  2,  2,
+    3,  2,  6,  8, 21,  8,  8,  2,  2, 26,  3, -1,  6, 27, 30, 10,
+#0x0100
+    2,  6,  6, 30, 79, 31, 10, 10, -1, -1,  4,  6,  6,  2, 11, -1,
+   10, 39,  4, 10, 31, 35, 10, 18,  2, 13, 15, 20, 68,  2,  3, 16,
+    6, 14, -1, -1, 21,  8,  8,  8,  8,  8,  2,  2,  3,  4,  2, -1,
+    6, 86,  6, -1, -1,  7, -1,  6,  3, 16,  4,  4,  4,  6, 24, 26,
+#0x0140
+   22, 14,  6, 10, 23, 19,  6, 39,  8,  9,  6, 27, -1,  2,  6,  6,
+  110,  6, -1, -1, -1, -1, -1,  6, -1, 54, 66, 54, 90, 42,  6, 42,
+   -1, -1, -1, -1, -1, 30, -1,  3, 14,  3, 30, 10, 43, 14,186,182,
+   14, 30, 10,  3, -1,  6,106, -1,  4,  5,  4, -1,  6,  7, -1, -1,
+#0x0180
+    6,  3,106, 10, 10, 34,  0,  6,  8,  4,  4,  4, 29, -1, 10,  6,
+   90, 86, 24,  6, 30,102,  9,  4,  8,  4, 14, 10,  4,  6,  2,  6,
+    3,  3, 35,  5, 11, 26, -1,  4,  4,  6, 10, 12,  6, -1,  4,  4,
+   11,  7, -1, 67, 12, 18,114,  6,  3,  6, 26, 26, 26, 26,  2,  3,
+#0x01C0
+    2, 14, 10, -1, 22, 22,  4,  2, 13, 97,  0,  9,  9, 29,  6, 28,
+    8, 14, 10, 35,  6,  8,  4, 11, 54, 53, 60,  2, -1, 47, 33,  6,
+   30,  8, 34, 14,  2,  6, 26,  2, 28, 81,  6, 10, 26,  2, -1, -1,
+   -1, -1, 20, 10, 32,  9, 34, 14,  2,  6, 48, 56, -1,  4,  5, 10,
+#0x0200
+   26, -1, 26, 10, 18, 26, 11, 34, 14, 36, 10, 19, 19, -1, 24,  0,
+
+S クライアントから見て送信
+R クライアントから見て受信
+
+S sent by the client
+R received by the client
+
+B バイト
+w ワード=2B
+l ロングワード=4B
+* 0個以上くりかえし
+
+B byte
+w word (2 bytes)
+l long (4 bytes)
+* at least this amount, but can be empty
+
+S 0064 <version>.l <account name>.24B <password>.24B <version2>.B
+	アカウントID&パスワード送信
+
+	Send account ID and password.
+
+S 0065 <account ID>.l <login ID1>.l <login ID2>.l ?.2B <sex>.B
+	キャラセレ鯖接続要求
+
+	Send request to connect to character selection server.
+
+S 0066 <character number>.B
+	キャラクタ選択要求
+
+	Request to select character.
+
+S 0067 <character name>.24B <param etc>.11B
+	キャラクタ作成要求
+
+	Request to create new character.
+
+S 0068 <character ID>.l <mail address>.40B
+	キャラクタ削除要求
+
+	Request to delete character.
+
+R 0069 <len>.w <login ID1>.l <account ID>.l <login ID2>.l ?.32B <sex>.B {<IP>.l <port>.w <server name>.20B <login users>.w <maintenance>.w <new>.w}.32B*
+	login成功&鯖情報
+
+	Information about success of login to login server.
+
+R 006a <error No>.B
+	login失敗 その１
+		err No=00 未登録のIDです
+		err No=01 パスワードが違います
+		err No=02 使用期間が終了しています
+		err No=03 サーバーから接続拒否されました
+		err No=04 解約されたID、またはアカウントブロックされているIDです
+		err No=05 最新のパッチではありません
+		err No=06 解約されたID、またはアカウントブロックされているIDです
+		err No=07 サーバーが混雑しています
+
+	Login failure, the first type:
+		err No=00 Unregistered ID.
+		err No=01 Password incorrect.
+		err No=02 Usage period has expired.
+		err No=03 Connection rejected by the server.
+		err No=04 Blocked ID, or an ID of a locked account.
+		err No=05 Not up-to-date on latest patch.
+		err No=06 Blocked ID, or an ID of a locked account.
+		err No=07 Server is full.
+
+R 006b <len>.w <charactor select data>.106B*
+	キャラセレ鯖接続成功&キャラクタデータ
+	<charactor select data> = <charactor ID>.l <base exp>.l <zeny>.l <job exp>.l <job level>.l ?.8B <option>.l <karma>.l <manner>.l ?.2B <HP>.w <MaxHP>.w <SP>.w <MaxSP>.w <speed>.w <class>.w <hair>.w <weapon>.2w <base level>.w <skill point>.w <head_bottom>.w <sheild>.w <head option top>.w <head option mid>.w <hair color>.w ?.w <name>.24B <STR>.B <AGI>.B <VIT>.B <INT>.B <DEX>.B <LUK>.B <charactor number>.B ?.B
+
+	Information about a success of connection to character select server & character data.
+
+R 006c <error No>.B
+	キャラクタ選択失敗
+
+	Character selection failed.
+
+R 006d <charactor select data>.106B
+	キャラクタ作成成功
+
+	Successful character creation.
+
+R 006e <error No>.B
+	キャラクタ作成失敗
+
+	Failed character creation.
+
+R 006f
+	キャラクタ削除成功
+
+	Successful character deletion.
+
+R 0070 <error No>.B
+	キャラクタ削除失敗
+		err No=00 メールアドレスが違う
+		err No=01 削除が拒否された
+
+	Failed character deletion:
+		err No=00 Mail address incorrect.
+		err No=01 Deletion was rejected.
+
+R 0071 <charactor ID>.l <map name>.16B <ip>.l <port>.w
+	キャラクタ選択成功&マップ名&ゲーム鯖IP/port
+
+	Success to select character & map name and IP/port number for game server.
+
+S 0072 <account ID>.l <charactor ID>.l <login ID1>.l <login ID2>.l <sex>.b
+	ゲーム鯖接続要求
+
+	Game server connection request.
+
+R 0073 <server tick>.l <coordidate>.3B ?.2B
+	ゲーム鯖接続成功&サーバ側1ms時計&出現位置
+
+	Game server connection successful.  Returns server time and spawn location.
+
+R 0078 <ID>.l <speed>.w <opt1>.w <opt2>.w <option>.w <class>.w <hair>.w <weapon>.w <head option bottom>.w <sheild>.w <head option top>.w <head option mid>.w <hair color>.w ?.w <head dir>.w <guild>.l <emblem>.l <manner>.w <karma>.B <sex>.B <X_Y_dir>.3B ?.B ?.B <sit>.B <Lv>.B
+	マップロード時&移動時用、向き付き用キャラ情報?
+
+	A packet for map load or moving, information about a direction for character?
+
+R 0079 <ID>.l <speed>.w <opt1>.w <opt2>.w <option>.w <class>.w <hair>.w <weapon>.w <head option bottom>.w <sheild>.w <head option top>.w <head option mid>.w <hair color>.w ?.w <head dir>.w <guild>.l <emblem>.l <manner>.w <karma>.B <sex>.B <X_Y_dir>.3B ?.B ?.B <Lv>.B
+	テレポ等の表示範囲内沸きキャラ用、向き付き無しキャラ情報?
+
+	Information about characters in a range of a skill like teleport, no info about direction for character?
+
+R 007b <ID>.l <speed>.w <opt1>.w <opt2>.w <option>.w <class>.w <hair>.w <weapon>.w <head option bottom>.w <server tick>.l <sheild>.w <head option top>.w <head option mid>.w <hair color>.w ?.w <head dir>.w <guild>.l <emblem>.l <manner>.w <karma>.B <sex>.B <X_Y_X_Y>.5B ?.B ?.B ?.B <Lv>.B
+	表示範囲内キャラ移動情報
+
+	Information about movement in the character's visible range. 
+
+R 007c <ID>.l <speed>.w ?.6w <class>.w ?.7w <X_Y>.3B ?.2B
+	NPC用表示範囲内キャラ情報
+
+	Character information for NPCs in the character's visible range.
+
+S 007d
+	mapロード終り
+
+	Map loading complete.
+
+S 007e <client tick>.l
+	クライアント側1msタイマ送信
+	
+	Sends a client tick.
+
+R 007f <server tick>.l
+	サーバ側1msタイマ送信
+
+	Receives a server tick.
+
+R 0080 <ID>.l <type>.B
+	type=00 キャラ消滅 (画面外移動。死体消滅等?)
+	type=01 キャラ死亡
+	type=02 キャラ消滅 (logout等?)
+	type=03 テレポート (テレポ,蝿,蝶等？)
+
+	Information about a character leaving the visible area:
+	type=00 Character disappeared (Moved offscreen.  Died and respawned?)
+	type=01 Character died.
+	type=02 Character vanished (logout?)
+	type=03 Teleport (Teleport, fly wing, butterfly wing?)
+
+R 0081 <type>.B
+	login失敗 その２
+		type=01 サーバー接続終了
+		type=02 同じIDで他の使用者がログインしました
+		type=03 サーバーとの同期に失敗しました
+		type=04 地域の収容人員超過で接続できません
+		type=05 １８歳以下は接続できません
+		type=06 決済されたアカウントではありません
+		type=07 サーバーが混雑しています
+		type=08 前の接続情報が残っています
+		type=0b アカウントが保留されました
+		type=0c 課金システム変更のため、一時終了します
+		type=0d IPが一致しないため、接続を終了します
+		type=10 有料サービスになりました
+		type=11 チケットが買われていないか、有効期限が切れています
+
+	Login failure, second type:
+		type=01 Server connection rejected.
+		type=02 Another user is logged in on the same ID.
+		type=03 Server lost sync.
+		type=04 Too many simultaneous users trying to log in (?)
+		type=05 Underage players are blocked.
+		type=06 Unpaid account.
+		type=07 Server is full.
+		type=08 Previous connection information still remains (duplicate login?)
+		type=0b Account is put on hold.
+		type=0c Changing payment system, closed temporarily.
+		type=0d IP does not resolve (?), connection rejected.
+		type=10 Using pay-to-play (toll, debit?) service.
+		type=11 Due to lack of payment card, debit service is cancelled.
+
+S 0085 <X_Y>.3B
+	移動要求
+
+	Walking request.
+
+R 0087 <server tick>.l <X_Y_X_Y>.5B ?.B
+	移動応答
+
+	Server response to walk request.
+
+R 0088 <ID>.l <X>.w <Y>.w
+	移動途中停止
+
+	Stop walking.
+
+S 0089 <target ID>.l <type>.B
+	type=00 targetを1回殴る
+	type=02 座る
+	type=03 立ち上る
+	type=07 targetを殴り続ける
+
+	
+	type=00 Hit target once.
+	type=02 Sit.
+	type=03 Stand.
+	type=07 Hit target continuously.
+
+R 008a <src ID>.l <dst ID>.l <server tick>.l <src speed>.l <dst speed>.l <param1>.w <param2>.w <type>.B <param3>.w
+	type=00 param1=0 miss
+	type=00 param1:ダメージ(の合計?) param2:分割数 param3:アサシン2刀流逆手ダメージ
+		NPCからの攻撃の場合、param2,param3はゴミデータ
+		speedはPCの場合内部ASPDと一致
+	type=01 itemを拾う ID*2以外ゴミ
+	type=02 座る src ID以外ゴミ
+	type=03 立つ src ID以外ゴミ
+	type=08 複数攻撃
+	type=09 ダメージモーションなしにダメージだけ表示される物(インデュア)
+	type=0a クリティカル
+	type=0b 完全回避
+
+	type=00 param1=0
+		Miss.
+	type=00 param1: Total damage  param2: Number of divisions  param3: Assassin's off-hand damage
+		If the attack came from an NPC, param2 and param3 are ignored.
+		speed is the PC's ASPD.
+
+	type=01 Pick up an item.  Only the IDs are used.
+	type=02 Sit.  Only src ID is used.
+	type=03 Stand.  Only src ID is used.
+	type=08 Multiple attack.  When param2 is 2, double attack; when param2 is 255, Triple Attack.  (Go figure.)
+	type=09 Damage without damage motion (damage while Enduring)
+	type=0a Critical attack.
+	type=0b Perfect evade.
+
+S 008c <len>.w <str>.?B
+	通常発言送信。チャット中はチャット内発言用になる
+	先頭の"<nick> : "の部分はクライアント側で付ける事
+
+	Send normal speech.  While chatting, it becomes a chatroom speech.
+	The "<nick> : " prefix is added by the client.
+
+R 008d <len>.w <ID>.l <str>.?B
+	IDさんの発言受信。チャット中はチャット内発言用になる
+
+	Receive speech from the ID given.  While chatting, it becomes a chatroom speech.
+
+R 008e <len>.w <str>.?B
+	自分の発言受信。チャット中はチャット内発言用になる
+
+	Receive your own character's speech.  While chatting, it becomes a chatroom speech.
+
+S 0090 <ID>.l <type?>.B
+	NPCに話しかける。typeは01しか見た事無し
+
+	Speak to an NPC.  (Haven't seen types other than 01.)
+
+R 0091 <map name>.16B <X>.w <Y>.w
+	鯖内マップ間移動、テレポ,蝿等用
+
+	Map change within the server, teleport, flywing...
+
+R 0092 <map name>.16B <X>.w <Y>.w <IP>.l <port>.w
+	鯖間移動
+
+	Map change to different server.
+
+R 0093
+	8月中に1回だけ観測。謎
+
+	This packet was observed once in August.  Unknown.
+
+S 0094 <ID>.l
+	IDのキャラ名等要求。0095か0195の返答があるはず
+
+	Request a character name for ID.  0095 or 0195 response is expected.
+
+R 0095 <ID>.l <nick>.24B
+	NPC,ギルド未所属PCの0094への返答
+	0193	<charID>.l で問い合わせて
+	0194	<charID>.l <name>.24B の応答で得てます。
+
+	Response for 0094 request from an NPC or guildless PC:
+	0193	<charID>.l
+		If you inquire with this method, 
+	0194	<charID>.l <name>.24B 
+		You get a response in this format.
+
+S 0096 <len>.w <nick>.24B <message>.?B
+	wis送信
+
+	Send whisper text.
+
+R 0097 <len>.w <nick>.24B <message>.?B
+	wis受信
+
+	Receive whisper text.
+
+R 0098 <type>.B
+	type=00 wis送信成功
+	type=01 wis相手がloginしてない?
+	type=02 wis相手からignoreされてる?
+
+	Responses to whisper sending:
+	type=00 Successfully sent.
+	type=01 Whisper target not logged in.
+	type=02 Target is ignoring the whisper.
+
+S 0099 <len>.w <message>.?B
+	GMコマンド/b,/bb,/nbにて発行。サーバー内ブロードキャスト
+
+	Send 'the voice of God' (i.e., nameless broadcast).
+
+R 009a <len>.w <message>.?B
+	GMからの天の声
+
+	Heavenly voice of the GMs (GM broadcast)
+
+S 009b <head dir>.w <dir>.B
+	体&頭の方向変更要求。クライアントへの応答は無い模様
+	dirは00～07で体の向き。00で北から反時計回りに45°単位で07まで
+	head dirは00,01,02で頭の向き。00で体と同じ、01が右、02が左
+
+	Request a change of head and body direction.  No response is given to the client.
+	dir can be from 0-7, for body direction. 0 is north, 1 NW...to 7, NE.
+	head dir is 0, 1 or 2.  0 is same direction as body, 1 is right, 2 is left.
+
+R 009c <ID>.l <head dir>.w <dir>.B
+	IDの体&頭の方向変更
+
+	Change head and body direction for ID.  (Consider this 009b's 'response'?)
+
+R 009d <ID>.l <item ID>.w <identify flag>.B <X>.w <Y>.w <amount>.w <subX>.B <subY>.B
+	移動等で床アイテムが画面内に入ってきた時
+
+	Received when an item on the ground appears onscreen (by walking, etc.)
+
+R 009e <ID>.l <item ID>.w <identify flag>.B <X>.w <Y>.w <subX>.B <subY>.B <amount>.w
+	item drop。何故か009dとマス目内位置&個数が入れ変っている
+
+	Item drop.  Coordinate and amount is different from 009d.
+
+S 009f <ID>.l
+	IDの床アイテムを拾う
+
+	Pick up an item on the floor (having the ID sent).
+
+R 00a0 <index>.w <amount>.w <item ID>.w <identify flag>.B <attribute?>.B <refine>.B <card>.4w <equip type>.w <type>.B <fail>.B
+	fail=02 取得失敗?
+	fail=06 ルート権無し。取得失敗
+
+	
+	Response to item pickup.  If you have fail set:
+	fail=02 Failed to pick up the item.
+	fail=06 No loot rights, so failed to pick up.
+
+R 00a1 <ID>.l
+	IDの床アイテム消去
+
+	Remove item with ID from the ground.
+
+S 00a2 <index>.w <amount>.w
+	所有アイテムを落す
+
+	Drop an inventory item.
+
+R 00a3 <len>.w {<index>.w <item ID>.w <type>.B <identify flag>.B <amount>.w ?.2B}.10B*
+	Tsusai 12/14/04: jA has <len>.w {<index>.w <item ID>.w <type>.B <identify flag>.B <amount>.w ?.2B(矢の場合0x8000?)}.10B*
+	
+	所有消耗品&収集品リスト
+
+	List of consumable/collectible drops you have in inventory.
+
+R 00a4 <len>.w {<index>.w <item ID>.w <type>.B <identify flag>.B <equip type>.w <equip point>.w <attribute?>.B <refine>.B <card>.4w}.20B*
+	所有装備リスト
+
+	List of equipable items in inventory.
+
+R 00a5 <len>.w {<index>.w <item ID>.w <type>.B <identify flag>.B <amount>.w ?.2B}.10B*
+	カプラさんに預けてある消耗品&収集品リスト
+
+	List of consumable/collectible drops in Kapra storage.
+
+R 00a6 <len>.w {<index>.w <item ID>.w <type>.B <identify flag>.B <equip type>.w <equip point>.w <attribute?>.B <refine>.B <card>.4w}.20B*
+	カプラさんに預けてある装備リスト
+
+	List of equipable items in Kapra storage.
+
+S 00a7 <index>.w <ID>.l
+	所持アイテムindexを使用する。IDは自分のみ?
+
+	Use item at index in inventory.  ID is self (the person using it).
+
+R 00a8 <index>.w <amount>.w <type>.B
+	アイテム使用応答。type=00の場合使用失敗? amountもゴミの模様
+	type=01の場合成功で、amountは使用後の残り個数
+
+	Response to using an item:
+	type=00 is a failure, amount goes unused.
+	type=01 is successful usage of item.  Amount is the number of remaining items in that index.
+
+S 00a9 <index>.w <equip type>.w
+	アイテム装備
+
+	Equip item at index.
+
+R 00aa <index>.w <equip point>.w <type>.B
+	アイテム装備応答。type=00の場合装備失敗? equip pointもゴミの模様
+
+	Response to equipping an item:
+	type=00 is a failure, and the equip point is unused.
+	type=01 is success.
+
+S 00ab <index>.w
+	装備解除
+
+	Remove equipment at index.
+
+R 00ac <index>.w <equip point>.w <type>.B
+	装備解除応答。type=00の場合失敗? equip pointもゴミの模様
+
+	Response to removing an equipment:
+	type=00 is a failure, and the equip point is unused.
+	type=01 is success.
+
+R 00af <index>.w <amount>.w
+	アイテム数減少。amount個だけ減らす
+
+	Reduce number of items at index by amount.
+
+R 00b0 <type>.w <val>.l
+	色々な能力値の更新。以下type:対応する数値を列挙
+	0000:speed 0003:悪行値 0004:マナーポイント 0005:HP 0006:MaxHP
+	0007:SP 0008:MaxSP 0009:ステータスポイント 000b:ベースレベル
+	000c:スキルポイント 0018:重量(表示されてる数字の10倍)
+	0019:最大重量(表示されてる数字の10倍)
+	0029:ATK前 002a:ATK後 002b:MATK前 002c:MATK後
+	002d:DEF前 002e:DEF後 002f:MDEF前 0030:MDEF後
+	0031:HIT 0032:FLEE前 0033:FLEE後 0034:クリティカル
+	0035:ASPD(2ms単位の時間?) 0037:ジョブレベル
+	0082:謎 ATK後と同じ数字?
+	
+	12/14/04 jA difference:
+	0000:speed 0003:悪行値 0004:マナーポイント(会話禁止) 0005:HP 0006:MaxHP
+	type 0004の時のvalは0-解除までの時間
+
+	Update values of various properties.  types below correspond to properties that can be changed:
+
+	0000: speed
+	0003: karma
+	0004: manner points
+	0005: HP
+	0006: MaxHP
+	0007: SP
+	0008: MaxSP
+	0009: Status points
+	000b: base level
+	000c: skill points
+	0018: weight (must be 10x greater than value displayed.  I.e., 20000 for 2000 weight.)
+	0019: maximum weight (must be 10x greater than value displayed.  I.e., 20000 for 2000 weight.)
+	0029: ATK (front)
+	002a: ATK (back)
+	002b: MATK (front)
+	002c: MATK (back)
+	002d: DEF (front)
+	002e: DEF (back)
+	002f: MDEF (front)
+	0030: MDEF (back)
+	0031: HIT
+	0032: FLEE (front)
+	0033: FLEE (back)
+	0035: ASPD (in 2ms units?)
+	0037: job level
+	0082: unknown (is it the same number as ATK (back)?)
+
+R 00b1 <type>.w <val>.l
+	色々な能力値の更新。以下type:対応する数値を列挙
+	0001:ベース側経験値 0002:ジョブ側経験値	0014:zeny
+	0016:ベース側必要経験値 0017:ジョブ側必要経験値
+	β1では00b0はvalがshort、00b1はvalがlongという使い分けがあったんだけど
+	今となっては差が無くなって、盲腸みたいなもの?
+
+	Update values of various properties.  types below correspond to properties that can be changed:
+
+	0001: Base XP
+	0002: Job XP
+	0014: Zeny
+	0016: Base XP needed for level-up
+	0017: Job XP needed for level-up
+
+	(In beta 1, 00b0's value was short and 00b1's was long, but now it seems there is no difference.)
+
+S 00b2 <type>.B
+	type=00 死亡時リスタート
+	type=01 キャラセレ要求
+
+	Send choice from menu that appears when dead:
+	type=00 Restart when dead (return to last save point)
+	type=01 Request character select screen.
+
+R 00b3 <type>.B
+	type=01 キャラセレ応答
+
+	Response to character select.  (type 01 is the only value...)
+
+R 00b4 <len>.w <ID>.l <str>.?B
+	IDのNPCからのメッセージ
+	
+	Message from the NPC with the given ID.
+
+R 00b5 <ID>.l
+	IDのNPCとのメッセージウィンドウに"NEXT"アイコンを出す
+
+	Display the 'Next' icon in the NPC message window.
+
+R 00b6 <ID>.l
+	IDのNPCとのメッセージウィンドウに"CLOSE"アイコンを出す
+
+	Display the 'Close' icon in the NPC message window.
+
+R 00b7 <len>.w <ID>.l <str>.?B
+	IDのNPCの会話で選択項目表示。各項目は':'で区切られる
+
+	Display selectable options in the NPC dialog.  Each option in str is separated by ':'.
+
+S 00b8 <ID>.l <select>.B
+	IDのNPCの会話の選択。各項目に順に1～が振られる。ffでキャンセル?
+
+	Make a selection from options in NPC dialog.  Numbering of select starts with 1 for first option.  FF is cancel (?)
+
+S 00b9 <ID>.l
+	IDのNPCとの会話。NEXTボタンを押した
+
+	Clicked 'Next' in the NPC dialog.
+
+S 00bb <type>.w <amount>.B
+	ステータスup要求。typeは000dから0012が順にSTR,AGI,VIT,INT,DEX,LUKに対応
+
+	Request a raise of a stat.  type goes from 000d to 0012 for STR, AGI, VIT, INT, DEX, LUK.
+
+R 00bc <type>.w <fail>.B <val>.B
+	ステータスup応答。fail=01なら成功。typeは00bbと同じ。valは上った後の数字
+	失敗例は見た事無いので謎。ステータスポイントが足りない状態で
+	00bbを発行できるクライアントが有れば、fail=00になるのではないかと予想
+
+	Response to the 00bb request to raise a stat.  If fail=01 it succeeded (shouldn't it be called 'success', then?  Bah...)
+	type is the same value as in 00bb.  val is the value after being raised.
+
+	It is unknown when it fails because it hasn't been observed.
+	You can't send 00bb when you don't have the status points to raise a skill.
+	It may be that fail=00 when it fails.
+
+R 00bd <status point>.w <STR>.B <STRupP>.B <AGI>.B <AGIupP>.B <VIT>.B <VITupP>.B <INT>.B <INTupP>.B <DEX>.B <DEXupP>.B <LUK>.B <LUKupP>.B <ATK>.w <ATKbonus>.w <MATKmax>.w <MATKmin>.w <DEF>.w <DEFbonus>.w <MDEF>.w <MDEFbonus>.w <HIT>.w <FLEE>.w <FLEEbonus>.w <critical>.w ?.w
+	まとめてステータス情報を送るパケット
+	
+	12/14/04 jA: update
+	R 00bd <status point>.w <STR>.B <STRupP>.B <AGI>.B <AGIupP>.B <VIT>.B <VITupP>.B <INT>.B <INTupP>.B <DEX>.B <DEXupP>.B <LUK>.B <LUKupP>.B <ATK>.w <ATKbonus>.w <MATKmax>.w <MATKmin>.w <DEF>.w <DEFbonus>.w <MDEF>.w <MDEFbonus>.w <HIT>.w <FLEE>.w <FLEEbonus>.w <critical>.w <karma?>.w <manner?>.w
+
+	Information packet for the various stats.
+
+R 00be <type>.w <val>.B
+	必要ステータスポイント更新パケット。typeは0020～0025が順にSTR～LUKに対応
+
+	Packet to update required stat points.  type can be 0020-0025 for STR-LUK.
+
+S 00bf <type>.B
+	エモーションを出す。typeは00-0c(,0d)がALT+1～ALT+9,ALT+0,チョキ,グー,パー(,韓国旗)に対応
+	00=!	01=?	02=うれしい(♪)	03=ハート	04=汗	05=あはは(電球)
+	06=いやだな(＃)	07=怒り(もやもや)08=お金(＄)	09=…	0a=チョキ
+	0b=グー	0c=パー	0d=韓国旗	0e=大きいハート	0f=ありがとう(thanks)
+	10=無念	11=ごめん(sorry)	12=笑い	13=汗かき	14=あの
+	15=最高(GoodJob)16=キョロキョロ	17=ショック	18=まる	19=バツ
+	1a=ヘルプ(help)	1b=go	1c=えーん	1d=くすくす	1e=ちゅ
+	1f=ちゅちゅ	20=ふん	21=うんうん
+
+	Display an emotion.  type can be 00-0c(,0d) for ALT+1-ALT+9, ALT-0, CTRL+-, CTRL++,CTRL+\(,korean flag):
+
+	00=!
+	01=?
+	02=Happy (music note)
+	03=Heart
+	04=Sweat drop
+	05=Aha! (light bulb)
+	06=Dislike (bulging vein)
+	07=Anger (storm cloud)
+	08=Money (dollar sign)
+	09=...
+	0a=Scissors (V-sign)
+	0b=Rock (Fist)
+	0c=Paper (Wave)
+	0d=Korean Flag
+	0e=Big Heart
+	0f=Thanks
+	10=Regret
+	11=Sorry
+	12=Laugh
+	13=Sweat (lots)
+	14=Uhh... (head-scratch)
+	15=Good Job (#1, thumbs-up)
+	16=Looking from side-to-side
+	17=Shock!
+	18=Circle (O)
+	19=Strike (X)
+	1a=Help!
+	1b=Go!
+	1c=Sob	
+	1d=Giggle
+	1e=Kiss
+	1f=Kiss-kiss
+	20=Sigh of exasperation (pfft!)
+	21=Yeah, yeah (head nod)
+
+R 00c0 <ID>.l <type>.B
+	IDの人がエモーションを出した。typeは00bfと同じ
+
+	Character with given ID made an emotion.  type is the same as 00bf.
+S 00c1
+	login人数問い合わせ
+
+	Request amount of people logged in (/who).
+
+R 00c2 <val>.l
+	login人数応答
+
+	Response to request for number of people logged in.
+
+R 00c3 <ID>.l <type>.B <val>.B
+	見た目変更。typeは00で本体(転職時等)、02が武器、03が頭(下)、04が頭(上)、05が頭(中)、08が盾
+
+	Change how you are seen.
+
+	type=00 body (job)
+	type=01 hairstyle
+	type=02 weapon
+	type=03 head (lower)
+	type=04 head (upper)
+	type=05 head (middle)
+	type=06 hair color
+	type=07 clothes color
+	type=08 shield
+
+R 00c4 <ID>.l
+	話かけたNPCが商人だったのでbuy/sell選択窓出
+
+	The NPC ID being spoken to gives a buy/sell option window.
+
+R 00c5 <ID>.l <type>.B
+	buy/sell選択。type=00ならbuy。type=01ならsell
+
+	Select buy/sell:
+
+	type=00 buy
+	type=01 sell
+
+R 00c6 <len>.w {<value>.l <DCvalue>.l <type>.B <item ID>.w}.11B*
+	NPCのお店buy選択時。DCvalueは商人DC後の値段
+
+	NPC shop's items available for purchase.  DCvalue is the value after applying player's Discount skill.
+
+R 00c7 <len>.w {<index>.w <value>.l <OCvalue>.l}.10B*
+	NPCのお店sell選択時。OCvalueは商人OC後の値段
+
+	NPC shop's sell window.  OCvalue is the value after applying player's Overcharge skill.
+
+S 00c8 <len>.w {<amount>.w <item ID>.w}.4B*
+	NPCのお店から買う
+
+	Request to buy items from the NPC's shop.
+
+S 00c9 <len>.w {<index>.w <amount>.w}.4B*
+	NPCのお店に売る
+
+	Request to sell items to the NPC's shop.
+
+R 00ca <type>.B
+	NPCから購入終了。type=00成功
+
+	Response to item purchase request.  Type=00 is success.
+
+R 00cb <type>.B
+	NPCへ売却終了。type=00成功
+
+	Response to item sell request.  Type=00 is success.
+
+S 00cc <ID>.l
+	GM用右クリックメニュー「（name）使用者強制終了」使用
+
+	GM right-click menu option "Kick (name)" selected.
+
+R 00cd <ID？>.l
+	GM用右クリックメニュー「（name）使用者強制終了」の応答
+	<ID>が0の場合は失敗と表示。(このパケットはただの応答です。接続終了の機能はありません。)
+
+	Response for GM right-click menu option "Kick (name)" selection.
+	If <ID> is 0, that indicates a failure.
+	(This packet is the standard response.  It is not the function for actual disconnection.)
+
+S 00cf <nick>.24B <type>.B
+	type=00 nickからの発言受け付け拒否 (/ex nick)
+	type=01 nickからの発言受け付け許可 (/in nick)
+
+	Request to block or allow communication from one nick:
+	type=00 Block all communication from nick.  (/ex nick)
+	type=01 Allow all communication from nick. (/in nick)
+
+S 00d0 <type>len.B
+	type=00 全ての発言受け付け拒否 (/exall)
+	type=01 全ての発言受け付け許可 (/inall)
+
+	Request to block or allow all communication:
+	type=00 Block all communication. (/exall)
+	type=01 Allow all communication. (/inall)
+
+R 00d1 <type>.B <fail>.B
+	fail=00 発言受け付け拒否成功
+	fail=01 発言受け付け拒否失敗
+
+	Response for 00cf, /ex or /in nick request:
+
+	type=00 Block... (?)
+	type=01 Allow... (?)
+
+	fail=00 Succeeded.
+	fail=01 Failed.
+
+R 00d2 <type>.B <fail>.B
+	fail=00 全発言受け付け拒否成功
+	fail=01 全発言受け付け拒否失敗
+
+	Response for 00d0, /exall or /inall request:
+
+	type=00 Block... (?)
+	type=01 Allow... (?)
+
+	fail=00 Succeeded.
+	fail=01 Failed.
+	
+S 00d3
+	Wis拒否リスト要求
+R 00d4 <len>.w <nick>.24B*  NOT IN 621
+	Wis拒否リスト応答
+
+S 00d5 <len>.w <limit>.w <pub>.B <passwd>.8B <title>.?B
+	チャット立て。ここからチャット関係が続くけど調べが甘いので補完よろ
+
+	Requesting chat room creation.
+	(From here on, chat-related stuff continues, but more investigation to complete it is necessary...)
+
+R 00d6 <fail>.B
+	チャット立て応答
+
+	Response to chat room creation request.
+
+R 00d7 <len>.w <owner ID>.l <chat ID>.l <limit>.w <users>.w <pub>.B <title>.?B
+	画面内チャット情報
+
+	Chat room information displayed in the window.
+
+R 00d8 <chat ID>.l
+	チャット消去
+
+	Remove the chat room.
+
+S 00d9 <chat ID>.l <passwd>.8B
+	チャット参加要請
+
+	Send request to join a chat.
+
+R 00da <fail>.B
+	チャット参加失敗
+
+	Response given when failing to join a chat.
+
+R 00db <len>.w <chat ID>.l {<index>.l <nick>.24B}.28B*
+	チャット参加者リスト
+
+	List of users in the chatroom.
+	
+R 00dc <users>.w <nick>.24B
+	チャットへの参加者追加(?)
+
+	Add a user to the chat room users (?)
+
+R 00dd <index>.w <nick>.24B <fail>.B
+	チャットから参加者抜け
+
+	A participant leaves the chat room.
+
+S 00de <len>.w <limit>.w <pub>.B <passwd>.8B <title>.?B
+	チャットステータス変更
+
+	Update chatroom status.
+
+R 00df <len>.w <owner ID>.l <chat ID>.l <limit>.w <users>.w <pub>.B <title>.?B
+	チャットステータス変更成功
+
+	Chatroom status update successful.
+
+S 00e0 <chat ID>.l <nick>.24B
+	チャットルーム所有者変更要求?
+
+	Chatroom owner change request.
+	
+R 00e1 <index>.l <nick>.24B
+	チャット参加者番号付け直し?
+
+	Number of participants in chat room has changed.
+
+S 00e2 <nick>.24B
+	チャットkick
+
+	Chat-kick of nick.
+
+S 00e3
+	チャット抜け
+
+	Exit the chatroom.
+
+S 00e4 <ID>.l
+	取り引き要求
+
+	Request a trade with <ID>.
+
+R 00e5 <nick>.24B
+	取り引き要請受け
+
+	Receive a trade request from <nick>.
+
+S 00e6 <type>.B
+	type=03 取り引き要請ok
+	type=04 取り引き要請キャンセル
+
+	Send response to trade initiation request:
+	type=03 Clicked OK.
+	type=04 Clicked Cancel.
+
+R 00e7 <fail>.B
+	取り引き要求応答
+	fail=00 距離が遠過ぎ
+	fail=03 要請受けてくれた
+	fail=04 キャンセルされた?
+
+	Response to trade initiation request:
+	fail=00 Too far away to trade.
+	fail=03 Accepted, begin trade.
+	fail=04 Trade cancelled.
+
+S 00e8 <index>.w <amount>.l
+	アイテム追加。index=0でzeny追加。正規クライアントではzenyは00ebの直前のみ
+
+	Add an item to trade window.  index=0 means adding zeny.
+	In the official client, you have to send 00eb before sending zeny (hit OK).
+
+R 00e9 <amount>.l <type ID>.w <identify flag>.B <attribute?>.B <refine>.B <card>.4w
+	相手方からのアイテム追加
+
+	Your trade partner adds something to his/her side of the trade window.
+
+R 00ea <index>.w <fail>.B
+	fail=00 アイテム追加成功
+	fail=01 追加失敗。相手側重量オーバ
+
+	Response to adding an item to the trade box:
+	fail=00 Successfully added an item to the trade window.
+	fail=01 Failed to add the item (the target player would be overweight).
+
+S 00eb
+	アイテム追加完了(ok押し)
+
+	Item adding complete (clicked 'OK' in the trade window).
+
+R 00ec <fail>.B
+	fail=00 自分からのok受領
+	fail=01 相手からのok受領
+
+	Receiving acknowledgement of 'OK' (disables OK button in trade window)
+	fail=00 Received 'OK' from self.
+	fail=01 Received 'OK' from trade partner.
+
+S 00ed
+	取り引きキャンセル
+
+	Trade cancel request.
+
+R 00ee
+	取り引きがキャンセルされました
+
+	Trade cancelled.
+
+S 00ef
+	取り引き許諾(trade押し)
+
+	Trade allowed (clicked 'Trade').
+
+R 00f0
+	取り引き完了
+
+	Trade completed.
+
+R 00f2 <num>.w <limit>.w
+	カプラさん許容アイテム個数&現状
+
+	Get current number of items in Kapra storage and maximum allowed (num/limit display).
+
+S 00f3 <index>.w <amount>.l
+	カプラさん倉庫にアイテム放り込み
+
+	User puts an item into Kapra storage.
+
+R 00f4 <index>.w <amount>.l <type ID>.w <identify flag>.B <attribute?>.B <refine>.B <card>.4w
+	カプラさん倉庫のアイテム追加
+
+	Item is added to Kapra storage.
+
+S 00f5 <index>.w <amount>.l
+	カプラさん倉庫からアイテム取り出し要求
+
+	User takes an item from Kapra storage.
+
+R 00f6 <index>.w <amount>.l
+	カプラさん倉庫からアイテム取り出し応答
+
+	Response to item removed from Kapra storage.
+
+S 00f7
+	カプラさん倉庫閉じ要求
+
+	Request to close Kapra storage.
+
+R 00f8
+	カプラさん倉庫閉じ応答
+
+	Response to closing Kapra storage.
+
+S 00f9 <party name>.24B
+	パーティ作成要求
+
+	Request to create a party with <party name>.
+
+R 00fa <fail>.B
+	パーティ作成応答
+
+	fail=00 「パーティーを結成しました。」
+	fail=01 「同じ名前のパーティーがあります。」
+	fail=02 「すでにパーティーに加入しています。」
+
+	Response to party creation request:
+
+	fail=00 "Party created."
+	fail=01 "A party with the same name already exists."
+	fail=02 "You are already a member of another party."
+
+R 00fb <len>.w <party name>.24B {<ID>.l <nick>.24B <map name>.16B <leader>.B <offline>.B}.46B*
+	パーティ情報まとめて送り
+
+	Party information packet.
+
+S 00fc <ID>.l
+	パーティ勧誘する
+
+	Invite <ID> to your party.
+
+R 00fd <nick>.24B <fail>.B
+
+	fail=00 相手は既にパーティに入っていた
+	fail=01 相手に拒否された
+	fail=02 勧誘成功
+
+	Response to party invitation request:
+	fail=00 Player is already in another party.
+	fail=01 Invitation declined.
+	fail=02 Invitation accepted.
+
+R 00fe <ID>.l <party name>.24B
+	パーティに誘われた
+
+	Received invitation to join party.
+
+S 00ff <ID>.l <fail>.l
+	パーティに誘われた時の返答。fail=1 ok返答?
+
+	Send response to party invitation.  fail=1 is 'OK' response?
+
+S 0100
+	パーティ脱退要求
+
+	Request to leave a party.
+
+R 0101 <exp>.w <item?>.w
+	パーティ設定現状? exp=2の場合は公平配分設定失敗?
+
+	Party setting status.  When exp=2, change to 'Share experience' failed?
+
+S 0102 <exp>.w <item?>.w
+	パーティ設定変更
+
+	Request to change party settings.
+
+R 0104 <ID>.l ?.l <X>.w <Y>.w <offline>.B <party name>.24B <nick>.24B <map name>.16B
+	パーティ1人分情報更新
+
+	Update information about one player in the party.
+
+R 0105 <ID>.l <nick>.24B <fail>.B
+	nickさんがパーティから離脱
+
+	<nick> has left the party.
+
+R 0106 <ID>,l <HP>.w <MaxHP>.w
+	パーティメンバHP更新
+
+	Update HP of party members.
+
+R 0107 <ID>.l <X>.w <Y>.w
+	パーティメンバ位置更新
+
+	Update coordinates of party members.
+
+S 0108 <len>.w <message>.?B
+	パーティ内発言
+
+	Send text to party.
+
+R 0109 <len>.w <ID>.l <message>.?B
+	パーティ内発言受信
+
+	Receive text for party.
+
+R 010a <type ID>.w
+	MVPアイテム取得
+
+	Get an MVP item.
+
+R 010b <exp>.l
+	MVP経験値取得
+
+	Get MVP experience.
+
+R 010c <ID>.l
+	MVPキャラ表示
+
+	MVP winner indicated (with the MVP icon).
+
+R 010e <skill ID>.w <lv>.w <sp>.w <range>.w <up>.B
+	スキル情報更新。spは未使用?
+
+	Skill information update.  SP is unused?  (That doesn't seem right, the SP is displayed.)
+
+R 010f <len>.w {<skill ID>.w <target type>.w ?.w <lv>.w <sp>.w <range>.w <skill name>.24B <up>.B}.37B*
+	スキル情報の塊。skill nameは一部流れて来ない物がある＞AL_PNEUMA,PR_SLOWPOISON等
+	target typeは0-パッシブ、1-敵、2-場所、4-即時発動、16-味方
+	lv=0 up=0の場合はリストに出してない?
+
+	Bunch of information about skills.  Some skill names are not sent (e.g. AL_PNEUMA, PR_SLOWPOISON).
+
+	Target type:
+	0 : Passive
+	1 : Active (enemy)
+	2 : Active (area)
+	4 : Immediate invocation
+	16: Ally (party member)
+
+	If lv=0 and up=0, it will not be put on the list?
+
+R 0110 <skill ID>.w <basic type>.w ?.w <fail>.B <type>.B
+	fail=00の時にスキル利用失敗?
+	type 00:basic typeの方 01:SP不足 02:HP不足 03:memo無し 04:delay中
+	05:お金無し(めまー) 06:武器がよろしくない 07:赤ジェム無し 08:青ジェム無し 09:謎
+	basic type 00:取り引き 01:emotion 02:座り 03:チャット 04:パーティ
+	05:shout? 06:PK 07:マナーポイント
+
+	Result of trying to use a skill.
+
+	When fail=00, the skill could not be used.
+	type 00: Skill has failed (customized for certain skills like steal)
+	type 01: Not enough SP
+	type 02: Not enough HP
+	type 03: No memo
+	type 04: In cast delay
+	type 05: Not enough money (Mammonite)
+	type 06: Weapon is not usable with the skill
+	type 07: No red gemstone
+	type 08: No blue gemstone
+	type 09: No yellow gemstone
+	type 0a: Skill has failed (seen in combo delay situations)
+
+	basic type=00: Trade
+	basic type=01: Emotion
+	basic type=02: Sit
+	basic type=03: Chat
+	basic type=04: Party
+	basic type=05: Shout(?)
+	basic type=06: PK
+	basic type=07: Manner Point
+
+R 0111 <skill ID>.w <target type>.w ?.w <lv>.w <sp>.w <range>.w <skill name>.24B <up>.B
+	010fの1つ分。β2だと未使用?
+	20040415転職時に観測
+
+	Single-skill version of 010f.  Unused in beta 2?
+	20040415: OBSERVED upon job-changing.
+
+S 0112 <skill ID>.w
+	スキルlvup要求
+
+	Requesting a skill level up.
+
+S 0113 <level>.w <skill ID>.w <ID>.l
+	IDをターゲットにskillを使う
+
+	Use a skill on target <ID>.	
+
+R 0114 <skill ID>.w <src ID>.l <dst ID>.l <server tick>.l <src speed>.l <dst speed>.l <param1>.w <param2>.w <param3>.w <type>.B
+	攻撃系スキルエフェクト@
+	type=04 火壁で観測 type=06とほぼ同じ?
+	type=05 NB/FBlの分散したダメージ用？
+	type=06 単発もの? param1はダメージ合計、param2はlevel、param3は1固定と予想
+	type=07 ダメージ表示無し？
+	type=08 連打もの? param1はダメージ合計、param2はlevel、param3は分割数と予想
+	type=09 ダメージモーションなしにダメージだけ表示される物(インデュア)と思ったのだがダメージモーションが出る物。(機能は謎)
+
+	Skill effect for an attack.
+	type=04 Seen when using firewall.  About the same as type=06?
+	type=05 Split-damage type seen with Napalm Beat/Fireball?
+	type=06 Single-hit type?  param1 is total damage, param2 is level, param3 is 1.
+	type=07 Damage without a display?
+	type=08 Multiple-hit type?  param1 is total damage, param2 is level, param3 is number of hits.
+	type=09 I thought it was for giving damage without the actual damage motion (Endure), but it made a damage motion.  (True function is unknown.)
+
+R 0115 <skill ID>.w <src ID>.l <dst ID>.l <server tick>.l <src speed>.l <dst speed>.l <X>.w <Y>.w <param1>.w <param2>.w <param3>.w <type>.B
+	弾き飛ばし有り攻撃系スキルエフェクト
+	type=05 ダメージ&弾き飛ばし。param1はダメージ合計、param2はlevel、param3は分割数と予想
+	type=06 爆心地? 少なくともparam1はゴミの模様
+	type=09 ダメージモーションなしにダメージだけ表示される物(インデュア)と思ったのだがダメージモーションが出る物。(機能は謎)
+
+	Release a burst-type skill effect.
+	type=05 Damage and burst.  param1 is total damage, param2 is level, param3 is number of hits.
+	type=06 Ground zero?  At least param1 is not used.
+	type=09 I thought it was for giving damage without the actual damage motion (Endure), but it made a damage motion.  (True function is unknown.)
+
+S 0116 <level>.w <skill ID>.w <X>.w <Y>.w
+	(X,Y)をターゲットにskillを使う
+
+	Use a skill on target <X>, <Y>.
+
+R 0117 <skill ID>.w <src ID>.l <val>.w <X>.w <Y>.w <server tick>.l
+	場所相手のスキルエフェクト表示。valはレベルか、一部固さ?(氷壁)
+
+	Display skill effect at targetted place.  Is val level, or durability? (Icewall)
+
+S 0118
+	攻撃キャンセル
+
+	Cancel attack.
+
+R 0119 <ID>.l <param1>.w <param2>.w <param3>.w ?.B
+	見た目変更
+	param1=02 フロストダイバで凍り漬け?
+	param2=01 毒?
+	param2=20 ANGELUS状態?
+	param3=01 サイトかルワッチ?
+	param3=0b ハイディング状態?
+	param3=0b クローキング状態?
+	param3=0d カート付き
+	param3=0e 鷹付き
+	param3=0f ペコペコ乗り
+
+	Change how you look (based on status).
+
+	param1=02 Frost Driver?
+
+	param2=01 Poison?
+	param2=20 Angelus condition?
+
+	(NOTE: The Japanese info is out of date.  I am correcting values below:)
+
+	Param1 values are statuses that keep you from moving:
+
+	param1=01   Stone
+	param1=02   Freeze
+	param1=03   Stun
+	param1=04   Sleep
+	param1=06   Blind
+
+	Param2 values are statuses that affect you physically:
+
+	param2=01   Poison        (x01)
+	param2=02   Curse         (x02)
+	param2=04   Silence       (x04)
+	param2=08   Confusion     (x08)
+	param2=16   Darkness      (x10)
+
+	Param3 values are visual effects upon the player.
+
+	param3=01   Sight/Ruwach  (x01)
+	param3=02   Hidden        (x02)
+	param3=04   Cloaked       (x04)
+	param3=08   Cart (#1)     (x08)
+	param3=16   Falcon        (x10)
+	param3=32   Peco-Peco     (x20)
+	param3=64   Perfect Hide  (x40)
+	param3=128  Cart (#2)     (x80)
+	param3=256  Cart (#3)     (x100)
+	param3=512  Cart (#4)     (x200)
+	param3=1024 Cart (#5)     (x400)
+	param3=2048 Reverse Orcish(x800)
+	param3=4096 Wedding Dress (x1000)
+	param3=8192 Ruwach        (x2000)
+	param3=16384Footsteps     (x4000)
+	param3=32768?             (x8000)
+
+R 011a <skill ID>.w <val>.w <dst ID>.l <src ID>.l <fail>.B
+	非ダメージ系スキル表示。ヒールの場合valは回復量
+	fail=00の場合失敗ぽいが、スチール以外では見た事無し
+
+	Display an undamaging skill effect.  When <skill ID> is Heal, <val> is amount healed.
+	When fail=00 it must mean failure, but I haven't seen that except with Steal.
+
+S 011b <skill ID>.w <map name>.16B
+	011cへの応答。使わない場合"cancel"、マップ内ランダムの場合"Random"を送る
+
+	A response to 011c (warp portal cast dialog).  "Cancel" is sent when you don't use it,
+	"Random" is sent when you do a random warp within the map.
+
+R 011c <skill ID>.w <map1>.16B <map2>.16B <map3>.16B <map4>.16B
+	テレポ/ポタの場所選択。
+	テレポの場合、Random/セーブ場所、ポタの場合、セーブ場所/memo1/memo2/memo3となる
+	マップ名のみ送られる
+
+	Teleport/Warp Portal map selection dialog.
+	When using Teleport, you have Random Area/Save Point options.
+	When using Warp Portal the options become Save Point/memo1/memo2/memo3.
+	Only the map names are sent.
+
+S 011d
+	現在居る所をメモ要求
+
+	Memo save request.
+
+R 011e <fail>.B
+	fail=00 メモ成功
+	fail=01 メモ失敗
+
+	Memo save response:
+	fail=00 Memo saved.
+	fail=01 Memo save failed.
+
+R 011f <dst ID>.l <src ID>.l <X>.w <Y>.w <type>.B <fail>.B
+	スキル効能地作成
+	type 7e:SW 7f:火壁 80:ポタ発動中 81:ポタ発動前 83:サンク 85:フニューマ
+	86:バーミリオン 8c:トーキーボックス発動時 8d:氷壁 8e:くあぐまいやー 91:あんくるすねあ
+	93:らんどまいん 97:?? 99:トーキーボックス発動前
+	他情報求む
+
+	Display a ground skill effect.
+
+	(ADDITION: These types are the same as those in 01c9, it seems.
+	The difference between this packet and 01c9 is the extra 81 bytes of undetermined
+	space on the improved version.)
+
+	Types:
+
+	7e: Safety Wall
+	7f: Firewall
+	80: Opened Warp Portal
+	81: Opening Warp Portal
+	82: B.S. Sacramenti
+	83: Sanctuary
+	84: Magnus Exorcismus
+	85: Pneuma
+	86: Large Magic Circle (SG/MS/LoV/GX (Grand Cross?))
+	87: Fire Pillar (standby)
+	88: Fire Pillar (activated)
+	89-8b: No effect
+	8c: Talkie Box (activated)
+	8d: Ice Wall
+	8e: Quagmire
+	8f: Blast Mine
+	90: Skid Trap
+	91: Ankle Snare
+	92: Venom Dust
+	93: Land Mine
+	94: Shockwave Trap
+	95: Sandman
+	96: Flasher
+	97: Freezing Trap
+	98: Claymore Trap
+	99: Talkie Box (before activation)
+	9a: Volcano
+	9b: Deluge
+	9c: Violent Gale
+	9d: Land Protector
+	9e: Zeny sign
+	9f: Zeny bag (Mr. Kim, a Rich Man)
+	a0: Turning green pillar
+	a1: Pink music note (two types alternate, single and joined)
+	a2: Ball of light with a point in the middle
+	a3: Lavender spring, short
+	a4: Gemstones (Into the Abyss)
+	a5: Turning blue pillar
+	a6: Dissonance (short yellow haze)
+	a7: Whistle (single music note)
+	a8: Assassin Cross of Sunset (tall red haze)
+	a9: Poem of Bragi (arcane letters)
+	aa: Apple of Idun (golden apples)
+	ab: Selfish Dance (same effect as Dissonance)
+	ac: Humming (joined musical notes)
+	ad: Please Don't Forget Me... (tall green haze)
+	ae: Service For You (hearts)
+	af: Pink spring, tall
+	b0: Graffiti (?)
+	b1: Demonstration
+	b2: Pink Warp Portal (active)
+	b3: Small floating cross (Gospel)
+	b4: 5x5 square of light (Basilica)
+	b5: No effect?
+	b6: Fog wall (X-shaped dark effect)
+	b7: Spider Web
+	b8-: No resource?
+	Ground info request ?.81b is unkhown.	
+
+R 0120 <ID>.l
+	スキル効能地消去
+
+	Remove ground skill effect.
+
+R 0121 <num>.w <num limit>.w <weight>.l <weight limit>l
+	カートの種類&重さの現在値&上限
+
+	Cart type <num>, weight and maximum weight.
+	
+R 0122 <len>.w {<index>.w <item ID>.w <type>.B <identify flag>.B <equip type>.w <equip point>.w <attribute?>.B <refine>.B <card>.4w}.20B*
+	カート内アイテム。装備品
+
+	Information about equipable items in cart.
+
+R 0123 <len>.w {<index>.w <item ID>.w <type>.B <identify flag>.B <amount>.w ?.2B}.10B*
+	カート内アイテム。消耗品/収集品
+
+	Information about consumable/collectible items in cart.
+
+R 0124 <index>.w <amount>.l <item ID>.w <identify flag>.B <attribute?>.B <refine>.B <card>.4w
+	カートにアイテム追加
+
+	Item added to cart.
+
+R 0125 <index>.w <amount>.l
+	カートからアイテム削除
+
+	Item removed from cart.
+
+S 0126 <index>.w <amount>.l
+	カートにアイテムを入れる
+
+	Place an item in the cart.
+
+S 0127 <index>.w <amount>.l
+	カートからアイテムを取り出す
+
+	Take an item from the cart.
+
+S 0128 <index>.w <amount>.l
+	カプラさんからカートへアイテムを移す
+
+	Move an item from Kapra storage to cart.
+
+S 0129 <index>.w <amount>.l
+	カートからカプラさんへアイテムを移す
+
+	Move an item from cart to Kapra storage.
+
+S 012A
+	Request to remove falcon/cart/peco options from this character.
+	12/14/04: No longer listed in jA packet info
+
+R 012c <fail>.B
+	fail=00 「重量オーバーです。」
+	fail=01 「アイテム最大種類数を超過しました。」
+
+	Failures for adding items to cart:
+	fail=00 Cart is overweight.
+	fail=01 Maximum number of items in cart reached.
+
+R 012d <num>.w
+	露店開設。アイテムリスト要求。numは置ける最大数
+
+	Open Vending window.  Item list is requested; <num> is maximum number of vend slots.
+
+S 012e
+	露店閉鎖
+
+	Close Vending window.
+
+S 012f <len>.w <message>.80B {<index>.w <amount>.w <value>.l}.8B*
+	露店開設、露店名&アイテム,値段リスト
+
+	Create shop with shop name, item and price list.
+
+S 0130 <ID>.l
+	露店アイテムリスト要求
+
+	Request item list for Vending shop.
+
+R 0131 <ID>.l <message>.80B
+	露店看板表示
+	
+	Display shop name.
+
+R 0132 <ID>.l
+	露店看板消去
+
+	Remove shop name from display.
+
+R 0133 <len>.w <ID>.l {<value>.l <amount>.w <index>.w <type>.B <item ID>.w <identify flag>.B <attribute?>.B <refine>.B <card>.4w}.22B
+	露店アイテムリスト
+
+	Vending shop item list (response to 0130).
+
+S 0134 <len>.w <ID>.l {<amount>.w <index>.w}.4B*
+	露店アイテム購入
+
+	Request to buy items from Vending shop.
+
+R 0135 <index>.w <amount>.w <fail>.B
+	露店アイテム購入失敗。
+	fail=1 「お金が足りません。」
+	fail=2 「重量オーバーです。」
+
+	Response to buy request from Vending shop:
+	fail=1 Not enough money.
+	fail=2 Overweight.
+
+R 0136 <len>.w <ID>.l {<value>.l <index>.w <amount>.w <type>.B <item ID>.w <identify flag>.B <attribute?>.B <refine>.B <card>.4w}.22B*
+	露店開設成功
+
+	Successful Vending shop creation.
+
+R 0137 <index>.w <amount>.w
+	露店アイテム販売報告
+
+	Report of sale from Vending shop.
+
+R 0139 <ID>.l <X>.w <Y>.w <X2>.w <Y2>.w <range>.w
+	IDの敵は(X,Y)に居て自分は(X2,Y2)に居るので攻撃が届きませんでした
+	攻撃可能距離はrangeなので、近寄って下さい?
+
+	Enemy with <ID> at (X, Y); player is at (X2, Y2); therefore, out of range to attack.
+	Possible attack range is <range>, please move closer?
+
+R 013a <val>.w
+	攻撃射程
+
+	Attack range.
+
+R 013b <type>.w
+	各種メッセージ表示。3=矢が装備できました
+
+	Display various messages.
+	3 = Arrows equipped.
+
+R 013c <ID>.w
+	装備された矢のItemID。0で、未装備状態。
+
+	ItemID of equipped arrows.  If 0, no arrows equipped.
+
+
+
+R 013c <index>.w
+(WARNING: THIS 013C IS A DUPLICATED ENTRY.  I believe the previous one is correct.)
+	装備している矢
+
+	Index of equipped arrow.
+
+R 013d <type>.w <val>.w
+	HP回復スキル/SP回復スキルによる回復
+	type=5ならHP type=7ならSP
+
+	HP or SP recovery skill is activated.
+	type=5: HP
+	type=7: SP
+
+	
+R 013e <src ID>.l <dst ID>.l <X>.w <Y>.w <skillID>.w <element>.w <wait>.l
+	スキル詠唱中。PC/NPCが相手の場合は(X,Y)は0。場所がターゲットの場合はdst IDは0になる
+
+	0x013e の offset+16(dword) はスキル属性です(調査済)。
+	00:無 01:水 02:地 03:火 04:風 05:毒 06:聖 07:暗 08:念 09:死
+	将来的に、詠唱中のエフェクトが属性で変わるのかと。
+
+	waitはms単位かな?
+
+	Skill is being cast.  If cast on a PC/NPC, (X,Y) are both 0.  If cast on an area, <dst ID> is 0.
+
+	(I do not bother to translate the conjectures about +14 and +16, they are now proven.)
+	(Also, the part about 'casting effect may differ in future' is now true.)
+
+	element:
+	00: None 01: Water 02: Earth 03: Fire 04: Wind 05: Poison 06: Holy 07: Dark 08: Spirit 09: Death
+
+	wait is time in milliseconds.
+	12/14/04: jA has <src ID>.l <dst ID>.l <X>.w <Y>.w <lv?>.w ?.w <wait>.l
+
+R 0141 <type>.l <base>.l <bonus>.l
+	ステータス情報。typeは0dから12が順にSTR,AGI,VIT,INT,DEX,LUKに対応
+	base+bonusと表示される
+
+	Display a stat.  Type goes from 0d to 12 for STR, AGI, VIT, INT, DEX, LUK.
+	Base + bonus are both returned.
+
+R 0142 <ID>.l
+	数値入力用窓表示
+
+	Window which prompts for numerical input.
+
+S 0143 <ID>.l <amount>.l
+	0142の窓に入力した数値の送信
+
+	Send the number entered in the 0142 window.
+
+R 0144 <ID>.l <type>.l <X>.l <Y>.l <point ID>.B <color>.3B ?.B
+	案内員用、マップ上アイコン表示パケット
+	type=1 アイコンを表示
+	type=2 アイコンを消去
+
+	For guide NPCs, this packet places mini-map icons.
+	type=1 Place mini-map icon.
+	type=2 Remove mini-map icon.
+
+R 0145 <file name>.16B <type>.B
+	(今の所)カプラさんcutin表示
+	type=0x02 表示
+	type=0xff 消去
+
+	Display Kapra cutin image.
+	type=02 Show
+	type=ff Remove
+
+S 0146 <ID>.l
+	IDのNPCとの会話。CLOSEボタンを押した。ack無しにNPCメッセージウィンドを同時に閉じる
+
+	In dialog with the given NPC ID, this is sent when 'Close' is pressed.
+	There is no acknowledgement as this closes the message window at the same time.
+
+R 0147 <skill ID>.w <target type>.w ?.w <lv>.w <sp>.w <range>.w <skill name>.24B <up>.B
+	アイテム利用の結果一時的に得られたスキル情報
+
+	Skill effect displayed when using an item.
+
+R 0148 <ID>.l
+	リザレクションの相手決め? @ β1
+
+	In beta 1, this chooses a target for Resurrection.
+
+S 0149 <ID>.l <type>.B <time>.w
+
+	IDにチャット禁止時間を付加 type=0 マイナス type=1 プラス
+	tymeは分単位
+	
+	12/14/04: jA:
+	GM用右クリックメニュー「チャット禁止時間を下げる（解ける）」使用 → type=00
+	GM用右クリックメニュー「チャット禁止時間を上げる（掛ける）」使用 → type=01
+	喋りすぎでクライアントから送信 → type=02
+	timeは分単位です（確か
+
+	The given ID is prohibited from chat for the given time .  type=00 adds, type=01 subtracts.
+	Time is in minutes.
+
+R 014a <fail>.l
+	マナーポイントを与えた結果。fail=0 成功 fail=1 失敗
+
+	Result of giving manner points.  fail=0 is success, fail=1 is failure.
+
+R 014b <type>.B <nick>.24B
+	マナーポイントを貰った。type=00 プラス type=01 マイナス
+	12/14/04: jA: アマツ以降？会話禁止状態になった nick=自分の名前 type=1のみ？
+
+	Received manner points.  type=00 is added, type=01 is subtracted.
+
+R 014C <len>.w (<type>.l <guildID>.l <guild name>.24B).*
+	同盟・敵対ギルド表示
+	type=0 同盟
+	type=1 敵対
+
+	Display allied/opposing guilds.
+	type=0 Allied.
+	type=1 Opposing.
+
+S 014D
+	ギルド情報表示開始？
+
+	Begin guild information display.
+
+R 014E <type?>.l
+	type=0x57 一般ギルド団員
+	type=0xD7 ギルドマスター
+
+	Guild member privileges:
+	type=0x57 Normal guild member.
+	type=0xD7 Guild master.
+
+S 014F <page>.l
+	ギルド表示タブ送信
+
+	Send request to display the Guild information tab (ALT-G).
+
+R 0150 <guildID>.l <guildLv>.l <connum>.l <capacity>.l <Avl.lvl>.l <cur_exp>.l <next_exp>.l <tax_point>.l <tendency(horizontal)Vw>.l <tendency(vertical)RW>.l <members>.l <guild name>.24B <guild master>.24B <territory>.16B
+	ギルド情報
+
+	Guild information returned.
+	(Tendency (VW) and (RF) refer to the guild manner display.  Later on, 01B6 has a similar improved packet,
+	but it has F-V and R-W for positions.  I don't remember the full names of the axes.)
+
+	(I don't remember tax_point being used at this time.  Guild XP = total taxed XP of the members anyway.)
+
+S 0151 <guild ID>.l
+	エンブレム要求
+
+	Guild emblem request.
+
+R 0152 <len>.w <guild ID>.l <emblem ID(How many times changed?)>.l <emblem data>.?B
+	エンブレムイメージ送付
+
+	Emblem image is sent back to client.
+
+S 0153 <len>.w <emblem data>.?B
+	エンブレムイメージ変更
+
+	Change emblem image.
+
+R 0154 <len>.w {<accID>.l <characterID>.l <hstyle>.w <hcolor>.w <gender>.w <job>.w <lvl>.w <tax_paid>.l <online>.l <Position>.l <memo?>.50B <nick>.24B}*
+	ギルドメンバリスト
+
+	Guild member list.
+
+S 0155 <len>.w {<accID>.l <charaID>.l <index>.l}.12B*
+	役職変更
+
+	Guild position change.
+
+R 0156 <len>.w {<accID>.l <charaID>.l <index>.l}.12B*
+	役職変更通知
+
+	Guild position change acknowledged.
+
+S 0159 <guildID>.l <accID>.l <charID>.l <mess>.40B
+	ギルド脱退送信
+
+	Send packet to leave guild.
+
+R 015A <nic>.24B <mess>.40B
+	ギルド脱退(全員)受信
+
+	Receive packet to leave guild (rec'd by all members).
+
+S 015B <guildID>.l <accID>.l <charID>.l <mess>.40B
+	ギルド追放送信
+
+	Send packet to expel guild member.
+
+R 015C <nick>.24B <mess>.40B <accID>.24B
+	ギルド追放（全員）受信
+
+	Receive packet to expel guild member (rec'd by all members).
+
+S 015D <guild name>.24B <?>.16B
+	ギルド解散
+
+	Send request to dissolve a guild.
+
+R 015E <fail>.l
+	ギルド解散正否通知
+	0x00：成功
+	0x01：住民登録番号不一致
+
+	Result of guild breakup request acknowledged:
+	0x00: Breakup successful.
+	0x01: There is still more than one person left in guild.
+
+R 0160 <len>.w {<index>.l <mode>.l <index>.l <exp_mode>.l}.16B
+	職位情報
+
+	Display guild position information.
+
+S 0161 <len>.w {<index>.l <mode>.l <index>.l <exp_mode>.l <nickname>.24B}.40B*
+	職位変更
+
+	Change guild position information.
+
+R 0162 <len>.w <skill_point>.w {<skill ID>.w <target type>.w ?.w <lv>.w <sp>.w <range>.w <skill name>.24B <up>.B}.37B*
+	ギルドスキル
+
+	Guild skills.
+
+R 0163 <len>.w { <nick>.24B <accID>.24B <reason>.40B }.88B*
+	ギルド追放リスト
+
+	Guild expulsion list.
+
+S 0165 <myaccID>.l <guild name>.24B
+	ギルド作成
+
+	Create a guild.
+
+R 0166 <len>.w {<index>.l <name>.24B }.28B*
+	職位名リスト
+
+	Guild position list.
+
+R 0167 <type>.b
+	ギルド作成合否
+	type = 0 ギルド作成成功
+	type = 1 すでにギルドに所属している
+	type = 2 同名のギルドがある
+	type = 3 エンペリウム無し
+
+	Result of guild creation attempt:
+	type = 0 Guild created.
+	type = 1 Already in a guild.
+	type = 2 A guild with the same name exists.
+	type = 3 No Emperium.
+
+S 0168 <TargetAccID>.l <sourceAccID>.l <myCharacterID>.l
+	ギルド勧誘
+
+	Invite TargetAccID to guild.
+
+	[2006/04/16 ChrstphrR] - Clarification notes on behavior and relationship of this packet to others.
+
+	This packet will generate one, or 3 packets as a result:
+	0168 sent from inviter to server.
+	0169 sent back to inviter from server (immediate rejection)
+	OR...
+	016a sent from server to invited character, server waits for
+	016b reply from Invited character, and based on that reply, informs Inviter with an 0169 packet.
+	
+	So, 0169 is always the reply to this packet; sometimes there is a delayed reply, due to 
+	human interaction.
+
+R 0169 <type>.B
+	ギルド勧誘結果
+	type = 0 他のギルドに加入している
+	type = 1 拒否された
+	type = 2 加入した
+	type = 3 定員を超過
+
+	Result of invitation attempt:
+	type = 0 Already a member of another guild.
+	type = 1 Rejected invitation.
+	type = 2 Enrolled.
+	type = 3 Capacity has been reached.
+
+R 016A <guild ID>.l <guild name>.24B
+	ギルド勧誘された
+
+	Invited to join <guild name>.
+
+S 016B <guild ID>.l <type>.l
+	ギルド勧誘返信
+	type=0 拒否する
+	type=1 許諾する
+
+	Respond to guild invitation:
+	type=0 Decline.
+	type=1 Accept.
+
+R 016c <guild ID>.l <emblem ID>.l <mode>.l ?.5B <guild name>.24B
+	login時ギルド情報
+	mode=自分の所属職位のmode
+
+	Guild information at login time.
+	mode=Your own guild position's mode (?)
+
+R 016d <ID>.l <charactor ID>.l <online>.l
+	ギルドメンバがloginした抜けた等
+
+	Guild member has logged in or out.
+
+S 016E <guildID>.l <mess1>.60B <mess2>.120B
+	ギルド告知設定
+
+	Set guild announcement.
+
+R 016F <mess1>.60B <mess2>.120B
+	ギルド告知
+
+	Receive guild announcement.
+
+S 0170 <TargetAccID>.l <sourceAccID>.l <myCharacterID>.l
+	同盟要請勧誘
+
+	Invite guild into alliance.
+
+R 0171 <SourceAccID>.l <guild name>.24B
+	同盟要請勧誘された
+
+	Received invitation to ally with guild.
+
+S 0172 <SorceAccID>.l <type>.l
+	同盟要請返信
+	type=0 拒否する
+	type=1 許諾する
+
+	Send response to guild alliance invitation:
+	type=0 Deny.
+	type=1 Accept.
+
+R 0173 <type>.B
+	type = 0 すでに同盟関係
+	type = 1 同盟拒否された
+	type = 2 同盟成功
+	type = 3 相手ギルドの同盟ギルド数が超過
+	type = 4 自分のギルドの同盟ギルド数が超過
+
+	Receive response from other guild regarding alliance:
+	type = 0 Already in another alliance.
+	type = 1 Alliance rejected.
+	type = 2 Alliance accepted.
+	type = 3 Other guild has reached maximum number of allies.
+	type = 4 This guild has reached maximum number of allies.
+
+R 0174 <len>.w {<index>.l <mode>.l <index>.l <exp_mode>.l <nickname>.24B}.40B*
+	職位変更通知
+
+	Acknowledge changes in guild positions.
+
+R 0177 <len>.w <index>.w*
+	鑑定可能アイテムリスト
+
+	List of unappraised items.
+
+S 0178 <index>.w
+	アイテム鑑定
+
+	Appraise an item.
+
+R 0179 <index>.w <fail>.B
+	アイテム鑑定結果。fail=00で成功。fail=01ってあるのか?
+
+	Result of item appraisal.
+	fail=00 is success.  Does fail=01 even exist?
+	(It might.  You can't appraise while sitting, for example.)
+
+S 017A <index>.w
+	カードＷクリック
+
+	Double-clicked a card.
+
+R 017B <len>.w {<index>.w}*
+	カード挿入できるアイテムIndex番号
+
+	The list of indexes containing items that can be carded.
+
+S 017C <SrcIndex>.w <DestIndex>.w
+	Src をDescに突っ込む
+
+	Insert <srcindex> into <destindex>.
+
+R 017D <DescIndex>.w <SrcIndex>.w <fail>.b
+	Src をDescに突っ込み<fail> 0=成功 1=失敗？
+
+	Result of inserting <srcindex> into <destindex>.
+	Fail=0 is success, fail=1 is failure?
+
+S 017e <len>.w <message>.?B
+	ギルド内メッセージ発言
+
+	Send text to guild members.
+
+R 017f <len>.w <message>.?B
+	ギルド内メッセージ受信
+
+	Receive text for guild members.
+
+S 0180 <characterID>.l
+	ギルド敵対
+
+	Oppose a guild.
+
+R 0181 <flag>.b
+	ギルド敵対可否
+	flag=0 敵対成功
+	flag=1 敵対ギルド数が多すぎる
+	flag=2 すでに敵対関係
+
+	Guild opposition request returns:
+	flag=0 Successfully opposing guild.
+	flag=1 Already have too many opposing guild.
+	flag=2 Already opposing this guild.
+
+R 0182 <accID>.l <characterID>.l <hstyle>.w <hcolor>.w <gender?>.w <job>.w <lvl?>.w <tax_paid>.l <online>.l <Position>.l <memo?>.50B <nick>.24B
+	
+	Guild information for a single member?
+
+S 0183 <guild_id>.l <type>.l
+	ギルド関係解消
+
+	Cancel guild relationship (alliance/opposition).
+
+R 0184 <guild_id>.l <type>.l
+	ギルド関係解消通知
+
+	Received request to cancel guild relationship.
+
+R 0185 <flag>.l <guild_id>.l <guild_name>.24B
+	ギルド関係追加 flag=0 同盟/ 1 敵対
+
+	Guild relationship addition (?)
+	flag=0: Allied
+	flag=1: Opposed
+
+R 0187 <account ID>.l
+	alive信号?
+
+	Keep-alive signal?
+
+R 0188 <fail?>.w <index>.w <val>.w
+	武器精錬。結果+val武器に
+
+	Weapon refining.  Result + val goes to the weapon.
+
+R 0189 <fail?>.w
+	Unknown.  Teleport (warp portal memo) failure?
+	1 (fail code 1?) memo in prohibited area
+
+S 018a ?.w
+	ゲーム終了
+
+	Quit game.
+
+R 018b <fail>.w
+	ゲーム終了/キャラセレ応答。fail=0成功。fail=1失敗?
+
+	Response to quit game/return to character select screen.
+	fail=0 is success, fail=1 is failure?
+
+R 018C <MonsID>.w <level?>.w <size>.w <HP value?>.w <SP value?>.w <def>.w <race>.w <mdef>.w <atribute>.w <magic_compat_attrib?>.9b
+	wizの敵のセンス結果
+
+	0 小型
+	1 中型
+	2 大型
+
+	Response to Wizard's Sense skill.
+
+	size:
+
+	0 small
+	1 medium
+	2 large
+
+R 018d <length>.w { <ItemID>,w ?.w <CharID?>.l }.8B*
+	製造可能アイテムリスト表示(?の部分は0012固定)
+	
+	Display Item Creation window with list of makeable items.
+	(The ? part is 0012 bytes, fixed length)
+
+S 018e <MakeItemID>.w <slot1ItemID>.w <slot2ItemID>,w <slot3.ItemID>.w
+	製造アイテムの選択
+
+	Choose an item to create.
+
+R 018f <flag>.w [00] <MakeItemID>.w
+	製造結果(flag = 00なら成功 01なら失敗)
+
+	Show result of item creation.
+	flag = 00 is success of Forging
+	flag = 01 is failure of Forging
+	flag = 02 is success of Pharmacy
+	flag = 03 is failure of Pharmacy
+
+S 0190 <skill lv>.w <skill code>.w <x & y>.l <message>.80b
+	メッセージ(トーキーボックス）
+
+	Set message and position of Talkie Box.
+
+R 0191 <ID>.l <message>.80B
+	トーキーボックスのメッセージ
+
+	Receive message of Talkie Box.
+
+R 0192 <x>.w <y>.w <type>.w <mapname>.16b
+	アイスウォール等による地形属性変化
+
+	Change the terrain element for skills like icewall.
+
+S 0193 <ID>.l
+	ギルドメンバ名前引き?
+
+	Guild member search by name?
+	
+R 0194 <ID>.l <nick>.24B
+	ギルドメンバ名前引き応答?
+
+	Response to guild member search by name?
+
+R 0195 <ID>.l <nick>.24B <party name>.24B <guild name>.24B <class name>.24B
+	ギルド所属PCの場合の0094返答
+
+	Response to 0094 for a guilded player.
+
+R 0196 <type>.w <ID>.l
+	増強系スキル使用時のメッセージ色々。IDはtargetと思われるが自分相手のみしか来ない?
+	type=00	2HQ付与「攻撃速度が増加しました。」
+	type=01	2HQ解除「攻撃速度が減少しました。」
+	type=02 IMPOSITIO付与「武器の攻撃力が増加しました。」
+	type=03 IMPOSITIO解除「武器の攻撃力が減少しました。」
+	type=04	「スキル使用ディレイが減少しました。」
+	type=05	「スキル使用ディレイが元に戻りました。」
+	type=06	「武器に毒属性が付与されました。」
+	type=07 ASPERSIO付与「武器に聖属性が付与されました。」
+	type=08 ASPERSIO解除「武器の属性が元に戻りました。」
+	type=09	「防具に聖属性が付与されました。」
+	type=0a	「防具の属性が元に戻りました。」
+	type=0b KYRIE付与「バリア状態になりました。」
+	type=0c KYRIE解除「バリア状態が解除されました。」
+	type=0d	「ウェポンパーフェクションモードになりました。」
+	type=0e	「ウェポンパーフェクションモードが解除されました。」
+	type=0f	「オーバートラストモードになりました。」
+	type=10	「オーバートラストモードが解除されました。」
+	type=11	「マキシマイズパワーモードになりました。」
+	type=12	「マキシマイズパワーモードが解除されました。」
+
+	Various messages displayed when using supportive skills.
+	(I had thought that <ID> is the target, but only my own opponent's ID was ever sent?)
+	(EDIT: That doesn't make much sense.  It's pretty clear that <ID> is the message recipient...)
+
+	type=00	2HQ begins: "Attack Speed is up."
+	type=01	2HQ ends: "Attack Speed is down."
+	type=02 Imposito begins: "Weapon Damage is improved."
+	type=03 Imposito ends: "Weapon Damage is reduced."
+	type=04	Suffragium begins: "Casting Delay is reduced."
+	type=05	Suffragium ends: "Casting Delay has returned to normal."
+	type=06	Enchant Poison: "Weapon has been enchanted with Poison."
+	type=07 Aspersio begins: "Weapon has been enchanted with the Holy Ghost."
+	type=08 Aspersio ends: "Weapon has changed back to the normal."
+	type=09	BSS begins: "Armor has been enchanted with the Holy Ghost."
+	type=0a	BSS ends: "Armor has changed back to normal."
+	type=0b Kyrie Eleison begins: "Barrier Formed."
+	type=0c Kyrie Eleison ends: "Barrier Cancelled."
+	type=0d	Weapon Perfection: "Weapon Perfection Mode Initiated."
+	type=0e	Weapon Perfection: "Weapon Perfection Mode Cancelled."
+	type=0f	Power Thrust: "Power-Thrust Mode Initiated."
+	type=10	Power Thrust: "Power-Thrust Mode Cancelled."
+	type=11	Maximize Power: "Maximize-Power Mode Initiated."
+	type=12	Maximize Power: "Maximize-Power Mode Cancelled."
+
+R 0196 <type>.w <ID>.l <switch>.b	(post-Comodo)
+	switch=0で解除,1で付加
+	type=00	プロボック
+	type=01	インデュア
+	type=02	「攻撃速度が増加しました。」（2HQ）
+	type=03	集中力向上
+	type=04 ハイディング
+	type=05	クローキング
+	type=06	「武器に毒属性が付与されました。」（エンチャントポイズン）
+	type=07	「毒を反射できる状態になりました。」（ポイズンリアクト）
+	type=08	「クァグマイア状態になり、・・・」
+	type=09	「エンジェラス状態になり、・・・」
+	type=0a	ブレッシング
+	type=0b	シグナムクルシス
+	type=0c	「速さが増加しました」（速度増加）
+	type=0d	「速さが減少しました」（速度減少）
+	type=0e	「スローポイズン状態になりました」（スローポイズン）
+	type=0f	「武器の攻撃力が増加しました」（インポシティオマヌス）
+	type=10	「スキル使用ディレイが減少しました」（サフラギウム）
+	type=11	「武器に聖属性が付与されました」（アスペルシオ）
+	type=12	「防具に聖属性が付与されました」（聖体降臨）
+	type=13	「バリア状態になりました」（キリエエレイソン）
+	type=14	「マグニフィカート状態になりました」
+	type=15	「グロリア状態になりました」
+	type=16	「レックスエーテルナ状態になりました」
+	type=17	「アドレナリンラッシュ状態になりました」
+	type=18	「ウェポンパーフェクションモードになりました」
+	type=19	「オーバートラストモードになりました」
+	type=1a	「マキシマイズパワーモードになりました」
+	type=1b	ペコペコ騎乗
+	type=1c	鷹
+	type=1d	死んだふり
+	type=1e	「叫びました」（ラウドボイス）
+	type=1f	「エナジーコート状態になりました」
+	type=20	「防具が壊れました」
+	type=21	「武器が壊れました」
+	type=22	謎（目のアップというアイコン：盲目？？）
+	type=23	重量50％超え
+	type=24	重量90％超え
+	type=25 謎「攻撃速度が増加しました」（ｘ２アイコン：速度系ポーション？）
+	type=26 謎「攻撃速度が増加しました」（ｘ２アイコン：速度系ポーション？）
+	type=27 謎「攻撃速度が増加しました」（ｘ２アイコン：速度系ポーション？）
+	type=28 (未使用っぽい？：不可と解除で効果が違う)
+	type=29 謎「速さが増加しました」（白いアイコン）
+	type=32 ストリップウエポン
+	type=33 ストリップシールド
+	type=34 ストリップアーマー
+	type=35 ストリップヘルム
+	type=36 ケミカルウェポンチャージ
+	type=37 ケミカルシールドチャージ
+	type=38 ケミカルアーマーチャージ
+	type=39 ケミカルヘルムチャージ
+	type=3a オートガード
+	type=3b リフレクトシールド
+	type=3d プロヴィデンス
+	type=3e ディフェンダー
+	type=41 オートスペル
+	type=44 スピアクィッケン
+	type=56 爆裂波動(アイコンは表示されません。)
+	type=57 金剛(表示はされないが金剛の解除はされるようです。)
+	type=59 コンボディレイ
+	type=5a フレイムランチャー 
+	type=5b フロストウェポン 
+	type=5c ライトニングローダー 
+	type=5d サイズミックウェポン
+
+	switch=0 means cancelled, switch=1 is initiated
+	type=00	Provoke
+	type=01	Endure
+	type=02	"Attack Speed is up." (2HQ)
+	type=03	Improve Concentration
+	type=04 Hiding
+	type=05	Cloaking
+	type=06	"Weapon has been enchanted with Poison." (Enchant Poison)
+	type=07	"Poison React status initiated." (Poison React)
+	type=08	"Quagmire Cancelled."
+	type=09	"Angelus Cancelled."
+	type=0a	Blessing
+	type=0b	Signum Crucis
+	type=0c	Speed has increased. (AGI Up)
+	type=0d	Speed has decreased. (AGI Down)
+	type=0e	"Slow Poison status initiated." (Slow Poison)
+	type=0f	"Attack Power has increased." (Imposito Manus)
+	type=10	"Casting Delay is reduced." (Suffragium)
+	type=11	"Weapon has been enchanted with the Holy Ghost." (Aspersio)
+	type=12	"Armor has been enchanted with the Holy Ghost." (BSS)
+	type=13	"Barrier Formed." (Kyrie Eleison)
+	type=14	"HP/SP Recovery improved." (Magnificat)
+	type=15	"Luck increased." (Gloria)
+	type=16	"Double Damage for 1 attack initiated." (Lex Aeterna)
+	type=17	"Attack Speed improved." (Adrenaline Rush)
+	type=18	"Weapon Perfection Mode initiated." (Weapon Perfection)
+	type=19	"Power Thrust Mode Initiated." (Power Thrust)
+	type=1a	"Maximize Power Mode Initiated." (Maximize Power)
+	type=1b	Peco-Peco
+	type=1c	Falcon
+	type=1d	Play Dead
+	type=1e	"Strength Improved." (Loud Proclamation)
+	type=1f	"Energy Coat initiated." (Energy Coat)
+	type=20	"Armor is broken."
+	type=21	"Weapon is broken."
+	type=22	Blind (?)
+	type=23	50% Overweight
+	type=24	90% Overweight
+	type=25 Concentration Potion (?)
+	type=26 Awakening Potion (?)
+	type=27 Berserk Potion (?)
+	type=28 (Unused?  If incorrect, cancellation and effect are wrong)
+	type=29 Unknown "Speed has increased." (White icon)
+	type=32 Strip Weapon
+	type=33 Strip Shield
+	type=34 Strip Armor
+	type=35 Strip Helm
+	type=36 Chemical Protection: Weapon
+	type=37 Chemical Protection: Shield
+	type=38 Chemical Protection: Armor
+	type=39 Chemical Protection: Helm
+	type=3a Auto-Guard
+	type=3b Reflect Shield
+	type=3d Providence
+	type=3e Defender
+	type=41 Auto-Spell
+	type=44 Spear Quicken
+	type=56 Explosion Spirits (no icon)
+	type=57 Steel Body (no indicator except when cancelled)
+	type=59 Combo Delay
+	type=5a Flame Launcher
+	type=5b Frost Weapon
+	type=5c Lightning Loader
+	type=5d Seismic Weapon
+
+S 0197 <type>.w
+	効能は無し?
+	type=0 /resetstate
+	type=1 /resetskill
+
+	No effect?
+	type=0 /resetstate
+	type=1 /resetskill
+
+	(Actually, I think there is an effect.  You can't do this yourself but this may be the packet to reset your
+	 stats and/or skills as you would with the Mesmerist.)
+
+S 0198 <?>.w <?>.w <Flag>.w
+	GMコマンド/cmt(=/changemaptype)にて発行。おそらく、MAP属性変更コマンド
+	Flagのみ1か0
+	
+R 0199 <type>.w
+	type=1 pvpモード開始?
+	type=3 gvgモード開始?
+
+	type=1 PvP mode engaged
+	type=3 GvG mode engaged
+
+R 019a <ID>.l <rank>.l <num>.l
+	pvp順位 rank/num
+
+	Display PvP ranking out of <num> players.
+
+R 019b <ID>.l <type>.l
+	他人のlvupや武器精錬等の表示?
+	type=0 base lvup?
+	type=1 job lvup?
+	type=2 武器精錬失敗
+	type=3 武器精錬成功
+
+	Others' level-up or refining results:
+	type=0 base level up
+	type=1 job level up
+	type=2 Refining failure
+	type=3 Refining success
+	type=4 ?
+	type=5 Pharmacy success
+	type=6 Pharmacy failure
+	
+S 019c <len>.w <message>.?B
+	GMコマンド/nlb,/lbにて発行。MAP内ブロードキャスト
+
+R 019d <?>.4B
+	GMコマンド/hide
+
+	GM command /hide.
+
+R 019e
+	捕獲モンスター決め
+
+	Confirmed attempt to capture a monster.
+
+S 019f <ID>.l
+	捕獲モンスター指定
+
+	Choose monster to capture.
+
+R 01a0 <fail>.B
+	捕獲判定
+	fail=01で成功、00で失敗
+
+	Monster capture judgment:
+	
+	fail=01 success, fail=00 failure
+
+S 01a1 <param>.1B
+	<param>
+	0x00：ペット状態表示
+	0x01：餌を与える
+	0x02：パフォーマンス
+	0x03：卵に戻す
+	0x04：アクセサリ解除
+
+	Pet menu.  <param>:
+	0x00: Display pet's condition
+	0x01: Feed pet
+	0x02: Performance
+	0x03: Return to egg status
+	0x04: Unequip accessory
+
+R 01a2 <pet name>.24B <name flag>.B <lv>.w <hungry>.w <friendly>.w <accessory>.w
+	ペットの状態
+	name flag:00=名前未設定 01=名前設定済み(変更不可)
+	lv=ペットのレベル、hungry=満腹度(0~100)、friendly=親密度(初期値250?)、accessory=アクセサリのItemID
+
+	Pet information.
+	name flag: 00=Name is unset.  01=Name is set (cannot be changed).
+	lv=Pet's level  hungry=hunger level (0-100), friendly=intimacy level (initial value 250)  accessory=accessory's ItemID
+
+R 01a3 <fail>.B <itemID>.w
+	<fail>
+	0x00：餌やり失敗
+	0x01：餌やり成功
+
+	Information about attempt to feed pet:
+	<fail>
+	0x00: Failed to feed pet (don't have feed item)
+	0x01: Succeeded in feeding pet.
+
+R 01a4 <type>.B <ID>.l <val>.l
+	ペット関連通知
+	type=00,val=00 ペット孵化時に送られてくる。ペット認識用？
+	type=01 親密度変化
+	type=02 満腹度変化
+	type=03 アクセサリ変化(0で未装備)
+	type=04 パフォーマンス 確認されたval=1~3
+		(4はスペシャルパフォーマンス？)
+	type=05 ？確認されたval=0x14
+
+	Relevant pet information:
+	type=00,val=00 Time pet was sent into incubator.  (Needed for pet identification?)
+	type=01 Hunger level changed.
+	type=02 Intimacy level changed.
+	type=03 Accessory changed (0 means not yet equipped).
+	type=04 Performance confirmed (val is 1 to 3).
+		(value 4 is special performance?)
+	type=05 ? (confirmed that val=0x14)
+
+S 01a5 <pet name>.24B
+	ペットの名前決め
+
+	New pet name is decided.
+
+R 01a6 <len>.w <index>.w*
+	ペットの卵リスト
+
+	List of pet eggs.
+
+S 01a7 <index>.w
+	ペットの卵リストが選択された
+
+	Pet egg chosen from the egg list.
+
+S 01a9 <emotion>.l
+	ペットエモーション送信
+
+	Pet emotion sent.
+
+R 01aa <ID>.l <emotion>.l
+	ペットエモーション受信
+	<emotion>
+	33以下のとき：エモーション
+	34以上のとき：発言テーブル？
+
+	Pet emotion received.
+
+	<emotion>
+	Up to 33: Emotion
+	34 and up: Pet talk table?
+	
+R 01ab <ID>.l <type>.w <val>.l
+	00b0の他人に見せるバージョン
+	0004:マナーポイント(会話禁止)	
+	type 0004の時のvalは0-解除までの時間
+
+R 01ac <object id>.l
+	アンクルの発動(≠設置)時のみ毎回出現(機能は謎)
+
+	Done every time Ankle Snare is activated (not just established).  Function is unknown.
+
+R 01ad <len>.l <item>.w
+	矢作りの作成可能ITEM表受信
+
+	Receive the menu showing lists of possible items to use for Arrow Crafting.
+
+S 01ae <itemID>.w
+	矢作りで使う材料送信
+
+	Choose ingredients for Arrow Crafting.
+
+S 01af <type>.w
+	チェンジカート（カート選択）
+	type=1	ノーマルカート
+
+	Change Cart.
+
+	type=1  Normal cart.
+	(Carts go from 1-5.)
+
+R 01b0 <monster id>.l <?>.b <new monster code>.l
+	油のクラスチェンジ
+	<new monster code>はチェンジ後のコード(1001～)をdwordで
+
+	(Lit: Oil, or 'abura') class change.  (I think this refers to monster metamorphosis skills, 'abra'-cadabra!)
+	The <new monster code> is the post-change code as a dword (1001-...)
+
+S 01b2 <len>.w <message>.80B <flag>.B {<index>.w <amount>.w <value>.l}.8B*
+
+	露店開設
+	flag ： 0=キャンセル , 1=オープン
+
+	Open a Vending shop.
+	flag: 0=cancel, 1=open
+
+	(Is this an improved version of 012f?)
+
+R 01b3 <filename>.64B <type>.B
+	R 0145の上位互換
+	画像表示(R 0145の上位互換)
+	type	0:左
+		1:中央
+		2:右(カプラ)
+		3:バーつき移動可能×ボタン付
+		4:バーなし移動可能×ボタン付(髪型カタログ)
+		255:非表示
+
+	Improved version of 0145 (displaying a cutin image).  Allows a longer cutin filename.
+
+R 01B6 <guildID>.l <guildLv>.l <connum>.l <capacity>.l <Avl.lvl>.l <now_exp>.l <next_exp>.l <tax_point>.l <tendency F-V>.l <tendency R-W>.l <members>.l <guild name>.24B <guild master>.24B <agit?>.20B
+	ギルド情報 
+
+	Guild information (improved).
+
+	(It used to be that <agit?> was 16B and indicated the guild headquarters (mapname?)
+	(I don't remember tax_point being used at this time.  Guild XP = total taxed XP of the members anyway.)
+
+R 01b9 <ID>.I
+	被ダメ等によるIDの詠唱中断
+
+	When damaged, etc., this ID failed to cast (cast timer disappears).
+
+S 01ba <CharName>.24B
+	GMコマンド/removeにて発行。account_nameへ飛ぶコマンド
+S 01bb <CharName>.24B
+	GMコマンド/shiftにて発行。char_nameへ飛ぶコマンド(@jumpto)
+S 01bc <CharName>.24B
+	GMコマンド/recallにて発行。account_name呼び出しコマンド
+S 01bd <CharName>.24B
+	GMコマンド/summonにて発行。char_name呼び出しコマンド(@recall)
+S 01c0
+	GMコマンド/ｿ莖ﾝにて発行。何かの要求パケ
+R 01c4 <index>.w <amount>.l <itemID>.w <item data>.12B
+	カプラ倉庫アイテム 
+
+	An item in Kapra storage.
+
+R 01c5 <index>.w <amount>.l <itemID>.w <item data>.12B
+
+R 01c8 <index>.w <item ID>.w <ID>.l <amount left>.w <type>.B
+	アイテム使用応答。(00a8の上位バーション？)
+	type=00の場合使用失敗? amountもゴミの模様
+	type=01の場合成功で、amountは使用後の残り個数
+
+	Response to using an item (00a8's improved version?).  Note the <item ID> and <ID> additions.
+
+	type=00 is a failure, amount goes unused.
+	type=01 is successful usage of item.  Amount is the number of remaining items in that index.
+	
+R 01c9 <dst ID>.l <src ID>.l <X>.w <Y>.w <type>.B <fail>.B ?.81b
+	スキル効能地作成(011fの上位バーション？)
+	type 0x7e:SW、0x7f:火壁、0x80 ポタ開き中、0x81 ポタ開き直前
+	0x82 聖体、0x83 サンク、0x84 マグヌス、0x85 ニューマ
+	0x86 0x86 大魔法(SG/MS/LoV/GX)、0x87 ファイヤーピラ待機
+	0x88 ファイヤーピラ爆発、0x87～0x8B 表示無し、
+	0x8c トーキーボックス(発動中)、0x8D アイスウォール
+	0x8E クワグマイア、0x8f ブラストマイン、0x90 スキッド
+	0x91 アンクル、0x92 ベノムダスト、0x93 ランドマイン
+	0x94 ショックウェーブトラップ、0x95 サンドマン
+	0x96 フラッシャー、0x97 フリージングトラップ
+	0x98 クレイモアートラップ、0x99 トーキーボックス
+	0x9A ボルケーノ、0x9B デリュージ、0x9C バイオレントゲイル
+	0x9D ランドプロテクター、0x9E Zenyマーク、0x9F Zeny袋
+	0xA0 回る緑の輪、0xA1 ピンクの音符 (二連符有り
+	0xA2 真ん中に点のある光の玉、0xA3 ピンクのスプリング
+	0xA4 深淵の中に、0xA5 回る青い輪、0xA6 不協和音
+	0xA7 口笛、0xA8 夕陽のアサシンクロス、0xA9 ブラギの詩
+	0xAA イドゥンの林檎、0xAB 自分勝手なダンス、0xAC ハミング
+	0xAD 私を忘れないで…、0xAE サービスフォーユー
+	0xAF ピンクのスプリング、0xB0 表示無し
+	0xB0 グラフィティ,
+	0xB1 デモンストレーション、0xB2～0xBF 表示無し
+	0xB2 ピンクのワープポータル風
+	0xB3 小さな十字架がふよふよ
+	0xB4 バジリカ、0xB5 エフェクトなし？
+	0xB6 黒い×が立体的に浮かび上がる
+	0xB7 クモの巣、0xB8～ エフェクトなし？
+
+	他情報求む
+	?.81bは謎。
+
+	Display a ground skill effect. (011f's improved version?)
+
+	Types:
+
+	7e: Safety Wall
+	7f: Firewall
+	80: Opened Warp Portal
+	81: Opening Warp Portal
+	82: B.S. Sacramenti
+	83: Sanctuary
+	84: Magnus Exorcismus
+	85: Pneuma
+	86: Large Magic Circle (SG/MS/LoV/GX (Grand Cross?))
+	87: Fire Pillar (standby)
+	88: Fire Pillar (activated)
+	89-8b: No effect
+	8c: Talkie Box (activated)
+	8d: Ice Wall
+	8e: Quagmire
+	8f: Blast Mine
+	90: Skid Trap
+	91: Ankle Snare
+	92: Venom Dust
+	93: Land Mine
+	94: Shockwave Trap
+	95: Sandman
+	96: Flasher
+	97: Freezing Trap
+	98: Claymore Trap
+	99: Talkie Box (before activation)
+	9a: Volcano
+	9b: Deluge
+	9c: Violent Gale
+	9d: Land Protector
+	9e: Zeny sign
+	9f: Zeny bag (Mr. Kim, a Rich Man)
+	a0: Turning green pillar
+	a1: Pink music note (two types alternate, single and joined)
+	a2: Ball of light with a point in the middle
+	a3: Lavender spring, short
+	a4: Gemstones (Into the Abyss)
+	a5: Turning blue pillar
+	a6: Dissonance (short yellow haze)
+	a7: Whistle (single music note)
+	a8: Assassin Cross of Sunset (tall red haze)
+	a9: Poem of Bragi (arcane letters)
+	aa: Apple of Idun (golden apples)
+	ab: Selfish Dance (same effect as Dissonance)
+	ac: Humming (joined musical notes)
+	ad: Please Don't Forget Me... (tall green haze)
+	ae: Service For You (hearts)
+	af: Pink spring, tall
+	b0: Graffiti (?)
+	b1: Demonstration
+	b2: Pink Warp Portal (active)
+	b3: Small floating cross (Gospel)
+	b4: 5x5 square of light (Basilica)
+	b5: No effect?
+	b6: Fog wall (X-shaped dark effect)
+	b7: Spider Web
+	b8-: No resource?
+
+	Ground info request ?.81b is unkhown.
+
+R 01cd (<sid>.l)x7
+	オートスペル選択肢受信
+	<sid>x7 には NB,CB,FB,LB,SS,FBL,FD の順でスキルコードがdwordで入る
+	まだ選択できないスキルの部分は <sid> = 0x00000000 が入る
+
+	Receive Auto-spell choices.
+	<sid>x7 would be NB, CB, FB, LB, SS, FBl, FD's skill codes in dword format.
+	If you don't have one of those skills, its <sid> will be 0x00000000.
+
+S 01ce <sid>.l
+	オートスペル選択肢送信
+
+	Send Auto-spell choice.
+
+R 01cf <crusader id>.l <target id>.l <?>.18b
+	献身状態ターゲットON/OFF。献身が切れると <target id> が 0x00000000 になる
+
+	Changes your status as a target of Devotion ON or OFF.
+	If Devotion is cancelled, the <target id> will be 0x0000000.
+
+R 01d0 <ID>.l <num>.w 
+	<num> : 気功の数(非Lv)
+
+	<num> : Number of Spirit Spheres (not-level?)
+
+R 01d1 <monk id>.l <target monster id>.l <bool>.l
+	白羽取り状態ON/OFF。<bool> は白刃取り成立時に 0x00000001 解除時に 0x00000000 が来る
+
+	Blade Stop status ON/OFF.  <bool> is 0x00000001 if activated, 0x00000000 if ended.
+
+R 01d2 <id>.l <delay>.l
+	モンクのコンボディレイ(msec)
+	三段・連打は基本ディレイ1000(+300)、猛龍は基本ディレイ700(+300)
+
+	Monk's combo delay (in milliseconds).
+	Triple Blows and Quadruple Blows have a base delay of 1000(+300),
+	Way of the Dragon has a base delay of 700(+300).
+
+R 01d4 <ID>.l
+	文字列入力窓表示(IDはNPCのIDが入る)
+
+	Character string input window indicated (ID is the ID of the NPC that sent it).
+
+S 01d5 <len>.w <ID>.l <input>.?B 00
+	文字列入力内容送信(IDはNPCのIDが入る)
+
+	Sending text written in the string input window (ID is the ID of the NPC that sent it).
+
+R 01d7 <ID>.l <equip point>.b <item id1>.w <item id2>.w
+	装備グラフィック <equip point> は 02手と09足のみ確認。id2は左手
+
+	Equipment graphics.
+	Confirmed <equip points> are 02 for hand and 09 for foot.  <id2> is the left hand.
+
+
+R 01d8 <ID>.l <speed>.w <opt1>.w <opt2>.w <option>.w <class>.w <hair>.w <item id1>.w <item id2>.w <head option bottom>.w <head option top>.w <head option mid>.w <hair color>.w ?.w <head dir>.w <guild>.l <emblem>.l <manner>.w <karma>.B <sex>.B <X_Y_dir>.3B ?.B ?.B <sit>.B <Lv>.B ?.B
+	マップロード時&移動時用、向き付き用キャラ情報?(0078の上位バージョン)
+
+	A packet for map load or moving, information about a direction for character (0078's improved version).
+	Note the two (instead of one) item ids and the removal of shield (item id2 now, probably).
+
+R 01d9 <ID>.l <speed>.w <opt1>.w <opt2>.w <option>.w <class>.w <hair>.w <item id1>.w <item id2>.w.<head option bottom>.w <head option top>.w <head option mid>.w <hair color>.w ?.w <head dir>.w <guild>.l <emblem>.l <manner>.w <karma>.B <sex>.B <X_Y_dir>.3B ?.B ?.B <Lv>.B ?.B
+	テレポ等の表示範囲内沸きキャラ用、向き付き無しキャラ情報?(0079の上位バージョン)
+
+	Information about characters in a range of a skill like teleport, no info about direction for character (0079's improved version).
+
+R 01da <ID>.l <speed>.w <opt1>.w <opt2>.w <option>.w <class>.w <hair>.<item id1>.w <item id2>.w <head option bottom>.w <server tick>.l <head option top>.w <head option mid>.w <hair color>.w ?.w <head dir>.w <guild>.l <emblem>.l <manner>.w <karma>.B <sex>.B <X_Y_X_Y>.5B ?.B ?.B ?.B <Lv>.B ?.B
+	表示範囲内キャラ移動情報(007bの上位バージョン)
+
+	Information about movement in the character's visible range. (007b's improved version).
+S 01db
+	暗号化key要求
+
+	Encryption key request.
+
+R 01dc <len>.w <key>.?B
+	暗号化key送付
+
+	Encryption key received.
+
+S 01dd <version>.l <account name>.24B <md5 binary>.16B <version2>.1B
+	id&暗号化済みpass送信
+		順にクライアントが01dbを送る、
+		鯖が01dcでkeyを返す、
+		クライアントが"<key><password>"についてmd5計算し
+		<md5 binary>の所を埋めて01ddを送る。
+		<passwordencrypt2>の時は
+		"<key><password>"に対してmd5計算としている所を
+		"<password><key>"と変更する
+
+	Send ID and encrypted password.
+		Order is that the client sends 01db,
+		The server returns 01dc with the key,
+		The client then takes the "<key><password>", md5-hashes it,
+		then places the result in <md5 binary> and sends with 01dd.
+		When <version2> is used,
+		The "<key><password>" md5 calculation is changed into "<password><key>".
+		The MD5 binary is the raw data on the buffer, and should not be read as a string by normal conventions.
+
+R 01de <skill ID>.w <src ID>.l <dst ID>.l <server tick>.l <src speed>.l <dst speed>.l <param1>.l <param2>.w <param3>.w <type>.B
+	攻撃系スキルエフェクト@(0114の上位バーション？)
+	type=04 火壁で観測 type=06とほぼ同じ?
+	type=05 NB/FBlの分散したダメージ用？
+	type=06 単発もの? param1はダメージ合計、param2はlevel、param3は1固定と予想
+	type=07 ダメージ表示無し？
+	type=08 連打もの? param1はダメージ合計、param2はlevel、param3は分割数と予想
+	type=09 ダメージモーションなしにダメージだけ表示される物(インデュア)と思ったのだがダメージモーションが出る物。(機能は謎)
+
+	Skill effect for an attack.  (Improved version of 0114.)
+	type=04 Seen when using firewall.  About the same as type=06?
+	type=05 Split-damage type seen with Napalm Beat/Fireball?
+	type=06 Single-hit type?  param1 is total damage, param2 is level, param3 is 1.
+	type=07 Damage without a display?
+	type=08 Multiple-hit type?  param1 is total damage, param2 is level, param3 is number of hits.
+	type=09 I thought it was for giving damage without the actual damage motion (Endure), but it made a damage motion.  (True function is unknown.)
+
+S 01df <ID>.|
+	GM右クリックによるIDのチャット禁止回数参照？
+
+	GM right-click for blocking the selected ID's ability to make chats?
+
+R 01e1 <ID>.l <num>.w 
+	<num> : 気功の数(非Lv) 一度表示したら後どんなnumが来ても無視される。
+
+	<num> : Number of Spirit Spheres (not level) - Once displayed, whatever <num> comes is disregarded. (???)
+R 01e4
+	プロポーズターゲット表示
+S 01e5 <ID>.l
+	プロポーズ要求
+
+R 01e6 <partner name>.24B
+	結婚スキルあなたに逢いたい使用時の叫び声
+
+	Cry given when using the wedding skill "I Want To See You!" (prompt for allowing the warp?)
+
+S 01e7
+	スパノビで/doridoriしたら飛んでくる。SPR回復量2倍フラグを立てるパケット
+
+	Sent when a Super Novice does /doridori like crazy (the head-turning pose).
+	This packet sets a flag to double regeneration through the SP Recovery skill.
+
+S 01e8 <party name>.24B <item1>B <item2>B
+	<item1>アイテム収集方法。0で個人別、1でパーティ公有
+	<item2>アイテム分配方法。0で個人別、1でパーティに均等分配
+	(00f9の上位バーション)
+
+	Information about party item sharing.  (00f9's improved version)
+	<item> covers item loot rights.  0 means every man for himself, 1 is party can loot.
+	<item2> covers item sharing.  0 means every man for himself, 1 divides equally among the party.
+
+R 01ea <ID>.l
+	結婚エフェクト(音楽、紙吹雪)
+	IDは新婦のものが入る？
+
+	Wedding effects (music, confetti)
+	ID is the bride when she arrives (?) (after the ceremony?  That kind of makes sense. :))
+
+S 01ed
+	スパノビが爆裂波動になるフラグを立てるパケット
+
+	This flag is sent when the Super Novice goes into Critical Explosion mode (!)
+	(Note: Happens when you die with 99% XP--you don't die, instead you get the effect.
+	You have to have spheres first through the Super Novice plea trick.)
+
+R 01ee <len>.w {<index>.w <item ID>.w <type>.B <identify flag>.B <amount>.w ?.2B <card>.4w}.18B*
+	所有消耗品&収集品リスト
+	矢の場合は?.2Bが0x8000になる
+	00a3から変更
+
+	Information about consumable and collectible items in your inventory.
+	In the case of arrows, the ?.2B value is 0x8000.
+	(Changed from 00a3)
+
+R 01ef <len>.w {<index>.w <item ID>.w <type>.B <identify flag>.B <amount>.w ?.2B <card>.4w}.18B*
+	カート内アイテム。消耗品/収集品
+	0123から変更
+
+	Information about consumable and collectible items in your cart.
+	(Changed from 0123)
+
+R 01f0 <len>.w {<index>.w <item ID>.w <type>.B <identify flag>.B <amount>.w ?.2B <card>.4w}.18B*
+	カプラさんに預けてある消耗品&収集品リスト
+	00a5から変更
+
+	Information about consumable and collectible items in Kapra's storage.
+	(Changed from 00a5)
+
+R 01f4 <name>.24B <trade id?>.L <LV>.w
+	先方から取引要請
+	00e5から変更
+
+	Receive a trade request from <name>.  Changed from 00e5.
+	(NOTE the additions: Unique trade ID (?) and level of trader (?))
+
+R 01f5 <result>.B <trade id?>.L <LV>.w
+	こちらからの取引要請に対する反応
+	00e7から変更
+
+	Response to trade initiation request (changed from 00e7):
+	(NOTE the additions: Unique trade ID (?) and level of trader (?))
+	result=00 Too far away to trade.
+	result=03 Accepted, begin trade.
+	result=04 Trade cancelled.
+
+R 01f8
+	養子ターゲット表示
+S 01f9 <ID>.l
+	養子要求
+
+S 0200 <login name>.24B
+	ragexeに/accountオプションをつけて起動するとログイン要求に付加されるパケット
+
+	If you use the /account parameter with ragexe, this sends that parameter as an additional packet to the login server.
+
+S 0202 <nick name>.24B NOT IN 621 Client
+	友達リストへ追加要求
+
+S 0204 <ragexe md5>.16B
+	ログイン要求に付加されるパケット。16バイトは固定？
+
+	Additional packet sent at login request time.  The 16 bytes are a fixed length?
+
+S 020B <?>.B<ragexe md5>.16B
+	キャラクタサーバ接続要求0065に付加されるパケット。1+0204の16バイトで17バイト？
+
+	Additional packet sent when sending 0065 connection request to the character server.
+	1 + 0204's 16 bytes = 17 bytes?  CONFIRMED
+
+----
+
+R 01eb 
+
+(Source - eAthena posts/code) - Guild packet to locate fellow guild members on the mini-map
+
+WBUFW(buf,0)=0x1eb;
+WBUFL(buf,2)=sd->status.account_id;
+WBUFW(buf,6)=sd->bl.x;
+WBUFW(buf,8)=sd->bl.y;
+clif_send(buf,packet_len_table[0x1eb],&sd->bl,GUILD_SAMEMAP_WOS);

@@ -54,6 +54,7 @@ implementation
 		//Helios
 		WinLinux,
 		Console,
+		DatabaseTXT,
 		//3rd Party
 		IdHashMessageDigest;
 
@@ -94,6 +95,7 @@ end;{GetMD5}
 //------------------------------------------------------------------------------
 procedure InitGlobals;
 begin
+	Load_PacketDB;
 	AccountList     := TStringList.Create;
 	CharacterList   := TCharacterList.Create(True);
 	if ParamCount = 0 then

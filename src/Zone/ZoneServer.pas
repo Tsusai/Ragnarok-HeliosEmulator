@@ -214,7 +214,7 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TZoneServer.Stop();
 begin
-  DeActivateServer(TCPServer);
+  DeActivateServer('Zone', TCPServer);
 	//DeActivateClient(ToCharaTCPClient);
   //DeActivateClient(ToInterTCPClient);
 end;{Start}

@@ -5,6 +5,8 @@ uses
 	Character,
 	PacketTypes;
 
+	procedure Load_PacketDB;
+
 (*------------------------------------------------------------------------------
 Here we are setting up a table of packets for the Load_PacketDB to fill up.
 CodeBase[] - Holds the different client sets of packets

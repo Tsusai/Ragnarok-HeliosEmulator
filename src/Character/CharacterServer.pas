@@ -71,15 +71,15 @@ uses
 	//Helios
 	CharaLoginPackets,
 	BufferIO,
-  Character,
-  Account,
+	Character,
+	Account,
 	GameConstants,
-  Globals,
-  TCPServerRoutines,
-  //3rd
+	Globals,
+	TCPServerRoutines,
+	//3rd
 	StrUtils,
-  CharaList,
-  Console;
+	CharaList,
+	Console;
 
 const
 	INVALIDNAME = 0;
@@ -193,7 +193,7 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.Stop();
 begin
-	DeActivateServer(TCPServer);
+	DeActivateServer('Character',TCPServer);
 	DeActivateClient(CharaToLoginClient);
 end;{Start}
 //------------------------------------------------------------------------------
@@ -203,20 +203,33 @@ begin
 	ValidateWithLoginServer(CharaToLoginClient,Self);
 end;
 
+//		January 3rd, 2006 - Tsusai - Added console messages.
 procedure TCharacterServer.LoginClientRead(AClient : TInterClient);
 var
 	ABuffer : TBuffer;
 	PacketID : Word;
+	Response : Byte;
 begin
 	RecvBuffer(AClient,ABuffer,2);
 	PacketID := BufferReadWord(0,ABuffer);
 	case PacketID of
 	$2001:
 		begin
-			RecvBuffer(AClient,ABuffer[2],1);
-			SendWANIP(CharaToLoginClient,Self);
-			SendLANIP(CharaToLoginClient,Self);
-			SendOnlineUsers(CharaToLoginClient,Self);
+			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2001)-2);
+			Response := BufferReadByte(2,ABuffer);
+			if Boolean(Response) then
+			begin
+				MainProc.Console('Character Server: Verified with Login Server, '+
+					'sending details.');
+				SendWANIP(CharaToLoginClient,Self);
+				SendLANIP(CharaToLoginClient,Self);
+				SendOnlineUsers(CharaToLoginClient,Self);
+			end else
+			begin
+				MainProc.Console('Character Server: Failed to verify with Login Server.');
+				MainProc.Console('Character Server: Stopping...');
+				Stop;
+			end;
 		end;
 	end;
 
@@ -234,6 +247,7 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //    July 6th, 2006 - Tsusai - Started work on changing dummy procedure to real
 //      procedure.
+//		January 3rd, 2006 - Tsusai - Added console messages.
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
@@ -320,13 +334,22 @@ begin
 						end;
 					end;
 				end;
-        ACharaList.Free;
+        //size is (24 + (character count * 106))
+				PacketSize := (Ver + (Count * 106));
+				WriteBufferWord(0,$006b,ReplyBuffer); //header
+				WriteBufferWord(2,PacketSize,ReplyBuffer);
+				SendBuffer(AClient,ReplyBuffer,PacketSize);
+
+				ACharaList.Free;
+			end else
+			begin
+				WriteBufferWord(0, $0081, ReplyBuffer);
+				WriteBufferByte(2, 01, ReplyBuffer);
+				SendBuffer(AClient,ReplyBuffer,GetPacketLength($0081));
+
+				MainProc.Console('Character Server: Connecting RO client from '+
+					AClient.Connection.Socket.Binding.PeerIP + ' did not pass key validation.');
 			end;
-			//size is (24 + (character count * 106))
-			PacketSize := (Ver + (Count * 106));
-			WriteBufferWord(0,$006b,ReplyBuffer); //header
-			WriteBufferWord(2,PacketSize,ReplyBuffer);
-			SendBuffer(AClient,ReplyBuffer,PacketSize);
 		end;
 	end;
 end; {SendCharas}
@@ -387,7 +410,7 @@ var
 	begin
 		WriteBufferWord(0, $006e, ReplyBuf);
 		WriteBufferByte(2, Error, ReplyBuf);
-		SendBuffer(AClient,ReplyBuf,3);
+		SendBuffer(AClient,ReplyBuf,GetPacketLength($006e));
 	end;
 
 begin
@@ -530,7 +553,7 @@ begin
 					WriteBufferByte(2+104, CharaNum,ReplyBuffer);
 					WriteBufferByte(2+105, 0,ReplyBuffer);
 				end;
-				SendBuffer(AClient,ReplyBuffer,108);
+				SendBuffer(AClient,ReplyBuffer,GetPacketLength($006d));
 			end;
 		end;
 	end else
@@ -567,7 +590,7 @@ var
 	begin
 		WriteBufferWord(0, $0070, ReplyBuffer);
 		WriteBufferByte(2, Error, ReplyBuffer);
-		SendBuffer(AClient,ReplyBuffer,3);
+		SendBuffer(AClient,ReplyBuffer,GetPacketLength($0070));
 	end;
 
 begin
@@ -590,7 +613,7 @@ begin
 					  if AGameDatabase.AnInterface.DeleteChara(ACharacter) then
 					  begin
 						  WriteBufferWord(0, $006f, ReplyBuffer);
-						  SendBuffer(AClient,ReplyBuffer, 2);
+						  SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));
 					  end else DeleteCharaError(DELETEBADCHAR);
 				  end else DeleteCharaError(DELETEBADCHAR);
 			  end else DeleteCharaError(DELETEBADCHAR);
@@ -634,7 +657,7 @@ begin
 				if PacketID = $0065 then
 				begin
 					//Verify login and send characters
-				RecvBuffer(AClient,ABuffer[2],17-2);
+				RecvBuffer(AClient,ABuffer[2],GetPacketLength($0065)-2);
 					SendCharas(AClient,ABuffer);
 				end;
 			end else
@@ -642,17 +665,17 @@ begin
 				case PacketID of
 				$0066: // Character Selected -- Refer Client to Map Server
 					begin
-					RecvBuffer(AClient,ABuffer[2],3-2);
+						RecvBuffer(AClient,ABuffer[2],GetPacketLength($0066)-2);
 						SendCharaToMap();
 					end;
 				$0067: // Create New Character
 					begin
-					RecvBuffer(AClient,ABuffer[2],37-2);
+					RecvBuffer(AClient,ABuffer[2],GetPacketLength($0067)-2);
 						CreateChara(AClient,ABuffer);
 					end;
 				$0068: // Request to Delete Character
 					begin
-					RecvBuffer(AClient,ABuffer[2],46-2);
+					RecvBuffer(AClient,ABuffer[2],GetPacketLength($0068)-2);
 						DeleteChara(AClient,ABuffer);
 					end;
 				end;

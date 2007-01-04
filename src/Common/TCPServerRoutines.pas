@@ -16,7 +16,7 @@ uses
 	CommClient;
 
 	function ActivateServer(Name : string; var AServer : TIdTCPServer) : Boolean;
-	procedure DeActivateServer(var AServer : TIdTCPServer);
+	procedure DeActivateServer(const Name : String; var AServer : TIdTCPServer);
 
 	function ActivateClient(var AClient : TInterClient) : Boolean;
 	procedure DeActivateClient(var AClient : TInterClient);
@@ -81,17 +81,26 @@ end;{ActivateServer}
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		January 3rd, 2006 - Tsusai - Added console strings.
 //
 //------------------------------------------------------------------------------
-procedure DeActivateServer(var AServer : TIdTCPServer);
+procedure DeActivateServer(const Name : String; var AServer : TIdTCPServer);
+const
+	TERMINATING =
+		'  **Deactivating %s Server Component';
+	TERMINATED =
+		'  --%s Server Component Offline';
 begin
+
 	If Assigned(AServer) then
 	begin
 		if AServer.Active then
 		begin
+			MainProc.Console(Format(TERMINATING, [Name]));
 			AServer.Active := false;
 		end;
 		AServer.Bindings.Clear;
+		MainProc.Console(Format(TERMINATED, [Name]));
 	end;
 end;{DeActivateServer}
 //------------------------------------------------------------------------------

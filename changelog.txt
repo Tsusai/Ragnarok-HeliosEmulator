@@ -13,6 +13,25 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 93 -
+[2007/01/03] - Tsusai - Notes/Overview : Implemented the GetPacketLength function, and added
+ some new console output messages to let admins know what is going on with login and character
+ servers.
+[2007/01/03] - Tsusai - DatabaseTXT: Allowed Load_PacketDB be called outside of that unit.
+[2007/01/03] - Tsusai - Added the following files into Notes: client_packet_en (from
+ prometheus), and Generating Linux Compiles.txt
+[2007/01/03] - Tsusai - Database\packet_db.txt - Added Helios custom packets (server
+ communication packets).
+[2007/01/03] - Tsusai - Globals - InitGlobals:  Calls Load_PacketDB.
+[2007/01/03] - Tsusai - TCPServerRoutines - DeactivateServer: Added termination messages,
+ and is passed a name for those messages.
+[2007/01/03] - Tsusai - LoginServer, CharaServer, InterServer, ZoneServer: Updated
+ DeactivateServer calls.
+[2007/01/03] - Tsusai - Console : Added a blank space after the server startup.
+[2007/01/03] - Tsusai - LoginServer, CharaServer, CharaLoginPackets : Updated static packet
+ lengths (Recv and Send) with the GetPacketLength function.
+-
+
 - Rev 92 -
 [2007/01/03] - RaX - Added 2 ini entries, [Login] - Key and [Chara] - LoginKey. Now we can
  specify the password used to communicate between the login and character servers.

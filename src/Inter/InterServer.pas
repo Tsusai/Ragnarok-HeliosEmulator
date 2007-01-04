@@ -192,7 +192,7 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TInterServer.Stop();
 begin
-  DeActivateServer(TCPServer);
+  DeActivateServer('Inter',TCPServer);
   //DeActivateClient(ToZoneTCPClient);
 end;{Start}
 //------------------------------------------------------------------------------

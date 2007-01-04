@@ -19,7 +19,8 @@ implementation
 uses
 	BufferIO,
 	Globals,
-	PacketTypes;
+	PacketTypes,
+	TCPServerRoutines;
 
 	procedure ValidateWithLoginServer(
 		AClient : TInterClient;
@@ -32,7 +33,7 @@ uses
 		WriteBufferMD5String(2, GetMD5(ServerConfig.LoginComKey), OutBuffer);
 		WriteBufferString(18, CharacterServer.Servername, 24, OutBuffer);
 		WriteBufferWord(42, CharacterServer.WANPort, OutBuffer);
-		SendBuffer(AClient,OutBuffer,44);
+		SendBuffer(AClient,OutBuffer,GetPacketLength($2000));
 	end;
 
 	procedure SendValidateFlag(AClient : TIdContext; Validated : boolean);
@@ -41,7 +42,7 @@ uses
 	begin
 		WriteBufferWord(0, $2001, OutBuffer);
 		WriteBufferByte(2, Byte(Validated), OutBuffer);
-		SendBuffer(AClient,OutBuffer,3);
+		SendBuffer(AClient,OutBuffer,GetPacketLength($2001));
 	end;
 
 	procedure SendWANIP(AClient : TInterClient; CharacterServer : TCharacterServer);
@@ -74,7 +75,7 @@ uses
 	begin
 		WriteBufferWord(0,$2004,OutBuffer);
 		WriteBufferWord(2,CharacterServer.OnlineUsers,OutBuffer);
-		SendBuffer(AClient,OutBuffer,4);
+		SendBuffer(AClient,OutBuffer,GetPacketLength($2004));
 	end;
 
 end.
