@@ -27,6 +27,7 @@ type
   public
     Procedure Parse(InputText : String);
 
+  private
     function Help : String;
     function Reload() : String;
     function Restart() : String;
@@ -141,10 +142,11 @@ function TCommands.Help : String;
 begin
 	MainProc.Console('The available console commands are as follows...');
 	MainProc.Console('--------------------------------------');
-	MainProc.Console('/reload - reloads account database');
-	MainProc.Console('/restart - restarts the server');
+  MainProc.Console('/start - starts a server');
+  MainProc.Console('/stop - stops a server');
+	MainProc.Console('/restart - restarts all enabled servers');
 	MainProc.Console('/exit - exits the program');
-	MainProc.Console('/help - list all console commands');
+	MainProc.Console('/help - lists all console commands');
 	MainProc.Console('--------------------------------------');
 	Result := '';
 end;{TCommands.Help}
@@ -172,7 +174,7 @@ end;{TCommands.Reload}
 //TCommands.Restart() 		                                             FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Writes a list of commands to the console.
+//			Restarts all enabled servers.
 //
 //	Changes -
 //		September 20th, 2006 - RaX - Created Header.
@@ -204,10 +206,8 @@ begin
     Values[0] := LowerCase(Values[0]);
     if Values[0] = 'login' then
     begin
-      if NOT Assigned(MainProc.LoginServer) then
+      if NOT MainProc.LoginServer.Started then
       begin
-        MainProc.LoginServer := TLoginServer.Create;
-        MainProc.LoginServer.Port := ServerConfig.LoginPort;
         MainProc.LoginServer.Start;
       end else
       begin
@@ -216,11 +216,8 @@ begin
     end else
     if Values[0] = 'character' then
     begin
-      if NOT Assigned(MainProc.CharacterServer) then
+      if NOT MainProc.CharacterServer.Started then
       begin
-        MainProc.CharacterServer              := TCharacterServer.Create;
-        MainProc.CharacterServer.WANPort      := ServerConfig.CharaPort;
-        MainProc.CharacterServer.ServerName   := ServerConfig.ServerName;
         MainProc.CharacterServer.Start;
       end else
       begin
@@ -229,11 +226,8 @@ begin
     end else
     if Values[0] = 'inter' then
     begin
-      if NOT Assigned(MainProc.InterServer) then
+      if NOT MainProc.InterServer.Started then
       begin
-        MainProc.InterServer              := TInterServer.Create;
-        MainProc.InterServer.Port         := ServerConfig.InterPort;
-        MainProc.InterServer.IP           := ServerConfig.InterWANIP;
         MainProc.InterServer.Start;
       end else
       begin
@@ -242,11 +236,8 @@ begin
     end else
     if Values[0] = 'zone' then
     begin
-      if NOT Assigned(MainProc.ZoneServer) then
+      if NOT MainProc.ZoneServer.Started then
       begin
-        MainProc.ZoneServer       := TZoneServer.Create;
-		    MainProc.ZoneServer.Port  := ServerConfig.ZonePort;
-        MainProc.ZoneServer.IP    := ServerConfig.ZoneWANIP;
         MainProc.ZoneServer.Start;
       end else
       begin
@@ -285,10 +276,9 @@ begin
     Values[0] := LowerCase(Values[0]);
     if Values[0] = 'login' then
     begin
-      if Assigned(MainProc.LoginServer) then
+      if MainProc.LoginServer.Started then
       begin
-        MainProc.LoginServer.Stop;
-        FreeAndNil(MainProc.LoginServer);
+        MainProc.LoginServer.Stop;;
       end else
       begin
         Result := 'Login Server is already stopped.';
@@ -296,10 +286,9 @@ begin
     end else
     if Values[0] = 'character' then
     begin
-      if Assigned(MainProc.CharacterServer) then
+      if MainProc.CharacterServer.Started then
       begin
         MainProc.CharacterServer.Stop;
-        FreeAndNil(MainProc.CharacterServer);
       end else
       begin
         Result := 'Character Server is already stopped.';
@@ -307,10 +296,9 @@ begin
     end else
     if Values[0] = 'inter' then
     begin
-      if Assigned(MainProc.InterServer) then
+      if MainProc.InterServer.Started then
       begin
         MainProc.InterServer.Stop;
-        FreeAndNil(MainProc.InterServer);
       end else
       begin
         Result := 'Inter Server is already stopped.';
@@ -318,10 +306,9 @@ begin
     end else
     if Values[0] = 'zone' then
     begin
-      if Assigned(MainProc.ZoneServer) then
+      if MainProc.ZoneServer.Started then
       begin
         MainProc.ZoneServer.Stop;
-        FreeAndNil(MainProc.ZoneServer);
       end else
       begin
         Result := 'Zone Server is already stopped.';

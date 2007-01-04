@@ -38,6 +38,7 @@ type
 
 		Procedure SetIPCardinal(Value : string);
     Procedure SetPort(Value : Word);
+    Function GetStarted() : Boolean;
 
   public
 		IPCardinal    : Cardinal;
@@ -46,6 +47,7 @@ type
 
 		property IP   : string read fIP write SetIPCardinal;
     property Port : Word read fPort write SetPort;
+    property Started : Boolean read GetStarted;
 
     Constructor Create();
     Destructor  Destroy();Override;
@@ -235,5 +237,23 @@ begin
   fPort := Value;
   TCPServer.DefaultPort := Value;
 end;//SetPort
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetStarted                                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Checks to see if the internal TCP server is active, if it is it returns
+//    true.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function TInterServer.GetStarted() : Boolean;
+begin
+  Result := TCPServer.Active;
+end;{SetPort}
 //------------------------------------------------------------------------------
 end.

@@ -45,6 +45,7 @@ type
 
 		Procedure SetIPCardinal(Value : string);
     Procedure SetPort(Value : Word);
+    Function GetStarted() : Boolean;
 
   public
 		IPCardinal    : Cardinal;
@@ -53,7 +54,8 @@ type
 
     AGameDatabase : TDatabase;
     ACommonDatabase : TDatabase;
-    
+
+    property Started : Boolean read GetStarted;
 		property IP   : string read fIP write SetIPCardinal;
     property Port : Word read fPort write SetPort;
 
@@ -446,5 +448,23 @@ begin
   fPort := Value;
   TCPServer.DefaultPort := Value;
 end;//SetPort
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetStarted                                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Checks to see if the internal TCP server is active, if it is it returns
+//    true.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function TZoneServer.GetStarted() : Boolean;
+begin
+  Result := TCPServer.Active;
+end;{SetPort}
 //------------------------------------------------------------------------------
 end.

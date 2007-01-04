@@ -13,6 +13,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 94 -
+[2007/01/04] - RaX - Updated documentation + headers in LoginServer. Added /help command
+ listings for new /start and /stop commands in Commands.
+[2007/01/04] - RaX - Added Started property to each server class.
+[2007/01/04] - RaX - Changed /start and /stop to use already build in <server>.start procedures
+ and modified them to work with servers which aren't free'd.
+-
+
 - Rev 93 -
 [2007/01/03] - Tsusai - Notes/Overview : Implemented the GetPacketLength function, and added
  some new console output messages to let admins know what is going on with login and character

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//LoginServer			                                                UNIT
+//LoginServer			                                                        UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //      The Login Server Class.
@@ -61,9 +61,10 @@ type
 		);
 
 		Procedure SetPort(Value : Word);
-
+    Function GetStarted() : Boolean;
 	public
 		Property Port : Word read fPort write SetPort;
+    property Started : Boolean read GetStarted;
 
 		Constructor Create();
 		Destructor  Destroy();override;
@@ -174,6 +175,7 @@ begin
 end;{Start}
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 //OnConnect()                                          EVENT
 //------------------------------------------------------------------------------
@@ -191,6 +193,18 @@ begin
 end;{LoginServerConnect}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//OnDisconnect()                                                         EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//		  Executes when a client disconnects from the login server. Removes
+//    disconnected character servers from the list.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 Procedure TLoginServer.OnDisconnect(AConnection: TIdContext);
 var
 	idx : integer;
@@ -206,7 +220,8 @@ begin
 			ACharaServInfo.Free;
 		end;
 	end;
-end;
+end;{OnDisconnect}
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
@@ -305,6 +320,17 @@ end;{OnException}
 	end; // Proc SendCharacterServers
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ParseMF()                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		  Parses a client's login for _M/_F registration.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure TLoginServer.ParseMF(var Username : string; Password : string);
 	var
 		GenderStr  : string;
@@ -324,7 +350,9 @@ end;{OnException}
 				);
 			end;
 		end;
-	end;
+	end;{ParseMF}
+//----------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //ValidateLogin                                                       PROCEDURE
@@ -399,8 +427,19 @@ end;{OnException}
 	end;//ValidateLogin
 //------------------------------------------------------------------------------
 
-	//		January 3rd, 2006 - Tsusai - Added console messages.
-	// Add header please kthxbai
+
+//------------------------------------------------------------------------------
+//VerifyCharaServer()                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		  Makes sure a character server is allowed to be added to the character
+//    server list by verifying it's password.
+//
+//	Changes -
+//		January 3rd, 2007 - Tsusai - Added console messages.
+//		January 4th, 2007 - RaX - Created Header. Tsusai lazy =)
+//
+//------------------------------------------------------------------------------
 	procedure TLoginServer.VerifyCharaServer(
 		AClient: TIdContext;
 		InBuffer : TBuffer;
@@ -434,7 +473,8 @@ end;{OnException}
 			MainProc.Console('Login Server: Character Server failed verification.');
 		end;
 		SendValidateFlag(AClient,Validated);
-	end;
+	end;{VerifyCharaServer}
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
@@ -551,5 +591,23 @@ begin
 	fPort := Value;
 	TCPServer.DefaultPort := Value;
 end;//SetPort
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetStarted                                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Checks to see if the internal TCP server is active, if it is it returns
+//    true.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function TLoginServer.GetStarted() : Boolean;
+begin
+  Result := TCPServer.Active;
+end;{SetPort}
 //------------------------------------------------------------------------------
 end.

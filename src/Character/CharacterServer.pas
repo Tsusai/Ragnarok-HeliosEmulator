@@ -50,14 +50,14 @@ type
     procedure DeleteChara(AClient : TIdContext; var ABuffer : Tbuffer);
 
     Procedure SetPort(Value : Word);
-
+    Function GetStarted() : Boolean;
 	public
 		ServerName    : String;
 		OnlineUsers   : Word;
 		WANIP : string;
 		LANIP : string;
 		property WANPort : Word read fWANPort write SetPort;
-
+    property Started : Boolean read GetStarted;
 		Constructor Create();
     Destructor  Destroy();Override;
     Procedure   Start();
@@ -198,12 +198,35 @@ begin
 end;{Start}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//LoginClientOnConnect()                                                 EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//		 Executed on connection to the login server.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacterServer.LoginClientOnConnect(Sender : TObject);
 begin
 	ValidateWithLoginServer(CharaToLoginClient,Self);
-end;
+end;{LoginClientOnConnect}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//LoginClientRead()                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		 Reads information sent from the login server.
+//
+//	Changes -
 //		January 3rd, 2006 - Tsusai - Added console messages.
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacterServer.LoginClientRead(AClient : TInterClient);
 var
 	ABuffer : TBuffer;
@@ -232,8 +255,9 @@ begin
 			end;
 		end;
 	end;
+end;{LoginClientRead}
+//------------------------------------------------------------------------------
 
-end;
 
 //------------------------------------------------------------------------------
 //SendCharas			                                                    PROCEDURE
@@ -685,7 +709,7 @@ end; {ParseCharaServ}
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
+
 //------------------------------------------------------------------------------
 //SetPort                                                          PROCEDURE
 //------------------------------------------------------------------------------
@@ -704,4 +728,21 @@ begin
 end;{SetPort}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetStarted                                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Checks to see if the internal TCP server is active, if it is it returns
+//    true.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function TCharacterServer.GetStarted() : Boolean;
+begin
+  Result := TCPServer.Active;
+end;{SetPort}
+//------------------------------------------------------------------------------
 end.
