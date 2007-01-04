@@ -78,6 +78,13 @@ uses
 						end;
 					end;
 				end;
+			end else
+			begin
+				if FClient.Connected then
+				begin
+					FClient.Disconnect;
+				end;
+				Suspend;
 			end;
 		end;
 	end;
@@ -113,12 +120,11 @@ uses
 			if Value then
 			begin
 				fReadThread.Resume;
+				fActive := Value;
 			end else
 			begin
-				fReadThread.Suspend;
-				Disconnect;
+				fActive := Value;
 			end;
-			fActive := Value;
 		end;
 	end;
 

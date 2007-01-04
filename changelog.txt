@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 95 -
+[2007/01/04] - Tsusai - Reorganized the suspending code of the CommClient thread. 
+ Apparently it would halt the thread (good) but not disconnect (bad).
+-
+
 - Rev 94 -
 [2007/01/04] - RaX - Updated documentation + headers in LoginServer. Added /help command
  listings for new /start and /stop commands in Commands.
