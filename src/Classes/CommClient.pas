@@ -1,6 +1,20 @@
+//------------------------------------------------------------------------------
+//CommClient                                                               UNIT
+//------------------------------------------------------------------------------
+//	What it does -
+//			This is an extension of the tIdTCPClient which uses a thread to read
+//    incoming data into a buffer.
+//
+//  Notes -
+//      Followed idea of TIdTelnet, with a thread checking data.
+//    Original Code by Tsusai, with corrections given by Gambit of the Indy
+//    team.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 unit CommClient;
-//Followed idea of TIdTelnet, with a thread checking data.
-//Original Code by Tsusai, with corrections given by Gambit of the Indy team.
 
 interface
 uses
@@ -8,10 +22,15 @@ uses
 	Classes;
 
 type
+  //forward declaration
 	TInterClient = class;
 
+  //Event Type
 	TDataAvailableEvent = procedure (AClient : TInterClient) of object;
 
+//------------------------------------------------------------------------------
+//TClientThread                                                           CLASS
+//------------------------------------------------------------------------------
 	TClientThread = class(TThread)
 	protected
 		FClient: TInterClient;
@@ -19,8 +38,13 @@ type
 	public
 		constructor Create(AClient: TInterClient); reintroduce;
 		property Client: TInterClient read FClient;
-	end;
+	end;{TClientThread}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TInterClient                                                           CLASS
+//------------------------------------------------------------------------------
 	TInterClient = class(TIdTCPClient)
 	protected
 		fReadThread : TClientThread;
@@ -35,7 +59,9 @@ type
 	published
 		property Active : boolean read fActive write SetActive;
 		property OnRecieve : TDataAvailableEvent read fOnRecieve write fOnRecieve;
-	end;
+	end;{TInterClient}
+//------------------------------------------------------------------------------
+
 
 implementation
 uses
@@ -45,6 +71,16 @@ uses
 	WinLinux,
 	IdStack;
 
+//------------------------------------------------------------------------------
+//Execute                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//			This is the actual executing code of the thread.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure TClientThread.Execute;
 	begin
 		while not Terminated do
@@ -87,22 +123,58 @@ uses
 				Suspend;
 			end;
 		end;
-	end;
+	end;{Execute}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//Create                                                           CONSTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does -
+//			Creates our client thread.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	constructor TClientThread.Create(AClient : TInterClient);
 	begin
 		inherited Create(True);
 		FreeOnTerminate := true;
 		FClient := AClient;
 		Priority := PriorityLow;
-	end;
+	end;{Create}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//Create                                                           CONSTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does -
+//			Creates our interclient.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	constructor TInterClient.Create;
 	begin
 		inherited Create;
 		fReadThread := TClientThread.Create(Self);
-	end;
+	end;{Create}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//Destroy                                                           DESTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does -
+//			Destroys our interclient.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	destructor TInterClient.Destroy;
 	begin
 		Active := false;
@@ -111,8 +183,20 @@ uses
 			fReadThread.Terminate;
 		end;
 		inherited Destroy;
-	end;
+	end;{Destroy}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetActive                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//			This is the actual executing code of the thread.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure TInterClient.SetActive(Value : boolean);
 	begin
 		if Assigned(fReadThread) then
@@ -126,8 +210,20 @@ uses
 				fActive := Value;
 			end;
 		end;
-	end;
+	end;{SetActive}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//DoReceiveEvent                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		 Receives data.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure TInterClient.DoRecieveEvent;
 	begin
 		try
@@ -135,6 +231,7 @@ uses
 		finally
 			IOHandler.InputBuffer.Clear;
 		end;
-	end;
+	end;{DoReceiveEvent}
+//------------------------------------------------------------------------------
 
 end.

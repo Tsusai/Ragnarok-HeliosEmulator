@@ -68,7 +68,7 @@ type
 
 		Constructor Create();
 		Destructor  Destroy();override;
-		Procedure   Start();
+		Procedure   Start(Reload : Boolean = FALSE);
 		Procedure   Stop();
 	end;
 //------------------------------------------------------------------------------
@@ -152,8 +152,12 @@ end;{Destroy}
 //		September 19th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Procedure TLoginServer.Start();
+Procedure TLoginServer.Start(Reload : Boolean = FALSE);
 begin
+  if Reload then
+  begin
+    LoadIni;
+  end;
 	ActivateServer('Login',TCPServer);
 end;{Start}
 //------------------------------------------------------------------------------

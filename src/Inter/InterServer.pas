@@ -51,7 +51,7 @@ type
 
     Constructor Create();
     Destructor  Destroy();Override;
-    Procedure   Start();
+    Procedure   Start(Reload : Boolean = FALSE);
 		Procedure   Stop();
 	end;
 implementation
@@ -173,8 +173,12 @@ end;{OnException}
 //		September 19th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Procedure TInterServer.Start();
+Procedure TInterServer.Start(Reload : Boolean = FALSE);
 begin
+  if Reload then
+  begin
+    LoadIni;
+  end;
   TCPServer.DefaultPort := ServerConfig.InterPort;
   ActivateServer('Inter',TCPServer);
 	//ActivateClient(ToZoneTCPClient);

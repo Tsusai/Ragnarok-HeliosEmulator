@@ -60,7 +60,7 @@ type
     property Started : Boolean read GetStarted;
 		Constructor Create();
     Destructor  Destroy();Override;
-    Procedure   Start();
+    Procedure   Start(Reload : Boolean = FALSE);
     Procedure   Stop();
 	end;
 //------------------------------------------------------------------------------
@@ -75,6 +75,7 @@ uses
 	Account,
 	GameConstants,
 	Globals,
+  ServerOptions,
 	TCPServerRoutines,
 	//3rd
 	StrUtils,
@@ -168,8 +169,12 @@ end;{OnException}
 //		September 19th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Procedure TCharacterServer.Start();
+Procedure TCharacterServer.Start(Reload : Boolean = FALSE);
 begin
+  if Reload then
+  begin
+    LoadIni;
+  end;
 	TCPServer.DefaultPort := ServerConfig.CharaPort;
 	ActivateServer('Character',TCPServer);
 	WANIP := ServerConfig.CharaWANIP;

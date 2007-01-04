@@ -23,12 +23,13 @@ uses
 	procedure InitGlobals;
 	procedure DestroyGlobals;
 	procedure TerminateApplication;
+  procedure LoadIni;
 
 	function  GetMD5(const Input : string) : string;
 	function  MakeRNDString(Count: Integer): string;
 	function  ConvertMySQLTime(DateString: string) : TDateTime;
-	function IncSecond(const AValue: TDateTime; const ANumberOfSeconds: Int64): TDateTime;
-	function IncMinute(const AValue: TDateTime; const ANumberOfMinutes: Int64): TDateTime;
+	function  IncSecond(const AValue: TDateTime; const ANumberOfSeconds: Int64): TDateTime;
+	function  IncMinute(const AValue: TDateTime; const ANumberOfMinutes: Int64): TDateTime;
 
 //------------------------------------------------------------------------------
 //                              Global Variables
@@ -98,16 +99,7 @@ begin
 	Load_PacketDB;
 	AccountList     := TStringList.Create;
 	CharacterList   := TCharacterList.Create(True);
-	if ParamCount = 0 then
-	begin
-		ServerConfig    := TServerOptions.Create('./ServerOptions.ini');
-	end else
-	if ParamCount = 1 then
-	begin
-		MainProc.Console('USING REMOTE INI : ' + ParamStr(1));
-		ServerConfig    := TServerOptions.Create('./' + ParamStr(1));
-	end;
-	ServerConfig.Load;
+  LoadIni;
 end; {InitGlobals}
 //------------------------------------------------------------------------------
 
@@ -211,16 +203,71 @@ begin
 end;{ConvertMySQLTime}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//IncSecond                                                            FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Adds a second to a TDateTime type.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function IncSecond(const AValue: TDateTime;
 	const ANumberOfSeconds: Int64): TDateTime;
 begin
 	Result := ((AValue * SecsPerDay) + ANumberOfSeconds) / SecsPerDay;
-end;
+end;{IncSecond}
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//IncMinute                                                            FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Adds a second to a TDateTime type.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function IncMinute(const AValue: TDateTime;
 	const ANumberOfMinutes: Int64): TDateTime;
 begin
   Result := ((AValue * MinsPerDay) + ANumberOfMinutes) / MinsPerDay;
-end;
+end;{IncMinute}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//LoadIni                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates and Loads the inifile.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure LoadIni;
+begin
+  if Assigned(ServerConfig) then
+  begin
+    FreeAndNIL(ServerConfig);
+  end;
+
+	if ParamCount = 0 then
+	begin
+		ServerConfig    := TServerOptions.Create('./ServerOptions.ini');
+	end else
+	if ParamCount = 1 then
+	begin
+		MainProc.Console('USING REMOTE INI : ' + ParamStr(1));
+		ServerConfig    := TServerOptions.Create('./' + ParamStr(1));
+	end;
+	ServerConfig.Load;
+end;{LoadIni}
+//------------------------------------------------------------------------------
 
 end.

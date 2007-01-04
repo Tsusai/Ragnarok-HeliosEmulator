@@ -218,7 +218,7 @@ begin
     begin
       if NOT MainProc.CharacterServer.Started then
       begin
-        MainProc.CharacterServer.Start;
+        MainProc.CharacterServer.Start(TRUE);
       end else
       begin
         Result := 'Character Server already started';

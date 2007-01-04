@@ -13,6 +13,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 96 -
+[2007/01/04] - RaX - Added Headers to CommClient and updated Globals'.
+[2007/01/04] - RaX - Changed server.start routines to use a hidden parameter, reload, which
+ tells it whether to reload the ini or not.
+[2007/01/04] - RaX - Added and implemented Globals - LoadIni; for the above change. LoadIni
+ Free's ServerConfig if it's assigned, and recreates it.
+-
+
 - Rev 95 -
 [2007/01/04] - Tsusai - Reorganized the suspending code of the CommClient thread. 
  Apparently it would halt the thread (good) but not disconnect (bad).
