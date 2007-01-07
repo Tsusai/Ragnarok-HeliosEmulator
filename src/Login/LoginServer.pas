@@ -22,7 +22,8 @@ uses
 	Classes,
 	SysUtils,
 	Account,
-	Database;
+	Database,
+  LoginOptions;
 
 type
 //------------------------------------------------------------------------------
@@ -42,6 +43,8 @@ type
 		Procedure OnDisconnect(AConnection: TIdContext);
 		Procedure OnException(AConnection: TIdContext;
 			AException: Exception);
+
+    Procedure LoadOptions;
 
 		Procedure ParseLogin(AClient: TIdContext);
 		Procedure SendLoginError(var AClient: TIdContext; const Error : byte);
@@ -63,6 +66,8 @@ type
 		Procedure SetPort(Value : Word);
     Function GetStarted() : Boolean;
 	public
+    Options : TLoginOptions;
+
 		Property Port : Word read fPort write SetPort;
     property Started : Boolean read GetStarted;
 
@@ -83,7 +88,6 @@ uses
 	CharacterServerInfo,
 	StrUtils,
 	Console,
-	ServerOptions,
 	TCPServerRoutines;
 
 const
@@ -108,6 +112,8 @@ Constructor TLoginServer.Create();
 begin
 	Inherited;
 
+  LoadOptions;
+
 	ACommonDatabase := TDatabase.Create(FALSE);
 
 	TCPServer := TIdTCPServer.Create;
@@ -116,8 +122,10 @@ begin
 	TCPServer.OnConnect   := OnConnect;
 	TCPServer.OnDisconnect:= OnDisconnect;
 	TCPServer.OnException := OnException;
-	fCharaServerList      := TStringList.Create;
 
+  Port                  := Options.Port;
+
+	fCharaServerList      := TStringList.Create;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -137,6 +145,8 @@ begin
 	ACommonDatabase.Free;
 	TCPServer.Free;
 	fCharaServerList.Free;
+  Options.Save;
+  Options.Free;
 	Inherited;
 end;{Destroy}
 //------------------------------------------------------------------------------
@@ -156,8 +166,9 @@ Procedure TLoginServer.Start(Reload : Boolean = FALSE);
 begin
   if Reload then
   begin
-    LoadIni;
+    LoadOptions;
   end;
+  Port := Options.Port;
 	ActivateServer('Login',TCPServer);
 end;{Start}
 //------------------------------------------------------------------------------
@@ -390,7 +401,7 @@ end;{OnException}
 		end;
 
 		//If MF enabled, and NO MD5KEY LOGIN, parse _M/_F
-		if ServerConfig.EnableMF and
+		if Options.EnableMF and
 		(MD5Key = '') then
 		begin
 			ParseMF(Username,Password);
@@ -457,7 +468,7 @@ end;{OnException}
 	begin
 		Validated := false;
 		MainProc.Console('Login Server: Reading Character Server connection from ' + AClient.Connection.Socket.Binding.PeerIP);
-		if Password = GetMD5(ServerConfig.LoginKey) then
+		if Password = GetMD5(Options.Key) then
 		begin
 			Validated := true;
 		end;
@@ -576,6 +587,30 @@ end;{OnException}
 			end;
 		end;
 	end;  // Proc SendCharacterServers
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//LoadOptions                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates and Loads the inifile.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TLoginServer.LoadOptions;
+begin
+  if Assigned(Options) then
+  begin
+    FreeAndNIL(Options);
+  end;
+
+  Options    := TLoginOptions.Create('./Login.ini');
+
+	Options.Load;
+end;{LoadOptions}
 //------------------------------------------------------------------------------
 
 

@@ -21,7 +21,8 @@ uses
 	CommClient,
 	SysUtils,
   PacketTypes,
-  Database;
+  Database,
+  CharaOptions;
 type
 //------------------------------------------------------------------------------
 //TCharacterServer                                                        CLASS
@@ -51,11 +52,15 @@ type
 
     Procedure SetPort(Value : Word);
     Function GetStarted() : Boolean;
+    Procedure LoadOptions;
 	public
 		ServerName    : String;
 		OnlineUsers   : Word;
 		WANIP : string;
 		LANIP : string;
+
+    Options : TCharaOptions;
+
 		property WANPort : Word read fWANPort write SetPort;
     property Started : Boolean read GetStarted;
 		Constructor Create();
@@ -75,7 +80,6 @@ uses
 	Account,
 	GameConstants,
 	Globals,
-  ServerOptions,
 	TCPServerRoutines,
 	//3rd
 	StrUtils,
@@ -100,6 +104,8 @@ const
 //------------------------------------------------------------------------------
 Constructor TCharacterServer.Create;
 begin
+  LoadOptions;
+
   ACommonDatabase := TDatabase.Create(FALSE);
   AGameDatabase   := TDatabase.Create(TRUE);
 
@@ -112,6 +118,7 @@ begin
 	CharaToLoginClient.OnConnected := LoginClientOnConnect;
 	CharaToLoginClient.OnRecieve := LoginClientRead;
 
+  ServerName := Options.ServerName;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -133,6 +140,9 @@ begin
 
   TCPServer.Free;
 	CharaToLoginClient.Free;
+
+  Options.Save;
+  Options.Free;
 end;{Destroy}
 //------------------------------------------------------------------------------
 
@@ -173,14 +183,14 @@ Procedure TCharacterServer.Start(Reload : Boolean = FALSE);
 begin
   if Reload then
   begin
-    LoadIni;
+    LoadOptions;
   end;
-	TCPServer.DefaultPort := ServerConfig.CharaPort;
+	WANPort := Options.Port;
 	ActivateServer('Character',TCPServer);
-	WANIP := ServerConfig.CharaWANIP;
-	LANIP := ServerConfig.CharaLANIP;
-	CharaToLoginClient.Host := ServerConfig.LoginComIP;
-	CharaToLoginClient.Port := ServerConfig.LoginComPort;
+	WANIP := Options.WANIP;
+	LANIP := Options.LANIP;
+	CharaToLoginClient.Host := Options.LoginIP;
+	CharaToLoginClient.Port := Options.LoginPort;
 	ActivateClient(CharaToLoginClient);
 end;{Start}
 //------------------------------------------------------------------------------
@@ -713,6 +723,29 @@ begin
 end; {ParseCharaServ}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//LoadOptions                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates and Loads the inifile.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TCharacterServer.LoadOptions;
+begin
+  if Assigned(Options) then
+  begin
+    FreeAndNIL(Options);
+  end;
+
+  Options    := TCharaOptions.Create('./Character.ini');
+
+	Options.Load;
+end;{LoadOptions}
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------

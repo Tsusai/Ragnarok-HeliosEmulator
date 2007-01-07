@@ -15,7 +15,8 @@ unit Database;
 
 interface
 uses
-	DatabaseTemplate;
+	DatabaseTemplate,
+  DatabaseOptions;
 
 type
 
@@ -23,8 +24,14 @@ type
 //TDatabase			                                                          CLASS
 //------------------------------------------------------------------------------
 	TDatabase = class(TObject)
+  private
+    Procedure LoadOptions;
+
 	public
 		AnInterface : TDatabaseTemplate;
+    
+    Options     : TDatabaseOptions;
+
 		Constructor Create(
 									UseGameDatabase : boolean = false;
 									DatabaseType : Integer = -1
@@ -43,7 +50,8 @@ uses
 	Globals,
 	DatabaseConstants,
 	MySQLDatabase,
-	JanSQLDatabase;
+	JanSQLDatabase,
+  SysUtils;
 
 //------------------------------------------------------------------------------
 //TDatabase.Create()			                                          CONSTRUCTOR
@@ -61,22 +69,22 @@ Constructor TDatabase.Create(
 );
 begin
 	Inherited Create();
-
+  LoadOptions;
 	//Checks to see if the DatabaseType variable has been specified, if not we...
 	if DatabaseType = -1 then
 	begin
-		DatabaseType := ServerConfig.DatabaseType;//set it to the value of our config.
+		DatabaseType := Options.DatabaseType;//set it to the value of our config.
 	end;
 	//Here's where we figure out which database interface we want to use.
 	case DatabaseType of
 		TEXT ://1    Helios Text Database
 			begin
-				AnInterface := TJanSQLDatabase.Create(UseGameDatabase);
+				AnInterface := TJanSQLDatabase.Create(UseGameDatabase, self);
 			end;
 
 		MYSQL://2
 			begin
-				AnInterface := TMySQLDatabase.Create(UseGameDatabase);
+				AnInterface := TMySQLDatabase.Create(UseGameDatabase, self);
 			end;
 
 		else begin //anything else
@@ -101,7 +109,33 @@ end;
 Destructor TDatabase.Destroy();
 begin
 	AnInterface.Free;
+  Options.Save;
+  Options.Free;
 	Inherited;
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//LoadOptions                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates and Loads the inifile.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TDatabase.LoadOptions;
+begin
+  if Assigned(Options) then
+  begin
+    FreeAndNIL(Options);
+  end;
+
+  Options    := TDatabaseOptions.Create('./Database.ini');
+
+	Options.Load;
+end;{LoadOptions}
 //------------------------------------------------------------------------------
 end.

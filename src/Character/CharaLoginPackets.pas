@@ -30,7 +30,7 @@ uses
 		OutBuffer : TBuffer;
 	begin
 		WriteBufferWord(0, $2000, OutBuffer);
-		WriteBufferMD5String(2, GetMD5(ServerConfig.LoginComKey), OutBuffer);
+		WriteBufferMD5String(2, GetMD5(CharacterServer.Options.LoginKey), OutBuffer);
 		WriteBufferString(18, CharacterServer.Servername, 24, OutBuffer);
 		WriteBufferWord(42, CharacterServer.WANPort, OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2000));

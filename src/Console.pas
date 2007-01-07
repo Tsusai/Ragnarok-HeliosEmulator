@@ -19,7 +19,8 @@ uses
   LoginServer,
 	CharacterServer,
   InterServer,
-  ZoneServer;
+  ZoneServer,
+  HeliosOptions;
 
 type
 
@@ -35,7 +36,11 @@ type
 		ZoneServer  		: TZoneServer;
 		InterServer 		: TInterServer;
 
+    Options         : THeliosOptions;
+
 		procedure Console(Line : string);
+
+    procedure LoadOptions;
 
 		procedure Startup;
 		procedure Shutdown;
@@ -101,35 +106,30 @@ begin
 	InitGlobals;
 	SetupTerminationCapturing;
 
+  LoadOptions;
+
 //Start and create Enabled Servers
-	if ServerConfig.LoginEnabled then
+	if Options.LoginEnabled then
 	begin
 		LoginServer      := TLoginServer.Create;
-		LoginServer.Port := ServerConfig.LoginPort;
 		LoginServer.Start;
 	end;
 	//NOTE: Prior
-	if ServerConfig.CharaEnabled then
+	if Options.CharaEnabled then
 	begin
 		CharacterServer  := TCharacterServer.Create;
-		CharacterServer.WANPort     := ServerConfig.CharaPort;
-		CharacterServer.ServerName  := ServerConfig.ServerName;
 		CharacterServer.Start;
 	end;
 
-	if ServerConfig.InterEnabled then
+	if Options.InterEnabled then
 	begin
 		InterServer       := TInterServer.Create;
-		InterServer.Port  := ServerConfig.InterPort;
-    InterServer.IP    := ServerConfig.InterWANIP;
 		InterServer.Start;
 	end;
 
-	if ServerConfig.ZoneEnabled then
+	if Options.ZoneEnabled then
 	begin
     ZoneServer       := TZoneServer.Create;
-		ZoneServer.Port  := ServerConfig.ZonePort;
-    ZoneServer.IP    := ServerConfig.ZoneWANIP;
     ZoneServer.Start;
 	end;
 
@@ -185,6 +185,9 @@ begin
     ZoneServer.Free;
 	end;
 
+  Options.Save;
+  Options.Free;
+
 	//Make sure globals are Free'd on Application exit.
 	DestroyGlobals;
 
@@ -220,6 +223,29 @@ begin
 end;{TMainProc.ThirdPartyCredits}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//LoadOptions                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates and Loads the inifile.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TMainProc.LoadOptions;
+begin
+  if Assigned(Options) then
+  begin
+    FreeAndNIL(Options);
+  end;
+
+  Options    := THeliosOptions.Create('./Helios.ini');
+
+	Options.Load;
+end;{LoadOptions}
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //TMainProc.Create()                                                CONSTRUCTOR

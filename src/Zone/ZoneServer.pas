@@ -19,7 +19,8 @@ uses
 	SysUtils,
   PacketTypes,
   Character,
-  Database;
+  Database,
+  ZoneOptions;
 
 type
 	TZoneServer = class
@@ -47,6 +48,7 @@ type
     Procedure SetPort(Value : Word);
     Function GetStarted() : Boolean;
 
+    procedure LoadOptions;
   public
 		IPCardinal    : Cardinal;
 		ServerName    : String;
@@ -54,6 +56,8 @@ type
 
     AGameDatabase : TDatabase;
     ACommonDatabase : TDatabase;
+
+    Options          : TZoneOptions;
 
     property Started : Boolean read GetStarted;
 		property IP   : string read fIP write SetIPCardinal;
@@ -90,6 +94,8 @@ uses
 //------------------------------------------------------------------------------
 Constructor TZoneServer.Create;
 begin
+  LoadOptions;
+
   ACommonDatabase := TDatabase.Create(FALSE);
   AGameDatabase   := TDatabase.Create(TRUE);
 
@@ -122,6 +128,8 @@ begin
   TCPServer.Free;
   ToCharaTCPClient.Free;
   ToInterTCPClient.Free;
+  Options.Save;
+  Options.Free;
 end;{Destroy}
 //------------------------------------------------------------------------------
 
@@ -198,9 +206,9 @@ Procedure TZoneServer.Start(Reload : Boolean = FALSE);
 begin
   if Reload then
   begin
-    LoadIni;
+    LoadOptions;
   end;
-  TCPServer.DefaultPort := ServerConfig.ZonePort;
+  Port := Options.Port;
   ActivateServer('Zone',TCPServer);
 	//ActivateClient(ToCharaTCPClient);
 	//ActivateClient(ToInterTCPClient);
@@ -412,6 +420,30 @@ Begin
 		end;
 	end;
 End;{ProcessZonePacket}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//LoadOptions                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates and Loads the inifile.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TZoneServer.LoadOptions;
+begin
+  if Assigned(Options) then
+  begin
+    FreeAndNIL(Options);
+  end;
+
+  Options    := TZoneOptions.Create('./Zone.ini');
+
+	Options.Load;
+end;{LoadOptions}
 //------------------------------------------------------------------------------
 
 

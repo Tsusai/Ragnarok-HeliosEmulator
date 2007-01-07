@@ -17,7 +17,8 @@ uses
 	Character,
 	CharaList,
 	Account,
-	janSQL;
+	janSQL,
+  Database;
 
 //------------------------------------------------------------------------------
 //TJanSQLDatabase			                                                           CLASS
@@ -34,9 +35,10 @@ type
 	TJanSQLDatabase = class(TDatabaseTemplate)
 	private
 		Database : TjanSQL;
+    Parent  : TDatabase;
 	public
 
-		Constructor Create(UseGameDatabase : boolean); reintroduce; overload;
+		Constructor Create(UseGameDatabase : boolean; AParent : TDatabase); reintroduce; overload;
 		Destructor Destroy();override;
 
 		function GetAccount(ID    : Cardinal) : TAccount;overload;override;
@@ -100,9 +102,10 @@ implementation
 //		November 13th, 2006 - Tsusai - create inherit comes first.
 //
 //------------------------------------------------------------------------------
-Constructor TJanSQLDatabase.Create(UseGameDatabase : boolean);
+Constructor TJanSQLDatabase.Create(UseGameDatabase : boolean; AParent : TDatabase);
 begin
 	inherited Create;
+  Parent := AParent;
 	Connect(UseGameDatabase);
 end;
 //------------------------------------------------------------------------------
@@ -175,24 +178,24 @@ begin
 
 	if Not UseGameDatabase then //Access the Common database
 	begin
-		if DirectoryExists(ServerConfig.CommonHost) then
+		if DirectoryExists(Parent.Options.CommonHost) then
 		begin
-			ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[ServerConfig.CommonHost]));
+			ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.CommonHost]));
 		end else
 		begin
 			MainProc.Console('');
-			MainProc.Console('The database at '+ServerConfig.CommonHost+' does not exist!');
+			MainProc.Console('The database at '+Parent.Options.CommonHost+' does not exist!');
 			MainProc.Console('Please ensure that you have correctly configured your ini file');
 		end;
 	end else //Access the Game database
 	begin
-		if DirectoryExists(ServerConfig.GameHost) then
+		if DirectoryExists(Parent.Options.GameHost) then
 		begin
-			ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[ServerConfig.GameHost]));
+			ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.GameHost]));
 		end else
 		begin
 			MainProc.Console('');
-			MainProc.Console('The database at '+ServerConfig.GameHost+' does not exist!');
+			MainProc.Console('The database at '+Parent.Options.GameHost+' does not exist!');
 			MainProc.Console('Please ensure that you have correctly configured your ini file');
 		end;
 	end;
@@ -200,7 +203,7 @@ begin
 	if ResultIdentifier = 0 then
 	begin
 		MainProc.Console('*****Could not open text database. Error : ' + Database.Error);
-		MainProc.Console(ServerConfig.GameHost);
+		MainProc.Console(Parent.Options.GameHost);
 	end else
   begin
     Database.ReleaseRecordset(ResultIdentifier);

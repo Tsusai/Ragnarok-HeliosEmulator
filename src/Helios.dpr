@@ -60,102 +60,160 @@ compile for linux, at the same time*}
 //                            Windows Definitions
 //------------------------------------------------------------------------------
 	{$IFDEF MSWINDOWS}
-	Account in 'Classes\Account.pas',
-	BufferIO in 'Common\BufferIO.pas',
-	Character in 'Classes\Character.pas',
-	CharacterServer in 'Character\CharacterServer.pas',
-	CharacterServerInfo in 'Character\CharacterServerInfo.pas',
-	CharaList in 'Classes\CharaList.pas',
-	CharaLoginPackets in 'Character\CharaLoginPackets.pas',
-	Commands in 'Classes\Commands.pas',
-	CommClient in 'Classes\CommClient.pas',
-	Database in 'Classes\Database.pas',
-	DatabaseTemplate in 'Classes\Database\DatabaseTemplate.pas',
-	DatabaseConstants in 'Constants\DatabaseConstants.pas',
-	DatabaseTXT in 'Database\DatabaseTXT.pas',
-	GameConstants in 'Constants\GameConstants.pas',
-	GameObjects in 'Database\GameObjects.pas',
-	Globals in 'Common\Globals.pas',
-	InterServer in 'Inter\InterServer.pas',
-	janSQL in 'Common\3rdParty\JanSQL\janSQL.pas',
-	janSQLExpression2 in 'Common\3rdParty\JanSQL\janSQLExpression2.pas',
-	JanSQLDatabase in 'Classes\Database\JanSQLDatabase.pas',
-	janSQLStrings in 'Common\3rdParty\JanSQL\janSQLStrings.pas',
-	janSQLTokenizer in 'Common\3rdParty\JanSQL\janSQLTokenizer.pas',
-	mwStringHashList in 'Common\3rdParty\JanSQL\mwStringHashList.pas',
-	List32 in 'Common\3rdParty\List32.pas',
-	LoginServer in 'Login\LoginServer.pas',
-	Map in 'Classes\Map.pas',
-	madExcept,
-	madLinkDisAsm,
-	MySQLDatabase in 'Classes\Database\MySQLDatabase.pas',
-	PacketTypes in 'Common\PacketTypes.pas',
-	PointList in 'Classes\PointList.pas',
-	ServerOptions in 'Config\ServerOptions.pas',
-	TCPServerRoutines in 'Common\TCPServerRoutines.pas',
-	uMysqlClient in 'Common\3rdParty\MySQL\uMysqlClient.pas',
-	uMysqlCT in 'Common\3rdParty\MySQL\uMysqlCT.pas',
-	uMysqlErrors in 'Common\3rdParty\MySQL\uMysqlErrors.pas',
-	uMysqlNet in 'Common\3rdParty\MySQL\uMysqlNet.pas',
-	uMysqlNewPassword in 'Common\3rdParty\MySQL\uMysqlNewPassword.pas',
-	umysqlsha1 in 'Common\3rdParty\MySQL\umysqlsha1.pas',
-	uMysqlVio in 'Common\3rdParty\MySQL\uMysqlVio.pas',
-	Version in 'Common\Version.pas',
-	WinLinux in 'Common\WinLinux.pas',
-	XTimer in 'Classes\XTimer.pas',
-	ZoneServer in 'Zone\ZoneServer.pas',
-	ZoneRecv in 'Zone\ZoneRecv.pas',
-	ZoneSend in 'Zone\ZoneSend.pas',
+  //Login Server
+  LoginServer in 'Login\LoginServer.pas',
+
+  //Character Server
+  CharacterServer in 'Character\CharacterServer.pas',
+  CharacterServerInfo in 'Character\CharacterServerInfo.pas',
+  CharaLoginPackets in 'Character\CharaLoginPackets.pas',
+
+  //InterServer
+  InterServer in 'Inter\InterServer.pas',
+
+  //Zone Server
+  ZoneServer in 'Zone\ZoneServer.pas',
+  ZoneRecv in 'Zone\ZoneRecv.pas',
+  ZoneSend in 'Zone\ZoneSend.pas',
+
+  //Constants
+  GameConstants in 'Constants\GameConstants.pas',
+
+  //Game Objects
+  Account in 'Classes\Account.pas',
+  Character in 'Classes\Character.pas',
+  GameObjects in 'Database\GameObjects.pas',
+  Map in 'Classes\Map.pas',
+
+  //Lists
+  CharaList in 'Classes\CharaList.pas',
+  List32 in 'Common\3rdParty\List32.pas',
+  PointList in 'Classes\PointList.pas',
+
+  //Database
+  Database in 'Classes\Database.pas',
+  DatabaseTemplate in 'Classes\Database\DatabaseTemplate.pas',
+  DatabaseConstants in 'Constants\DatabaseConstants.pas',
+  DatabaseTXT in 'Database\DatabaseTXT.pas',
+  JanSQLDatabase in 'Classes\Database\JanSQLDatabase.pas',
+  MySQLDatabase in 'Classes\Database\MySQLDatabase.pas',
+
+  //Database Clients
+    //jansql
+  janSQL in 'Common\3rdParty\JanSQL\janSQL.pas',
+  janSQLExpression2 in 'Common\3rdParty\JanSQL\janSQLExpression2.pas',
+  janSQLStrings in 'Common\3rdParty\JanSQL\janSQLStrings.pas',
+  janSQLTokenizer in 'Common\3rdParty\JanSQL\janSQLTokenizer.pas',
+  mwStringHashList in 'Common\3rdParty\JanSQL\mwStringHashList.pas',
+    //mysql
+  uMysqlClient in 'Common\3rdParty\MySQL\uMysqlClient.pas',
+  uMysqlCT in 'Common\3rdParty\MySQL\uMysqlCT.pas',
+  uMysqlErrors in 'Common\3rdParty\MySQL\uMysqlErrors.pas',
+  uMysqlNet in 'Common\3rdParty\MySQL\uMysqlNet.pas',
+  uMysqlNewPassword in 'Common\3rdParty\MySQL\uMysqlNewPassword.pas',
+  umysqlsha1 in 'Common\3rdParty\MySQL\umysqlsha1.pas',
+  uMysqlVio in 'Common\3rdParty\MySQL\uMysqlVio.pas',
+
+  //Configuration
+  HeliosOptions in 'Config\HeliosOptions.pas',
+  LoginOptions in 'Config\LoginOptions.pas',
+  CharaOptions in 'Config\CharaOptions.pas',
+  InterOptions in 'Config\InterOptions.pas',
+  ZoneOptions in 'Config\ZoneOptions.pas',
+  DatabaseOptions in 'Config\DatabaseOptions.pas',
+
+  //Other
+  BufferIO in 'Common\BufferIO.pas',
+  Commands in 'Classes\Commands.pas',
+  CommClient in 'Classes\CommClient.pas',
+  Globals in 'Common\Globals.pas',
+  madExcept,
+  madLinkDisAsm,
+  PacketTypes in 'Common\PacketTypes.pas',
+  TCPServerRoutines in 'Common\TCPServerRoutines.pas',
+  Version in 'Common\Version.pas',
+  WinLinux in 'Common\WinLinux.pas',
+  XTimer in 'Classes\XTimer.pas',
 	{$ENDIF}
 
 //------------------------------------------------------------------------------
 //                            Linux Definitions
 //------------------------------------------------------------------------------
 	{$IFDEF LINUX}
-	Account in 'Classes/Account.pas',
-	BufferIO in 'Common/BufferIO.pas',
-	Character in 'Classes/Character.pas',
-	CharacterServer in 'Character/CharacterServer.pas',
-	CharacterServerInfo in 'Character/CharacterServerInfo.pas',
-	CharaList in 'Classes/CharaList.pas',
-	CharaLoginPackets in 'Character/CharaLoginPackets.pas',
-	Commands in 'Classes/Commands.pas',
-	CommClient in 'Classes/CommClient.pas',
-	Database in 'Classes/Database.pas',
-	DatabaseTemplate in 'Classes/Database/DatabaseTemplate.pas',
-	DatabaseConstants in 'Constants/DatabaseConstants.pas',
-	DatabaseTXT in 'Database/DatabaseTXT.pas',
-	GameConstants in 'Constants/GameConstants.pas',
-	GameObjects in 'Database/GameObjects.pas',
-	Globals in 'Common/Globals.pas',
-	InterServer in 'Inter/InterServer.pas',
-	janSQL in 'Common/3rdParty/JanSQL/janSQL.pas',
-	janSQLExpression2 in 'Common/3rdParty/JanSQL/janSQLExpression2.pas',
-	JanSQLDatabase in 'Classes/Database/JanSQLDatabase.pas',
-	janSQLStrings in 'Common/3rdParty/JanSQL/janSQLStrings.pas',
-	janSQLTokenizer in 'Common/3rdParty/JanSQL/janSQLTokenizer.pas',
-	mwStringHashList in 'Common/3rdParty/JanSQL/mwStringHashList.pas',
-	List32 in 'Common/3rdParty/List32.pas',
-	LoginServer in 'Login/LoginServer.pas',
-	Map in 'Classes/Map.pas',
-	MySQLDatabase in 'Classes/Database/MySQLDatabase.pas',
-	PacketTypes in 'Common/PacketTypes.pas',
-	PointList in 'Classes/PointList.pas',
-	ServerOptions in 'Config/ServerOptions.pas',
-	TCPServerRoutines in 'Common/TCPServerRoutines.pas',
-	uMysqlClient in 'Common/3rdParty/MySQL/uMysqlClient.pas',
-	uMysqlCT in 'Common/3rdParty/MySQL/uMysqlCT.pas',
-	uMysqlErrors in 'Common/3rdParty/MySQL/uMysqlErrors.pas',
-	uMysqlNet in 'Common/3rdParty/MySQL/uMysqlNet.pas',
-	uMysqlNewPassword in 'Common/3rdParty/MySQL/uMysqlNewPassword.pas',
-	umysqlsha1 in 'Common/3rdParty/MySQL/umysqlsha1.pas',
-	uMysqlVio in 'Common/3rdParty/MySQL/uMysqlVio.pas',
-	Version in 'Common/Version.pas',
-	WinLinux in 'Common/WinLinux.pas',
-	XTimer in 'Classes/XTimer.pas',
-	ZoneServer in 'Zone/ZoneServer.pas',
-	ZoneRecv in 'Zone/ZoneRecv.pas',
-	ZoneSend in 'Zone/ZoneSend.pas',
+  //Login Server
+  LoginServer in 'Login/LoginServer.pas',
+
+  //Character Server
+  CharacterServer in 'Character/CharacterServer.pas',
+  CharacterServerInfo in 'Character/CharacterServerInfo.pas',
+  CharaLoginPackets in 'Character/CharaLoginPackets.pas',
+
+  //InterServer
+  InterServer in 'Inter/InterServer.pas',
+
+  //Zone Server
+  ZoneServer in 'Zone/ZoneServer.pas',
+  ZoneRecv in 'Zone/ZoneRecv.pas',
+  ZoneSend in 'Zone/ZoneSend.pas',
+
+  //Constants
+  GameConstants in 'Constants/GameConstants.pas',
+
+  //Game Objects
+  Account in 'Classes/Account.pas',
+  Character in 'Classes/Character.pas',
+  GameObjects in 'Database/GameObjects.pas',
+  Map in 'Classes/Map.pas',
+
+  //Lists
+  CharaList in 'Classes/CharaList.pas',
+  List32 in 'Common/3rdParty/List32.pas',
+  PointList in 'Classes/PointList.pas',
+
+  //Database
+  Database in 'Classes/Database.pas',
+  DatabaseTemplate in 'Classes/Database/DatabaseTemplate.pas',
+  DatabaseConstants in 'Constants/DatabaseConstants.pas',
+  DatabaseTXT in 'Database/DatabaseTXT.pas',
+  JanSQLDatabase in 'Classes/Database/JanSQLDatabase.pas',
+  MySQLDatabase in 'Classes/Database/MySQLDatabase.pas',
+
+  //Database Clients
+    //jansql
+  janSQL in 'Common/3rdParty/JanSQL/janSQL.pas',
+  janSQLExpression2 in 'Common/3rdParty/JanSQL/janSQLExpression2.pas',
+  janSQLStrings in 'Common/3rdParty/JanSQL/janSQLStrings.pas',
+  janSQLTokenizer in 'Common/3rdParty/JanSQL/janSQLTokenizer.pas',
+  mwStringHashList in 'Common/3rdParty/JanSQL/mwStringHashList.pas',
+    //mysql
+  uMysqlClient in 'Common/3rdParty/MySQL/uMysqlClient.pas',
+  uMysqlCT in 'Common/3rdParty/MySQL/uMysqlCT.pas',
+  uMysqlErrors in 'Common/3rdParty/MySQL/uMysqlErrors.pas',
+  uMysqlNet in 'Common/3rdParty/MySQL/uMysqlNet.pas',
+  uMysqlNewPassword in 'Common/3rdParty/MySQL/uMysqlNewPassword.pas',
+  umysqlsha1 in 'Common/3rdParty/MySQL/umysqlsha1.pas',
+  uMysqlVio in 'Common/3rdParty/MySQL/uMysqlVio.pas',
+
+  //Configuration
+  HeliosOptions in 'Config/HeliosOptions.pas',
+  LoginOptions in 'Config/LoginOptions.pas',
+  CharaOptions in 'Config/CharaOptions.pas',
+  InterOptions in 'Config/InterOptions.pas',
+  ZoneOptions in 'Config/ZoneOptions.pas',
+  DatabaseOptions in 'Config/DatabaseOptions.pas',
+
+  //Other
+  BufferIO in 'Common/BufferIO.pas',
+  Commands in 'Classes/Commands.pas',
+  CommClient in 'Classes/CommClient.pas',
+  Globals in 'Common/Globals.pas',
+  madExcept,
+  madLinkDisAsm,
+  PacketTypes in 'Common/PacketTypes.pas',
+  TCPServerRoutines in 'Common/TCPServerRoutines.pas',
+  Version in 'Common/Version.pas',
+  WinLinux in 'Common/WinLinux.pas',
+  XTimer in 'Classes/XTimer.pas',
 	{$ENDIF}
 //------------------------------------------------------------------------------
 //                              Definitions for both.

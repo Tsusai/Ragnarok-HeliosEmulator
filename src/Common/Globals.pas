@@ -15,7 +15,6 @@ uses
 	Classes,
 	//Helios
 	Commands,
-	ServerOptions,
   CharaList
   ;
 
@@ -23,7 +22,6 @@ uses
 	procedure InitGlobals;
 	procedure DestroyGlobals;
 	procedure TerminateApplication;
-  procedure LoadIni;
 
 	function  GetMD5(const Input : string) : string;
 	function  MakeRNDString(Count: Integer): string;
@@ -37,8 +35,6 @@ uses
 var
 	Command         : TCommands;
 	AppPath         : String;
-
-	ServerConfig    : TServerOptions;
 
 	AccountList     : TStringList;
 	CharacterList   : TCharacterList;
@@ -99,7 +95,6 @@ begin
 	Load_PacketDB;
 	AccountList     := TStringList.Create;
 	CharacterList   := TCharacterList.Create(True);
-  LoadIni;
 end; {InitGlobals}
 //------------------------------------------------------------------------------
 
@@ -118,8 +113,6 @@ procedure DestroyGlobals;
 begin
 	AccountList.Free;
 	CharacterList.Free;
-	ServerConfig.Save;
-	ServerConfig.Free;
 end;{DestroyGlobals}
 //------------------------------------------------------------------------------
 
@@ -237,37 +230,6 @@ function IncMinute(const AValue: TDateTime;
 begin
   Result := ((AValue * MinsPerDay) + ANumberOfMinutes) / MinsPerDay;
 end;{IncMinute}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//LoadIni                                                             PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Creates and Loads the inifile.
-//
-//	Changes -
-//		January 4th, 2007 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-Procedure LoadIni;
-begin
-  if Assigned(ServerConfig) then
-  begin
-    FreeAndNIL(ServerConfig);
-  end;
-
-	if ParamCount = 0 then
-	begin
-		ServerConfig    := TServerOptions.Create('./ServerOptions.ini');
-	end else
-	if ParamCount = 1 then
-	begin
-		MainProc.Console('USING REMOTE INI : ' + ParamStr(1));
-		ServerConfig    := TServerOptions.Create('./' + ParamStr(1));
-	end;
-	ServerConfig.Load;
-end;{LoadIni}
 //------------------------------------------------------------------------------
 
 end.

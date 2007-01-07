@@ -13,6 +13,26 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 97 -
+[2007/01/07] - RaX - Notes/Overview : Split up ServerOptions.ini into one ini for each
+ server, one for database, and one for general helios config(enabled servers).
+[2007/01/07] - RaX - Added LoginOptions, CharaOptions, InterOptions, ZoneOptions,
+ DatabaseOptions, and HeliosOptions.
+[2007/01/07] - RaX - Removed serverOptions.
+[2007/01/07] - RaX - Removed ServerConfig from Globals.
+[2007/01/07] - RaX - Added public property, Options, to each server. Options is the ini for
+ each.
+[2007/01/07] - RaX - Added Options to MainProc and Database.
+[2007/01/07] - RaX - Changed Database class system so that each Database Template Child is
+ created with a parent argument, allowing Options to be called from inside the child classes
+ rather than having to have it passed into it.
+[2007/01/07] - RaX - Cleaned up unused variables in ZoneServer.
+[2007/01/07] - RaX - Re-organized uses in Helios.dpr to be organized first by category, and
+ then alphabetically for better classification.
+[2007/01/07] - RaX - Added more inter communication variables to ZoneServer, in preparation
+ for zone->chara and zone->inter communication.
+-
+
 - Rev 96 -
 [2007/01/04] - RaX - Added Headers to CommClient and updated Globals'.
 [2007/01/04] - RaX - Changed server.start routines to use a hidden parameter, reload, which

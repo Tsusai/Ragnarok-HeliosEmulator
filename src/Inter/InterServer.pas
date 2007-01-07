@@ -16,7 +16,8 @@ uses
   IdTCPServer,
   IdTCPClient,
   IdContext,
-	SysUtils;
+	SysUtils,
+  InterOptions;
 
 type
 	TInterServer = class
@@ -40,10 +41,13 @@ type
     Procedure SetPort(Value : Word);
     Function GetStarted() : Boolean;
 
+    Procedure LoadOptions;
+
   public
 		IPCardinal    : Cardinal;
 		ServerName    : String;
-		OnlineUsers   : Word;
+
+    Options : TInterOptions;
 
 		property IP   : string read fIP write SetIPCardinal;
     property Port : Word read fPort write SetPort;
@@ -84,6 +88,7 @@ begin
   TCPServer.OnExecute   := OnExecute;
 	TCPServer.OnException := OnException;
 
+  LoadOptions;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -102,6 +107,8 @@ Destructor TInterServer.Destroy;
 begin
   TCPServer.Free;
   ToZoneTCPClient.Free;
+  Options.Save;
+  Options.Free;
 end;{Destroy}
 //------------------------------------------------------------------------------
 
@@ -177,9 +184,9 @@ Procedure TInterServer.Start(Reload : Boolean = FALSE);
 begin
   if Reload then
   begin
-    LoadIni;
+    LoadOptions;
   end;
-  TCPServer.DefaultPort := ServerConfig.InterPort;
+  Port := Options.Port;
   ActivateServer('Inter',TCPServer);
 	//ActivateClient(ToZoneTCPClient);
 end;{Start}
@@ -203,6 +210,29 @@ begin
 end;{Start}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//LoadOptions                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates and Loads the inifile.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TInterServer.LoadOptions;
+begin
+  if Assigned(Options) then
+  begin
+    FreeAndNIL(Options);
+  end;
+
+  Options    := TInterOptions.Create('./Inter.ini');
+
+	Options.Load;
+end;{LoadOptions}
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //SetIPCardinal   			                                             PROCEDURE

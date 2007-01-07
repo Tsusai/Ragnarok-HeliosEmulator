@@ -17,7 +17,8 @@ uses
 	Character,
 	CharaList,
 	Account,
-	uMysqlClient;
+	uMysqlClient,
+  Database;
 type
 //------------------------------------------------------------------------------
 //TMySQLDatabase			                                                           CLASS
@@ -33,10 +34,11 @@ type
 	TMySQLDatabase = class(TDatabaseTemplate)
 	private
 		Connection   : TMySQLClient;
+    Parent : TDatabase;
 	public
 
 
-		Constructor Create(UseGameDatabase : boolean); reintroduce; overload;
+		Constructor Create(UseGameDatabase : boolean; AParent : TDatabase); reintroduce; overload;
 		Destructor Destroy();override;
 
 		function GetAccount(ID    : Cardinal) : TAccount;overload;override;
@@ -99,9 +101,10 @@ implementation
 //		November 13th, 2006 - Tsusai - create inherit comes first.
 //
 //------------------------------------------------------------------------------
-Constructor TMySQLDatabase.Create(UseGameDatabase : boolean);
+Constructor TMySQLDatabase.Create(UseGameDatabase : boolean; AParent : TDatabase);
 begin
 	inherited Create;
+  Parent := AParent;
 	Connect(UseGameDatabase);
 end;
 //------------------------------------------------------------------------------
@@ -143,18 +146,18 @@ begin
 	begin
 		if Not UseGameDatabase then //Access the Common database
 		begin
-			Connection.Host            := ServerConfig.CommonHost;
-			Connection.Port            := ServerConfig.CommonPort;
-			Connection.Db              := ServerConfig.CommonDB;
-			Connection.User            := ServerConfig.CommonUser;
-			Connection.Password        := ServerConfig.CommonPass;
+			Connection.Host            := Parent.Options.CommonHost;
+			Connection.Port            := Parent.Options.CommonPort;
+			Connection.Db              := Parent.Options.CommonDB;
+			Connection.User            := Parent.Options.CommonUser;
+			Connection.Password        := Parent.Options.CommonPass;
 		end else //Access the Game database
 		begin
-			Connection.Host            := ServerConfig.GameHost;
-			Connection.Port            := ServerConfig.GamePort;
-			Connection.Db              := ServerConfig.GameDB;
-			Connection.User            := ServerConfig.GameUser;
-			Connection.Password        := ServerConfig.GamePass;
+			Connection.Host            := Parent.Options.GameHost;
+			Connection.Port            := Parent.Options.GamePort;
+			Connection.Db              := Parent.Options.GameDB;
+			Connection.User            := Parent.Options.GameUser;
+			Connection.Password        := Parent.Options.GamePass;
 		end;
 	end;
 
