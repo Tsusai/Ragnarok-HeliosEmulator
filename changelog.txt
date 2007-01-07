@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 98 -
+[2007/01/07] - RaX - Updated JanSQL queries, SAVE TABLE and RELEASE TABLE instead of SAVE
+ and RELEASE.
+-
+
 - Rev 97 -
 [2007/01/07] - RaX - Notes/Overview : Split up ServerOptions.ini into one ini for each
  server, one for database, and one for general helios config(enabled servers).
