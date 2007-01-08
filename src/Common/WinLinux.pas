@@ -18,8 +18,15 @@ uses
 	{$ENDIF}
 	Classes;
 
+	type
+		TIPSet = record
+			Full : string;
+			//Partial is just missing a value for the 4th octect (192.168.1.)
+			Partial : string;
+		end;
+
 	function GetCardinalFromIPString(IPString : string) : Cardinal;
-	function GetIPStringFromHostname(Hostname : String) : String;
+	function GetIPStringFromHostname(Hostname : String) : TIPSet;
 	procedure SetupTerminationCapturing;
 	procedure KillTerminationCapturing;
 	procedure KillProcess;
@@ -32,7 +39,6 @@ uses
 		{$IFDEF LINUX}
 		PriorityLow = PRIO_MIN;
 		{$ENDIF}
-
 
 implementation
 uses
@@ -72,7 +78,7 @@ uses
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-	function GetIPStringFromHostname(Hostname : string) : string;
+	function GetIPStringFromHostname(Hostname : string) : TIPSet;
 	var
 		h: PHostEnt;
 	begin
@@ -81,12 +87,14 @@ uses
 		begin
 			with h^ do
 			begin
-				Result := format('%d.%d.%d.%d', [ord(h_addr^[0]), ord(h_addr^[1]),
-						ord(h_addr^[2]), ord(h_addr^[3])]);
+				Result.Partial := Format('%d.%d.%d.', [ord(h_addr^[0]), ord(h_addr^[1]),
+						ord(h_addr^[2])]);
+				Result.Full := Result.Partial + IntToStr(ord(h_addr^[3]));
 			end;
 		end else
 		begin
-			Result := '0.0.0.0'
+			Result.Full := '0.0.0.0';
+			Result.Partial := '0.0.0.';
 		end;
 	end;
 //------------------------------------------------------------------------------

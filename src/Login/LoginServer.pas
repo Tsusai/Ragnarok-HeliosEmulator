@@ -317,8 +317,14 @@ end;{OnException}
 			WriteBufferWord(44, 0, Buffer);
 			WriteBufferByte(46,AnAccount.GenderNum,Buffer);
 			for Index := 0 to fCharaServerList.Count - 1 do begin
-				WriteBufferCardinal(47+(index*32)+0,TCharaServerInfo(fCharaServerList.Objects[Index]).WANCardinal,Buffer);
-				WriteBufferWord(47+(index*32)+4,TCharaServerInfo(fCharaServerList.Objects[Index]).WANPort,Buffer);
+				WriteBufferCardinal(
+					47+(index*32)+0,
+					TCharaServerInfo(fCharaServerList.Objects[Index]).Address(
+						AClient.Connection.Socket.Binding.PeerIP
+					),
+					Buffer
+				);
+				WriteBufferWord(47+(index*32)+4,TCharaServerInfo(fCharaServerList.Objects[Index]).Port,Buffer);
 				WriteBufferString(47+(index*32)+6,TCharaServerInfo(fCharaServerList.Objects[Index]).ServerName,20,Buffer);
 				WriteBufferWord(47+(index*32)+26,TCharaServerInfo(fCharaServerList.Objects[Index]).OnlineUsers,Buffer);
 				WriteBufferWord(47+(index*32)+28,0,Buffer);
@@ -479,7 +485,7 @@ end;{OnException}
 			Port := BufferReadWord(42,InBuffer);
 			CServerInfo := TCharaServerInfo.Create;
 			CServerInfo.ServerName := ServerName;
-			CServerInfo.WANPort := Port;
+			CServerInfo.Port := Port;
 			AClient.Data := TCharaServerLink.Create;
 			TCharaServerLink(AClient.Data).Info := CServerInfo;
 			fCharaServerList.AddObject(ServerName,CServerInfo);
@@ -557,7 +563,7 @@ end;{OnException}
 					RecvBuffer(AClient,Buffer[2],2);
 					Size := BufferReadWord(2,Buffer);
 					RecvBuffer(AClient,Buffer[4],Size-4);
-					TCharaServerLink(AClient.Data).Info.WANIP := BufferReadString(4,Size-4,Buffer);
+					TCharaServerLink(AClient.Data).Info.WAN := BufferReadString(4,Size-4,Buffer);
 					MainProc.Console('Login Server: Recieved updated Character Server WANIP.');
 				end;
 			end;
@@ -568,7 +574,7 @@ end;{OnException}
 					RecvBuffer(AClient,Buffer[2],2);
 					Size := BufferReadWord(2,Buffer);
 					RecvBuffer(AClient,Buffer[4],Size-4);
-					TCharaServerLink(AClient.Data).Info.LANIP := BufferReadString(4,Size-4,Buffer);
+					TCharaServerLink(AClient.Data).Info.LAN := BufferReadString(4,Size-4,Buffer);
 					MainProc.Console('Login Server: Recieved updated Character Server LANIP.');
 				end;
 			end;

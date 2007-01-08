@@ -249,8 +249,8 @@ end;{LoadOptions}
 //------------------------------------------------------------------------------
 procedure TInterServer.SetIPCardinal(Value : string);
 begin
-	fIP         := GetIPStringFromHostname(Value);
-	IPCardinal  := GetCardinalFromIPString(fIP);
+	//fIP         := GetIPStringFromHostname(Value);
+	//IPCardinal  := GetCardinalFromIPString(fIP);
 end; //proc SetIPCardinal
 //------------------------------------------------------------------------------
 

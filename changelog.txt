@@ -13,6 +13,29 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 101 -
+[2007/01/08] - Tsusai - Notes/Overview: Modifications to allow WAN/LAN checking complete
+ and in place.
+[2007/01/08] - Tsusai - WinLinux: Added a record type called TIPSet, which contains 2 strings,
+ Full, and Partial.  This is to store more things for the result type of 
+ GetIPStringFromHostname.
+[2007/01/08] - Tsusai - WinLinux - GetIPStringFromHostname: Now returns a TIPSet type, 
+ the Full IP that is obtained and a Partial (X.X.X.) The last . is for prevention of comparing
+ 192.168.10.1 to the partial of 192.168.1
+[2007/01/08] - Tsusai - Inter/Zone servers: Disabled IP and IPCardinal code.  Will reactivate
+ properly later.
+[2007/01/08] - Tsusai - CharaServerInfo: Overhauled ip / port information. changed the storage
+ strings that would store pure IPs as what they originally are, instead of parsing the IPs
+ from a hostname for example.  WANPort -> Port.  Added fLANPartial to store the partial LAN
+ IP.  Added Function Address, which takes a IP string of the client, for checking against 
+ the LAN IP Partial that is stored.
+[2007/01/08] - Tsusai - LoginServer - SendCharacterServers: Changed the WANCardinal and
+ placed the Address() function in it is placed.
+[2007/01/08] - Tsusai - LoginServer - VerifyCharaServer: Changed the WANPort to Port.
+[2007/01/08] - Tsusai - LoginServer - ParseLogin: Changed the incoming WAN and LAN information
+ to the fixed names.
+-
+
 - Rev 100 -
 [2007/01/08] - Tsusai - Notes/Overview: Fixed JanSQL Queries, and a tweak to janSQL and 
  CommClient.

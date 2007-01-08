@@ -5,39 +5,58 @@ interface
 type
 	TCharaServerInfo = class
 	protected
-		fWANIPCard : Cardinal;
-		fLANIPCard : Cardinal;
-		fWANIP     : String;
-		fLANIP     : String;
+		fWANIPCard  : Cardinal;
+		fLANIPCard  : Cardinal;
 
-		procedure SetWANIPCardinal(Value : String);
-		procedure SetLANIPCardinal(Value : String);
+		fWAN        : String;
+		fLAN        : String;
+
+		fLANPartial : String;
+
+		procedure SetWANCardinal(Value : String);
+		procedure SetLANCardinal(Value : String);
 
 	public
-		WANPort    : Word;
+		Port    : Word;
 		ServerName : String;
 		OnlineUsers : Word;
 	published
-		property WANCardinal : Cardinal read fWANIPCard;
-		property LANCardinal : Cardinal read fLANIPCard;
-		property WANIP       : String   read fWANIP write SetWANIPCardinal;
-		property LANIP       : String   read fLANIP write SetLANIPCardinal;
+		property WAN       : String   read fWAN write SetWANCardinal;
+		property LAN       : String   read fLAN write SetLANCardinal;
+
+		function Address(ClientIP : string) : Cardinal;
 	end;
 
 implementation
 uses
+	StrUtils,
 	WinLinux;
 
-procedure TCharaServerInfo.SetWANIPCardinal(Value : string);
+procedure TCharaServerInfo.SetWANCardinal(Value : string);
 begin
-	fWANIP         := GetIPStringFromHostname(Value);
-	fWANIPCard     := GetCardinalFromIPString(fWANIP);
+	fWAN       := Value;
+	fWANIPCard := GetCardinalFromIPString(GetIPStringFromHostname(Value).Full);
 end;
 
-procedure TCharaServerInfo.SetLANIPCardinal(Value : string);
+procedure TCharaServerInfo.SetLANCardinal(Value : string);
+var
+	ReturnedIPs : TIPSet;
 begin
-	fLANIP         := GetIPStringFromHostname(Value);
-	fLANIPCard     := GetCardinalFromIPString(fLANIP);
+	fLAN        := Value;
+	ReturnedIPs := GetIPStringFromHostname(Value);
+	fLANPartial := ReturnedIPs.Partial;
+	fLANIPCard  := GetCardinalFromIPString(ReturnedIPs.Full);
+end;
+
+function TCharaServerInfo.Address(ClientIP : string) : Cardinal;
+begin
+	if AnsiStartsText(fLANPartial, ClientIP) then
+	begin
+		Result := fLANIPCard;
+	end else
+	begin
+		Result := fWANIPCard;
+	end;
 end;
 
 end.

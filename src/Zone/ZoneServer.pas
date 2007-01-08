@@ -462,8 +462,8 @@ end;{LoadOptions}
 //------------------------------------------------------------------------------
 procedure TZoneServer.SetIPCardinal(Value : string);
 begin
-	fIP         := GetIPStringFromHostname(Value);
-	IPCardinal  := GetCardinalFromIPString(fIP);
+	//fIP         := GetIPStringFromHostname(Value);
+	//IPCardinal  := GetCardinalFromIPString(fIP);
 end; //proc SetIPCardinal
 //------------------------------------------------------------------------------
 
