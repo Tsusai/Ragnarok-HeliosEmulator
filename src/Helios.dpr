@@ -207,8 +207,6 @@ compile for linux, at the same time*}
   Commands in 'Classes/Commands.pas',
   CommClient in 'Classes/CommClient.pas',
   Globals in 'Common/Globals.pas',
-  madExcept,
-  madLinkDisAsm,
   PacketTypes in 'Common/PacketTypes.pas',
   TCPServerRoutines in 'Common/TCPServerRoutines.pas',
   Version in 'Common/Version.pas',

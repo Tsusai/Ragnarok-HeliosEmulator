@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 99 -
+[2007/01/08] - RaX - Forgot to remove madexcept from linux includes, removed.
+-
+
 - Rev 98 -
 [2007/01/07] - RaX - Updated JanSQL queries, SAVE TABLE and RELEASE TABLE instead of SAVE
  and RELEASE.
