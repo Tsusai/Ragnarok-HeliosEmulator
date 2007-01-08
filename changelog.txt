@@ -13,6 +13,17 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 100 -
+[2007/01/08] - Tsusai - Notes/Overview: Fixed JanSQL Queries, and a tweak to janSQL and 
+ CommClient.
+[2007/01/08] - Tsusai - CommClient: Once again reorganized order of procedures when relating
+ to disconnecting and suspending the client thread.
+[2007/01/08] - Tsusai - janSQL: Modified anything relating to file I/O to use / in the path,
+ instead of \ due to linux issues.
+[2007/01/08] - Tsusai - JanSQLDatabase: Updated any missing %s strings to have quotes
+ surrounding, janSQL doesn't like them too much and goofs w/o errors.
+-
+
 - Rev 99 -
 [2007/01/08] - RaX - Forgot to remove madexcept from linux includes, removed.
 -

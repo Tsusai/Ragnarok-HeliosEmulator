@@ -821,7 +821,7 @@ begin
   if persistent then
     if not directoryexists(FCatalog) then exit;
   if FRecordSets.IndexOf(value)<>-1 then exit;
-  fn:=Fcatalog+'\'+value+'.txt';
+  fn:=Fcatalog+'/'+value+'.txt';
   if persistent then
     if not fileexists(fn) then exit;
   rs:=TjanRecordSet.create;
@@ -1098,7 +1098,7 @@ begin
   result:=0;
   if tablename='' then exit;
   if fields='' then exit;
-  fn:=FCatalog+'\'+tablename+'.txt';
+  fn:=FCatalog+'/'+tablename+'.txt';
   if fileexists(fn) then exit;
   s:=fields;
   janSQLstrings.savestring(fn,s);
@@ -1113,7 +1113,7 @@ begin
   result:=0;
   err('DROP TABLE: table name missing');
   if tablename='' then exit;
-  fn:=FCatalog+'\'+tablename+'.txt';
+  fn:=FCatalog+'/'+tablename+'.txt';
   err('DROP TABLE: can not find file '+fn);
   if not fileexists(fn) then exit;
   deletefile(fn);
@@ -1449,7 +1449,7 @@ begin
   end;
   for i:=1 to c do
     if (recordsets[i].persistent) and (recordsets[i].modified) then begin
-      fn:=Fcatalog+'\'+recordsets[i].name+'.txt';
+      fn:=Fcatalog+'/'+recordsets[i].name+'.txt';
 			if not fileexists(fn) then exit;
 			recordsets[i].SaveToFile(fn);
       recordsets[i].modified:=false;
@@ -2399,7 +2399,7 @@ var
 	fn:string;
 begin
   result:=true;
-  fn:=Fcatalog+'\'+value+'.txt';
+  fn:=Fcatalog+'/'+value+'.txt';
   if fileexists(fn) then exit;
   result:=false;
 end;
@@ -2452,8 +2452,8 @@ begin
   recordsets[idx+1].intermediate:=false;
   // force persistance
   recordsets[idx+1].persistent:=true;
-  fn:=Fcatalog+'\'+recordsets[idx+1].name+'.txt';
-  recordsets[idx+1].SaveToFile(fn);
+	fn:=Fcatalog+'/'+recordsets[idx+1].name+'.txt';
+	recordsets[idx+1].SaveToFile(fn);
   recordsets[idx+1].modified:=false;
   result:=-1;
 end;

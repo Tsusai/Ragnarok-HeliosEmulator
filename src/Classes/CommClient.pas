@@ -114,13 +114,6 @@ uses
 						end;
 					end;
 				end;
-			end else
-			begin
-				if FClient.Connected then
-				begin
-					FClient.Disconnect;
-				end;
-				Suspend;
 			end;
 		end;
 	end;{Execute}
@@ -208,6 +201,11 @@ uses
 			end else
 			begin
 				fActive := Value;
+				if Connected then
+				begin
+					Disconnect;
+				end;
+				fReadThread.Suspend;
 			end;
 		end;
 	end;{SetActive}

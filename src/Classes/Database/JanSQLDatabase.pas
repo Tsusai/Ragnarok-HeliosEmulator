@@ -144,7 +144,7 @@ begin
 	//This tells it to save all infomation, since everything happens in memory
   if Assigned(Database) then
   begin
-	  SendQuery('COMMIT');
+	  //SendQuery('COMMIT');
     Database.Free;
   end;
 end;
@@ -549,14 +549,14 @@ const
 		'UPDATE accounts SET '+
 		'userid=''%s'', ' +
 		'user_pass=''%s'', ' +
-		'lastlogin=%s, ' +
+		'lastlogin=''%s'', ' +
 		'sex=''%s'', ' +
 		'logincount=%d, ' +
 		'email=''%s'', ' +
 		'loginkey1=%d, ' +
 		'loginkey2=%d, ' +
-		'connect_until=%s, ' +
-		'ban_until=%s, ' +
+		'connect_until=''%s'', ' +
+		'ban_until=''%s'', ' +
 		'last_ip=''%s'' ' +
 		'WHERE account_id=%d';
 var
@@ -579,8 +579,8 @@ begin
 			 AnAccount.ID]
 		);
 	ResultIdentifier := SendQuery(QueryString);
-  SendQuery('SAVE TABLE accounts');
-  SendQuery('RELEASE TABLE accounts');
+	SendQuery('SAVE TABLE accounts');
+	SendQuery('RELEASE TABLE accounts');
   if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;
 //------------------------------------------------------------------------------
@@ -599,7 +599,7 @@ end;
 procedure TJanSQLDatabase.SaveChara(AChara : TCharacter);
 var
 	QueryString : string;
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
 begin
 	with AChara do
 	begin
@@ -774,7 +774,7 @@ var
 begin
 
 	ResultIdentifier := SendQuery(
-		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(%s, %s, %s)',
+		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(''%s'', ''%s'', ''%s'')',
 		[Username,Password,GenderChar]));
   SendQuery('SAVE TABLE accounts');
   SendQuery('RELEASE TABLE accounts');
@@ -945,7 +945,7 @@ var
 begin
 	ResultIdentifier :=
 		SendQuery(
-		Format('SELECT * FROM hp WHERE level = %d, job = %s',
+		Format('SELECT * FROM hp WHERE level = %d, job = ''%s''',
 			[ACharacter.BaseLV,ACharacter.JID]));
   QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
@@ -975,7 +975,7 @@ var
 begin
 	ResultIdentifier :=
 		SendQuery(
-		Format('SELECT * FROM sp WHERE level = %d, job = %s',
+		Format('SELECT * FROM sp WHERE level = %d, job = ''%s''',
 			[ACharacter.BaseLV,ACharacter.JID]));
   QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
