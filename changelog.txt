@@ -12,6 +12,11 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 102 -
+[2007/01/09] - RaX - Deleted rev_55.sql
+[2007/01/09] - RaX - Added helioscommon, heliosgame, and heliosstatic.sql to replace.
+[2007/01/09] - RaX - Filled helios statics zonemaps table with mapinfo from prometheus.
+-
 
 - Rev 101 -
 [2007/01/08] - Tsusai - Notes/Overview: Modifications to allow WAN/LAN checking complete
