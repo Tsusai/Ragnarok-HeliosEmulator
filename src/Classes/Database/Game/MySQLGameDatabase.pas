@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//MySQLDatabase		                                                        UNIT
+//MySQLGameDatabase		                                                        UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //			This is one of our database objects which enabled Helios to use a MySQL
@@ -9,11 +9,11 @@
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-unit MySQLDatabase;
+unit MySQLGameDatabase;
 
 interface
 uses
-	DatabaseTemplate,
+	GameDatabaseTemplate,
 	Character,
 	CharaList,
 	Account,
@@ -21,7 +21,7 @@ uses
   Database;
 type
 //------------------------------------------------------------------------------
-//TMySQLDatabase			                                                           CLASS
+//TMySQLGameDatabase			                                                           CLASS
 //------------------------------------------------------------------------------
 //	What it does-
 //			This is a child class for our database object system. It allows Helios
@@ -31,20 +31,15 @@ type
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-	TMySQLDatabase = class(TDatabaseTemplate)
+	TMySQLGameDatabase = class(TGameDatabaseTemplate)
 	private
 		Connection   : TMySQLClient;
     Parent : TDatabase;
 	public
 
 
-		Constructor Create(UseGameDatabase : boolean; AParent : TDatabase); reintroduce; overload;
+		Constructor Create(EnableGameDatabase : boolean; AParent : TDatabase); reintroduce; overload;
 		Destructor Destroy();override;
-
-		function GetAccount(ID    : Cardinal) : TAccount;overload;override;
-		function GetAccount(Name  : string) : TAccount;overload;override;
-
-		procedure RefreshAccountData(var AnAccount : TAccount); override;
 
 		function CreateChara(
 			var ACharacter : TCharacter;
@@ -52,27 +47,17 @@ type
 			NName : string
 		) : boolean;override;
 
-		procedure CreateAccount(
-			const Username : string;
-			const Password : string;
-			const GenderChar : char
-		); override;
-
 		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
 		function LoadChara(CharaID : Cardinal) : TCharacter;override;
 		function GetChara(CharaID : Cardinal) : TCharacter;override;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
 		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;override;
 		function CharaExists(Name : String) : Boolean;overload;override;
-		function AccountExists(UserName : String) : Boolean;override;
 
-		procedure SaveAccount(AnAccount : TAccount);override;
 		procedure SaveChara(AChara : TCharacter);override;
 
-		Function GetBaseHP(ACharacter : TCharacter) : Cardinal;override;
-		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;override;
 	protected
-		procedure Connect(UseGameDatabase : Boolean); override;
+		procedure Connect(); override;
 		function SendQuery(
 			const QString : string;
 			StoreResult : boolean;
@@ -91,7 +76,7 @@ implementation
 		SysUtils,
 		Classes;
 //------------------------------------------------------------------------------
-//TMySQLDatabase.Create()                                          CONSTRUCTOR
+//TMySQLGameDatabase.Create()                                          CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes our connection object.
@@ -101,16 +86,20 @@ implementation
 //		November 13th, 2006 - Tsusai - create inherit comes first.
 //
 //------------------------------------------------------------------------------
-Constructor TMySQLDatabase.Create(UseGameDatabase : boolean; AParent : TDatabase);
+Constructor TMySQLGameDatabase.Create(EnableGameDatabase : boolean; AParent : TDatabase);
 begin
 	inherited Create;
   Parent := AParent;
-	Connect(UseGameDatabase);
+  Connection := TMySQLClient.Create;
+  if EnableGameDatabase then
+  begin
+	  Connect();
+  end;
 end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TMySQLDatabase.Destroy()                                          DESTRUCTOR
+//TMySQLGameDatabase.Destroy()                                          DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys our connection object.
@@ -119,15 +108,16 @@ end;
 //		October 5th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Destructor TMySQLDatabase.Destroy();
+Destructor TMySQLGameDatabase.Destroy();
 begin
 	Disconnect;
+  Connection.Free;
 	inherited;
 end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TMySQLDatabase.Connect()                                            Procedure
+//TMySQLGameDatabase.Connect()                                            Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes the MySQL Connection.
@@ -136,29 +126,15 @@ end;
 //		October 5th, 2006 - RaX - Moved here from globals.
 //
 //------------------------------------------------------------------------------
-Procedure TMySQLDatabase.Connect(UseGameDatabase : boolean);
+Procedure TMySQLGameDatabase.Connect();
 begin
-	if Not Assigned(Connection) then
-	begin
-		Connection := TMySQLClient.Create;
-	end;
 	if NOT Connection.Connected then
 	begin
-		if Not UseGameDatabase then //Access the Common database
-		begin
-			Connection.Host            := Parent.Options.CommonHost;
-			Connection.Port            := Parent.Options.CommonPort;
-			Connection.Db              := Parent.Options.CommonDB;
-			Connection.User            := Parent.Options.CommonUser;
-			Connection.Password        := Parent.Options.CommonPass;
-		end else //Access the Game database
-		begin
-			Connection.Host            := Parent.Options.GameHost;
-			Connection.Port            := Parent.Options.GamePort;
-			Connection.Db              := Parent.Options.GameDB;
-			Connection.User            := Parent.Options.GameUser;
-			Connection.Password        := Parent.Options.GamePass;
-		end;
+    Connection.Host            := Parent.Options.GameHost;
+    Connection.Port            := Parent.Options.GamePort;
+    Connection.Db              := Parent.Options.GameDB;
+    Connection.User            := Parent.Options.GameUser;
+    Connection.Password        := Parent.Options.GamePass;
 	end;
 
 	Connection.ConnectTimeout  := 10;
@@ -171,7 +147,7 @@ begin
 end;
 //------------------------------------------------------------------------------
 
-function TMySQLDatabase.SendQuery(
+function TMySQLGameDatabase.SendQuery(
 	const QString : string;
 	StoreResult : boolean;
 	var ExecutedOK : boolean
@@ -185,7 +161,7 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-//TMySQLDatabase.Disconnect()                                         Procedure
+//TMySQLGameDatabase.Disconnect()                                         Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys the MySQL Connection.
@@ -194,7 +170,7 @@ end;
 //		October 5th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Procedure TMySQLDatabase.Disconnect();
+Procedure TMySQLGameDatabase.Disconnect();
 begin
 	if Connection.Connected then
 	begin
@@ -205,7 +181,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLDatabase.SetAccount()                                         PROCEDURE
+//TMySQLGameDatabase.SetAccount()                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Builds a taccount object from a query result.
@@ -240,113 +216,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLDatabase.GetAccount()                               OVERLOADED FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//			This function returns a TAccount type and is used for loading up an
-//    account by ID.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
-//													set the data
-//		December 27th, 2006 - Tsusai - Reorganized
-//
-//------------------------------------------------------------------------------
-function TMySQLDatabase.GetAccount(ID: Cardinal) : TAccount;
-var
-	Success     : Boolean;
-	AnAccount   : TAccount;
-	Index       : Integer;
-	QueryResult : TMySQLResult;
-begin
-	Result := NIL;
-	//Check Memory
-	if not Assigned(AccountList) then Accountlist := TStringlist.Create;
-	for Index := 0 to AccountList.Count -1 do begin
-		if TAccount(AccountList.Objects[Index]).ID = ID then
-		begin
-			Result := TAccount(AccountList.Objects[Index]);
-			break;
-		end;
-	end;
-
-	if Assigned(Result) then
-	begin
-		RefreshAccountData(Result);
-	end else
-	begin
-		QueryResult := SendQuery('SELECT * FROM accounts WHERE account_id = '''+IntToStr(ID)+'''',true,Success);
-		if Success and (QueryResult.RowsCount = 1) then begin
-			if Not Assigned(Result) then
-			begin
-				SetAccount(AnAccount,QueryResult);
-				AccountList.AddObject(AnAccount.Username, AnAccount);
-				Result := AnAccount;
-			end;
-		end;
-		if Assigned(QueryResult) then QueryResult.Free;
-	end;
-
-end;
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TMySQLDatabase.GetAccount()                               OVERLOADED FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//			This function returns a TAccount type and is used for loading up an
-//    account by Name.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
-//													set the data
-//		December 27th, 2006 - Tsusai - Reorganized
-//
-//------------------------------------------------------------------------------
-function TMySQLDatabase.GetAccount(Name : string) : TAccount;
-var
-	Success     : Boolean;
-	AnAccount   : TAccount;
-	Index       : Integer;
-	QueryResult : TMySQLResult;
-begin
-	Result := NIL;
-	//Check Memory
-	if not Assigned(AccountList) then Accountlist := TStringlist.Create;
-	for Index := 0 to AccountList.Count -1 do begin
-		if TAccount(AccountList.Objects[Index]).Username = Name then
-		begin
-			Result := TAccount(AccountList.Objects[Index]);
-			break;
-		end;
-	end;
-
-	if Assigned(Result) then
-	begin
-		RefreshAccountData(Result);
-	end else
-	begin
-		QueryResult := SendQuery('SELECT * FROM accounts WHERE userid = '''+Name+'''',true,Success);
-		if Success and (QueryResult.RowsCount = 1) then begin
-			if Not Assigned(Result) then
-			begin
-				SetAccount(AnAccount,QueryResult);
-				AccountList.AddObject(AnAccount.Username, AnAccount);
-				Result := AnAccount;
-			end;
-		end;
-		if Assigned(QueryResult) then QueryResult.Free;
-	end;
-
-end;
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TMySQLDatabase.GetChara()                                           FUNCTION
+//TMySQLGameDatabase.GetChara()                                           FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Doesn't do anything yet.
@@ -355,7 +225,7 @@ end;
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-function TMySQLDatabase.GetChara(CharaID : Cardinal) : TCharacter;
+function TMySQLGameDatabase.GetChara(CharaID : Cardinal) : TCharacter;
 var
   CharacterIndex : Integer;
 begin
@@ -382,7 +252,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLDatabase.GetAccountCharas()                                   FUNCTION
+//TMySQLGameDatabase.GetAccountCharas()                                   FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Doesn't do anything yet.
@@ -392,7 +262,7 @@ end;
 //		December 18th, 2006 - Tsusai - Freed result.
 //
 //------------------------------------------------------------------------------
-function TMySQLDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
+function TMySQLGameDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
 var
 	QueryResult     : TMySQLResult;
 	Success         : Boolean;
@@ -422,7 +292,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLDatabase.CharaExists()                                         FUNCTION
+//TMySQLGameDatabase.CharaExists()                                         FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Doesn't do anything yet.
@@ -432,7 +302,7 @@ end;
 //		December 18th, 2006 - Tsusai - Simplified Result, freed Queryresult
 //
 //------------------------------------------------------------------------------
-function TMySQLDatabase.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
+function TMySQLGameDatabase.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
 var
 	QueryResult : TMySQLResult;
 	Success     : Boolean;
@@ -451,7 +321,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLDatabase.CharaExists()                                         FUNCTION
+//TMySQLGameDatabase.CharaExists()                                         FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Doesn't do anything yet.
@@ -461,7 +331,7 @@ end;
 //		December 18th, 2006 - Tsusai - Simplified Result, freed queryresult
 //
 //------------------------------------------------------------------------------
-function TMySQLDatabase.CharaExists(Name : String) : Boolean;
+function TMySQLGameDatabase.CharaExists(Name : String) : Boolean;
 var
 	QueryResult : TMySQLResult;
 	Success     : Boolean;
@@ -478,25 +348,9 @@ begin
 end;
 //------------------------------------------------------------------------------
 
-function TMySQLDatabase.AccountExists(UserName : String) : Boolean;
-var
-	QueryResult : TMySQLResult;
-	Success : boolean;
-begin
-	Result := false;
-	QueryResult :=
-		SendQuery(
-			Format('SELECT userid FROM accounts WHERE userid = ''%s''',[UserName]),true,Success);
-	if Success then
-	begin
-		Result := (QueryResult.RowsCount > 0);
-	end;
-
-	if Assigned(QueryResult) then QueryResult.Free;
-end;
 
 //------------------------------------------------------------------------------
-//TMySQLDatabase.SaveAccount()                                     Procedure
+//TMySQLGameDatabase.SaveChara()                                     Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Doesn't do anything yet.
@@ -505,57 +359,7 @@ end;
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TMySQLDatabase.SaveAccount(AnAccount: TAccount);
-const
-	BaseString =
-		'UPDATE accounts SET '+
-		'userid=''%s'', ' +
-		'user_pass=''%s'', ' +
-		'lastlogin=%s, ' +
-		'sex=''%s'', ' +
-		'logincount=%d, ' +
-		'email=''%s'', ' +
-		'loginkey1=%d, ' +
-		'loginkey2=%d, ' +
-		'connect_until=%s, ' +
-		'ban_until=%s, ' +
-		'last_ip=''%s'' ' +
-		'WHERE account_id=%d;';
-var
-	Success : boolean;
-	QueryString : string;
-begin
-	QueryString :=
-		Format(BaseString,
-			[AnAccount.Username,
-			 AnAccount.Password,
-			 FormatDateTime('yyyymmddhhmmss',AnAccount.LastLoginTime),
-			 AnAccount.Gender,
-			 AnAccount.LoginCount,
-			 AnAccount.EMail,
-			 AnAccount.LoginKey[1],
-			 AnAccount.LoginKey[2],
-			 FormatDateTime('yyyymmddhhmmss',AnAccount.ConnectUntil),
-			 FormatDateTime('yyyymmddhhmmss',AnAccount.Bantime),
-			 AnAccount.LastIP,
-			 AnAccount.ID]
-		);
-	SendQuery(QueryString, FALSE, Success);
-end;
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TMySQLDatabase.SaveChara()                                     Procedure
-//------------------------------------------------------------------------------
-//	What it does-
-//			Doesn't do anything yet.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-procedure TMySQLDatabase.SaveChara(AChara : TCharacter);
+procedure TMySQLGameDatabase.SaveChara(AChara : TCharacter);
 var
 	QueryString : string;
 	Success : boolean;
@@ -666,7 +470,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLDatabase.CreateChara()                                       PROCEDURE
+//TMySQLGameDatabase.CreateChara()                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Create's a character in teh database.
@@ -675,7 +479,7 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function TMySQLDatabase.CreateChara(
+function TMySQLGameDatabase.CreateChara(
 	var ACharacter : TCharacter;
 	AID : Cardinal;
 	NName : string
@@ -706,22 +510,9 @@ begin
 end;
 //------------------------------------------------------------------------------
 
-procedure TMySQLDatabase.CreateAccount(
-	const Username : string;
-	const Password : string;
-	const GenderChar : char
-);
-var
-	Success : boolean;
-begin
-	SendQuery(
-		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(''%s'', ''%s'', ''%s'')',
-		[Username,Password,GenderChar])
-	,TRUE,Success);
-end;
 
 //------------------------------------------------------------------------------
-//TMySQLDatabase.LoadChara()                                         PROCEDURE
+//TMySQLGameDatabase.LoadChara()                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Gets a Character from the database.
@@ -730,7 +521,7 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function TMySQLDatabase.LoadChara(CharaID : Cardinal) : TCharacter;
+function TMySQLGameDatabase.LoadChara(CharaID : Cardinal) : TCharacter;
 var
 	Success     : Boolean;
 	APoint      : TPoint;
@@ -806,7 +597,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLDatabase.DeleteChara()                                       PROCEDURE
+//TMySQLGameDatabase.DeleteChara()                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Deletes a character from the database.
@@ -815,7 +606,7 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function TMySQLDatabase.DeleteChara(var ACharacter : TCharacter) : boolean;
+function TMySQLGameDatabase.DeleteChara(var ACharacter : TCharacter) : boolean;
 begin
 	SendQuery(
 		Format('DELETE FROM characters WHERE char_id=%d',[ACharacter.CID]),
@@ -832,90 +623,5 @@ end;
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//TMySQLDatabase.RefreshAccountData()                                PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//		December 27th, 2006 - Tsusai - Remade, now gets all needed account data
-//			regardless
-//
-//------------------------------------------------------------------------------
-procedure TMySQLDatabase.RefreshAccountData(var AnAccount : TAccount);
-var
-	Success     : Boolean;
-	QueryResult : TMySQLResult;
-begin
-	QueryResult := SendQuery(
-		Format('SELECT loginkey1, loginkey2, connect_until, ban_until FROM accounts WHERE account_id=%d',[AnAccount.ID]),true,Success);
-	AnAccount.LoginKey[1]  := StrToIntDef(QueryResult.FieldValue(0),0);
-	AnAccount.LoginKey[2]  := StrToIntDef(QueryResult.FieldValue(1),0);
-	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.FieldValue(2));
-	AnAccount.BanTime := ConvertMySQLTime(QueryResult.FieldValue(3));
-  if Assigned(QueryResult) then QueryResult.Free;
-end;
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TMySQLDatabase.GetBaseHP()                                          FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//			Gets a characters basehp.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-Function TMySQLDatabase.GetBaseHP(ACharacter : TCharacter) : Cardinal;
-var
-	Success     : Boolean;
-	QueryResult : TMySQLResult;
-begin
-	QueryResult :=
-		SendQuery(
-		Format('SELECT * FROM hp WHERE level = %d, job = ''%s''',
-			[ACharacter.BaseLV,ACharacter.JID])
-		,TRUE,Success);
-	if (QueryResult.RowsCount = 1) and (QueryResult.FieldsCount = 48) then
-	begin
-			Result              := StrToInt(QueryResult.FieldValue(0));
-	end else Result := 0;
-	if Assigned(QueryResult) then QueryResult.Free;
-end;
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TMySQLDatabase.GetBaseSP()                                          FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//			Gets a characters basesp.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-Function TMySQLDatabase.GetBaseSP(ACharacter : TCharacter) : Cardinal;
-var
-	Success     : Boolean;
-	QueryResult : TMySQLResult;
-begin
-	QueryResult :=
-		SendQuery(
-		Format('SELECT * FROM sp WHERE level = %d, job = ''%s''',
-			[ACharacter.BaseLV,ACharacter.JID])
-		,TRUE,Success);
-	if (QueryResult.RowsCount = 1) and (QueryResult.FieldsCount = 48) then
-	begin
-			Result              := StrToInt(QueryResult.FieldValue(0));
-	end else Result := 0;
-	if Assigned(QueryResult) then QueryResult.Free;
-end;
-//------------------------------------------------------------------------------
-
-{END MYSQLDATABASE}
+{END MySQLGameDatabase}
 end.

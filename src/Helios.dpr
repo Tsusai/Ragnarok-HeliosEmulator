@@ -92,11 +92,17 @@ compile for linux, at the same time*}
 
   //Database
   Database in 'Classes\Database.pas',
-  DatabaseTemplate in 'Classes\Database\DatabaseTemplate.pas',
+  CommonDatabaseTemplate in 'Classes\Database\Common\CommonDatabaseTemplate.pas',
+  GameDatabaseTemplate in 'Classes\Database\Game\GameDatabaseTemplate.pas',
+  StaticDatabaseTemplate in 'Classes\Database\Static\StaticDatabaseTemplate.pas',
   DatabaseConstants in 'Constants\DatabaseConstants.pas',
   DatabaseTXT in 'Database\DatabaseTXT.pas',
-  JanSQLDatabase in 'Classes\Database\JanSQLDatabase.pas',
-  MySQLDatabase in 'Classes\Database\MySQLDatabase.pas',
+  JanSQLCommonDatabase in 'Classes\Database\Common\JanSQLCommonDatabase.pas',
+  MySQLCommonDatabase in 'Classes\Database\Common\MySQLCommonDatabase.pas',
+  JanSQLGameDatabase in 'Classes\Database\Game\JanSQLGameDatabase.pas',
+  MySQLGameDatabase in 'Classes\Database\Game\MySQLGameDatabase.pas',
+  JanSQLStaticDatabase in 'Classes\Database\Static\JanSQLStaticDatabase.pas',
+  MySQLStaticDatabase in 'Classes\Database\Static\MySQLStaticDatabase.pas',
 
   //Database Clients
     //jansql
@@ -172,11 +178,17 @@ compile for linux, at the same time*}
 
   //Database
   Database in 'Classes/Database.pas',
-  DatabaseTemplate in 'Classes/Database/DatabaseTemplate.pas',
+  CommonDatabaseTemplate in 'Classes/Database/Common/CommonDatabaseTemplate.pas',
+  GameDatabaseTemplate in 'Classes/Database/Game/GameDatabaseTemplate.pas',
+  StaticDatabaseTemplate in 'Classes/Database/Static/StaticDatabaseTemplate.pas',
   DatabaseConstants in 'Constants/DatabaseConstants.pas',
   DatabaseTXT in 'Database/DatabaseTXT.pas',
-  JanSQLDatabase in 'Classes/Database/JanSQLDatabase.pas',
-  MySQLDatabase in 'Classes/Database/MySQLDatabase.pas',
+  JanSQLCommonDatabase in 'Classes/Database/Common/JanSQLCommonDatabase.pas',
+  MySQLCommonDatabase in 'Classes/Database/Common/MySQLCommonDatabase.pas',
+  JanSQLGameDatabase in 'Classes/Database/Game/JanSQLGameDatabase.pas',
+  MySQLGameDatabase in 'Classes/Database/Game/MySQLGameDatabase.pas',
+  JanSQLStaticDatabase in 'Classes/Database/Static/JanSQLStaticDatabase.pas',
+  MySQLStaticDatabase in 'Classes/Database/Static/MySQLStaticDatabase.pas',
 
   //Database Clients
     //jansql

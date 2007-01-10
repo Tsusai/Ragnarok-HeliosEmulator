@@ -37,6 +37,12 @@ interface
 			fGameUser 		: string;
 			fGamePass 		: string;
 
+      fStaticHost 	: string;
+			fStaticPort 	: integer;
+			fStaticDB   	: string;
+			fStaticUser 	: string;
+			fStaticPass 	: string;
+
 			procedure SetType(Value : Integer);
 		public
 			property DatabaseType : Integer read fType write SetType;
@@ -54,6 +60,13 @@ interface
 			property GameDB   : string Read fGameDB;
 			property GameUser : string Read fGameUser;
 			property GamePass : string Read fGamePass;
+
+			//StaticDB
+			property StaticHost : string Read fStaticHost;
+			property StaticPort : integer read fStaticPort;
+			property StaticDB   : string Read fStaticDB;
+			property StaticUser : string Read fStaticUser;
+			property StaticPass : string Read fStaticPass;
 
       Procedure Load;
       Procedure Save;
@@ -139,6 +152,29 @@ implementation
 			fGamePass := Section.Values['Password'];
 		end;{Subroutine LoadGame}
     //--------------------------------------------------------------------------
+
+    //--------------------------------------------------------------------------
+    //LoadStatic                                                  SUB PROCEDURE
+    //--------------------------------------------------------------------------
+		procedure LoadStatic;
+		begin
+			ReadSectionValues('Static', Section);
+			if Section.Values['Host'] = '' then begin
+				Section.Values['Host'] := './save';
+			end;
+			fStaticHost := Section.Values['Host'];
+			fStaticPort := StrToIntDef(Section.Values['Port'], 3306);
+			if Section.Values['DBName'] = '' then begin
+				Section.Values['DBName'] := 'HeliosStatic';
+			end;
+			fStaticDB := Section.Values['DBName'];
+			if Section.Values['Username'] = '' then begin
+				Section.Values['Username'] := 'root';
+			end;
+			fStaticUser := Section.Values['Username'];
+			fStaticPass := Section.Values['Password'];
+		end;{Subroutine LoadStatic}
+    //--------------------------------------------------------------------------
 	begin
 		Section    := TStringList.Create;
 
@@ -147,6 +183,7 @@ implementation
 
     LoadCommon;
     LoadGame;
+    LoadStatic;
     LoadDatabase;
 
 		Section.Free;
@@ -184,6 +221,13 @@ implementation
 		WriteString('Game','DBName', GameDB);
 		WriteString('Game','Username', GameUser);
 		WriteString('Game','Password', GamePass);
+
+    //Static
+		WriteString('Static','Host', StaticHost);
+		WriteString('Static','Port', IntToStr(StaticPort));
+		WriteString('Static','DBName', StaticDB);
+		WriteString('Static','Username', StaticUser);
+		WriteString('Static','Password', StaticPass);
     
 		UpdateFile;
 	end;{Save}

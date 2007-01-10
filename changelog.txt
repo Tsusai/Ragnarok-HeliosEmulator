@@ -12,6 +12,19 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+
+- Rev 103 -
+[2007/01/10] - RaX - Notes/Overview : Database changes, broke up the database class into 3
+ separate database classes (Common, Game, and Static).
+[2007/01/10] - RaX - Deleted old database units.
+[2007/01/10] - RaX - Added new database units (one of each of the old per database). Moved
+ units into separate folders inside the database folder under classes.
+[2007/01/10] - RaX - Updated zonemaps in Static database, all flags are now boolean and it
+ has been renamed to just 'maps'.
+[2007/01/10] - RaX - Updated jansql databases to reflect mysql changes.
+[2007/01/10] - RaX - Reorganized how each database is created and free'd.
+-
+
 - Rev 102 -
 [2007/01/09] - RaX - Deleted rev_55.sql
 [2007/01/09] - RaX - Added helioscommon, heliosgame, and heliosstatic.sql to replace.

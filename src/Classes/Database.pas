@@ -15,7 +15,9 @@ unit Database;
 
 interface
 uses
-	DatabaseTemplate,
+	CommonDatabaseTemplate,
+  GameDatabaseTemplate,
+  StaticDatabaseTemplate,
   DatabaseOptions;
 
 type
@@ -28,12 +30,16 @@ type
     Procedure LoadOptions;
 
 	public
-		AnInterface : TDatabaseTemplate;
-    
-    Options     : TDatabaseOptions;
+    CommonData    : TCommonDatabaseTemplate;
+    GameData      : TGameDatabaseTemplate;
+    StaticData    : TStaticDatabaseTemplate;
+
+    Options       : TDatabaseOptions;
 
 		Constructor Create(
-									UseGameDatabase : boolean = false;
+									EnableCommonDatabase  : Boolean;
+                  EnableGameDatabase    : Boolean;
+                  EnableStaticDatabase  : Boolean;
 									DatabaseType : Integer = -1
 		);
 		Destructor  Destroy();override;
@@ -49,8 +55,12 @@ uses
 	Console,
 	Globals,
 	DatabaseConstants,
-	MySQLDatabase,
-	JanSQLDatabase,
+	MySQLCommonDatabase,
+	JanSQLCommonDatabase,
+	MySQLGameDatabase,
+	JanSQLGameDatabase,
+	MySQLStaticDatabase,
+	JanSQLStaticDatabase,
   SysUtils;
 
 //------------------------------------------------------------------------------
@@ -64,8 +74,10 @@ uses
 //
 //------------------------------------------------------------------------------
 Constructor TDatabase.Create(
-	UseGameDatabase : boolean = false;
-	DatabaseType : Integer = -1
+  EnableCommonDatabase  : Boolean;
+  EnableGameDatabase    : Boolean;
+  EnableStaticDatabase  : Boolean;
+  DatabaseType          : Integer = -1
 );
 begin
 	Inherited Create();
@@ -75,16 +87,21 @@ begin
 	begin
 		DatabaseType := Options.DatabaseType;//set it to the value of our config.
 	end;
-	//Here's where we figure out which database interface we want to use.
+
+	//Here's where we figure out which database interfaces we want to use.
 	case DatabaseType of
 		TEXT ://1    Helios Text Database
 			begin
-				AnInterface := TJanSQLDatabase.Create(UseGameDatabase, self);
+        CommonData  := TJanSQLCommonDatabase.Create(EnableCommonDatabase, self);
+        GameData    := TJanSQLGameDatabase.Create(EnableGameDatabase, self);
+        StaticData  := TJanSQLStaticDatabase.Create(EnableStaticDatabase, self);
 			end;
 
 		MYSQL://2
 			begin
-				AnInterface := TMySQLDatabase.Create(UseGameDatabase, self);
+        CommonData  := TMySQLCommonDatabase.Create(EnableCommonDatabase, self);
+        GameData    := TMySQLGameDatabase.Create(EnableGameDatabase, self);
+        StaticData  := TMySQLStaticDatabase.Create(EnableStaticDatabase, self);
 			end;
 
 		else begin //anything else
@@ -108,7 +125,9 @@ end;
 //------------------------------------------------------------------------------
 Destructor TDatabase.Destroy();
 begin
-	AnInterface.Free;
+	CommonData.Free;
+  GameData.Free;
+  StaticData.Free;
   Options.Save;
   Options.Free;
 	Inherited;

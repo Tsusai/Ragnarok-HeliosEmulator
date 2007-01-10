@@ -54,8 +54,7 @@ type
 		ServerName    : String;
 		OnlineUsers   : Word;
 
-    AGameDatabase : TDatabase;
-    ACommonDatabase : TDatabase;
+    Database : TDatabase;
 
     Options          : TZoneOptions;
 
@@ -96,8 +95,7 @@ Constructor TZoneServer.Create;
 begin
   LoadOptions;
 
-  ACommonDatabase := TDatabase.Create(FALSE);
-  AGameDatabase   := TDatabase.Create(TRUE);
+  Database := TDatabase.Create(TRUE,TRUE,TRUE);
 
   TCPServer := TIdTCPServer.Create;
   ToCharaTCPClient := TIdTCPClient.Create;
@@ -123,8 +121,7 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TZoneServer.Destroy;
 begin
-  ACommonDatabase.Free;
-  AGameDatabase.Free;
+  Database.Free;
   TCPServer.Free;
   ToCharaTCPClient.Free;
   ToInterTCPClient.Free;

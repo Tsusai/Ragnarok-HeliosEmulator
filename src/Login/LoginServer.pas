@@ -37,7 +37,7 @@ type
 		TCPServer     : TIdTCPServer;
 		fCharaServerList : TStringList;
 
-		ACommonDatabase : TDatabase;
+		Database : TDatabase;
 
 		Procedure OnConnect(AConnection: TIdContext);
 		Procedure OnDisconnect(AConnection: TIdContext);
@@ -114,7 +114,7 @@ begin
 
   LoadOptions;
 
-	ACommonDatabase := TDatabase.Create(FALSE);
+	Database := TDatabase.Create(TRUE,FALSE,FALSE);
 
 	TCPServer := TIdTCPServer.Create;
 
@@ -142,7 +142,7 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TLoginServer.Destroy();
 begin
-	ACommonDatabase.Free;
+	Database.Free;
 	TCPServer.Free;
 	fCharaServerList.Free;
   Options.Save;
@@ -363,10 +363,10 @@ end;{OnException}
 			//Trim the MF off because people forget to take it off.
 			Username := AnsiLeftStr(Username,Length(Username)-2);
 			//Check to see if the account already exists.
-			if NOT ACommonDatabase.AnInterface.AccountExists(Username) then
+			if NOT Database.CommonData.AccountExists(Username) then
 			begin
 				//Create the account.
-				ACommonDatabase.AnInterface.CreateAccount(
+				Database.CommonData.CreateAccount(
 					Username,Password,GenderStr[2]
 				);
 			end;
@@ -413,7 +413,7 @@ end;{OnException}
 			ParseMF(Username,Password);
 		end;
 
-		AnAccount := ACommonDatabase.AnInterface.GetAccount(UserName);
+		AnAccount := Database.CommonData.GetAccount(UserName);
 		if Assigned(AnAccount) then begin
 			AccountPassword := AnAccount.Password;
 			if not(MD5Key = '') then
@@ -431,7 +431,7 @@ end;{OnException}
 						AnAccount.LastIP := AClient.Connection.Socket.Binding.PeerIP;
 						AnAccount.LastLoginTime := Now;
 						Inc(AnAccount.LoginCount);
-						ACommonDatabase.AnInterface.SaveAccount(AnAccount);
+						Database.CommonData.SaveAccount(AnAccount);
 						SendCharacterServers(AnAccount,AClient);
 					end else begin
 						SendLoginError(AClient,LOGIN_TIMEUP);

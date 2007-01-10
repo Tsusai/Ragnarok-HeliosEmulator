@@ -35,8 +35,7 @@ type
     TCPServer       : TIdTCPServer;
 		CharaToLoginClient : TInterClient;
 
-    ACommonDatabase : TDatabase;
-    AGameDatabase   : TDatabase;
+    Database : TDatabase;
 
     Procedure OnException(AConnection: TIdContext;
       AException: Exception);
@@ -106,8 +105,7 @@ Constructor TCharacterServer.Create;
 begin
   LoadOptions;
 
-  ACommonDatabase := TDatabase.Create(FALSE);
-  AGameDatabase   := TDatabase.Create(TRUE);
+  Database := TDatabase.Create(TRUE,TRUE,FALSE);
 
   TCPServer := TIdTCPServer.Create;
 	TCPServer.OnExecute   := ParseCharaServ;
@@ -135,8 +133,7 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TCharacterServer.Destroy;
 begin
-  ACommonDatabase.Free;
-  AGameDatabase.Free;
+  Database.Free;
 
   TCPServer.Free;
 	CharaToLoginClient.Free;
@@ -304,7 +301,7 @@ begin
 	Count     := 0;
 	Ver       := 24;
 	AccountID := BufferReadCardinal(2, ABuffer);
-	AnAccount := ACommonDatabase.AnInterface.GetAccount(AccountID);
+	AnAccount := Database.CommonData.GetAccount(AccountID);
 
 	if Assigned(AnAccount) then
 	begin
@@ -317,7 +314,7 @@ begin
 				TThreadLink(AClient.Data).AccountLink := AnAccount;
 				SendPadding(AClient); //Legacy padding
 
-				ACharaList := AGameDatabase.AnInterface.GetAccountCharas(AccountID);
+				ACharaList := Database.GameData.GetAccountCharas(AccountID);
 				for Index := 0 to ACharaList.Count-1 do
 				begin
 					ACharacter := ACharaList.Items[Index];
@@ -464,7 +461,7 @@ begin
 	TotalStatPt := 0;
 
 	//Name Check.
-	if NOT AGameDatabase.AnInterface.CharaExists(CharaName) then
+	if NOT Database.GameData.CharaExists(CharaName) then
 	begin
 		//Stat Point check.
 		for idx := 0 to 5 do begin
@@ -486,7 +483,7 @@ begin
 		end;
 
 		//Slot Check.
-		if AGameDatabase.AnInterface.CharaExists(Account.ID, SlotNum) then
+		if Database.GameData.CharaExists(Account.ID, SlotNum) then
 		begin
 			CreateCharaError(INVALIDMISC);
 			Validated := FALSE;
@@ -498,7 +495,7 @@ begin
 			//Validated...Procede with creation
 			ACharacter := TCharacter.Create;
 			//Set a record in Database for our new character
-			if AGameDatabase.AnInterface.CreateChara(
+			if Database.GameData.CreateChara(
 				ACharacter,Account.ID,CharaName) then
 			begin
 				ACharacter.Name           := CharaName;
@@ -554,7 +551,7 @@ begin
         ACharacter.HomunID        := 0;
 
 				//INSERT ANY OTHER CREATION CHANGES HERE!
-				AGameDatabase.AnInterface.SaveChara(ACharacter);
+				Database.GameData.SaveChara(ACharacter);
 				with ACharacter do begin
 					WriteBufferWord(0, $006d,ReplyBuffer);
 					WriteBufferCardinal(2+  0, CID,ReplyBuffer);
@@ -636,7 +633,7 @@ begin
 	CharacterID := BufferReadCardinal(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TThreadLink(AClient.Data).AccountLink;
-	ACharacter := AGameDatabase.AnInterface.GetChara(CharacterID);
+	ACharacter := Database.GameData.GetChara(CharacterID);
 
   if Assigned(ACharacter) then
   begin
@@ -649,7 +646,7 @@ begin
 			  begin
 				  if CharacterList.Items[CharacterIndex].CID = ACharacter.CID then
 				  begin
-					  if AGameDatabase.AnInterface.DeleteChara(ACharacter) then
+					  if Database.GameData.DeleteChara(ACharacter) then
 					  begin
 						  WriteBufferWord(0, $006f, ReplyBuffer);
 						  SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));

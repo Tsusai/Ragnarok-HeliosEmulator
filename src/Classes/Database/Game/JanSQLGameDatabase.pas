@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//JanSQLDatabase		                                                        UNIT
+//JanSQLGameDatabase		                                                        UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //			This is one of our database objects which enabled Helios to use a TEXT
@@ -9,11 +9,11 @@
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-unit JanSQLDatabase;
+unit JanSQLGameDatabase;
 
 interface
 uses
-	DatabaseTemplate,
+	GameDatabaseTemplate,
 	Character,
 	CharaList,
 	Account,
@@ -21,7 +21,7 @@ uses
   Database;
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase			                                                           CLASS
+//TJanSQLGameDatabase			                                                           CLASS
 //------------------------------------------------------------------------------
 //	What it does-
 //			This is a child class for our database object system. It allows Helios
@@ -32,19 +32,14 @@ uses
 //
 //------------------------------------------------------------------------------
 type
-	TJanSQLDatabase = class(TDatabaseTemplate)
+	TJanSQLGameDatabase = class(TGameDatabaseTemplate)
 	private
 		Database : TjanSQL;
     Parent  : TDatabase;
 	public
 
-		Constructor Create(UseGameDatabase : boolean; AParent : TDatabase); reintroduce; overload;
+		Constructor Create(EnableGameDatabase : boolean; AParent : TDatabase); reintroduce; overload;
 		Destructor Destroy();override;
-
-		function GetAccount(ID    : Cardinal) : TAccount;overload;override;
-		function GetAccount(Name  : string) : TAccount;overload;override;
-
-		procedure RefreshAccountData(var AnAccount : TAccount); override;
 
 		function CreateChara(
 			var ACharacter : TCharacter;
@@ -52,27 +47,17 @@ type
 			NName : string
 		) : boolean;override;
 
-		procedure CreateAccount(
-			const Username : string;
-			const Password : string;
-			const GenderChar : char
-		); override;
-
 		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
 		function LoadChara(CharaID : Cardinal) : TCharacter;override;
 		function GetChara(CharaID : Cardinal) : TCharacter;override;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
 		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;override;
 		function CharaExists(Name : String) : Boolean;overload;override;
-		function AccountExists(UserName : String) : Boolean;override;
 
-		procedure SaveAccount(AnAccount : TAccount);override;
 		procedure SaveChara(AChara : TCharacter);override;
 
-		Function GetBaseHP(ACharacter : TCharacter) : Cardinal;override;
-		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;override;
 	protected
-		procedure Connect(UseGameDatabase : Boolean); override;
+		procedure Connect(); override;
 		procedure Disconnect; override;
 		function SendQuery(
 			const QString : string
@@ -92,7 +77,7 @@ implementation
 
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.Create()                                          CONSTRUCTOR
+//TJanSQLGameDatabase.Create()                                          CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes our connection object.
@@ -102,17 +87,21 @@ implementation
 //		November 13th, 2006 - Tsusai - create inherit comes first.
 //
 //------------------------------------------------------------------------------
-Constructor TJanSQLDatabase.Create(UseGameDatabase : boolean; AParent : TDatabase);
+Constructor TJanSQLGameDatabase.Create(EnableGameDatabase : boolean; AParent : TDatabase);
 begin
 	inherited Create;
   Parent := AParent;
-	Connect(UseGameDatabase);
+  Database := TJanSQL.Create;
+  if EnableGameDatabase then
+  begin
+	  Connect();
+  end;
 end;
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.Destroy()                                          DESTRUCTOR
+//TJanSQLGameDatabase.Destroy()                                          DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys our connection object.
@@ -121,16 +110,17 @@ end;
 //		October 5th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Destructor TJanSQLDatabase.Destroy();
+Destructor TJanSQLGameDatabase.Destroy();
 begin
 	Disconnect;
+  Database.Free;
 	inherited;
 end;
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.Disconnect()                                        Procedure
+//TJanSQLGameDatabase.Disconnect()                                        Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys the TEXT Connection.
@@ -139,20 +129,15 @@ end;
 //		December 21st, 2006 - RaX - Created
 //
 //------------------------------------------------------------------------------
-procedure TJanSQLDatabase.Disconnect;
+procedure TJanSQLGameDatabase.Disconnect;
 begin
-	//This tells it to save all infomation, since everything happens in memory
-  if Assigned(Database) then
-  begin
-	  //SendQuery('COMMIT');
-    Database.Free;
-  end;
+
 end;
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.Connect()                                            Procedure
+//TJanSQLGameDatabase.Connect()                                            Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes the TEXT Connection.
@@ -163,7 +148,7 @@ end;
 //			Also FileExists doesn't work for directories, its DirectoryExists
 //
 //------------------------------------------------------------------------------
-Procedure TJanSQLDatabase.Connect(UseGameDatabase : boolean);
+Procedure TJanSQLGameDatabase.Connect();
 var
 	ResultIdentifier : Integer;
 const ConnectQuery = 'Connect to ''%s''';
@@ -171,34 +156,15 @@ begin
 
 	ResultIdentifier := 0;
 
-	if Not Assigned(Database) then
-	begin
-		Database := TJanSQL.Create;
-	end;
-
-	if Not UseGameDatabase then //Access the Common database
-	begin
-		if DirectoryExists(Parent.Options.CommonHost) then
-		begin
-			ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.CommonHost]));
-		end else
-		begin
-			MainProc.Console('');
-			MainProc.Console('The database at '+Parent.Options.CommonHost+' does not exist!');
-			MainProc.Console('Please ensure that you have correctly configured your ini file');
-		end;
-	end else //Access the Game database
-	begin
-		if DirectoryExists(Parent.Options.GameHost) then
-		begin
-			ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.GameHost]));
-		end else
-		begin
-			MainProc.Console('');
-			MainProc.Console('The database at '+Parent.Options.GameHost+' does not exist!');
-			MainProc.Console('Please ensure that you have correctly configured your ini file');
-		end;
-	end;
+  if DirectoryExists(Parent.Options.GameHost) then
+  begin
+    ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.GameHost]));
+  end else
+  begin
+    MainProc.Console('');
+    MainProc.Console('The database at '+Parent.Options.GameHost+' does not exist!');
+    MainProc.Console('Please ensure that you have correctly configured your ini file');
+  end;
 
 	if ResultIdentifier = 0 then
 	begin
@@ -213,7 +179,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.SendQuery()                                          Function
+//TJanSQLGameDatabase.SendQuery()                                          Function
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sends a query to the jansql object.
@@ -224,7 +190,7 @@ end;
 //			to return anything, only a nil pointer that would cause issues when read.
 //
 //------------------------------------------------------------------------------
-function TJanSQLDatabase.SendQuery(
+function TJanSQLGameDatabase.SendQuery(
 	const QString : string
 ) : Integer;
 begin
@@ -239,7 +205,7 @@ end;//SendQuery
 
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.SetAccount()                                        Procedure
+//TJanSQLGameDatabase.SetAccount()                                        Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Builds a taccount object from a query result.
@@ -274,119 +240,7 @@ end;//SetAccount
 
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.GetAccount()                               OVERLOADED FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//			This function returns a TAccount type and is used for loading up an
-//    account by ID.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
-//													set the data
-//		December 18th, 2006 - Tsusai - Corrected query string syntax
-//		December 27th, 2006 - Tsusai - Reorganized
-//
-//------------------------------------------------------------------------------
-function TJanSQLDatabase.GetAccount(ID: Cardinal) : TAccount;
-var
-	AnAccount   : TAccount;
-	Index       : Integer;
-	QueryResult : TJanRecordSet;
-	ResultIdentifier : Integer;
-begin
-	Result := NIL;
-	//Check Memory
-	if not Assigned(AccountList) then Accountlist := TStringlist.Create;
-	for Index := 0 to AccountList.Count -1 do begin
-		if TAccount(AccountList.Objects[Index]).ID = ID then
-		begin
-			Result := TAccount(AccountList.Objects[Index]);
-			break;
-		end;
-	end;
-
-	if Assigned(Result) then
-	begin
-		RefreshAccountData(Result);
-	end else
-	begin
-		ResultIdentifier := SendQuery(
-		Format('SELECT * FROM accounts WHERE account_id = %d', [ID]));
-		QueryResult := Database.RecordSets[ResultIdentifier];
-		if (QueryResult.recordcount = 1) then begin
-			if Not Assigned(Result) then
-			begin
-				SetAccount(AnAccount,QueryResult);
-				AccountList.AddObject(AnAccount.Username, AnAccount);
-				Result := AnAccount;
-			end;
-		end;
-    SendQuery('RELEASE TABLE accounts');
-		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
-	end;
-end;
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TJanSQLDatabase.GetAccount()                               OVERLOADED FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//			This function returns a TAccount type and is used for loading up an
-//    account by Name.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
-//													set the data
-//		December 18th, 2006 - Tsusai - Corrected query syntax
-//		December 27th, 2006 - Tsusai - Reorganized
-//
-//------------------------------------------------------------------------------
-function TJanSQLDatabase.GetAccount(Name : string) : TAccount;
-var
-	AnAccount   : TAccount;
-	Index       : Integer;
-	QueryResult : TJanRecordSet;
-  ResultIdentifier : Integer;
-begin
-	Result := NIL;
-	//Check Memory
-	if not Assigned(AccountList) then Accountlist := TStringlist.Create;
-	for Index := 0 to AccountList.Count -1 do begin
-		if TAccount(AccountList.Objects[Index]).Username = Name then
-		begin
-			Result := TAccount(AccountList.Objects[Index]);
-			break;
-		end;
-	end;
-
-	if Assigned(Result) then
-	begin
-		RefreshAccountData(Result);
-	end else
-	begin
-		ResultIdentifier := SendQuery('SELECT * FROM accounts WHERE userid = '+Name);
-		QueryResult := Database.RecordSets[ResultIdentifier];
-		if (QueryResult.recordcount = 1) then begin
-			if Not Assigned(Result) then
-			begin
-				SetAccount(AnAccount,QueryResult);
-				AccountList.AddObject(AnAccount.Username, AnAccount);
-				Result := AnAccount;
-			end;
-		end;
-    SendQuery('RELEASE TABLE accounts');
-		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
-	end;
-
-end;
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TJanSQLDatabase.GetChara()                                           FUNCTION
+//TJanSQLGameDatabase.GetChara()                                           FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Doesn't do anything yet.
@@ -395,7 +249,7 @@ end;
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-function TJanSQLDatabase.GetChara(CharaID : Cardinal) : TCharacter;
+function TJanSQLGameDatabase.GetChara(CharaID : Cardinal) : TCharacter;
 var
   CharacterIndex : Integer;
 begin
@@ -421,7 +275,7 @@ end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.GetAccountCharas()                                   FUNCTION
+//TJanSQLGameDatabase.GetAccountCharas()                                   FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Doesn't do anything yet.
@@ -431,7 +285,7 @@ end;
 //		December 18th, 2006 - Tsusai - QueryResult now freed.
 //
 //------------------------------------------------------------------------------
-function TJanSQLDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
+function TJanSQLGameDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
 var
 	QueryResult     : TJanRecordSet;
 	Index           : Integer;
@@ -458,7 +312,7 @@ end;
 //-----------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.CharaExists()                                         FUNCTION
+//TJanSQLGameDatabase.CharaExists()                                         FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Doesn't do anything yet.
@@ -468,7 +322,7 @@ end;
 //		December 18th, 2006 - Tsusai - Result simplified, freed queryresult.
 //
 //------------------------------------------------------------------------------
-function TJanSQLDatabase.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
+function TJanSQLGameDatabase.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
 var
   ResultIdentifier : Integer;
 begin
@@ -489,7 +343,7 @@ end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.CharaExists()                                         FUNCTION
+//TJanSQLGameDatabase.CharaExists()                                         FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Doesn't do anything yet.
@@ -499,7 +353,7 @@ end;
 //		December 18th, 2006 - Tsusai - Simplified Result, freed query result
 //
 //------------------------------------------------------------------------------
-function TJanSQLDatabase.CharaExists(Name : String) : Boolean;
+function TJanSQLGameDatabase.CharaExists(Name : String) : Boolean;
 var
   ResultIdentifier : Integer;
 begin
@@ -519,75 +373,9 @@ begin
 end;
 //------------------------------------------------------------------------------
 
-function TJanSQLDatabase.AccountExists(UserName : String) : Boolean;
-var
-	QueryResult : TJanRecordSet;
-  ResultIdentifier : Integer;
-begin
-	ResultIdentifier :=
-		SendQuery(
-			Format('SELECT userid FROM accounts WHERE userid = ''%s''',[UserName]));
-  QueryResult := Database.RecordSets[ResultIdentifier];
-	Result := (QueryResult.recordcount > 0);
-  SendQuery('RELEASE TABLE accounts');
-	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
-end;
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.SaveAccount()                                     Procedure
-//------------------------------------------------------------------------------
-//	What it does-
-//			Doesn't do anything yet.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-procedure TJanSQLDatabase.SaveAccount(AnAccount: TAccount);
-const
-	BaseString =
-		'UPDATE accounts SET '+
-		'userid=''%s'', ' +
-		'user_pass=''%s'', ' +
-		'lastlogin=''%s'', ' +
-		'sex=''%s'', ' +
-		'logincount=%d, ' +
-		'email=''%s'', ' +
-		'loginkey1=%d, ' +
-		'loginkey2=%d, ' +
-		'connect_until=''%s'', ' +
-		'ban_until=''%s'', ' +
-		'last_ip=''%s'' ' +
-		'WHERE account_id=%d';
-var
-	QueryString : string;
-  ResultIdentifier : Integer;
-begin
-	QueryString :=
-		Format(BaseString,
-			[AnAccount.Username,
-			 AnAccount.Password,
-			 FormatDateTime('yyyy-mm-dd hh:mm:ss',AnAccount.LastLoginTime),
-			 AnAccount.Gender,
-			 AnAccount.LoginCount,
-			 AnAccount.EMail,
-			 AnAccount.LoginKey[1],
-			 AnAccount.LoginKey[2],
-			 FormatDateTime('yyyy-mm-dd hh:mm:ss',AnAccount.ConnectUntil),
-			 FormatDateTime('yyyy-mm-dd hh:mm:ss',AnAccount.Bantime),
-			 AnAccount.LastIP,
-			 AnAccount.ID]
-		);
-	ResultIdentifier := SendQuery(QueryString);
-	SendQuery('SAVE TABLE accounts');
-	SendQuery('RELEASE TABLE accounts');
-  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
-end;
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TJanSQLDatabase.SaveChara()                                        Procedure
+//TJanSQLGameDatabase.SaveChara()                                        Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			saves a TCharacter to the database
@@ -596,7 +384,7 @@ end;
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TJanSQLDatabase.SaveChara(AChara : TCharacter);
+procedure TJanSQLGameDatabase.SaveChara(AChara : TCharacter);
 var
 	QueryString : string;
 	ResultIdentifier : Integer;
@@ -710,7 +498,7 @@ end;//SaveChara
 
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.CreateChara()                                       Function
+//TJanSQLGameDatabase.CreateChara()                                       Function
 //------------------------------------------------------------------------------
 //	What it does-
 //			Creates a character in the database. Also, adds it to the charalist.
@@ -720,7 +508,7 @@ end;//SaveChara
 //		December 18th, 2006 - Tsusai - Fixed query syntax
 //
 //------------------------------------------------------------------------------
-function TJanSQLDatabase.CreateChara(
+function TJanSQLGameDatabase.CreateChara(
 	var ACharacter : TCharacter;
 	AID : Cardinal;
 	NName : string
@@ -764,25 +552,9 @@ begin
 end;//CreateChara
 //------------------------------------------------------------------------------
 
-procedure TJanSQLDatabase.CreateAccount(
-	const Username : string;
-	const Password : string;
-	const GenderChar : char
-);
-var
-  ResultIdentifier : Integer;
-begin
-
-	ResultIdentifier := SendQuery(
-		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(''%s'', ''%s'', ''%s'')',
-		[Username,Password,GenderChar]));
-  SendQuery('SAVE TABLE accounts');
-  SendQuery('RELEASE TABLE accounts');
-  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
-end;
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.LoadChara()                                        FUNCTION
+//TJanSQLGameDatabase.LoadChara()                                        FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Loads a character from the database.
@@ -791,7 +563,7 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function TJanSQLDatabase.LoadChara(CharaID : Cardinal) : TCharacter;
+function TJanSQLGameDatabase.LoadChara(CharaID : Cardinal) : TCharacter;
 var
 	APoint      : TPoint;
 	QueryResult : TJanRecordSet;
@@ -810,11 +582,6 @@ begin
 			CID              := StrToIntDef(QueryResult.Records[0].Fields[0].Value, 0);
 			ID               := StrToIntDef(QueryResult.Records[0].Fields[1].Value, 0);
 			CharaNum         := StrToIntDef(QueryResult.Records[0].Fields[2].Value, 0);
-			if CharaNum < 9 then
-			begin
-				//If its active, then attach to the player.
-				Account.CharaID[CharaNum] := CID;
-			end;
 			Name            :=          QueryResult.Records[0].Fields[3].Value;
 			JID             := StrToIntDef(QueryResult.Records[0].Fields[4].Value, 0);
 			BaseLV          := StrToIntDef(QueryResult.Records[0].Fields[5].Value, 0);
@@ -873,7 +640,7 @@ end;//LoadChara
 
 
 //------------------------------------------------------------------------------
-//TJanSQLDatabase.DeleteChara()                                        FUNCTION
+//TJanSQLGameDatabase.DeleteChara()                                        FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Deletes a character from the database.
@@ -882,7 +649,7 @@ end;//LoadChara
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function TJanSQLDatabase.DeleteChara(var ACharacter : TCharacter) : boolean;
+function TJanSQLGameDatabase.DeleteChara(var ACharacter : TCharacter) : boolean;
 var
   ResultIdentifier : Integer;
 begin
@@ -897,95 +664,5 @@ begin
 end;//DeleteChara
 //------------------------------------------------------------------------------
 
-
-//------------------------------------------------------------------------------
-//TJanSQLDatabase.RefreshAccountData()                                 Procedure
-//------------------------------------------------------------------------------
-//	What it does-
-//			Retrieves all needed data regardless of if its in memory or not.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//		December 27th, 2006 - Tsusai - Remade, now gets all needed account data
-//			regardless
-//
-//------------------------------------------------------------------------------
-procedure TJanSQLDatabase.RefreshAccountData(var AnAccount : TAccount);
-var
-	ResultIdentifier : Integer;
-	QueryResult : TJanRecordSet;
-begin
-	ResultIdentifier := SendQuery(
-		Format('SELECT loginkey1, loginkey2, connect_until, ban_until FROM accounts WHERE account_id=%d',[AnAccount.ID]));
-	QueryResult := Database.RecordSets[ResultIdentifier];
-
-	AnAccount.LoginKey[1]  := StrToIntDef(QueryResult.records[0].fields[0].Value,0);
-	AnAccount.LoginKey[2]  := StrToIntDef(QueryResult.records[0].fields[1].Value,0);
-	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.records[0].fields[2].Value);
-	AnAccount.Bantime := ConvertMySQLTime(QueryResult.records[0].fields[3].Value);
-  SendQuery('RELEASE TABLE accounts');
-	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
-end;//GetAccountBanAndConnectTime
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-//TJanSQLDatabase.GetBaseHP()                                          FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//			Gets a characters basehp.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-Function TJanSQLDatabase.GetBaseHP(ACharacter : TCharacter) : Cardinal;
-var
-	QueryResult : TJanRecordSet;
-  ResultIdentifier : Integer;
-begin
-	ResultIdentifier :=
-		SendQuery(
-		Format('SELECT * FROM hp WHERE level = %d, job = ''%s''',
-			[ACharacter.BaseLV,ACharacter.JID]));
-  QueryResult := Database.RecordSets[ResultIdentifier];
-	if (QueryResult.RecordCount = 1) then
-	begin
-			Result              := StrToInt(QueryResult.Records[0].Fields[0].value);
-	end else Result := 0;
-  SendQuery('RELEASE TABLE hp');
-	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
-end;//GetBaseHP
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TJanSQLDatabase.GetBaseSP()                                          FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//			Gets a characters basesp.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-Function TJanSQLDatabase.GetBaseSP(ACharacter : TCharacter) : Cardinal;
-var
-	QueryResult : TJanRecordSet;
-  ResultIdentifier : Integer;
-begin
-	ResultIdentifier :=
-		SendQuery(
-		Format('SELECT * FROM sp WHERE level = %d, job = ''%s''',
-			[ACharacter.BaseLV,ACharacter.JID]));
-  QueryResult := Database.RecordSets[ResultIdentifier];
-	if (QueryResult.RecordCount = 1) then
-	begin
-			Result              := StrToInt(QueryResult.Records[0].Fields[0].Value);
-	end else Result := 0;
-  SendQuery('RELEASE TABLE sp');
-	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
-end;//GetBaseSP
-//------------------------------------------------------------------------------
-
-{END JanSQLDatabase}
+{END JanSQLGameDatabase}
 end.

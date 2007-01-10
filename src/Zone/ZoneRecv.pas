@@ -88,9 +88,9 @@ uses
 		ValidateIDs[2] := BufferReadCardinal(ReadPts[3], Buffer);
 		Gender         := BufferReadByte    (ReadPts[4], Buffer);
 
-		AnAccount  := MainProc.ZoneServer.ACommonDatabase.AnInterface.GetAccount(AccountID);
+		AnAccount  := MainProc.ZoneServer.Database.CommonData.GetAccount(AccountID);
   //use global game database
-		ACharacter := MainProc.ZoneServer.AGameDatabase.AnInterface.GetChara(CharacterID);
+		ACharacter := MainProc.ZoneServer.Database.GameData.GetChara(CharacterID);
 
 		if Assigned(AnAccount) and Assigned(ACharacter) then
 		begin
