@@ -23,6 +23,7 @@ interface
 		TZoneOptions = class(TMemIniFile)
 		private
 //private variables
+      fID           : Cardinal;
 			fPort		      : Word;
 			fEnabled      : boolean;
 			fWANIP      	: String;
@@ -44,6 +45,7 @@ interface
 		public
       //Server
       property Enabled : boolean read fEnabled;
+      property ID      : Cardinal read fID;
 
 			//Communication
       property Port    : Word read fPort write SetPort;
@@ -90,6 +92,7 @@ implementation
 		begin
 			ReadSectionValues('Server', Section);
 			fEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
+      fID := StrToIntDef(Section.Values['ID'] ,1);
 		end;{Subroutine LoadServer}
     //--------------------------------------------------------------------------
 
@@ -187,6 +190,7 @@ implementation
 	begin
     //Server
 		WriteString('Server','Enabled',BoolToStr(Enabled));
+    WriteString('Server','ID',IntToStr(ID));
 
     //Communication
 		WriteString('Communication','WANIP',WANIP);

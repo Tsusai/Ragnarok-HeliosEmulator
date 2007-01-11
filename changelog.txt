@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 105 -
+[2007/01/11] - RaX - Added ID field to Zone.ini.
+-
+
 - Rev 104 -
 [2007/01/10] - RaX - Notes/Overview : Updated Static Database and added one query for Zone.
 [2007/01/10] - RaX - Added 3 new tables to Static : hp, sp, and statpoints.
