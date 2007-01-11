@@ -42,6 +42,7 @@ type
 		Function GetBaseHP(ACharacter : TCharacter) : Cardinal;override;
 		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;override;
 
+		Function GetMapCanSave(MapName : String) : Boolean;override;
 	protected
 		procedure Connect(); override;
 		function SendQuery(
@@ -223,5 +224,33 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetMapCanSave							                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Checks to see if a map can save or not.
+//
+//	Changes -
+//		January 10th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Function TMySQLStaticDatabase.GetMapCanSave(MapName : String) : Boolean;
+var
+	QueryResult : TMySQLResult;
+	Success			: Boolean;
+begin
+	QueryResult :=
+		SendQuery(
+		Format('SELECT save FROM maps WHERE mapname = ''%s''',
+			[MapName]),TRUE,Success);
+
+	if (QueryResult.RowsCount = 1) then
+	begin
+			Result := StrToBool(QueryResult.FieldValue(0));
+	end else Result := FALSE;
+	QueryResult.Free;
+end;//GetMapCanSave
+//------------------------------------------------------------------------------
 {END MySQLStaticDatabase}
 end.

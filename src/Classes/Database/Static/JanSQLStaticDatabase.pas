@@ -43,6 +43,9 @@ type
 
 		Function GetBaseHP(ACharacter : TCharacter) : Cardinal;override;
 		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;override;
+
+		Function GetMapCanSave(MapName : String) : Boolean;override;
+
 	protected
 		procedure Connect(); override;
 		procedure Disconnect; override;
@@ -246,12 +249,12 @@ begin
 		SendQuery(
 		Format('SELECT * FROM hp WHERE level = %d, job = ''%s''',
 			[ACharacter.BaseLV,ACharacter.JID]));
-  QueryResult := Database.RecordSets[ResultIdentifier];
+	QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
 	begin
 			Result              := StrToInt(QueryResult.Records[0].Fields[0].value);
 	end else Result := 0;
-  SendQuery('RELEASE TABLE hp');
+	SendQuery('RELEASE TABLE hp');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetBaseHP
 //------------------------------------------------------------------------------
@@ -270,21 +273,50 @@ end;//GetBaseHP
 Function TJanSQLStaticDatabase.GetBaseSP(ACharacter : TCharacter) : Cardinal;
 var
 	QueryResult : TJanRecordSet;
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
 begin
 	ResultIdentifier :=
 		SendQuery(
 		Format('SELECT * FROM sp WHERE level = %d, job = ''%s''',
 			[ACharacter.BaseLV,ACharacter.JID]));
-  QueryResult := Database.RecordSets[ResultIdentifier];
+	QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
 	begin
 			Result              := StrToInt(QueryResult.Records[0].Fields[0].Value);
 	end else Result := 0;
-  SendQuery('RELEASE TABLE sp');
+	SendQuery('RELEASE TABLE sp');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetBaseSP
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetMapCanSave							                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Checks to see if a map can save or not.
+//
+//	Changes -
+//		January 10th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Function TJanSQLStaticDatabase.GetMapCanSave(MapName : String) : Boolean;
+var
+	QueryResult : TJanRecordSet;
+	ResultIdentifier : Integer;
+begin
+	ResultIdentifier :=
+		SendQuery(
+		Format('SELECT save FROM maps WHERE mapname = ''%s''',
+			[MapName]));
+	QueryResult := Database.RecordSets[ResultIdentifier];
+	if (QueryResult.RecordCount = 1) then
+	begin
+			Result := StrToBool(QueryResult.Records[0].Fields[0].Value);
+	end else Result := FALSE;
+	SendQuery('RELEASE TABLE maps');
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+end;//GetMapCanSave
+//------------------------------------------------------------------------------
 {END JanSQLStaticDatabase}
 end.

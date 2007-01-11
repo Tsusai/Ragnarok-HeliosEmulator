@@ -13,6 +13,15 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 104 -
+[2007/01/10] - RaX - Notes/Overview : Updated Static Database and added one query for Zone.
+[2007/01/10] - RaX - Added 3 new tables to Static : hp, sp, and statpoints.
+[2007/01/10] - RaX - Added same tables to jansql databases.
+[2007/01/10] - RaX - Updated Static->maps table : removed .gat extensions from mapnames.
+[2007/01/10] - RaX - Added one query to StaticDatabase, GetMapCanSave(MapName). Returns
+ a boolean indicating if a character can save on said map or not.
+-
+
 - Rev 103 -
 [2007/01/10] - RaX - Notes/Overview : Database changes, broke up the database class into 3
  separate database classes (Common, Game, and Static).

@@ -35,6 +35,8 @@ type
 		Function GetBaseHP(ACharacter : TCharacter) : Cardinal;virtual;
 		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;virtual;
 
+		Function GetMapCanSave(MapName : String) : Boolean;virtual;
+
 	protected
 		procedure Connect(); virtual;
 		procedure Disconnect();virtual;
@@ -80,6 +82,11 @@ end;
 Function TStaticDatabaseTemplate.GetBaseSP(ACharacter : TCharacter) : Cardinal;
 begin
 	Result := 0;
+end;
+
+Function TStaticDatabaseTemplate.GetMapCanSave(MapName : String) : Boolean;
+begin
+	Result := FALSE;
 end;
 //------------------------------------------------------------------------------
 {END TStaticDatabaseTemplate}
