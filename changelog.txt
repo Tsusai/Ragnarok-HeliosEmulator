@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 106 -
+[2007/01/11] - RaX - Added headers in JanSQLCommonDatabase and MySQLCommonDatabase.
+-
+
 - Rev 105 -
 [2007/01/11] - RaX - Added ID field to Zone.ini.
 -

@@ -73,11 +73,11 @@ implementation
 		Console,
 		SysUtils,
 		Classes,
-    Math;
+		Math;
 
 
 //------------------------------------------------------------------------------
-//TJanSQLCommonDatabase.Create()                                          CONSTRUCTOR
+//Create()                 								                         CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes our connection object.
@@ -90,18 +90,18 @@ implementation
 Constructor TJanSQLCommonDatabase.Create(EnableCommonDatabase : boolean; AParent : TDatabase);
 begin
 	inherited Create(EnableCommonDatabase);
-  Parent := AParent;
-  Database := TJanSQL.Create;
-  if EnableCommonDatabase then
-  begin
-	  Connect();
-  end;
-end;
+	Parent := AParent;
+	Database := TJanSQL.Create;
+	if EnableCommonDatabase then
+	begin
+		Connect();
+	end;
+end;//Create
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TJanSQLCommonDatabase.Destroy()                                          DESTRUCTOR
+//Destroy()								                                           DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys our connection object.
@@ -112,15 +112,15 @@ end;
 //------------------------------------------------------------------------------
 Destructor TJanSQLCommonDatabase.Destroy();
 begin
-  Database.Free;
+	Database.Free;
 	Disconnect;
 	inherited;
-end;
+end;//Destroy
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TJanSQLCommonDatabase.Disconnect()                                        Procedure
+//Disconnect()								                                        Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys the TEXT Connection.
@@ -132,12 +132,12 @@ end;
 procedure TJanSQLCommonDatabase.Disconnect;
 begin
 
-end;
+end;//Disconnect
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TJanSQLCommonDatabase.Connect()                                            Procedure
+//Connect() 							                                            Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes the TEXT Connection.
@@ -156,30 +156,30 @@ begin
 
 	ResultIdentifier := 0;
 
-  if DirectoryExists(Parent.Options.CommonHost) then
-  begin
-    ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.CommonHost]));
-  end else
-  begin
-    MainProc.Console('');
-    MainProc.Console('The database at '+Parent.Options.CommonHost+' does not exist!');
-    MainProc.Console('Please ensure that you have correctly configured your ini file');
-  end;
+	if DirectoryExists(Parent.Options.CommonHost) then
+	begin
+		ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.CommonHost]));
+	end else
+	begin
+		MainProc.Console('');
+		MainProc.Console('The database at '+Parent.Options.CommonHost+' does not exist!');
+		MainProc.Console('Please ensure that you have correctly configured your ini file');
+	end;
 
 	if ResultIdentifier = 0 then
 	begin
 		MainProc.Console('*****Could not open text database. Error : ' + Database.Error);
 		MainProc.Console(Parent.Options.GameHost);
 	end else
-  begin
-    Database.ReleaseRecordset(ResultIdentifier);
-  end;
-end;
+	begin
+		Database.ReleaseRecordset(ResultIdentifier);
+	end;
+end;//Connect
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TJanSQLCommonDatabase.SendQuery()                                          Function
+//SendQuery()								                                           Function
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sends a query to the jansql object.
@@ -198,14 +198,14 @@ begin
 	if (Result = 0) AND (Database.Error <> 'SELECT FROM: no records') then
 	begin
 		MainProc.Console('Text Query error: ' + QString);
-    MainProc.Console(Database.Error);
+		MainProc.Console(Database.Error);
 	end;
 end;//SendQuery
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TJanSQLCommonDatabase.SetAccount()                                        Procedure
+//SetAccount()								                                        Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Builds a taccount object from a query result.
@@ -240,7 +240,7 @@ end;//SetAccount
 
 
 //------------------------------------------------------------------------------
-//TJanSQLCommonDatabase.GetAccount()                               OVERLOADED FUNCTION
+//GetAccount()							                                OVERLOADED FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			This function returns a TAccount type and is used for loading up an
@@ -288,15 +288,15 @@ begin
 				Result := AnAccount;
 			end;
 		end;
-    SendQuery('RELEASE TABLE accounts');
+		SendQuery('RELEASE TABLE accounts');
 		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 	end;
-end;
+end;//GetAccount
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TJanSQLCommonDatabase.GetAccount()                               OVERLOADED FUNCTION
+//GetAccount()							                               OVERLOADED FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			This function returns a TAccount type and is used for loading up an
@@ -315,7 +315,7 @@ var
 	AnAccount   : TAccount;
 	Index       : Integer;
 	QueryResult : TJanRecordSet;
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
 begin
 	Result := NIL;
 	//Check Memory
@@ -343,30 +343,42 @@ begin
 				Result := AnAccount;
 			end;
 		end;
-    SendQuery('RELEASE TABLE accounts');
+		SendQuery('RELEASE TABLE accounts');
 		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 	end;
 
-end;
+end;//GetAccount
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//AccountExists()						                                					 FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Checks to see if an account exists in the database.
+//
+//	Changes -
+//		January 11th, 2007 - RaX - Created header.
+//
+//------------------------------------------------------------------------------
 function TJanSQLCommonDatabase.AccountExists(UserName : String) : Boolean;
 var
 	QueryResult : TJanRecordSet;
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
 begin
 	ResultIdentifier :=
 		SendQuery(
 			Format('SELECT userid FROM accounts WHERE userid = ''%s''',[UserName]));
-  QueryResult := Database.RecordSets[ResultIdentifier];
+	QueryResult := Database.RecordSets[ResultIdentifier];
 	Result := (QueryResult.recordcount > 0);
-  SendQuery('RELEASE TABLE accounts');
+	SendQuery('RELEASE TABLE accounts');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
-end;
+end;//AccountExists
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
-//TJanSQLCommonDatabase.SaveAccount()                                     Procedure
+//SaveAccount() 									                                    Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Doesn't do anything yet.
@@ -393,7 +405,7 @@ const
 		'WHERE account_id=%d';
 var
 	QueryString : string;
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
 begin
 	QueryString :=
 		Format(BaseString,
@@ -413,31 +425,42 @@ begin
 	ResultIdentifier := SendQuery(QueryString);
 	SendQuery('SAVE TABLE accounts');
 	SendQuery('RELEASE TABLE accounts');
-  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
-end;
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+end;//SaveAccount
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//CreateAccount							                               						FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates an account.
+//
+//	Changes -
+//		January 11th, 2007 - RaX - Created header.
+//
+//------------------------------------------------------------------------------
 procedure TJanSQLCommonDatabase.CreateAccount(
 	const Username : string;
 	const Password : string;
 	const GenderChar : char
 );
 var
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
 begin
 
 	ResultIdentifier := SendQuery(
 		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(''%s'', ''%s'', ''%s'')',
 		[Username,Password,GenderChar]));
-  SendQuery('SAVE TABLE accounts');
-  SendQuery('RELEASE TABLE accounts');
-  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
-end;
+	SendQuery('SAVE TABLE accounts');
+	SendQuery('RELEASE TABLE accounts');
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+end;//CreateAccount
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TJanSQLCommonDatabase.RefreshAccountData()                                 Procedure
+//RefreshAccountData()							                                 Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Retrieves all needed data regardless of if its in memory or not.

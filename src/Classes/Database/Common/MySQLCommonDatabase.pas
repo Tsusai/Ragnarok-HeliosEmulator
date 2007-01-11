@@ -76,7 +76,7 @@ implementation
 		SysUtils,
 		Classes;
 //------------------------------------------------------------------------------
-//TMySQLCommonDatabase.Create()                                          CONSTRUCTOR
+//Create()								                                          CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes our connection object.
@@ -89,17 +89,17 @@ implementation
 Constructor TMySQLCommonDatabase.Create(EnableCommonDatabase : boolean; AParent : TDatabase);
 begin
 	inherited Create(EnableCommonDatabase);
-  Parent := AParent;
-  Connection := TMySQLClient.Create;
-  if EnableCommonDatabase then
-  begin
-	  Connect();
-  end;
-end;
+	Parent := AParent;
+	Connection := TMySQLClient.Create;
+	if EnableCommonDatabase then
+	begin
+		Connect();
+	end;
+end;//Create
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TMySQLCommonDatabase.Destroy()                                          DESTRUCTOR
+//Destroy()								                                          DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys our connection object.
@@ -110,15 +110,15 @@ end;
 //------------------------------------------------------------------------------
 Destructor TMySQLCommonDatabase.Destroy();
 begin
-  
+
 	Disconnect;
-  Connection.Free;
+	Connection.Free;
 	inherited;
-end;
+end;//Destroy
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TMySQLCommonDatabase.Connect()                                            Procedure
+//Connect()								                                            Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes the MySQL Connection.
@@ -145,9 +145,20 @@ begin
 		MainProc.Console('*****Could not connect to mySQL database server.');
 	end;
 
-end;
+end;//Connect
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SendQuery()								                                           Function
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sends a query.
+//
+//	Changes -
+//		January 11th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 function TMySQLCommonDatabase.SendQuery(
 	const QString : string;
 	StoreResult : boolean;
@@ -159,10 +170,12 @@ begin
 	begin
 		MainProc.Console('MySQL Query error: ' + QString);
 	end;
-end;
+end;//SendQuery
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
-//TMySQLCommonDatabase.Disconnect()                                         Procedure
+//Disconnect()							                                         Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys the MySQL Connection.
@@ -177,12 +190,12 @@ begin
 	begin
 		Connection.close;
 	end;
-end;
+end;//Disconnect
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TMySQLCommonDatabase.SetAccount()                                         PROCEDURE
+//SetAccount()							                                          PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Builds a taccount object from a query result.
@@ -212,12 +225,12 @@ begin
 	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.FieldValue(11));
 	AnAccount.LastIP       := QueryResult.FieldValue(12);
 	AnAccount.Bantime      := ConvertMySQLTime(QueryResult.FieldValue(14));
-end;
+end;//SetAccount
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TMySQLCommonDatabase.GetAccount()                               OVERLOADED FUNCTION
+//GetAccount()							                                OVERLOADED FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			This function returns a TAccount type and is used for loading up an
@@ -265,12 +278,12 @@ begin
 		if Assigned(QueryResult) then QueryResult.Free;
 	end;
 
-end;
+end;//GetAccount
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TMySQLCommonDatabase.GetAccount()                               OVERLOADED FUNCTION
+//GetAccount()							                                OVERLOADED FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			This function returns a TAccount type and is used for loading up an
@@ -318,10 +331,20 @@ begin
 		if Assigned(QueryResult) then QueryResult.Free;
 	end;
 
-end;
+end;//GetAccount
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//AccountExists()						                                					 FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Checks to see if an account exists in the database.
+//
+//	Changes -
+//		January 11th, 2007 - RaX - Created header.
+//
+//------------------------------------------------------------------------------
 function TMySQLCommonDatabase.AccountExists(UserName : String) : Boolean;
 var
 	QueryResult : TMySQLResult;
@@ -337,10 +360,12 @@ begin
 	end;
 
 	if Assigned(QueryResult) then QueryResult.Free;
-end;
+end;//AccountExists
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
-//TMySQLCommonDatabase.SaveAccount()                                     Procedure
+//SaveAccount()									                                     Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Doesn't do anything yet.
@@ -385,10 +410,19 @@ begin
 			 AnAccount.ID]
 		);
 	SendQuery(QueryString, FALSE, Success);
-end;
+end;//SaveAccount
 //------------------------------------------------------------------------------
 
-
+//------------------------------------------------------------------------------
+//CreateAccount							                               						FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates an account.
+//
+//	Changes -
+//		January 11th, 2007 - RaX - Created header.
+//
+//------------------------------------------------------------------------------
 procedure TMySQLCommonDatabase.CreateAccount(
 	const Username : string;
 	const Password : string;
@@ -401,11 +435,13 @@ begin
 		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(''%s'', ''%s'', ''%s'')',
 		[Username,Password,GenderChar])
 	,TRUE,Success);
-end;
+
+end;//CreateAccount
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TMySQLCommonDatabase.RefreshAccountData()                                PROCEDURE
+//RefreshAccountData()								                                PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //
@@ -427,8 +463,8 @@ begin
 	AnAccount.LoginKey[2]  := StrToIntDef(QueryResult.FieldValue(1),0);
 	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.FieldValue(2));
 	AnAccount.BanTime := ConvertMySQLTime(QueryResult.FieldValue(3));
-  if Assigned(QueryResult) then QueryResult.Free;
-end;
+	if Assigned(QueryResult) then QueryResult.Free;
+end;//RefreshAccountData
 //------------------------------------------------------------------------------
 
 
