@@ -40,7 +40,9 @@ type
 									EnableCommonDatabase  : Boolean;
                   EnableGameDatabase    : Boolean;
                   EnableStaticDatabase  : Boolean;
-									DatabaseType : Integer = -1
+                  CommonDatabaseType    : Integer = -1;
+                  GameDatabaseType      : Integer = -1;
+                  StaticDatabaseType    : Integer = -1
 		);
 		Destructor  Destroy();override;
 
@@ -77,35 +79,79 @@ Constructor TDatabase.Create(
   EnableCommonDatabase  : Boolean;
   EnableGameDatabase    : Boolean;
   EnableStaticDatabase  : Boolean;
-  DatabaseType          : Integer = -1
+  CommonDatabaseType    : Integer = -1;
+  GameDatabaseType      : Integer = -1;
+  StaticDatabaseType    : Integer = -1
 );
 begin
 	Inherited Create();
   LoadOptions;
 	//Checks to see if the DatabaseType variable has been specified, if not we...
-	if DatabaseType = -1 then
+  //Common
+	if CommonDatabaseType = -1 then
 	begin
-		DatabaseType := Options.DatabaseType;//set it to the value of our config.
+		CommonDatabaseType := Options.CommonType;//set it to the value of our config.
+	end;
+  //Game
+  if GameDatabaseType = -1 then
+	begin
+		GameDatabaseType := Options.GameType;//set it to the value of our config.
+	end;
+  //Static
+  if StaticDatabaseType = -1 then
+	begin
+		StaticDatabaseType := Options.StaticType;//set it to the value of our config.
 	end;
 
 	//Here's where we figure out which database interfaces we want to use.
-	case DatabaseType of
+  //Common
+	case CommonDatabaseType of
 		TEXT ://1    Helios Text Database
 			begin
         CommonData  := TJanSQLCommonDatabase.Create(EnableCommonDatabase, self);
-        GameData    := TJanSQLGameDatabase.Create(EnableGameDatabase, self);
-        StaticData  := TJanSQLStaticDatabase.Create(EnableStaticDatabase, self);
 			end;
 
 		MYSQL://2
 			begin
         CommonData  := TMySQLCommonDatabase.Create(EnableCommonDatabase, self);
-        GameData    := TMySQLGameDatabase.Create(EnableGameDatabase, self);
-        StaticData  := TMySQLStaticDatabase.Create(EnableStaticDatabase, self);
 			end;
 
 		else begin //anything else
-			MainProc.Console('DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
+			MainProc.Console('COMMON DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
+			MainProc.Console('     See ServerOptions.ini for configuration options.');
+		end;
+  end;
+  //Game
+	case GameDatabaseType of
+		TEXT ://1    Helios Text Database
+			begin
+        GameData    := TJanSQLGameDatabase.Create(EnableGameDatabase, self);
+			end;
+
+		MYSQL://2
+			begin
+        GameData    := TMySQLGameDatabase.Create(EnableGameDatabase, self);
+			end;
+
+    else begin //anything else
+			MainProc.Console('GAME DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
+			MainProc.Console('     See ServerOptions.ini for configuration options.');
+		end;
+	end;
+  //Static
+	case StaticDatabaseType of
+		TEXT ://1    Helios Text Database
+			begin
+        StaticData    := TJanSQLStaticDatabase.Create(EnableStaticDatabase, self);
+			end;
+
+		MYSQL://2
+			begin
+        StaticData    := TMySQLStaticDatabase.Create(EnableStaticDatabase, self);
+			end;
+
+    else begin //anything else
+			MainProc.Console('STATIC DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
 			MainProc.Console('     See ServerOptions.ini for configuration options.');
 		end;
 	end;

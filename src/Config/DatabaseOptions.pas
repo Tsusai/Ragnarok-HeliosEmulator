@@ -23,31 +23,30 @@ interface
 		TDatabaseOptions = class(TMemIniFile)
 		private
 //private variables
-			fType         : Integer;
-
+			fCommonType   : Integer;
 			fCommonHost 	: string;
 			fCommonPort 	: integer;
 			fCommonDB   	: string;
 			fCommonUser 	: string;
 			fCommonPass 	: string;
 
+      fGameType     : Integer;
 			fGameHost 		: string;
 			fGamePort 		: integer;
 			fGameDB   		: string;
 			fGameUser 		: string;
 			fGamePass 		: string;
 
+      fStaticType   : Integer;
       fStaticHost 	: string;
 			fStaticPort 	: integer;
 			fStaticDB   	: string;
 			fStaticUser 	: string;
 			fStaticPass 	: string;
 
-			procedure SetType(Value : Integer);
 		public
-			property DatabaseType : Integer read fType write SetType;
-
       //CommonDB
+      property CommonType : Integer read fCommonType write fCommonType;
 			property CommonHost : string Read fCommonHost;
 			property CommonPort : integer read fCommonPort;
 			property CommonDB   : string Read fCommonDB;
@@ -55,6 +54,7 @@ interface
 			property CommonPass : string Read fCommonPass;
 
 			//GameDB
+      property GameType : Integer read fGameType write fGameType;
 			property GameHost : string Read fGameHost;
 			property GamePort : integer read fGamePort;
 			property GameDB   : string Read fGameDB;
@@ -62,6 +62,7 @@ interface
 			property GamePass : string Read fGamePass;
 
 			//StaticDB
+      property StaticType : Integer read fStaticType write fStaticType;
 			property StaticHost : string Read fStaticHost;
 			property StaticPort : integer read fStaticPort;
 			property StaticDB   : string Read fStaticDB;
@@ -96,22 +97,12 @@ implementation
 		Section    : TStringList;
 
     //--------------------------------------------------------------------------
-    //LoadDatabase                                                SUB PROCEDURE
-    //--------------------------------------------------------------------------
-    Procedure LoadDatabase;
-    begin
-      ReadSectionValues('Database', Section);
-      fType := StrToIntDef(Section.Values['Type'],1);
-    end;{LoadDatabase}
-    //--------------------------------------------------------------------------
-
-
-    //--------------------------------------------------------------------------
     //LoadCommon                                                  SUB PROCEDURE
     //--------------------------------------------------------------------------
 		procedure LoadCommon;
 		begin
 			ReadSectionValues('Common', Section);
+      fCommonType := StrToIntDef(Section.Values['Type'], 1);
 			if Section.Values['Host'] = '' then begin
 				Section.Values['Host'] := './save';
 			end;
@@ -135,7 +126,9 @@ implementation
     //--------------------------------------------------------------------------
 		procedure LoadGame;
 		begin
-			ReadSectionValues('Game', Section);
+      ReadSectionValues('Game', Section);
+      fGameType := StrToIntDef(Section.Values['Type'], 1);
+
 			if Section.Values['Host'] = '' then begin
 				Section.Values['Host'] := './save';
 			end;
@@ -158,7 +151,9 @@ implementation
     //--------------------------------------------------------------------------
 		procedure LoadStatic;
 		begin
-			ReadSectionValues('Static', Section);
+      ReadSectionValues('Static', Section);
+      fStaticType := StrToIntDef(Section.Values['Type'], 1);
+
 			if Section.Values['Host'] = '' then begin
 				Section.Values['Host'] := './save';
 			end;
@@ -184,7 +179,6 @@ implementation
     LoadCommon;
     LoadGame;
     LoadStatic;
-    LoadDatabase;
 
 		Section.Free;
 
@@ -205,10 +199,8 @@ implementation
 //------------------------------------------------------------------------------
 	procedure TDatabaseOptions.Save;
 	begin
-    //Database
-		WriteString('Database', 'Type',IntToStr(fType));
-
     //Common
+    WriteString('Common','Type', IntToStr(CommonType));
 		WriteString('Common','Host', CommonHost);
 		WriteString('Common','Port', IntToStr(CommonPort));
 		WriteString('Common','DBName', CommonDB);
@@ -216,6 +208,7 @@ implementation
 		WriteString('Common','Password', CommonPass);
 
     //Game
+    WriteString('Game','Type', IntToStr(GameType));
 		WriteString('Game','Host', GameHost);
 		WriteString('Game','Port', IntToStr(GamePort));
 		WriteString('Game','DBName', GameDB);
@@ -223,6 +216,7 @@ implementation
 		WriteString('Game','Password', GamePass);
 
     //Static
+    WriteString('Static','Type', IntToStr(StaticType));
 		WriteString('Static','Host', StaticHost);
 		WriteString('Static','Port', IntToStr(StaticPort));
 		WriteString('Static','DBName', StaticDB);
@@ -231,25 +225,5 @@ implementation
     
 		UpdateFile;
 	end;{Save}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TServerOptions.SetDatabaseType()                                    PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-	procedure TDatabaseOptions.SetType(Value : Integer);
-	begin
-		if fType <> Value then
-		begin
-			fType := Value;
-			WriteString('Database', 'Type', IntToStr(fType));
-		end;
-	end;{SetType}
 //------------------------------------------------------------------------------
 end{ServerOptions}.

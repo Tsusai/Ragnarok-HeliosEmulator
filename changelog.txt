@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 107 -
+[2007/01/12] - RaX - Modified Database.ini and The Database constructor to support setting
+ each database's type individually. (IE - Common : text Game : SQL Static : Text)
+-
+
 - Rev 106 -
 [2007/01/11] - RaX - Added headers in JanSQLCommonDatabase and MySQLCommonDatabase.
 -
