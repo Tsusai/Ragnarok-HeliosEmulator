@@ -13,6 +13,16 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 108 -
+[2007/01/12] - Tsusai - Notes/Overview: Fixed the outstanding JanSQL character server table
+ errors.  We were trying to save and release a table that was already released due to 
+ LoadChara releasing.
+[2007/01/12] - Tsusai - JanSQLGameDatabase - Overrode the GetChara procedure.  Now takes a
+ flag to release the table after loading of a character. LoadChara NO LONGER releases the
+ table, since GetChara is the only thing that calls it and takes care of it if it needs to.
+[2007/01/12] - Tsusai - LoginServer - Fixed my January 2006 entries...its 2007 now.
+-
+
 - Rev 107 -
 [2007/01/12] - RaX - Modified Database.ini and The Database constructor to support setting
  each database's type individually. (IE - Common : text Game : SQL Static : Text)

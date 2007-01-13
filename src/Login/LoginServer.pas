@@ -384,7 +384,7 @@ end;{OnException}
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
-//		January 3rd, 2006 - Tsusai - Added console messages.
+//		January 3rd, 2007 - Tsusai - Added console messages.
 //
 //------------------------------------------------------------------------------
 	procedure TLoginServer.ValidateLogin(
@@ -507,7 +507,7 @@ end;{OnException}
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
-//		January 3rd, 2006 - Tsusai - Added console messages.
+//		January 3rd, 2007 - Tsusai - Added console messages.
 //
 //------------------------------------------------------------------------------
 	procedure TLoginServer.ParseLogin(AClient: TIdContext);

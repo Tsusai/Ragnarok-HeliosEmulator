@@ -18,7 +18,7 @@ uses
 	CharaList,
 	Account,
 	janSQL,
-  Database;
+	Database;
 
 //------------------------------------------------------------------------------
 //TJanSQLGameDatabase			                                                           CLASS
@@ -35,7 +35,7 @@ type
 	TJanSQLGameDatabase = class(TGameDatabaseTemplate)
 	private
 		Database : TjanSQL;
-    Parent  : TDatabase;
+		Parent  : TDatabase;
 	public
 
 		Constructor Create(EnableGameDatabase : boolean; AParent : TDatabase); reintroduce; overload;
@@ -48,8 +48,16 @@ type
 		) : boolean;override;
 
 		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
-		function LoadChara(CharaID : Cardinal) : TCharacter;override;
-		function GetChara(CharaID : Cardinal) : TCharacter;override;
+
+		function LoadChara(
+			CharaID : Cardinal
+		) : TCharacter;override;
+
+		function GetChara(
+			CharaID : Cardinal;
+			ReleaseTable : boolean = true
+		) : TCharacter;reintroduce;
+
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
 		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;override;
 		function CharaExists(Name : String) : Boolean;overload;override;
@@ -73,7 +81,7 @@ implementation
 		Console,
 		SysUtils,
 		Classes,
-    Math;
+		Math;
 
 
 //------------------------------------------------------------------------------
@@ -90,12 +98,12 @@ implementation
 Constructor TJanSQLGameDatabase.Create(EnableGameDatabase : boolean; AParent : TDatabase);
 begin
 	inherited Create;
-  Parent := AParent;
-  Database := TJanSQL.Create;
-  if EnableGameDatabase then
-  begin
-	  Connect();
-  end;
+	Parent := AParent;
+	Database := TJanSQL.Create;
+	if EnableGameDatabase then
+	begin
+		Connect();
+	end;
 end;
 //------------------------------------------------------------------------------
 
@@ -113,7 +121,7 @@ end;
 Destructor TJanSQLGameDatabase.Destroy();
 begin
 	Disconnect;
-  Database.Free;
+	Database.Free;
 	inherited;
 end;
 //------------------------------------------------------------------------------
@@ -156,24 +164,24 @@ begin
 
 	ResultIdentifier := 0;
 
-  if DirectoryExists(Parent.Options.GameHost) then
-  begin
-    ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.GameHost]));
-  end else
-  begin
-    MainProc.Console('');
-    MainProc.Console('The database at '+Parent.Options.GameHost+' does not exist!');
-    MainProc.Console('Please ensure that you have correctly configured your ini file');
-  end;
+	if DirectoryExists(Parent.Options.GameHost) then
+	begin
+		ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.GameHost]));
+	end else
+	begin
+		MainProc.Console('');
+		MainProc.Console('The database at '+Parent.Options.GameHost+' does not exist!');
+		MainProc.Console('Please ensure that you have correctly configured your ini file');
+	end;
 
 	if ResultIdentifier = 0 then
 	begin
 		MainProc.Console('*****Could not open text database. Error : ' + Database.Error);
 		MainProc.Console(Parent.Options.GameHost);
 	end else
-  begin
-    Database.ReleaseRecordset(ResultIdentifier);
-  end;
+	begin
+		Database.ReleaseRecordset(ResultIdentifier);
+	end;
 end;
 //------------------------------------------------------------------------------
 
@@ -197,8 +205,8 @@ begin
 	Result := Database.SQLDirect(QString);
 	if (Result = 0) AND (Database.Error <> 'SELECT FROM: no records') then
 	begin
-		MainProc.Console('Text Query error: ' + QString);
-    MainProc.Console(Database.Error);
+		MainProc.Console('Text Query Error: ' + QString);
+			MainProc.Console(Database.Error);
 	end;
 end;//SendQuery
 //------------------------------------------------------------------------------
@@ -247,14 +255,19 @@ end;//SetAccount
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		January 12th, 2007 - Tsusai - Now recieves an option to clear the table
+//			or not
 //
 //------------------------------------------------------------------------------
-function TJanSQLGameDatabase.GetChara(CharaID : Cardinal) : TCharacter;
+function TJanSQLGameDatabase.GetChara(
+	CharaID : Cardinal;
+	ReleaseTable : boolean = true
+) : TCharacter;
 var
-  CharacterIndex : Integer;
+	CharacterIndex : Integer;
 begin
 	Result := NIL;
-  CharacterIndex := CharacterList.IndexOf(CharaID);
+	CharacterIndex := CharacterList.IndexOf(CharaID);
 	if CharacterIndex > -1 then
 	begin
 		if CharacterList.Items[CharacterIndex].CID = CharaID then
@@ -266,6 +279,10 @@ begin
 	if Result = NIL then
 	begin
 		Result := LoadChara(CharaID);
+		if ReleaseTable then
+		begin
+			SendQuery('RELEASE TABLE characters');
+		end;
 		if Assigned(Result) then
 		begin
 			CharacterList.Add(Result);
@@ -289,25 +306,27 @@ function TJanSQLGameDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacter
 var
 	QueryResult     : TJanRecordSet;
 	Index           : Integer;
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
 begin
 	Result := TCharacterList.Create(FALSE);
 	ResultIdentifier := SendQuery(
 		Format('SELECT char_id FROM characters WHERE account_id = %d and char_num < 9',
 		[AccountID]));
-  if ResultIdentifier > 0 then
-  begin
-    QueryResult := Database.RecordSets[ResultIdentifier];
-	  if QueryResult.RecordCount > 0 then
-    begin
-      for Index := 0 to QueryResult.RecordCount - 1 do
-      begin
-			  Result.Add(GetChara(StrToInt(QueryResult.Records[Index].Fields[0].value)));
-      end;
-    end;
-    SendQuery('RELEASE TABLE characters');
- 	  Database.ReleaseRecordset(ResultIdentifier);
-  end;
+	if ResultIdentifier > 0 then
+	begin
+		QueryResult := Database.RecordSets[ResultIdentifier];
+		if QueryResult.RecordCount > 0 then
+		begin
+			for Index := 0 to QueryResult.RecordCount - 1 do
+			begin
+				//Call GetChara and tell it not to release the table for
+				//every stinking character.
+				Result.Add(GetChara(StrToInt(QueryResult.Records[Index].Fields[0].value),false));
+			end;
+		end;
+	SendQuery('RELEASE TABLE characters');
+	Database.ReleaseRecordset(ResultIdentifier);
+	end;
 end;
 //-----------------------------------------------------------------------------
 
@@ -324,21 +343,21 @@ end;
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
 var
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
 begin
-  Result := FALSE;
+	Result := FALSE;
 	ResultIdentifier :=
 			SendQuery(
 			Format('SELECT char_id FROM characters WHERE char_num = %d and account_id = %d',[Slot, AccountID]));
-  if ResultIdentifier > 0 then
-  begin
-    if Database.RecordSets[ResultIdentifier].recordcount > 0 then
-    begin
-      Result := TRUE;
-    end;
-    SendQuery('RELEASE TABLE characters');
-    Database.ReleaseRecordset(ResultIdentifier);
-  end;
+	if ResultIdentifier > 0 then
+	begin
+		if Database.RecordSets[ResultIdentifier].recordcount > 0 then
+		begin
+			Result := TRUE;
+		end;
+		SendQuery('RELEASE TABLE characters');
+	Database.ReleaseRecordset(ResultIdentifier);
+	end;
 end;
 //------------------------------------------------------------------------------
 
@@ -355,21 +374,21 @@ end;
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.CharaExists(Name : String) : Boolean;
 var
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
 begin
-  Result := FALSE;
+	Result := FALSE;
 	ResultIdentifier :=
 			SendQuery(
 			Format('SELECT char_id FROM characters WHERE name = ''%s''',[Name]));
-  if ResultIdentifier > 0 then
-  begin
-    if Database.RecordSets[ResultIdentifier].recordcount > 0 then
-    begin
-      Result := TRUE;
-    end;
-    SendQuery('RELEASE TABLE characters');
-    Database.ReleaseRecordset(ResultIdentifier);
-  end;
+	if ResultIdentifier > 0 then
+	begin
+		if Database.RecordSets[ResultIdentifier].recordcount > 0 then
+		begin
+			Result := TRUE;
+		end;
+		SendQuery('RELEASE TABLE characters');
+		Database.ReleaseRecordset(ResultIdentifier);
+	end;
 end;
 //------------------------------------------------------------------------------
 
@@ -490,9 +509,9 @@ begin
 			]);
 	end;
 	ResultIdentifier := SendQuery(QueryString);
-  SendQuery('SAVE TABLE characters');
-  SendQuery('RELEASE TABLE characters');
-  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+	SendQuery('SAVE TABLE characters');
+	SendQuery('RELEASE TABLE characters');
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//SaveChara
 //------------------------------------------------------------------------------
 
@@ -515,40 +534,44 @@ function TJanSQLGameDatabase.CreateChara(
 ) : boolean;
 var
 	QueryResult : TJanRecordSet;
-  ResultIdentifier : Integer;
-  CharacterID : Integer;
-  Index : Integer;
+	ResultIdentifier : Integer;
+	CharacterID : Integer;
+	Index : Integer;
 begin
 	Result := FALSE;
-  ResultIdentifier := SendQuery('SELECT char_id FROM characters');
-  CharacterID := 1;
-  if ResultIdentifier > 0 then
-  begin
-    QueryResult := Database.RecordSets[ResultIdentifier];
-    for Index := 0 to QueryResult.recordcount - 1 do
-    begin
-      CharacterID := Max(CharacterID, QueryResult.records[Index].fields[0].value);
-    end;
-    inc(CharacterID);
-  end;
+	ResultIdentifier := SendQuery('SELECT char_id FROM characters');
+	CharacterID := 1;
+	if ResultIdentifier > 0 then
+	begin
+		QueryResult := Database.RecordSets[ResultIdentifier];
+		for Index := 0 to QueryResult.recordcount - 1 do
+		begin
+			CharacterID := Max(CharacterID, QueryResult.records[Index].fields[0].value);
+		end;
+		inc(CharacterID);
+	end;
 
 	ResultIdentifier := SendQuery(
 		Format('INSERT INTO characters (char_id, account_id, name) VALUES(%d, %d, ''%s'')',
 		[CharacterID, AID,NName]));
-  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+
+	//Save Now, GetChara procedure will release the table.
+	SendQuery('SAVE TABLE characters');
+
 	ResultIdentifier :=
 		SendQuery(
 		Format('SELECT char_id FROM characters WHERE account_id = %d AND name = ''%s''',
 		[AID,NName]));
-  QueryResult := Database.RecordSets[ResultIdentifier];
+	QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
 	begin
+		//Call GetChara, which will release the table.
 		ACharacter := GetChara(StrToInt(QueryResult.Records[0].Fields[0].value));
 		Result := Assigned(ACharacter);
 	end;
-  SendQuery('SAVE TABLE characters');
-  SendQuery('RELEASE TABLE characters');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+
 end;//CreateChara
 //------------------------------------------------------------------------------
 
@@ -563,17 +586,19 @@ end;//CreateChara
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function TJanSQLGameDatabase.LoadChara(CharaID : Cardinal) : TCharacter;
+function TJanSQLGameDatabase.LoadChara(
+	CharaID : Cardinal
+) : TCharacter;
 var
 	APoint      : TPoint;
 	QueryResult : TJanRecordSet;
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
 begin
 	ResultIdentifier :=
 		SendQuery(
 		Format('SELECT * FROM characters WHERE char_id = %d',
 			[CharaID]));
-  QueryResult := Database.RecordSets[ResultIdentifier];
+	QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) and (QueryResult.fieldcount = 48) then
 	begin
 		with Result do
@@ -633,7 +658,6 @@ begin
 			DataChanged := false;
 		end;
 	end else Result := nil;
-  SendQuery('RELEASE TABLE characters');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//LoadChara
 //------------------------------------------------------------------------------
@@ -651,16 +675,16 @@ end;//LoadChara
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.DeleteChara(var ACharacter : TCharacter) : boolean;
 var
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
 begin
 	ResultIdentifier := SendQuery(
 		Format('DELETE FROM characters WHERE char_id=%d',[ACharacter.CID]));
 
 		CharacterList.Delete(CharacterList.IndexOf(ACharacter.CID));
-    Result := TRUE;
-    SendQuery('SAVE TABLE characters');
-    SendQuery('RELEASE TABLE characters');
-  if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+		Result := TRUE;
+		SendQuery('SAVE TABLE characters');
+		SendQuery('RELEASE TABLE characters');
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//DeleteChara
 //------------------------------------------------------------------------------
 
