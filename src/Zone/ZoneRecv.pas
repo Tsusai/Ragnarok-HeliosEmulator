@@ -90,7 +90,7 @@ uses
 
 		AnAccount  := MainProc.ZoneServer.Database.CommonData.GetAccount(AccountID);
   //use global game database
-		ACharacter := MainProc.ZoneServer.Database.GameData.GetChara(CharacterID);
+		ACharacter := MainProc.ZoneServer.Database.GameData.GetChara(CharacterID,true);
 
 		if Assigned(AnAccount) and Assigned(ACharacter) then
 		begin

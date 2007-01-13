@@ -16,56 +16,62 @@ unit CharacterServer;
 
 interface
 uses
-  IdTCPServer,
-  IdContext,
+	IdTCPServer,
+	IdContext,
 	CommClient,
+	Classes,
 	SysUtils,
-  PacketTypes,
-  Database,
-  CharaOptions;
+	PacketTypes,
+	Database,
+	CharaOptions;
+
 type
 //------------------------------------------------------------------------------
 //TCharacterServer                                                        CLASS
 //------------------------------------------------------------------------------
 	TCharacterServer = class
-  protected
-  //
+	protected
+	//
 	private
 		fWANPort           : Word;
-    TCPServer       : TIdTCPServer;
+
+		fZoneServerList : TStringList;
+
+		TCPServer       : TIdTCPServer;
 		CharaToLoginClient : TInterClient;
 
-    Database : TDatabase;
+		Database : TDatabase;
 
-    Procedure OnException(AConnection: TIdContext;
-      AException: Exception);
+		Procedure OnDisconnect(AConnection: TIdContext);
+		Procedure OnException(AConnection: TIdContext;
+			AException: Exception);
 
 		procedure LoginClientOnConnect(Sender : TObject);
 		procedure LoginClientRead(AClient : TInterClient);
 
-    procedure ParseCharaServ(AClient : TIdContext);
-    procedure SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
-    procedure SendCharaToMap();
-    procedure CreateChara(AClient : TIdContext; var ABuffer : TBuffer);
-    procedure DeleteChara(AClient : TIdContext; var ABuffer : Tbuffer);
+		procedure ParseCharaServ(AClient : TIdContext);
+		procedure SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
+		procedure SendCharaToMap(AClient : TIdContext; var ABuffer : TBuffer);
+		procedure CreateChara(AClient : TIdContext; var ABuffer : TBuffer);
+		procedure DeleteChara(AClient : TIdContext; var ABuffer : Tbuffer);
 
-    Procedure SetPort(Value : Word);
-    Function GetStarted() : Boolean;
-    Procedure LoadOptions;
+		Procedure SetPort(Value : Word);
+		Function GetStarted() : Boolean;
+		Procedure LoadOptions;
 	public
 		ServerName    : String;
 		OnlineUsers   : Word;
 		WANIP : string;
 		LANIP : string;
 
-    Options : TCharaOptions;
+		Options : TCharaOptions;
 
 		property WANPort : Word read fWANPort write SetPort;
-    property Started : Boolean read GetStarted;
+		property Started : Boolean read GetStarted;
 		Constructor Create();
-    Destructor  Destroy();Override;
-    Procedure   Start(Reload : Boolean = FALSE);
-    Procedure   Stop();
+		Destructor  Destroy();Override;
+		Procedure   Start(Reload : Boolean = FALSE);
+		Procedure   Stop();
 	end;
 //------------------------------------------------------------------------------
 
@@ -80,6 +86,7 @@ uses
 	GameConstants,
 	Globals,
 	TCPServerRoutines,
+	ZoneServerInfo,
 	//3rd
 	StrUtils,
 	CharaList,
@@ -88,8 +95,8 @@ uses
 const
 	INVALIDNAME = 0;
 	INVALIDMISC = 2;
-	DELETEBADCHAR = 0;
-	DELETEBADEMAIL = 1;
+	DELETEBADCHAR = 1;
+	DELETEBADEMAIL = 0;
 
 //------------------------------------------------------------------------------
 //Create  ()                                                        CONSTRUCTOR
@@ -103,20 +110,21 @@ const
 //------------------------------------------------------------------------------
 Constructor TCharacterServer.Create;
 begin
-  LoadOptions;
+	LoadOptions;
 
-  Database := TDatabase.Create(TRUE,TRUE,FALSE);
+	Database := TDatabase.Create(TRUE,TRUE,FALSE);
 
-  TCPServer := TIdTCPServer.Create;
-	TCPServer.OnExecute   := ParseCharaServ;
-	TCPServer.OnException := OnException;
+	TCPServer := TIdTCPServer.Create;
+	TCPServer.OnExecute    := ParseCharaServ;
+	TCPServer.OnException  := OnException;
+	TCPServer.OnDisconnect := OnDisconnect;
 
 	CharaToLoginClient := TInterClient.Create;
 
 	CharaToLoginClient.OnConnected := LoginClientOnConnect;
 	CharaToLoginClient.OnRecieve := LoginClientRead;
 
-  ServerName := Options.ServerName;
+	ServerName := Options.ServerName;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -133,13 +141,13 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TCharacterServer.Destroy;
 begin
-  Database.Free;
+	Database.Free;
 
-  TCPServer.Free;
+	TCPServer.Free;
 	CharaToLoginClient.Free;
 
-  Options.Save;
-  Options.Free;
+	Options.Save;
+	Options.Free;
 end;{Destroy}
 //------------------------------------------------------------------------------
 
@@ -178,10 +186,10 @@ end;{OnException}
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.Start(Reload : Boolean = FALSE);
 begin
-  if Reload then
-  begin
-    LoadOptions;
-  end;
+	if Reload then
+	begin
+		LoadOptions;
+	end;
 	WANPort := Options.Port;
 	ActivateServer('Character',TCPServer);
 	WANIP := Options.WANIP;
@@ -235,7 +243,7 @@ end;{LoginClientOnConnect}
 //		 Reads information sent from the login server.
 //
 //	Changes -
-//		January 3rd, 2006 - Tsusai - Added console messages.
+//		January 3rd, 2007 - Tsusai - Added console messages.
 //		January 4th, 2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
@@ -283,7 +291,7 @@ end;{LoginClientRead}
 //		December 17th, 2006 - RaX - Created Header.
 //    July 6th, 2006 - Tsusai - Started work on changing dummy procedure to real
 //      procedure.
-//		January 3rd, 2006 - Tsusai - Added console messages.
+//		January 3rd, 2007 - Tsusai - Added console messages.
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
@@ -296,7 +304,7 @@ var
 	Count       : Byte;
 	PacketSize  : Word;
 	Ver         : Byte;
-  ACharaList  : TCharacterList;
+	ACharaList  : TCharacterList;
 begin
 	Count     := 0;
 	Ver       := 24;
@@ -318,8 +326,8 @@ begin
 				for Index := 0 to ACharaList.Count-1 do
 				begin
 					ACharacter := ACharaList.Items[Index];
-          ACharacter.Account := AnAccount;
-          AnAccount.CharaID[ACharacter.CharaNum] := ACharacter.CID;
+					ACharacter.Account := AnAccount;
+					AnAccount.CharaID[ACharacter.CharaNum] := ACharacter.CID;
 					if not (ACharacter = NIL) then
 					begin
 						with ACharacter do
@@ -370,7 +378,7 @@ begin
 						end;
 					end;
 				end;
-        //size is (24 + (character count * 106))
+				//size is (24 + (character count * 106))
 				PacketSize := (Ver + (Count * 106));
 				WriteBufferWord(0,$006b,ReplyBuffer); //header
 				WriteBufferWord(2,PacketSize,ReplyBuffer);
@@ -403,10 +411,47 @@ end; {SendCharas}
 //		December 17th, 2006 - RaX - Created Header. - Stubbed for later use.
 //
 //------------------------------------------------------------------------------
-procedure TCharacterServer.SendCharaToMap();
+procedure TCharacterServer.SendCharaToMap(
+	AClient : TIdContext;
+	var ABuffer : TBuffer
+);
+var
+	AnAccount : TAccount;
+	CharaIdx : byte;
+	ACharacter : TCharacter;
+	OutBuffer : TBuffer;
 begin
+	if AClient.Data = nil then Exit;
+	if not (AClient.Data is TThreadLink) then exit;
+	AnAccount := TThreadLink(AClient.Data).AccountLink;
 
-end;{SendToMap}
+	//Tsusai: Possible Check for online characters here...but
+	//they should be terminated when logging in.
+
+	CharaIdx := BufferReadByte(2, ABuffer);
+
+	if AnAccount.CharaID[CharaIdx] <> 0 then
+	begin
+		{ACharacter := Database.GameData.GetChara(AnAccount.CharaID[CharaIdx],true);
+		ACharacter.ClientVersion := -1;
+		//query the map database for the map data (send name, check nosave flag
+		//do NoSave check here
+		Database.GameData.SaveChara(ACharacter);
+		//get zone ID for the map.
+		//get the zone info from that
+
+		WriteBufferWord(0, $0071, OutBuffer);
+		WriteBufferCardinal(2, ACharacter.CID, OutBuffer);
+		WriteBufferString(4, ACharacter.Map + '.rsw', 24, OutBuffer);
+
+//		if UseLAN(APlayer.IP) then WFIFOL(SendBuffer, 22, LAN_ADDR)
+//		else WFIFOL(SendBuffer, 22, WAN_ADDR);
+//		WFIFOW(SendBuffer, 26, sv3port);
+		SendBuffer(AClient,OutBuffer, 28); }
+
+	end;
+
+end;{SendCharaToMap}
 //------------------------------------------------------------------------------
 
 
@@ -421,6 +466,7 @@ end;{SendToMap}
 //		December 17th, 2006 - RaX - Created Header.
 //    July      6th, 2006 - Tsusai - Started work on changing dummy procedure to
 //      real procedure.
+//		January 12th, 2007 - Tsusai - Fixed Stat point display.
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.CreateChara(
@@ -500,55 +546,55 @@ begin
 			begin
 				ACharacter.Name           := CharaName;
 				ACharacter.CharaNum       := SlotNum;
-        ACharacter.Account        := Account;
-        if ACharacter.CharaNum < 9 then
-			  begin
-				  //If its active, then attach to the player.
-				  ACharacter.Account.CharaID[ACharacter.CharaNum] := ACharacter.CID;
-			  end;
-        ACharacter.BaseLV         := 1;
-        ACharacter.JobLV          := 1;
-        ACharacter.JID            := 0;
-        ACharacter.Speed          := 50;
-        ACharacter.Zeny           := 0;
+				ACharacter.Account        := Account;
+				if ACharacter.CharaNum < 9 then
+				begin
+					//If its active, then attach to the player.
+					ACharacter.Account.CharaID[ACharacter.CharaNum] := ACharacter.CID;
+				end;
+				ACharacter.BaseLV         := 1;
+				ACharacter.JobLV          := 1;
+				ACharacter.JID            := 0;
+				ACharacter.Speed          := 50;
+				ACharacter.Zeny           := 0;
 				ACharacter.ParamBase[STR] := StatPoints[0];
 				ACharacter.ParamBase[AGI] := StatPoints[1];
 				ACharacter.ParamBase[VIT] := StatPoints[2];
 				ACharacter.ParamBase[INT] := StatPoints[3];
 				ACharacter.ParamBase[DEX] := StatPoints[4];
 				ACharacter.ParamBase[LUK] := StatPoints[5];
-        ACharacter.MaxHP          := 0;//need to calculate HP/SP values here.
-        ACharacter.MaxSP          := 0;
-        ACharacter.HP             := 0;
-        ACharacter.SP             := 0;
-        ACharacter.StatusPts      := 0;
-        ACharacter.SkillPts       := 0;
-        ACharacter.Option         := 0;
-        ACharacter.Karma          := 0;
-        ACharacter.Manner         := 0;
-        ACharacter.PartyID        := 0;
-        ACharacter.GuildID        := 0;
-        ACharacter.PetID          := 0;
-        ACharacter.Hair           := HairStyle;
-        ACharacter.HairColor      := HairColor;
-        ACharacter.ClothesColor   := 0;
-        ACharacter.Weapon         := 0;
-        ACharacter.Shield         := 0;
-        ACharacter.HeadTop        := 0;
-        ACharacter.HeadMid        := 0;
-        ACharacter.HeadBottom     := 0;
-        ACharacter.Map            := 'prontera';
-        //ACharacter.Point.X        := 156;
-        //ACharacter.Point.Y        := 180;
-        ACharacter.SaveMap        := 'prontera';
-        //ACharacter.SavePoint.X    := 156;
-        //ACharacter.SavePoint.Y    := 180;
-        ACharacter.PartnerID      := 0;
-        ACharacter.ParentID1      := 0;
-        ACharacter.ParentID2      := 0;
-        ACharacter.BabyID         := 0;
-        ACharacter.Online         := 0;
-        ACharacter.HomunID        := 0;
+				ACharacter.MaxHP          := 0;//need to calculate HP/SP values here.
+				ACharacter.MaxSP          := 0;
+				ACharacter.HP             := 0;
+				ACharacter.SP             := 0;
+				ACharacter.StatusPts      := 0;
+				ACharacter.SkillPts       := 0;
+				ACharacter.Option         := 0;
+				ACharacter.Karma          := 0;
+				ACharacter.Manner         := 0;
+				ACharacter.PartyID        := 0;
+				ACharacter.GuildID        := 0;
+				ACharacter.PetID          := 0;
+				ACharacter.Hair           := HairStyle;
+				ACharacter.HairColor      := HairColor;
+				ACharacter.ClothesColor   := 0;
+				ACharacter.Weapon         := 0;
+				ACharacter.Shield         := 0;
+				ACharacter.HeadTop        := 0;
+				ACharacter.HeadMid        := 0;
+				ACharacter.HeadBottom     := 0;
+				ACharacter.Map            := 'prontera';
+				//ACharacter.Point.X        := 156;
+				//ACharacter.Point.Y        := 180;
+				ACharacter.SaveMap        := 'prontera';
+				//ACharacter.SavePoint.X    := 156;
+				//ACharacter.SavePoint.Y    := 180;
+				ACharacter.PartnerID      := 0;
+				ACharacter.ParentID1      := 0;
+				ACharacter.ParentID2      := 0;
+				ACharacter.BabyID         := 0;
+				ACharacter.Online         := 0;
+				ACharacter.HomunID        := 0;
 
 				//INSERT ANY OTHER CREATION CHANGES HERE!
 				Database.GameData.SaveChara(ACharacter);
@@ -582,10 +628,14 @@ begin
 					WriteBufferWord(2+ 70, HairColor,ReplyBuffer);
 					WriteBufferWord(2+ 72, ClothesColor,ReplyBuffer);
 					WriteBufferString(2+ 74, Name, 24,ReplyBuffer);
-					for idx := STR to LUK do
-					begin
-						WriteBufferByte(2+98+idx, ParamBase[idx],ReplyBuffer);
-					end;
+
+					WriteBufferByte(2+98,  ParamBase[STR],ReplyBuffer);
+					WriteBufferByte(2+99,  ParamBase[AGI],ReplyBuffer);
+					WriteBufferByte(2+100, ParamBase[VIT],ReplyBuffer);
+					WriteBufferByte(2+101, ParamBase[INT],ReplyBuffer);
+					WriteBufferByte(2+102, ParamBase[DEX],ReplyBuffer);
+					WriteBufferByte(2+103, ParamBase[LUK],ReplyBuffer);
+
 					WriteBufferByte(2+104, CharaNum,ReplyBuffer);
 					WriteBufferByte(2+105, 0,ReplyBuffer);
 				end;
@@ -620,7 +670,7 @@ var
 	AnAccount   : TAccount;
 	ACharacter  : TCharacter;
 	ReplyBuffer : TBuffer;
-  CharacterIndex : Integer;
+	CharacterIndex : Integer;
 
 	procedure DeleteCharaError(const Error : byte);
 	begin
@@ -633,29 +683,29 @@ begin
 	CharacterID := BufferReadCardinal(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TThreadLink(AClient.Data).AccountLink;
-	ACharacter := Database.GameData.GetChara(CharacterID);
+	ACharacter := Database.GameData.GetChara(CharacterID,true);
 
-  if Assigned(ACharacter) then
-  begin
-    if ACharacter.Account = AnAccount then
-    begin
-      if AnAccount.EMail = EmailOrID then
-	    begin
-        CharacterIndex := CharacterList.IndexOf(CharacterID);
-			  if CharacterIndex > -1 then
-			  begin
-				  if CharacterList.Items[CharacterIndex].CID = ACharacter.CID then
-				  begin
-					  if Database.GameData.DeleteChara(ACharacter) then
-					  begin
-						  WriteBufferWord(0, $006f, ReplyBuffer);
-						  SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));
-					  end else DeleteCharaError(DELETEBADCHAR);
-				  end else DeleteCharaError(DELETEBADCHAR);
-			  end else DeleteCharaError(DELETEBADCHAR);
-      end else DeleteCharaError(DELETEBADEMAIL);
-    end else DeleteCharaError(DELETEBADCHAR);
-  end else DeleteCharaError(DELETEBADCHAR);
+	if Assigned(ACharacter) then
+	begin
+		if ACharacter.Account = AnAccount then
+		begin
+			if AnAccount.EMail = EmailOrID then
+			begin
+				CharacterIndex := CharacterList.IndexOf(CharacterID);
+				if CharacterIndex > -1 then
+				begin
+					if CharacterList.Items[CharacterIndex].CID = ACharacter.CID then
+					begin
+						if Database.GameData.DeleteChara(ACharacter) then
+						begin
+							WriteBufferWord(0, $006f, ReplyBuffer);
+							SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));
+						end else DeleteCharaError(DELETEBADCHAR);
+					end else DeleteCharaError(DELETEBADCHAR);
+				end else DeleteCharaError(DELETEBADCHAR);
+			end else DeleteCharaError(DELETEBADEMAIL);
+		end else DeleteCharaError(DELETEBADCHAR);
+	end else DeleteCharaError(DELETEBADCHAR);
 end;{DeleteChara}
 //------------------------------------------------------------------------------
 
@@ -678,45 +728,42 @@ var
 	ABuffer       : TBuffer;
 	PacketID      : Word;
 begin
-	if AClient.Connection.Connected then
+	RecvBuffer(AClient,ABuffer,2);
+	PacketID := BufferReadWord(0, ABuffer);
+	if (AClient.Data = nil) or not (AClient.Data is TThreadLink) then
 	begin
-		RecvBuffer(AClient,ABuffer,2);
-			PacketID := BufferReadWord(0, ABuffer);
-			if (AClient.Data = nil) or not (AClient.Data is TThreadLink) then
+		//Thread Data should have a TThreadLink object...if not, make one
+		AClient.Data := TThreadlink.Create;
+	end;
+	//First time connection from login needs to do 0x0065.  No exceptions.
+	if TThreadLink(AClient.Data).AccountLink = nil then
+	begin
+		if PacketID = $0065 then
+		begin
+			//Verify login and send characters
+			RecvBuffer(AClient,ABuffer[2],GetPacketLength($0065)-2);
+			SendCharas(AClient,ABuffer);
+		end;
+	end else
+	begin
+		case PacketID of
+		$0066: // Character Selected -- Refer Client to Map Server
 			begin
-				//Thread Data should have a TThreadLink object...if not, make one
-				AClient.Data := TThreadlink.Create;
+				RecvBuffer(AClient,ABuffer[2],GetPacketLength($0066)-2);
+				SendCharaToMap(AClient,ABuffer);
 			end;
-			//First time connection from login needs to do 0x0065.  No exceptions.
-			if TThreadLink(AClient.Data).AccountLink = nil then
+		$0067: // Create New Character
 			begin
-				if PacketID = $0065 then
-				begin
-					//Verify login and send characters
-				RecvBuffer(AClient,ABuffer[2],GetPacketLength($0065)-2);
-					SendCharas(AClient,ABuffer);
-				end;
-			end else
+				RecvBuffer(AClient,ABuffer[2],GetPacketLength($0067)-2);
+				CreateChara(AClient,ABuffer);
+			end;
+		$0068: // Request to Delete Character
 			begin
-				case PacketID of
-				$0066: // Character Selected -- Refer Client to Map Server
-					begin
-						RecvBuffer(AClient,ABuffer[2],GetPacketLength($0066)-2);
-						SendCharaToMap();
-					end;
-				$0067: // Create New Character
-					begin
-					RecvBuffer(AClient,ABuffer[2],GetPacketLength($0067)-2);
-						CreateChara(AClient,ABuffer);
-					end;
-				$0068: // Request to Delete Character
-					begin
-					RecvBuffer(AClient,ABuffer[2],GetPacketLength($0068)-2);
-						DeleteChara(AClient,ABuffer);
-					end;
-				end;
+				RecvBuffer(AClient,ABuffer[2],GetPacketLength($0068)-2);
+				DeleteChara(AClient,ABuffer);
 			end;
 		end;
+	end;
 end; {ParseCharaServ}
 //------------------------------------------------------------------------------
 
@@ -733,12 +780,12 @@ end; {ParseCharaServ}
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.LoadOptions;
 begin
-  if Assigned(Options) then
-  begin
-    FreeAndNIL(Options);
-  end;
+	if Assigned(Options) then
+	begin
+		FreeAndNIL(Options);
+	end;
 
-  Options    := TCharaOptions.Create('./Character.ini');
+	Options    := TCharaOptions.Create('./Character.ini');
 
 	Options.Load;
 end;{LoadOptions}
@@ -758,8 +805,8 @@ end;{LoadOptions}
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.SetPort(Value : Word);
 begin
-  fWANPort := Value;
-  TCPServer.DefaultPort := Value;
+	fWANPort := Value;
+	TCPServer.DefaultPort := Value;
 end;{SetPort}
 //------------------------------------------------------------------------------
 
@@ -777,7 +824,37 @@ end;{SetPort}
 //------------------------------------------------------------------------------
 Function TCharacterServer.GetStarted() : Boolean;
 begin
-  Result := TCPServer.Active;
+	Result := TCPServer.Active;
 end;{SetPort}
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//OnDisconnect()                                                         EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//		  Executes when a client disconnects from the login server. Removes
+//    disconnected zone servers from the list.
+//
+//	Changes -
+//		January 10th, 2007 - Tsusai - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TCharacterServer.OnDisconnect(AConnection: TIdContext);
+var
+	idx : integer;
+	AZoneServInfo : TZoneServerInfo;
+begin
+	if AConnection.Data is TZoneServerLink then
+	begin
+		AZoneServInfo := TZoneServerLink(AConnection.Data).Info;
+		idx := fZoneServerList.IndexOfObject(AZoneServInfo);
+		if not (idx = -1) then
+		begin
+			fZoneServerList.Delete(idx);
+			AZoneServInfo.Free;
+		end;
+	end;
+end;{OnDisconnect}
+//------------------------------------------------------------------------------
+
 end.

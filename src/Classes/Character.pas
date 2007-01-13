@@ -119,7 +119,7 @@ uses
 		Speed : word; //Not in MySQL...odd...
 		Account : TAccount;
 
-		ClientVersion : byte;
+		ClientVersion : Integer;
 		ClientInfo : TIdContext;
 
 		property DataChanged : boolean  read fDataChanged write SetSaveTime;

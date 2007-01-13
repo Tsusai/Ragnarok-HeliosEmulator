@@ -55,8 +55,8 @@ type
 
 		function GetChara(
 			CharaID : Cardinal;
-			ReleaseTable : boolean = true
-		) : TCharacter;reintroduce;
+			JanSQLClearTable : boolean = false
+		) : TCharacter;override;
 
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
 		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;override;
@@ -261,7 +261,7 @@ end;//SetAccount
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.GetChara(
 	CharaID : Cardinal;
-	ReleaseTable : boolean = true
+	JanSQLClearTable : boolean = false
 ) : TCharacter;
 var
 	CharacterIndex : Integer;
@@ -279,7 +279,7 @@ begin
 	if Result = NIL then
 	begin
 		Result := LoadChara(CharaID);
-		if ReleaseTable then
+		if JanSQLClearTable then
 		begin
 			SendQuery('RELEASE TABLE characters');
 		end;
@@ -287,7 +287,7 @@ begin
 		begin
 			CharacterList.Add(Result);
 		end;
-	end else Result := NIL;
+	end;
 end;
 //------------------------------------------------------------------------------
 
@@ -321,7 +321,7 @@ begin
 			begin
 				//Call GetChara and tell it not to release the table for
 				//every stinking character.
-				Result.Add(GetChara(StrToInt(QueryResult.Records[Index].Fields[0].value),false));
+				Result.Add(GetChara(StrToInt(QueryResult.Records[Index].Fields[0].value)));
 			end;
 		end;
 	SendQuery('RELEASE TABLE characters');
@@ -567,7 +567,7 @@ begin
 	if (QueryResult.RecordCount = 1) then
 	begin
 		//Call GetChara, which will release the table.
-		ACharacter := GetChara(StrToInt(QueryResult.Records[0].Fields[0].value));
+		ACharacter := GetChara(StrToInt(QueryResult.Records[0].Fields[0].value),true);
 		Result := Assigned(ACharacter);
 	end;
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
@@ -607,6 +607,8 @@ begin
 			CID              := StrToIntDef(QueryResult.Records[0].Fields[0].Value, 0);
 			ID               := StrToIntDef(QueryResult.Records[0].Fields[1].Value, 0);
 			CharaNum         := StrToIntDef(QueryResult.Records[0].Fields[2].Value, 0);
+			Account					:= Parent.CommonData.GetAccount(ID);
+			Account.CharaID[CharaNum] := CID;
 			Name            :=          QueryResult.Records[0].Fields[3].Value;
 			JID             := StrToIntDef(QueryResult.Records[0].Fields[4].Value, 0);
 			BaseLV          := StrToIntDef(QueryResult.Records[0].Fields[5].Value, 0);

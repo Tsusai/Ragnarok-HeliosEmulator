@@ -42,7 +42,10 @@ type
 
 		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;virtual;
 		function LoadChara(CharaID : Cardinal) : TCharacter;virtual;
-		function GetChara( CharaID    : Cardinal)   : TCharacter;virtual;
+		function GetChara(
+			CharaID : Cardinal;
+			JanSQLClearTable : boolean = false
+		) : TCharacter;virtual;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;virtual;
 		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;virtual;
 		function CharaExists(Name : String) : Boolean;overload;virtual;
@@ -91,7 +94,10 @@ begin
 	Result := NIL;
 end;
 
-function TGameDatabaseTemplate.GetChara(CharaID : Cardinal) : TCharacter;
+function TGameDatabaseTemplate.GetChara(
+	CharaID : Cardinal;
+	JanSQLClearTable : boolean = false
+) : TCharacter;
 begin
 	Result := NIL;
 end;

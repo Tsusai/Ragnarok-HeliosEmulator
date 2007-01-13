@@ -49,7 +49,12 @@ type
 
 		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
 		function LoadChara(CharaID : Cardinal) : TCharacter;override;
-		function GetChara(CharaID : Cardinal) : TCharacter;override;
+
+		function GetChara(
+			CharaID : Cardinal;
+			JanSQLClearTable : boolean = false
+		) : TCharacter;override;
+
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
 		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;override;
 		function CharaExists(Name : String) : Boolean;overload;override;
@@ -225,7 +230,11 @@ end;
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-function TMySQLGameDatabase.GetChara(CharaID : Cardinal) : TCharacter;
+function TMySQLGameDatabase.GetChara(
+	CharaID : Cardinal;
+	//JanSQLClearTable is never used.
+	JanSQLClearTable : boolean = false
+) : TCharacter;
 var
   CharacterIndex : Integer;
 begin
@@ -540,6 +549,8 @@ begin
 			CID              := StrToInt(QueryResult.FieldValue(0));
 			ID               := StrToInt(QueryResult.FieldValue(1));
 			CharaNum         := StrToInt(QueryResult.FieldValue(2));
+			Account					:= Parent.CommonData.GetAccount(ID);
+			Account.CharaID[CharaNum] := CID;
 			Name            :=          QueryResult.FieldValue(3);
 			JID             := StrToInt(QueryResult.FieldValue(4));
 			BaseLV          := StrToInt(QueryResult.FieldValue(5));

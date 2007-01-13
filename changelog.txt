@@ -14,6 +14,25 @@ Developers & Contributers
 -------------------------------------------------------------------------------------------
 
 - Rev 108 -
+[2007/01/13] - Tsusai - Notes/Overview: Fixes and partial commits to character server for
+ zone connections.
+[2007/01/13] - Tsusai - CharacterServer : Added fZoneServerList, OnDisconnect Method, 
+ updated SendCharaToMap to take on a connection and buffer parameter, Corrected error constant
+ numbers (was getting email error where could not happen error should be, and vice versa.
+ Please verify this change RaX). Added commented out code in SendcharaToMap. Fixed StatPoint
+ display in CreateChara.  Removed unneeded If connected check in ParseCharaServ. 
+[2007/01/13] - Tsusai - ***GameDatabase: Updated GetChara to take on a JanSQLReleaseTable
+ hidden bool.  Assumes false. Updated any GetChara calls.  Updated LoadChara to attach
+ Account information.
+[2007/01/13] - Tsusai - CharacterServer, ZoneRecv: Updated any/all GetChara calls.
+
+[2007/01/13] - Tsusai - Character: ClientVersion changed to byte (I need a negative number).
+[2007/01/13] - Tsusai - Added ServerInfo root object, and updated CharacterServerInfo to
+ descend from that.  Added ZoneServerInfo to do the same.
+[2007/01/13] - Tsusai - PacketTypes: Added ZoneServerLink object.
+-
+
+- Rev 108 -
 [2007/01/12] - Tsusai - Notes/Overview: Fixed the outstanding JanSQL character server table
  errors.  We were trying to save and release a table that was already released due to 
  LoadChara releasing.

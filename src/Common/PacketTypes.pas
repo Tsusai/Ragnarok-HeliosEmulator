@@ -13,7 +13,8 @@ interface
 uses
 	Account,
 	Character,
-	CharacterServerInfo;
+	CharacterServerInfo,
+	ZoneServerInfo;
 
 type
 	TBufSize = 0..(High(Word) div 2);
@@ -28,6 +29,10 @@ type
 
 	TCharaServerLink = class
 		Info : TCharaServerInfo;
+	end;
+
+	TZoneServerLink = class
+		Info : TZoneServerInfo;
 	end;
 
 	TMD5String = class
