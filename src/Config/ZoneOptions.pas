@@ -41,6 +41,8 @@ interface
 			procedure SetPort(Value : Word);
 			procedure SetWANIP(Value : String);
 			procedure SetLANIP(Value : String);
+			procedure SetCharaIP(Value : String);
+			procedure SetCharaPort(Value : Word);
 
 		public
       //Server
@@ -52,7 +54,11 @@ interface
 			property WANIP : String read fWANIP write SetWANIP;
 			property LANIP : String read fLANIP write SetLANIP;
 
-      //Security
+			property CharaIP : String read fCharaIP write SetCharaIP;
+			property CharaPort : Word read fCharaPort write SetCharaPort;
+
+			//Security
+			property CharaKey : string read fCharaKey;
 
       //Options
 
@@ -273,5 +279,43 @@ implementation
 			WriteString('Communication', 'LANIP', LANIP);
 		end;
 	end;{SetLANIP}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//SetCharaPort()                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		January 14th, 2007 - Tsusai - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TZoneOptions.SetCharaPort(Value : Word);
+	begin
+		if fCharaPort <> Value then
+		begin
+			fCharaPort := Value;
+			WriteString('Communication', 'CharaPort', IntToStr(CharaPort));
+		end;
+	end;{SetCharaPort}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//SetCharaIP()                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//		January 14th, 2007 - Tsusai - Created.
+//
+//------------------------------------------------------------------------------
+	procedure TZoneOptions.SetCharaIP(Value : String);
+	begin
+		if fCharaIP <> Value then
+		begin
+			fCharaIP := Value;
+			WriteString('Communication', 'CharaIP', CharaIP);
+		end;
+	end;{SetLoginIP}
 //------------------------------------------------------------------------------
 end{ServerOptions}.

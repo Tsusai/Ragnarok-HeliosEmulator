@@ -113,13 +113,14 @@ end;{DeActivateServer}
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		January 14th, 2007 - Tsusai - Updated the Create call
 //
 //------------------------------------------------------------------------------
 function ActivateClient(var AClient : TInterClient) : boolean;
 begin
 	if not Assigned(AClient) then
 	begin
-		AClient := TInterClient.Create;
+		AClient := TInterClient.Create('Unknown','Unknown');
 	end;
 	AClient.Active := true;
 	Result := true;

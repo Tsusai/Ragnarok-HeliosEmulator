@@ -1,9 +1,0 @@
-Login Character
-R login recieves
-S login sends to chara
-
-R $2000 <md5password x16><servername x24><port x2>
-S $2001 <accept/deny x1> 0=false 1=true
-R $2002 <wanip size x2><wanip x?>
-R $2003 <lanip size x2><lanip x?>
-R $2004 <online users x2>

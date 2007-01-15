@@ -13,60 +13,63 @@ unit ZoneServer;
 interface
 
 uses
-  IdTCPServer,
-  IdTCPClient,
-  IdContext,
+	IdTCPServer,
+	CommClient,
+	IdContext,
 	SysUtils,
-  PacketTypes,
-  Character,
-  Database,
-  ZoneOptions;
+	PacketTypes,
+	Character,
+	Database,
+	ZoneOptions;
 
 type
 	TZoneServer = class
-  protected
-  //
+	protected
+	//
 	private
-		fIP              : String;
-    fPort            : Word;
 
-    TCPServer        : TIdTCPServer;
-    ToCharaTCPClient : TIdTCPClient;
-    ToInterTCPClient : TIdTCPClient;
+		fPort            : Word;
 
-    Procedure OnExecute(AConnection: TIdContext);
-    Procedure OnConnect(AConnection: TIdContext);
-    Procedure OnException(AConnection: TIdContext;
-      AException: Exception);
+		TCPServer        : TIdTCPServer;
+		ToCharaTCPClient : TInterClient;
+		ToInterTCPClient : TInterClient;
 
-    procedure ProcessZonePacket(AClient : TIdContext);
-    function  SearchPacketListing(var AChara : TCharacter; var AClient : TIdContext;
-	                                var InBuffer :  TBuffer; const Version   : Word;
-                                  const Packet    : Word  ) :Boolean;
+		Procedure OnExecute(AConnection: TIdContext);
+		Procedure OnConnect(AConnection: TIdContext);
+		Procedure OnException(AConnection: TIdContext;
+			AException: Exception);
 
-		Procedure SetIPCardinal(Value : string);
-    Procedure SetPort(Value : Word);
-    Function GetStarted() : Boolean;
+		procedure CharaClientOnConnect(Sender : TObject);
+		procedure CharaClientRead(AClient : TInterClient);
 
-    procedure LoadOptions;
-  public
-		IPCardinal    : Cardinal;
+		procedure ProcessZonePacket(AClient : TIdContext);
+		function  SearchPacketListing(var AChara : TCharacter; var AClient : TIdContext;
+																	var InBuffer :  TBuffer; const Version   : Word;
+																	const Packet    : Word  ) :Boolean;
+
+		Procedure SetPort(Value : Word);
+		Function GetStarted() : Boolean;
+
+		procedure LoadOptions;
+	public
+		WANIP : string;
+		LANIP : string;
+
 		ServerName    : String;
 		OnlineUsers   : Word;
 
-    Database : TDatabase;
+		Database : TDatabase;
 
-    Options          : TZoneOptions;
+		Options          : TZoneOptions;
 
-    property Started : Boolean read GetStarted;
-		property IP   : string read fIP write SetIPCardinal;
-    property Port : Word read fPort write SetPort;
+		property Started : Boolean read GetStarted;
+		property Port : Word read fPort write SetPort;
 
-    Constructor Create();
-    Destructor  Destroy();Override;
-    Procedure   Start(Reload : Boolean = FALSE);
-    Procedure   Stop();
-  end;
+		Constructor Create();
+		Destructor  Destroy();Override;
+		Procedure   Start(Reload : Boolean = FALSE);
+		Procedure   Stop();
+	end;
 implementation
 
 uses
@@ -77,6 +80,7 @@ uses
 	DatabaseTXT,
 	Globals,
 	TCPServerRoutines,
+	ZoneCharaPackets,
 	ZoneRecv,
 	//3rd
 	StrUtils;
@@ -89,20 +93,24 @@ uses
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
+//		January 14th, 2007 - Tsusai - Chara Client is now setup
 //
 //------------------------------------------------------------------------------
 Constructor TZoneServer.Create;
 begin
-  LoadOptions;
+	LoadOptions;
 
-  Database := TDatabase.Create(TRUE,TRUE,TRUE);
+	Database := TDatabase.Create(TRUE,TRUE,TRUE);
 
-  TCPServer := TIdTCPServer.Create;
-  ToCharaTCPClient := TIdTCPClient.Create;
-  ToInterTCPClient := TIdTCPClient.Create;
+	TCPServer := TIdTCPServer.Create;
+	ToCharaTCPClient := TInterClient.Create('Zone','Character');
+	ToInterTCPClient := TInterClient.Create('Zone','Inter');
 
-  TCPServer.OnConnect   := OnConnect;
-  TCPServer.OnExecute   := OnExecute;
+	ToCharaTCPClient.OnConnected := CharaClientOnConnect;
+	ToCharaTCPClient.OnRecieve   := CharaClientRead;
+
+	TCPServer.OnConnect   := OnConnect;
+	TCPServer.OnExecute   := OnExecute;
 	TCPServer.OnException := OnException;
 
 end;{Create}
@@ -121,12 +129,12 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TZoneServer.Destroy;
 begin
-  Database.Free;
-  TCPServer.Free;
-  ToCharaTCPClient.Free;
-  ToInterTCPClient.Free;
-  Options.Save;
-  Options.Free;
+	Database.Free;
+	TCPServer.Free;
+	ToCharaTCPClient.Free;
+	ToInterTCPClient.Free;
+	Options.Save;
+	Options.Free;
 end;{Destroy}
 //------------------------------------------------------------------------------
 
@@ -197,17 +205,22 @@ end;{OnException}
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
+//		January 14th, 2007 - Tsusai - Chara client settings in place
 //
 //------------------------------------------------------------------------------
 Procedure TZoneServer.Start(Reload : Boolean = FALSE);
 begin
-  if Reload then
-  begin
-    LoadOptions;
-  end;
-  Port := Options.Port;
-  ActivateServer('Zone',TCPServer);
-	//ActivateClient(ToCharaTCPClient);
+	if Reload then
+	begin
+		LoadOptions;
+	end;
+	WANIP := Options.WANIP;
+	LANIP := Options.LANIP;
+	Port := Options.Port;
+	ToCharaTCPClient.Host := Options.CharaIP;
+	ToCharaTCPClient.Port := Options.CharaPort;
+	ActivateServer('Zone',TCPServer);
+	ActivateClient(ToCharaTCPClient);
 	//ActivateClient(ToInterTCPClient);
 end;{Start}
 //------------------------------------------------------------------------------
@@ -225,9 +238,9 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TZoneServer.Stop();
 begin
-  DeActivateServer('Zone', TCPServer);
-	//DeActivateClient(ToCharaTCPClient);
-  //DeActivateClient(ToInterTCPClient);
+	DeActivateServer('Zone', TCPServer);
+	DeActivateClient(ToCharaTCPClient);
+	//DeActivateClient(ToInterTCPClient);
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -254,7 +267,7 @@ end;{Start}
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
-//    Old Comments Follow...
+//   	Old Comments Follow...
 //    [2006/03/11] Tsusai - Packet is now a word type, not a 0xHexString
 //    [2006/08/12] Tsusai - Updated for Indy.
 //    [2006/09/26] Tsusai - Imported to Helios
@@ -432,38 +445,16 @@ End;{ProcessZonePacket}
 //------------------------------------------------------------------------------
 Procedure TZoneServer.LoadOptions;
 begin
-  if Assigned(Options) then
-  begin
-    FreeAndNIL(Options);
-  end;
+	if Assigned(Options) then
+	begin
+		FreeAndNIL(Options);
+	end;
 
-  Options    := TZoneOptions.Create('./Zone.ini');
+	Options    := TZoneOptions.Create('./Zone.ini');
 
 	Options.Load;
 end;{LoadOptions}
 //------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//SetIPCardinal   			                                             PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//      The Ragnarok client does not connect to a server using the plain x.x.x.x
-//    IP string format.  It uses a cardinal form.  Making the IP a property, we
-//    are able to call a function to go ahead and set the Cardinal form at any
-//    time.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TZoneServer.SetIPCardinal(Value : string);
-begin
-	//fIP         := GetIPStringFromHostname(Value);
-	//IPCardinal  := GetCardinalFromIPString(fIP);
-end; //proc SetIPCardinal
-//------------------------------------------------------------------------------
-
 
 //------------------------------------------------------------------------------
 //SetPort                                                          PROCEDURE
@@ -478,8 +469,8 @@ end; //proc SetIPCardinal
 //------------------------------------------------------------------------------
 Procedure TZoneServer.SetPort(Value : Word);
 begin
-  fPort := Value;
-  TCPServer.DefaultPort := Value;
+	fPort := Value;
+	TCPServer.DefaultPort := Value;
 end;//SetPort
 //------------------------------------------------------------------------------
 
@@ -497,7 +488,50 @@ end;//SetPort
 //------------------------------------------------------------------------------
 Function TZoneServer.GetStarted() : Boolean;
 begin
-  Result := TCPServer.Active;
+	Result := TCPServer.Active;
 end;{SetPort}
 //------------------------------------------------------------------------------
+
+//		January 14th, 2007 - Tsusai - Added
+procedure TZoneServer.CharaClientOnConnect(Sender : TObject);
+begin
+	ValidateWithCharaServer(ToCharaTCPClient,Self);
+end;
+
+//		January 14th, 2007 - Tsusai - Added
+procedure TZoneServer.CharaClientRead(AClient : TInterClient);
+var
+	ABuffer : TBuffer;
+	PacketID : Word;
+	Response : Byte;
+begin
+	RecvBuffer(AClient,ABuffer,2);
+	PacketID := BufferReadWord(0,ABuffer);
+	case PacketID of
+	$2101:
+		begin
+			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2101)-2);
+			Response := BufferReadByte(2,ABuffer);
+
+			//If validated.
+			if Response = 0 then
+			begin
+				MainProc.Console('Zone Server: Verified with Character Server, '+
+					'sending details.');
+				SendZoneWANIPToChara(ToCharaTCPClient,Self);
+				SendZoneLANIPToChara(ToCharaTCPClient,Self);
+				SendZoneOnlineUsersToChara(ToCharaTCPClient,Self);
+			end else
+			begin
+				case Response of
+				1 : MainProc.Console('Zone Server: Failed to verify with Character Server. ID already in use.');
+				2 : MainProc.Console('Zone Server: Failed to verify with Character Server. Invalid security key.');
+				end;
+				MainProc.Console('Zone Server: Stopping...');
+				Stop;
+			end;
+		end;
+	end;
+end;{CharaClientRead}
+
 end.

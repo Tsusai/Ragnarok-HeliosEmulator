@@ -19,7 +19,7 @@ uses
 	IdTCPServer,
 	IdContext,
 	CommClient,
-	Classes,
+	List32,
 	SysUtils,
 	PacketTypes,
 	Database,
@@ -35,7 +35,7 @@ type
 	private
 		fWANPort           : Word;
 
-		fZoneServerList : TStringList;
+		fZoneServerList : TIntList32;
 
 		TCPServer       : TIdTCPServer;
 		CharaToLoginClient : TInterClient;
@@ -50,6 +50,12 @@ type
 		procedure LoginClientRead(AClient : TInterClient);
 
 		procedure ParseCharaServ(AClient : TIdContext);
+
+		procedure VerifyZoneServer(
+			AClient : TIdContext;
+			InBuffer : TBuffer
+		);
+
 		procedure SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
 		procedure SendCharaToMap(AClient : TIdContext; var ABuffer : TBuffer);
 		procedure CreateChara(AClient : TIdContext; var ABuffer : TBuffer);
@@ -80,6 +86,7 @@ implementation
 uses
 	//Helios
 	CharaLoginPackets,
+	ZoneCharaPackets,
 	BufferIO,
 	Character,
 	Account,
@@ -106,6 +113,8 @@ const
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
+//		January 14th, 2007 - Tsusai - Updated CharaClient create, and initialized
+//			the fZoneServerList
 //
 //------------------------------------------------------------------------------
 Constructor TCharacterServer.Create;
@@ -119,12 +128,13 @@ begin
 	TCPServer.OnException  := OnException;
 	TCPServer.OnDisconnect := OnDisconnect;
 
-	CharaToLoginClient := TInterClient.Create;
+	CharaToLoginClient := TInterClient.Create('Character','Login');
 
 	CharaToLoginClient.OnConnected := LoginClientOnConnect;
 	CharaToLoginClient.OnRecieve := LoginClientRead;
 
 	ServerName := Options.ServerName;
+	fZoneServerList := TIntList32.Create;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -137,6 +147,7 @@ end;{Create}
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
+//		January 14th, 2007 - Tsusai - Frees fZoneServerList
 //
 //------------------------------------------------------------------------------
 Destructor TCharacterServer.Destroy;
@@ -148,6 +159,8 @@ begin
 
 	Options.Save;
 	Options.Free;
+
+	fZoneServerList.Free;
 end;{Destroy}
 //------------------------------------------------------------------------------
 
@@ -245,6 +258,7 @@ end;{LoginClientOnConnect}
 //	Changes -
 //		January 3rd, 2007 - Tsusai - Added console messages.
 //		January 4th, 2007 - RaX - Created Header.
+//		January 14th, 2007 - Tsusai - Updated procedure calls.
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.LoginClientRead(AClient : TInterClient);
@@ -264,12 +278,12 @@ begin
 			begin
 				MainProc.Console('Character Server: Verified with Login Server, '+
 					'sending details.');
-				SendWANIP(CharaToLoginClient,Self);
-				SendLANIP(CharaToLoginClient,Self);
-				SendOnlineUsers(CharaToLoginClient,Self);
+				SendCharaWANIPToLogin(CharaToLoginClient,Self);
+				SendCharaLANIPToLogin(CharaToLoginClient,Self);
+				SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
 			end else
 			begin
-				MainProc.Console('Character Server: Failed to verify with Login Server.');
+				MainProc.Console('Character Server: Failed to verify with Login Server. Invalid Security Key');
 				MainProc.Console('Character Server: Stopping...');
 				Stop;
 			end;
@@ -418,8 +432,8 @@ procedure TCharacterServer.SendCharaToMap(
 var
 	AnAccount : TAccount;
 	CharaIdx : byte;
-	ACharacter : TCharacter;
-	OutBuffer : TBuffer;
+	//ACharacter : TCharacter;
+	//OutBuffer : TBuffer;
 begin
 	if AClient.Data = nil then Exit;
 	if not (AClient.Data is TThreadLink) then exit;
@@ -709,6 +723,50 @@ begin
 end;{DeleteChara}
 //------------------------------------------------------------------------------
 
+//		January 14th, 2007 - Tsusai -  Added
+procedure TCharacterServer.VerifyZoneServer(
+	AClient : TIdContext;
+	InBuffer : TBuffer
+);
+var
+	Password : string;
+	Validated : byte;
+	ZServerInfo : TZoneServerInfo;
+	ID : Cardinal;
+begin
+	Validated := 0; //Assume true
+	MainProc.Console('Character Server: Reading Zone Server connection from ' +
+		AClient.Connection.Socket.Binding.PeerIP
+	);
+	ID := BufferReadCardinal(2,InBuffer);
+	Password := BufferReadMD5(8,InBuffer);
+
+	if (fZoneServerList.IndexOf(ID) > -1) then
+	begin
+		MainProc.Console('Character Server: Zone Server failed verification. ID already in use.');
+		Validated := 1;
+	end;
+
+	if (Password <> GetMD5(Options.Key)) then
+	begin
+		MainProc.Console('Character Server: Zone Server failed verification. Invalid Security Key.');
+		Validated := 2;
+	end;
+
+	if Validated = 0 then
+	begin
+		MainProc.Console('Character Server: Zone Server connection validated.');
+
+		ZServerInfo :=  TZoneServerInfo.Create;
+		ZServerInfo.ZoneID := ID;
+		ZServerInfo.Port := BufferReadWord(6,InBuffer);
+		AClient.Data := TZoneServerLink.Create;
+		TZoneServerLink(AClient.Data).Info := ZServerInfo;
+		fZoneServerList.AddObject(ZServerInfo.ZoneID,ZServerInfo);
+	end;
+	SendValidateFlagToZone(AClient,Validated);
+end;
+
 
 //------------------------------------------------------------------------------
 //ParseCharaServ                                                      PROCEDURE
@@ -721,30 +779,19 @@ end;{DeleteChara}
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		January 14th, 2007 - Tsusai - Added Zone server packet parsing.
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.ParseCharaServ(AClient : TIdContext);
 var
 	ABuffer       : TBuffer;
 	PacketID      : Word;
+	Size          : Word;
 begin
 	RecvBuffer(AClient,ABuffer,2);
 	PacketID := BufferReadWord(0, ABuffer);
-	if (AClient.Data = nil) or not (AClient.Data is TThreadLink) then
-	begin
-		//Thread Data should have a TThreadLink object...if not, make one
-		AClient.Data := TThreadlink.Create;
-	end;
-	//First time connection from login needs to do 0x0065.  No exceptions.
-	if TThreadLink(AClient.Data).AccountLink = nil then
-	begin
-		if PacketID = $0065 then
-		begin
-			//Verify login and send characters
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($0065)-2);
-			SendCharas(AClient,ABuffer);
-		end;
-	end else
+	//Check to see if it is an already connected Client
+	if (AClient.Data is TThreadLink) then
 	begin
 		case PacketID of
 		$0066: // Character Selected -- Refer Client to Map Server
@@ -761,6 +808,58 @@ begin
 			begin
 				RecvBuffer(AClient,ABuffer[2],GetPacketLength($0068)-2);
 				DeleteChara(AClient,ABuffer);
+			end;
+		end;
+	end else
+	begin
+		case PacketID of
+		$0065: // RO Client request to connect and get characters
+			begin
+				//Thread Data should have a TThreadLink object...if not, make one
+				AClient.Data := TThreadlink.Create;
+				//Verify login and send characters
+				RecvBuffer(AClient,ABuffer[2],GetPacketLength($0065)-2);
+				SendCharas(AClient,ABuffer);
+			end;
+		$2100: // Zone Server Connection request
+			begin
+				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2100)-2);
+				VerifyZoneServer(AClient,ABuffer);
+			end;
+		$2102: // Zone Server sending new WAN location details
+			begin
+				if AClient.Data is TZoneServerLink then
+				begin
+					RecvBuffer(AClient,ABuffer[2],2);
+					Size := BufferReadWord(2,ABuffer);
+					RecvBuffer(AClient,ABuffer[4],Size-4);
+					TZoneServerLink(AClient.Data).Info.WAN := BufferReadString(4,Size-4,ABuffer);
+					MainProc.Console('Character Server: Recieved updated Zone Server WANIP.');
+				end;
+			end;
+		$2103: // Zone Server sending new LAN location details
+			begin
+				if AClient.Data is TZoneServerLink then
+				begin
+					RecvBuffer(AClient,ABuffer[2],2);
+					Size := BufferReadWord(2,ABuffer);
+					RecvBuffer(AClient,ABuffer[4],Size-4);
+					TZoneServerLink(AClient.Data).Info.LAN := BufferReadString(4,Size-4,ABuffer);
+					MainProc.Console('Character Server: Recieved updated Zone Server LANIP.');
+				end;
+			end;
+		$2104: // Zone Server sending new Online User count
+			begin
+				if AClient.Data is TZoneServerLink then
+				begin
+					RecvBuffer(AClient,ABuffer[2],GetPacketLength($2104)-2);
+					//TZoneServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
+					MainProc.Console('Character Server: Recieved updated Zone Server Online Users.');
+				end;
+			end;
+		else
+			begin
+				MainProc.Console('Character Server: Unknown Character Server Packet : ' + IntToHex(PacketID,4));
 			end;
 		end;
 	end;

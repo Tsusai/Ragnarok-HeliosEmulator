@@ -14,6 +14,7 @@ TList32: based on TList. added IndexOfObject.
 [2005/12/10] CR - Added compile directives to suppress warnings for some warning
 	generating code in this library we use for the Prometheus Project.
 [2006/11/27] Tsusai - Cleaned up Uses usage.
+[2007/01/14] Tsusai - Made IndexOfObject what it should be.
 }
 
 interface
@@ -74,7 +75,8 @@ Type
     procedure Exchange(Index1, Index2: Integer);
     function Find(const S: cardinal; var Index: Integer): Boolean; virtual;
     function IndexOf(const S: cardinal): Integer;
-		function IndexOfObject(const S: cardinal): TObject;
+
+		function IndexOfObject(AObject: TObject): Integer;
 		procedure Insert(Index: Integer; const S: cardinal);
     procedure Sort; virtual;
     procedure CustomSort(Compare: TIntListSortCompare); virtual;
@@ -280,12 +282,11 @@ begin
 	else if not Find(S, Result) then Result := -1;
 end;
 
-function TIntList32.IndexOfObject(const S: cardinal): TObject;
-var
-	i:integer;
+function TIntList32.IndexOfObject(AObject: TObject): Integer;
 begin
-	i := IndexOf(S);
-	if i = -1 then Result := nil else Result := GetObject(i);
+	for Result := 0 to GetCount - 1 do
+		if GetObject(Result) = AObject then Exit;
+	Result := -1;
 end;
 
 procedure TIntList32.Insert(Index: Integer; const S: cardinal);

@@ -1,0 +1,21 @@
+Login <-> Character
+R login recieves
+S login sends to chara
+
+R $2000 <md5password x16><servername x24><port x2>
+S $2001 <accept/deny x1> 
+	0 = Invalid Key
+	1 = OK
+R $2002 <wanip size x2><wanip x?>
+R $2003 <lanip size x2><lanip x?>
+R $2004 <online users x2>
+
+Character <-> Zone
+R $2100 <Zone Server ID x2><Port x2><md5password x16>
+S $2101 <accept/deny x1> 
+	0 = OK
+	1 = ID in use
+	2 = Invalid Key
+R $2102 <wanip size x2><wanip x?>
+R $2103 <lanip size x2><lanip x?>
+R $2104 <online users x2>

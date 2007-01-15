@@ -10,10 +10,10 @@ uses
 		AClient : TInterClient;
 		CharacterServer : TCharacterServer
 	);
-	procedure SendValidateFlag(AClient : TIdContext; Validated : boolean);
-	procedure SendWANIP(AClient : TInterClient; CharacterServer : TCharacterServer);
-	procedure SendLANIP(AClient : TInterClient; CharacterServer : TCharacterServer);
-	procedure SendOnlineUsers(AClient : TInterClient; CharacterServer : TCharacterServer);
+	procedure SendValidateFlagToChara(AClient : TIdContext; Validated : boolean);
+	procedure SendCharaWANIPToLogin(AClient : TInterClient; CharacterServer : TCharacterServer);
+	procedure SendCharaLANIPToLogin(AClient : TInterClient; CharacterServer : TCharacterServer);
+	procedure SendCharaOnlineUsersToLogin(AClient : TInterClient; CharacterServer : TCharacterServer);
 
 implementation
 uses
@@ -36,7 +36,7 @@ uses
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2000));
 	end;
 
-	procedure SendValidateFlag(AClient : TIdContext; Validated : boolean);
+	procedure SendValidateFlagToChara(AClient : TIdContext; Validated : boolean);
 	var
 		OutBuffer : TBuffer;
 	begin
@@ -45,7 +45,10 @@ uses
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2001));
 	end;
 
-	procedure SendWANIP(AClient : TInterClient; CharacterServer : TCharacterServer);
+	procedure SendCharaWANIPToLogin(
+		AClient : TInterClient;
+		CharacterServer : TCharacterServer
+	);
 	var
 		OutBuffer : TBuffer;
 		Size : integer;
@@ -57,7 +60,10 @@ uses
 		SendBuffer(AClient,OutBuffer,Size+4);
 	end;
 
-	procedure SendLANIP(AClient : TInterClient; CharacterServer : TCharacterServer);
+	procedure SendCharaLANIPToLogin(
+		AClient : TInterClient;
+		CharacterServer : TCharacterServer
+	);
 	var
 		OutBuffer : TBuffer;
 		Size : integer;
@@ -69,7 +75,10 @@ uses
 		SendBuffer(AClient,OutBuffer,Size+4);
 	end;
 
-	procedure SendOnlineUsers(AClient : TInterClient; CharacterServer : TCharacterServer);
+	procedure SendCharaOnlineUsersToLogin(
+		AClient : TInterClient;
+		CharacterServer : TCharacterServer
+	);
 	var
 		OutBuffer : TBuffer;
 	begin

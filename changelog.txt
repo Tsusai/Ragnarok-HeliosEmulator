@@ -13,7 +13,31 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
-- Rev 108 -
+- Rev 110 -
+[2007/01/14] - Tsusai - Notes/Overview: Zone communications to character server in place.
+ Still no connection for the RO Client to make the connection to the Zone just yet.
+[2007/01/14] - Tsusai - ServerToServerPackets.txt - contains all packet documentation of
+ server to server communications.
+[2007/01/14] - Tsusai - Database\packet_db.txt - Added new packets for chara<->zone packets.
+[2007/01/14] - Tsusai - CharacterServer - Added zone packet parsing and validation of the zone.
+[2007/01/14] - Tsusai - CharaLoginPackets - All packet procedures renamed.
+[2007/01/14] - Tsusai - CommClient - Added Source and Destination names (for the error
+ messages.).
+[2007/01/14] - Tsusai - List32 - Replaced IndexOfObject.  I don't know wtf the writers
+ were thinking. It was taking an integer instead of an object -_-
+[2007/01/14] - Tsusai - TCPServerRoutines - Updated the CommClient creation for the above
+ update.
+[2007/01/14] - Tsusai - ZoneOptions - Added missing entries, such as CharaServer location
+ and port. 
+[2007/01/14] - Tsusai - LoginServer - Updated Error response to a bad character server
+ validation.
+[2007/01/14] - Tsusai - ZoneCharaPackets - Added.
+[2007/01/14] - Tsusai - ZoneServerInfo - Added.
+[2007/01/14] - Tsusai - ZoneServer - Removed unneeded IPCardinal code, added setting of
+ the client that connects to the character server.
+-
+
+- Rev 109 -
 [2007/01/13] - Tsusai - Notes/Overview: Fixes and partial commits to character server for
  zone connections.
 [2007/01/13] - Tsusai - CharacterServer : Added fZoneServerList, OnDisconnect Method, 

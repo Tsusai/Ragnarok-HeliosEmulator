@@ -54,7 +54,9 @@ type
 		procedure SetActive(Value : boolean);
 	public
 		ReconnectTime : TDateTime;
-		constructor Create;
+		SourceName : string;
+		DestinationName : string;
+		constructor Create(Source,Destination : string);
 		destructor Destroy; override;
 	published
 		property Active : boolean read fActive write SetActive;
@@ -79,6 +81,7 @@ uses
 //
 //	Changes -
 //		January 4th, 2007 - RaX - Created Header.
+//		January 14th, 2007 - Tsusai - Modified the error response.
 //
 //------------------------------------------------------------------------------
 	procedure TClientThread.Execute;
@@ -97,7 +100,11 @@ uses
 				except
 					on E:EIdSocketError do
 					begin
-						MainProc.Console('Character Server failed to connect to login server.');
+						MainProc.Console(
+							Format('%s Server failed to connect to %s Server.',
+								[FClient.SourceName,FClient.DestinationName]
+							)
+						);
 						MainProc.Console('Retrying in 30 seconds.');
 						FClient.ReconnectTime := IncSecond(Now,30);
 					end;
@@ -148,11 +155,15 @@ uses
 //
 //	Changes -
 //		January 4th, 2007 - RaX - Created Header.
+//		January 14th, 2007 - Tsusai - Added setup of source and destination
+//			Server names.
 //
 //------------------------------------------------------------------------------
-	constructor TInterClient.Create;
+	constructor TInterClient.Create(Source,Destination : string);
 	begin
 		inherited Create;
+		SourceName := Source;
+		DestinationName := Destination;
 		fReadThread := TClientThread.Create(Self);
 	end;{Create}
 //------------------------------------------------------------------------------

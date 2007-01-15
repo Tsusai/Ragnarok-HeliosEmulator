@@ -72,6 +72,7 @@ compile for linux, at the same time*}
 	InterServer in 'Inter\InterServer.pas',
 
 	//Zone Server
+	ZoneCharaPackets in 'Zone\ZoneCharaPackets.pas',
 	ZoneServer in 'Zone\ZoneServer.pas',
 	ZoneServerInfo in 'Zone\ZoneServerInfo.pas',
 	ZoneRecv in 'Zone\ZoneRecv.pas',
@@ -160,6 +161,7 @@ compile for linux, at the same time*}
 	InterServer in 'Inter/InterServer.pas',
 
 	//Zone Server
+  ZoneCharaPackets in 'Zone/ZoneCharaPackets.pas',
 	ZoneServer in 'Zone/ZoneServer.pas',
 	ZoneServerInfo in 'Zone/ZoneServerInfo.pas',
 	ZoneRecv in 'Zone/ZoneRecv.pas',

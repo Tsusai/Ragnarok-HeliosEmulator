@@ -459,6 +459,7 @@ end;{OnException}
 //	Changes -
 //		January 3rd, 2007 - Tsusai - Added console messages.
 //		January 4th, 2007 - RaX - Created Header. Tsusai lazy =)
+//		January 14th, 2007 - Tsusai - Updated error response
 //
 //------------------------------------------------------------------------------
 	procedure TLoginServer.VerifyCharaServer(
@@ -472,12 +473,15 @@ end;{OnException}
 		Port : word;
 		CServerInfo : TCharaServerInfo;
 	begin
-		Validated := false;
 		MainProc.Console('Login Server: Reading Character Server connection from ' + AClient.Connection.Socket.Binding.PeerIP);
-		if Password = GetMD5(Options.Key) then
+		Validated := true;
+
+		if Password <> GetMD5(Options.Key) then
 		begin
-			Validated := true;
+			MainProc.Console('Login Server: Character Server failed verification: Invalid Security Key.');
+			Validated := false;
 		end;
+
 		if Validated then
 		begin
 			MainProc.Console('Login Server: Character Server connection validated.');
@@ -489,11 +493,8 @@ end;{OnException}
 			AClient.Data := TCharaServerLink.Create;
 			TCharaServerLink(AClient.Data).Info := CServerInfo;
 			fCharaServerList.AddObject(ServerName,CServerInfo);
-		end else
-		begin
-			MainProc.Console('Login Server: Character Server failed verification.');
 		end;
-		SendValidateFlag(AClient,Validated);
+		SendValidateFlagToChara(AClient,Validated);
 	end;{VerifyCharaServer}
 //------------------------------------------------------------------------------
 
