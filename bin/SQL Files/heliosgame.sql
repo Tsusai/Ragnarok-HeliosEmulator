@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 2.9.0.3
+-- version 2.8.2.4
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Generation Time: Jan 09, 2007 at 05:34 PM
--- Server version: 5.0.27
--- PHP Version: 5.2.0
+-- Generation Time: Jan 15, 2007 at 11:16 AM
+-- Server version: 5.0.24
+-- PHP Version: 5.1.6
 -- 
 -- Database: `heliosgame`
 -- 
@@ -77,8 +77,13 @@ CREATE TABLE `characters` (
   `hair` tinyint(4) NOT NULL default '0',
   `hair_color` int(11) NOT NULL default '0',
   `clothes_color` tinyint(4) NOT NULL default '0',
-  `weapon` int(11) NOT NULL default '1',
-  `shield` int(11) NOT NULL default '0',
+  `righthand` int(11) NOT NULL default '1',
+  `lefthand` int(11) NOT NULL default '0',
+  `armor` int(11) default NULL,
+  `garment` int(11) default NULL,
+  `shoes` int(11) default NULL,
+  `accessory1` int(11) default NULL,
+  `accessory2` int(11) default NULL,
   `head_top` int(11) NOT NULL default '0',
   `head_mid` int(11) NOT NULL default '0',
   `head_bottom` int(11) NOT NULL default '0',
@@ -99,7 +104,7 @@ CREATE TABLE `characters` (
   KEY `party_id` (`party_id`),
   KEY `guild_id` (`guild_id`),
   KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=41 ;
+) ENGINE=MyISAM AUTO_INCREMENT=48 DEFAULT CHARSET=latin1 AUTO_INCREMENT=48 ;
 
 -- 
 -- Dumping data for table `characters`

@@ -13,6 +13,22 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 111 -
+[2007/01/15] - RaX - Notes/Overview: Added character defaults to Character.ini and
+ implemented them in characterserver.
+[2007/01/15] - RaX - Added Game Database fields armor, garment, shoes, accessory1, and
+ accessory2. Renamed Weapon and shield to RightHand and LeftHand, respectively, both
+ internally and database side.
+[2007/01/15] - RaX - Corrected spelling mistakes in console messages (I before E except
+ after C in Received).
+[2007/01/15] - RaX - Fixed character.txt in jansql - Tsu, you committed the character
+ "tonto" =).
+[2007/01/15] - RaX - Added armor, garment, shoes, accessory1, and accessory2 as
+ properties to Character class.
+[2007/01/15] - RaX - Renamed DatabaseTXT.pas to PacketDB.pas.
+[2007/01/15] - RaX - Moved Gameobjects to classes and renamed to Being.
+-
+
 - Rev 110 -
 [2007/01/14] - Tsusai - Notes/Overview: Zone communications to character server in place.
  Still no connection for the RO Client to make the connection to the Zone just yet.

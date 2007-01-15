@@ -31,7 +31,7 @@ uses
 	IdContext,
 	Classes,
 	Console,
-	DatabaseTXT;
+	PacketDB;
 
 //------------------------------------------------------------------------------
 //ActivateServer                                                       FUNCTION

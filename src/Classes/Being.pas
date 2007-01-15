@@ -1,14 +1,14 @@
 //------------------------------------------------------------------------------
-//GameObjects                                                              UNIT
+//Being                                                                   UNIT
 //------------------------------------------------------------------------------
 //	What it does-
-//			Contains RO environment types, such as TBeing.
+//			Contains RO environment type TBeing.
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-unit GameObjects;
+unit Being;
 
 interface
 

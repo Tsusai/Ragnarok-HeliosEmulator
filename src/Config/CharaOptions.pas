@@ -13,7 +13,8 @@ unit CharaOptions;
 
 interface
 	uses
-		IniFiles;
+		IniFiles,
+    Types;
 
 	type
 
@@ -33,6 +34,20 @@ interface
       fLoginKey     : String;
 
 			fServerName		: String;
+
+      fDefaultZeny  : Integer;
+      fDefaultMap   : String;
+      fDefaultPoint : TPoint;
+      fDefaultHeadTop  : Integer;
+      fDefaultHeadMid : Integer;
+      fDefaultHeadLow : Integer;
+      fDefaultArmor : Integer;
+      fDefaultRightHand: Integer;
+      fDefaultLeftHand  : Integer;
+      fDefaultShoes : Integer;
+      fDefaultGarment : Integer;
+      fDefaultAccessory1 : Integer;
+      fDefaultAccessory2 : Integer;
 
 //Gets/Sets
 			procedure SetPort(Value : Word);
@@ -58,6 +73,21 @@ interface
 
       //Options
 			property ServerName : String read fServerName write SetServerName;
+
+
+      property DefaultZeny: Integer read fDefaultZeny write fDefaultZeny;
+      property DefaultMap : String read fDefaultMap write fDefaultMap;
+      property DefaultPoint : TPoint read fDefaultPoint write fDefaultPoint;
+      property DefaultHeadTop: Integer read fDefaultHeadTop write fDefaultHeadTop;
+      property DefaultHeadMid: Integer read fDefaultHeadMid write fDefaultHeadMid;
+      property DefaultHeadLow: Integer read fDefaultHeadLow write fDefaultHeadLow;
+      property DefaultRightHand: Integer read fDefaultRightHand write fDefaultRightHand;
+      property DefaultLeftHand: Integer read fDefaultLeftHand write fDefaultLeftHand;
+      property DefaultArmor: Integer read fDefaultArmor write fDefaultArmor;
+      property DefaultGarment: Integer read fDefaultGarment write fDefaultGarment;
+      property DefaultShoes: Integer read fDefaultShoes write fDefaultShoes;
+      property DefaultAccessory1: Integer read fDefaultAccessory1 write fDefaultAccessory1;
+      property DefaultAccessory2: Integer read fDefaultAccessory2 write fDefaultAccessory2;
 
 			//Public methods
 			procedure Load;
@@ -138,8 +168,34 @@ implementation
 				Section.Values['ServerName'] := 'Helios';
 			end;
       fServerName			:= Section.Values['ServerName'];
-
 		end;{Subroutine LoadOptions}
+    //--------------------------------------------------------------------------
+
+
+    //--------------------------------------------------------------------------
+    //LoadCharacterDefaults                                       SUB PROCEDURE
+    //--------------------------------------------------------------------------
+    procedure LoadCharacterDefaults;
+    begin
+      ReadSectionValues('CharacterDefaults', Section);
+      DefaultZeny       := StrToIntDef(Section.Values['Zeny'], 0);
+      if Section.Values['Map'] = '' then begin
+				Section.Values['Map'] := 'new_1-1';
+			end;
+      DefaultMap        := Section.Values['Map'];
+      fDefaultPoint.X   := StrToIntDef(Section.Values['Point.X'], 150);
+      fDefaultPoint.Y   := StrToIntDef(Section.Values['Point.Y'], 86);
+      DefaultHeadTop    := StrToIntDef(Section.Values['HeadTop'], -1);
+      DefaultHeadMid    := StrToIntDef(Section.Values['HeadMid'], -1);
+      DefaultHeadLow    := StrToIntDef(Section.Values['HeadLow'], -1);
+      DefaultRightHand  := StrToIntDef(Section.Values['RightHand'], 1201);
+      DefaultLeftHand   := StrToIntDef(Section.Values['LeftHand'], -1);
+      DefaultArmor      := StrToIntDef(Section.Values['Armor'], 2301);
+      DefaultShoes      := StrToIntDef(Section.Values['Shoes'], -1);
+      DefaultGarment    := StrToIntDef(Section.Values['Garment'], -1);
+      DefaultAccessory1 := StrToIntDef(Section.Values['Accessory1'], -1);
+      DefaultAccessory2 := StrToIntDef(Section.Values['Accessory2'], -1);
+    end;{LoadCharacterDefaults}
     //--------------------------------------------------------------------------
 
 	begin
@@ -151,6 +207,7 @@ implementation
     LoadCommunication;
     LoadSecurity;
     LoadOptions;
+    LoadCharacterDefaults;
 
 		Section.Free;
 
@@ -183,6 +240,22 @@ implementation
 
     //Options
 		WriteString('Options','ServerName',ServerName);
+
+    //CharacterDefaults
+    WriteString('CharacterDefaults','Zeny',IntToStr(DefaultZeny));
+    WriteString('CharacterDefaults','Map',DefaultMap);
+    WriteString('CharacterDefaults','Point.X',IntToStr(fDefaultPoint.X));
+    WriteString('CharacterDefaults','Point.Y',IntToStr(DefaultPoint.Y));
+    WriteString('CharacterDefaults','HeadTop',IntToStr(DefaultHeadTop));
+    WriteString('CharacterDefaults','HeadMid',IntToStr(DefaultHeadMid));
+    WriteString('CharacterDefaults','HeadLow',IntToStr(DefaultHeadLow));
+    WriteString('CharacterDefaults','RightHand',IntToStr(DefaultRightHand));
+    WriteString('CharacterDefaults','LeftHand',IntToStr(DefaultLeftHand));
+    WriteString('CharacterDefaults','Armor',IntToStr(DefaultArmor));
+    WriteString('CharacterDefaults','Shoes',IntToStr(DefaultShoes));
+    WriteString('CharacterDefaults','Garment',IntToStr(DefaultGarment));
+    WriteString('CharacterDefaults','Accessory1',IntToStr(DefaultAccessory1));
+    WriteString('CharacterDefaults','Accessory2',IntToStr(DefaultAccessory2));
 
 		UpdateFile;
 	end;{Save}

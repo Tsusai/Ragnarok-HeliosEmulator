@@ -84,7 +84,7 @@ compile for linux, at the same time*}
 	//Game Objects
 	Account in 'Classes\Account.pas',
 	Character in 'Classes\Character.pas',
-	GameObjects in 'Database\GameObjects.pas',
+	Being in 'Classes\Being.pas',
 	Map in 'Classes\Map.pas',
 
 	//Lists
@@ -98,7 +98,7 @@ compile for linux, at the same time*}
 	GameDatabaseTemplate in 'Classes\Database\Game\GameDatabaseTemplate.pas',
 	StaticDatabaseTemplate in 'Classes\Database\Static\StaticDatabaseTemplate.pas',
 	DatabaseConstants in 'Constants\DatabaseConstants.pas',
-	DatabaseTXT in 'Database\DatabaseTXT.pas',
+	PacketDB in 'Database\PacketDB.pas',
 	JanSQLCommonDatabase in 'Classes\Database\Common\JanSQLCommonDatabase.pas',
 	MySQLCommonDatabase in 'Classes\Database\Common\MySQLCommonDatabase.pas',
 	JanSQLGameDatabase in 'Classes\Database\Game\JanSQLGameDatabase.pas',
@@ -173,7 +173,7 @@ compile for linux, at the same time*}
 	//Game Objects
 	Account in 'Classes/Account.pas',
 	Character in 'Classes/Character.pas',
-	GameObjects in 'Database/GameObjects.pas',
+	Being in 'Classes/Being.pas',
 	Map in 'Classes/Map.pas',
 
 	//Lists
@@ -187,7 +187,7 @@ compile for linux, at the same time*}
 	GameDatabaseTemplate in 'Classes/Database/Game/GameDatabaseTemplate.pas',
 	StaticDatabaseTemplate in 'Classes/Database/Static/StaticDatabaseTemplate.pas',
 	DatabaseConstants in 'Constants/DatabaseConstants.pas',
-	DatabaseTXT in 'Database/DatabaseTXT.pas',
+	PacketDB in 'Database/PacketDB.pas',
 	JanSQLCommonDatabase in 'Classes/Database/Common/JanSQLCommonDatabase.pas',
 	MySQLCommonDatabase in 'Classes/Database/Common/MySQLCommonDatabase.pas',
 	JanSQLGameDatabase in 'Classes/Database/Game/JanSQLGameDatabase.pas',

@@ -95,6 +95,7 @@ uses
 	TCPServerRoutines,
 	ZoneServerInfo,
 	//3rd
+  Types,
 	StrUtils,
 	CharaList,
 	Console;
@@ -297,7 +298,7 @@ end;{LoginClientRead}
 //SendCharas			                                                    PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//      Verifies the new connection by checking the account ID which is recieved
+//      Verifies the new connection by checking the account ID which is received
 //    and the two random keys generated during login. Upon validation, check
 //    database for any/all created characters.
 //
@@ -367,11 +368,11 @@ begin
 							WriteBufferWord(Ver+(Count*106)+ 50, Speed,ReplyBuffer);
 							WriteBufferWord(Ver+(Count*106)+ 52, JID,ReplyBuffer);
 							WriteBufferWord(Ver+(Count*106)+ 54, Hair,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 56, Weapon,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 56, RightHand,ReplyBuffer);
 							WriteBufferWord(Ver+(Count*106)+ 58, BaseLV,ReplyBuffer);
 							WriteBufferWord(Ver+(Count*106)+ 60, SkillPts,ReplyBuffer);
 							WriteBufferWord(Ver+(Count*106)+ 62, HeadBottom,ReplyBuffer); //Head3
-							WriteBufferWord(Ver+(Count*106)+ 64, Shield,ReplyBuffer);
+							WriteBufferWord(Ver+(Count*106)+ 64, LeftHand,ReplyBuffer);
 							WriteBufferWord(Ver+(Count*106)+ 66, HeadTop,ReplyBuffer); //head1
 							WriteBufferWord(Ver+(Count*106)+ 68, HeadMid,ReplyBuffer); //head2
 							WriteBufferWord(Ver+(Count*106)+ 70, HairColor,ReplyBuffer);
@@ -570,7 +571,7 @@ begin
 				ACharacter.JobLV          := 1;
 				ACharacter.JID            := 0;
 				ACharacter.Speed          := 50;
-				ACharacter.Zeny           := 0;
+				ACharacter.Zeny           := Options.DefaultZeny;
 				ACharacter.ParamBase[STR] := StatPoints[0];
 				ACharacter.ParamBase[AGI] := StatPoints[1];
 				ACharacter.ParamBase[VIT] := StatPoints[2];
@@ -592,17 +593,21 @@ begin
 				ACharacter.Hair           := HairStyle;
 				ACharacter.HairColor      := HairColor;
 				ACharacter.ClothesColor   := 0;
-				ACharacter.Weapon         := 0;
-				ACharacter.Shield         := 0;
-				ACharacter.HeadTop        := 0;
-				ACharacter.HeadMid        := 0;
-				ACharacter.HeadBottom     := 0;
-				ACharacter.Map            := 'prontera';
-				//ACharacter.Point.X        := 156;
-				//ACharacter.Point.Y        := 180;
-				ACharacter.SaveMap        := 'prontera';
-				//ACharacter.SavePoint.X    := 156;
-				//ACharacter.SavePoint.Y    := 180;
+
+				ACharacter.RightHand      := Options.DefaultRightHand;
+				ACharacter.LeftHand       := Options.DefaultLeftHand;
+        ACharacter.Armor          := Options.DefaultArmor;
+        ACharacter.Garment        := Options.DefaultGarment;
+        ACharacter.Shoes          := Options.DefaultShoes;
+        ACharacter.Accessory1     := Options.DefaultAccessory1;
+        ACharacter.Accessory2     := Options.DefaultAccessory2;
+				ACharacter.HeadTop        := Options.DefaultHeadTop;
+				ACharacter.HeadMid        := Options.DefaultHeadMid;
+				ACharacter.HeadBottom     := Options.DefaultHeadLow;
+				ACharacter.Map            := Options.DefaultMap;
+				ACharacter.Point          := Point(Options.DefaultPoint.X,Options.DefaultPoint.Y);
+				ACharacter.SaveMap        := Options.DefaultMap;
+				ACharacter.SavePoint      := Point(Options.DefaultPoint.X,Options.DefaultPoint.Y);
 				ACharacter.PartnerID      := 0;
 				ACharacter.ParentID1      := 0;
 				ACharacter.ParentID2      := 0;
@@ -632,11 +637,11 @@ begin
 					WriteBufferWord(2+ 50, Speed,ReplyBuffer);
 					WriteBufferWord(2+ 52, JID,ReplyBuffer);
 					WriteBufferWord(2+ 54, Hair,ReplyBuffer);
-					WriteBufferWord(2+ 56, Weapon,ReplyBuffer);
+					WriteBufferWord(2+ 56, RightHand,ReplyBuffer);
 					WriteBufferWord(2+ 58, BaseLV,ReplyBuffer);
 					WriteBufferWord(2+ 60, SkillPts,ReplyBuffer);
 					WriteBufferWord(2+ 62, HeadBottom,ReplyBuffer);
-					WriteBufferWord(2+ 64, Shield,ReplyBuffer);
+					WriteBufferWord(2+ 64, LeftHand,ReplyBuffer);
 					WriteBufferWord(2+ 66, HeadTop,ReplyBuffer);
 					WriteBufferWord(2+ 68, HeadMid,ReplyBuffer);
 					WriteBufferWord(2+ 70, HairColor,ReplyBuffer);
@@ -834,7 +839,7 @@ begin
 					Size := BufferReadWord(2,ABuffer);
 					RecvBuffer(AClient,ABuffer[4],Size-4);
 					TZoneServerLink(AClient.Data).Info.WAN := BufferReadString(4,Size-4,ABuffer);
-					MainProc.Console('Character Server: Recieved updated Zone Server WANIP.');
+					MainProc.Console('Character Server: Received updated Zone Server WANIP.');
 				end;
 			end;
 		$2103: // Zone Server sending new LAN location details
@@ -845,7 +850,7 @@ begin
 					Size := BufferReadWord(2,ABuffer);
 					RecvBuffer(AClient,ABuffer[4],Size-4);
 					TZoneServerLink(AClient.Data).Info.LAN := BufferReadString(4,Size-4,ABuffer);
-					MainProc.Console('Character Server: Recieved updated Zone Server LANIP.');
+					MainProc.Console('Character Server: Received updated Zone Server LANIP.');
 				end;
 			end;
 		$2104: // Zone Server sending new Online User count
@@ -854,7 +859,7 @@ begin
 				begin
 					RecvBuffer(AClient,ABuffer[2],GetPacketLength($2104)-2);
 					//TZoneServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
-					MainProc.Console('Character Server: Recieved updated Zone Server Online Users.');
+					MainProc.Console('Character Server: Received updated Zone Server Online Users.');
 				end;
 			end;
 		else

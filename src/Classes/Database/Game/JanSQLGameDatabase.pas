@@ -440,8 +440,13 @@ begin
 			'hair=%d, ' +
 			'hair_color=%d, ' +
 			'clothes_color=%d, ' +
-			'weapon=%d, ' +
-			'shield=%d, ' +
+			'righthand=%d, ' +
+			'lefthand=%d, ' +
+      'armor=%d, ' +
+      'garment=%d, ' +
+      'shoes=%d, ' +
+      'accessory1=%d, ' +
+      'accessory2=%d, ' +
 			'head_top=%d, ' +
 			'head_mid=%d, ' +
 			'head_bottom=%d, ' +
@@ -488,8 +493,13 @@ begin
 			Hair,
 			HairColor,
 			ClothesColor,
-			Weapon,
-			Shield,
+			RightHand,
+			LeftHand,
+      Armor,
+      Garment,
+      Shoes,
+      Accessory1,
+      Accessory2,
 			HeadTop,
 			HeadMid,
 			HeadBottom,
@@ -637,8 +647,8 @@ begin
 			Hair            := StrToIntDef(QueryResult.Records[0].Fields[28].Value, 0);
 			HairColor       := StrToIntDef(QueryResult.Records[0].Fields[29].Value, 0);
 			ClothesColor    := StrToIntDef(QueryResult.Records[0].Fields[30].Value, 0);
-			Weapon          := StrToIntDef(QueryResult.Records[0].Fields[31].Value, 0);
-			Shield          := StrToIntDef(QueryResult.Records[0].Fields[32].Value, 0);
+			RightHand       := StrToIntDef(QueryResult.Records[0].Fields[31].Value, 0);
+			LeftHand        := StrToIntDef(QueryResult.Records[0].Fields[32].Value, 0);
 			HeadTop         := StrToIntDef(QueryResult.Records[0].Fields[33].Value, 0);
 			HeadMid         := StrToIntDef(QueryResult.Records[0].Fields[34].Value, 0);
 			HeadBottom      := StrToIntDef(QueryResult.Records[0].Fields[35].Value, 0);

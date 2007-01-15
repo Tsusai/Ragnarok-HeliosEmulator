@@ -49,8 +49,13 @@ uses
 		fHair             : Word;
 		fHairColor        : Word;
 		fClothesColor     : Word;
-		fWeapon           : Word;
-		fShield           : Word;
+		fRightHand        : Word;
+		fLeftHand         : Word;
+    fArmor            : Word;
+    fGarment          : Word;
+    fShoes            : Word;
+    fAccessory1       : Word;
+    fAccessory2       : Word;
 		fHeadTop          : Word;
 		fHeadMid          : Word;
 		fHeadBottom       : Word;
@@ -94,8 +99,13 @@ uses
 		Procedure SetHair(Value : word);
 		Procedure SetHairColor(Value : word);
 		Procedure SetClothesColor(Value : word);
-		Procedure SetWeapon(Value : word);
-		Procedure SetShield(Value : word);
+		Procedure SetRightHand(Value : word);
+		Procedure SetLeftHand(Value : word);
+    Procedure SetArmor(Value : Word);
+    Procedure SetGarment(Value : Word);
+    Procedure SetShoes(Value : Word);
+    Procedure SetAccessory1(Value : Word);
+    Procedure SetAccessory2(Value : Word);
 		Procedure SetHeadTop(Value : word);
 		Procedure SetHeadMid(Value : word);
 		Procedure SetHeadBottom(Value : word);
@@ -149,8 +159,13 @@ uses
 		property Hair      : Word       read fHair write SetHair;
 		property HairColor : Word       read fHairColor write SetHairColor;
 		property ClothesColor: Word     read fClothesColor write SetClothesColor;
-		property Weapon    : Word       read fWeapon write SetWeapon;
-		property Shield    : Word       read fShield write SetShield;
+		property RightHand : Word       read fRightHand write SetRightHand;
+		property LeftHand  : Word       read fLeftHand write SetLeftHand;
+    property Armor     : Word       read fArmor write SetArmor;
+    property Garment   : Word       read fGarment write SetGarment;
+    property Shoes     : Word       read fShoes write SetShoes;
+    property Accessory1: Word       read fAccessory1 write SetAccessory1;
+    property Accessory2: Word       read fAccessory1 write SetAccessory2;
 		property HeadTop   : Word       read fHeadTop write SetHeadTop;
 		property HeadMid   : Word       read fHeadMid write SetHeadMid;
 		property HeadBottom: Word       read fHeadBottom write SetHeadBottom;
@@ -669,26 +684,26 @@ end;{SetClothesColor}
 
 
 //------------------------------------------------------------------------------
-//SetWeapon                                                        PROCEDURE
+//SetRightHand                                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Weapon to Value. Also, lets our object know that data has
+//			Sets the Right Hand to Value. Also, lets our object know that data has
 //    changed.
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetWeapon(Value : word);
+procedure TCharacter.SetRightHand(Value : word);
 begin
 	DataChanged := TRUE;
-	fWeapon     := Value;
+	fRightHand  := Value;
 end;{SetWeapon}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetShield                                                           PROCEDURE
+//SetLeftHand                                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sets the Shield to Value. Also, lets our object know that data has
@@ -698,11 +713,106 @@ end;{SetWeapon}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetShield(Value : word);
+procedure TCharacter.SetLeftHand(Value : word);
 begin
 	DataChanged := TRUE;
-	fShield     := Value;
+	fLeftHand   := Value;
 end;{SetShield}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetArmor                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Armor to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		January 15th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.SetArmor(Value : word);
+begin
+	DataChanged := TRUE;
+	fArmor   := Value;
+end;{SetArmor}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetGarment                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Garment to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		January 15th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.SetGarment(Value : word);
+begin
+	DataChanged := TRUE;
+	fGarment   := Value;
+end;{SetGarment}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetShoes                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Shoes to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		January 15th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.SetShoes(Value : word);
+begin
+	DataChanged := TRUE;
+	fShoes   := Value;
+end;{SetShoes}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetAccessory1                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Accessory1 to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		January 15th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.SetAccessory1(Value : word);
+begin
+	DataChanged := TRUE;
+	fAccessory1   := Value;
+end;{SetAccessory1}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetAccessory2                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Accessory2 to Value. Also, lets our object know that data has
+//    changed.
+//
+//	Changes -
+//		January 15th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.SetAccessory2(Value : word);
+begin
+	DataChanged := TRUE;
+	fAccessory2   := Value;
+end;{SetAccessory2}
 //------------------------------------------------------------------------------
 
 

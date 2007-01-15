@@ -565,7 +565,7 @@ end;{OnException}
 					Size := BufferReadWord(2,Buffer);
 					RecvBuffer(AClient,Buffer[4],Size-4);
 					TCharaServerLink(AClient.Data).Info.WAN := BufferReadString(4,Size-4,Buffer);
-					MainProc.Console('Login Server: Recieved updated Character Server WANIP.');
+					MainProc.Console('Login Server: Received updated Character Server WANIP.');
 				end;
 			end;
 		$2003:
@@ -576,7 +576,7 @@ end;{OnException}
 					Size := BufferReadWord(2,Buffer);
 					RecvBuffer(AClient,Buffer[4],Size-4);
 					TCharaServerLink(AClient.Data).Info.LAN := BufferReadString(4,Size-4,Buffer);
-					MainProc.Console('Login Server: Recieved updated Character Server LANIP.');
+					MainProc.Console('Login Server: Received updated Character Server LANIP.');
 				end;
 			end;
 		$2004:
@@ -585,7 +585,7 @@ end;{OnException}
 				begin
 					RecvBuffer(AClient,Buffer[2],GetPacketLength($2004)-2);
 					TCharaServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,Buffer);
-					MainProc.Console('Login Server: Recieved updated Character Server Online Users.');
+					MainProc.Console('Login Server: Received updated Character Server Online Users.');
 				end;
 			end;
 		else

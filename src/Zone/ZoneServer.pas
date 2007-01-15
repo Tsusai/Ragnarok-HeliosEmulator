@@ -77,7 +77,7 @@ uses
 	BufferIO,
 	WinLinux,
 	Console,
-	DatabaseTXT,
+	PacketDB,
 	Globals,
 	TCPServerRoutines,
 	ZoneCharaPackets,

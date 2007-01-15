@@ -405,8 +405,13 @@ begin
 			'hair=%d, ' +
 			'hair_color=%d, ' +
 			'clothes_color=%d, ' +
-			'weapon=%d, ' +
-			'shield=%d, ' +
+			'righthand=%d, ' +
+			'lefthand=%d, ' +
+      'armor=%d, ' +
+      'garment=%d, ' +
+      'shoes=%d, ' +
+      'accessory1=%d, ' +
+      'accessory2=%d, ' +
 			'head_top=%d, ' +
 			'head_mid=%d, ' +
 			'head_bottom=%d, ' +
@@ -453,8 +458,13 @@ begin
 			Hair,
 			HairColor,
 			ClothesColor,
-			Weapon,
-			Shield,
+			RightHand,
+			LeftHand,
+      Armor,
+      Garment,
+      Shoes,
+      Accessory1,
+      Accessory2,
 			HeadTop,
 			HeadMid,
 			HeadBottom,
@@ -579,8 +589,8 @@ begin
 			Hair            := StrToInt(QueryResult.FieldValue(28));
 			HairColor       := StrToInt(QueryResult.FieldValue(29));
 			ClothesColor    := StrToInt(QueryResult.FieldValue(30));
-			Weapon          := StrToInt(QueryResult.FieldValue(31));
-			Shield          := StrToInt(QueryResult.FieldValue(32));
+			RightHand       := StrToInt(QueryResult.FieldValue(31));
+			LeftHand        := StrToInt(QueryResult.FieldValue(32));
 			HeadTop         := StrToInt(QueryResult.FieldValue(33));
 			HeadMid         := StrToInt(QueryResult.FieldValue(34));
 			HeadBottom      := StrToInt(QueryResult.FieldValue(35));
