@@ -13,6 +13,13 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 112 -
+[2007/01/15] - RaX - Updated Static database - added fields and converted from latest(11.2)
+ aegis mapinfo dump. - Table Maps
+[2007/01/15] - RaX - Added /bin/Maps folder with all kro 11.2 maps as specified in the
+ newly converted maps database. (644 maps)
+-
+
 - Rev 111 -
 [2007/01/15] - RaX - Notes/Overview: Added character defaults to Character.ini and
  implemented them in characterserver.
