@@ -36,7 +36,7 @@ type
 		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;virtual;
 
 		Function GetMapCanSave(MapName : String) : Boolean;virtual;
-
+		Function GetMapZoneID(MapName : String) : Integer;virtual;
 	protected
 		procedure Connect(); virtual;
 		procedure Disconnect();virtual;
@@ -87,6 +87,11 @@ end;
 Function TStaticDatabaseTemplate.GetMapCanSave(MapName : String) : Boolean;
 begin
 	Result := FALSE;
+end;
+
+Function TStaticDatabaseTemplate.GetMapZoneID(MapName : String) : Integer;
+begin
+	Result := 0;
 end;
 //------------------------------------------------------------------------------
 {END TStaticDatabaseTemplate}

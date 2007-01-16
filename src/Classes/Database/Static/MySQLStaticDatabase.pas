@@ -43,6 +43,8 @@ type
 		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;override;
 
 		Function GetMapCanSave(MapName : String) : Boolean;override;
+		Function GetMapZoneID(MapName : String) : Integer;override;
+
 	protected
 		procedure Connect(); override;
 		function SendQuery(
@@ -251,6 +253,35 @@ begin
 	end else Result := FALSE;
 	QueryResult.Free;
 end;//GetMapCanSave
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetMapZoneID							                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Returns the ID of a zone that is handling a certain map.
+//
+//	Changes -
+//		January 16th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+function TMySQLStaticDatabase.GetMapZoneID(MapName : String) : Integer;
+var
+	QueryResult : TMySQLResult;
+	Success			: Boolean;
+begin
+	QueryResult :=
+		SendQuery(
+		Format('SELECT zoneid FROM maps WHERE mapname = ''%s''',
+			[MapName]),TRUE,Success);
+
+	if (QueryResult.RowsCount = 1) then
+	begin
+			Result := StrToInt(QueryResult.FieldValue(0));
+	end else Result := -1;
+	QueryResult.Free;
+end;//GetMapZoneID
 //------------------------------------------------------------------------------
 {END MySQLStaticDatabase}
 end.

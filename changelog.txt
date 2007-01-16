@@ -13,6 +13,13 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 113 -
+[2007/01/16] - RaX - Updated Static Databases, added query to return the zone id a map is
+ assigned to from our maps table.
+[2007/01/16] - RaX - Removed setaccount from jansqlstaticdatabase...why that was still there
+ I still do not know.
+-
+
 - Rev 112 -
 [2007/01/15] - RaX - Updated Static database - added fields and converted from latest(11.2)
  aegis mapinfo dump. - Table Maps

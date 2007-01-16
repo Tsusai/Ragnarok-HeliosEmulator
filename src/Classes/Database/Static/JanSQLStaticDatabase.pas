@@ -45,6 +45,7 @@ type
 		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;override;
 
 		Function GetMapCanSave(MapName : String) : Boolean;override;
+		Function GetMapZoneID(MapName : String): Integer; override;
 
 	protected
 		procedure Connect(); override;
@@ -196,41 +197,6 @@ end;//SendQuery
 
 
 //------------------------------------------------------------------------------
-//TJanSQLStaticDatabase.SetAccount()                                        Procedure
-//------------------------------------------------------------------------------
-//	What it does-
-//			Builds a taccount object from a query result.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//		December 27th, 2006 - Tsusai - Fixed login key and gender char reading
-//
-//------------------------------------------------------------------------------
-procedure SetAccount(
-	var AnAccount : TAccount;
-	var QueryResult : TJanRecordSet
-);
-begin
-	AnAccount := TAccount.Create;
-	AnAccount.ID          := StrToInt(QueryResult.records[0].fields[0].value);
-	AnAccount.Username     := QueryResult.records[0].fields[1].value;
-	AnAccount.Password     := QueryResult.records[0].fields[2].value;
-	//Tsusai - For Gender, we need to return the first char, thats
-	//why there is a [1]
-	AnAccount.Gender       := String(QueryResult.records[0].fields[4].value)[1];
-	AnAccount.LoginCount   := StrToIntDef(QueryResult.records[0].fields[5].value,0);
-	AnAccount.EMail        := QueryResult.records[0].fields[6].value;
-	AnAccount.LoginKey[1]  := StrToIntDef(QueryResult.records[0].fields[7].value,0);
-	AnAccount.LoginKey[2]  := StrToIntDef(QueryResult.records[0].fields[8].value,0);
-	AnAccount.Level        := StrToIntDef(QueryResult.records[0].fields[9].value,0);
-	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.records[0].fields[11].value);
-	AnAccount.LastIP       := QueryResult.records[0].fields[12].value;
-	AnAccount.Bantime      := ConvertMySQLTime(QueryResult.records[0].fields[14].value);
-end;//SetAccount
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
 //TJanSQLStaticDatabase.GetBaseHP()                                          FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
@@ -317,6 +283,36 @@ begin
 	SendQuery('RELEASE TABLE maps');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetMapCanSave
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetMapZoneID							                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Checks to see if a map can save or not.
+//
+//	Changes -
+//		January 10th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Function TJanSQLStaticDatabase.GetMapZoneID(MapName : String) : Integer;
+var
+	QueryResult : TJanRecordSet;
+	ResultIdentifier : Integer;
+begin
+	ResultIdentifier :=
+		SendQuery(
+		Format('SELECT zoneid FROM maps WHERE mapname = ''%s''',
+			[MapName]));
+	QueryResult := Database.RecordSets[ResultIdentifier];
+	if (QueryResult.RecordCount = 1) then
+	begin
+			Result := StrToInt(QueryResult.Records[0].Fields[0].Value);
+	end else Result := -1;
+	SendQuery('RELEASE TABLE maps');
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+end;//GetMapZoneID
 //------------------------------------------------------------------------------
 {END JanSQLStaticDatabase}
 end.
