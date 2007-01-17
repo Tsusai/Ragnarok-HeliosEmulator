@@ -22,7 +22,6 @@ uses
 	List32,
 	SysUtils,
 	PacketTypes,
-	Database,
 	CharaOptions;
 
 type
@@ -39,8 +38,6 @@ type
 
 		TCPServer       : TIdTCPServer;
 		CharaToLoginClient : TInterClient;
-
-		Database : TDatabase;
 
 		Procedure OnDisconnect(AConnection: TIdContext);
 		Procedure OnException(AConnection: TIdContext;
@@ -122,8 +119,6 @@ Constructor TCharacterServer.Create;
 begin
 	LoadOptions;
 
-	Database := TDatabase.Create(TRUE,TRUE,FALSE);
-
 	TCPServer := TIdTCPServer.Create;
 	TCPServer.OnExecute    := ParseCharaServ;
 	TCPServer.OnException  := OnException;
@@ -153,7 +148,6 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TCharacterServer.Destroy;
 begin
-	Database.Free;
 
 	TCPServer.Free;
 	CharaToLoginClient.Free;
@@ -324,7 +318,7 @@ begin
 	Count     := 0;
 	Ver       := 24;
 	AccountID := BufferReadCardinal(2, ABuffer);
-	AnAccount := Database.CommonData.GetAccount(AccountID);
+	AnAccount := ADatabase.CommonData.GetAccount(AccountID);
 
 	if Assigned(AnAccount) then
 	begin
@@ -337,7 +331,7 @@ begin
 				TThreadLink(AClient.Data).AccountLink := AnAccount;
 				SendPadding(AClient); //Legacy padding
 
-				ACharaList := Database.GameData.GetAccountCharas(AccountID);
+				ACharaList := ADatabase.GameData.GetAccountCharas(AccountID);
 				for Index := 0 to ACharaList.Count-1 do
 				begin
 					ACharacter := ACharaList.Items[Index];
@@ -522,7 +516,7 @@ begin
 	TotalStatPt := 0;
 
 	//Name Check.
-	if NOT Database.GameData.CharaExists(CharaName) then
+	if NOT ADatabase.GameData.CharaExists(CharaName) then
 	begin
 		//Stat Point check.
 		for idx := 0 to 5 do begin
@@ -544,7 +538,7 @@ begin
 		end;
 
 		//Slot Check.
-		if Database.GameData.CharaExists(Account.ID, SlotNum) then
+		if ADatabase.GameData.CharaExists(Account.ID, SlotNum) then
 		begin
 			CreateCharaError(INVALIDMISC);
 			Validated := FALSE;
@@ -556,7 +550,7 @@ begin
 			//Validated...Procede with creation
 			ACharacter := TCharacter.Create;
 			//Set a record in Database for our new character
-			if Database.GameData.CreateChara(
+			if ADatabase.GameData.CreateChara(
 				ACharacter,Account.ID,CharaName) then
 			begin
 				ACharacter.Name           := CharaName;
@@ -570,7 +564,6 @@ begin
 				ACharacter.BaseLV         := 1;
 				ACharacter.JobLV          := 1;
 				ACharacter.JID            := 0;
-				ACharacter.Speed          := 50;
 				ACharacter.Zeny           := Options.DefaultZeny;
 				ACharacter.ParamBase[STR] := StatPoints[0];
 				ACharacter.ParamBase[AGI] := StatPoints[1];
@@ -578,10 +571,11 @@ begin
 				ACharacter.ParamBase[INT] := StatPoints[3];
 				ACharacter.ParamBase[DEX] := StatPoints[4];
 				ACharacter.ParamBase[LUK] := StatPoints[5];
-				ACharacter.MaxHP          := 0;//need to calculate HP/SP values here.
-				ACharacter.MaxSP          := 0;
-				ACharacter.HP             := 0;
-				ACharacter.SP             := 0;
+        ACharacter.CalcMaxHP;
+        ACharacter.CalcMaxSP;
+        ACharacter.CalcSpeed;
+				ACharacter.HP             := ACharacter.MaxHP;
+				ACharacter.SP             := ACharacter.MaxSP;
 				ACharacter.StatusPts      := 0;
 				ACharacter.SkillPts       := 0;
 				ACharacter.Option         := 0;
@@ -616,7 +610,7 @@ begin
 				ACharacter.HomunID        := 0;
 
 				//INSERT ANY OTHER CREATION CHANGES HERE!
-				Database.GameData.SaveChara(ACharacter);
+				ADatabase.GameData.SaveChara(ACharacter);
 				with ACharacter do begin
 					WriteBufferWord(0, $006d,ReplyBuffer);
 					WriteBufferCardinal(2+  0, CID,ReplyBuffer);
@@ -702,7 +696,7 @@ begin
 	CharacterID := BufferReadCardinal(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TThreadLink(AClient.Data).AccountLink;
-	ACharacter := Database.GameData.GetChara(CharacterID,true);
+	ACharacter := ADatabase.GameData.GetChara(CharacterID,true);
 
 	if Assigned(ACharacter) then
 	begin
@@ -715,7 +709,7 @@ begin
 				begin
 					if CharacterList.Items[CharacterIndex].CID = ACharacter.CID then
 					begin
-						if Database.GameData.DeleteChara(ACharacter) then
+						if ADatabase.GameData.DeleteChara(ACharacter) then
 						begin
 							WriteBufferWord(0, $006f, ReplyBuffer);
 							SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));

@@ -13,6 +13,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 115 -
+[2007/01/17] - RaX - Joint commit by me and Tsusai, calcmaxhp/sp/speed are now in place and
+ pull from the static database. They also send to the client and show on character create.
+[2007/01/17] - RaX - Made databases global per exe once again due to circular include errors.
+-
+
 - Rev 114 -
 [2007/01/17] - RaX - Fixed my character database fubar. Forgot that a WORD type is unsigned =)
 [2007/01/17] - RaX - Updated SQL files to reflect new changes, all equipment fields are unsigned.

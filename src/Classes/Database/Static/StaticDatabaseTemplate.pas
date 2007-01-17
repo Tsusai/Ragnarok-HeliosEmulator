@@ -32,8 +32,8 @@ type
 		Constructor Create(EnableStaticDatabase : Boolean); virtual;
 		Destructor Destroy();override;
 
-		Function GetBaseHP(ACharacter : TCharacter) : Cardinal;virtual;
-		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;virtual;
+		Function GetBaseHP(ACharacter : TCharacter) : Word;virtual;
+		Function GetBaseSP(ACharacter : TCharacter) : Word;virtual;
 
 		Function GetMapCanSave(MapName : String) : Boolean;virtual;
 		Function GetMapZoneID(MapName : String) : Integer;virtual;
@@ -74,12 +74,12 @@ procedure TStaticDatabaseTemplate.Disconnect();
 begin
 end;
 
-Function TStaticDatabaseTemplate.GetBaseHP(ACharacter : TCharacter) : Cardinal;
+Function TStaticDatabaseTemplate.GetBaseHP(ACharacter : TCharacter) : Word;
 begin
 	Result := 0;
 end;
 
-Function TStaticDatabaseTemplate.GetBaseSP(ACharacter : TCharacter) : Cardinal;
+Function TStaticDatabaseTemplate.GetBaseSP(ACharacter : TCharacter) : Word;
 begin
 	Result := 0;
 end;

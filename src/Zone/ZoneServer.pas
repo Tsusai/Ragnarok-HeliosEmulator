@@ -19,7 +19,6 @@ uses
 	SysUtils,
 	PacketTypes,
 	Character,
-	Database,
 	ZoneOptions;
 
 type
@@ -57,8 +56,6 @@ type
 
 		ServerName    : String;
 		OnlineUsers   : Word;
-
-		Database : TDatabase;
 
 		Options          : TZoneOptions;
 
@@ -100,8 +97,6 @@ Constructor TZoneServer.Create;
 begin
 	LoadOptions;
 
-	Database := TDatabase.Create(TRUE,TRUE,TRUE);
-
 	TCPServer := TIdTCPServer.Create;
 	ToCharaTCPClient := TInterClient.Create('Zone','Character');
 	ToInterTCPClient := TInterClient.Create('Zone','Inter');
@@ -129,7 +124,6 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TZoneServer.Destroy;
 begin
-	Database.Free;
 	TCPServer.Free;
 	ToCharaTCPClient.Free;
 	ToInterTCPClient.Free;

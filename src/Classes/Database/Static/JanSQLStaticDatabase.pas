@@ -41,8 +41,8 @@ type
 		Constructor Create(EnableStaticDatabase : boolean; AParent : TDatabase); reintroduce; overload;
 		Destructor Destroy();override;
 
-		Function GetBaseHP(ACharacter : TCharacter) : Cardinal;override;
-		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;override;
+		Function GetBaseHP(ACharacter : TCharacter) : Word;override;
+		Function GetBaseSP(ACharacter : TCharacter) : Word;override;
 
 		Function GetMapCanSave(MapName : String) : Boolean;override;
 		Function GetMapZoneID(MapName : String): Integer; override;
@@ -206,15 +206,15 @@ end;//SendQuery
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TJanSQLStaticDatabase.GetBaseHP(ACharacter : TCharacter) : Cardinal;
+Function TJanSQLStaticDatabase.GetBaseHP(ACharacter : TCharacter) : Word;
 var
 	QueryResult : TJanRecordSet;
   ResultIdentifier : Integer;
 begin
 	ResultIdentifier :=
 		SendQuery(
-		Format('SELECT * FROM hp WHERE level = %d, job = ''%s''',
-			[ACharacter.BaseLV,ACharacter.JID]));
+		Format('SELECT %s FROM hp WHERE level = %d',
+			[ACharacter.JobName, ACharacter.BaseLV]));
 	QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
 	begin
@@ -236,19 +236,19 @@ end;//GetBaseHP
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TJanSQLStaticDatabase.GetBaseSP(ACharacter : TCharacter) : Cardinal;
+Function TJanSQLStaticDatabase.GetBaseSP(ACharacter : TCharacter) : Word;
 var
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
 begin
 	ResultIdentifier :=
 		SendQuery(
-		Format('SELECT * FROM sp WHERE level = %d, job = ''%s''',
-			[ACharacter.BaseLV,ACharacter.JID]));
+		Format('SELECT %s FROM sp WHERE level = %d',
+			[ACharacter.JobName, ACharacter.BaseLV]));
 	QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
 	begin
-			Result              := StrToInt(QueryResult.Records[0].Fields[0].Value);
+			Result  := StrToInt(QueryResult.Records[0].Fields[0].Value);
 	end else Result := 0;
 	SendQuery('RELEASE TABLE sp');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);

@@ -28,10 +28,11 @@ uses
 		fCharacterNumber  : Byte;
 		fName             : String;
 		fJID              : Word;
+    fJOB              : String;
 		fBaseLV           : Byte;
 		fJobLV            : Byte;
-		fBaseEXP          : Byte;
-		fJobEXP           : Byte;
+		fBaseEXP          : Cardinal;
+		fJobEXP           : Cardinal;
 		fZeny             : Cardinal;
 		fParamBase        : Array[STR..LUK] of Byte;
 		fMaxHP            : Word;
@@ -73,6 +74,8 @@ uses
 		fDataChanged      : Boolean; //For timed save procedure to activate.
 		fTimeToSave       : TDateTime;
 
+		fJobName          : string;
+
 	protected
 		procedure SetSaveTime(Value : boolean);
 
@@ -81,8 +84,8 @@ uses
 		procedure SetClass(Value : word);
 		procedure SetBaseLV(Value : byte);
 		procedure SetJobLV(Value : byte);
-		procedure SetBaseEXP(Value : byte);
-		procedure SetJobEXP(Value : byte);
+		procedure SetBaseEXP(Value : Cardinal);
+		procedure SetJobEXP(Value : Cardinal);
 		procedure SetZeny(Value : Cardinal);
 		function  GetBaseStats(Index : Byte) : byte;
 		procedure SetBaseStats(Index: byte; Value: byte);
@@ -128,6 +131,27 @@ uses
 		ID  : Cardinal; //Account ID
 		Speed : word; //Not in MySQL...odd...
 		Account : TAccount;
+		Direction : byte;
+
+		BaseNextEXP  : Cardinal;
+		JobNextEXP   : Cardinal;
+		Weight       : Cardinal;
+		MaxWeight    : Cardinal;
+
+		ParamUP : array [STR..LUK] of byte;
+		ParamBonus : array [STR..LUK] of byte;
+
+		MATK2 : word;
+		MATK1 : word;
+		DEF1 : word;
+		DEF2 : word;
+		MDEF1 : word;
+		MDEF2 : word;
+		HIT : word;
+		FLEE1 : word;
+		Lucky : word;
+		Critical : word;
+		ASpeed : word;
 
 		ClientVersion : Integer;
 		ClientInfo : TIdContext;
@@ -140,11 +164,11 @@ uses
 		property JID       : Word       read fJID write SetClass;
 		property BaseLV    : Byte       read fBaseLV write SetBaseLV;
 		property JobLV     : Byte       read fJobLV write SetJobLV;
-		property BaseEXP   : Byte       read fBaseEXP write SetBaseEXP;
-		property JobEXP    : Byte       read fJobEXP write SetJobEXP;
+		property BaseEXP   : Cardinal   read fBaseEXP write SetBaseEXP;
+		property JobEXP    : Cardinal   read fJobEXP write SetJobEXP;
 		property Zeny      : Cardinal   read fZeny write SetZeny;
 		property ParamBase[Index : byte] : byte read GetBaseStats write SetBaseStats;
-		property MaxHP     : Word       read fMaxHP write SetMaxHP;
+    property MaxHP     : Word       read fMaxHP write SetMaxHP;
 		property HP        : Word       read fHP write SetHP;
 		property MaxSP     : Word       read fMaxSP write SetMaxSP;
 		property SP        : Word       read fSP write SetSP;
@@ -180,7 +204,11 @@ uses
 		property Online    : Byte       read fOnline write SetOnline;
 		property HomunID   : Cardinal   read fHomunID write SetHomunID;
 
+		property JobName   : string     read fJobName;
+
 		procedure CalcMaxHP;
+    procedure CalcMaxSP;
+    procedure CalcSpeed;
 
 	end;{TCharacter}
 //------------------------------------------------------------------------------
@@ -189,8 +217,11 @@ implementation
 uses
 	//IDE
 	SysUtils,
+  Math,
 	//Helios
-	Globals
+	BufferIO,
+	Globals,
+	PacketTypes
 	;
 
 //------------------------------------------------------------------------------
@@ -266,6 +297,90 @@ procedure TCharacter.SetClass(Value : Word);
 begin
 	DataChanged := TRUE;
 	fJID        := Value;
+
+	case fJID of
+		JOB_NOVICE     :  fJobName := 'Novice';
+		JOB_SWORDSMAN  :  fJobName := 'Swordsman';
+		JOB_MAGE       :  fJobName := 'Magician';
+		JOB_ARCHER     :  fJobName := 'Archer';
+		JOB_ACOLYTE    :  fJobName := 'Acolyte';
+		JOB_MERCHANT   :  fJobName := 'Merchant';
+		JOB_THIEF      :  fJobName := 'Thief';
+
+		JOB_KNIGHT     :  fJobName := 'Knight';
+		JOB_PRIEST     :  fJobName := 'Priest';
+		JOB_WIZARD     :  fJobName := 'Wizard';
+		JOB_BLACKSMITH :  fJobName := 'Blacksmith';
+		JOB_HUNTER     :  fJobName := 'Hunter';
+		JOB_ASSASSIN   :  fJobName := 'Assassin';
+
+		JOB_CRUSADER   :  fJobName := 'Crusader';
+		JOB_MONK       :  fJobName := 'Monk';
+		JOB_SAGE       :  fJobName := 'Sage';
+		JOB_ROGUE      :  fJobName := 'Rogue';
+		JOB_ALCHEMIST  :  fJobName := 'Alchemist';
+		JOB_BARD       :  fJobName := 'Bard';
+		JOB_DANCER     :  fJobName := 'Dancer';
+
+		JOB_SNOVICE    :  fJobName := 'Super_Novice';
+
+		JOB_GUNSLINGER :  fJobName := 'Gunslinger';
+		JOB_NINJA      :  fJobName := 'Ninja';
+
+		HJOB_HIGH_NOVICE     : fJobName := 'High_Novice';
+		HJOB_HIGH_SWORDSMAN  : fJobName := 'High_Swordsman';
+		HJOB_HIGH_MAGE       : fJobName := 'High_Magician';
+		HJOB_HIGH_ARCHER     : fJobName := 'High_Archer';
+		HJOB_HIGH_ACOLYTE    : fJobName := 'High_Acolyte';
+		HJOB_HIGH_MERCHANT   : fJobName := 'High_Merchant';
+		HJOB_HIGH_THIEF      : fJobName := 'High_Thief';
+
+		HJOB_LORD_KNIGHT     : fJobName := 'Lord_Knight';
+		HJOB_HIGH_PRIEST     : fJobName := 'High_Priest';
+		HJOB_HIGH_WIZARD     : fJobName := 'High_Wizard';
+		HJOB_WHITESMITH      : fJobName := 'Whitesmith';
+		HJOB_SNIPER          : fJobName := 'Sniper';
+		HJOB_ASSASSIN_CROSS  : fJobName := 'Assassin_Cross';
+
+		HJOB_PALADIN         : fJobName := 'Paladin';
+		HJOB_CHAMPION        : fJobName := 'Champion';
+		HJOB_PROFESSOR       : fJobName := 'Scholar';
+		HJOB_STALKER         : fJobName := 'Stalker';
+		HJOB_CREATOR         : fJobName := 'Biochemist';
+		HJOB_CLOWN           : fJobName := 'Clown';
+		HJOB_GYPSY           : fJobName := 'Gypsy';
+
+		HJOB_BABY             : fJobName := 'Baby_Novice';
+		HJOB_BABY_SWORDSMAN   : fJobName := 'Baby_Swordsman';
+		HJOB_BABY_MAGE        : fJobName := 'Baby_Magician';
+		HJOB_BABY_ARCHER      : fJobName := 'Baby_Archer';
+		HJOB_BABY_ACOLYTE     : fJobName := 'Baby_Acolyte';
+		HJOB_BABY_MERCHANT    : fJobName := 'Baby_Merchant';
+		HJOB_BABY_THIEF       : fJobName := 'Baby_Thief';
+
+		HJOB_BABY_KNIGHT      : fJobName := 'Baby_Knight';
+		HJOB_BABY_PRIEST      : fJobName := 'Baby_Priest';
+		HJOB_BABY_WIZARD      : fJobName := 'Baby_Wizard';
+		HJOB_BABY_BLACKSMITH  : fJobName := 'Baby_Blacksmith';
+		HJOB_BABY_HUNTER      : fJobName := 'Baby_Hunter';
+		HJOB_BABY_ASSASSIN    : fJobName := 'Baby_Assassin';
+
+		HJOB_BABY_CRUSADER    : fJobName := 'Baby_Crusader';
+		HJOB_BABY_MONK        : fJobName := 'Baby_Monk';
+		HJOB_BABY_SAGE        : fJobName := 'Baby_Sage';
+		HJOB_BABY_ROGUE       : fJobName := 'Baby_Rogue';
+		HJOB_BABY_ALCHEMIST   : fJobName := 'Baby_Alchemist';
+		HJOB_BABY_BARD        : fJobName := 'Baby_Bard';
+		HJOB_BABY_DANCER      : fJobName := 'Baby_Dancer';
+
+		HJOB_BABY_SNOVICE     : fJobName := 'Baby_Super_Novice';
+
+		HJOB_EXPANDED_TAEKWON              : fJobName := 'Taekwon';
+		HJOB_EXPANDED_STAR_GLADIATOR       : fJobName := 'Star_Gladiator';
+		HJOB_EXPANDED_STAR_GLADIATOR_2     : fJobName := 'Star_Gladiator)';
+		HJOB_EXPANDED_SOUL_LINKER          : fJobName := 'Soul_Linker';
+	end;
+
 end;{SetClass}
 //------------------------------------------------------------------------------
 
@@ -319,7 +434,7 @@ end;{SetJobLV}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetBaseEXP(Value : byte);
+procedure TCharacter.SetBaseEXP(Value : Cardinal);
 begin
 	DataChanged := TRUE;
 	fBaseEXP    := Value;
@@ -338,7 +453,7 @@ end;{SetBaseEXP}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetJobEXP(Value : byte);
+procedure TCharacter.SetJobEXP(Value : Cardinal);
 begin
 	DataChanged := TRUE;
 	fJobEXP     := Value;
@@ -1067,7 +1182,7 @@ end;{SetHomunID}
 //CalcMaxHP                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Calculates teh character's Maximum HP.
+//			Calculates the character's Maximum HP.
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
@@ -1075,7 +1190,48 @@ end;{SetHomunID}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxHP;
 begin
+  MAXHP := EnsureRange(
+    (MAXHP + (35 + BaseLV * 5 + ((1 + BaseLV) * BaseLV div 2) *
+      ADatabase.StaticData.GetBaseHP(self) div 100) * (100 + ParamBase[VIT]) div 100)
+      ,1
+      ,High(MAXHP)
+ 		);
 end;{CalcMaxHP}
 //------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CalcMaxSP                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Calculates the character's Maximum SP.
+//
+//	Changes -
+//		January 17th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.CalcMaxSP;
+begin
+  MAXSP := MAXSP + BaseLV * ADatabase.StaticData.GetBaseSP(self) * (100 + ParamBase[INT]) div 100;
+end;{CalcMaxSP}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CalcSpeed                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Calculates the character's Speed.
+//
+//	Changes -
+//		January 17th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.CalcSpeed;
+begin
+  Speed := 150;
+end;{CalcSpeed}
+//------------------------------------------------------------------------------
+
 
 end.

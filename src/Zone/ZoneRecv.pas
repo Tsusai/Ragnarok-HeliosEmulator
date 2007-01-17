@@ -42,9 +42,9 @@ uses
 	Account,
 	BufferIO,
 	Console,
-	Database,
 	ZoneSend,
-  ZoneServer;
+  ZoneServer,
+  Globals;
 
 	Procedure NoCommand(
 			AChara  : TCharacter;
@@ -88,9 +88,9 @@ uses
 		ValidateIDs[2] := BufferReadCardinal(ReadPts[3], Buffer);
 		Gender         := BufferReadByte    (ReadPts[4], Buffer);
 
-		AnAccount  := MainProc.ZoneServer.Database.CommonData.GetAccount(AccountID);
+		AnAccount  := ADatabase.CommonData.GetAccount(AccountID);
   //use global game database
-		ACharacter := MainProc.ZoneServer.Database.GameData.GetChara(CharacterID,true);
+		ACharacter := ADatabase.GameData.GetChara(CharacterID,true);
 
 		if Assigned(AnAccount) and Assigned(ACharacter) then
 		begin

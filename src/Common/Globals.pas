@@ -15,7 +15,8 @@ uses
 	Classes,
 	//Helios
 	Commands,
-  CharaList
+  CharaList,
+  Database
   ;
 
 
@@ -40,6 +41,8 @@ var
 	CharacterList   : TCharacterList;
 
 	LastAccountID   : Integer;
+
+  ADatabase       : TDatabase;
 //------------------------------------------------------------------------------
 
 
@@ -95,6 +98,7 @@ begin
 	Load_PacketDB;
 	AccountList     := TStringList.Create;
 	CharacterList   := TCharacterList.Create(True);
+  ADatabase       := TDatabase.Create(TRUE,TRUE,TRUE);
 end; {InitGlobals}
 //------------------------------------------------------------------------------
 
@@ -113,6 +117,7 @@ procedure DestroyGlobals;
 begin
 	AccountList.Free;
 	CharacterList.Free;
+  ADatabase.Free;
 end;{DestroyGlobals}
 //------------------------------------------------------------------------------
 

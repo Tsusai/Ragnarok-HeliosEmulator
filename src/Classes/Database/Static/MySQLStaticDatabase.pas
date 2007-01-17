@@ -39,8 +39,8 @@ type
 		Constructor Create(EnableStaticDatabase : boolean; AParent : TDatabase); reintroduce; overload;
 		Destructor Destroy();override;
 
-		Function GetBaseHP(ACharacter : TCharacter) : Cardinal;override;
-		Function GetBaseSP(ACharacter : TCharacter) : Cardinal;override;
+		Function GetBaseHP(ACharacter : TCharacter) : Word;override;
+		Function GetBaseSP(ACharacter : TCharacter) : Word;override;
 
 		Function GetMapCanSave(MapName : String) : Boolean;override;
 		Function GetMapZoneID(MapName : String) : Integer;override;
@@ -179,17 +179,17 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TMySQLStaticDatabase.GetBaseHP(ACharacter : TCharacter) : Cardinal;
+Function TMySQLStaticDatabase.GetBaseHP(ACharacter : TCharacter) : Word;
 var
 	Success     : Boolean;
 	QueryResult : TMySQLResult;
 begin
 	QueryResult :=
 		SendQuery(
-		Format('SELECT * FROM hp WHERE level = %d, job = ''%s''',
-			[ACharacter.BaseLV,ACharacter.JID])
+		Format('SELECT %s FROM hp WHERE level = %d',
+			[ACharacter.JobName, ACharacter.BaseLV])
 		,TRUE,Success);
-	if (QueryResult.RowsCount = 1) and (QueryResult.FieldsCount = 48) then
+	if (QueryResult.RowsCount = 1) then
 	begin
 			Result              := StrToInt(QueryResult.FieldValue(0));
 	end else Result := 0;
@@ -208,17 +208,17 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TMySQLStaticDatabase.GetBaseSP(ACharacter : TCharacter) : Cardinal;
+Function TMySQLStaticDatabase.GetBaseSP(ACharacter : TCharacter) : Word;
 var
 	Success     : Boolean;
 	QueryResult : TMySQLResult;
 begin
 	QueryResult :=
 		SendQuery(
-		Format('SELECT * FROM sp WHERE level = %d, job = ''%s''',
-			[ACharacter.BaseLV,ACharacter.JID])
+		Format('SELECT %s FROM sp WHERE level = %d',
+			[ACharacter.JobName, ACharacter.BaseLV])
 		,TRUE,Success);
-	if (QueryResult.RowsCount = 1) and (QueryResult.FieldsCount = 48) then
+	if (QueryResult.RowsCount = 1) then
 	begin
 			Result              := StrToInt(QueryResult.FieldValue(0));
 	end else Result := 0;
