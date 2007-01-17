@@ -37,7 +37,8 @@ type
 		function CreateChara(
 			var ACharacter : TCharacter;
 			AID : Cardinal;
-			NName : string
+			NName : string;
+			CharaNum : Integer
 		) : boolean;virtual;
 
 		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;virtual;
@@ -119,7 +120,8 @@ end;
 function TGameDatabaseTemplate.CreateChara(
 	var ACharacter : TCharacter;
 	AID : Cardinal;
-	NName : string
+	NName : string;
+	CharaNum : Integer
 ) : boolean;
 begin
 	Result := false;

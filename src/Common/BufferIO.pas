@@ -233,8 +233,11 @@ PREMADE SENDING OF BUFFER TO CLIENT
 	var
 		RecvBytes : TIdBytes;
 	begin
-		AClient.Connection.IOHandler.ReadBytes(RecvBytes,Size);
-		BytesToRaw(RecvBytes,Buffer,Size);
+		if Size > 0 then
+		begin
+			AClient.Connection.IOHandler.ReadBytes(RecvBytes,Size);
+			BytesToRaw(RecvBytes,Buffer,Size);
+		end;
 	end;
 
 		//Socket Method RecvBuffer - Reads the buffer from the socket.

@@ -42,7 +42,7 @@ type
 		Function GetBaseHP(ACharacter : TCharacter) : Word;override;
 		Function GetBaseSP(ACharacter : TCharacter) : Word;override;
 
-		Function GetMapCanSave(MapName : String) : Boolean;override;
+		Function GetMapCannotSave(MapName : String) : Boolean;override;
 		Function GetMapZoneID(MapName : String) : Integer;override;
 
 	protected
@@ -228,7 +228,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//GetMapCanSave							                                          FUNCTION
+//GetMapCannotSave					                                          FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Checks to see if a map can save or not.
@@ -237,14 +237,14 @@ end;
 //		January 10th, 2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TMySQLStaticDatabase.GetMapCanSave(MapName : String) : Boolean;
+Function TMySQLStaticDatabase.GetMapCannotSave(MapName : String) : Boolean;
 var
 	QueryResult : TMySQLResult;
 	Success			: Boolean;
 begin
 	QueryResult :=
 		SendQuery(
-		Format('SELECT save FROM maps WHERE mapname = ''%s''',
+		Format('SELECT noreturnondc FROM maps WHERE mapname = ''%s.gat''',
 			[MapName]),TRUE,Success);
 
 	if (QueryResult.RowsCount = 1) then
@@ -271,15 +271,16 @@ var
 	QueryResult : TMySQLResult;
 	Success			: Boolean;
 begin
+	Result := 1; //Assume 1
 	QueryResult :=
 		SendQuery(
-		Format('SELECT zoneid FROM maps WHERE mapname = ''%s''',
+		Format('SELECT zoneid FROM maps WHERE mapname = ''%s.gat''',
 			[MapName]),TRUE,Success);
 
 	if (QueryResult.RowsCount = 1) then
 	begin
-			Result := StrToInt(QueryResult.FieldValue(0));
-	end else Result := -1;
+		Result := StrToIntDef(QueryResult.FieldValue(0),1);
+	end;
 	QueryResult.Free;
 end;//GetMapZoneID
 //------------------------------------------------------------------------------

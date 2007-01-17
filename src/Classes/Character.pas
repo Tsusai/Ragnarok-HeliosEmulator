@@ -28,7 +28,6 @@ uses
 		fCharacterNumber  : Byte;
 		fName             : String;
 		fJID              : Word;
-    fJOB              : String;
 		fBaseLV           : Byte;
 		fJobLV            : Byte;
 		fBaseEXP          : Cardinal;
@@ -141,6 +140,14 @@ uses
 		ParamUP : array [STR..LUK] of byte;
 		ParamBonus : array [STR..LUK] of byte;
 
+		//Stat Calculations should fill these in
+		//Maybe a record type for this crap for shared info between mobs and chars
+		//Hell...maybe..properties? o_O
+
+		AttackRange : word;
+		//No idea what 0..5 is from.  Stats?
+		ATK : array[R_HAND..L_HAND] of array[0..5] of Word; // Displayed ATK power
+
 		MATK2 : word;
 		MATK1 : word;
 		DEF1 : word;
@@ -207,8 +214,15 @@ uses
 		property JobName   : string     read fJobName;
 
 		procedure CalcMaxHP;
-    procedure CalcMaxSP;
-    procedure CalcSpeed;
+		procedure CalcMaxSP;
+		procedure CalcSpeed;
+
+		procedure SendSubStat(
+			Mode : word;
+			DataType : word;
+			Value : Cardinal
+		);
+		procedure SendCharacterStats(UpdateView : boolean = false);
 
 	end;{TCharacter}
 //------------------------------------------------------------------------------
@@ -217,7 +231,7 @@ implementation
 uses
 	//IDE
 	SysUtils,
-  Math,
+	Math,
 	//Helios
 	BufferIO,
 	Globals,
@@ -1199,6 +1213,126 @@ begin
 end;{CalcMaxHP}
 //------------------------------------------------------------------------------
 
+//Mode is either 0 or 1, since its $00b0 or $00b1 (Its $00b0 + Mode)
+procedure TCharacter.SendSubStat(
+	Mode : word;
+	DataType : word;
+	Value : Cardinal
+);
+Var
+	WeightPercent  : Integer;
+	OutBuffer : TBuffer;
+Begin
+	WriteBufferWord(0, $00b0 + Mode, OutBuffer);
+	WriteBufferWord(2, DataType, OutBuffer);
+	WriteBufferCardinal(4, Value, OutBuffer);
+
+	if Online <> 0 then
+	begin
+		SendBuffer(ClientInfo, OutBuffer, 8);
+	end;
+
+	//Party Info from prometheus
+	{if (tc.PartyName <> '') and (Mode = 0) and ((DType = 5) or (DType = 6)) then
+	begin
+		WriteBufferWord( 0, $0106);
+		WriteBufferCardinal( 2, tc.ID);
+		WriteBufferWord( 6, tc.HP);
+		WriteBufferWord( 8, tc.MAXHP);
+		SendPCmd(tc, OutBuffer, 10, True, True);
+	end;}
+
+
+	if (Mode = 0) and ((DataType = $0018) or (DataType = $0019)) then
+	begin
+		WeightPercent := Weight * 100 div MaxWeight;
+
+		//UpdateIcon(35, InRange(WeightPercent, 50, 90)); //50% overweight icon
+		//UpdateIcon(36, (WeightPercent >= 90)); //90% overweight icon
+	end;
+end;
+
+procedure TCharacter.SendCharacterStats(UpdateView : boolean = false);
+Var
+	idx :integer;
+	OutBuffer : TBuffer;
+Begin
+	//Speed
+	SendSubStat(0, 0, Speed);
+	//HPSP
+	SendSubStat(0, 5, HP);
+	SendSubStat(0, 6, MAXHP);
+
+	SendSubStat(0, 7, SP);
+	SendSubStat(0, 8, MAXSP);
+
+	// Update status points and points needed to level up.
+	WriteBufferWord( 0, $00bd, OutBuffer);
+	WriteBufferWord( 2, Self.StatusPts, OutBuffer);
+	for idx := STR to LUK do
+	begin
+		WriteBufferByte((idx-1)*2+4, ParamBase[idx], OutBuffer);
+		WriteBufferByte((idx-1)*2+5, ParamUp[idx], OutBuffer);
+	end;
+	WriteBufferWord(16, ATK[0][0], OutBuffer);
+	WriteBufferWord(18, ATK[1][0] + ATK[0][4], OutBuffer);
+	WriteBufferWord(20, MATK2, OutBuffer);
+	WriteBufferWord(22, MATK1, OutBuffer);
+	WriteBufferWord(24, DEF1, OutBuffer);
+	WriteBufferWord(26, DEF2, OutBuffer);
+	WriteBufferWord(28, MDEF1, OutBuffer);
+	WriteBufferWord(30, MDEF2, OutBuffer);
+	WriteBufferWord(32, HIT, OutBuffer);
+	WriteBufferWord(34, FLEE1, OutBuffer);
+	WriteBufferWord(36, Lucky, OutBuffer);
+	WriteBufferWord(38, Critical, OutBuffer);
+	WriteBufferWord(40, ASpeed, OutBuffer);
+	WriteBufferWord(42, 0, OutBuffer);
+	SendBuffer(ClientInfo, OutBuffer, 44);
+
+	// Update base XP
+	SendSubStat(1, 1, BaseEXP);
+	SendSubStat(1, $0016, BaseNextEXP);
+
+	// Update job XP
+	SendSubStat(1, 2, JobEXP);
+	SendSubStat(1, $0017, JobNextEXP);
+
+	// Update Zeny
+	SendSubStat(1, $0014, Zeny);
+
+	// Update weight
+	SendSubStat(0, $0018, Weight);
+	SendSubStat(0, $0019, MaxWeight);
+
+	// Send status points.
+	for idx := 0 to 5 do
+	begin
+		WriteBufferWord( 0, $0141, OutBuffer);
+		WriteBufferCardinal( 2, 13+idx, OutBuffer);
+		WriteBufferCardinal( 6, ParamBase[idx+1], OutBuffer);
+		WriteBufferCardinal(10, ParamBonus[idx+1], OutBuffer);
+		SendBuffer(ClientInfo, OutBuffer, 14);
+	end;
+	// Send attack range.
+	WriteBufferWord(0, $013a, OutBuffer);
+	WriteBufferWord(2, AttackRange, OutBuffer);
+	SendBuffer(ClientInfo, OutBuffer, 4);
+
+	// Update the character's view packets if necessary.
+	if UpdateView then
+	begin
+		{tc.UpdateLook(3, tc.Head3, 0, True);
+		tc.UpdateLook(4, tc.Head1, 0, True);
+		tc.UpdateLook(5, tc.Head2, 0, True);
+		if (tc.Shield > 0) then
+		begin
+			tc.UpdateLook(2, tc.WeaponSprite[0], tc.Shield);
+		end else begin
+			tc.UpdateLook(2, tc.WeaponSprite[0], tc.WeaponSprite[1]);
+		end;}
+	end;
+End;
 
 //------------------------------------------------------------------------------
 //CalcMaxSP                                                           PROCEDURE

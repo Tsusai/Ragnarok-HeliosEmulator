@@ -13,9 +13,12 @@ unit GameConstants;
  
 interface
 const
- 
+
 	CHAR_CLICKAREA = 16;//the distance away a character can click from itself
 											//CHAR_CLICKAREA used in Map.pas - Pathing.
+
+	L_HAND = 1;
+	R_HAND = 0;
  
 //------------------------------------------------------------------------------
 //                             Character Stat Constants
@@ -62,74 +65,7 @@ const
   JOB_NINJA      = 25;  //Ninja
  
   JOB_XMAS       = 26;  //Xmas Suit
- 
-	//
-	JOB_MAX    = 26;
- 
-	JOB_HIGH_OFFSET    = 27;
- 
-	JOB_HIGH_NOVICE     = JOB_HIGH_OFFSET + JOB_NOVICE;     //27 High Novice
-	JOB_HIGH_SWORDSMAN  = JOB_HIGH_OFFSET + JOB_SWORDSMAN;  //28 High Swordsman
-	JOB_HIGH_MAGE       = JOB_HIGH_OFFSET + JOB_MAGE;       //29 High Magician
-	JOB_HIGH_ARCHER     = JOB_HIGH_OFFSET + JOB_ARCHER;     //30 High Archer
-	JOB_HIGH_ACOLYTE    = JOB_HIGH_OFFSET + JOB_ACOLYTE;    //31 High Acolyte
-	JOB_HIGH_MERCHANT   = JOB_HIGH_OFFSET + JOB_MERCHANT;   //32 High Merchant
-	JOB_HIGH_THIEF      = JOB_HIGH_OFFSET + JOB_THIEF;      //33 High Thief
- 
-	JOB_LORD_KNIGHT     = JOB_HIGH_OFFSET + JOB_KNIGHT;     //34 Lord Knight
-	JOB_HIGH_PRIEST     = JOB_HIGH_OFFSET + JOB_PRIEST;     //35 High Priest
-	JOB_HIGH_WIZARD     = JOB_HIGH_OFFSET + JOB_WIZARD;     //36 High Wizard
-	JOB_WHITESMITH      = JOB_HIGH_OFFSET + JOB_BLACKSMITH; //37 Master Smith
-	JOB_SNIPER          = JOB_HIGH_OFFSET + JOB_HUNTER;     //38 Sniper
-	JOB_ASSASSIN_CROSS  = JOB_HIGH_OFFSET + JOB_ASSASSIN;   //39 Assassin Cross
-	JOB_PECO_KNIGHT     = JOB_HIGH_OFFSET + JOB_KNIGHT_2;   //40 Mounted Lord Knight(on peco)
- 
-	JOB_PALADIN         = JOB_HIGH_OFFSET + JOB_CRUSADER;   //41 Paladin
-	JOB_CHAMPION        = JOB_HIGH_OFFSET + JOB_MONK;       //42 Champion
-	JOB_PROFESSOR       = JOB_HIGH_OFFSET + JOB_SAGE;       //43 Scholar
-	JOB_STALKER         = JOB_HIGH_OFFSET + JOB_ROGUE;      //44 Stalker
-	JOB_CREATOR         = JOB_HIGH_OFFSET + JOB_ALCHEMIST;  //45 Biochemist
-	JOB_CLOWN           = JOB_HIGH_OFFSET + JOB_BARD;       //46 Minstrel
-	JOB_GYPSY           = JOB_HIGH_OFFSET + JOB_DANCER;     //47 Gypsy
-	JOB_PECO_PALADIN    = JOB_HIGH_OFFSET + JOB_CRUSADER_2; //48 Mounted Paladin(on peco)
- 
-	//
-	JOB_BABY_OFFSET    = 49;
- 
-	JOB_BABY            = JOB_BABY_OFFSET + JOB_NOVICE;       //49 Baby Novice
-	JOB_BABY_SWORDSMAN  = JOB_BABY_OFFSET + JOB_SWORDSMAN;    //50 Baby Swordsman
-	JOB_BABY_MAGE       = JOB_BABY_OFFSET + JOB_MAGE;         //51 Baby Magician
-	JOB_BABY_ARCHER     = JOB_BABY_OFFSET + JOB_ARCHER;       //52 Baby Archer
-	JOB_BABY_ACOLYTE    = JOB_BABY_OFFSET + JOB_ACOLYTE;      //53 Baby Acolyte
-	JOB_BABY_MERCHANT   = JOB_BABY_OFFSET + JOB_MERCHANT;     //54 Baby Merchant
-	JOB_BABY_THIEF      = JOB_BABY_OFFSET + JOB_THIEF;        //55 Baby Thief
- 
-	JOB_BABY_KNIGHT      = JOB_BABY_OFFSET + JOB_KNIGHT;      //56 Baby Knight
-	JOB_BABY_PRIEST      = JOB_BABY_OFFSET + JOB_PRIEST;      //57 Baby Priest
-	JOB_BABY_WIZARD      = JOB_BABY_OFFSET + JOB_WIZARD;      //58 Baby Wizard
-	JOB_BABY_BLACKSMITH  = JOB_BABY_OFFSET + JOB_BLACKSMITH;  //59 Baby Blacksmith
-	JOB_BABY_HUNTER      = JOB_BABY_OFFSET + JOB_HUNTER;      //60 Baby Hunter
-	JOB_BABY_ASSASSIN    = JOB_BABY_OFFSET + JOB_ASSASSIN;    //61 Baby Assassin
-	JOB_BABY_KNIGHT_2    = JOB_BABY_OFFSET + JOB_KNIGHT_2;    //62 Baby Peco Knight
- 
-	JOB_BABY_CRUSADER    = JOB_BABY_OFFSET + JOB_CRUSADER;    //63 Baby Cruaser
-	JOB_BABY_MONK        = JOB_BABY_OFFSET + JOB_MONK;        //64 Baby Monk
-	JOB_BABY_SAGE        = JOB_BABY_OFFSET + JOB_SAGE;        //65 Baby Sage
-	JOB_BABY_ROGUE       = JOB_BABY_OFFSET + JOB_ROGUE;       //66 Baby Rogue
-	JOB_BABY_ALCHEMIST   = JOB_BABY_OFFSET + JOB_ALCHEMIST;   //67 Baby Alchemist
-	JOB_BABY_BARD        = JOB_BABY_OFFSET + JOB_BARD;        //68 Baby Bard
-	JOB_BABY_DANCER      = JOB_BABY_OFFSET + JOB_DANCER;      //69 Baby Dancer
-	JOB_BABY_CRUSADER_2  = JOB_BABY_OFFSET + JOB_CRUSADER_2;  //70 Mounted Baby Crusader(on peco)
-	JOB_BABY_SNOVICE     = 71;                                //Baby Super Novice
- 
-  //
-	JOB_EXPANDED_OFFSET    = 72;
 
-	JOB_EXPANDED_TAEKWON              = JOB_EXPANDED_OFFSET + JOB_NOVICE;     //72 Taekwon Boy/Girl
-	JOB_EXPANDED_STAR_GLADIATOR       = JOB_EXPANDED_OFFSET + JOB_SWORDSMAN;  //73 Taekwon Master
-	JOB_EXPANDED_STAR_GLADIATOR_2     = JOB_EXPANDED_OFFSET + JOB_MAGE;       //74 Taekwon Master(Flying)
-	JOB_EXPANDED_SOUL_LINKER          = JOB_EXPANDED_OFFSET + JOB_ARCHER;     //75 Soul Linker
- 
 	//High (4001+ Job classes)
 	HJOB_OFFSET    = 4001;
  

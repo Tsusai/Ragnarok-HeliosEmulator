@@ -13,6 +13,32 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 117 -
+[2007/01/17] - Tsusai - Notes/Overview: Zone display done. Also as always, various tweaks
+ to get it to work.
+[2007/01/17] - Tsusai - CharacterServer - SendCharaToMap : Completed code to auto select a
+ zone for transport.
+[2007/01/17] - Tsusai - Database\Game*** - CreateChara : Sends the character number over
+ for when creating.
+[2007/01/17] - Tsusai - Database\Static** - GetMapCanSave changed to GetMapCannotSave, 
+ and corrected queries.
+[2007/01/17] - Tsusai - Character - TCharacter : Added a basic client packet subsystem.  It 
+ may not be the best place for it, but for now it is ok.
+[2007/01/17] - Tsusai - BufferIO - RecvBuffer : Cannot recieve 0 packets. The system 
+ doesn't like it.
+[2007/01/17] - Tsusai - GameConstants : Removed invalid job classes (stupid data I put in)
+ and added a right and left hand constant.
+[2007/01/17] - Tsusai - PacketDB - Activated 'ticksend' and 'getcharnamerequest' packet_db
+ command routines.
+[2007/01/17] - Tsusai - ZoneRecv - Added ShowMap, RecvTick, and GetNameAndID. Added temp
+ spots for packets for inventory and stuff.
+[2007/01/17] - Tsusai - ZoneSend - Added replies for RecvTick and GetNameAndID
+[2007/01/17] - Tsusai - ZoneServer - Added a check for data on the buffer (odd things were
+ happening).
+[2007/01/17] - Tsusai - Client_packet_en - corrected the map connect packet.  There are not
+ 2 login keys, only 1 and a tick.
+-
+
 - Rev 116 -
 [2007/01/17] - RaX - Added IndexOfAID to CharaList. Gets a character by account id
 [2007/01/17] - RaX - Updated starting points in CharacterOptions.

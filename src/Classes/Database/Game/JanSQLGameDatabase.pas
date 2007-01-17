@@ -44,7 +44,8 @@ type
 		function CreateChara(
 			var ACharacter : TCharacter;
 			AID : Cardinal;
-			NName : string
+			NName : string;
+			CharaNum : Integer
 		) : boolean;override;
 
 		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
@@ -540,7 +541,8 @@ end;//SaveChara
 function TJanSQLGameDatabase.CreateChara(
 	var ACharacter : TCharacter;
 	AID : Cardinal;
-	NName : string
+	NName : string;
+	CharaNum : Integer
 ) : boolean;
 var
 	QueryResult : TJanRecordSet;
@@ -562,8 +564,8 @@ begin
 	end;
 
 	ResultIdentifier := SendQuery(
-		Format('INSERT INTO characters (char_id, account_id, name) VALUES(%d, %d, ''%s'')',
-		[CharacterID, AID,NName]));
+		Format('INSERT INTO characters (char_id, account_id, char_num, name) VALUES(%d, %d, %d, ''%s'')',
+		[CharacterID, AID, CharaNum, NName]));
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 
 	//Save Now, GetChara procedure will release the table.
@@ -618,8 +620,11 @@ begin
 			ID               := StrToIntDef(QueryResult.Records[0].Fields[1].Value, 0);
 			CharaNum         := StrToIntDef(QueryResult.Records[0].Fields[2].Value, 0);
 			Account					:= Parent.CommonData.GetAccount(ID);
-			Account.CharaID[CharaNum] := CID;
-			Name            :=          QueryResult.Records[0].Fields[3].Value;
+			if InRange(CharaNum, 0, 8) then
+			begin
+				Account.CharaID[CharaNum] := CID;
+			end;
+			Name            :=             QueryResult.Records[0].Fields[3].Value;
 			JID             := StrToIntDef(QueryResult.Records[0].Fields[4].Value, 0);
 			BaseLV          := StrToIntDef(QueryResult.Records[0].Fields[5].Value, 0);
 			JobLV           := StrToIntDef(QueryResult.Records[0].Fields[6].Value, 0);

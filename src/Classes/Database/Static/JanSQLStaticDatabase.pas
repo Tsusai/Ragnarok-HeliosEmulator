@@ -44,7 +44,7 @@ type
 		Function GetBaseHP(ACharacter : TCharacter) : Word;override;
 		Function GetBaseSP(ACharacter : TCharacter) : Word;override;
 
-		Function GetMapCanSave(MapName : String) : Boolean;override;
+		Function GetMapCannotSave(MapName : String) : Boolean;override;
 		Function GetMapZoneID(MapName : String): Integer; override;
 
 	protected
@@ -150,7 +150,7 @@ begin
 
   if DirectoryExists(Parent.Options.StaticHost) then
   begin
-    ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.GameHost]));
+		ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.StaticHost]));
   end else
   begin
     MainProc.Console('');
@@ -161,7 +161,7 @@ begin
 	if ResultIdentifier = 0 then
 	begin
 		MainProc.Console('*****Could not open text database. Error : ' + Database.Error);
-		MainProc.Console(Parent.Options.GameHost);
+		MainProc.Console(Parent.Options.StaticHost);
 	end else
   begin
     Database.ReleaseRecordset(ResultIdentifier);
@@ -257,7 +257,7 @@ end;//GetBaseSP
 
 
 //------------------------------------------------------------------------------
-//GetMapCanSave							                                          FUNCTION
+//GetMapCannotSave					                                          FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Checks to see if a map can save or not.
@@ -266,22 +266,27 @@ end;//GetBaseSP
 //		January 10th, 2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TJanSQLStaticDatabase.GetMapCanSave(MapName : String) : Boolean;
+Function TJanSQLStaticDatabase.GetMapCannotSave(MapName : String) : Boolean;
 var
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
 begin
+	Result := false;
 	ResultIdentifier :=
 		SendQuery(
-		Format('SELECT save FROM maps WHERE mapname = ''%s''',
+		Format('SELECT noreturnondc FROM maps WHERE mapname = ''%s.gat''',
 			[MapName]));
-	QueryResult := Database.RecordSets[ResultIdentifier];
-	if (QueryResult.RecordCount = 1) then
+
+	if ResultIdentifier > 0 then
 	begin
-			Result := StrToBool(QueryResult.Records[0].Fields[0].Value);
-	end else Result := FALSE;
-	SendQuery('RELEASE TABLE maps');
-	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+		QueryResult := Database.RecordSets[ResultIdentifier];
+		if (QueryResult.RecordCount = 1) then
+		begin
+				Result := StrToBool(QueryResult.Records[0].Fields[0].Value);
+		end;
+		SendQuery('RELEASE TABLE maps');
+		Database.ReleaseRecordset(ResultIdentifier);
+	end;
 end;//GetMapCanSave
 //------------------------------------------------------------------------------
 
@@ -301,17 +306,21 @@ var
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
 begin
+	Result := 1; //Assume 1
 	ResultIdentifier :=
 		SendQuery(
-		Format('SELECT zoneid FROM maps WHERE mapname = ''%s''',
+		Format('SELECT zoneid FROM maps WHERE mapname = ''%s.gat''',
 			[MapName]));
-	QueryResult := Database.RecordSets[ResultIdentifier];
-	if (QueryResult.RecordCount = 1) then
+	if ResultIdentifier > 0 then
 	begin
-			Result := StrToInt(QueryResult.Records[0].Fields[0].Value);
-	end else Result := -1;
-	SendQuery('RELEASE TABLE maps');
-	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+		QueryResult := Database.RecordSets[ResultIdentifier];
+		if (QueryResult.RecordCount = 1) then
+		begin
+			Result := StrToIntDef(QueryResult.Records[0].Fields[0].Value,1);
+		end;
+		SendQuery('RELEASE TABLE maps');
+		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+	end;
 end;//GetMapZoneID
 //------------------------------------------------------------------------------
 {END JanSQLStaticDatabase}

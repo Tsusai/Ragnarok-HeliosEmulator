@@ -44,7 +44,8 @@ type
 		function CreateChara(
 			var ACharacter : TCharacter;
 			AID : Cardinal;
-			NName : string
+			NName : string;
+			CharaNum : Integer
 		) : boolean;override;
 
 		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
@@ -75,6 +76,7 @@ type
 implementation
 	uses
 		Types,
+		Math,
 		GameConstants,
 		Globals,
 		Console,
@@ -501,7 +503,8 @@ end;
 function TMySQLGameDatabase.CreateChara(
 	var ACharacter : TCharacter;
 	AID : Cardinal;
-	NName : string
+	NName : string;
+	CharaNum : Integer
 ) : boolean;
 var
 	Success     : boolean;
@@ -509,8 +512,8 @@ var
 begin
 	Result := FALSE;
 	SendQuery(
-		Format('INSERT INTO characters (account_id, name) VALUES(%d, ''%s'')',
-		[AID,NName])
+		Format('INSERT INTO characters (account_id, char_num, name) VALUES(%d, %d, ''%s'')',
+		[AID,CharaNum, NName])
 	,TRUE,Success);
 	if Success then
 	begin
@@ -560,7 +563,10 @@ begin
 			ID               := StrToInt(QueryResult.FieldValue(1));
 			CharaNum         := StrToInt(QueryResult.FieldValue(2));
 			Account					:= Parent.CommonData.GetAccount(ID);
-			Account.CharaID[CharaNum] := CID;
+			if InRange(CharaNum, 0, 8) then
+			begin
+				Account.CharaID[CharaNum] := CID;
+			end;
 			Name            :=          QueryResult.FieldValue(3);
 			JID             := StrToInt(QueryResult.FieldValue(4));
 			BaseLV          := StrToInt(QueryResult.FieldValue(5));

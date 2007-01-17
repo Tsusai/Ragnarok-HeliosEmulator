@@ -35,7 +35,7 @@ type
 		Function GetBaseHP(ACharacter : TCharacter) : Word;virtual;
 		Function GetBaseSP(ACharacter : TCharacter) : Word;virtual;
 
-		Function GetMapCanSave(MapName : String) : Boolean;virtual;
+		Function GetMapCannotSave(MapName : String) : Boolean;virtual;
 		Function GetMapZoneID(MapName : String) : Integer;virtual;
 	protected
 		procedure Connect(); virtual;
@@ -84,7 +84,7 @@ begin
 	Result := 0;
 end;
 
-Function TStaticDatabaseTemplate.GetMapCanSave(MapName : String) : Boolean;
+Function TStaticDatabaseTemplate.GetMapCannotSave(MapName : String) : Boolean;
 begin
 	Result := FALSE;
 end;

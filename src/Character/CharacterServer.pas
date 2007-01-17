@@ -427,8 +427,11 @@ procedure TCharacterServer.SendCharaToMap(
 var
 	AnAccount : TAccount;
 	CharaIdx : byte;
-	//ACharacter : TCharacter;
-	//OutBuffer : TBuffer;
+	ACharacter : TCharacter;
+	OutBuffer : TBuffer;
+	ZServerInfo : TZoneServerInfo;
+	ZoneID : byte;
+	idx : integer;
 begin
 	if AClient.Data = nil then Exit;
 	if not (AClient.Data is TThreadLink) then exit;
@@ -441,23 +444,44 @@ begin
 
 	if AnAccount.CharaID[CharaIdx] <> 0 then
 	begin
-		{ACharacter := Database.GameData.GetChara(AnAccount.CharaID[CharaIdx],true);
-		ACharacter.ClientVersion := -1;
-		//query the map database for the map data (send name, check nosave flag
-		//do NoSave check here
-		Database.GameData.SaveChara(ACharacter);
+		ACharacter := ADatabase.GameData.GetChara(AnAccount.CharaID[CharaIdx],true);
+		//ACharacter.ClientVersion := -1; //Need to either save, or make sure its cleared
+																			//later on
+
+		if ADatabase.StaticData.GetMapCannotSave(ACharacter.Map) then
+		begin
+			ACharacter.Map := ACharacter.SaveMap;
+			ACharacter.Point := ACharacter.SavePoint;
+		end;
+
+		ADatabase.GameData.SaveChara(ACharacter);
 		//get zone ID for the map.
+		ZoneID := ADatabase.StaticData.GetMapZoneID(ACharacter.Map);
 		//get the zone info from that
 
-		WriteBufferWord(0, $0071, OutBuffer);
-		WriteBufferCardinal(2, ACharacter.CID, OutBuffer);
-		WriteBufferString(4, ACharacter.Map + '.rsw', 24, OutBuffer);
+		idx := fZoneServerList.IndexOf(ZoneID);
+		if idx > -1 then
+		begin
+			ZServerInfo := TZoneServerInfo(fZoneServerList.Objects[idx]);
 
-//		if UseLAN(APlayer.IP) then WFIFOL(SendBuffer, 22, LAN_ADDR)
-//		else WFIFOL(SendBuffer, 22, WAN_ADDR);
-//		WFIFOW(SendBuffer, 26, sv3port);
-		SendBuffer(AClient,OutBuffer, 28); }
-
+			WriteBufferWord(0, $0071, OutBuffer);
+			WriteBufferCardinal(2, ACharacter.CID, OutBuffer);
+			WriteBufferString(6, ACharacter.Map + '.rsw', 16, OutBuffer);
+			WriteBufferCardinal(22,
+				ZServerInfo.Address(
+					AClient.Connection.Socket.Binding.PeerIP
+				),
+				OutBuffer,
+			);
+			WriteBufferWord(26, ZServerInfo.Port, OutBuffer);
+			SendBuffer(AClient, OutBuffer, 28);
+		end else
+		begin
+			//Server offline error goes here
+			WriteBufferWord(0, $0081, Outbuffer);
+			WriteBufferByte(2, 03, OutBuffer);
+			SendBuffer(AClient, OutBuffer, 3);
+		end;
 	end;
 
 end;{SendCharaToMap}
@@ -551,16 +575,9 @@ begin
 			ACharacter := TCharacter.Create;
 			//Set a record in Database for our new character
 			if ADatabase.GameData.CreateChara(
-				ACharacter,Account.ID,CharaName) then
+				ACharacter,Account.ID,CharaName,SlotNum) then
 			begin
-				ACharacter.Name           := CharaName;
-				ACharacter.CharaNum       := SlotNum;
-				ACharacter.Account        := Account;
-				if ACharacter.CharaNum < 9 then
-				begin
-					//If its active, then attach to the player.
-					ACharacter.Account.CharaID[ACharacter.CharaNum] := ACharacter.CID;
-				end;
+				//All other info is already saved
 				ACharacter.BaseLV         := 1;
 				ACharacter.JobLV          := 1;
 				ACharacter.JID            := 0;
@@ -571,9 +588,9 @@ begin
 				ACharacter.ParamBase[INT] := StatPoints[3];
 				ACharacter.ParamBase[DEX] := StatPoints[4];
 				ACharacter.ParamBase[LUK] := StatPoints[5];
-        ACharacter.CalcMaxHP;
-        ACharacter.CalcMaxSP;
-        ACharacter.CalcSpeed;
+				ACharacter.CalcMaxHP;
+				ACharacter.CalcMaxSP;
+				ACharacter.CalcSpeed;
 				ACharacter.HP             := ACharacter.MaxHP;
 				ACharacter.SP             := ACharacter.MaxSP;
 				ACharacter.StatusPts      := 0;
@@ -590,8 +607,8 @@ begin
 
 				ACharacter.RightHand      := Options.DefaultRightHand;
 				ACharacter.LeftHand       := Options.DefaultLeftHand;
-        ACharacter.Armor          := Options.DefaultArmor;
-        ACharacter.Garment        := Options.DefaultGarment;
+				ACharacter.Armor          := Options.DefaultArmor;
+				ACharacter.Garment        := Options.DefaultGarment;
         ACharacter.Shoes          := Options.DefaultShoes;
         ACharacter.Accessory1     := Options.DefaultAccessory1;
         ACharacter.Accessory2     := Options.DefaultAccessory2;

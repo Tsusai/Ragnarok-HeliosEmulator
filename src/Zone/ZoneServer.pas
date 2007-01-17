@@ -292,7 +292,6 @@ begin
 
 			if (ID = Packet) then
 			begin
-
 				//Ok so we found a matching packet ID, now to read our right length
 				if PLength <> -1 then
 				begin
@@ -350,17 +349,13 @@ Var
 	Found           : Boolean;
 	ABuffer         : TBuffer;
 Begin
+	AClient.Connection.IOHandler.CheckForDataOnSource();
 	while AClient.Connection.IOHandler.InputBuffer.Size >= 2 do
 	begin
 		Lth := AClient.Connection.IOHandler.InputBuffer.Size;
 		RecvBuffer(AClient,ABuffer[0], 2);
 		PacketID := BufferReadWord(0, ABuffer);
 		AChara := TThreadLink(AClient.Data).CharacterLink;
-
-		{if (AChara <> nil) and (Option_Packet_Out) then
-		begin
-			Console(Format('3:%.8d CMD %.4x', [AChara.ID, PacketID]));
-		end;}
 
 		Found := False;
 		if NOT Assigned(AChara) then

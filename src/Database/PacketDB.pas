@@ -166,8 +166,8 @@ Begin
 				//Find the right procedure to assign to the database
 				if Command = 'loadendack' then begin
 					ExecCommand := ShowMap;
-				end ;{else if Command = 'ticksend' then begin
-					ExecCommand := Tick;
+				end else if Command = 'ticksend' then begin
+					ExecCommand := RecvTick;{
 				end else if Command = 'walktoxy' then begin
 					ExecCommand := CharacterWalk;
 				end else if Command = 'actionrequest' then begin
@@ -175,10 +175,10 @@ Begin
 				end else if Command = 'globalmessage' then begin
 					ExecCommand := AreaChat;
 				end else if Command = 'npcclicked' then begin
-					ExecCommand := NPCClick;
+					ExecCommand := NPCClick;}
 				end else if Command = 'getcharnamerequest' then begin
 					ExecCommand := GetNameAndID;
-				end else if Command = 'wis' then begin
+				end;{ else if Command = 'wis' then begin
 					ExecCommand := Whisper;
 				end else if Command = 'gmmessage' then begin
 					ExecCommand := GMBroadcast;

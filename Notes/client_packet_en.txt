@@ -212,7 +212,7 @@ R 0071 <charactor ID>.l <map name>.16B <ip>.l <port>.w
 
 	Success to select character & map name and IP/port number for game server.
 
-S 0072 <account ID>.l <charactor ID>.l <login ID1>.l <login ID2>.l <sex>.b
+S 0072 <account ID>.l <charactor ID>.l <login ID1>.l <client tick>.l <sex>.b
 	ƒQ[ƒ€IÚ‘±—v‹
 
 	Game server connection request.
