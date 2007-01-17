@@ -551,7 +551,7 @@ begin
 		Format('SELECT * FROM characters WHERE char_id = %d;',
 			[CharaID])
 		,TRUE,Success);
-	if (QueryResult.RowsCount = 1) and (QueryResult.FieldsCount = 48) then
+	if (QueryResult.RowsCount = 1) then
 	begin
 		with Result do
 		begin
@@ -591,23 +591,28 @@ begin
 			ClothesColor    := StrToInt(QueryResult.FieldValue(30));
 			RightHand       := StrToInt(QueryResult.FieldValue(31));
 			LeftHand        := StrToInt(QueryResult.FieldValue(32));
-			HeadTop         := StrToInt(QueryResult.FieldValue(33));
-			HeadMid         := StrToInt(QueryResult.FieldValue(34));
-			HeadBottom      := StrToInt(QueryResult.FieldValue(35));
-			Map             :=          QueryResult.FieldValue(36) ;
-				APoint.X      := StrToInt(QueryResult.FieldValue(37));
-				APoint.Y      := StrToInt(QueryResult.FieldValue(38));
+			Armor        		:= StrToInt(QueryResult.FieldValue(33));
+			Garment        	:= StrToInt(QueryResult.FieldValue(34));
+			Shoes        		:= StrToInt(QueryResult.FieldValue(35));
+			Accessory1      := StrToInt(QueryResult.FieldValue(36));
+			Accessory2      := StrToInt(QueryResult.FieldValue(37));
+			HeadTop         := StrToInt(QueryResult.FieldValue(38));
+			HeadMid         := StrToInt(QueryResult.FieldValue(39));
+			HeadBottom      := StrToInt(QueryResult.FieldValue(40));
+			Map             :=          QueryResult.FieldValue(41) ;
+				APoint.X      := StrToInt(QueryResult.FieldValue(42));
+				APoint.Y      := StrToInt(QueryResult.FieldValue(43));
 			Point           := APoint;
-			SaveMap         :=          QueryResult.FieldValue(39) ;
-				APoint.X      := StrToInt(QueryResult.FieldValue(40));
-				APoint.Y      := StrToInt(QueryResult.FieldValue(41));
+			SaveMap         :=          QueryResult.FieldValue(44) ;
+				APoint.X      := StrToInt(QueryResult.FieldValue(45));
+				APoint.Y      := StrToInt(QueryResult.FieldValue(46));
 			SavePoint       := APoint;
-			PartnerID       := StrToInt(QueryResult.FieldValue(42));
-			ParentID1       := StrToInt(QueryResult.FieldValue(43));
-			ParentID2       := StrToInt(QueryResult.FieldValue(44));
-			BabyID          := StrToInt(QueryResult.FieldValue(45));
-			Online          := StrToInt(QueryResult.FieldValue(46));
-			HomunID         := StrToInt(QueryResult.FieldValue(47));
+			PartnerID       := StrToInt(QueryResult.FieldValue(47));
+			ParentID1       := StrToInt(QueryResult.FieldValue(48));
+			ParentID2       := StrToInt(QueryResult.FieldValue(49));
+			BabyID          := StrToInt(QueryResult.FieldValue(50));
+			Online          := StrToInt(QueryResult.FieldValue(51));
+			HomunID         := StrToInt(QueryResult.FieldValue(52));
 			//Do not start the save timer caused by modifying everything else.
 			DataChanged := false;
 		end;

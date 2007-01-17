@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Generation Time: Jan 15, 2007 at 11:16 AM
+-- Generation Time: Jan 17, 2007 at 09:00 AM
 -- Server version: 5.0.24
 -- PHP Version: 5.1.6
 -- 
@@ -77,16 +77,16 @@ CREATE TABLE `characters` (
   `hair` tinyint(4) NOT NULL default '0',
   `hair_color` int(11) NOT NULL default '0',
   `clothes_color` tinyint(4) NOT NULL default '0',
-  `righthand` int(11) NOT NULL default '1',
-  `lefthand` int(11) NOT NULL default '0',
-  `armor` int(11) default NULL,
-  `garment` int(11) default NULL,
-  `shoes` int(11) default NULL,
-  `accessory1` int(11) default NULL,
-  `accessory2` int(11) default NULL,
-  `head_top` int(11) NOT NULL default '0',
-  `head_mid` int(11) NOT NULL default '0',
-  `head_bottom` int(11) NOT NULL default '0',
+  `righthand` int(11) unsigned NOT NULL default '0',
+  `lefthand` int(11) unsigned NOT NULL default '0',
+  `armor` int(11) unsigned NOT NULL default '0',
+  `garment` int(11) unsigned NOT NULL default '0',
+  `shoes` int(11) unsigned NOT NULL default '0',
+  `accessory1` int(11) unsigned NOT NULL default '0',
+  `accessory2` int(11) unsigned NOT NULL default '0',
+  `head_top` int(11) unsigned NOT NULL default '0',
+  `head_mid` int(11) unsigned NOT NULL default '0',
+  `head_bottom` int(11) unsigned NOT NULL default '0',
   `last_map` varchar(20) NOT NULL default 'new_5-1.gat',
   `last_x` int(4) NOT NULL default '53',
   `last_y` int(11) NOT NULL default '111',
@@ -104,7 +104,7 @@ CREATE TABLE `characters` (
   KEY `party_id` (`party_id`),
   KEY `guild_id` (`guild_id`),
   KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=48 DEFAULT CHARSET=latin1 AUTO_INCREMENT=48 ;
+) ENGINE=MyISAM AUTO_INCREMENT=53 DEFAULT CHARSET=latin1 AUTO_INCREMENT=53 ;
 
 -- 
 -- Dumping data for table `characters`

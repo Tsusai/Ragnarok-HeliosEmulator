@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 114 -
+[2007/01/17] - RaX - Fixed my character database fubar. Forgot that a WORD type is unsigned =)
+[2007/01/17] - RaX - Updated SQL files to reflect new changes, all equipment fields are unsigned.
+-
+
 - Rev 113 -
 [2007/01/16] - RaX - Updated Static Databases, added query to return the zone id a map is
  assigned to from our maps table.

@@ -609,7 +609,7 @@ begin
 		Format('SELECT * FROM characters WHERE char_id = %d',
 			[CharaID]));
 	QueryResult := Database.RecordSets[ResultIdentifier];
-	if (QueryResult.RecordCount = 1) and (QueryResult.fieldcount = 48) then
+	if (QueryResult.RecordCount = 1) then
 	begin
 		with Result do
 		begin
@@ -649,23 +649,28 @@ begin
 			ClothesColor    := StrToIntDef(QueryResult.Records[0].Fields[30].Value, 0);
 			RightHand       := StrToIntDef(QueryResult.Records[0].Fields[31].Value, 0);
 			LeftHand        := StrToIntDef(QueryResult.Records[0].Fields[32].Value, 0);
-			HeadTop         := StrToIntDef(QueryResult.Records[0].Fields[33].Value, 0);
-			HeadMid         := StrToIntDef(QueryResult.Records[0].Fields[34].Value, 0);
-			HeadBottom      := StrToIntDef(QueryResult.Records[0].Fields[35].Value, 0);
-			Map             :=          QueryResult.Records[0].Fields[36].Value ;
-				APoint.X      := StrToIntDef(QueryResult.Records[0].Fields[37].Value, 0);
-				APoint.Y      := StrToIntDef(QueryResult.Records[0].Fields[38].Value, 0);
+			Armor        		:= StrToIntDef(QueryResult.Records[0].Fields[33].Value, 0);
+			Garment        	:= StrToIntDef(QueryResult.Records[0].Fields[34].Value, 0);
+			Shoes        		:= StrToIntDef(QueryResult.Records[0].Fields[35].Value, 0);
+			Accessory1      := StrToIntDef(QueryResult.Records[0].Fields[36].Value, 0);
+			Accessory2      := StrToIntDef(QueryResult.Records[0].Fields[37].Value, 0);
+			HeadTop         := StrToIntDef(QueryResult.Records[0].Fields[38].Value, 0);
+			HeadMid         := StrToIntDef(QueryResult.Records[0].Fields[39].Value, 0);
+			HeadBottom      := StrToIntDef(QueryResult.Records[0].Fields[40].Value, 0);
+			Map             :=          	 QueryResult.Records[0].Fields[41].Value ;
+				APoint.X      := StrToIntDef(QueryResult.Records[0].Fields[42].Value, 0);
+				APoint.Y      := StrToIntDef(QueryResult.Records[0].Fields[43].Value, 0);
 			Point           := APoint;
-			SaveMap         :=          QueryResult.Records[0].Fields[39].Value ;
-				APoint.X      := StrToIntDef(QueryResult.Records[0].Fields[40].Value, 0);
-				APoint.Y      := StrToIntDef(QueryResult.Records[0].Fields[41].Value, 0);
+			SaveMap         :=          	 QueryResult.Records[0].Fields[44].Value ;
+				APoint.X      := StrToIntDef(QueryResult.Records[0].Fields[45].Value, 0);
+				APoint.Y      := StrToIntDef(QueryResult.Records[0].Fields[46].Value, 0);
 			SavePoint       := APoint;
-			PartnerID       := StrToIntDef(QueryResult.Records[0].Fields[42].Value, 0);
-			ParentID1       := StrToIntDef(QueryResult.Records[0].Fields[43].Value, 0);
-			ParentID2       := StrToIntDef(QueryResult.Records[0].Fields[44].Value, 0);
-			BabyID          := StrToIntDef(QueryResult.Records[0].Fields[45].Value, 0);
-			Online          := StrToIntDef(QueryResult.Records[0].Fields[46].Value, 0);
-			HomunID         := StrToIntDef(QueryResult.Records[0].Fields[47].Value, 0);
+			PartnerID       := StrToIntDef(QueryResult.Records[0].Fields[47].Value, 0);
+			ParentID1       := StrToIntDef(QueryResult.Records[0].Fields[48].Value, 0);
+			ParentID2       := StrToIntDef(QueryResult.Records[0].Fields[49].Value, 0);
+			BabyID          := StrToIntDef(QueryResult.Records[0].Fields[50].Value, 0);
+			Online          := StrToIntDef(QueryResult.Records[0].Fields[51].Value, 0);
+			HomunID         := StrToIntDef(QueryResult.Records[0].Fields[52].Value, 0);
 			//Do not start the save timer caused by modifying everything else.
 			DataChanged := false;
 		end;

@@ -185,16 +185,16 @@ implementation
       DefaultMap        := Section.Values['Map'];
       fDefaultPoint.X   := StrToIntDef(Section.Values['Point.X'], 150);
       fDefaultPoint.Y   := StrToIntDef(Section.Values['Point.Y'], 86);
-      DefaultHeadTop    := StrToIntDef(Section.Values['HeadTop'], -1);
-      DefaultHeadMid    := StrToIntDef(Section.Values['HeadMid'], -1);
-      DefaultHeadLow    := StrToIntDef(Section.Values['HeadLow'], -1);
+      DefaultHeadTop    := StrToIntDef(Section.Values['HeadTop'], 0);
+      DefaultHeadMid    := StrToIntDef(Section.Values['HeadMid'], 0);
+      DefaultHeadLow    := StrToIntDef(Section.Values['HeadLow'], 0);
       DefaultRightHand  := StrToIntDef(Section.Values['RightHand'], 1201);
-      DefaultLeftHand   := StrToIntDef(Section.Values['LeftHand'], -1);
+      DefaultLeftHand   := StrToIntDef(Section.Values['LeftHand'], 0);
       DefaultArmor      := StrToIntDef(Section.Values['Armor'], 2301);
-      DefaultShoes      := StrToIntDef(Section.Values['Shoes'], -1);
-      DefaultGarment    := StrToIntDef(Section.Values['Garment'], -1);
-      DefaultAccessory1 := StrToIntDef(Section.Values['Accessory1'], -1);
-      DefaultAccessory2 := StrToIntDef(Section.Values['Accessory2'], -1);
+      DefaultShoes      := StrToIntDef(Section.Values['Shoes'], 0);
+      DefaultGarment    := StrToIntDef(Section.Values['Garment'], 0);
+      DefaultAccessory1 := StrToIntDef(Section.Values['Accessory1'], 0);
+      DefaultAccessory2 := StrToIntDef(Section.Values['Accessory2'], 0);
     end;{LoadCharacterDefaults}
     //--------------------------------------------------------------------------
 
