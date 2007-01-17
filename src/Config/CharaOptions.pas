@@ -183,8 +183,8 @@ implementation
 				Section.Values['Map'] := 'new_1-1';
 			end;
       DefaultMap        := Section.Values['Map'];
-      fDefaultPoint.X   := StrToIntDef(Section.Values['Point.X'], 150);
-      fDefaultPoint.Y   := StrToIntDef(Section.Values['Point.Y'], 86);
+      fDefaultPoint.X   := StrToIntDef(Section.Values['Point.X'], 53);
+      fDefaultPoint.Y   := StrToIntDef(Section.Values['Point.Y'], 111);
       DefaultHeadTop    := StrToIntDef(Section.Values['HeadTop'], 0);
       DefaultHeadMid    := StrToIntDef(Section.Values['HeadMid'], 0);
       DefaultHeadLow    := StrToIntDef(Section.Values['HeadLow'], 0);

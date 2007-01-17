@@ -46,6 +46,7 @@ type
     Procedure Delete(Index : Integer);
     Procedure Clear();
     Function IndexOf(const CID : Cardinal) : Integer;
+    Function IndexOfAID(const AID : Cardinal) : Integer;
 
 		Property Count : Integer
 		read MsCount;
@@ -329,6 +330,34 @@ begin
     dec(Index,  1);
   end;
 end;{IndexOf}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//IndexOfAID                                                           FUNCTION
+//------------------------------------------------------------------------------
+//  What it does -
+//      Returns the index in the list of the TCharacter;
+//
+//  Changes -
+//    December 22nd, 2006 - RaX - Created.
+//------------------------------------------------------------------------------
+function TCharacterList.IndexOfAID(const AID: Cardinal): Integer;
+var
+  Index : Integer;
+begin
+  Index := MsCount-1;
+  Result := -1;
+  while (Index >= 0) do
+  begin
+    if AID = Items[Index].Account.ID then
+    begin
+      Result := Index;
+      Exit;
+    end;
+    dec(Index,  1);
+  end;
+end;{IndexOfAID}
 //------------------------------------------------------------------------------
 
 
