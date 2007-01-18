@@ -1,3 +1,13 @@
+//------------------------------------------------------------------------------
+//ZoneRecv                                                                 UNIT
+//------------------------------------------------------------------------------
+//  What it does -
+//      Receives packets sent by users on the zone server, does whatever they
+//    tell us to do =) Contains all routines related to doing as such.
+//
+//  Changes -
+//    January 18th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
 unit ZoneRecv;
 
 interface
@@ -8,6 +18,9 @@ uses
 	IdContext
 	;
 
+//------------------------------------------------------------------------------
+//NoCommand                                                           PROCEDURE
+//------------------------------------------------------------------------------
 	procedure NoCommand(
 			AChara : TCharacter;
 			InBuffer : TBuffer;
@@ -15,6 +28,9 @@ uses
 			ReadPts : TReadPts
 		); overload;
 
+//------------------------------------------------------------------------------
+//NoCommand                                                           PROCEDURE
+//------------------------------------------------------------------------------
 	procedure NoCommand(
 		const
 			AChara : TCharacter;
@@ -22,6 +38,9 @@ uses
 			AvoidSelf:boolean = False
 		); overload;
 
+//------------------------------------------------------------------------------
+//MapConnect                                                          PROCEDURE
+//------------------------------------------------------------------------------
 	procedure MapConnect(
 		Version : Integer;
 		AClient : TIdContext;
@@ -30,6 +49,9 @@ uses
 			ReadPts : TReadPts
 		);
 
+//------------------------------------------------------------------------------
+//ShowMap                                                             PROCEDURE
+//------------------------------------------------------------------------------
 	Procedure ShowMap(
 			AChara  : TCharacter;
 			InBuffer : TBuffer;
@@ -37,6 +59,9 @@ uses
 			ReadPts : TReadPts
 		);
 
+//------------------------------------------------------------------------------
+//RecvTick                                                            PROCEDURE
+//------------------------------------------------------------------------------
 	procedure RecvTick(
 			AChara  : TCharacter;
 			InBuffer : TBuffer;
@@ -44,12 +69,16 @@ uses
 			ReadPts : TReadPts
 	);
 
+//------------------------------------------------------------------------------
+//GetNameAndID                                                        PROCEDURE
+//------------------------------------------------------------------------------
 	Procedure GetNameAndID(
 			AChara  : TCharacter;
 			InBuffer : TBuffer;
 		const
 			ReadPts : TReadPts
 	);
+//------------------------------------------------------------------------------
 
 implementation
 uses
@@ -61,6 +90,16 @@ uses
 	ZoneSend,
   ZoneServer;
 
+//------------------------------------------------------------------------------
+//NoCommand                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      This is a dummy command for processes that either don't do anything or
+//    don't do anything yet.
+//
+//  Changes -
+//    January 18th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
 	Procedure NoCommand(
 			AChara  : TCharacter;
 			InBuffer : TBuffer;
@@ -69,8 +108,20 @@ uses
 	);
 	Begin
 		//Dummy Command for processes that don't have one.
-	End;
+	End;//NoCommand
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//NoCommand                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      This is a dummy command for processes that either don't do anything or
+//    don't do anything yet.
+//
+//  Changes -
+//    January 18th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
 	Procedure NoCommand(
 		const
 			AChara    : TCharacter;
@@ -79,9 +130,22 @@ uses
 	);
 	Begin
 		//Dummy Command for processes that don't have one.
-	End;
+	End;//NoCommand
+//------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//MapConnect                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      This is executed when a character requests to conenct ot the map server.
+//    It first checks to see if a character should be able to connect to the
+//    zone (to stop hacking attempts) and then it links the chosen character to
+//    the connection.
+//
+//  Changes -
+//    January 18th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
 	procedure MapConnect(
 			Version : Integer;
 			AClient : TIdContext;
@@ -134,8 +198,21 @@ uses
       	ZoneSendMapConnectDeny(AClient);
 			end;
 		end;
-	end;
+	end;//MapConnect
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ShowMap                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      This is executed on a character showing the map, it sends them all the
+//    information they need, such as their skill list, stats, friends list,
+//    guild, etc. Anything that would be used by the character.
+//
+//  Changes -
+//    January 18th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
 	Procedure ShowMap(
 			AChara  : TCharacter;
 			InBuffer : TBuffer;
@@ -182,8 +259,21 @@ uses
 		WriteBufferWord(2, 0, OutBuffer);
 		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
 
-	end;
+	end;//ShowMap
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//RecvTick                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      This sends a simple ping command basically to the client on receiving a
+//    "tick" from them. It ensures that the client is still connected to the
+//    game server.
+//
+//  Changes -
+//    January 18th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
 	procedure RecvTick(
 			AChara  : TCharacter;
 			InBuffer : TBuffer;
@@ -192,8 +282,20 @@ uses
 	);
 	Begin
 		ZoneSendTickToClient(AChara.ClientInfo);
-	end;
+	end;//RecvTick
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetNameAndID                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      This gets a character's name and id from the charalist if it's there,
+//    else, it looks through mobs and npcs.
+//
+//  Changes -
+//    January 18th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
 	Procedure GetNameAndID(
 			AChara  : TCharacter;
 			InBuffer : TBuffer;
@@ -224,6 +326,7 @@ uses
 		end;
 
 
-	end;
+	end;//GetNameAndID
+//------------------------------------------------------------------------------
 
 end.

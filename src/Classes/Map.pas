@@ -13,15 +13,20 @@ interface
 
 uses
 	Types,
-	PointList;
+	PointList,
+  List32;
 
 type
 	//graph related types
 	TCell = record
     //what kind of tile is it
-		Attribute : Byte;
+		Attribute       : Byte;
 		//Tsusai 11/09/06: Keep track of the number of things in the way, like icewall(s)
-		ObstructionCount : Byte;
+		ObstructionCount: Byte;
+
+    Mobs            : TIntList32;
+    NPCs            : TIntList32;
+    Characters      : TIntList32;
 	end;
 
 	TGraph = array of array of TCell;
@@ -40,7 +45,16 @@ type
 //------------------------------------------------------------------------------
 TMap = class(TObject)
 	public
-		Graph : TGraph;
+		Cell : TGraph;
+		Constructor Create();
+		Destructor Destroy();override;
+
+		Function GetPath(
+			StartPoint  : TPoint;
+			EndPoint    : TPoint;
+			var APath   : TPointList
+		) : boolean;
+
 	private
 		procedure GetArea(
 			const APoint	: TPoint;
@@ -48,17 +62,6 @@ TMap = class(TObject)
 			var   XMod		: Integer;
 			var   YMod		: Integer
 		);
-	protected
-
-	published
-		Constructor Create();
-		Destructor Destroy();override;
-
-		Function GetPath(
-			StartPoint : TPoint;
-			EndPoint : TPoint;
-			var APath : TPointList
-		) : boolean;
 
 end;
 //------------------------------------------------------------------------------

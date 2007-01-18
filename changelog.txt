@@ -13,6 +13,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 118 -
+[2007/01/18] - RaX - Updated Headers on Yesterdays changes to ZoneServer related files.
+[2007/01/18] - RaX - Added Mobs, NPCs, and Characters to each TMap Cell, renamed Graph to
+ cell.
+-
+
 - Rev 117 -
 [2007/01/17] - Tsusai - Notes/Overview: Zone display done. Also as always, various tweaks
  to get it to work.

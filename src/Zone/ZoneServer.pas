@@ -481,13 +481,36 @@ begin
 end;{SetPort}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//CharaClientOnConnect                                                PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Validates with the character server once it connects.
+//
+//	Changes -
+//		January 17th, 2007 - RaX - Created Header.
 //		January 14th, 2007 - Tsusai - Added
+//
+//------------------------------------------------------------------------------
 procedure TZoneServer.CharaClientOnConnect(Sender : TObject);
 begin
 	ValidateWithCharaServer(ToCharaTCPClient,Self);
-end;
+end;//CharaClientOnConnect 
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//CharaClientRead                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Executes on receiving information back from a character server.
+//
+//	Changes -
+//		January 17th, 2007 - RaX - Created Header.
 //		January 14th, 2007 - Tsusai - Added
+//
+//------------------------------------------------------------------------------
 procedure TZoneServer.CharaClientRead(AClient : TInterClient);
 var
 	ABuffer : TBuffer;
@@ -522,5 +545,5 @@ begin
 		end;
 	end;
 end;{CharaClientRead}
-
+//------------------------------------------------------------------------------
 end.

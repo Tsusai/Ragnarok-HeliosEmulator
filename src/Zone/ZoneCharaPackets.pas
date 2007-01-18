@@ -1,3 +1,13 @@
+//------------------------------------------------------------------------------
+//ZoneCharaPackets                                                        UNIT
+//------------------------------------------------------------------------------
+//  What it does -
+//      Houses our Zone<->Character server communication routines. These are
+//    used in ZoneServer.pas and also in CharacterServer.pas.
+//
+//  Changes -
+//    January 18th, 2007 - RaX - Created Header.
+//------------------------------------------------------------------------------
 unit ZoneCharaPackets;
 
 interface
@@ -22,6 +32,16 @@ uses
 	PacketTypes,
 	TCPServerRoutines;
 
+//------------------------------------------------------------------------------
+//ValidateWithCharaServer                                             PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Sends the character server key, zone id, and zoneport to the character
+//    server for validation.
+//
+//  Changes -
+//    January 18th, 2007 - RaX - Created Header.
+//------------------------------------------------------------------------------
 	procedure ValidateWithCharaServer(
 		AClient : TInterClient;
 		ZoneServer : TZoneServer
@@ -34,8 +54,21 @@ uses
 		WriteBufferWord(6, ZoneServer.Port, OutBuffer);
 		WriteBufferMD5String(8, GetMD5(ZoneServer.Options.CharaKey), OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2100));
-	end;
+	end;//ValidateWithCharaServer 
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SendValidateFlagToZone                                              PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      After validation, if a zone server checks out it is sent this flag back
+//    which contains a simple TRUE/FALSE flag that lets a zone know that it
+//    passed or not.
+//
+//  Changes -
+//    January 18th, 2007 - RaX - Created Header.
+//------------------------------------------------------------------------------
 	procedure SendValidateFlagToZone(
 		AClient : TIdContext;
 		Validated : byte
@@ -46,8 +79,19 @@ uses
 		WriteBufferWord(0, $2101, OutBuffer);
 		WriteBufferByte(2, Validated, OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2101));
-	end;
+	end;//SendValidateFlagToZone
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SendZoneWANIPToChara                                                PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Sends the zone's WANIP to the character server.
+//
+//  Changes -
+//    January 18th, 2007 - RaX - Created Header.
+//------------------------------------------------------------------------------
 	procedure SendZoneWANIPToChara(
 		AClient : TInterClient;
 		ZoneServer : TZoneServer
@@ -61,8 +105,19 @@ uses
 		WriteBufferWord(2,Size+4,OutBuffer);
 		WriteBufferString(4,ZoneServer.Options.WANIP,Size,OutBuffer);
 		SendBuffer(AClient,OutBuffer,Size+4);
-	end;
+	end;//SendZoneWANIPToChara
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SendZoneLANIPToChara                                                PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Sends the zone's LANIP to the character server.
+//
+//  Changes -
+//    January 18th, 2007 - RaX - Created Header.
+//------------------------------------------------------------------------------
 	procedure SendZoneLANIPToChara(
 		AClient : TInterClient;
 		ZoneServer : TZoneServer
@@ -76,8 +131,19 @@ uses
 		WriteBufferWord(2,Size+4,OutBuffer);
 		WriteBufferString(4,ZoneServer.Options.LANIP,Size,OutBuffer);
 		SendBuffer(AClient,OutBuffer,Size+4);
-	end;
+	end;//SendZoneLANIPToChara
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SendZoneOnlineUsersToChara                                          PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Updates the character server's internal list of online characters.
+//
+//  Changes -
+//    January 18th, 2007 - RaX - Created Header.
+//------------------------------------------------------------------------------
 	procedure SendZoneOnlineUsersToChara(AClient : TInterClient; ZoneServer : TZoneServer);
 	var
 		OutBuffer : TBuffer;
@@ -85,7 +151,7 @@ uses
 		WriteBufferWord(0,$2104,OutBuffer);
 		WriteBufferWord(2,ZoneServer.OnlineUsers,OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2104));
-	end;
-
+	end;//SendZoneOnlineUsersToChara
+//------------------------------------------------------------------------------
 end.
  
