@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 119 -
+[2007/01/19] - RaX - Added some properties to TMap, Size and Mode. Fixed last commit, I
+ forgot to update Graph to Cell in TMap (sorry =)) 
+-
+
 - Rev 118 -
 [2007/01/18] - RaX - Updated Headers on Yesterdays changes to ZoneServer related files.
 [2007/01/18] - RaX - Added Mobs, NPCs, and Characters to each TMap Cell, renamed Graph to

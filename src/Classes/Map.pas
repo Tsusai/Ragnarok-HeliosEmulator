@@ -44,7 +44,19 @@ type
 //TMap                                                                  CLASS
 //------------------------------------------------------------------------------
 TMap = class(TObject)
+	private
+    fSize : TPoint;
+		procedure GetArea(
+			const APoint	: TPoint;
+			var   AnArea	: TGraph;
+			var   XMod		: Integer;
+			var   YMod		: Integer
+		);
+    procedure SetSize(Value  : TPoint);
+
 	public
+    Name : String;
+    Mode : Integer;
 		Cell : TGraph;
 		Constructor Create();
 		Destructor Destroy();override;
@@ -54,15 +66,8 @@ TMap = class(TObject)
 			EndPoint    : TPoint;
 			var APath   : TPointList
 		) : boolean;
-
-	private
-		procedure GetArea(
-			const APoint	: TPoint;
-			var   AnArea	: TGraph;
-			var   XMod		: Integer;
-			var   YMod		: Integer
-		);
-
+    
+    property Size : TPoint read fSize write SetSize;
 end;
 //------------------------------------------------------------------------------
 
@@ -136,8 +141,8 @@ var
 	XAreaMax	: Integer;//last x point in area
 	YAreaMax	: Integer;//last y point in area
 begin
-	XMax := Length(Graph)-1;
-	YMax := Length(Graph[0])-1;
+	XMax := Length(Cell)-1;
+	YMax := Length(Cell[0])-1;
 
 	//first, we get our areas position(really nasty condition follows)
 	//get XMod and XAreaMax
@@ -183,10 +188,10 @@ begin
 	end;
 
 	//finally, build our area
-	AnArea := copy(Graph,XMod,XAreaMax);
+	AnArea := copy(Cell,XMod,XAreaMax);
 	for Index := XMod to (XAreaMax) do
 	begin
-		AnArea[Index-XMod] := copy(Graph[Index], YMod, YAreaMax);
+		AnArea[Index-XMod] := copy(Cell[Index], YMod, YAreaMax);
 	end;
 end;
 //------------------------------------------------------------------------------
@@ -352,6 +357,50 @@ begin
 		Result := true
 	end;
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetSize                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Sets the size of a map.
+//
+//  Changes -
+//    January 19th, 2007.
+//------------------------------------------------------------------------------
+Procedure TMap.SetSize(Value : TPoint);
+var
+  XIndex : Integer;
+  YIndex : Integer;
+begin
+  for XIndex := 0 to fSize.X - 1 do
+  begin
+    for YIndex := 0 to fSize.Y - 1 do
+    begin
+      Cell[XIndex][YIndex].Mobs.Free;
+      Cell[XIndex][YIndex].Characters.Free;
+      Cell[XIndex][YIndex].NPCs.Free;
+    end;
+    SetLength(Cell[XIndex], 0);
+  end;
+  SetLength(Cell,0);
+
+  fSize := Value;
+  SetLength(Cell, fSize.X);
+  for XIndex := 0 to fSize.X - 1 do
+  begin
+    SetLength(Cell[XIndex], fSize.Y);
+    for YIndex := 0 to fSize.Y do
+    begin
+      Cell[XIndex][YIndex].Mobs := TIntList32.Create;
+      Cell[XIndex][YIndex].Characters := TIntList32.Create;
+      Cell[XIndex][YIndex].NPCs := TIntList32.Create;
+      Cell[XIndex][YIndex].Attribute := 0;
+      Cell[XIndex][YIndex].ObstructionCount := 0;
+    end;
+  end;
+end;//SetSize
 //------------------------------------------------------------------------------
 
 end.
