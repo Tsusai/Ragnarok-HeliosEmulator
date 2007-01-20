@@ -13,6 +13,21 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 120 -
+[2007/01/20] - Tsusai - Notes/Overview: TWEAKS!
+[2007/01/20] - Tsusai - Found a shortcut method IdContext.Binding, which
+ links to Idcontext.Connection.Socket.Binding.  Any use of the long version has been
+ replaced with the shortcut, and any Console messages that broke word wrap limit have been
+ wrapped.  Changes are in:
+ -LoginServer 
+ -CharacterServer
+ -ZoneServer
+[2007/01/20] - Tsusai - CharacterServer - In the ZServerInfo.Address call, there was a spare
+ ',' that I overlooked.  Delphi ignores it, but Kylix caught it.  Fixed
+[2007/01/20] - Tsusai - CommClient - Replaced TThread and now useing TIdThread.  It has
+ reduced some conflicts when trying to access the client readthreads.
+-
+
 - Rev 119 -
 [2007/01/19] - RaX - Added some properties to TMap, Size and Mode. Fixed last commit, I
  forgot to update Graph to Cell in TMap (sorry =)) 

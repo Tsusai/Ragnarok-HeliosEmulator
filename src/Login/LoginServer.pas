@@ -22,7 +22,7 @@ uses
 	Classes,
 	SysUtils,
 	Account,
-  LoginOptions;
+	LoginOptions;
 
 type
 //------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ type
 		Procedure OnException(AConnection: TIdContext;
 			AException: Exception);
 
-    Procedure LoadOptions;
+		Procedure LoadOptions;
 
 		Procedure ParseLogin(AClient: TIdContext);
 		Procedure SendLoginError(var AClient: TIdContext; const Error : byte);
@@ -61,12 +61,12 @@ type
 		);
 
 		Procedure SetPort(Value : Word);
-    Function GetStarted() : Boolean;
+		Function GetStarted() : Boolean;
 	public
-    Options : TLoginOptions;
+		Options : TLoginOptions;
 
 		Property Port : Word read fPort write SetPort;
-    property Started : Boolean read GetStarted;
+		property Started : Boolean read GetStarted;
 
 		Constructor Create();
 		Destructor  Destroy();override;
@@ -109,7 +109,7 @@ Constructor TLoginServer.Create();
 begin
 	Inherited;
 
-  LoadOptions;
+	LoadOptions;
 
 	TCPServer := TIdTCPServer.Create;
 
@@ -118,7 +118,7 @@ begin
 	TCPServer.OnDisconnect:= OnDisconnect;
 	TCPServer.OnException := OnException;
 
-  Port                  := Options.Port;
+	Port                  := Options.Port;
 
 	fCharaServerList      := TStringList.Create;
 end;{Create}
@@ -139,8 +139,8 @@ Destructor TLoginServer.Destroy();
 begin
 	TCPServer.Free;
 	fCharaServerList.Free;
-  Options.Save;
-  Options.Free;
+	Options.Save;
+	Options.Free;
 	Inherited;
 end;{Destroy}
 //------------------------------------------------------------------------------
@@ -158,11 +158,11 @@ end;{Destroy}
 //------------------------------------------------------------------------------
 Procedure TLoginServer.Start(Reload : Boolean = FALSE);
 begin
-  if Reload then
-  begin
-    LoadOptions;
-  end;
-  Port := Options.Port;
+	if Reload then
+	begin
+		LoadOptions;
+	end;
+	Port := Options.Port;
 	ActivateServer('Login',TCPServer);
 end;{Start}
 //------------------------------------------------------------------------------
@@ -287,6 +287,8 @@ end;{OnException}
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
+//			IdContext.Binding shortcut.
 //
 //------------------------------------------------------------------------------
 	procedure TLoginServer.SendCharacterServers(AnAccount : TAccount; AClient: TIdContext);
@@ -314,7 +316,7 @@ end;{OnException}
 				WriteBufferCardinal(
 					47+(index*32)+0,
 					TCharaServerInfo(fCharaServerList.Objects[Index]).Address(
-						AClient.Connection.Socket.Binding.PeerIP
+						AClient.Binding.PeerIP
 					),
 					Buffer
 				);
@@ -379,6 +381,8 @@ end;{OnException}
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //		January 3rd, 2007 - Tsusai - Added console messages.
+//		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
+//			IdContext.Binding shortcut
 //
 //------------------------------------------------------------------------------
 	procedure TLoginServer.ValidateLogin(
@@ -392,7 +396,10 @@ end;{OnException}
 		AccountPassword : string;
 		MD5Key    : string;
 	begin
-		MainProc.Console('Login Server: RO Client connection from ' + AClient.Connection.Socket.Binding.PeerIP);
+		MainProc.Console(
+			'Login Server: RO Client connection from ' +
+			AClient.Binding.PeerIP
+		);
 		MD5Key := '';
 
 		if (AClient.Data is TMD5String) then
@@ -422,7 +429,7 @@ end;{OnException}
 					begin
 						AnAccount.LoginKey[1] := Random($7FFFFFFF) + 1;
 						AnAccount.LoginKey[2] := Random($7FFFFFFF) + 1;
-						AnAccount.LastIP := AClient.Connection.Socket.Binding.PeerIP;
+						AnAccount.LastIP := AClient.Binding.PeerIP;
 						AnAccount.LastLoginTime := Now;
 						Inc(AnAccount.LoginCount);
 						ADatabase.CommonData.SaveAccount(AnAccount);
@@ -454,6 +461,8 @@ end;{OnException}
 //		January 3rd, 2007 - Tsusai - Added console messages.
 //		January 4th, 2007 - RaX - Created Header. Tsusai lazy =)
 //		January 14th, 2007 - Tsusai - Updated error response
+//		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
+//			IdContext.Binding shortcut
 //
 //------------------------------------------------------------------------------
 	procedure TLoginServer.VerifyCharaServer(
@@ -467,7 +476,10 @@ end;{OnException}
 		Port : word;
 		CServerInfo : TCharaServerInfo;
 	begin
-		MainProc.Console('Login Server: Reading Character Server connection from ' + AClient.Connection.Socket.Binding.PeerIP);
+		MainProc.Console(
+			'Login Server: Reading Character Server connection from ' +
+			AClient.Binding.PeerIP
+		);
 		Validated := true;
 
 		if Password <> GetMD5(Options.Key) then
@@ -603,12 +615,12 @@ end;{OnException}
 //------------------------------------------------------------------------------
 Procedure TLoginServer.LoadOptions;
 begin
-  if Assigned(Options) then
-  begin
-    FreeAndNIL(Options);
-  end;
+	if Assigned(Options) then
+	begin
+		FreeAndNIL(Options);
+	end;
 
-  Options    := TLoginOptions.Create('./Login.ini');
+	Options    := TLoginOptions.Create('./Login.ini');
 
 	Options.Load;
 end;{LoadOptions}
@@ -647,7 +659,7 @@ end;//SetPort
 //------------------------------------------------------------------------------
 Function TLoginServer.GetStarted() : Boolean;
 begin
-  Result := TCPServer.Active;
+	Result := TCPServer.Active;
 end;{SetPort}
 //------------------------------------------------------------------------------
 end.

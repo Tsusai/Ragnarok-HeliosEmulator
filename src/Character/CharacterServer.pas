@@ -298,9 +298,11 @@ end;{LoginClientRead}
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
-//    July 6th, 2006 - Tsusai - Started work on changing dummy procedure to real
-//      procedure.
+//		July 6th, 2006 - Tsusai - Started work on changing dummy procedure to real
+//      	procedure.
 //		January 3rd, 2007 - Tsusai - Added console messages.
+//		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
+//			IdContext.Binding shortcut
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
@@ -400,8 +402,11 @@ begin
 				WriteBufferByte(2, 01, ReplyBuffer);
 				SendBuffer(AClient,ReplyBuffer,GetPacketLength($0081));
 
-				MainProc.Console('Character Server: Connecting RO client from '+
-					AClient.Connection.Socket.Binding.PeerIP + ' did not pass key validation.');
+				MainProc.Console(
+					'Character Server: Connecting RO client from '+
+					AClient.Binding.PeerIP +
+					' did not pass key validation.'
+				);
 			end;
 		end;
 	end;
@@ -418,6 +423,8 @@ end; {SendCharas}
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header. - Stubbed for later use.
+//		January 20th, 2007 - Tsusai - Now using IdContext.Binding shortcut,
+//			Removed extra comma inthe ZserverAddress procedure (Kylix caught this)
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.SendCharaToMap(
@@ -468,10 +475,9 @@ begin
 			WriteBufferCardinal(2, ACharacter.CID, OutBuffer);
 			WriteBufferString(6, ACharacter.Map + '.rsw', 16, OutBuffer);
 			WriteBufferCardinal(22,
-				ZServerInfo.Address(
-					AClient.Connection.Socket.Binding.PeerIP
+				ZServerInfo.Address(AClient.Binding.PeerIP
 				),
-				OutBuffer,
+				OutBuffer
 			);
 			WriteBufferWord(26, ZServerInfo.Port, OutBuffer);
 			SendBuffer(AClient, OutBuffer, 28);
@@ -740,6 +746,8 @@ end;{DeleteChara}
 //------------------------------------------------------------------------------
 
 //		January 14th, 2007 - Tsusai -  Added
+//		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
+//			IdContext.Binding shortcut
 procedure TCharacterServer.VerifyZoneServer(
 	AClient : TIdContext;
 	InBuffer : TBuffer
@@ -751,8 +759,9 @@ var
 	ID : Cardinal;
 begin
 	Validated := 0; //Assume true
-	MainProc.Console('Character Server: Reading Zone Server connection from ' +
-		AClient.Connection.Socket.Binding.PeerIP
+	MainProc.Console(
+		'Character Server: Reading Zone Server connection from ' +
+		AClient.Binding.PeerIP
 	);
 	ID := BufferReadCardinal(2,InBuffer);
 	Password := BufferReadMD5(8,InBuffer);

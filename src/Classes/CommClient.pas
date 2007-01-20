@@ -12,6 +12,8 @@
 //
 //	Changes -
 //		January 4th, 2007 - RaX - Created Header.
+//		January 20th, 2007 - Tsusai - Reusing TIdThread. It doesn't raise as
+//			many exceptions due to conflicts with the process threadlist
 //
 //------------------------------------------------------------------------------
 unit CommClient;
@@ -19,7 +21,7 @@ unit CommClient;
 interface
 uses
 	IdTCPClient,
-	Classes;
+	IdThread;
 
 type
   //forward declaration
@@ -31,10 +33,10 @@ type
 //------------------------------------------------------------------------------
 //TClientThread                                                           CLASS
 //------------------------------------------------------------------------------
-	TClientThread = class(TThread)
+	TClientThread = class(TIdThread)
 	protected
 		FClient: TInterClient;
-		procedure Execute; override;
+		procedure Run; override;
 	public
 		constructor Create(AClient: TInterClient); reintroduce;
 		property Client: TInterClient read FClient;
@@ -74,7 +76,7 @@ uses
 	IdStack;
 
 //------------------------------------------------------------------------------
-//Execute                                                            PROCEDURE
+//Run                                                            PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does -
 //			This is the actual executing code of the thread.
@@ -82,48 +84,46 @@ uses
 //	Changes -
 //		January 4th, 2007 - RaX - Created Header.
 //		January 14th, 2007 - Tsusai - Modified the error response.
+//		January 20th, 2007 - Tsusai - Now TIdThread.Run, removed while statement
 //
 //------------------------------------------------------------------------------
-	procedure TClientThread.Execute;
+	procedure TClientThread.Run;
 	begin
-		while not Terminated do
+		Sleep(1);
+		if FClient.Active then
 		begin
-			Sleep(1);
-			if FClient.Active then
-			begin
-				try
-					if (Now > FClient.ReconnectTime) and
-						(FClient.Connected = false) then
-					begin
-						FClient.Connect;
-					end;
-				except
-					on E:EIdSocketError do
-					begin
-						MainProc.Console(
-							Format('%s Server failed to connect to %s Server.',
-								[FClient.SourceName,FClient.DestinationName]
-							)
-						);
-						MainProc.Console('Retrying in 30 seconds.');
-						FClient.ReconnectTime := IncSecond(Now,30);
-					end;
-				end;
-				//READ CHECK
-				if FClient.Connected then
+			try
+				if (Now > FClient.ReconnectTime) and
+					(FClient.Connected = false) then
 				begin
-					if Assigned(FClient.IOHandler) then
+					FClient.Connect;
+				end;
+			except
+				on E:EIdSocketError do
+				begin
+					MainProc.Console(
+						Format('%s Server failed to connect to %s Server.',
+							[FClient.SourceName,FClient.DestinationName]
+						)
+					);
+					MainProc.Console('Retrying in 30 seconds.');
+					FClient.ReconnectTime := IncSecond(Now,30);
+				end;
+			end;
+			//READ CHECK
+			if FClient.Connected then
+			begin
+				if Assigned(FClient.IOHandler) then
+				begin
+					FClient.IOHandler.CheckForDataOnSource(10);
+					if not FClient.IOHandler.InputBufferIsEmpty then
 					begin
-						FClient.IOHandler.CheckForDataOnSource(10);
-						if not FClient.IOHandler.InputBufferIsEmpty then
-						begin
-							FClient.DoRecieveEvent;
-						end;
+						FClient.DoRecieveEvent;
 					end;
 				end;
 			end;
 		end;
-	end;{Execute}
+	end;{Run}
 //------------------------------------------------------------------------------
 
 
@@ -135,12 +135,12 @@ uses
 //
 //	Changes -
 //		January 4th, 2007 - RaX - Created Header.
+//		January 20th, 2007 - Tsusai - Updated create call, removed FreeOnTerminate
 //
 //------------------------------------------------------------------------------
 	constructor TClientThread.Create(AClient : TInterClient);
 	begin
-		inherited Create(True);
-		FreeOnTerminate := true;
+		inherited Create(True,True,AClient.SourceName + ' Client');
 		FClient := AClient;
 		Priority := PriorityLow;
 	end;{Create}
@@ -177,6 +177,7 @@ uses
 //
 //	Changes -
 //		January 4th, 2007 - RaX - Created Header.
+//		January 20th, 2007 - Tsusai - Changed how the readthread ends.
 //
 //------------------------------------------------------------------------------
 	destructor TInterClient.Destroy;
@@ -184,7 +185,8 @@ uses
 		Active := false;
 		if Assigned(fReadThread) then
 		begin
-			fReadThread.Terminate;
+			fReadThread.Stop;
+			fReadThread.Destroy;
 		end;
 		inherited Destroy;
 	end;{Destroy}
@@ -199,6 +201,7 @@ uses
 //
 //	Changes -
 //		January 4th, 2007 - RaX - Created Header.
+//		January 20th, 2007 - Tsusai - Updated for TIdThread.
 //
 //------------------------------------------------------------------------------
 	procedure TInterClient.SetActive(Value : boolean);
@@ -207,16 +210,16 @@ uses
 		begin
 			if Value then
 			begin
-				fReadThread.Resume;
+				fReadThread.Start;
 				fActive := Value;
 			end else
 			begin
-				fActive := Value;
+				fReadThread.Stop;
 				if Connected then
 				begin
 					Disconnect;
 				end;
-				fReadThread.Suspend;
+				fActive := Value;
 			end;
 		end;
 	end;{SetActive}

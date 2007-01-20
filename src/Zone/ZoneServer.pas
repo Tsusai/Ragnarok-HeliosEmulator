@@ -327,6 +327,9 @@ end;{SearchPacketListing}
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
+//		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
+//			IdContext.Binding shortcut
+
 //    Old Comments Follow...
 //    [2005/07/11] CR - Added Comment Header, Reindented, using newer syntax for
 //	    MapConnect that is MUCH less verbose.
@@ -394,10 +397,17 @@ Begin
 			if NOT Found then
 			begin
 				//They can't get in, so prevent the rest of their useless packets from parsing
-				MainProc.Console('Someone with the IP '+
-					AClient.Connection.Socket.Binding.PeerIP +
-					' attempted to send a packet '+ IntToHex(packetID, 4) +' with a length of ' + IntToStr(Lth));
-				MainProc.Console('Reason for this response: Unsupported client or a bot attempted to connect.');
+				MainProc.Console(
+					'Someone with the IP '+
+					AClient.Binding.PeerIP +
+					' attempted to send a packet '+
+					IntToHex(packetID, 4) +
+					' with a length of ' + IntToStr(Lth)
+				);
+				MainProc.Console(
+					'Reason for this response: Unsupported ' +
+					'client or a bot attempted to connect.'
+				);
 				AClient.Connection.Disconnect;
 			end;
 
