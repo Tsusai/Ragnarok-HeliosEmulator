@@ -13,9 +13,6 @@ unit WinLinux;
 
 interface
 uses
-	{$IFDEF LINUX}
-	Libc,
-	{$ENDIF}
 	Classes;
 
 	type
@@ -31,14 +28,8 @@ uses
 	procedure KillTerminationCapturing;
 	procedure KillProcess;
 	function GetTick : Cardinal;
+	procedure LowerPriority(AThread : TThread);
 
-	const
-		{$IFDEF MSWINDOWS}
-		PriorityLow = tpLowest;
-		{$ENDIF}
-		{$IFDEF LINUX}
-		PriorityLow = PRIO_MIN;
-		{$ENDIF}
 
 implementation
 uses
@@ -46,6 +37,9 @@ uses
 	Windows,
 	MMSystem,
 	Winsock,
+	{$ENDIF}
+	{$IFDEF LINUX}
+	Libc,
 	{$ENDIF}
 	SysUtils,
 	Version,
@@ -218,6 +212,16 @@ uses
 		Result := LinuxInfo.uptime;
 		{$ENDIF}
 	end;{GetTick}
-  //----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+
+	procedure LowerPriority(AThread : TThread);
+	begin
+		{$IFDEF MSWINDOWS}
+		AThread.Priority := tpLowest;
+		{$ENDIF}
+		{$IFDEF LINUX}
+		Nice(getpid,0);
+		{$ENDIF}
+	end;
 
 end.

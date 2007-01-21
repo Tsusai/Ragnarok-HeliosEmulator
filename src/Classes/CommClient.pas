@@ -60,6 +60,8 @@ type
 		DestinationName : string;
 		constructor Create(Source,Destination : string);
 		destructor Destroy; override;
+		procedure Connect; override;
+		procedure Disconnect(ANotifyPeer: Boolean); override;
 	published
 		property Active : boolean read fActive write SetActive;
 		property OnRecieve : TDataAvailableEvent read fOnRecieve write fOnRecieve;
@@ -87,43 +89,16 @@ uses
 //		January 20th, 2007 - Tsusai - Now TIdThread.Run, removed while statement
 //
 //------------------------------------------------------------------------------
+
 	procedure TClientThread.Run;
 	begin
-		Sleep(1);
-		if FClient.Active then
+		FClient.IOHandler.CheckForDataOnSource(10);
+		if not FClient.IOHandler.InputBufferIsEmpty then
 		begin
-			try
-				if (Now > FClient.ReconnectTime) and
-					(FClient.Connected = false) then
-				begin
-					FClient.Connect;
-				end;
-			except
-				on E:EIdSocketError do
-				begin
-					MainProc.Console(
-						Format('%s Server failed to connect to %s Server.',
-							[FClient.SourceName,FClient.DestinationName]
-						)
-					);
-					MainProc.Console('Retrying in 30 seconds.');
-					FClient.ReconnectTime := IncSecond(Now,30);
-				end;
-			end;
-			//READ CHECK
-			if FClient.Connected then
-			begin
-				if Assigned(FClient.IOHandler) then
-				begin
-					FClient.IOHandler.CheckForDataOnSource(10);
-					if not FClient.IOHandler.InputBufferIsEmpty then
-					begin
-						FClient.DoRecieveEvent;
-					end;
-				end;
-			end;
+			FClient.DoRecieveEvent;
 		end;
 	end;{Run}
+
 //------------------------------------------------------------------------------
 
 
@@ -142,7 +117,8 @@ uses
 	begin
 		inherited Create(True,True,AClient.SourceName + ' Client');
 		FClient := AClient;
-		Priority := PriorityLow;
+		LowerPriority(Self);
+		Start;
 	end;{Create}
 //------------------------------------------------------------------------------
 
@@ -164,10 +140,33 @@ uses
 		inherited Create;
 		SourceName := Source;
 		DestinationName := Destination;
-		fReadThread := TClientThread.Create(Self);
 	end;{Create}
 //------------------------------------------------------------------------------
 
+	procedure TInterClient.Connect;
+	begin
+		inherited Connect;
+		try
+			fReadThread := TClientThread.Create(Self);
+		except
+			Disconnect(False);
+			raise;
+		end;
+	end;
+
+	procedure TInterClient.Disconnect(ANotifyPeer: Boolean);
+	begin
+		if Assigned(fReadThread) then fReadThread.Terminate;
+		try
+			inherited Disconnect(ANotifyPeer);
+		finally
+			if Assigned(fReadThread) then
+			begin
+				fReadThread.WaitFor;
+				FreeAndNil(fReadThread);
+			end;
+		end;
+	end;
 
 //------------------------------------------------------------------------------
 //Destroy                                                           DESTRUCTOR
@@ -192,7 +191,6 @@ uses
 	end;{Destroy}
 //------------------------------------------------------------------------------
 
-
 //------------------------------------------------------------------------------
 //SetActive                                                           PROCEDURE
 //------------------------------------------------------------------------------
@@ -206,21 +204,17 @@ uses
 //------------------------------------------------------------------------------
 	procedure TInterClient.SetActive(Value : boolean);
 	begin
-		if Assigned(fReadThread) then
+		if Value then
 		begin
-			if Value then
-			begin
-				fReadThread.Start;
-				fActive := Value;
-			end else
-			begin
-				fReadThread.Stop;
-				if Connected then
-				begin
-					Disconnect;
-				end;
-				fActive := Value;
+			try
+				Connect;
+			except
+				fActive := Connected;
 			end;
+		end else
+		begin
+			Disconnect;
+			fActive := Connected;
 		end;
 	end;{SetActive}
 //------------------------------------------------------------------------------
@@ -241,7 +235,7 @@ uses
 		try
 			if Assigned(fOnRecieve) then fOnRecieve(Self);
 		finally
-			IOHandler.InputBuffer.Clear;
+			//
 		end;
 	end;{DoReceiveEvent}
 //------------------------------------------------------------------------------

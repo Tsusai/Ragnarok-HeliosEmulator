@@ -13,6 +13,15 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 123
+[2007/01/21] - Tsusai - Notes/Overview: Modifications to CommClient.
+[2007/01/21] - Tsusai - CommClient : Redid logic.  Its thread only deals with reading any
+ data on the buffer, and is setup by connect/disconnect methods
+[2007/01/21] - Tsusai - WinLinux - Added LowerPriority method that lowers a thread's
+ priority (will be testing Libc.nice soon)
+[2007/01/21] - Tsusai - XTimer : Updated priority call (LowerPriority);
+-
+
 - Rev 122 -
 [2007/01/21] - RaX - Fixed /start command, moved server create/destroys into mainproc
  create/destroy.

@@ -88,7 +88,7 @@ begin
 	inherited;
 	EndLoop := FALSE;
 
-	Priority := PriorityLow;//TpLowest;
+	LowerPriority(Self);
 	//makes sure we can enable and disable this as much as we want without the
 	//thread terminating on us.
 	while NOT Terminated do
