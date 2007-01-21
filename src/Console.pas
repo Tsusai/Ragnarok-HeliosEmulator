@@ -118,25 +118,21 @@ begin
 		//Start and create Enabled Servers
 		if Options.LoginEnabled then
 		begin
-			LoginServer      := TLoginServer.Create;
 			LoginServer.Start;
 		end;
 		//NOTE: Prior
 		if Options.CharaEnabled then
 		begin
-			CharacterServer  := TCharacterServer.Create;
 			CharacterServer.Start;
 		end;
 
 		if Options.InterEnabled then
 		begin
-			InterServer       := TInterServer.Create;
 			InterServer.Start;
 		end;
 
 		if Options.ZoneEnabled then
 		begin
-			ZoneServer       := TZoneServer.Create;
 			ZoneServer.Start;
 		end;
 	end;
@@ -184,26 +180,22 @@ begin
   if Assigned(ZoneServer) then
 	begin
 		ZoneServer.Stop;
-		ZoneServer.Free;
 	end;
 
 	if Assigned(InterServer) then
 	begin
 		InterServer.Stop;
-		InterServer.Free;
 	end;
 
 	//NOTE: Prior
 	if Assigned(CharacterServer) then
 	begin
 		CharacterServer.Stop;
-		CharacterServer.Free;
 	end;
 
 	if Assigned(LoginServer) then
 	begin
 		LoginServer.Stop;
-		LoginServer.Free;
 	end;
 
   Options.Save;
@@ -281,6 +273,11 @@ end;{LoadOptions}
 constructor TMainProc.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
+
+  LoginServer      := TLoginServer.Create;
+  CharacterServer  := TCharacterServer.Create;
+  InterServer      := TInterServer.Create;
+  ZoneServer       := TZoneServer.Create;
 end;{TMainProc.Create}
 //------------------------------------------------------------------------------
 
@@ -297,6 +294,11 @@ end;{TMainProc.Create}
 //------------------------------------------------------------------------------
 destructor  TMainProc.Destroy;
 begin
+  ZoneServer.Free;
+  InterServer.Free;
+  CharacterServer.Free;
+  LoginServer.Free;
+
 	inherited Destroy;
 end;{TMainProc.Destroy}
 //------------------------------------------------------------------------------

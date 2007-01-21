@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 122 -
+[2007/01/21] - RaX - Fixed /start command, moved server create/destroys into mainproc
+ create/destroy.
+-
+
 - Rev 121 -
 [2007/01/20] - Tsusai - Notes/Overview: Something isn't right when either packet_db or the
  databases fail to load/connect and the server says Startup Success.....bullshit.
