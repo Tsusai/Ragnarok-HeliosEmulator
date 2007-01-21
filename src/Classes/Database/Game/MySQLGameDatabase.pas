@@ -29,6 +29,8 @@ type
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		January 20th, 2007 - Tsusai - Connect is now a bool function
+//			Create holds connection result
 //
 //------------------------------------------------------------------------------
 	TMySQLGameDatabase = class(TGameDatabaseTemplate)
@@ -38,7 +40,11 @@ type
 	public
 
 
-		Constructor Create(EnableGameDatabase : boolean; AParent : TDatabase); reintroduce; overload;
+		Constructor Create(
+			EnableGameDatabase : boolean;
+			var LoadedOK : boolean;
+			AParent : TDatabase
+		); reintroduce; overload;
 		Destructor Destroy();override;
 
 		function CreateChara(
@@ -63,7 +69,7 @@ type
 		procedure SaveChara(AChara : TCharacter);override;
 
 	protected
-		procedure Connect(); override;
+		function Connect() : boolean; override;
 		function SendQuery(
 			const QString : string;
 			StoreResult : boolean;
@@ -91,16 +97,21 @@ implementation
 //	Changes -
 //		October 5th, 2006 - RaX - Created.
 //		November 13th, 2006 - Tsusai - create inherit comes first.
+//		January 20th, 2007 - Tsusai - Create holds connection result
 //
 //------------------------------------------------------------------------------
-Constructor TMySQLGameDatabase.Create(EnableGameDatabase : boolean; AParent : TDatabase);
+Constructor TMySQLGameDatabase.Create(
+	EnableGameDatabase : boolean;
+	var LoadedOK : boolean;
+	AParent : TDatabase
+);
 begin
 	inherited Create;
-  Parent := AParent;
-  Connection := TMySQLClient.Create;
-  if EnableGameDatabase then
-  begin
-	  Connect();
+	Parent := AParent;
+	Connection := TMySQLClient.Create;
+	if EnableGameDatabase then
+	begin
+		LoadedOK := Connect();
   end;
 end;
 //------------------------------------------------------------------------------
@@ -131,17 +142,19 @@ end;
 //
 //	Changes -
 //		October 5th, 2006 - RaX - Moved here from globals.
+//		January 20th, 2007 - Tsusai - Connect is now a bool function
 //
 //------------------------------------------------------------------------------
-Procedure TMySQLGameDatabase.Connect();
+function TMySQLGameDatabase.Connect() : boolean;
 begin
+	Result := true;
 	if NOT Connection.Connected then
 	begin
-    Connection.Host            := Parent.Options.GameHost;
-    Connection.Port            := Parent.Options.GamePort;
-    Connection.Db              := Parent.Options.GameDB;
-    Connection.User            := Parent.Options.GameUser;
-    Connection.Password        := Parent.Options.GamePass;
+		Connection.Host            := Parent.Options.GameHost;
+		Connection.Port            := Parent.Options.GamePort;
+		Connection.Db              := Parent.Options.GameDB;
+		Connection.User            := Parent.Options.GameUser;
+		Connection.Password        := Parent.Options.GamePass;
 	end;
 
 	Connection.ConnectTimeout  := 10;
@@ -149,6 +162,7 @@ begin
 	if NOT Connection.Connect then
 	begin
 		MainProc.Console('*****Could not connect to mySQL database server.');
+		Result := false;
 	end;
 
 end;

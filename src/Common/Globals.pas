@@ -20,7 +20,7 @@ uses
   ;
 
 
-	procedure InitGlobals;
+	function InitGlobals : boolean;
 	procedure DestroyGlobals;
 	procedure TerminateApplication;
 
@@ -91,14 +91,20 @@ end;{GetMD5}
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		January 20th, 2007 - Tsusai - Now a function that returns success of
+//			Database connecting and packet_db
 //
 //------------------------------------------------------------------------------
-procedure InitGlobals;
+function InitGlobals : boolean;
+var
+	DatabaseLoaded : boolean;
 begin
-	Load_PacketDB;
+  DatabaseLoaded := false; //assume the database connections failed!
+
 	AccountList     := TStringList.Create;
 	CharacterList   := TCharacterList.Create(True);
-  ADatabase       := TDatabase.Create(TRUE,TRUE,TRUE);
+	ADatabase       := TDatabase.Create(TRUE,TRUE,TRUE,DatabaseLoaded);
+	Result := (Load_PacketDB and DatabaseLoaded);
 end; {InitGlobals}
 //------------------------------------------------------------------------------
 

@@ -96,49 +96,65 @@ end;{TMainProc.Console}
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
+//		January 20th, 2007 - Tsusai - If server passes PreLoad check (packet_db
+//			and database connect), then start the servers.  Readded Failed to 
+//			Start message.
 //
 //------------------------------------------------------------------------------
 procedure TMainProc.Startup;
+var
+	PreloadOK : boolean;
 begin
 	ThirdPartyCredits; //Load external credits file.
 	AppPath  := ExtractFilePath(ParamStr(0));
 
-	InitGlobals;
 	SetupTerminationCapturing;
+	PreloadOK := InitGlobals;
 
-  LoadOptions;
-
-//Start and create Enabled Servers
-	if Options.LoginEnabled then
+	if PreloadOK then
 	begin
-		LoginServer      := TLoginServer.Create;
-		LoginServer.Start;
-	end;
-	//NOTE: Prior
-	if Options.CharaEnabled then
-	begin
-		CharacterServer  := TCharacterServer.Create;
-		CharacterServer.Start;
-	end;
+		LoadOptions;
 
-	if Options.InterEnabled then
-	begin
-		InterServer       := TInterServer.Create;
-		InterServer.Start;
-	end;
+		//Start and create Enabled Servers
+		if Options.LoginEnabled then
+		begin
+			LoginServer      := TLoginServer.Create;
+			LoginServer.Start;
+		end;
+		//NOTE: Prior
+		if Options.CharaEnabled then
+		begin
+			CharacterServer  := TCharacterServer.Create;
+			CharacterServer.Start;
+		end;
 
-	if Options.ZoneEnabled then
-	begin
-    ZoneServer       := TZoneServer.Create;
-    ZoneServer.Start;
-	end;
+		if Options.InterEnabled then
+		begin
+			InterServer       := TInterServer.Create;
+			InterServer.Start;
+		end;
 
+		if Options.ZoneEnabled then
+		begin
+			ZoneServer       := TZoneServer.Create;
+			ZoneServer.Start;
+		end;
+	end;
 	MainProc.Console('');
 
 	Run := TRUE;
 
-	Console('- Startup Success');
-	Console('  For a list of console commands, input "/help".');
+	if PreloadOK
+		{and servers started ok} then
+	begin
+		Console('- Startup Success');
+		Console('  For a list of console commands, input "/help".');
+	end else
+	begin
+		Console('- Startup Failed');
+		Console('  Please see what error was mentioned above, close this program '+
+			'and correct');
+	end;
 	Console('');
 
 end;{TMainProc.Startup}
@@ -154,35 +170,40 @@ end;{TMainProc.Startup}
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
+//		January 20th, 2007 - Tsusai - Reversed shutdown order so server clients
+//			aren't disconnected and attempt to reconnect (cleaner shutdown 
+//			messages)
 //
 //------------------------------------------------------------------------------
 procedure TMainProc.Shutdown;
 begin
 	Console('- Helios is shutting down...');
+	//Go backwards (so zone doesn't try and connect to character while shutting down)
 
 	//Disconnect clients.
-	if Assigned(LoginServer) then
+  if Assigned(ZoneServer) then
 	begin
-    LoginServer.Stop;
-    LoginServer.Free;
-	end;
-	//NOTE: Prior
-	if Assigned(CharacterServer) then
-	begin
-    CharacterServer.Stop;
-    CharacterServer.Free;
+		ZoneServer.Stop;
+		ZoneServer.Free;
 	end;
 
 	if Assigned(InterServer) then
 	begin
-    InterServer.Stop;
-    InterServer.Free;
+		InterServer.Stop;
+		InterServer.Free;
 	end;
 
-	if Assigned(ZoneServer) then
+	//NOTE: Prior
+	if Assigned(CharacterServer) then
 	begin
-    ZoneServer.Stop;
-    ZoneServer.Free;
+		CharacterServer.Stop;
+		CharacterServer.Free;
+	end;
+
+	if Assigned(LoginServer) then
+	begin
+		LoginServer.Stop;
+		LoginServer.Free;
 	end;
 
   Options.Save;

@@ -27,6 +27,8 @@ type
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		January 20th, 2007 - Tsusai - Connect is now a bool function
+//			Create holds connection result
 //
 //------------------------------------------------------------------------------
 	TGameDatabaseTemplate = class(TObject)
@@ -54,7 +56,7 @@ type
 		procedure SaveChara(AChara : TCharacter);virtual;
 
 	protected
-		procedure Connect(); virtual;
+		function Connect() : boolean; virtual;
 		procedure Disconnect();virtual;
 	end;
 //------------------------------------------------------------------------------
@@ -82,7 +84,7 @@ begin
 	inherited;
 end;
 
-procedure TGameDatabaseTemplate.Connect(); 
+function TGameDatabaseTemplate.Connect() : boolean; 
 begin
 end;
 

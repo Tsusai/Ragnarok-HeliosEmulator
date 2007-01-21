@@ -13,6 +13,23 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 121 -
+[2007/01/20] - Tsusai - Notes/Overview: Something isn't right when either packet_db or the
+ databases fail to load/connect and the server says Startup Success.....bullshit.
+[2007/01/20] - Tsusai - PacketDB - LoadPacketDB: Now a function, if it fails to load, its
+ false. (duh)
+[2007/01/20] - Tsusai - ALLDATABASES : Create holds a result bool variable, which is set
+ by the Connect function (if connected, true)
+[2007/01/20] - Tsusai - Database - Create : Holds a result bool, which is determined if 
+ all 3 databases were created and connected.
+[2007/01/20] - Tsusai - Globals - InitGlobals: Now a function, returns true if packetdb 
+ and database loaded. (notice a pattern in the changelog yet?)
+[2007/01/20] - Tsusai - Console - MainProc.Startup : Will ERROR if InitGlobals failed to
+ load the packet_db and database.
+[2007/01/20] - Tsusai - Console - MainProc.Shutdown : Reversed order of server shutdowns,
+ so there are no reattempts for internal clients to reconnect.
+-
+
 - Rev 120 -
 [2007/01/20] - Tsusai - Notes/Overview: TWEAKS!
 [2007/01/20] - Tsusai - Found a shortcut method IdContext.Binding, which

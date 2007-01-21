@@ -18,7 +18,7 @@ uses
 	CommonDatabaseTemplate,
   GameDatabaseTemplate,
   StaticDatabaseTemplate,
-  DatabaseOptions;
+	DatabaseOptions;
 
 type
 
@@ -31,18 +31,19 @@ type
 
 	public
     CommonData    : TCommonDatabaseTemplate;
-    GameData      : TGameDatabaseTemplate;
+		GameData      : TGameDatabaseTemplate;
     StaticData    : TStaticDatabaseTemplate;
 
     Options       : TDatabaseOptions;
 
 		Constructor Create(
 									EnableCommonDatabase  : Boolean;
-                  EnableGameDatabase    : Boolean;
-                  EnableStaticDatabase  : Boolean;
-                  CommonDatabaseType    : Integer = -1;
-                  GameDatabaseType      : Integer = -1;
-                  StaticDatabaseType    : Integer = -1
+									EnableGameDatabase    : Boolean;
+									EnableStaticDatabase  : Boolean;
+									var LoadedOK					: Boolean;
+									CommonDatabaseType    : Integer = -1;
+									GameDatabaseType      : Integer = -1;
+									StaticDatabaseType    : Integer = -1
 		);
 		Destructor  Destroy();override;
 
@@ -73,21 +74,29 @@ uses
 //
 //	Changes -
 //		September 30th, 2006 - RaX - Created.
+//		January 20th, 2007 - Tsusai - Added feedback boolean variable, in order
+//			to know if any of the databases failed to connect.
 //
 //------------------------------------------------------------------------------
 Constructor TDatabase.Create(
   EnableCommonDatabase  : Boolean;
   EnableGameDatabase    : Boolean;
-  EnableStaticDatabase  : Boolean;
-  CommonDatabaseType    : Integer = -1;
-  GameDatabaseType      : Integer = -1;
-  StaticDatabaseType    : Integer = -1
+	EnableStaticDatabase  : Boolean;
+	var LoadedOK					: Boolean;
+	CommonDatabaseType    : Integer = -1;
+	GameDatabaseType      : Integer = -1;
+	StaticDatabaseType    : Integer = -1
 );
+Var
+	CommonOK : boolean;
+	GameOK   : boolean;
+	StaticOK : boolean;
+
 begin
 	Inherited Create();
-  LoadOptions;
+	LoadOptions;
 	//Checks to see if the DatabaseType variable has been specified, if not we...
-  //Common
+	//Common
 	if CommonDatabaseType = -1 then
 	begin
 		CommonDatabaseType := Options.CommonType;//set it to the value of our config.
@@ -97,7 +106,7 @@ begin
 	begin
 		GameDatabaseType := Options.GameType;//set it to the value of our config.
 	end;
-  //Static
+	//Static
   if StaticDatabaseType = -1 then
 	begin
 		StaticDatabaseType := Options.StaticType;//set it to the value of our config.
@@ -108,12 +117,12 @@ begin
 	case CommonDatabaseType of
 		TEXT ://1    Helios Text Database
 			begin
-        CommonData  := TJanSQLCommonDatabase.Create(EnableCommonDatabase, self);
+				CommonData  := TJanSQLCommonDatabase.Create(EnableCommonDatabase,CommonOK,self);
 			end;
 
 		MYSQL://2
 			begin
-        CommonData  := TMySQLCommonDatabase.Create(EnableCommonDatabase, self);
+				CommonData  := TMySQLCommonDatabase.Create(EnableCommonDatabase,CommonOK,self);
 			end;
 
 		else begin //anything else
@@ -121,16 +130,16 @@ begin
 			MainProc.Console('     See ServerOptions.ini for configuration options.');
 		end;
   end;
-  //Game
+	//Game
 	case GameDatabaseType of
 		TEXT ://1    Helios Text Database
 			begin
-        GameData    := TJanSQLGameDatabase.Create(EnableGameDatabase, self);
+				GameData    := TJanSQLGameDatabase.Create(EnableGameDatabase,GameOK,self);
 			end;
 
 		MYSQL://2
 			begin
-        GameData    := TMySQLGameDatabase.Create(EnableGameDatabase, self);
+				GameData    := TMySQLGameDatabase.Create(EnableGameDatabase,GameOK,self);
 			end;
 
     else begin //anything else
@@ -142,19 +151,20 @@ begin
 	case StaticDatabaseType of
 		TEXT ://1    Helios Text Database
 			begin
-        StaticData    := TJanSQLStaticDatabase.Create(EnableStaticDatabase, self);
+				StaticData    := TJanSQLStaticDatabase.Create(EnableStaticDatabase,StaticOK,self);
 			end;
 
 		MYSQL://2
 			begin
-        StaticData    := TMySQLStaticDatabase.Create(EnableStaticDatabase, self);
+        StaticData    := TMySQLStaticDatabase.Create(EnableStaticDatabase,StaticOK,self);
 			end;
 
-    else begin //anything else
+		else begin //anything else
 			MainProc.Console('STATIC DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
 			MainProc.Console('     See ServerOptions.ini for configuration options.');
 		end;
 	end;
+	LoadedOK := (CommonOK and GameOK and StaticOK);
 end;
 //------------------------------------------------------------------------------
 

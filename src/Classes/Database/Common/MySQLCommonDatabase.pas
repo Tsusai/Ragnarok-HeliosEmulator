@@ -18,7 +18,7 @@ uses
 	CharaList,
 	Account,
 	uMysqlClient,
-  Database;
+	Database;
 type
 //------------------------------------------------------------------------------
 //TMySQLCommonDatabase			                                                           CLASS
@@ -29,6 +29,8 @@ type
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		January 20th, 2007 - Tsusai - Connect is now a bool function
+//			Create holds connection result
 //
 //------------------------------------------------------------------------------
 	TMySQLCommonDatabase = class(TCommonDatabaseTemplate)
@@ -38,7 +40,11 @@ type
 	public
 
 
-		Constructor Create(EnableCommonDatabase : boolean; AParent : TDatabase); reintroduce; overload;
+		Constructor Create(
+			EnableCommonDatabase : boolean;
+			var LoadedOK : Boolean;
+			AParent : TDatabase
+		); reintroduce; overload;
 		Destructor Destroy();override;
 
 		function GetAccount(ID    : Cardinal) : TAccount;overload;override;
@@ -57,7 +63,7 @@ type
 		procedure SaveAccount(AnAccount : TAccount);override;
 
 	protected
-		procedure Connect(); override;
+		function Connect(): boolean; override;
 		function SendQuery(
 			const QString : string;
 			StoreResult : boolean;
@@ -84,16 +90,21 @@ implementation
 //	Changes -
 //		October 5th, 2006 - RaX - Created.
 //		November 13th, 2006 - Tsusai - create inherit comes first.
+//		January 20th, 2007 - Tsusai - Create holds connection result
 //
 //------------------------------------------------------------------------------
-Constructor TMySQLCommonDatabase.Create(EnableCommonDatabase : boolean; AParent : TDatabase);
+Constructor TMySQLCommonDatabase.Create(
+	EnableCommonDatabase : boolean;
+	var LoadedOK : Boolean;
+	AParent : TDatabase
+);
 begin
 	inherited Create(EnableCommonDatabase);
 	Parent := AParent;
 	Connection := TMySQLClient.Create;
 	if EnableCommonDatabase then
 	begin
-		Connect();
+		LoadedOK := Connect();
 	end;
 end;//Create
 //------------------------------------------------------------------------------
@@ -125,10 +136,12 @@ end;//Destroy
 //
 //	Changes -
 //		October 5th, 2006 - RaX - Moved here from globals.
+//		January 20th, 2007 - Tsusai - Connect is now a bool function
 //
 //------------------------------------------------------------------------------
-Procedure TMySQLCommonDatabase.Connect();
+function TMySQLCommonDatabase.Connect() : Boolean;
 begin
+	Result := false;
 	if NOT Connection.Connected then
 	begin
 			Connection.Host            := Parent.Options.CommonHost;
@@ -143,8 +156,11 @@ begin
 	if NOT Connection.Connect then
 	begin
 		MainProc.Console('*****Could not connect to mySQL database server.');
+	end else
+	begin
+		Result := true;
 	end;
-
+	
 end;//Connect
 //------------------------------------------------------------------------------
 

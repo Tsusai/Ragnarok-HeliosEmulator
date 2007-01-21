@@ -27,6 +27,8 @@ type
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		January 20th, 2007 - Tsusai - Connect is now a bool function
+//			Create holds connection result
 //
 //------------------------------------------------------------------------------
 	TMySQLStaticDatabase = class(TStaticDatabaseTemplate)
@@ -36,7 +38,11 @@ type
 	public
 
 
-		Constructor Create(EnableStaticDatabase : boolean; AParent : TDatabase); reintroduce; overload;
+		Constructor Create(
+			EnableStaticDatabase : boolean;
+			var LoadedOK : boolean;
+			AParent : TDatabase
+		); reintroduce; overload;
 		Destructor Destroy();override;
 
 		Function GetBaseHP(ACharacter : TCharacter) : Word;override;
@@ -46,7 +52,7 @@ type
 		Function GetMapZoneID(MapName : String) : Integer;override;
 
 	protected
-		procedure Connect(); override;
+		function Connect() : boolean; override;
 		function SendQuery(
 			const QString : string;
 			StoreResult : boolean;
@@ -73,16 +79,21 @@ implementation
 //	Changes -
 //		October 5th, 2006 - RaX - Created.
 //		November 13th, 2006 - Tsusai - create inherit comes first.
+//		January 20th, 2007 - Tsusai - Create holds connection result
 //
 //------------------------------------------------------------------------------
-Constructor TMySQLStaticDatabase.Create(EnableStaticDatabase : boolean; AParent : TDatabase);
+Constructor TMySQLStaticDatabase.Create(
+	EnableStaticDatabase : boolean;
+	var LoadedOK : boolean;
+	AParent : TDatabase
+);
 begin
 	inherited Create(EnableStaticDatabase);
-  Parent := AParent;
-  Connection := TMySQLClient.Create;
-  if EnableStaticDatabase then
-  begin
-	  Connect();
+	Parent := AParent;
+	Connection := TMySQLClient.Create;
+	if EnableStaticDatabase then
+	begin
+	  LoadedOK := Connect();
   end;
 end;
 //------------------------------------------------------------------------------
@@ -113,17 +124,19 @@ end;
 //
 //	Changes -
 //		October 5th, 2006 - RaX - Moved here from globals.
+//		January 20th, 2007 - Tsusai - Connect is now a bool function
 //
 //------------------------------------------------------------------------------
-Procedure TMySQLStaticDatabase.Connect();
+function TMySQLStaticDatabase.Connect() : boolean;
 begin
+	Result := true;
 	if NOT Connection.Connected then
 	begin
-    Connection.Host            := Parent.Options.StaticHost;
-    Connection.Port            := Parent.Options.StaticPort;
-    Connection.Db              := Parent.Options.StaticDB;
-    Connection.User            := Parent.Options.StaticUser;
-    Connection.Password        := Parent.Options.StaticPass;
+		Connection.Host            := Parent.Options.StaticHost;
+		Connection.Port            := Parent.Options.StaticPort;
+		Connection.Db              := Parent.Options.StaticDB;
+		Connection.User            := Parent.Options.StaticUser;
+		Connection.Password        := Parent.Options.StaticPass;
 	end;
 
 	Connection.ConnectTimeout  := 10;
@@ -131,6 +144,7 @@ begin
 	if NOT Connection.Connect then
 	begin
 		MainProc.Console('*****Could not connect to mySQL database server.');
+		Result := false;
 	end;
 
 end;

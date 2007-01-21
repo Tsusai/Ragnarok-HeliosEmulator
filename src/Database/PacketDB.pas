@@ -5,7 +5,7 @@ uses
 	Character,
 	PacketTypes;
 
-	procedure Load_PacketDB;
+	function Load_PacketDB : boolean;
 
 (*------------------------------------------------------------------------------
 Here we are setting up a table of packets for the Load_PacketDB to fill up.
@@ -84,8 +84,9 @@ Revisions:
 [2006/04/09] Tsusai - Adjusted expanding of packet array to prevent blank end
 	packet info.
 [2006/09/26] Tsusai - Imported to Helios
+January 20th 2007 - Tsusai - Now a function
 ------------------------------------------------------------------------------*)
-Procedure Load_PacketDB;
+function Load_PacketDB : boolean;
 Var
 	sidx : word;
 	CB : word;
@@ -97,7 +98,8 @@ Var
 	PacketInfo : TStringList;
 	ReadPtInfo : TStringList;
 Begin
-	if FileExists(AppPath + 'Database/packet_db.txt') then
+	Result := FileExists(AppPath + 'Database/packet_db.txt');
+	if Result then
 	begin
 		//load the packet_db file
 		packet_db := TStringList.Create;
@@ -415,7 +417,7 @@ Begin
 		packet_db.Free;
 		PacketInfo.Free;
 	end else begin
-		MainProc.Console('Packet_db file not detected, reverting into basic protocol');
+		MainProc.Console('*** Database/packet_db.txt was not found.  Please fix.');
 	end;
 End; (* Proc Load_PacketDB
 *-----------------------------------------------------------------------------*)

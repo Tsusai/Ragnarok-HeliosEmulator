@@ -29,6 +29,8 @@ uses
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		January 20th, 2007 - Tsusai - Connect is now a bool function
+//			Create holds connection result
 //
 //------------------------------------------------------------------------------
 type
@@ -38,7 +40,11 @@ type
     Parent  : TDatabase;
 	public
 
-		Constructor Create(EnableCommonDatabase : boolean; AParent : TDatabase); reintroduce; overload;
+		Constructor Create(
+			EnableCommonDatabase : boolean;
+			var LoadedOK : boolean;
+			AParent : TDatabase
+		); reintroduce; overload;
 		Destructor Destroy();override;
 
 		function GetAccount(ID    : Cardinal) : TAccount;overload;override;
@@ -57,7 +63,7 @@ type
 		procedure SaveAccount(AnAccount : TAccount);override;
 
 	protected
-		procedure Connect(); override;
+		function Connect() : boolean; override;
 		procedure Disconnect; override;
 		function SendQuery(
 			const QString : string
@@ -85,16 +91,21 @@ implementation
 //	Changes -
 //		October 5th, 2006 - RaX - Created.
 //		November 13th, 2006 - Tsusai - create inherit comes first.
+//		January 20th, 2007 - Tsusai - Create holds connection result
 //
 //------------------------------------------------------------------------------
-Constructor TJanSQLCommonDatabase.Create(EnableCommonDatabase : boolean; AParent : TDatabase);
+Constructor TJanSQLCommonDatabase.Create(
+	EnableCommonDatabase : boolean;
+	var LoadedOK : boolean;
+	AParent : TDatabase
+);
 begin
 	inherited Create(EnableCommonDatabase);
 	Parent := AParent;
 	Database := TJanSQL.Create;
 	if EnableCommonDatabase then
 	begin
-		Connect();
+		LoadedOK := Connect();
 	end;
 end;//Create
 //------------------------------------------------------------------------------
@@ -146,14 +157,15 @@ end;//Disconnect
 //		October 5th, 2006 - RaX - Moved here from globals.
 //		December 18th, 2006 - Tsusai - Modified the connect to actually...connect
 //			Also FileExists doesn't work for directories, its DirectoryExists
+//		January 20th, 2007 - Tsusai - Connect is now a bool function
 //
 //------------------------------------------------------------------------------
-Procedure TJanSQLCommonDatabase.Connect();
+function TJanSQLCommonDatabase.Connect() : boolean;
 var
 	ResultIdentifier : Integer;
 const ConnectQuery = 'Connect to ''%s''';
 begin
-
+	Result := true;
 	ResultIdentifier := 0;
 
 	if DirectoryExists(Parent.Options.CommonHost) then
@@ -164,12 +176,14 @@ begin
 		MainProc.Console('');
 		MainProc.Console('The database at '+Parent.Options.CommonHost+' does not exist!');
 		MainProc.Console('Please ensure that you have correctly configured your ini file');
+		Result := false;
 	end;
 
 	if ResultIdentifier = 0 then
 	begin
 		MainProc.Console('*****Could not open text database. Error : ' + Database.Error);
-		MainProc.Console(Parent.Options.GameHost);
+		MainProc.Console(Parent.Options.CommonHost);
+		Result := false;
 	end else
 	begin
 		Database.ReleaseRecordset(ResultIdentifier);

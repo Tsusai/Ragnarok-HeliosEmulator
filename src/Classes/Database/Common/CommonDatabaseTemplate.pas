@@ -25,6 +25,7 @@ type
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		January 20th, 2007 - Tsusai - Connect is now a bool function
 //
 //------------------------------------------------------------------------------
 	TCommonDatabaseTemplate = class(TObject)
@@ -46,7 +47,7 @@ type
 		procedure SaveAccount(AnAccount : TAccount);virtual;
 
 	protected
-		procedure Connect(); virtual;
+		function Connect() : boolean; virtual;
 		procedure Disconnect();virtual;
 	end;
 //------------------------------------------------------------------------------
@@ -74,8 +75,9 @@ begin
 	inherited;
 end;
 
-procedure TCommonDatabaseTemplate.Connect();
+function TCommonDatabaseTemplate.Connect() : boolean;
 begin
+	Result := false;
 end;
 
 procedure TCommonDatabaseTemplate.Disconnect();

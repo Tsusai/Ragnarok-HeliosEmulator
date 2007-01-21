@@ -25,6 +25,8 @@ type
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		January 20th, 2007 - Tsusai - Connect is now a bool function
+//			Create holds connection result
 //
 //------------------------------------------------------------------------------
 	TStaticDatabaseTemplate = class(TObject)
@@ -38,7 +40,7 @@ type
 		Function GetMapCannotSave(MapName : String) : Boolean;virtual;
 		Function GetMapZoneID(MapName : String) : Integer;virtual;
 	protected
-		procedure Connect(); virtual;
+		function Connect() : boolean; virtual;
 		procedure Disconnect();virtual;
 	end;
 //------------------------------------------------------------------------------
@@ -66,8 +68,9 @@ begin
 	inherited;
 end;
 
-procedure TStaticDatabaseTemplate.Connect();
+function TStaticDatabaseTemplate.Connect() : boolean;
 begin
+	Result := false;
 end;
 
 procedure TStaticDatabaseTemplate.Disconnect();

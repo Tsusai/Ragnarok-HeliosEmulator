@@ -29,6 +29,8 @@ uses
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		January 20th, 2007 - Tsusai - Connect is now a bool function
+//			Create holds connection result
 //
 //------------------------------------------------------------------------------
 type
@@ -38,7 +40,12 @@ type
 		Parent  : TDatabase;
 	public
 
-		Constructor Create(EnableGameDatabase : boolean; AParent : TDatabase); reintroduce; overload;
+		Constructor Create(
+			EnableGameDatabase : boolean;
+			var LoadedOK : boolean;
+			AParent : TDatabase
+		); reintroduce; overload;
+
 		Destructor Destroy();override;
 
 		function CreateChara(
@@ -66,7 +73,7 @@ type
 		procedure SaveChara(AChara : TCharacter);override;
 
 	protected
-		procedure Connect(); override;
+		function Connect() : boolean; override;
 		procedure Disconnect; override;
 		function SendQuery(
 			const QString : string
@@ -94,16 +101,21 @@ implementation
 //	Changes -
 //		October 5th, 2006 - RaX - Created.
 //		November 13th, 2006 - Tsusai - create inherit comes first.
+//		January 20th, 2007 - Tsusai - Create holds connection result
 //
 //------------------------------------------------------------------------------
-Constructor TJanSQLGameDatabase.Create(EnableGameDatabase : boolean; AParent : TDatabase);
+Constructor TJanSQLGameDatabase.Create(
+	EnableGameDatabase : boolean;
+	var LoadedOK : boolean;
+	AParent : TDatabase
+);
 begin
 	inherited Create;
 	Parent := AParent;
 	Database := TJanSQL.Create;
 	if EnableGameDatabase then
 	begin
-		Connect();
+		LoadedOK := Connect();
 	end;
 end;
 //------------------------------------------------------------------------------
@@ -155,14 +167,15 @@ end;
 //		October 5th, 2006 - RaX - Moved here from globals.
 //		December 18th, 2006 - Tsusai - Modified the connect to actually...connect
 //			Also FileExists doesn't work for directories, its DirectoryExists
+//		January 20th, 2007 - Tsusai - Connect is now a bool function
 //
 //------------------------------------------------------------------------------
-Procedure TJanSQLGameDatabase.Connect();
+function TJanSQLGameDatabase.Connect() : boolean;
 var
 	ResultIdentifier : Integer;
 const ConnectQuery = 'Connect to ''%s''';
 begin
-
+	Result := true;
 	ResultIdentifier := 0;
 
 	if DirectoryExists(Parent.Options.GameHost) then
@@ -173,12 +186,14 @@ begin
 		MainProc.Console('');
 		MainProc.Console('The database at '+Parent.Options.GameHost+' does not exist!');
 		MainProc.Console('Please ensure that you have correctly configured your ini file');
+		Result := false;
 	end;
 
 	if ResultIdentifier = 0 then
 	begin
 		MainProc.Console('*****Could not open text database. Error : ' + Database.Error);
 		MainProc.Console(Parent.Options.GameHost);
+		Result := false;
 	end else
 	begin
 		Database.ReleaseRecordset(ResultIdentifier);
