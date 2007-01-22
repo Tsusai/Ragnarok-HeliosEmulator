@@ -157,7 +157,7 @@ uses
 		AccountID   : Cardinal;
 		CharacterID : Cardinal;
 		ValidateID1 : Cardinal;
-		ClientTick  : Cardinal;
+		//ClientTick  : Cardinal;
 		Gender      : Byte;
 		AnAccount   : TAccount;
 		ACharacter  : TCharacter;
@@ -166,7 +166,7 @@ uses
 		AccountID      := BufferReadCardinal(ReadPts[0], Buffer);
 		CharacterID    := BufferReadCardinal(ReadPts[1], Buffer);
 		ValidateID1    := BufferReadCardinal(ReadPts[2], Buffer);
-		ClientTick     := BufferReadCardinal(ReadPts[3], Buffer);
+		{ClientTick     := }BufferReadCardinal(ReadPts[3], Buffer);
 		Gender         := BufferReadByte    (ReadPts[4], Buffer);
 
 		AnAccount  := ADatabase.CommonData.GetAccount(AccountID);

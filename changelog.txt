@@ -13,6 +13,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 125 -
+[2007/01/22] - RaX - Notes/Overview :: Removed hints + warnings.
+[2007/01/22] - RaX - Added dummy result of FALSE to TGameDatabaseTemplate.Connect();
+[2007/01/22] - RaX - commented out ClientTick in ZoneRecv, Tsusai - uncomment when you need
+ it.
+[2007/01/22] - RaX - Commented out Reload in Commands.pas.
+-
+
 - Rev 124 -
 [2007/01/21] - Tsusai - Notes/Overview: WinLinux changes
 [2007/01/21] - Tsusai - WinLinux - Changed the linux termination.  Uses SIGQUIT output, and

@@ -86,6 +86,7 @@ end;
 
 function TGameDatabaseTemplate.Connect() : boolean; 
 begin
+  Result := FALSE;
 end;
 
 procedure TGameDatabaseTemplate.Disconnect();

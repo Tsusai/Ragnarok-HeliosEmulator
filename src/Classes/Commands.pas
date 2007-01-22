@@ -29,7 +29,7 @@ type
 
   private
     function Help : String;
-    function Reload() : String;
+    //function Reload() : String;
     function Restart() : String;
     function Start(Values : TStringList) : String;
     function Stop(Values : TStringList) : String;
@@ -163,7 +163,7 @@ end;{TCommands.Help}
 //		September 20th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function TCommands.Reload() : String;
+{function TCommands.Reload() : String;
 begin
 	//To be done when all DB is done.  One swoop kill
 end;{TCommands.Reload}
