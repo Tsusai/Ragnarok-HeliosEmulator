@@ -111,9 +111,10 @@ begin
 	SetupTerminationCapturing;
 	PreloadOK := InitGlobals;
 
+  LoadOptions;
+
 	if PreloadOK then
 	begin
-		LoadOptions;
 
 		//Start and create Enabled Servers
 		if Options.LoginEnabled then
@@ -177,26 +178,10 @@ begin
 	//Go backwards (so zone doesn't try and connect to character while shutting down)
 
 	//Disconnect clients.
-  if Assigned(ZoneServer) then
-	begin
-		ZoneServer.Stop;
-	end;
-
-	if Assigned(InterServer) then
-	begin
-		InterServer.Stop;
-	end;
-
-	//NOTE: Prior
-	if Assigned(CharacterServer) then
-	begin
-		CharacterServer.Stop;
-	end;
-
-	if Assigned(LoginServer) then
-	begin
-		LoginServer.Stop;
-	end;
+  ZoneServer.Stop;
+  InterServer.Stop;
+  CharacterServer.Stop;
+  LoginServer.Stop;
 
   Options.Save;
   Options.Free;
@@ -249,11 +234,6 @@ end;{TMainProc.ThirdPartyCredits}
 //------------------------------------------------------------------------------
 Procedure TMainProc.LoadOptions;
 begin
-  if Assigned(Options) then
-  begin
-    FreeAndNIL(Options);
-  end;
-
   Options    := THeliosOptions.Create('./Helios.ini');
 
 	Options.Load;

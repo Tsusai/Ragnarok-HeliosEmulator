@@ -12,68 +12,52 @@ unit Map;
 interface
 
 uses
-	Types,
+  Types,
 	PointList,
-  List32;
+  List32,
+  MapTypes;
 
 type
-	//graph related types
-	TCell = record
-    //what kind of tile is it
-		Attribute       : Byte;
-		//Tsusai 11/09/06: Keep track of the number of things in the way, like icewall(s)
-		ObstructionCount: Byte;
-
-    Mobs            : TIntList32;
-    NPCs            : TIntList32;
-    Characters      : TIntList32;
-	end;
-
-	TGraph = array of array of TCell;
-
-	//flood types
-	TFloodItem = record
-		Position : TPoint;
-		Path : array of TPoint;
-		PathLength : Integer;
-	end;
-
-	TFloodList = array of TFloodItem;
-
 //------------------------------------------------------------------------------
 //TMap                                                                  CLASS
 //------------------------------------------------------------------------------
-TMap = class(TObject)
+  TMap = class(TObject)
 	private
-    fSize : TPoint;
-		procedure GetArea(
-			const APoint	: TPoint;
-			var   AnArea	: TGraph;
-			var   XMod		: Integer;
-			var   YMod		: Integer
-		);
-    procedure SetSize(Value  : TPoint);
+    Procedure GetArea(
+      const APoint : TPoint;
+      var AnArea : TGraph;
+      var XMod : Integer;
+      var YMod : Integer
+    );
 
 	public
     Name : String;
-    Mode : Integer;
 		Cell : TGraph;
+    Size : TPoint;
+    Flags: TFlags;
+
 		Constructor Create();
 		Destructor Destroy();override;
 
+    Function LoadFromFile(Path : String) : Boolean;
+
 		Function GetPath(
-			StartPoint  : TPoint;
-			EndPoint    : TPoint;
-			var APath   : TPointList
+			const StartPoint  : TPoint;
+			const EndPoint    : TPoint;
+			var APath         : TPointList
 		) : boolean;
-    
-    property Size : TPoint read fSize write SetSize;
+
 end;
 //------------------------------------------------------------------------------
 
 implementation
 uses
-  GameConstants;
+  GameConstants,
+  Classes,
+  SysUtils,
+  Math,
+  Console,
+  Globals;
 
 //checks to see if a cell is blocked.
 	function IsBlocked(
@@ -102,7 +86,10 @@ const
 Constructor TMap.Create();
 begin
 	inherited;
-	//add stuff here
+
+  //Set Size to 0
+	Size.X := 0;
+  Size.Y := 0;
 end;
 //------------------------------------------------------------------------------
 
@@ -116,8 +103,22 @@ end;
 //    October 30th, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 Destructor TMap.Destroy();
+var
+  XIndex : Integer;
+  YIndex : Integer;
 begin
-	//add stuff here
+
+  //Free up each Graph Cell.
+  for XIndex := 0 to Size.X - 1 do
+  begin
+    for YIndex := 0 to Size.Y - 1 do
+    begin
+      Cell[XIndex][YIndex].Mobs.Free;
+      Cell[XIndex][YIndex].Characters.Free;
+      Cell[XIndex][YIndex].NPCs.Free;
+    end;
+    SetLength(Cell[XIndex], 0);
+  end;
 	inherited;
 end;
 //------------------------------------------------------------------------------
@@ -213,8 +214,8 @@ end;
 //     TPointList parameter passed by address, APath.
 //------------------------------------------------------------------------------
 function TMap.GetPath(
-	StartPoint : TPoint;
-	EndPoint : TPoint;
+	const StartPoint  : TPoint;
+	const EndPoint    : TPoint;
 	var APath : TPointList
 ) : boolean;
 var
@@ -361,46 +362,75 @@ end;
 
 
 //------------------------------------------------------------------------------
-//SetSize                                                            PROCEDURE
+//LoadFromFile()                                                     FUNCTION
 //------------------------------------------------------------------------------
 //  What it does -
-//      Sets the size of a map.
+//      Loads a map from a .pms file.
 //
 //  Changes -
-//    January 19th, 2007.
+//    January 22nd, 2007 - RaX - Created.
 //------------------------------------------------------------------------------
-Procedure TMap.SetSize(Value : TPoint);
-var
-  XIndex : Integer;
-  YIndex : Integer;
-begin
-  for XIndex := 0 to fSize.X - 1 do
-  begin
-    for YIndex := 0 to fSize.Y - 1 do
-    begin
-      Cell[XIndex][YIndex].Mobs.Free;
-      Cell[XIndex][YIndex].Characters.Free;
-      Cell[XIndex][YIndex].NPCs.Free;
-    end;
-    SetLength(Cell[XIndex], 0);
-  end;
-  SetLength(Cell,0);
+Function TMap.LoadFromFile(Path : String) : Boolean;
+Var
+	AByte   : byte;
+	MapFile : TMemoryStream;
+	MapTag  : string;
+	MapSize : TPoint;
+  XIndex  : Integer;
+  YIndex  : Integer;
+Begin
+  Result := TRUE;
 
-  fSize := Value;
-  SetLength(Cell, fSize.X);
-  for XIndex := 0 to fSize.X - 1 do
+  MapFile := TMemoryStream.Create;
+  MapFile.LoadFromFile(Path);
+
+  SetLength(MapTag, 13);
+  MapFile.Read(MapTag[1], 13);
+
+  if MapTag <> 'PrometheusMap' then //Check type
   begin
-    SetLength(Cell[XIndex], fSize.Y);
-    for YIndex := 0 to fSize.Y do
-    begin
-      Cell[XIndex][YIndex].Mobs := TIntList32.Create;
-      Cell[XIndex][YIndex].Characters := TIntList32.Create;
-      Cell[XIndex][YIndex].NPCs := TIntList32.Create;
-      Cell[XIndex][YIndex].Attribute := 0;
-      Cell[XIndex][YIndex].ObstructionCount := 0;
-    end;
+    MainProc.Console('The Map :'+Path+' is not a Prometheus Map.');
+    Result := False;
   end;
-end;//SetSize
+
+  MapFile.Read(Abyte,1); //Check version.
+
+  if AByte <> 1 then
+  begin
+    MainProc.Console('The Map :'+Path+' failed the version check.');
+    Result := False;
+  end;
+
+
+  MapFile.Read(MapSize.X, 4);
+  MapFile.Read(MapSize.Y, 4);
+
+  //check size.
+  if NOT (InRange(MapSize.X, 0, 511) AND InRange(MapSize.Y, 0, 511)) then
+  begin
+    MainProc.Console('The Map :'+Path+'''s size is out of range.');
+    Result := False;
+  end;
+
+  if Result then //If we've passed the checks then...
+  begin
+    //Load Map Information.
+    Name := ExtractFileName(LowerCase(ChangeFileExt(Path, '')));
+    Size := MapSize;
+    Flags:= ADatabase.StaticData.GetMapFlags(Name);
+
+    //Load Cell Information
+    SetLength(Cell, Size.X, Size.Y);
+    for YIndex := 0 to Size.Y - 1 do begin
+      for XIndex := 0 to Size.X - 1 do begin
+        MapFile.Read(Cell[XIndex][YIndex].Attribute,1);
+      end;
+    end;
+
+  end;
+
+  MapFile.Free;//finally, free the memory stream.
+End;//LoadFromFile
 //------------------------------------------------------------------------------
 
 end.

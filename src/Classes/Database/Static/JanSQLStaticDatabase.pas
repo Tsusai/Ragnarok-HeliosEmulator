@@ -18,7 +18,9 @@ uses
 	CharaList,
 	Account,
 	janSQL,
-  Database;
+  Database,
+  MapTypes,
+  Classes;
 
 //------------------------------------------------------------------------------
 //TJanSQLStaticDatabase			                                                           CLASS
@@ -52,6 +54,7 @@ type
 
 		Function GetMapCannotSave(MapName : String) : Boolean;override;
 		Function GetMapZoneID(MapName : String): Integer; override;
+    Function GetMapFlags(MapName : String) : TFlags; override;
 
 	protected
 		function Connect() : boolean; override;
@@ -69,7 +72,6 @@ implementation
 		Globals,
 		Console,
 		SysUtils,
-		Classes,
     Math;
 
 
@@ -336,6 +338,73 @@ begin
 		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 	end;
 end;//GetMapZoneID
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//GetMapFlags 							                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Queries and returns a map's flags.
+//
+//	Changes -
+//		January 22nd, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function TJanSQLStaticDatabase.GetMapFlags(MapName : String) : TFlags;
+var
+	QueryResult : TJanRecordSet;
+	ResultIdentifier : Integer;
+  Weather : Integer;
+begin
+	ResultIdentifier :=
+		SendQuery(
+		Format('SELECT memo, noreturnondc, teleport, itemdrop, exploss, pvp, pvpnightmare, guildpvp, items, skill, deadbranches, flywings, butterflywings, turbotrack, noparty, noguild, weather, FROM maps WHERE mapname = ''%s.gat''',
+			[MapName]));
+	if ResultIdentifier > 0 then
+	begin
+		QueryResult := Database.RecordSets[ResultIdentifier];
+		if (QueryResult.RecordCount = 1) then
+		begin
+			Result.Memo           := StrtoBoolDef(QueryResult.Records[0].fields[0].Value, FALSE);
+      Result.NoReturnOnDC   := StrtoBoolDef(QueryResult.Records[0].fields[1].Value, FALSE);
+      Result.Teleport       := StrtoBoolDef(QueryResult.Records[0].fields[2].Value, FALSE);
+      Result.ItemDrop       := StrtoBoolDef(QueryResult.Records[0].fields[3].Value, FALSE);
+      Result.ExpLoss        := StrtoBoolDef(QueryResult.Records[0].fields[4].Value, FALSE);
+      Result.PvP            := StrtoBoolDef(QueryResult.Records[0].fields[5].Value, FALSE);
+      Result.PvPNightmare   := StrtoBoolDef(QueryResult.Records[0].fields[6].Value, FALSE);
+      Result.GuildPvP       := StrtoBoolDef(QueryResult.Records[0].fields[7].Value, FALSE);
+      Result.Items          := StrtoBoolDef(QueryResult.Records[0].fields[8].Value, FALSE);
+      Result.Skill          := StrtoBoolDef(QueryResult.Records[0].fields[9].Value, FALSE);
+      Result.DeadBranches   := StrtoBoolDef(QueryResult.Records[0].fields[10].Value, FALSE);
+      Result.FlyWings       := StrtoBoolDef(QueryResult.Records[0].fields[11].Value, FALSE);
+      Result.ButterflyWings := StrtoBoolDef(QueryResult.Records[0].fields[12].Value, FALSE);
+      Result.TurboTrack     := StrtoBoolDef(QueryResult.Records[0].fields[13].Value, FALSE);
+      Result.NoParty        := StrtoBoolDef(QueryResult.Records[0].fields[14].Value, FALSE);
+      Result.NoGuild        := StrtoBoolDef(QueryResult.Records[0].fields[15].Value, FALSE);
+
+      //initialize weather
+      Result.Rain   := FALSE;
+      Result.Snow   := FALSE;
+      Result.Sakura := FALSE;
+      Result.Fog    := FALSE;
+      Result.Leaves := FALSE;
+      Result.Smog   := FALSE;
+
+      //Figure out weather.
+      Weather := StrToIntDef(QueryResult.Records[0].fields[16].Value, 0);
+      case Weather of
+        1 : Result.Rain     := TRUE;
+        2 : Result.Snow     := TRUE;
+        3 : Result.Sakura   := TRUE;
+        4 : Result.Fog      := TRUE;
+        5 : Result.Leaves   := TRUE;
+        6 : Result.Smog     := TRUE;
+      end;
+		end;
+		SendQuery('RELEASE TABLE maps');
+		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+	end;
+end;//GetMapFlags
 //------------------------------------------------------------------------------
 {END JanSQLStaticDatabase}
 end.

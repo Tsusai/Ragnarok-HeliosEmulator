@@ -19,7 +19,9 @@ uses
 	SysUtils,
 	PacketTypes,
 	Character,
-	ZoneOptions;
+	ZoneOptions,
+  Classes,
+  MapList;
 
 type
 	TZoneServer = class
@@ -38,26 +40,27 @@ type
 		Procedure OnException(AConnection: TIdContext;
 			AException: Exception);
 
-		procedure CharaClientOnConnect(Sender : TObject);
-		procedure CharaClientRead(AClient : TInterClient);
+		Procedure CharaClientOnConnect(Sender : TObject);
+		Procedure CharaClientRead(AClient : TInterClient);
 
-		procedure ProcessZonePacket(AClient : TIdContext);
-		function  SearchPacketListing(var AChara : TCharacter; var AClient : TIdContext;
+		Procedure ProcessZonePacket(AClient : TIdContext);
+		Function  SearchPacketListing(var AChara : TCharacter; var AClient : TIdContext;
 																	var InBuffer :  TBuffer; const Version   : Word;
 																	const Packet    : Word  ) :Boolean;
 
 		Procedure SetPort(Value : Word);
 		Function GetStarted() : Boolean;
 
-		procedure LoadOptions;
+		Procedure LoadOptions;
 	public
 		WANIP : string;
 		LANIP : string;
 
-		ServerName    : String;
 		OnlineUsers   : Word;
 
-		Options          : TZoneOptions;
+		Options       : TZoneOptions;
+
+    MapList       : TMapList;
 
 		property Started : Boolean read GetStarted;
 		property Port : Word read fPort write SetPort;
@@ -76,6 +79,7 @@ uses
 	Console,
 	PacketDB,
 	Globals,
+  Map,
 	TCPServerRoutines,
 	ZoneCharaPackets,
 	ZoneRecv,
@@ -95,7 +99,7 @@ uses
 //------------------------------------------------------------------------------
 Constructor TZoneServer.Create;
 begin
-	LoadOptions;
+  MapList := TMapList.Create(TRUE);
 
 	TCPServer := TIdTCPServer.Create;
 	ToCharaTCPClient := TInterClient.Create('Zone','Character');
@@ -127,8 +131,6 @@ begin
 	TCPServer.Free;
 	ToCharaTCPClient.Free;
 	ToInterTCPClient.Free;
-	Options.Save;
-	Options.Free;
 end;{Destroy}
 //------------------------------------------------------------------------------
 
@@ -204,18 +206,28 @@ end;{OnException}
 //------------------------------------------------------------------------------
 Procedure TZoneServer.Start(Reload : Boolean = FALSE);
 begin
-	if Reload then
-	begin
-		LoadOptions;
-	end;
-	WANIP := Options.WANIP;
-	LANIP := Options.LANIP;
-	Port := Options.Port;
-	ToCharaTCPClient.Host := Options.CharaIP;
-	ToCharaTCPClient.Port := Options.CharaPort;
-	ActivateServer('Zone',TCPServer);
-	ActivateClient(ToCharaTCPClient);
-	//ActivateClient(ToInterTCPClient);
+  if NOT Started then
+  begin
+    //Load our Zone.ini
+	  LoadOptions;
+
+    //Initialize ips and port.
+	  WANIP := Options.WANIP;
+	  LANIP := Options.LANIP;
+	  Port := Options.Port;
+
+    //initialize commclient ips and ports.
+	  ToCharaTCPClient.Host := Options.CharaIP;
+	  ToCharaTCPClient.Port := Options.CharaPort;
+
+    //Activate server and clients.
+	  ActivateServer('Zone',TCPServer);
+	  ActivateClient(ToCharaTCPClient);
+	  //ActivateClient(ToInterTCPClient);
+  end else
+  begin
+    MainProc.Console('Zone Server : Cannot Start():: Zone Server already running!');
+  end;
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -232,9 +244,24 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TZoneServer.Stop();
 begin
-	DeActivateServer('Zone', TCPServer);
-	DeActivateClient(ToCharaTCPClient);
-	//DeActivateClient(ToInterTCPClient);
+  if Started then
+  begin
+    //deactivate server and clients.
+	  DeActivateServer('Zone', TCPServer);
+	  DeActivateClient(ToCharaTCPClient);
+	  //DeActivateClient(ToInterTCPClient);
+
+    //Clear MapList
+    MapList.Clear;
+
+    //Save and free options, options must be free'd here to force a reload after
+    //start.
+    Options.Save;
+	  Options.Free;
+  end else
+  begin
+    MainProc.Console('Zone Server : Cannot Stop():: Zone Server is not running!');
+  end;
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -444,13 +471,7 @@ End;{ProcessZonePacket}
 //------------------------------------------------------------------------------
 Procedure TZoneServer.LoadOptions;
 begin
-	if Assigned(Options) then
-	begin
-		FreeAndNIL(Options);
-	end;
-
 	Options    := TZoneOptions.Create('./Zone.ini');
-
 	Options.Load;
 end;{LoadOptions}
 //------------------------------------------------------------------------------

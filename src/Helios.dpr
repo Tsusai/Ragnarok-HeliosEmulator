@@ -89,6 +89,7 @@ compile for linux, at the same time*}
 
 	//Lists
 	CharaList in 'Classes\CharaList.pas',
+  MapList in 'Classes\MapList.pas',
 	List32 in 'Common\3rdParty\List32.pas',
 	PointList in 'Classes\PointList.pas',
 
@@ -130,6 +131,9 @@ compile for linux, at the same time*}
 	ZoneOptions in 'Config\ZoneOptions.pas',
 	DatabaseOptions in 'Config\DatabaseOptions.pas',
 
+  //Types
+  MapTypes in 'Common\MapTypes.pas',
+
 	//Other
 	BufferIO in 'Common\BufferIO.pas',
 	Commands in 'Classes\Commands.pas',
@@ -142,7 +146,6 @@ compile for linux, at the same time*}
 	TCPServerRoutines in 'Common\TCPServerRoutines.pas',
 	Version in 'Common\Version.pas',
 	WinLinux in 'Common\WinLinux.pas',
-	XTimer in 'Classes\XTimer.pas',
 	{$ENDIF}
 
 //------------------------------------------------------------------------------
@@ -178,6 +181,7 @@ compile for linux, at the same time*}
 
 	//Lists
 	CharaList in 'Classes/CharaList.pas',
+  MapList in 'Classes/MapList.pas',
 	List32 in 'Common/3rdParty/List32.pas',
 	PointList in 'Classes/PointList.pas',
 
@@ -219,6 +223,9 @@ compile for linux, at the same time*}
 	ZoneOptions in 'Config/ZoneOptions.pas',
 	DatabaseOptions in 'Config/DatabaseOptions.pas',
 
+  //Types
+  MapTypes in 'Common/MapTypes.pas',
+
 	//Other
 	BufferIO in 'Common/BufferIO.pas',
 	Commands in 'Classes/Commands.pas',
@@ -229,7 +236,6 @@ compile for linux, at the same time*}
 	TCPServerRoutines in 'Common/TCPServerRoutines.pas',
 	Version in 'Common/Version.pas',
 	WinLinux in 'Common/WinLinux.pas',
-	XTimer in 'Classes/XTimer.pas',
 	{$ENDIF}
 //------------------------------------------------------------------------------
 //                              Definitions for both.

@@ -16,7 +16,8 @@ uses
 	StaticDatabaseTemplate,
 	Character,
 	uMysqlClient,
-  Database;
+  Database,
+  MapTypes;
 type
 //------------------------------------------------------------------------------
 //TMySQLStaticDatabase			                                                           CLASS
@@ -50,6 +51,7 @@ type
 
 		Function GetMapCannotSave(MapName : String) : Boolean;override;
 		Function GetMapZoneID(MapName : String) : Integer;override;
+    Function GetMapFlags(MapName : String) : TFlags; override;
 
 	protected
 		function Connect() : boolean; override;
@@ -293,9 +295,71 @@ begin
 
 	if (QueryResult.RowsCount = 1) then
 	begin
-		Result := StrToIntDef(QueryResult.FieldValue(0),1);
+		Result := StrToInt(QueryResult.FieldValue(0));
 	end;
 	QueryResult.Free;
+end;//GetMapZoneID
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetMapFlags 							                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Queries and returns a map's flags.
+//
+//	Changes -
+//		January 22nd, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function TMySQLStaticDatabase.GetMapFlags(MapName : String) : TFlags;
+var
+	QueryResult : TMySQLResult;
+  Weather : Integer;
+  Success			: Boolean;
+begin
+	QueryResult := SendQuery(
+		Format('SELECT memo, noreturnondc, teleport, itemdrop, exploss, pvp, pvpnightmare, guildpvp, items, skill, deadbranches, flywings, butterflywings, turbotrack, noparty, noguild, weather, FROM maps WHERE mapname = ''%s.gat''',
+			[MapName]),TRUE,Success);
+  if (QueryResult.RowsCount = 1) then
+  begin
+    Result.Memo           := StrToBool(QueryResult.FieldValue(0));
+    Result.NoReturnOnDC   := StrToBool(QueryResult.FieldValue(1));
+    Result.Teleport       := StrToBool(QueryResult.FieldValue(2));
+    Result.ItemDrop       := StrToBool(QueryResult.FieldValue(3));
+    Result.ExpLoss        := StrToBool(QueryResult.FieldValue(4));
+    Result.PvP            := StrToBool(QueryResult.FieldValue(5));
+    Result.PvPNightmare   := StrToBool(QueryResult.FieldValue(6));
+    Result.GuildPvP       := StrToBool(QueryResult.FieldValue(7));
+    Result.Items          := StrToBool(QueryResult.FieldValue(8));
+    Result.Skill          := StrToBool(QueryResult.FieldValue(9));
+    Result.DeadBranches   := StrToBool(QueryResult.FieldValue(10));
+    Result.FlyWings       := StrToBool(QueryResult.FieldValue(11));
+    Result.ButterflyWings := StrToBool(QueryResult.FieldValue(12));
+    Result.TurboTrack     := StrToBool(QueryResult.FieldValue(13));
+    Result.NoParty        := StrToBool(QueryResult.FieldValue(14));
+    Result.NoGuild        := StrToBool(QueryResult.FieldValue(15));
+
+    //initialize weather
+    Result.Rain   := FALSE;
+    Result.Snow   := FALSE;
+    Result.Sakura := FALSE;
+    Result.Fog    := FALSE;
+    Result.Leaves := FALSE;
+    Result.Smog   := FALSE;
+
+    //Figure out weather.
+    Weather := StrToInt(QueryResult.FieldValue(16));
+    case Weather of
+      1 : Result.Rain     := TRUE;
+      2 : Result.Snow     := TRUE;
+      3 : Result.Sakura   := TRUE;
+      4 : Result.Fog      := TRUE;
+      5 : Result.Leaves   := TRUE;
+      6 : Result.Smog     := TRUE;
+    end;
+  end;
+  QueryResult.Free;
 end;//GetMapZoneID
 //------------------------------------------------------------------------------
 {END MySQLStaticDatabase}

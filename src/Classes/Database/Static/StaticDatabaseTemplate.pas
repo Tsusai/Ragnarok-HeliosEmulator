@@ -14,7 +14,9 @@ unit StaticDatabaseTemplate;
 
 interface
 uses
-	Character;
+	Character,
+  MapTypes,
+  Classes;
 type
 //------------------------------------------------------------------------------
 //TStaticDatabaseTemplate			                                                           CLASS
@@ -39,6 +41,8 @@ type
 
 		Function GetMapCannotSave(MapName : String) : Boolean;virtual;
 		Function GetMapZoneID(MapName : String) : Integer;virtual;
+    Function GetMapFlags(MapName : String) : TFlags;virtual;
+    Function GetMapsForZone(ZoneID : Cardinal)  : TStringList;virtual;
 	protected
 		function Connect() : boolean; virtual;
 		procedure Disconnect();virtual;
@@ -95,6 +99,18 @@ end;
 Function TStaticDatabaseTemplate.GetMapZoneID(MapName : String) : Integer;
 begin
 	Result := 0;
+end;
+
+Function TStaticDatabaseTemplate.GetMapFlags(MapName : String) : TFlags;
+var
+  Flags : TFlags;
+begin
+  Result := Flags;
+end;
+
+Function TStaticDatabaseTemplate.GetMapsForZone(ZoneID : Cardinal)  : TStringList;
+begin
+  Result := TStringList.Create;
 end;
 //------------------------------------------------------------------------------
 {END TStaticDatabaseTemplate}

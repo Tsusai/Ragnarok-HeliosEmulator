@@ -13,6 +13,27 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 126 -
+[2007/01/22] - RaX - Notes/Overview :: Implemented map loading.
+[2007/01/22] - RaX - Added Classes/MapList.pas.
+[2007/01/22] - RaX - Added Common/MapTypes.pas.
+[2007/01/22] - RaX - Moved all types outside of TMap from Map.pas into MapTypes.pas.
+[2007/01/22] - RaX - Added Flags Type, holds boolean values pertaining to database map flags.
+[2007/01/22] - RaX - Added static database query GetMapFlags which fills a TFlags record
+ with the data specified in table maps.
+[2007/01/22] - RaX - Added LoadFromFile to TMap, it loads a pms map from the file indicated
+ by the parameter 'Path'.
+[2007/01/22] - RaX - Implemented half of Dynamic map loading, maps do not load on start,
+ instead, they load when a player enters a map. The half that's not done is unloading.
+[2007/01/22] - RaX - Updated Static maps table, removed '.gat' from the mapname field.
+[2007/01/22] - RaX - LoginServer, CharacterServer, ZoneServer, InterServer - added console
+ messages if someone tries to start a server that's already started, etc from inside code.
+ Also, removed the started checks from Commands.pas and moved them into each server's stop/
+ start routines.
+[2007/01/22] - RaX - Removed InterToZoneClient from inter server, won't be needing it.
+[2007/01/22] - RaX - Dumped XTimer from SVN - gonna rewrite when the need arises.
+-
+
 - Rev 125 -
 [2007/01/22] - RaX - Notes/Overview :: Removed hints + warnings.
 [2007/01/22] - RaX - Added dummy result of FALSE to TGameDatabaseTemplate.Connect();

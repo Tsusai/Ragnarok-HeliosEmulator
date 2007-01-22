@@ -73,7 +73,7 @@ type
 		property Started : Boolean read GetStarted;
 		Constructor Create();
 		Destructor  Destroy();Override;
-		Procedure   Start(Reload : Boolean = FALSE);
+		Procedure   Start();
 		Procedure   Stop();
 	end;
 //------------------------------------------------------------------------------
@@ -117,7 +117,6 @@ const
 //------------------------------------------------------------------------------
 Constructor TCharacterServer.Create;
 begin
-	LoadOptions;
 
 	TCPServer := TIdTCPServer.Create;
 	TCPServer.OnExecute    := ParseCharaServ;
@@ -129,7 +128,6 @@ begin
 	CharaToLoginClient.OnConnected := LoginClientOnConnect;
 	CharaToLoginClient.OnRecieve := LoginClientRead;
 
-	ServerName := Options.ServerName;
 	fZoneServerList := TIntList32.Create;
 end;{Create}
 //------------------------------------------------------------------------------
@@ -148,12 +146,8 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TCharacterServer.Destroy;
 begin
-
 	TCPServer.Free;
 	CharaToLoginClient.Free;
-
-	Options.Save;
-	Options.Free;
 
 	fZoneServerList.Free;
 end;{Destroy}
@@ -192,19 +186,26 @@ end;{OnException}
 //		September 19th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Procedure TCharacterServer.Start(Reload : Boolean = FALSE);
+Procedure TCharacterServer.Start();
 begin
-	if Reload then
-	begin
-		LoadOptions;
-	end;
-	WANPort := Options.Port;
-	ActivateServer('Character',TCPServer);
-	WANIP := Options.WANIP;
-	LANIP := Options.LANIP;
-	CharaToLoginClient.Host := Options.LoginIP;
-	CharaToLoginClient.Port := Options.LoginPort;
-	ActivateClient(CharaToLoginClient);
+  if NOT Started then
+  begin
+    LoadOptions;
+
+    ServerName := Options.ServerName;
+	  WANPort := Options.Port;
+
+	  ActivateServer('Character',TCPServer);
+	  WANIP := Options.WANIP;
+	  LANIP := Options.LANIP;
+
+	  CharaToLoginClient.Host := Options.LoginIP;
+	  CharaToLoginClient.Port := Options.LoginPort;
+	  ActivateClient(CharaToLoginClient);
+  end else
+  begin
+    MainProc.Console('Character Server : Cannot Start():: Character Server is already running!');
+  end;
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -221,8 +222,19 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.Stop();
 begin
-	DeActivateServer('Character',TCPServer);
-	DeActivateClient(CharaToLoginClient);
+  if Started then
+  begin
+	  DeActivateServer('Character',TCPServer);
+	  DeActivateClient(CharaToLoginClient);
+
+    fZoneServerList.Clear;
+
+    Options.Save;
+    Options.Free;
+  end else
+  begin
+    MainProc.Console('Character Server : Cannot Stop():: Character Server is not running');
+  end;
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -904,11 +916,6 @@ end; {ParseCharaServ}
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.LoadOptions;
 begin
-	if Assigned(Options) then
-	begin
-		FreeAndNIL(Options);
-	end;
-
 	Options    := TCharaOptions.Create('./Character.ini');
 
 	Options.Load;

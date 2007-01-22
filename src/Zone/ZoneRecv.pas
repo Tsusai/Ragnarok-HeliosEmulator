@@ -87,6 +87,7 @@ uses
 	Console,
 	GameConstants,
 	Globals,
+  Map,
 	ZoneSend,
   ZoneServer;
 
@@ -162,6 +163,7 @@ uses
 		AnAccount   : TAccount;
 		ACharacter  : TCharacter;
 		OutBuffer   : Tbuffer; //temp
+    AMap        : TMap;
 	begin
 		AccountID      := BufferReadCardinal(ReadPts[0], Buffer);
 		CharacterID    := BufferReadCardinal(ReadPts[1], Buffer);
@@ -183,6 +185,12 @@ uses
 				ACharacter.Account := AnAccount;
 				ACharacter.Online  := 1;
 				ACharacter.ClientInfo := AClient;
+
+        if MainProc.ZoneServer.MapList.IndexOf(ACharacter.Map) = -1 then
+        begin
+          AMap := TMap.Create;
+          AMap.LoadFromFile('./Maps/'+ACharacter.Map+'.pms')
+        end;
 
 				SendPadding(ACharacter.ClientInfo);
 

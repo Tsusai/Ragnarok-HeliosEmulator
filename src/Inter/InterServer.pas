@@ -28,7 +28,6 @@ type
     fPort            : Word;
 
     TCPServer        : TIdTCPServer;
-    ToZoneTCPClient : TIdTCPClient;
 
     Procedure OnExecute(AConnection: TIdContext);
     Procedure OnConnect(AConnection: TIdContext);
@@ -55,13 +54,14 @@ type
 
     Constructor Create();
     Destructor  Destroy();Override;
-    Procedure   Start(Reload : Boolean = FALSE);
+    Procedure   Start();
 		Procedure   Stop();
 	end;
 implementation
 
 uses
 	//Helios
+  Console,
 	WinLinux,
 	Database,
 	Globals,
@@ -82,13 +82,10 @@ uses
 Constructor TInterServer.Create;
 begin
   TCPServer := TIdTCPServer.Create;
-  ToZoneTCPClient := TIdTCPClient.Create;
 
   TCPServer.OnConnect   := OnConnect;
   TCPServer.OnExecute   := OnExecute;
 	TCPServer.OnException := OnException;
-
-  LoadOptions;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -106,9 +103,6 @@ end;{Create}
 Destructor TInterServer.Destroy;
 begin
   TCPServer.Free;
-  ToZoneTCPClient.Free;
-  Options.Save;
-  Options.Free;
 end;{Destroy}
 //------------------------------------------------------------------------------
 
@@ -180,15 +174,18 @@ end;{OnException}
 //		September 19th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Procedure TInterServer.Start(Reload : Boolean = FALSE);
+Procedure TInterServer.Start();
 begin
-  if Reload then
+  if NOT Started then
   begin
     LoadOptions;
+
+    Port := Options.Port;
+    ActivateServer('Inter',TCPServer);
+  end else
+  begin
+    MainProc.Console('Inter Server : Cannot Start():: Inter Server already running!');
   end;
-  Port := Options.Port;
-  ActivateServer('Inter',TCPServer);
-	//ActivateClient(ToZoneTCPClient);
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -205,8 +202,15 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TInterServer.Stop();
 begin
-  DeActivateServer('Inter',TCPServer);
-  //DeActivateClient(ToZoneTCPClient);
+  if Started then
+  begin
+    DeActivateServer('Inter',TCPServer);
+    Options.Save;
+    Options.Free;
+  end else
+  begin
+    MainProc.Console('Inter Server : Cannot Start():: Inter Server not running.');
+  end;
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -223,13 +227,7 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TInterServer.LoadOptions;
 begin
-  if Assigned(Options) then
-  begin
-    FreeAndNIL(Options);
-  end;
-
   Options    := TInterOptions.Create('./Inter.ini');
-
 	Options.Load;
 end;{LoadOptions}
 //------------------------------------------------------------------------------

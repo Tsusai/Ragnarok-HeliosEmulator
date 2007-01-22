@@ -62,6 +62,7 @@ type
 
 		Procedure SetPort(Value : Word);
 		Function GetStarted() : Boolean;
+
 	public
 		Options : TLoginOptions;
 
@@ -70,7 +71,7 @@ type
 
 		Constructor Create();
 		Destructor  Destroy();override;
-		Procedure   Start(Reload : Boolean = FALSE);
+		Procedure   Start();
 		Procedure   Stop();
 	end;
 //------------------------------------------------------------------------------
@@ -109,16 +110,12 @@ Constructor TLoginServer.Create();
 begin
 	Inherited;
 
-	LoadOptions;
-
 	TCPServer := TIdTCPServer.Create;
 
 	TCPServer.OnExecute   := ParseLogin;
 	TCPServer.OnConnect   := OnConnect;
 	TCPServer.OnDisconnect:= OnDisconnect;
 	TCPServer.OnException := OnException;
-
-	Port                  := Options.Port;
 
 	fCharaServerList      := TStringList.Create;
 end;{Create}
@@ -139,8 +136,6 @@ Destructor TLoginServer.Destroy();
 begin
 	TCPServer.Free;
 	fCharaServerList.Free;
-	Options.Save;
-	Options.Free;
 	Inherited;
 end;{Destroy}
 //------------------------------------------------------------------------------
@@ -156,14 +151,18 @@ end;{Destroy}
 //		September 19th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Procedure TLoginServer.Start(Reload : Boolean = FALSE);
+Procedure TLoginServer.Start();
 begin
-	if Reload then
-	begin
-		LoadOptions;
-	end;
-	Port := Options.Port;
-	ActivateServer('Login',TCPServer);
+  if NOT Started then
+  begin
+	  LoadOptions;
+
+	  Port := Options.Port;
+	  ActivateServer('Login',TCPServer);
+  end else
+  begin
+    MainProc.Console('Login Server : Cannot start():: Login server is already running.');
+  end;
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -180,7 +179,18 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TLoginServer.Stop();
 begin
-	DeActivateServer('Login', TCPServer);
+  if Started then
+  begin
+	  DeActivateServer('Login', TCPServer);
+
+    fCharaServerList.Clear;
+
+    Options.Save;
+    Options.Free;
+  end else
+  begin
+    MainProc.Console('Login Server : Cannot Stop():: Login server is not running.');
+  end;
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -615,11 +625,6 @@ end;{OnException}
 //------------------------------------------------------------------------------
 Procedure TLoginServer.LoadOptions;
 begin
-	if Assigned(Options) then
-	begin
-		FreeAndNIL(Options);
-	end;
-
 	Options    := TLoginOptions.Create('./Login.ini');
 
 	Options.Load;

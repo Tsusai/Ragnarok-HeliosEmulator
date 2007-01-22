@@ -206,43 +206,19 @@ begin
     Values[0] := LowerCase(Values[0]);
     if Values[0] = 'login' then
     begin
-      if NOT MainProc.LoginServer.Started then
-      begin
-        MainProc.LoginServer.Start;
-      end else
-      begin
-        Result := 'Login Server already started';
-      end;
+      MainProc.LoginServer.Start;
     end else
     if Values[0] = 'character' then
     begin
-      if NOT MainProc.CharacterServer.Started then
-      begin
-        MainProc.CharacterServer.Start(TRUE);
-      end else
-      begin
-        Result := 'Character Server already started';
-      end;
+      MainProc.CharacterServer.Start();
     end else
     if Values[0] = 'inter' then
     begin
-      if NOT MainProc.InterServer.Started then
-      begin
-        MainProc.InterServer.Start;
-      end else
-      begin
-        Result := 'Inter Server already started';
-      end;
+      MainProc.InterServer.Start;
     end else
     if Values[0] = 'zone' then
     begin
-      if NOT MainProc.ZoneServer.Started then
-      begin
-        MainProc.ZoneServer.Start;
-      end else
-      begin
-        Result := 'Zone Server already started';
-      end;
+      MainProc.ZoneServer.Start;
     end else
     begin
       Result := Values[0] + ' is not a valid server';
@@ -276,46 +252,22 @@ begin
     Values[0] := LowerCase(Values[0]);
     if Values[0] = 'login' then
     begin
-      if MainProc.LoginServer.Started then
-      begin
-        MainProc.LoginServer.Stop;;
-      end else
-      begin
-        Result := 'Login Server is already stopped.';
-      end;
+      MainProc.LoginServer.Stop;;
     end else
     if Values[0] = 'character' then
     begin
-      if MainProc.CharacterServer.Started then
-      begin
-        MainProc.CharacterServer.Stop;
-      end else
-      begin
-        Result := 'Character Server is already stopped.';
-      end;
+      MainProc.CharacterServer.Stop;
     end else
     if Values[0] = 'inter' then
     begin
-      if MainProc.InterServer.Started then
-      begin
-        MainProc.InterServer.Stop;
-      end else
-      begin
-        Result := 'Inter Server is already stopped.';
-      end;
+      MainProc.InterServer.Stop;
     end else
     if Values[0] = 'zone' then
     begin
-      if MainProc.ZoneServer.Started then
-      begin
-        MainProc.ZoneServer.Stop;
-      end else
-      begin
-        Result := 'Zone Server is already stopped.';
-      end;
+      MainProc.ZoneServer.Stop;
     end else
     begin
-      Result := Values[0] + ' is not a valid server name';
+      Result := Values[0] + ' is not a valid server';
     end;
   end else
   begin
