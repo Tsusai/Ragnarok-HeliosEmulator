@@ -42,6 +42,7 @@ uses
 	Libc,
 	{$ENDIF}
 	SysUtils,
+	Console,
 	Version,
 	Globals;
 
@@ -174,6 +175,8 @@ uses
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		January 21, 2007 - Tsusai - Added a message for linux shutdown, and changed
+//			the exit code.
 //
 //------------------------------------------------------------------------------
 	procedure KillProcess;
@@ -182,7 +185,8 @@ uses
 		TerminateProcess(GetCurrentProcess, 0);
 		{$ENDIF}
 		{$IFDEF LINUX}
-		kill(getpid,3);
+		MainProc.Console('Helios will generate a QUIT message.  Please ignore.')
+		kill(getpid,SIGQUIT);
 		{$ENDIF}
 	end;{KillProcess}
 //------------------------------------------------------------------------------
@@ -220,7 +224,9 @@ uses
 		AThread.Priority := tpLowest;
 		{$ENDIF}
 		{$IFDEF LINUX}
-		Nice(getpid,0);
+		//Tsusai 012107: CANNOT modify priority directly.  Libc.Nice isn't
+		//helping, takes only 1 unknown var,  SetPriority may have
+		//root only restrictions.  This will be blank for now.
 		{$ENDIF}
 	end;
 

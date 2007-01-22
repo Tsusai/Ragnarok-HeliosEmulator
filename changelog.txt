@@ -13,7 +13,13 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
-- Rev 123
+- Rev 124 -
+[2007/01/21] - Tsusai - Notes/Overview: WinLinux changes
+[2007/01/21] - Tsusai - WinLinux - Changed the linux termination.  Uses SIGQUIT output, and
+ displays a warning before it does (so that the user doesn't freak out).
+-
+
+- Rev 123 -
 [2007/01/21] - Tsusai - Notes/Overview: Modifications to CommClient.
 [2007/01/21] - Tsusai - CommClient : Redid logic.  Its thread only deals with reading any
  data on the buffer, and is setup by connect/disconnect methods
