@@ -128,6 +128,7 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TZoneServer.Destroy;
 begin
+  MapList.Free;
 	TCPServer.Free;
 	ToCharaTCPClient.Free;
 	ToInterTCPClient.Free;

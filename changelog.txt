@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 127 -
+[2007/01/23] - RaX - Forgot to Free the maplist in ZoneServer.Destroy (Thanks Damian),
+ remedied.
+-
+
 - Rev 126 -
 [2007/01/22] - RaX - Notes/Overview :: Implemented map loading.
 [2007/01/22] - RaX - Added Classes/MapList.pas.
