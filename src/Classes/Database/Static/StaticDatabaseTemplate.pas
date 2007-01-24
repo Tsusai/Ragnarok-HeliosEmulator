@@ -36,8 +36,9 @@ type
 		Constructor Create(EnableStaticDatabase : Boolean); virtual;
 		Destructor Destroy();override;
 
-		Function GetBaseHP(ACharacter : TCharacter) : Word;virtual;
-		Function GetBaseSP(ACharacter : TCharacter) : Word;virtual;
+		Function GetBaseMaxHP(ACharacter : TCharacter) : Word;virtual;
+		Function GetBaseMaxSP(ACharacter : TCharacter) : Word;virtual;
+    Function GetBaseMaxWeight(ACharacter : TCharacter) : Cardinal;virtual;
 
 		Function GetMapCannotSave(MapName : String) : Boolean;virtual;
 		Function GetMapZoneID(MapName : String) : Integer;virtual;
@@ -81,12 +82,17 @@ procedure TStaticDatabaseTemplate.Disconnect();
 begin
 end;
 
-Function TStaticDatabaseTemplate.GetBaseHP(ACharacter : TCharacter) : Word;
+Function TStaticDatabaseTemplate.GetBaseMaxHP(ACharacter : TCharacter) : Word;
 begin
 	Result := 0;
 end;
 
-Function TStaticDatabaseTemplate.GetBaseSP(ACharacter : TCharacter) : Word;
+Function TStaticDatabaseTemplate.GetBaseMaxSP(ACharacter : TCharacter) : Word;
+begin
+	Result := 0;
+end;
+
+Function TStaticDatabaseTemplate.GetBaseMaxWeight(ACharacter : TCharacter) : Cardinal;
 begin
 	Result := 0;
 end;

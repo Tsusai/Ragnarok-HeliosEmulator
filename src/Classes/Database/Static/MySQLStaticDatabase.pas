@@ -46,8 +46,9 @@ type
 		); reintroduce; overload;
 		Destructor Destroy();override;
 
-		Function GetBaseHP(ACharacter : TCharacter) : Word;override;
-		Function GetBaseSP(ACharacter : TCharacter) : Word;override;
+		Function GetBaseMaxHP(ACharacter : TCharacter) : Word;override;
+		Function GetBaseMaxSP(ACharacter : TCharacter) : Word;override;
+    Function GetBaseMaxWeight(ACharacter : TCharacter) : Cardinal;override;
 
 		Function GetMapCannotSave(MapName : String) : Boolean;override;
 		Function GetMapZoneID(MapName : String) : Integer;override;
@@ -186,16 +187,16 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLStaticDatabase.GetBaseHP()                                          FUNCTION
+//TMySQLStaticDatabase.GetBaseMaxHP()                                          FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Gets a characters basehp.
+//			Gets a characters Maximum hp before modifiers.
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TMySQLStaticDatabase.GetBaseHP(ACharacter : TCharacter) : Word;
+Function TMySQLStaticDatabase.GetBaseMaxHP(ACharacter : TCharacter) : Word;
 var
 	Success     : Boolean;
 	QueryResult : TMySQLResult;
@@ -215,16 +216,16 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLStaticDatabase.GetBaseSP()                                          FUNCTION
+//TMySQLStaticDatabase.GetBaseMaxSP()                                          FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Gets a characters basesp.
+//			Gets a characters maximum sp before modifiers.
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TMySQLStaticDatabase.GetBaseSP(ACharacter : TCharacter) : Word;
+Function TMySQLStaticDatabase.GetBaseMaxSP(ACharacter : TCharacter) : Word;
 var
 	Success     : Boolean;
 	QueryResult : TMySQLResult;
@@ -233,6 +234,35 @@ begin
 		SendQuery(
 		Format('SELECT %s FROM sp WHERE level = %d',
 			[ACharacter.JobName, ACharacter.BaseLV])
+		,TRUE,Success);
+	if (QueryResult.RowsCount = 1) then
+	begin
+			Result              := StrToInt(QueryResult.FieldValue(0));
+	end else Result := 0;
+	if Assigned(QueryResult) then QueryResult.Free;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//TMySQLStaticDatabase.GetBaseSP()                                     FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets a characters basesp.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Function TMySQLStaticDatabase.GetBaseMaxWeight(ACharacter : TCharacter) : Cardinal;
+var
+	Success     : Boolean;
+	QueryResult : TMySQLResult;
+begin
+	QueryResult :=
+		SendQuery(
+		Format('SELECT %s FROM weight WHERE',
+			[ACharacter.JobName])
 		,TRUE,Success);
 	if (QueryResult.RowsCount = 1) then
 	begin

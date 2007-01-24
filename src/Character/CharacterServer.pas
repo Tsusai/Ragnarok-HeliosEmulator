@@ -616,6 +616,7 @@ begin
 				ACharacter.CalcMaxHP;
 				ACharacter.CalcMaxSP;
 				ACharacter.CalcSpeed;
+        ACharacter.CalcMaxWeight;
 				ACharacter.HP             := ACharacter.MaxHP;
 				ACharacter.SP             := ACharacter.MaxSP;
 				ACharacter.StatusPts      := 0;

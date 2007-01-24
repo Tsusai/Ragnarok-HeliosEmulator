@@ -13,6 +13,16 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 130 -
+[2007/01/24] - RaX - Notes/Overview - Implemented weight table and MaxWeight TCharacter
+ calculations.
+[2007/01/24] - RaX - Added GetBaseMaxWeight to static database classes.
+[2007/01/24] - RaX - Added CalcMaxWeight in Character.pas.
+[2007/01/24] - RaX - Implemented CalcMaxWeight on chara creation in CharacterServer.pas.
+[2007/01/24] - RaX - Added weight table to statis databases both for jansql and mysql.
+[2007/01/24] - RaX - Updated hp/sp tables to include baby jobs and super novice.
+-
+
 - Rev 129 -
 [2007/01/24] - RaX - Added another optimization that was supposed to be in the last commit.
  TMap.LoadFromFile(Map.pas) changed MapTag from a string to an array[1..13] of char to

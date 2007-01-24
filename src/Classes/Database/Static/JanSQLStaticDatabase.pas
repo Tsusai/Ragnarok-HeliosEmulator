@@ -49,8 +49,9 @@ type
 		); reintroduce; overload;
 		Destructor Destroy();override;
 
-		Function GetBaseHP(ACharacter : TCharacter) : Word;override;
-		Function GetBaseSP(ACharacter : TCharacter) : Word;override;
+		Function GetBaseMaxHP(ACharacter : TCharacter) : Word;override;
+		Function GetBaseMaxSP(ACharacter : TCharacter) : Word;override;
+    Function GetBaseMaxWeight(ACharacter : TCharacter) : Cardinal;override;
 
 		Function GetMapCannotSave(MapName : String) : Boolean;override;
 		Function GetMapZoneID(MapName : String): Integer; override;
@@ -213,16 +214,16 @@ end;//SendQuery
 
 
 //------------------------------------------------------------------------------
-//TJanSQLStaticDatabase.GetBaseHP()                                          FUNCTION
+//TJanSQLStaticDatabase.GetBaseMaxHP()                                          FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Gets a characters basehp.
+//			Gets a characters Maximum HP before modifers.
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TJanSQLStaticDatabase.GetBaseHP(ACharacter : TCharacter) : Word;
+Function TJanSQLStaticDatabase.GetBaseMaxHP(ACharacter : TCharacter) : Word;
 var
 	QueryResult : TJanRecordSet;
   ResultIdentifier : Integer;
@@ -243,16 +244,16 @@ end;//GetBaseHP
 
 
 //------------------------------------------------------------------------------
-//TJanSQLStaticDatabase.GetBaseSP()                                          FUNCTION
+//TJanSQLStaticDatabase.GetBaseMaxSP()                                          FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Gets a characters basesp.
+//			Gets a characters Maximum Weight before modifiers.
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TJanSQLStaticDatabase.GetBaseSP(ACharacter : TCharacter) : Word;
+Function TJanSQLStaticDatabase.GetBaseMaxSP(ACharacter : TCharacter) : Word;
 var
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
@@ -267,6 +268,36 @@ begin
 			Result  := StrToInt(QueryResult.Records[0].Fields[0].Value);
 	end else Result := 0;
 	SendQuery('RELEASE TABLE sp');
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+end;//GetBaseSP
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//TJanSQLStaticDatabase.GetBaseMaxWeight()                                    FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets a characters Maximum weight before modifiers.
+//
+//	Changes -
+//		December 17th, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Function TJanSQLStaticDatabase.GetBaseMaxWeight(ACharacter : TCharacter) : Cardinal;
+var
+	QueryResult : TJanRecordSet;
+	ResultIdentifier : Integer;
+begin
+	ResultIdentifier :=
+		SendQuery(
+		Format('SELECT %s FROM weight',
+			[ACharacter.JobName]));
+	QueryResult := Database.RecordSets[ResultIdentifier];
+	if (QueryResult.RecordCount = 1) then
+	begin
+			Result  := StrToInt(QueryResult.Records[0].Fields[0].Value);
+	end else Result := 0;
+	SendQuery('RELEASE TABLE weight');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetBaseSP
 //------------------------------------------------------------------------------

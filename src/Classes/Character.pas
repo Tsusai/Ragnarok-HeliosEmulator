@@ -216,6 +216,7 @@ uses
 		procedure CalcMaxHP;
 		procedure CalcMaxSP;
 		procedure CalcSpeed;
+		procedure CalcMaxWeight;
 
 		procedure SendSubStat(
 			Mode : word;
@@ -1206,7 +1207,7 @@ procedure TCharacter.CalcMaxHP;
 begin
   MAXHP := EnsureRange(
     (MAXHP + (35 + BaseLV * 5 + ((1 + BaseLV) * BaseLV div 2) *
-      ADatabase.StaticData.GetBaseHP(self) div 100) * (100 + ParamBase[VIT]) div 100)
+      ADatabase.StaticData.GetBaseMaxHP(self) div 100) * (100 + ParamBase[VIT]) div 100)
       ,1
       ,High(MAXHP)
  		);
@@ -1346,7 +1347,7 @@ End;
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxSP;
 begin
-  MAXSP := MAXSP + BaseLV * ADatabase.StaticData.GetBaseSP(self) * (100 + ParamBase[INT]) div 100;
+  MAXSP := MAXSP + BaseLV * ADatabase.StaticData.GetBaseMaxSP(self) * (100 + ParamBase[INT]) div 100;
 end;{CalcMaxSP}
 //------------------------------------------------------------------------------
 
@@ -1368,4 +1369,20 @@ end;{CalcSpeed}
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//CalcMaxWeight                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Calculates the character's Maximum weight.
+//
+//	Changes -
+//		January 24th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.CalcMaxWeight;
+begin
+  MaxWeight  := Cardinal((ParamBase[STR] - ParamBonus[STR]) * 300) +
+                ADatabase.StaticData.GetBaseMaxWeight(self);
+end;{CalcMaxWeight}
+//------------------------------------------------------------------------------
 end.
