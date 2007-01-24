@@ -13,6 +13,17 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 128 -
+[2007/01/23] - RaX - Notes/Overview - Optimizations suggested by Damian (Thanks again).
+[2007/01/23] - RaX - Updated CharaServer/LoginServer to make sure that the charaserverinfo/
+ zoneserverinfo lists get their information free'd on stopping the servers.
+[2007/01/23] - RaX - Updated BufferReadString(BufferIO.pas) to hopefully be slightly faster
+ if not just more readable and not dependant on TCBuffer.
+[2007/01/23] - RaX - Changed TCell (MapTypes.pas) to use on Being list instead of 3 lists.
+[2007/01/23] - RaX - Renamed Graph to Cell in the comments in Map.pas, forgot to when I made
+ the earlier changes (sorry!)
+-
+
 - Rev 127 -
 [2007/01/23] - RaX - Forgot to Free the maplist in ZoneServer.Destroy (Thanks Damian),
  remedied.

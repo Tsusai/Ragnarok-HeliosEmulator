@@ -221,13 +221,20 @@ end;{Start}
 //
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.Stop();
+var
+  Index : Integer;
 begin
   if Started then
   begin
 	  DeActivateServer('Character',TCPServer);
 	  DeActivateClient(CharaToLoginClient);
 
-    fZoneServerList.Clear;
+    //Free up our existing server info objects
+    for Index := 0 to fZoneServerList.Count - 1 do
+    begin
+      TZoneServerInfo(fZoneServerList[Index]).Free;
+      fZoneServerList.Delete(Index);
+    end;
 
     Options.Save;
     Options.Free;

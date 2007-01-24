@@ -58,10 +58,8 @@ type
 		Attribute       : Byte;
 		//Tsusai 11/09/06: Keep track of the number of things in the way, like icewall(s)
 		ObstructionCount: Byte;
-
-    Mobs            : TIntList32;
-    NPCs            : TIntList32;
-    Characters      : TIntList32;
+    //TBeings in this cell (NPC/Mob/Chara)
+    Beings    : TIntList32;
 	end;
 
 	TGraph = array of array of TCell;

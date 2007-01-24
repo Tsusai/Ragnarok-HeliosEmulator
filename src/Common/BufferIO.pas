@@ -186,14 +186,12 @@ READING DATA FROM THE BUFFER METHODS
 
 	//Socket Method BufferReadString - Reads a String from the buffer.
 	function BufferReadString(Index:word; Count:word; var Buffer : TBuffer):string;
-	var
-		StringOut : TCBuffer;
 	begin
 		Assert(Index <= 32767, 'BufferReadString: Index overflow ' + IntToStr(Index));
 		Assert(Index + Count <= 32767, 'BufferReadString: Index+Count overflow ' + IntToStr(Index+Count));
-		StringOut[Count] := #0;
-		Move(Buffer[Index], StringOut, Count);
-		Result := StringOut;
+    SetLength(Result, Count);
+    Move(Buffer[Index], Result[1], Count);
+    Result := Trim(Result);
 	end;
 
 (*------------------------------------------------------------------------------

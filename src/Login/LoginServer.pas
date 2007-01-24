@@ -178,12 +178,19 @@ end;{Start}
 //
 //------------------------------------------------------------------------------
 Procedure TLoginServer.Stop();
+var
+  Index : Integer;
 begin
   if Started then
   begin
 	  DeActivateServer('Login', TCPServer);
 
-    fCharaServerList.Clear;
+    //Free up our existing server info objects
+    for Index := 0 to fCharaServerList.Count - 1 do
+    begin
+      TCharaServerInfo(fCharaServerList[Index]).Free;
+      fCharaServerList.Delete(Index);
+    end;
 
     Options.Save;
     Options.Free;

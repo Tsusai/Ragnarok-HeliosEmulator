@@ -108,14 +108,12 @@ var
   YIndex : Integer;
 begin
 
-  //Free up each Graph Cell.
+  //Free up each Cell.
   for XIndex := 0 to Size.X - 1 do
   begin
     for YIndex := 0 to Size.Y - 1 do
     begin
-      Cell[XIndex][YIndex].Mobs.Free;
-      Cell[XIndex][YIndex].Characters.Free;
-      Cell[XIndex][YIndex].NPCs.Free;
+      Cell[XIndex][YIndex].Beings.Free;
     end;
     SetLength(Cell[XIndex], 0);
   end;
@@ -127,7 +125,7 @@ end;
 //TMap.GetArea()                                                     PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
-//      It fills the TGraph, AnArea, with the contents of TMap.Graph based on
+//      It fills the TGraph, AnArea, with the contents of TMap.Cell based on
 //		the distance defined by CHAR_CLICKAREA away from the character in the 4
 //		cardinal directions.
 //
@@ -231,8 +229,8 @@ var
 	DirectionIndex		: Integer;
 	PossiblePosition  : TPoint;
   AnArea						: TGraph;//our search area
-	XMod							: Integer;//x offset in AnArea from the point in TMap.Graph
-	YMod							: Integer;//y offset in AnArea from the point in TMap.Graph
+	XMod							: Integer;//x offset in AnArea from the point in TMap.Cell
+	YMod							: Integer;//y offset in AnArea from the point in TMap.Cell
 	XMax							: Integer;//maximum y value in our area
 	YMax							: Integer;//maximum x value in our area
 
@@ -332,7 +330,7 @@ begin
 		AFloodListLength := NewFloodListLength;
 	end;
 	//use closest path
-	if Result = FALSE then
+	if NOT Result then
 	begin
 		APath.Assign(ClosestPath.Path);
   end;
@@ -343,7 +341,7 @@ end;
 //IsBlocked()                                                     FUNCTION
 //------------------------------------------------------------------------------
 //  What it does -
-//      It figures out if a specified cell in a TGraph is blocked.
+//      It figures out if a specified cell is blocked.
 //
 //  Changes -
 //    November 1st, 2006 - Tsusai - Created.
@@ -424,6 +422,8 @@ Begin
     for YIndex := 0 to Size.Y - 1 do begin
       for XIndex := 0 to Size.X - 1 do begin
         MapFile.Read(Cell[XIndex][YIndex].Attribute,1);
+        Cell[XIndex][YIndex].ObstructionCount := 0;
+        Cell[XIndex][YIndex].Beings := TIntList32.Create;
       end;
     end;
 
