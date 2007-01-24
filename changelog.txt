@@ -13,6 +13,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 129 -
+[2007/01/24] - RaX - Added another optimization that was supposed to be in the last commit.
+ TMap.LoadFromFile(Map.pas) changed MapTag from a string to an array[1..13] of char to
+ avoid a needless setlength call before reading in the maptag from the mapfile.
+-
+
 - Rev 128 -
 [2007/01/23] - RaX - Notes/Overview - Optimizations suggested by Damian (Thanks again).
 [2007/01/23] - RaX - Updated CharaServer/LoginServer to make sure that the charaserverinfo/

@@ -372,7 +372,7 @@ Function TMap.LoadFromFile(Path : String) : Boolean;
 Var
 	AByte   : byte;
 	MapFile : TMemoryStream;
-	MapTag  : string;
+	MapTag  : array[1..13] of Char;
 	MapSize : TPoint;
   XIndex  : Integer;
   YIndex  : Integer;
@@ -382,7 +382,6 @@ Begin
   MapFile := TMemoryStream.Create;
   MapFile.LoadFromFile(Path);
 
-  SetLength(MapTag, 13);
   MapFile.Read(MapTag[1], 13);
 
   if MapTag <> 'PrometheusMap' then //Check type
@@ -391,7 +390,7 @@ Begin
     Result := False;
   end;
 
-  MapFile.Read(Abyte,1); //Check version.
+  MapFile.Read(AByte,1); //Check version.
 
   if AByte <> 1 then
   begin
