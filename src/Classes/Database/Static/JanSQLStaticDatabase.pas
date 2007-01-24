@@ -321,7 +321,7 @@ begin
 	Result := false;
 	ResultIdentifier :=
 		SendQuery(
-		Format('SELECT noreturnondc FROM maps WHERE mapname = ''%s.gat''',
+		Format('SELECT noreturnondc FROM maps WHERE mapname = ''%s''',
 			[MapName]));
 
 	if ResultIdentifier > 0 then
@@ -356,7 +356,7 @@ begin
 	Result := 1; //Assume 1
 	ResultIdentifier :=
 		SendQuery(
-		Format('SELECT zoneid FROM maps WHERE mapname = ''%s.gat''',
+		Format('SELECT zoneid FROM maps WHERE mapname = ''%s''',
 			[MapName]));
 	if ResultIdentifier > 0 then
 	begin
@@ -389,7 +389,7 @@ var
 begin
 	ResultIdentifier :=
 		SendQuery(
-		Format('SELECT memo, noreturnondc, teleport, itemdrop, exploss, pvp, pvpnightmare, guildpvp, items, skill, deadbranches, flywings, butterflywings, turbotrack, noparty, noguild, weather, FROM maps WHERE mapname = ''%s.gat''',
+		Format('SELECT memo, noreturnondc, teleport, itemdrop, exploss, pvp, pvpnightmare, guildpvp, items, skill, deadbranches, flywings, butterflywings, turbotrack, noparty, noguild, weather FROM maps WHERE mapname = ''%s''',
 			[MapName]));
 	if ResultIdentifier > 0 then
 	begin

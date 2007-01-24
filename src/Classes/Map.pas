@@ -376,6 +376,7 @@ Var
 	MapSize : TPoint;
   XIndex  : Integer;
   YIndex  : Integer;
+  SlashPos: Integer;
 Begin
   Result := TRUE;
 
@@ -412,7 +413,25 @@ Begin
   if Result then //If we've passed the checks then...
   begin
     //Load Map Information.
-    Name := ExtractFileName(LowerCase(ChangeFileExt(Path, '')));
+
+    // -- Complicated way to get Name from our file path since Linux doesn't
+    //like \ and ExtractFileName doesn't work with /. - If someone can think of
+    //a better way, PLEASE implement it here. - RaX
+    Name := Path;
+    SlashPos := Pos('/',Name);
+    if SlashPos <> 0 then
+    begin
+      repeat
+        Name := Copy(Name,SlashPos+1,Length(Name)-SlashPos);
+        SlashPos := Pos('/',Name);
+      until SlashPos = 0;
+      Name := ChangeFileExt(ExtractFileName(Name),'');
+    end else
+    begin
+      Name := LowerCase(ChangeFileExt(ExtractFileName(Name), ''));
+    end;
+    //end really complicated name retrieval.
+
     Size := MapSize;
     Flags:= ADatabase.StaticData.GetMapFlags(Name);
 

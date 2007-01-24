@@ -290,7 +290,7 @@ var
 begin
 	QueryResult :=
 		SendQuery(
-		Format('SELECT noreturnondc FROM maps WHERE mapname = ''%s.gat''',
+		Format('SELECT noreturnondc FROM maps WHERE mapname = ''%s''',
 			[MapName]),TRUE,Success);
 
 	if (QueryResult.RowsCount = 1) then
@@ -320,7 +320,7 @@ begin
 	Result := 1; //Assume 1
 	QueryResult :=
 		SendQuery(
-		Format('SELECT zoneid FROM maps WHERE mapname = ''%s.gat''',
+		Format('SELECT zoneid FROM maps WHERE mapname = ''%s''',
 			[MapName]),TRUE,Success);
 
 	if (QueryResult.RowsCount = 1) then
@@ -349,7 +349,7 @@ var
   Success			: Boolean;
 begin
 	QueryResult := SendQuery(
-		Format('SELECT memo, noreturnondc, teleport, itemdrop, exploss, pvp, pvpnightmare, guildpvp, items, skill, deadbranches, flywings, butterflywings, turbotrack, noparty, noguild, weather, FROM maps WHERE mapname = ''%s.gat''',
+		Format('SELECT memo, noreturnondc, teleport, itemdrop, exploss, pvp, pvpnightmare, guildpvp, items, skill, deadbranches, flywings, butterflywings, turbotrack, noparty, noguild, weather FROM maps WHERE mapname = ''%s''',
 			[MapName]),TRUE,Success);
   if (QueryResult.RowsCount = 1) then
   begin

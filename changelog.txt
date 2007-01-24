@@ -13,6 +13,13 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 131 -
+[2007/01/24] - RaX - Notes/Overview - Bugfixes. ExtractFileName doesn't like forward slashes
+ like what we use in TMap.LoadFromFile. Had to write a very inefficient way to recreate
+ that. Luckily, now we can handle any slashes in a file path, even if the os can't...
+ Bugfix #2 - I forgot to remove the .gat searching in the static database queries.
+-
+
 - Rev 130 -
 [2007/01/24] - RaX - Notes/Overview - Implemented weight table and MaxWeight TCharacter
  calculations.
