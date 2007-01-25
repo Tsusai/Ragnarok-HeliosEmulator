@@ -13,6 +13,24 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 132 -
+[2007/01/25] - Tsusai - Notes/Overview: Cleaned up RaX's replace code, and added a
+ ExtractFileNameMod to WinLinux to take care of it.
+[2007/01/25] - Tsusai - Map - LoadFromFile: Replaced RaX's code to call ExtractFileNameMod
+[2007/01/25] - Tsusai - WinLinux - ExtractFileNameMod: Added.  The real ExtractFileName
+ uses a delimiter to do the work (\).  Our cross compiling code for paths use / so it would
+ never break it up.  This new function acts as a middle man, converting all / to \ in a
+ Windows Only environment before making the actual ExtractFileName call.
+[2007/01/25] - Tsusai - Being - TBeing: Added the common attributes between Characters and
+ Mobs, such as MDEF.  Unlike Prometheus, I think we can live with putting mob info into MDEF1
+ and not worry about reading/writing to MDEF2 (the + bonus).
+[2007/01/25] - Tsusai - Character - TCharacter: Removed most of the common things descending
+ from TBeing, and rearanged properties so that I could turn the "This method hides * in base
+ class" warnings by a compiler directive.
+[2007/01/25] - Tsusai - GameConstants: STR..LUK are now 0..5 instead of 1..6  Its murder on
+ me to remember and for packet writing (especially when it'll be shared w/ mobs).
+-
+
 - Rev 131 -
 [2007/01/24] - RaX - Notes/Overview - Bugfixes. ExtractFileName doesn't like forward slashes
  like what we use in TMap.LoadFromFile. Had to write a very inefficient way to recreate

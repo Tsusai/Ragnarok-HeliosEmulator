@@ -16,6 +16,7 @@ uses
 	Types,
 	//Helios
 	Account,
+	Being,
 	GameConstants,
 	//Third Party
 	IdContext;
@@ -23,7 +24,7 @@ uses
 //------------------------------------------------------------------------------
 //TCharacter                                                          PROCEDURE
 //------------------------------------------------------------------------------
-	type TCharacter = class
+	type TCharacter = class(TBeing)
 	private
 		fCharacterNumber  : Byte;
 		fName             : String;
@@ -165,23 +166,26 @@ uses
 
 		property DataChanged : boolean  read fDataChanged write SetSaveTime;
 		//For timed save procedure to activate.
-
-		property CharaNum  : Byte       read fCharacterNumber write SetCharaNum;
+		{$WARNINGS OFF}
 		property Name      : string     read fName write SetName;
 		property JID       : Word       read fJID write SetClass;
 		property BaseLV    : Byte       read fBaseLV write SetBaseLV;
 		property JobLV     : Byte       read fJobLV write SetJobLV;
-		property BaseEXP   : Cardinal   read fBaseEXP write SetBaseEXP;
-		property JobEXP    : Cardinal   read fJobEXP write SetJobEXP;
-		property Zeny      : Cardinal   read fZeny write SetZeny;
 		property ParamBase[Index : byte] : byte read GetBaseStats write SetBaseStats;
-    property MaxHP     : Word       read fMaxHP write SetMaxHP;
+		property MaxHP     : Word       read fMaxHP write SetMaxHP;
 		property HP        : Word       read fHP write SetHP;
 		property MaxSP     : Word       read fMaxSP write SetMaxSP;
 		property SP        : Word       read fSP write SetSP;
+		property Option    : Word       read fOption write SetOption;
+		property Map       : string     read fMap write SetMap;
+		property Point     : TPoint     read fMapPt write SetMapPt;
+		{$WARNINGS ON}
+		property BaseEXP   : Cardinal   read fBaseEXP write SetBaseEXP;
+		property JobEXP    : Cardinal   read fJobEXP write SetJobEXP;
+		property Zeny      : Cardinal   read fZeny write SetZeny;
+		property CharaNum  : Byte       read fCharacterNumber write SetCharaNum;
 		property StatusPts : Word       read fStatusPts write SetStatusPts;
 		property SkillPts  : Word       read fSkillPts write SetSkillPts;
-		property Option    : Word       read fOption write SetOption;
 		property Karma     : Word       read fKarma write SetKarma;
 		property Manner    : Word       read fManner write SetManner;
 		property PartyID   : Cardinal   read fPartyID write SetPartyID;
@@ -192,16 +196,14 @@ uses
 		property ClothesColor: Word     read fClothesColor write SetClothesColor;
 		property RightHand : Word       read fRightHand write SetRightHand;
 		property LeftHand  : Word       read fLeftHand write SetLeftHand;
-    property Armor     : Word       read fArmor write SetArmor;
-    property Garment   : Word       read fGarment write SetGarment;
-    property Shoes     : Word       read fShoes write SetShoes;
-    property Accessory1: Word       read fAccessory1 write SetAccessory1;
-    property Accessory2: Word       read fAccessory1 write SetAccessory2;
+		property Armor     : Word       read fArmor write SetArmor;
+		property Garment   : Word       read fGarment write SetGarment;
+		property Shoes     : Word       read fShoes write SetShoes;
+		property Accessory1: Word       read fAccessory1 write SetAccessory1;
+		property Accessory2: Word       read fAccessory1 write SetAccessory2;
 		property HeadTop   : Word       read fHeadTop write SetHeadTop;
 		property HeadMid   : Word       read fHeadMid write SetHeadMid;
 		property HeadBottom: Word       read fHeadBottom write SetHeadBottom;
-		property Map       : string     read fMap write SetMap;
-		property Point     : TPoint     read fMapPt write SetMapPt;
 		property SaveMap   : string     read fSaveMap write SetSMap;
 		property SavePoint : TPoint     read fSaveMapPt write SetSMapPt;
 		property PartnerID : Cardinal   read fPartnerID write SetPartnerID;
@@ -1272,8 +1274,8 @@ Begin
 	WriteBufferWord( 2, Self.StatusPts, OutBuffer);
 	for idx := STR to LUK do
 	begin
-		WriteBufferByte((idx-1)*2+4, ParamBase[idx], OutBuffer);
-		WriteBufferByte((idx-1)*2+5, ParamUp[idx], OutBuffer);
+		WriteBufferByte((idx)*2+4, ParamBase[idx], OutBuffer);
+		WriteBufferByte((idx)*2+5, ParamUp[idx], OutBuffer);
 	end;
 	WriteBufferWord(16, ATK[0][0], OutBuffer);
 	WriteBufferWord(18, ATK[1][0] + ATK[0][4], OutBuffer);

@@ -29,6 +29,7 @@ uses
 	procedure KillProcess;
 	function GetTick : Cardinal;
 	procedure LowerPriority(AThread : TThread);
+	function ExtractFileNameMod(Path : String) : string;
 
 
 implementation
@@ -228,6 +229,17 @@ uses
 		//helping, takes only 1 unknown var,  SetPriority may have
 		//root only restrictions.  This will be blank for now.
 		{$ENDIF}
+	end;
+
+	function ExtractFileNameMod(Path : String) : string;
+	begin
+		//Tsusai 012507: ExtractFileName does not like / in windows paths,
+		//since that method uses \ as a delimiter, so we correct it
+		//before calling :)
+		{$IFDEF MSWINDOWS}
+		Path := StringReplace(Path, '/', '\', [rfReplaceAll]);
+		{$ENDIF}
+		Result := ExtractFileName(Path);
 	end;
 
 end.

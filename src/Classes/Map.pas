@@ -57,7 +57,8 @@ uses
   SysUtils,
   Math,
   Console,
-  Globals;
+	Globals,
+	WinLinux;
 
 //checks to see if a cell is blocked.
 	function IsBlocked(
@@ -367,6 +368,8 @@ end;
 //
 //  Changes -
 //    January 22nd, 2007 - RaX - Created.
+//		January 25th, 2007 - Tsusai - Removed complicated path name code, replaced
+//			with ExtractFileNameMod (WinLinux)
 //------------------------------------------------------------------------------
 Function TMap.LoadFromFile(Path : String) : Boolean;
 Var
@@ -375,8 +378,7 @@ Var
 	MapTag  : array[1..13] of Char;
 	MapSize : TPoint;
   XIndex  : Integer;
-  YIndex  : Integer;
-  SlashPos: Integer;
+	YIndex  : Integer;
 Begin
   Result := TRUE;
 
@@ -411,28 +413,10 @@ Begin
   end;
 
   if Result then //If we've passed the checks then...
-  begin
-    //Load Map Information.
-
-    // -- Complicated way to get Name from our file path since Linux doesn't
-    //like \ and ExtractFileName doesn't work with /. - If someone can think of
-    //a better way, PLEASE implement it here. - RaX
-    Name := Path;
-    SlashPos := Pos('/',Name);
-    if SlashPos <> 0 then
-    begin
-      repeat
-        Name := Copy(Name,SlashPos+1,Length(Name)-SlashPos);
-        SlashPos := Pos('/',Name);
-      until SlashPos = 0;
-      Name := ChangeFileExt(ExtractFileName(Name),'');
-    end else
-    begin
-      Name := LowerCase(ChangeFileExt(ExtractFileName(Name), ''));
-    end;
-    //end really complicated name retrieval.
-
-    Size := MapSize;
+	begin
+		//Load Map Information.
+		Name := ExtractFileNameMod(Path);
+		Size := MapSize;
     Flags:= ADatabase.StaticData.GetMapFlags(Name);
 
     //Load Cell Information

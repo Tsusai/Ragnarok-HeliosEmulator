@@ -11,16 +11,50 @@
 unit Being;
 
 interface
+uses
+	Types,
+	GameConstants;
 
 //------------------------------------------------------------------------------
 //TBeing                                                                  CLASS
 //------------------------------------------------------------------------------
 type TBeing = class
-	{ TODO -oTsusai -cTBeing : Make properties }
-	{ID : Cardinal;
-	Name : String[24];
-	HP  : Word;
-	JID : Word;}
+	private
+	public
+		ID  : Cardinal;
+				Name      : string;
+		JID       : Word;
+		BaseLV    : Byte;
+		JobLV     : Byte;
+		ParamBase : array[STR..LUK] of byte;
+		MaxHP     : Word;
+		HP        : Word;
+		MaxSP     : Word;
+		SP        : Word;
+		Option    : Word;
+		Map       : string;
+		Point     : TPoint;
+		Speed : word;
+
+		Direction : byte;
+
+		AttackRange : word;
+		//No idea what 0..5 is from.  Stats?
+		ATK : Word;
+
+		//For Mobs and NPCs, Leave #2's alone (0), and use #1s
+		MATK1 : word;
+		MATK2 : word;
+		DEF1 : word;
+		DEF2 : word;
+		MDEF1 : word;
+		MDEF2 : word;
+		HIT : word;
+		FLEE1 : word;
+		Lucky : word;
+		Critical : word;
+		ASpeed : word;
+
 end;{TBeing}
 //------------------------------------------------------------------------------
 

@@ -23,11 +23,11 @@ const
 //------------------------------------------------------------------------------
 //                             Character Stat Constants
 //------------------------------------------------------------------------------
-	STR = 1;  //Strength - Increases attack strength and weight capacity
-	AGI = 2;  //Agility - Increases attack speed and dodge rate.
-	VIT = 3;  //Vitality - Increases defense and vitality, as well as HP recovery.
-	INT = 4;  //Intelligence - Increases magic attack and magic defense.
-	DEX = 5;  //Dexterity - Increases accuracy and stabilizes the amount of damage done by a weapon. As well as lowers the cast time to some skills/spells.
+	STR = 0;  //Strength - Increases attack strength and weight capacity
+	AGI = 1;  //Agility - Increases attack speed and dodge rate.
+	VIT = 2;  //Vitality - Increases defense and vitality, as well as HP recovery.
+	INT = 3;  //Intelligence - Increases magic attack and magic defense.
+	DEX = 4;  //Dexterity - Increases accuracy and stabilizes the amount of damage done by a weapon. As well as lowers the cast time to some skills/spells.
 	LUK = 6;  //Luck - Increases Critical hits and perfect dodge rate, and brings about lots of luck.
  
 //------------------------------------------------------------------------------
