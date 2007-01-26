@@ -42,7 +42,7 @@ begin
 	CurrentTime := GetTick;
 	for CharacterIndex := 0 to CharacterList.Count - 1 do
 	begin
-		for EventIndex := 0 to CharacterList[CharacterIndex].EventList.Count - 1 do
+		for EventIndex := CharacterList[CharacterIndex].EventList.Count - 1 downto 0 do
 		begin
 			CompareTimeStamp := CompareDateTime(CharacterList[CharacterIndex].EventList[EventIndex].ExpiryTime, CurrentTime);
 			if  (CompareTimeStamp = 0) OR
