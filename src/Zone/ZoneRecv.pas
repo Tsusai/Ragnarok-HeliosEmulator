@@ -320,10 +320,10 @@ uses
 		RecvCharacter : TCharacter;
 	begin
 		ID := BufferReadCardinal(ReadPts[0], InBuffer);
-		idx := CharacterList.IndexOfAID(ID);
+		idx := MainProc.ZoneServer.CharacterList.IndexOfAID(ID);
 		if idx > -1 then
 		begin
-			RecvCharacter := CharacterList.Items[idx];
+			RecvCharacter := MainProc.ZoneServer.CharacterList.Items[idx];
 			{guild check}
 			{guild version packet}
 			{else}

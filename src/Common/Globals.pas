@@ -38,7 +38,6 @@ var
 	AppPath         : String;
 
 	AccountList     : TStringList;
-	CharacterList   : TCharacterList;
 
 	LastAccountID   : Integer;
 
@@ -102,7 +101,7 @@ begin
   DatabaseLoaded := false; //assume the database connections failed!
 
 	AccountList     := TStringList.Create;
-	CharacterList   := TCharacterList.Create(True);
+
 	ADatabase       := TDatabase.Create(TRUE,TRUE,TRUE,DatabaseLoaded);
 	Result := (Load_PacketDB and DatabaseLoaded);
 end; {InitGlobals}
@@ -122,7 +121,7 @@ end; {InitGlobals}
 procedure DestroyGlobals;
 begin
 	AccountList.Free;
-	CharacterList.Free;
+
   ADatabase.Free;
 end;{DestroyGlobals}
 //------------------------------------------------------------------------------

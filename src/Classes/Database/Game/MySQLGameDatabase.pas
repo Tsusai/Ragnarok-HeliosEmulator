@@ -18,7 +18,7 @@ uses
 	CharaList,
 	Account,
 	uMysqlClient,
-  Database;
+	Database;
 type
 //------------------------------------------------------------------------------
 //TMySQLGameDatabase			                                                           CLASS
@@ -254,24 +254,7 @@ function TMySQLGameDatabase.GetChara(
 var
   CharacterIndex : Integer;
 begin
-	Result := NIL;
-  CharacterIndex := CharacterList.IndexOf(CharaID);
-	if CharacterIndex > -1 then
-	begin
-		if CharacterList.Items[CharacterIndex].CID = CharaID then
-		begin
-			Result := CharacterList.Items[CharacterIndex];
-			Exit;
-		end;
-	end;
-	if Result = NIL then
-	begin
-		Result := LoadChara(CharaID);
-		if Assigned(Result) then
-		begin
-			CharacterList.Add(Result);
-		end;
-	end else Result := NIL;
+	Result := LoadChara(CharaID);
 end;
 //------------------------------------------------------------------------------
 
@@ -594,9 +577,7 @@ begin
 			ParamBase[INT]  := StrToInt(QueryResult.FieldValue(13));
 			ParamBase[DEX]  := StrToInt(QueryResult.FieldValue(14));
 			ParamBase[LUK]  := StrToInt(QueryResult.FieldValue(15));
-			MaxHP           := StrToInt(QueryResult.FieldValue(16));
 			HP              := StrToInt(QueryResult.FieldValue(17));
-			MaxSP           := StrToInt(QueryResult.FieldValue(18));
 			SP              := StrToInt(QueryResult.FieldValue(19));
 			StatusPts       := StrToInt(QueryResult.FieldValue(20));
 			SkillPts        := StrToInt(QueryResult.FieldValue(21));
@@ -633,6 +614,12 @@ begin
 			BabyID          := StrToInt(QueryResult.FieldValue(50));
 			Online          := StrToInt(QueryResult.FieldValue(51));
 			HomunID         := StrToInt(QueryResult.FieldValue(52));
+
+			CalcMaxHP;
+			CalcMaxSP;
+			CalcMaxWeight;
+			CalcSpeed;
+
 			//Do not start the save timer caused by modifying everything else.
 			DataChanged := false;
 		end;
@@ -658,13 +645,6 @@ begin
 		Format('DELETE FROM characters WHERE char_id=%d',[ACharacter.CID]),
 		FALSE,Result
 	);
-
-	if Result then
-	begin
-		CharacterList.Delete(
-			CharacterList.IndexOf(ACharacter.CID)
-		);
-	end;
 end;
 //------------------------------------------------------------------------------
 

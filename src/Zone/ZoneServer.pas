@@ -21,7 +21,8 @@ uses
 	Character,
 	ZoneOptions,
   Classes,
-  MapList;
+	MapList,
+	CharaList;
 
 type
 	TZoneServer = class
@@ -62,6 +63,7 @@ type
 		Options       : TZoneOptions;
 
     MapList       : TMapList;
+		CharacterList : TCharacterList;
 
 		property Started : Boolean read GetStarted;
 		property Port : Word read fPort write SetPort;
@@ -105,6 +107,7 @@ uses
 Constructor TZoneServer.Create;
 begin
   MapList := TMapList.Create(TRUE);
+	CharacterList := TCharacterList.Create(TRUE);
 
 	TCPServer := TIdTCPServer.Create;
 	ToCharaTCPClient := TInterClient.Create('Zone','Character');
@@ -133,7 +136,8 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TZoneServer.Destroy;
 begin
-  MapList.Free;
+	MapList.Free;
+	CharacterList.Free;
 	TCPServer.Free;
 	ToCharaTCPClient.Free;
 	ToInterTCPClient.Free;

@@ -22,7 +22,8 @@ uses
 	List32,
 	SysUtils,
 	PacketTypes,
-	CharaOptions;
+	CharaOptions,
+	CharaList;
 
 type
 //------------------------------------------------------------------------------
@@ -95,7 +96,6 @@ uses
 	//3rd
   Types,
 	StrUtils,
-	CharaList,
 	Console;
 
 const
@@ -118,7 +118,6 @@ const
 //------------------------------------------------------------------------------
 Constructor TCharacterServer.Create;
 begin
-
 	TCPServer := TIdTCPServer.Create;
 	TCPServer.OnExecute    := ParseCharaServ;
 	TCPServer.OnException  := OnException;
@@ -723,7 +722,6 @@ var
 	AnAccount   : TAccount;
 	ACharacter  : TCharacter;
 	ReplyBuffer : TBuffer;
-	CharacterIndex : Integer;
 
 	procedure DeleteCharaError(const Error : byte);
 	begin
@@ -744,17 +742,10 @@ begin
 		begin
 			if AnAccount.EMail = EmailOrID then
 			begin
-				CharacterIndex := CharacterList.IndexOf(CharacterID);
-				if CharacterIndex > -1 then
+				if ADatabase.GameData.DeleteChara(ACharacter) then
 				begin
-					if CharacterList.Items[CharacterIndex].CID = ACharacter.CID then
-					begin
-						if ADatabase.GameData.DeleteChara(ACharacter) then
-						begin
-							WriteBufferWord(0, $006f, ReplyBuffer);
-							SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));
-						end else DeleteCharaError(DELETEBADCHAR);
-					end else DeleteCharaError(DELETEBADCHAR);
+					WriteBufferWord(0, $006f, ReplyBuffer);
+					SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));
 				end else DeleteCharaError(DELETEBADCHAR);
 			end else DeleteCharaError(DELETEBADEMAIL);
 		end else DeleteCharaError(DELETEBADCHAR);

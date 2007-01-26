@@ -293,10 +293,7 @@ begin
 		Format('SELECT %s FROM weight',
 			[ACharacter.JobName]));
 	QueryResult := Database.RecordSets[ResultIdentifier];
-	if (QueryResult.RecordCount = 1) then
-	begin
-			Result  := StrToInt(QueryResult.Records[0].Fields[0].Value);
-	end else Result := 0;
+	Result  := StrToIntDef(QueryResult.Records[0].Fields[0].Value, 0);
 	SendQuery('RELEASE TABLE weight');
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetBaseSP

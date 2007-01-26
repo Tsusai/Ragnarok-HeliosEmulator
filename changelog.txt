@@ -13,6 +13,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 134 -
+[2007/01/26] - RaX - Removed Global Character List. Now, only the zone server has a list.
+ Character Server only uses queries.
+[2007/01/26] - RaX - Modified LoadChara to calculate max hp/sp, speed, and weight.
+-
+
 - Rev 133 -
 [2007/01/25] - RaX - Updated Map Load, made all maps load on startup, but Cell information
  load dynamically. Nothing unloads...yet...will do once I finish the event system.

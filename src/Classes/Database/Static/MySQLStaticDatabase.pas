@@ -260,15 +260,13 @@ var
 	Success     : Boolean;
 	QueryResult : TMySQLResult;
 begin
+	Result := 0;
 	QueryResult :=
 		SendQuery(
-		Format('SELECT %s FROM weight WHERE',
+		Format('SELECT %s FROM weight',
 			[ACharacter.JobName])
 		,TRUE,Success);
-	if (QueryResult.RowsCount = 1) then
-	begin
-			Result              := StrToInt(QueryResult.FieldValue(0));
-	end else Result := 0;
+	Result := StrToIntDef(QueryResult.FieldValue(0), 0);
 	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------

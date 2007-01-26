@@ -279,30 +279,11 @@ function TJanSQLGameDatabase.GetChara(
 	CharaID : Cardinal;
 	JanSQLClearTable : boolean = false
 ) : TCharacter;
-var
-	CharacterIndex : Integer;
 begin
-	Result := NIL;
-	CharacterIndex := CharacterList.IndexOf(CharaID);
-	if CharacterIndex > -1 then
+	Result := LoadChara(CharaID);
+	if JanSQLClearTable then
 	begin
-		if CharacterList.Items[CharacterIndex].CID = CharaID then
-		begin
-			Result := CharacterList.Items[CharacterIndex];
-			Exit;
-		end;
-	end;
-	if Result = NIL then
-	begin
-		Result := LoadChara(CharaID);
-		if JanSQLClearTable then
-		begin
-			SendQuery('RELEASE TABLE characters');
-		end;
-		if Assigned(Result) then
-		begin
-			CharacterList.Add(Result);
-		end;
+		SendQuery('RELEASE TABLE characters');
 	end;
 end;
 //------------------------------------------------------------------------------
@@ -652,9 +633,7 @@ begin
 			ParamBase[INT]  := StrToIntDef(QueryResult.Records[0].Fields[13].Value, 0);
 			ParamBase[DEX]  := StrToIntDef(QueryResult.Records[0].Fields[14].Value, 0);
 			ParamBase[LUK]  := StrToIntDef(QueryResult.Records[0].Fields[15].Value, 0);
-			MaxHP           := StrToIntDef(QueryResult.Records[0].Fields[16].Value, 0);
 			HP              := StrToIntDef(QueryResult.Records[0].Fields[17].Value, 0);
-			MaxSP           := StrToIntDef(QueryResult.Records[0].Fields[18].Value, 0);
 			SP              := StrToIntDef(QueryResult.Records[0].Fields[19].Value, 0);
 			StatusPts       := StrToIntDef(QueryResult.Records[0].Fields[20].Value, 0);
 			SkillPts        := StrToIntDef(QueryResult.Records[0].Fields[21].Value, 0);
@@ -693,6 +672,10 @@ begin
 			HomunID         := StrToIntDef(QueryResult.Records[0].Fields[52].Value, 0);
 			//Do not start the save timer caused by modifying everything else.
 			DataChanged := false;
+			CalcMaxWeight;
+			CalcMaxHP;
+			CalcMaxSP;
+			CalcSpeed;
 		end;
 	end else Result := nil;
 	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
@@ -716,8 +699,6 @@ var
 begin
 	ResultIdentifier := SendQuery(
 		Format('DELETE FROM characters WHERE char_id=%d',[ACharacter.CID]));
-
-		CharacterList.Delete(CharacterList.IndexOf(ACharacter.CID));
 		Result := TRUE;
 		SendQuery('SAVE TABLE characters');
 		SendQuery('RELEASE TABLE characters');
