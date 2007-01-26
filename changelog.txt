@@ -13,6 +13,13 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 135 -
+[2007/01/26] - RaX - Added basic character events system. 
+[2007/01/26] - RaX -Added Event, EventList, MovementEvent, and CharacterEventThread into 
+ Classes/Events/.
+[2007/01/26] - RaX - Added ZoneServer.OnDisconnect, it free's characters from it's list.
+-
+
 - Rev 134 -
 [2007/01/26] - RaX - Removed Global Character List. Now, only the zone server has a list.
  Character Server only uses queries.

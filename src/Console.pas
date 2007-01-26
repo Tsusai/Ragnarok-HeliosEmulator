@@ -21,7 +21,8 @@ uses
   InterServer,
   ZoneServer,
   HeliosOptions,
-  Version;
+	Version,
+	CharacterEventThread;
 
 type
 
@@ -38,6 +39,8 @@ type
 		InterServer 		: TInterServer;
 
     Options         : THeliosOptions;
+
+		CharacterEventThread : TCharacterEventThread;
 
 		procedure Console(Line : string);
 
@@ -172,7 +175,7 @@ begin
   begin
     ZoneServer.ConnectToCharacter;
   end;
-
+	CharacterEventThread.Start;
 end;{TMainProc.Startup}
 //------------------------------------------------------------------------------
 
@@ -208,6 +211,7 @@ begin
 	//Make sure globals are Free'd on Application exit.
 	DestroyGlobals;
 
+	CharacterEventThread.Stop;
 end;{TMainProc.Shutdown}
 //------------------------------------------------------------------------------
 
@@ -276,7 +280,9 @@ begin
   LoginServer      := TLoginServer.Create;
   CharacterServer  := TCharacterServer.Create;
   InterServer      := TInterServer.Create;
-  ZoneServer       := TZoneServer.Create;
+	ZoneServer       := TZoneServer.Create;
+
+	CharacterEventThread := TCharacterEventThread.Create(ZoneServer.CharacterList);
 end;{TMainProc.Create}
 //------------------------------------------------------------------------------
 
@@ -296,8 +302,9 @@ begin
   ZoneServer.Free;
   InterServer.Free;
   CharacterServer.Free;
-  LoginServer.Free;
+	LoginServer.Free;
 
+	CharacterEventThread.Free;
 	inherited Destroy;
 end;{TMainProc.Destroy}
 //------------------------------------------------------------------------------

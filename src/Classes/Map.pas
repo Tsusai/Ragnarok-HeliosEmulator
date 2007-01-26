@@ -15,7 +15,8 @@ uses
   Types,
 	PointList,
   List32,
-  MapTypes;
+	MapTypes,
+	EventList;
 
 type
 //------------------------------------------------------------------------------
@@ -39,6 +40,8 @@ type
     Size : TPoint;
     Flags: TFlags;
     State: TMapMode;
+
+		EventList : TEventList;
 
 		Constructor Create();
 		Destructor Destroy();override;
@@ -96,7 +99,8 @@ begin
   State := UNLOADED;
   //Set Size to 0
 	Size.X := 0;
-  Size.Y := 0;
+	Size.Y := 0;
+	EventList := TEventList.Create(TRUE);
 end;
 //------------------------------------------------------------------------------
 
@@ -115,7 +119,7 @@ begin
   begin
     Unload;
   end;
-
+  EventList.Free;
 	inherited;
 end;
 //------------------------------------------------------------------------------

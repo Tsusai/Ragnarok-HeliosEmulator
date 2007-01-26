@@ -92,6 +92,11 @@ compile for linux, at the same time*}
   MapList in 'Classes\MapList.pas',
 	List32 in 'Common\3rdParty\List32.pas',
 	PointList in 'Classes\PointList.pas',
+	EventList in 'Classes\Events\EventList.pas',
+
+  	//Events
+	Event in 'Classes\Events\Event.pas',
+	MovementEvent in 'Classes\Events\MovementEvent.pas',
 
 	//Database
 	Database in 'Classes\Database.pas',
@@ -184,6 +189,11 @@ compile for linux, at the same time*}
   MapList in 'Classes/MapList.pas',
 	List32 in 'Common/3rdParty/List32.pas',
 	PointList in 'Classes/PointList.pas',
+	EventList in 'Classes/Events/EventList.pas',
+
+	//Events
+	Event in 'Classes/Events/Event.pas',
+	MovementEvent in 'Classes/Events/MovementEvent.pas',
 
 	//Database
 	Database in 'Classes/Database.pas',

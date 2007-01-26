@@ -38,6 +38,7 @@ type
 
 		Procedure OnExecute(AConnection: TIdContext);
 		Procedure OnConnect(AConnection: TIdContext);
+		Procedure OnDisconnect(AConnection: TIdContext);
 		Procedure OnException(AConnection: TIdContext;
 			AException: Exception);
 
@@ -53,7 +54,8 @@ type
 		Function GetStarted() : Boolean;
 
 		Procedure LoadOptions;
-    Procedure LoadMaps;
+		Procedure LoadMaps;
+
 	public
 		WANIP : string;
 		LANIP : string;
@@ -117,6 +119,7 @@ begin
 	ToCharaTCPClient.OnRecieve   := CharaClientRead;
 
 	TCPServer.OnConnect   := OnConnect;
+	TCPServer.OnDisconnect:= OnDisconnect;
 	TCPServer.OnExecute   := OnExecute;
 	TCPServer.OnException := OnException;
 
@@ -179,6 +182,25 @@ begin
 end;{OnConnect}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//OnDisconnect()                                                             EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			An event which fires when a user disconnects from the zone server.
+//
+//	Changes -
+//		January 25th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TZoneServer.OnDisconnect(AConnection: TIdContext);
+var
+	CharacterIndex : Integer;
+begin
+	CharacterIndex := CharacterList.IndexOf(TThreadLink(AConnection.Data).CharacterLink.CID);
+	CharacterList.Delete(CharacterIndex);
+end;{OnDisconnect}
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //OnException                                                             EVENT

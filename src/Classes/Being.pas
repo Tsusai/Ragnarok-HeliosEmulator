@@ -13,7 +13,8 @@ unit Being;
 interface
 uses
 	Types,
-	GameConstants;
+	GameConstants,
+	EventList;
 
 //------------------------------------------------------------------------------
 //TBeing                                                                  CLASS
@@ -22,7 +23,7 @@ type TBeing = class
 	private
 	public
 		ID  : Cardinal;
-				Name      : string;
+		Name      : string;
 		JID       : Word;
 		BaseLV    : Byte;
 		JobLV     : Byte;
@@ -55,10 +56,25 @@ type TBeing = class
 		Critical : word;
 		ASpeed : word;
 
+		EventList : TEventList;
+
+		Constructor Create();
+		Destructor Destroy();override;
 end;{TBeing}
 //------------------------------------------------------------------------------
 
 
 implementation
 
+Constructor TBeing.Create;
+begin
+	inherited;
+	EventList := TEventList.Create(TRUE);
+end;
+
+Destructor TBeing.Destroy;
+begin
+	inherited;
+	EventList.Free;
+end;
 end.

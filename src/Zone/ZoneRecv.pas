@@ -89,7 +89,7 @@ uses
 	Globals,
   MapTypes,
 	ZoneSend,
-  ZoneServer;
+	ZoneServer;
 
 //------------------------------------------------------------------------------
 //NoCommand                                                           PROCEDURE
@@ -163,7 +163,7 @@ uses
 		AnAccount   : TAccount;
 		ACharacter  : TCharacter;
 		OutBuffer   : Tbuffer; //temp
-    MapIndex    : Integer;
+		MapIndex    : Integer;
 	begin
 		AccountID      := BufferReadCardinal(ReadPts[0], Buffer);
 		CharacterID    := BufferReadCardinal(ReadPts[1], Buffer);
@@ -185,16 +185,17 @@ uses
 				ACharacter.Account := AnAccount;
 				ACharacter.Online  := 1;
 				ACharacter.ClientInfo := AClient;
+				MainProc.ZoneServer.CharacterList.Add(ACharacter);
 
-        //Load map cells if they are not already loaded
+				//Load map cells if they are not already loaded
         MapIndex := MainProc.ZoneServer.MapList.IndexOf(ACharacter.Map);
         if MapIndex > -1 then
         begin
-          if MainProc.ZoneServer.MapList[MapIndex].State = UNLOADED then
+					if MainProc.ZoneServer.MapList[MapIndex].State = UNLOADED then
           begin
             MainProc.ZoneServer.MapList[MapIndex].Load;
           end;
-        end;
+				end;
 
 				SendPadding(ACharacter.ClientInfo);
 
