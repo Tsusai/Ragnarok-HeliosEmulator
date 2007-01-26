@@ -17,7 +17,8 @@ uses
 	Character,
 	uMysqlClient,
   Database,
-  MapTypes;
+  MapTypes,
+  Classes;
 type
 //------------------------------------------------------------------------------
 //TMySQLStaticDatabase			                                                           CLASS
@@ -53,6 +54,7 @@ type
 		Function GetMapCannotSave(MapName : String) : Boolean;override;
 		Function GetMapZoneID(MapName : String) : Integer;override;
     Function GetMapFlags(MapName : String) : TFlags; override;
+    Function GetMapsForZone(ID : Cardinal) : TStringList; override;
 
 	protected
 		function Connect() : boolean; override;
@@ -71,8 +73,7 @@ implementation
 		GameConstants,
 		Globals,
 		Console,
-		SysUtils,
-		Classes;
+		SysUtils;
 //------------------------------------------------------------------------------
 //TMySQLStaticDatabase.Create()                                          CONSTRUCTOR
 //------------------------------------------------------------------------------
@@ -391,6 +392,39 @@ begin
   end;
   QueryResult.Free;
 end;//GetMapZoneID
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetMapsForZone 							                                         FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Queries and returns a map's flags.
+//
+//	Changes -
+//		January 22nd, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function TMySQLStaticDatabase.GetMapsForZone(ID : Cardinal) : TStringList;
+var
+	QueryResult : TMySQLResult;
+  Index       : Integer;
+  Success			: Boolean;
+begin
+  Result := TStringList.Create;
+	QueryResult := SendQuery(
+		Format('SELECT mapname FROM maps WHERE zoneid = %d',
+			[ID]),TRUE,Success);
+  if (QueryResult.RowsCount > 0) then
+  begin
+    for Index := 0 to QueryResult.RowsCount - 1 do
+    begin
+      Result.Add(QueryResult.FieldValue(0));
+      QueryResult.Next;
+    end;  
+  end;
+  QueryResult.Free;
+end;//GetMapsForZone
 //------------------------------------------------------------------------------
 {END MySQLStaticDatabase}
 end.

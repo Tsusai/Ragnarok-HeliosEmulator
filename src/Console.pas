@@ -20,7 +20,8 @@ uses
 	CharacterServer,
   InterServer,
   ZoneServer,
-  HeliosOptions;
+  HeliosOptions,
+  Version;
 
 type
 
@@ -105,7 +106,20 @@ procedure TMainProc.Startup;
 var
 	PreloadOK : boolean;
 begin
-	ThirdPartyCredits; //Load external credits file.
+  Run := TRUE;
+
+  MainProc.Console('  _    _          _   _                ');
+	MainProc.Console(' | |  | |        | | (_)               ');
+	MainProc.Console(' | |__| |   ___  | |  _    ___    ___  ');
+	MainProc.Console(' |  __  |  / _ \ | | | |  / _ \  / __| ');
+	MainProc.Console(' | |  | | |  __/ | | | | | (_) | \__ \ ');
+	MainProc.Console(' |_|  |_|  \___| |_| |_|  \___/  |___/ ');
+
+  ThirdPartyCredits; //Load external credits file.
+
+	MainProc.Console(Format('- %s is starting...',[HeliosVersion]));
+  MainProc.Console('');
+
 	AppPath  := ExtractFilePath(ParamStr(0));
 
 	SetupTerminationCapturing;
@@ -136,14 +150,9 @@ begin
 		begin
 			ZoneServer.Start;
 		end;
-	end;
-	MainProc.Console('');
 
-	Run := TRUE;
+	  MainProc.Console('');
 
-	if PreloadOK
-		{and servers started ok} then
-	begin
 		Console('- Startup Success');
 		Console('  For a list of console commands, input "/help".');
 	end else
@@ -153,6 +162,16 @@ begin
 			'and correct');
 	end;
 	Console('');
+
+  //Link Enabled Servers
+  if Options.CharaEnabled then
+  begin
+    CharacterServer.ConnectToLogin;
+  end;
+  if Options.ZoneEnabled then
+  begin
+    ZoneServer.ConnectToCharacter;
+  end;
 
 end;{TMainProc.Startup}
 //------------------------------------------------------------------------------

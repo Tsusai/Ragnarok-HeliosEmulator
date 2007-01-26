@@ -13,6 +13,22 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 133 -
+[2007/01/25] - RaX - Updated Map Load, made all maps load on startup, but Cell information
+ load dynamically. Nothing unloads...yet...will do once I finish the event system.
+[2007/01/25] - RaX - Moved Cell Loading portion of TMap.LoadFromFile into TMap.Load.
+[2007/01/25] - RaX - Added TMap.Unload, which destroys a map's Cell information.
+[2007/01/25] - RaX - Updated Pathing code a little bit, made to be slightly more efficient
+ by not using Length() to get Y and XMax variables twice, I have them returned via var
+ parameters in GetArea.
+[2007/01/25] - RaX - Moved ZoneServer CommClient connection stuff into 
+ TZoneServer.ConnectToCharacter, implemented AFTER startup to make things look nice.
+[2007/01/25] - RaX - Moved CharacterServer CommClient connection stuff into
+ TCharacterServer.ConnectToLogin for the same reasons and implemented the same way as above
+[2007/01/25] - RaX - Moved Helios Header into TMainProc.StartUp.
+[2007/01/25] - RaX - Moved starting message AFTER the credits.
+-
+
 - Rev 132 -
 [2007/01/25] - Tsusai - Notes/Overview: Cleaned up RaX's replace code, and added a
  ExtractFileNameMod to WinLinux to take care of it.

@@ -16,6 +16,8 @@ uses
 
 type
 
+  TMapMode = (UNLOADED,LOADING,LOADED);
+
   TFlags = record
     //Warping
     Memo          : Boolean;

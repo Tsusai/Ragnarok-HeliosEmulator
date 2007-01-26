@@ -75,6 +75,7 @@ type
 		Destructor  Destroy();Override;
 		Procedure   Start();
 		Procedure   Stop();
+    Procedure ConnectToLogin();
 	end;
 //------------------------------------------------------------------------------
 
@@ -198,10 +199,6 @@ begin
 	  ActivateServer('Character',TCPServer);
 	  WANIP := Options.WANIP;
 	  LANIP := Options.LANIP;
-
-	  CharaToLoginClient.Host := Options.LoginIP;
-	  CharaToLoginClient.Port := Options.LoginPort;
-	  ActivateClient(CharaToLoginClient);
   end else
   begin
     MainProc.Console('Character Server : Cannot Start():: Character Server is already running!');
@@ -290,15 +287,15 @@ begin
 			Response := BufferReadByte(2,ABuffer);
 			if Boolean(Response) then
 			begin
-				MainProc.Console('Character Server: Verified with Login Server, '+
+				MainProc.Console('[Character Server] - Verified with Login Server, '+
 					'sending details.');
 				SendCharaWANIPToLogin(CharaToLoginClient,Self);
 				SendCharaLANIPToLogin(CharaToLoginClient,Self);
 				SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
 			end else
 			begin
-				MainProc.Console('Character Server: Failed to verify with Login Server. Invalid Security Key');
-				MainProc.Console('Character Server: Stopping...');
+				MainProc.Console('[Character Server] - Failed to verify with Login Server. Invalid Security Key');
+				MainProc.Console('[Character Server] - Stopping...');
 				Stop;
 			end;
 		end;
@@ -422,7 +419,7 @@ begin
 				SendBuffer(AClient,ReplyBuffer,GetPacketLength($0081));
 
 				MainProc.Console(
-					'Character Server: Connecting RO client from '+
+					'[Character Server] - Connecting RO client from '+
 					AClient.Binding.PeerIP +
 					' did not pass key validation.'
 				);
@@ -780,7 +777,7 @@ var
 begin
 	Validated := 0; //Assume true
 	MainProc.Console(
-		'Character Server: Reading Zone Server connection from ' +
+		'[Character Server] - Reading Zone Server connection from ' +
 		AClient.Binding.PeerIP
 	);
 	ID := BufferReadCardinal(2,InBuffer);
@@ -788,19 +785,19 @@ begin
 
 	if (fZoneServerList.IndexOf(ID) > -1) then
 	begin
-		MainProc.Console('Character Server: Zone Server failed verification. ID already in use.');
+		MainProc.Console('[Character Server] - Zone Server failed verification. ID already in use.');
 		Validated := 1;
 	end;
 
 	if (Password <> GetMD5(Options.Key)) then
 	begin
-		MainProc.Console('Character Server: Zone Server failed verification. Invalid Security Key.');
+		MainProc.Console('[Character Server] - Zone Server failed verification. Invalid Security Key.');
 		Validated := 2;
 	end;
 
 	if Validated = 0 then
 	begin
-		MainProc.Console('Character Server: Zone Server connection validated.');
+		MainProc.Console('[Character Server] - Zone Server connection validated.');
 
 		ZServerInfo :=  TZoneServerInfo.Create;
 		ZServerInfo.ZoneID := ID;
@@ -879,7 +876,7 @@ begin
 					Size := BufferReadWord(2,ABuffer);
 					RecvBuffer(AClient,ABuffer[4],Size-4);
 					TZoneServerLink(AClient.Data).Info.WAN := BufferReadString(4,Size-4,ABuffer);
-					MainProc.Console('Character Server: Received updated Zone Server WANIP.');
+					MainProc.Console('[Character Server] - Received updated Zone Server WANIP.');
 				end;
 			end;
 		$2103: // Zone Server sending new LAN location details
@@ -890,7 +887,7 @@ begin
 					Size := BufferReadWord(2,ABuffer);
 					RecvBuffer(AClient,ABuffer[4],Size-4);
 					TZoneServerLink(AClient.Data).Info.LAN := BufferReadString(4,Size-4,ABuffer);
-					MainProc.Console('Character Server: Received updated Zone Server LANIP.');
+					MainProc.Console('[Character Server] - Received updated Zone Server LANIP.');
 				end;
 			end;
 		$2104: // Zone Server sending new Online User count
@@ -899,16 +896,35 @@ begin
 				begin
 					RecvBuffer(AClient,ABuffer[2],GetPacketLength($2104)-2);
 					//TZoneServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
-					MainProc.Console('Character Server: Received updated Zone Server Online Users.');
+					MainProc.Console('[Character Server] - Received updated Zone Server Online Users.');
 				end;
 			end;
 		else
 			begin
-				MainProc.Console('Character Server: Unknown Character Server Packet : ' + IntToHex(PacketID,4));
+				MainProc.Console('[Character Server] - Unknown Character Server Packet : ' + IntToHex(PacketID,4));
 			end;
 		end;
 	end;
 end; {ParseCharaServ}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ConnectToLogin                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Connects to the login server.
+//
+//	Changes -
+//		January 25th, 2007 - RaX - Moved from Start().
+//
+//------------------------------------------------------------------------------
+Procedure TCharacterServer.ConnectToLogin;
+begin
+  CharaToLoginClient.Host := Options.LoginIP;
+  CharaToLoginClient.Port := Options.LoginPort;
+  ActivateClient(CharaToLoginClient);
+end;//ConnectToLogin
 //------------------------------------------------------------------------------
 
 

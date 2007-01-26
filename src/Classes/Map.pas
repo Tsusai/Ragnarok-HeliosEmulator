@@ -23,11 +23,14 @@ type
 //------------------------------------------------------------------------------
   TMap = class(TObject)
 	private
+    Path : String;
     Procedure GetArea(
       const APoint : TPoint;
       var AnArea : TGraph;
       var XMod : Integer;
-      var YMod : Integer
+      var YMod : Integer;
+      var XAreaMax : Integer;
+      var YAreaMax : Integer
     );
 
 	public
@@ -35,11 +38,14 @@ type
 		Cell : TGraph;
     Size : TPoint;
     Flags: TFlags;
+    State: TMapMode;
 
 		Constructor Create();
 		Destructor Destroy();override;
 
     Function LoadFromFile(Path : String) : Boolean;
+    Procedure Load;
+    Procedure Unload;
 
 		Function GetPath(
 			const StartPoint  : TPoint;
@@ -87,7 +93,7 @@ const
 Constructor TMap.Create();
 begin
 	inherited;
-
+  State := UNLOADED;
   //Set Size to 0
 	Size.X := 0;
   Size.Y := 0;
@@ -104,20 +110,12 @@ end;
 //    October 30th, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 Destructor TMap.Destroy();
-var
-  XIndex : Integer;
-  YIndex : Integer;
 begin
-
-  //Free up each Cell.
-  for XIndex := 0 to Size.X - 1 do
+  if State = LOADED then
   begin
-    for YIndex := 0 to Size.Y - 1 do
-    begin
-      Cell[XIndex][YIndex].Beings.Free;
-    end;
-    SetLength(Cell[XIndex], 0);
+    Unload;
   end;
+
 	inherited;
 end;
 //------------------------------------------------------------------------------
@@ -133,13 +131,11 @@ end;
 //  Changes -
 //    November 1st, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-procedure TMap.GetArea(const APoint : TPoint; var AnArea : TGraph; var XMod : Integer; var YMod : Integer);
+procedure TMap.GetArea(const APoint : TPoint; var AnArea : TGraph; var XMod : Integer; var YMod : Integer; var XAreaMax : Integer; var YAreaMax : Integer);
 var
 	Index			: Integer;
 	XMax			: Integer;//last point in x axis on map
 	YMax			: Integer;//last point in y axis on map
-	XAreaMax	: Integer;//last x point in area
-	YAreaMax	: Integer;//last y point in area
 begin
 	XMax := Length(Cell)-1;
 	YMax := Length(Cell[0])-1;
@@ -196,6 +192,7 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 //TMap.GetPath()                                                      FUNCTION
 //------------------------------------------------------------------------------
@@ -249,9 +246,7 @@ begin
 
 
 	//Get Our Area and area constraints
-	GetArea(StartPoint, AnArea, XMod, YMod);
-	XMax          := Length(AnArea);
-	YMax          := Length(AnArea[0]);
+	GetArea(StartPoint, AnArea, XMod, YMod, XMax, YMax);
 
 	//initialize our first flood item
 	AFloodItem.Position:= StartPoint;
@@ -377,8 +372,6 @@ Var
 	MapFile : TMemoryStream;
 	MapTag  : array[1..13] of Char;
 	MapSize : TPoint;
-  XIndex  : Integer;
-	YIndex  : Integer;
 Begin
   Result := TRUE;
 
@@ -417,22 +410,79 @@ Begin
 		//Load Map Information.
 		Name := ExtractFileNameMod(Path);
 		Size := MapSize;
-    Flags:= ADatabase.StaticData.GetMapFlags(Name);
-
-    //Load Cell Information
-    SetLength(Cell, Size.X, Size.Y);
-    for YIndex := 0 to Size.Y - 1 do begin
-      for XIndex := 0 to Size.X - 1 do begin
-        MapFile.Read(Cell[XIndex][YIndex].Attribute,1);
-        Cell[XIndex][YIndex].ObstructionCount := 0;
-        Cell[XIndex][YIndex].Beings := TIntList32.Create;
-      end;
-    end;
-
   end;
 
   MapFile.Free;//finally, free the memory stream.
 End;//LoadFromFile
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//Load()                                                               FUNCTION
+//------------------------------------------------------------------------------
+//  What it does -
+//      Loads a map's cells from a .pms file.
+//
+//  Changes -
+//    January 25th, 2007 - RaX - Created.
+//------------------------------------------------------------------------------
+Procedure TMap.Load;
+Var
+	MapFile : TMemoryStream;
+  XIndex  : Integer;
+	YIndex  : Integer;
+Begin
+  State  := LOADING;
+
+  MapFile := TMemoryStream.Create;
+  MapFile.LoadFromFile(Path);
+
+  Flags:= ADatabase.StaticData.GetMapFlags(Name);
+  MapFile.Seek(22,0);//skip other non-cell information
+
+  //Load Cell Information
+  SetLength(Cell, Size.X, Size.Y);
+  for YIndex := 0 to Size.Y - 1 do begin
+    for XIndex := 0 to Size.X - 1 do begin
+      MapFile.Read(Cell[XIndex][YIndex].Attribute,1);
+      Cell[XIndex][YIndex].ObstructionCount := 0;
+      Cell[XIndex][YIndex].Beings := TIntList32.Create;
+    end;
+  end;
+  State := LOADED;
+
+  MapFile.Free;//finally, free the memory stream.
+End;//Load
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Unload()                                                             FUNCTION
+//------------------------------------------------------------------------------
+//  What it does -
+//      Unloads a map's cells and flags.
+//
+//  Changes -
+//    January 25th, 2007 - RaX - Created.
+//------------------------------------------------------------------------------
+Procedure TMap.Unload;
+var
+  XIndex  : Integer;
+	YIndex  : Integer;
+Begin
+  if State = LOADED then
+  begin
+    //Free up each Cell.
+    for XIndex := 0 to Size.X - 1 do
+    begin
+      for YIndex := 0 to Size.Y - 1 do
+      begin
+        Cell[XIndex][YIndex].Beings.Free;
+      end;
+    end;
+    SetLength(Cell, 0, 0);
+    State := UNLOADED;
+  end;
+End;//Unload
+//------------------------------------------------------------------------------
 end.

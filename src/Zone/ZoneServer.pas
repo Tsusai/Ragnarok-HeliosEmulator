@@ -52,6 +52,7 @@ type
 		Function GetStarted() : Boolean;
 
 		Procedure LoadOptions;
+    Procedure LoadMaps;
 	public
 		WANIP : string;
 		LANIP : string;
@@ -67,8 +68,12 @@ type
 
 		Constructor Create();
 		Destructor  Destroy();Override;
+
 		Procedure   Start(Reload : Boolean = FALSE);
 		Procedure   Stop();
+
+    Procedure   ConnectToCharacter;
+
 	end;
 implementation
 
@@ -217,14 +222,11 @@ begin
 	  LANIP := Options.LANIP;
 	  Port := Options.Port;
 
-    //initialize commclient ips and ports.
-	  ToCharaTCPClient.Host := Options.CharaIP;
-	  ToCharaTCPClient.Port := Options.CharaPort;
-
     //Activate server and clients.
 	  ActivateServer('Zone',TCPServer);
-	  ActivateClient(ToCharaTCPClient);
-	  //ActivateClient(ToInterTCPClient);
+    
+    //Load Maps
+    LoadMaps;
   end else
   begin
     MainProc.Console('Zone Server : Cannot Start():: Zone Server already running!');
@@ -477,6 +479,44 @@ begin
 end;{LoadOptions}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//LoadMaps                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Loads all maps into the maplist.
+//
+//	Changes -
+//		January 25th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Procedure TZoneServer.LoadMaps;
+var
+  Index     : Integer;
+  AMap      : TMap;
+  MapNames  : TStringList;
+begin
+  MainProc.Console('      - Loading Maps...');
+  MapNames := ADatabase.StaticData.GetMapsForZone(Options.ID);
+  for Index := 0 to MapNames.Count - 1 do
+  begin
+    AMap := TMap.Create;
+    if FileExists('./Maps/'+MapNames[Index]+'.pms') then
+    begin
+      if AMap.LoadFromFile('./Maps/'+MapNames[Index]+'.pms') then
+      begin
+        MapList.Add(AMap);
+      end;
+    end else
+    begin
+      MainProc.Console('      - Map '+MapNames[Index]+'.pms does not exist in the ./Maps directory');
+    end;
+  end;
+  MainProc.Console('      - Maps Loaded!');
+end;{LoadMaps}
+//------------------------------------------------------------------------------
+
+
 //------------------------------------------------------------------------------
 //SetPort                                                          PROCEDURE
 //------------------------------------------------------------------------------
@@ -560,7 +600,7 @@ begin
 			//If validated.
 			if Response = 0 then
 			begin
-				MainProc.Console('Zone Server: Verified with Character Server, '+
+				MainProc.Console('[Zone Server]      - Verified with Character Server, '+
 					'sending details.');
 				SendZoneWANIPToChara(ToCharaTCPClient,Self);
 				SendZoneLANIPToChara(ToCharaTCPClient,Self);
@@ -568,14 +608,35 @@ begin
 			end else
 			begin
 				case Response of
-				1 : MainProc.Console('Zone Server: Failed to verify with Character Server. ID already in use.');
-				2 : MainProc.Console('Zone Server: Failed to verify with Character Server. Invalid security key.');
+				1 : MainProc.Console('[Zone Server]      - Failed to verify with Character Server. ID already in use.');
+				2 : MainProc.Console('[Zone Server]      - Failed to verify with Character Server. Invalid security key.');
 				end;
-				MainProc.Console('Zone Server: Stopping...');
+				MainProc.Console('[Zone Server]      - Stopping...');
 				Stop;
 			end;
 		end;
 	end;
 end;{CharaClientRead}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ConnectToCharacter                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Connects to the character server
+//
+//	Changes -
+//		January 25th, 2007 - RaX - Moved from Start().
+//
+//------------------------------------------------------------------------------
+Procedure TZoneServer.ConnectToCharacter;
+begin
+  //initialize commclient ips and ports.
+  ToCharaTCPClient.Host := Options.CharaIP;
+  ToCharaTCPClient.Port := Options.CharaPort;
+
+  ActivateClient(ToCharaTCPClient);
+end;//ConnectToCharacter
 //------------------------------------------------------------------------------
 end.

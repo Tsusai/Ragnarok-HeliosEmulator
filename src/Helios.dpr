@@ -270,17 +270,6 @@ begin
 	Command := TCommands.Create;
 	MainProc := TMainProc.Create(nil); //Form replacement
 
-	MainProc.Console('  _    _          _   _                ');
-	MainProc.Console(' | |  | |        | | (_)               ');
-	MainProc.Console(' | |__| |   ___  | |  _    ___    ___  ');
-	MainProc.Console(' |  __  |  / _ \ | | | |  / _ \  / __| ');
-	MainProc.Console(' | |  | | |  __/ | | | | | (_) | \__ \ ');
-	MainProc.Console(' |_|  |_|  \___| |_| |_|  \___/  |___/ ');
-
-
-	MainProc.Console('');
-	MainProc.Console(Format('- %s is starting...',[HeliosVersion]));
-
 	MainProc.Startup; //Form Create replacement
 
 	{Begin Main Loop}

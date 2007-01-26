@@ -56,7 +56,7 @@ type
 		Function GetMapCannotSave(MapName : String) : Boolean;override;
 		Function GetMapZoneID(MapName : String): Integer; override;
     Function GetMapFlags(MapName : String) : TFlags; override;
-
+    Function GetMapsForZone(ID : Cardinal) : TStringList; override;
 	protected
 		function Connect() : boolean; override;
 		procedure Disconnect; override;
@@ -436,6 +436,44 @@ begin
 		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 	end;
 end;//GetMapFlags
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetMapsForZone						                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Queries and returns a zone's maps
+//
+//	Changes -
+//		January 22nd, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function TJanSQLStaticDatabase.GetMapsForZone(ID : Cardinal) : TStringList;
+var
+	QueryResult      : TJanRecordSet;
+	ResultIdentifier : Integer;
+  Index            : Integer;
+begin
+  Result := TStringList.Create;
+	ResultIdentifier :=
+		SendQuery(
+		Format('SELECT mapname FROM maps WHERE zoneid = %d',
+			[ID]));
+	if ResultIdentifier > 0 then
+	begin
+		QueryResult := Database.RecordSets[ResultIdentifier];
+		if (QueryResult.RecordCount > 0) then
+		begin
+      for Index := 0 to QueryResult.RecordCount-1 do
+      begin
+        Result.Add(QueryResult.Records[Index].fields[0].Value);
+      end;
+		end;
+		SendQuery('RELEASE TABLE maps');
+		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+	end;
+end;//GetMapsForZone
 //------------------------------------------------------------------------------
 {END JanSQLStaticDatabase}
 end.
