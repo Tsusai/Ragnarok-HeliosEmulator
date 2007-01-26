@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 136 -
+[2007/01/26] - RaX - Moved CharacterEventThread from Console to ZoneServer.
+-
+
 - Rev 135 -
 [2007/01/26] - RaX - Added basic character events system. 
 [2007/01/26] - RaX -Added Event, EventList, MovementEvent, and CharacterEventThread into 

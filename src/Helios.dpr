@@ -97,6 +97,7 @@ compile for linux, at the same time*}
   	//Events
 	Event in 'Classes\Events\Event.pas',
 	MovementEvent in 'Classes\Events\MovementEvent.pas',
+	CharacterEventThread in 'Classes\Events\CharacterEventThread.pas',
 
 	//Database
 	Database in 'Classes\Database.pas',
@@ -194,6 +195,7 @@ compile for linux, at the same time*}
 	//Events
 	Event in 'Classes/Events/Event.pas',
 	MovementEvent in 'Classes/Events/MovementEvent.pas',
+	CharacterEventThread in 'Classes/Events/CharacterEventThread.pas',
 
 	//Database
 	Database in 'Classes/Database.pas',

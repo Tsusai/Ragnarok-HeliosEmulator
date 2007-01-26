@@ -22,7 +22,8 @@ uses
 	ZoneOptions,
   Classes,
 	MapList,
-	CharaList;
+	CharaList,
+	CharacterEventThread;
 
 type
 	TZoneServer = class
@@ -66,6 +67,8 @@ type
 
     MapList       : TMapList;
 		CharacterList : TCharacterList;
+
+		CharacterEventThread : TCharacterEventThread;
 
 		property Started : Boolean read GetStarted;
 		property Port : Word read fPort write SetPort;
@@ -123,6 +126,7 @@ begin
 	TCPServer.OnExecute   := OnExecute;
 	TCPServer.OnException := OnException;
 
+	CharacterEventThread := TCharacterEventThread.Create(CharacterList);
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -141,6 +145,9 @@ Destructor TZoneServer.Destroy;
 begin
 	MapList.Free;
 	CharacterList.Free;
+  
+	CharacterEventThread.Free;
+
 	TCPServer.Free;
 	ToCharaTCPClient.Free;
 	ToInterTCPClient.Free;
@@ -252,7 +259,9 @@ begin
 	  ActivateServer('Zone',TCPServer);
     
     //Load Maps
-    LoadMaps;
+		LoadMaps;
+
+		CharacterEventThread.Start;
   end else
   begin
     MainProc.Console('Zone Server : Cannot Start():: Zone Server already running!');
@@ -274,19 +283,21 @@ end;{Start}
 Procedure TZoneServer.Stop();
 begin
   if Started then
-  begin
+	begin
+		CharacterEventThread.Stop;
     //deactivate server and clients.
 	  DeActivateServer('Zone', TCPServer);
 	  DeActivateClient(ToCharaTCPClient);
 	  //DeActivateClient(ToInterTCPClient);
 
-    //Clear MapList
-    MapList.Clear;
+		//Clear Lists
+		MapList.Clear;
+		CharacterList.Clear;
 
     //Save and free options, options must be free'd here to force a reload after
     //start.
     Options.Save;
-	  Options.Free;
+		Options.Free;
   end else
   begin
     MainProc.Console('Zone Server : Cannot Stop():: Zone Server is not running!');
