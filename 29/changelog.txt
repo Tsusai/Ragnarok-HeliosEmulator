@@ -1,0 +1,7 @@
+2006/05/03 - RaX - Modfied socket code to be accessed by a class, for flexibility. It's been tested and works.
+2006/05/01 - Forgot to SVN add database.pas
+2006/05/01 - RaX updated reload in commands.pas
+2006/05/01 - Added RaX's changes: Now Win32 (not everyone has Delphi Ent for cross)
+	Database changes, added Command.pas.  Also Added "missing" CharaServerPacket unit
+2006/04/13 - Added project group, added beginning of character server.
+2006/04/07 - Added new version of Helios - Tsusai

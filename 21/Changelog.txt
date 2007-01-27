@@ -1,0 +1,45 @@
+Helios
+______________________________
+
+- Rev 21 -
+ [2006/02/19] Tsusai - Upgraded code for indy 10.  doesn't do that odd lockup now.
+-
+
+- Rev 17 -
+ [2006/01/09] Tsusai - Updated Console version uses field, now cross-compatable.
+-
+
+- Rev 16 -
+ [2006/01/09] Tsusai - Updated CLX GUI's uses field. | Added Console version of the CLX
+-
+
+- Rev 11 -
+ [2005/12/19] Tsusai - BSD License Added to sourcecode and folder.
+-
+
+- Rev 10 -
+ [2005/12/05] Tsusai - Extracted CLX version out, now two applications, two flavors.
+  At this time, the CLXSocket formis being very very cooperative, allowing another
+  login after the other, while the Indy one is not.  Will test again after extraction.
+-
+
+- Rev 5 -
+ [2005/12/05] Tsusai - Main: commented on indy execute.  Disabled both server sockets
+-
+
+- Rev 4 -
+ [2005/12/04] Tsusai - Unneeded files removed
+-
+
+- Rev 3 -
+ [2005/12/04] Tsusai - Unneeded files removed
+-
+
+- Rev 2 -
+ [2005/12/04] Tsusai - Directory reorganized
+-
+
+- Rev 1 -
+ [2005/12/04] Tsusai - Imported
+-
+

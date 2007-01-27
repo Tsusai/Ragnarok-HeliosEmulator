@@ -1,0 +1,2 @@
+2006/04/13 - Added project group, added beginning of character server.
+2006/04/07 - Added new version of Helios - Tsusai

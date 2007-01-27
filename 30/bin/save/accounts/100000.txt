@@ -1,0 +1,6 @@
+ID=100000
+UserName=test
+Password=test
+EMail=-@-
+Gender=Male
+Banned=false

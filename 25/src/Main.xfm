@@ -1,0 +1,101 @@
+object MainForm: TMainForm
+  Left = 546
+  Top = 198
+  Width = 468
+  Height = 198
+  VertScrollBar.Visible = False
+  ActiveControl = Console
+  Caption = 'Helios'
+  Color = clBackground
+  Menu = MainMenu1
+  OnClose = FormClose
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  TextWidth = 6
+  object Console: TMemo
+    Left = 0
+    Top = 0
+    Width = 465
+    Height = 153
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    ReadOnly = True
+    ScrollBars = ssAutoVertical
+    TabOrder = 0
+  end
+  object UserInput: TEdit
+    Left = 0
+    Top = 152
+    Width = 465
+    Height = 21
+    Anchors = [akLeft, akRight, akBottom]
+    TabOrder = 1
+    OnReturnPressed = UserInputReturnPressed
+  end
+  object LoginServer: TIdTCPServer
+    Active = True
+    Bindings = <>
+    CommandHandlers = <>
+    CommandHandlersEnabled = False
+    DefaultPort = 6900
+    Greeting.NumericCode = 0
+    MaxConnectionReply.NumericCode = 0
+    OnConnect = LoginServerConnect
+    OnExecute = LoginServerExecute
+    OnException = ServerException
+    ReplyExceptionCode = 0
+    ReplyTexts = <>
+    ReplyUnknownCommand.NumericCode = 0
+    Left = 432
+    Top = 8
+  end
+  object MainMenu1: TMainMenu
+    Left = 400
+    Top = 8
+    object File1: TMenuItem
+      Caption = 'File'
+      object Exit1: TMenuItem
+        Caption = 'Exit'
+      end
+    end
+  end
+  object CharaServer: TIdTCPServer
+    Active = True
+    Bindings = <>
+    CommandHandlers = <>
+    DefaultPort = 6121
+    Greeting.NumericCode = 0
+    MaxConnectionReply.NumericCode = 0
+    OnExecute = CharaServerExecute
+    OnException = ServerException
+    ReplyExceptionCode = 0
+    ReplyTexts = <>
+    ReplyUnknownCommand.NumericCode = 0
+    Left = 432
+    Top = 40
+  end
+  object CharaToLogin: TIdTCPClient
+    MaxLineAction = maException
+    Port = 0
+    Left = 400
+    Top = 40
+  end
+  object ZoneServer: TIdTCPServer
+    Bindings = <>
+    CommandHandlers = <>
+    DefaultPort = 5121
+    Greeting.NumericCode = 0
+    MaxConnectionReply.NumericCode = 0
+    ReplyExceptionCode = 0
+    ReplyTexts = <>
+    ReplyUnknownCommand.NumericCode = 0
+    Left = 432
+    Top = 72
+  end
+  object ZoneToChara: TIdTCPClient
+    MaxLineAction = maException
+    Port = 0
+    Left = 400
+    Top = 72
+  end
+end

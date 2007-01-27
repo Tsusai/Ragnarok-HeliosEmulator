@@ -1,0 +1,23 @@
+Helios
+______________________________
+
+- Rev 5 -
+ [2005/12/05] Tsusai - Main: commented on indy execute.  Disabled both server sockets
+-
+
+- Rev 4 -
+ [2005/12/04] Tsusai - Unneeded files removed
+-
+
+- Rev 3 -
+ [2005/12/04] Tsusai - Unneeded files removed
+-
+
+- Rev 2 -
+ [2005/12/04] Tsusai - Directory reorganized
+-
+
+- Rev 1 -
+ [2005/12/04] Tsusai - Imported
+-
+

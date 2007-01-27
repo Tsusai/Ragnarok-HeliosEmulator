@@ -1,0 +1,82 @@
+object MainForm: TMainForm
+  Left = 262
+  Top = 158
+  Width = 633
+  Height = 276
+  VertScrollBar.Range = 253
+  HorzScrollBar.Range = 633
+  ActiveControl = Console
+  Caption = 'Helios'
+  Color = 15163672
+  Menu = Menu
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  TextWidth = 6
+  object ProgressBar1: TProgressBar
+    Left = 0
+    Top = 216
+    Width = 633
+    Height = 18
+    Color = clBackground
+    ParentColor = False
+  end
+  object Console: TMemo
+    Left = 0
+    Top = 0
+    Width = 633
+    Height = 217
+    ReadOnly = True
+    ScrollBars = ssVertical
+    TabOrder = 0
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Top = 234
+    Width = 633
+    Height = 19
+    Panels = <
+      item
+        Width = 0
+      end
+      item
+        Alignment = taRightJustify
+        PanelPosition = ppRight
+        Width = 200
+      end>
+  end
+  object Menu: TMainMenu
+    Left = 584
+    object File1: TMenuItem
+      Caption = 'File'
+      object N1: TMenuItem
+        Caption = 'Exit'
+      end
+    end
+    object Server1: TMenuItem
+      Caption = 'Server'
+      object Start1: TMenuItem
+        Caption = 'Start'
+      end
+      object Stop1: TMenuItem
+        Caption = 'Stop'
+      end
+    end
+  end
+  object IdTCPServer1: TIdTCPServer
+    Active = True
+    Bindings = <>
+    CommandHandlers = <>
+    DefaultPort = 6900
+    Greeting.NumericCode = 0
+    MaxConnectionReply.NumericCode = 0
+    OnExecute = IdTCPServer1Execute
+    OnDisconnect = IdTCPServer1Disconnect
+    OnException = IdTCPServer1Exception
+    ReplyExceptionCode = 0
+    ReplyTexts = <>
+    ReplyUnknownCommand.NumericCode = 0
+    Left = 584
+    Top = 32
+  end
+end

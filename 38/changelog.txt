@@ -1,0 +1,62 @@
+- Rev 38-
+[2006/05/04] - RaX : Bugfix :: If there aren't any charaservers in charaserverlist, there would be a range error in
+loginprocesses.pas - SendCharaServers. Fixed with condition checking if there is a charaserver in the list.
+-
+
+- Rev 37-
+forgot changelog
+-
+
+- Rev 36 -
+[2006/05/04] - Tsusai: Bugfix and added linux compatability
+	Helios.dpr : added one of the few win/linux conditional defines.
+	Console.pas : removed database variables, activated loginserver.
+	Globals.pas : added ADatabase as a global variable here.
+-
+
+- Rev 35 -
+[2006/05/04] - Tsusai - GUI removal and reorganization to accomidate.
+	Helios.dpr : executes in a controlled loop to keep the application alive.
+	Console.pas : new console class of the application (MainProc).  Items from Commands.pas moved here
+	Commands.pas : removed
+	Socket.pas : removed tsocket class, but kept procedures.  Those procedures are enough, 
+	 don't need to create and destroy classes (memory) over and over just yet. not till we have
+         game objects in place.
+	Database.pas : moved Reload here from Commands	
+-
+
+- Rev 34 -
+[2006/05/03] - RaX - Fixed bug from rev 29, AnAccount was being free'd after being added as an object to
+ accountlist in Database.pas - LoadAccountInfo. This was also removing the object from accountlist.
+-
+
+- Rev 33 -
+[2006/05/03] - RaX - Removed login processes from Socket.pas ...for now...=) Moved Socket.pas into common.
+-
+
+- Rev 32 -
+[2006/05/03] - RaX - Miscalculated version numbers in changelog. This fixes them.
+-
+
+- Rev 31 -
+[2006/05/03] - RaX - Moved all socket related code into socket class, renamed variables in all routines in socket.pas.
+ Added command "/commands" to display available console commands.
+-
+
+- Rev 30 -
+[2006/05/03] - RaX - Added some more of the socket interface to the socket class, there's a bit more to go though.
+ (SendBuffer was added, all Packet handling will be done by this class soon, and will make it
+ easier to swap out sockets if need be).
+-
+
+- Rev 29 -
+[2006/05/03] - RaX - Modified socket code to be accessed by a class, for flexibility. It's been tested and works.
+-
+
+- Rev 1-28 - Tsusai
+[2006/05/01] - Forgot to SVN add database.pas
+[2006/05/01] - RaX updated reload in commands.pas
+[2006/05/01] - Added RaX's changes: Now Win32 (not everyone has Delphi Ent for cross)
+ Database changes, added Command.pas.  Also Added "missing" CharaServerPacket unit
+[2006/04/13] - Added project group, added beginning of character server.
+[2006/04/07] - Added new version of Helios - Tsusai

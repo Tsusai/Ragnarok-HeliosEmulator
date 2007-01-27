@@ -1,0 +1,10 @@
+January 26th, 2007
+
+I felt that I should include the true roots of Helios.
+You may notice in the changelog, that there was around 30 revisions on another svn
+server prior to this svn server.  Since those revisions were not fully copied over,
+and just the latest revision, older revisions could've been lost.
+
+Every folder number is an individual revision on the last OpenSVN server.
+
+-Tsusai
