@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 138 -
+[2007/01/26] - Tsusai - Added revisions from former svn repository to the tags folder. In 
+ the structure of OpenSVN_Tsusai_Revisions/Rev#/(code). Perservation of older code.
+-
+
 - Rev 137 -
 [2007/01/26] - RaX - Bugfix - I forgot to use downto when dealing with the eventlist, caused
  it to skip events. Fixed.
