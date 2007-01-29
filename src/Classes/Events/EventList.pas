@@ -11,7 +11,8 @@ unit EventList;
 
 interface
 uses
-  Event;
+	SyncObjs,
+	Event;
 
 type
 	PEvent = ^TEvent;
@@ -28,6 +29,8 @@ type
 		NextSlot : PEvent; // Points to the next free slot in memory
 
     OwnsEvents : Boolean;//If we own the Events, we handle free'ing them.
+
+		CriticalSection : TCriticalSection;
 
 		Function GetValue(Index : Integer) : TEvent;
     Procedure SetValue(Index : Integer; Value : TEvent);
@@ -54,7 +57,7 @@ type
 implementation
 
 const
-	ALLOCATE_SIZE = 700; // How many Events to store in each incremental memory block
+	ALLOCATE_SIZE = 20; // How many Events to store in each incremental memory block
 
 //------------------------------------------------------------------------------
 //Create                                                            CONSTRUCTOR
@@ -67,11 +70,14 @@ const
 //------------------------------------------------------------------------------
 constructor TEventList.Create(OwnsEvents : Boolean);
 begin
-  inherited Create;
+	CriticalSection := TCriticalSection.Create;
+	CriticalSection.Enter;
+	inherited Create;
 	MsCount  := 0; // No Events in the list yet
   MaxCount := 0; //no mem yet!
 	MemStart := NIL;//no memory yet
-  self.OwnsEvents := OwnsEvents;
+	self.OwnsEvents := OwnsEvents;
+	CriticalSection.Leave;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -87,21 +93,24 @@ end;{Create}
 //------------------------------------------------------------------------------
 destructor TEventList.Destroy;
 var
-  Index : Integer;
+	Index : Integer;
 begin
-  //if we own the Events, free all of them in the list.
+	CriticalSection.Enter;
+	//if we own the Events, free all of them in the list.
   if OwnsEvents then
   begin
     for Index := 0 to MsCount - 1 do
     begin
-      Items[Index].Free;
-    end;
+			Items[Index].Free;
+		end;
   end;
 
 	// Free the allocated memory
 	FreeMem(MemStart);
 
 	// Call TObject destructor
+	CriticalSection.Leave;
+	CriticalSection.Free;
 	inherited;
 end;{Destroy}
 //------------------------------------------------------------------------------
@@ -122,6 +131,7 @@ var
 	OldPointer, NewPointer : PEvent;
 	Index : Integer;
 begin
+	CriticalSection.Enter;
 	// First allocate a new, bigger memory space
 	GetMem(NewMemoryStart, (MaxCount + Size) * SizeOf(TEvent));
 	if(Assigned(MemStart)) then
@@ -145,6 +155,7 @@ begin
 	NextSlot := MemStart;
 	Inc(NextSlot, MaxCount);
 	Inc(MaxCount, Size);
+	CriticalSection.Leave;
 end;{Expand}
 //------------------------------------------------------------------------------
 
@@ -164,6 +175,7 @@ var
 	OldPointer, NewPointer : PEvent;
 	Index : Integer;
 begin
+	CriticalSection.Enter;
   if MaxCount > Size then
   begin
     //first allocate a new, smaller memory space
@@ -189,7 +201,8 @@ begin
 	  NextSlot := MemStart;
 	  Inc(NextSlot, MaxCount);
 	  Inc(MaxCount, Size);
-  end;
+	end;
+	CriticalSection.Leave;
 end;{Shrink}
 //------------------------------------------------------------------------------
 
@@ -205,6 +218,7 @@ end;{Shrink}
 //------------------------------------------------------------------------------
 procedure TEventList.Add(const AEvent : TEvent);
 begin
+	CriticalSection.Enter;
 	// If we do not have enough space to add the Event, then get more space!
 	if MsCount = MaxCount then
 	begin
@@ -217,6 +231,7 @@ begin
 	// And update things to suit
 	Inc(MsCount);
 	Inc(NextSlot);
+	CriticalSection.Leave;
 end;{Add}
 //------------------------------------------------------------------------------
 
@@ -235,6 +250,7 @@ var
   CurrentItem : PEvent;
   NextItem    : PEvent;
 begin
+	CriticalSection.Enter;
 	//if we own the Event, free it.
   if OwnsEvents then
   begin
@@ -254,7 +270,8 @@ begin
     CurrentItem^ := NextItem^;
   end;
   Dec(MsCount,  1);
-  Dec(NextSlot, 1);
+	Dec(NextSlot, 1);
+	CriticalSection.Leave;
 end;{Delete}
 //------------------------------------------------------------------------------
 
@@ -272,7 +289,7 @@ procedure TEventList.Clear;
 var
   Index : Integer;
 begin
-
+	CriticalSection.Enter;
   //if we own the Events, the free them.
   if OwnsEvents then
   begin
@@ -287,10 +304,10 @@ begin
   begin
     FreeMem(MemStart);
     MsCount  := 0;  // No Events in the list yet
-    MaxCount := 0;  //no max size
+		MaxCount := 0;  //no max size
     MemStart := NIL;//no memory yet
-  end
-
+	end;
+	CriticalSection.Leave;
 end;{Clear}
 //------------------------------------------------------------------------------
 
@@ -330,10 +347,12 @@ procedure TEventList.SetValue(Index : Integer; Value : TEvent);
 var
 	EventPtr : PEvent;
 begin
+	CriticalSection.Enter;
 	// Simply set the value at the given TEvent index position
 	EventPtr := MemStart;
 	Inc(EventPtr, Index); // Point to the index'th TEvent in storage
-  EventPtr^ := Value;
+	EventPtr^ := Value;
+	CriticalSection.Leave;
 end;{SetValue}
 //------------------------------------------------------------------------------
 end.

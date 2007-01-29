@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 139 -
+[2007/01/28] - RaX - Added TCriticalSection changes to the eventlist and characterthread.
+-
+
 - Rev 138 -
 [2007/01/26] - Tsusai - Added revisions from former svn repository to the tags folder. In 
  the structure of OpenSVN_Tsusai_Revisions/Rev#/(code). Perservation of older code.

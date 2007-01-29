@@ -2,10 +2,14 @@ unit CharacterEventThread;
 
 interface
 uses
+	SyncObjs,
 	IdThread,
 	CharaList;
 type
 	TCharacterEventThread = class(TIdThread)
+	private
+		CriticalSection : TCriticalSection;
+
 	public
 		CharacterList : TCharacterList;
 		Constructor Create(ACharacterList : TCharacterList);reintroduce;
@@ -23,11 +27,12 @@ Constructor TCharacterEventThread.Create(ACharacterList : TCharacterList);
 begin
 	inherited Create(TRUE, TRUE, 'CharacterEventThread');
 	CharacterList := ACharacterList;
+	CriticalSection := TCriticalSection.Create;
 end;
 
 Destructor TCharacterEventThread.Destroy;
 begin
-
+	CriticalSection.Free;
 	inherited;
 end;
 
@@ -39,6 +44,7 @@ var
 	CompareTimestamp: Integer;
 begin
 	inherited;
+	CriticalSection.Enter;
 	CurrentTime := GetTick;
 	for CharacterIndex := 0 to CharacterList.Count - 1 do
 	begin
@@ -53,6 +59,7 @@ begin
 			end;
     end;
 	end;
+	CriticalSection.Leave;
 	Sleep(1);
 end;
 end.
