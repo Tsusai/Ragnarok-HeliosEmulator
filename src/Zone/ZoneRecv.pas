@@ -70,6 +70,16 @@ uses
 	);
 
 //------------------------------------------------------------------------------
+//CharacterWalkRequest                                                PROCEDURE
+//------------------------------------------------------------------------------
+	procedure CharacterWalkRequest(
+			AChara : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
+
+//------------------------------------------------------------------------------
 //GetNameAndID                                                        PROCEDURE
 //------------------------------------------------------------------------------
 	Procedure GetNameAndID(
@@ -82,12 +92,14 @@ uses
 
 implementation
 uses
+	SysUtils,
+	Types,
 	Account,
 	BufferIO,
 	Console,
 	GameConstants,
 	Globals,
-  MapTypes,
+	MapTypes,
 	ZoneSend,
 	ZoneServer;
 
@@ -188,13 +200,13 @@ uses
 				MainProc.ZoneServer.CharacterList.Add(ACharacter);
 
 				//Load map cells if they are not already loaded
-        MapIndex := MainProc.ZoneServer.MapList.IndexOf(ACharacter.Map);
+				MapIndex := MainProc.ZoneServer.MapList.IndexOf(ACharacter.Map);
         if MapIndex > -1 then
         begin
 					if MainProc.ZoneServer.MapList[MapIndex].State = UNLOADED then
-          begin
-            MainProc.ZoneServer.MapList[MapIndex].Load;
-          end;
+					begin
+						MainProc.ZoneServer.MapList[MapIndex].Load;
+					end;
 				end;
 
 				SendPadding(ACharacter.ClientInfo);
@@ -208,7 +220,7 @@ uses
 
 			end else
 			begin
-      	ZoneSendMapConnectDeny(AClient);
+				ZoneSendMapConnectDeny(AClient);
 			end;
 		end;
 	end;//MapConnect
@@ -235,6 +247,12 @@ uses
 	var
 		OutBuffer : TBuffer;
 	Begin
+
+		AChara.OnTouchIDs.Clear;
+		//Update character options
+		//Clear all vending/trading/etc id storages.
+		//Clear some possible events from the event list.
+
 
 		if (AChara.HP = 0) then
 		begin
@@ -272,6 +290,9 @@ uses
 		WriteBufferWord(2, 0, OutBuffer);
 		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
 
+		//Weather updates
+		//Various other tweaks
+
 	end;//ShowMap
 //------------------------------------------------------------------------------
 
@@ -297,6 +318,27 @@ uses
 		ZoneSendTickToClient(AChara.ClientInfo);
 	end;//RecvTick
 //------------------------------------------------------------------------------
+
+
+	procedure CharacterWalkRequest(
+			AChara : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
+	var
+		DestPoint : TPoint;
+	begin
+		DestPoint := BufferReadOnePoint(ReadPts[0], InBuffer);
+		
+		if true {Various checks (not sitting)} then
+		begin
+			MainProc.Console(Format('X%d Y%d recieved',[DestPoint.X,DestPoint.Y]));
+			{if AChara.MapInfo.GetPath(AChara.Point,DestPoint,) then
+			begin
+			end;}
+		end;
+	end;
 
 
 //------------------------------------------------------------------------------

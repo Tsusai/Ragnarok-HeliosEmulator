@@ -41,6 +41,7 @@ uses
 	function BufferReadCardinal(Index:word; var Buffer : TBuffer) : cardinal;
 	function BufferReadString(Index:word; Count:word; var Buffer : TBuffer) : string;
 	function BufferReadMD5(Index : word; var Buffer : TBuffer) : string;
+	function BufferReadOnePoint(Index:word; var Buffer : TBuffer) : TPoint;
 
 	procedure SendPadding(AClient : TIdContext);
 
@@ -192,6 +193,22 @@ READING DATA FROM THE BUFFER METHODS
     SetLength(Result, Count);
     Move(Buffer[Index], Result[1], Count);
     Result := Trim(Result);
+	end;
+
+	//Socket Method BufferReadCardinal - Reads one point from the buffer.
+	function BufferReadOnePoint(Index:word; var Buffer : TBuffer) : TPoint;
+	var
+		l   :cardinal;
+		bb  :array[0..3] of byte;
+	begin
+		Move(Buffer[index], bb[0], 3);
+		bb[3] := bb[0];
+		bb[0] := bb[2];
+		bb[2] := bb[3];
+		Move(bb[0], l, 3);
+		l := l shr 4;
+		Result.Y :=  (l and $003ff);
+		Result.X := ((l and $ffc00) shr 10);
 	end;
 
 (*------------------------------------------------------------------------------

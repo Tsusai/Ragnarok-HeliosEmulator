@@ -13,6 +13,24 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 140 -
+[2007/01/28] - Tsusai - Notes/Overview : Added beginnings of walking, and bugfixes/tweaks
+[2007/01/28] - Tsusai - Being - TBeing : Added MapInfo (TMap Link), IsWalking, and 
+ DestinationPoint
+[2007/01/28] - Tsusai - Character - TCharacter : Added a CharaState enumerated field, and
+ a OnTouchIDs list (useless now , but I felt like adding it), and create/destroy methods.
+[2007/01/28] - Tsusai - MySQLGameDatabase - GetChara - Removed unused variable.
+[2007/01/28] - Tsusai - MySQLStaticDatabase - GetBaseMaxWeight - Added check for one row.
+[2007/01/28] - Tsusai - CharacterEventThread - Fixed the way the time to fire the event 
+ is figured out.  Ticks are not TDateTime safe/compliant.  Also DateUtils or wtf its called
+ is not available on Delphi Personal.
+[2007/01/28] - Tsusai - BufferIO : Added BufferReadOnePoint.
+[2007/01/28] - Tsusai - WinLinux - KillProcess : Fixed linux side of the code, forgot a ; 
+ for the message.
+[2007/01/28] - Tsusai - PacketDB - Load_PacketDB : Activated the walk request packet.
+[2007/01/28] - Tsusai - ZoneRecv : Added CharacterWalkRequest
+-
+
 - Rev 139 -
 [2007/01/28] - RaX - Added TCriticalSection changes to the eventlist and characterthread.
 -

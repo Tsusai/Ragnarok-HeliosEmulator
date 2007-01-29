@@ -19,8 +19,13 @@ uses
 	Being,
 	GameConstants,
 	//Third Party
+	List32,
 	IdContext;
 
+type
+	TCharaState = (charaDead, charaPlayDead,
+								charaSitting, charaStanding,
+								charaWalking);
 //------------------------------------------------------------------------------
 //TCharacter                                                          PROCEDURE
 //------------------------------------------------------------------------------
@@ -54,7 +59,7 @@ uses
 		fLeftHand         : Word;
     fArmor            : Word;
     fGarment          : Word;
-    fShoes            : Word;
+		fShoes            : Word;
     fAccessory1       : Word;
     fAccessory2       : Word;
 		fHeadTop          : Word;
@@ -75,9 +80,11 @@ uses
 		fTimeToSave       : TDateTime;
 
 		fJobName          : string;
+		fCharaState       : TCharaState;
 
 	protected
 		procedure SetSaveTime(Value : boolean);
+		procedure SetCharaState(Value : TCharaState);
 
 		procedure SetCharaNum(Value : byte);
 		procedure SetName(Value : string);
@@ -104,7 +111,7 @@ uses
 		Procedure SetClothesColor(Value : word);
 		Procedure SetRightHand(Value : word);
 		Procedure SetLeftHand(Value : word);
-    Procedure SetArmor(Value : Word);
+		Procedure SetArmor(Value : Word);
     Procedure SetGarment(Value : Word);
     Procedure SetShoes(Value : Word);
     Procedure SetAccessory1(Value : Word);
@@ -164,7 +171,10 @@ uses
 		ClientVersion : Integer;
 		ClientInfo : TIdContext;
 
+		OnTouchIDs : TIntList32;
+
 		property DataChanged : boolean  read fDataChanged write SetSaveTime;
+		property CharaState  : TCharaState read fCharaState write SetCharaState;
 		//For timed save procedure to activate.
 		{$WARNINGS OFF}
 		property Name      : string     read fName write SetName;
@@ -226,6 +236,8 @@ uses
 			Value : Cardinal
 		);
 		procedure SendCharacterStats(UpdateView : boolean = false);
+		constructor Create;
+		destructor Destroy; override;
 
 	end;{TCharacter}
 //------------------------------------------------------------------------------
@@ -259,6 +271,13 @@ begin
 	end;
 end;{SetSaveTime}
 //------------------------------------------------------------------------------
+
+procedure TCharacter.SetCharaState(Value : TCharaState);
+begin
+	//Need to add easy to get to codes (STANCE_MOVE from prometheus)
+	//usually used for packets
+	fCharaState := value;
+end;
 
 
 //------------------------------------------------------------------------------
@@ -1387,4 +1406,17 @@ begin
                 ADatabase.StaticData.GetBaseMaxWeight(self);
 end;{CalcMaxWeight}
 //------------------------------------------------------------------------------
+
+constructor TCharacter.Create;
+begin
+	inherited;
+	OnTouchIDs := TIntList32.Create;
+end;
+
+destructor TCharacter.Destroy;
+begin
+	OnTouchIDs.Free;
+	inherited;
+end;
+
 end.

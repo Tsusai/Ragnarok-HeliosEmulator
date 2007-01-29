@@ -14,6 +14,7 @@ interface
 uses
 	Types,
 	GameConstants,
+	Map,
 	EventList;
 
 //------------------------------------------------------------------------------
@@ -37,6 +38,10 @@ type TBeing = class
 		Point     : TPoint;
 		Speed : word;
 
+		IsWalking : boolean;
+		DestinationPoint : TPoint;
+
+
 		Direction : byte;
 
 		AttackRange : word;
@@ -56,6 +61,7 @@ type TBeing = class
 		Critical : word;
 		ASpeed : word;
 
+		MapInfo : TMap;
 		EventList : TEventList;
 
 		Constructor Create();

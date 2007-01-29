@@ -266,7 +266,10 @@ begin
 		Format('SELECT %s FROM weight',
 			[ACharacter.JobName])
 		,TRUE,Success);
-	Result := StrToIntDef(QueryResult.FieldValue(0), 0);
+	if QueryResult.RowsCount = 1 then
+	begin
+		Result := StrToIntDef(QueryResult.FieldValue(0), 0);
+	end;
 	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------

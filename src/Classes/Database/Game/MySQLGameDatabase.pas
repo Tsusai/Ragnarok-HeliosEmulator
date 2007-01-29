@@ -251,8 +251,6 @@ function TMySQLGameDatabase.GetChara(
 	//JanSQLClearTable is never used.
 	JanSQLClearTable : boolean = false
 ) : TCharacter;
-var
-  CharacterIndex : Integer;
 begin
 	Result := LoadChara(CharaID);
 end;

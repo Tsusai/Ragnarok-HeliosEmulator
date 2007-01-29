@@ -169,9 +169,9 @@ Begin
 				if Command = 'loadendack' then begin
 					ExecCommand := ShowMap;
 				end else if Command = 'ticksend' then begin
-					ExecCommand := RecvTick;{
+					ExecCommand := RecvTick;
 				end else if Command = 'walktoxy' then begin
-					ExecCommand := CharacterWalk;
+					ExecCommand := CharacterWalkRequest;{
 				end else if Command = 'actionrequest' then begin
 					ExecCommand := ActionRequest;
 				end else if Command = 'globalmessage' then begin
