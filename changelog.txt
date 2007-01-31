@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 141 -
+[2007/01/31] - RaX - Added comment headers to event related units. Reorganized the
+ CharacterEventThread to get the time before looping, save some api calls.
+-
+
 - Rev 140 -
 [2007/01/28] - Tsusai - Notes/Overview : Added beginnings of walking, and bugfixes/tweaks
 [2007/01/28] - Tsusai - Being - TBeing : Added MapInfo (TMap Link), IsWalking, and 
