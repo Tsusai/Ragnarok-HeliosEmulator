@@ -7,7 +7,7 @@ uses
 type
 	TZoneServerInfo = class(TServerInfo)
 	public
-		ZoneID : cardinal;
+		ZoneID : LongWord;
 	end;
 
 implementation

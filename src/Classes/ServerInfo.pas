@@ -5,25 +5,25 @@ interface
 type
 	TServerInfo = class
 	protected
-		fWANIPCard  : Cardinal;
-		fLANIPCard  : Cardinal;
+		fWANIPCard  : LongWord;
+		fLANIPCard  : LongWord;
 
 		fWAN        : String;
 		fLAN        : String;
 
 		fLANPartial : String;
 
-		procedure SetWANCardinal(Value : String);
-		procedure SetLANCardinal(Value : String);
+		procedure SetWANLongWord(Value : String);
+		procedure SetLANLongWord(Value : String);
 
 	public
 		Port    : Word;
 
 	published
-		property WAN       : String   read fWAN write SetWANCardinal;
-		property LAN       : String   read fLAN write SetLANCardinal;
+		property WAN       : String   read fWAN write SetWANLongWord;
+		property LAN       : String   read fLAN write SetLANLongWord;
 
-		function Address(ClientIP : string) : Cardinal;
+		function Address(ClientIP : string) : LongWord;
 	end;
 
 implementation
@@ -31,23 +31,23 @@ uses
 	StrUtils,
 	WinLinux;
 
-procedure TServerInfo.SetWANCardinal(Value : string);
+procedure TServerInfo.SetWANLongWord(Value : string);
 begin
 	fWAN       := Value;
-	fWANIPCard := GetCardinalFromIPString(GetIPStringFromHostname(Value).Full);
+	fWANIPCard := GetLongWordFromIPString(GetIPStringFromHostname(Value).Full);
 end;
 
-procedure TServerInfo.SetLANCardinal(Value : string);
+procedure TServerInfo.SetLANLongWord(Value : string);
 var
 	ReturnedIPs : TIPSet;
 begin
 	fLAN        := Value;
 	ReturnedIPs := GetIPStringFromHostname(Value);
 	fLANPartial := ReturnedIPs.Partial;
-	fLANIPCard  := GetCardinalFromIPString(ReturnedIPs.Full);
+	fLANIPCard  := GetLongWordFromIPString(ReturnedIPs.Full);
 end;
 
-function TServerInfo.Address(ClientIP : string) : Cardinal;
+function TServerInfo.Address(ClientIP : string) : LongWord;
 begin
 	if AnsiStartsText(fLANPartial, ClientIP) then
 	begin

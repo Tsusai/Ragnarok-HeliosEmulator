@@ -36,9 +36,9 @@ type
 		fJID              : Word;
 		fBaseLV           : Byte;
 		fJobLV            : Byte;
-		fBaseEXP          : Cardinal;
-		fJobEXP           : Cardinal;
-		fZeny             : Cardinal;
+		fBaseEXP          : LongWord;
+		fJobEXP           : LongWord;
+		fZeny             : LongWord;
 		fParamBase        : Array[STR..LUK] of Byte;
 		fMaxHP            : Word;
 		fHP               : Word;
@@ -49,9 +49,9 @@ type
 		fOption           : Word;
 		fKarma            : Word;
 		fManner           : Word;
-		fPartyID          : Cardinal;
-		fGuildID          : Cardinal;
-		fPetID            : Cardinal;
+		fPartyID          : LongWord;
+		fGuildID          : LongWord;
+		fPetID            : LongWord;
 		fHair             : Word;
 		fHairColor        : Word;
 		fClothesColor     : Word;
@@ -69,12 +69,12 @@ type
 		fMapPt            : TPoint;
 		fSaveMap          : String;
 		fSaveMapPt        : TPoint;
-		fPartnerID        : Cardinal;
-		fParentID1        : Cardinal;
-		fParentID2        : Cardinal;
-		fBabyID           : Cardinal;
+		fPartnerID        : LongWord;
+		fParentID1        : LongWord;
+		fParentID2        : LongWord;
+		fBabyID           : LongWord;
 		fOnline           : Byte;
-		fHomunID          : Cardinal;
+		fHomunID          : LongWord;
 
 		fDataChanged      : Boolean; //For timed save procedure to activate.
 		fTimeToSave       : TDateTime;
@@ -91,9 +91,9 @@ type
 		procedure SetClass(Value : word);
 		procedure SetBaseLV(Value : byte);
 		procedure SetJobLV(Value : byte);
-		procedure SetBaseEXP(Value : Cardinal);
-		procedure SetJobEXP(Value : Cardinal);
-		procedure SetZeny(Value : Cardinal);
+		procedure SetBaseEXP(Value : LongWord);
+		procedure SetJobEXP(Value : LongWord);
+		procedure SetZeny(Value : LongWord);
 		function  GetBaseStats(Index : Byte) : byte;
 		procedure SetBaseStats(Index: byte; Value: byte);
 		procedure SetMaxHP(Value : word);
@@ -103,9 +103,9 @@ type
 		Procedure SetOption(Value : word);
 		Procedure SetKarma(Value : word);
 		Procedure SetManner(Value : word);
-		Procedure SetPartyID(Value : cardinal);
-		Procedure SetGuildID(Value : cardinal);
-		Procedure SetPetID(Value : cardinal);
+		Procedure SetPartyID(Value : LongWord);
+		Procedure SetGuildID(Value : LongWord);
+		Procedure SetPetID(Value : LongWord);
 		Procedure SetHair(Value : word);
 		Procedure SetHairColor(Value : word);
 		Procedure SetClothesColor(Value : word);
@@ -113,7 +113,7 @@ type
 		Procedure SetLeftHand(Value : word);
 		Procedure SetArmor(Value : Word);
     Procedure SetGarment(Value : Word);
-    Procedure SetShoes(Value : Word);
+		Procedure SetShoes(Value : Word);
     Procedure SetAccessory1(Value : Word);
     Procedure SetAccessory2(Value : Word);
 		Procedure SetHeadTop(Value : word);
@@ -125,25 +125,23 @@ type
 		procedure SetMapPt(Value : TPoint);
 		procedure SetSMap(Value : string);
 		procedure SetSMapPt(Value : TPoint);
-		procedure SetPartnerID(Value : Cardinal);
-		procedure SetParentID1(Value : Cardinal);
-		procedure SetParentID2(Value : Cardinal);
-		procedure SetBabyID(Value : Cardinal);
+		procedure SetPartnerID(Value : LongWord);
+		procedure SetParentID1(Value : LongWord);
+		procedure SetParentID2(Value : LongWord);
+		procedure SetBabyID(Value : LongWord);
 		procedure SetOnline(Value : Byte);
-		procedure SetHomunID(Value : Cardinal);
+		procedure SetHomunID(Value : LongWord);
 
 	public
-
-		CID : Cardinal;
-		ID  : Cardinal; //Account ID
+		CID : LongWord;
 		Speed : word; //Not in MySQL...odd...
 		Account : TAccount;
 		Direction : byte;
 
-		BaseNextEXP  : Cardinal;
-		JobNextEXP   : Cardinal;
-		Weight       : Cardinal;
-		MaxWeight    : Cardinal;
+		BaseNextEXP  : LongWord;
+		JobNextEXP   : LongWord;
+		Weight       : LongWord;
+		MaxWeight    : LongWord;
 
 		ParamUP : array [STR..LUK] of byte;
 		ParamBonus : array [STR..LUK] of byte;
@@ -190,17 +188,17 @@ type
 		property Map       : string     read fMap write SetMap;
 		property Point     : TPoint     read fMapPt write SetMapPt;
 		{$WARNINGS ON}
-		property BaseEXP   : Cardinal   read fBaseEXP write SetBaseEXP;
-		property JobEXP    : Cardinal   read fJobEXP write SetJobEXP;
-		property Zeny      : Cardinal   read fZeny write SetZeny;
+		property BaseEXP   : LongWord    read fBaseEXP write SetBaseEXP;
+		property JobEXP    : LongWord    read fJobEXP write SetJobEXP;
+		property Zeny      : LongWord    read fZeny write SetZeny;
 		property CharaNum  : Byte       read fCharacterNumber write SetCharaNum;
 		property StatusPts : Word       read fStatusPts write SetStatusPts;
 		property SkillPts  : Word       read fSkillPts write SetSkillPts;
 		property Karma     : Word       read fKarma write SetKarma;
 		property Manner    : Word       read fManner write SetManner;
-		property PartyID   : Cardinal   read fPartyID write SetPartyID;
-		property GuildID   : Cardinal   read fGuildID write SetGuildID;
-		property PetID     : Cardinal   read fPetID write SetPetID;
+		property PartyID   : LongWord    read fPartyID write SetPartyID;
+		property GuildID   : LongWord    read fGuildID write SetGuildID;
+		property PetID     : LongWord    read fPetID write SetPetID;
 		property Hair      : Word       read fHair write SetHair;
 		property HairColor : Word       read fHairColor write SetHairColor;
 		property ClothesColor: Word     read fClothesColor write SetClothesColor;
@@ -216,12 +214,12 @@ type
 		property HeadBottom: Word       read fHeadBottom write SetHeadBottom;
 		property SaveMap   : string     read fSaveMap write SetSMap;
 		property SavePoint : TPoint     read fSaveMapPt write SetSMapPt;
-		property PartnerID : Cardinal   read fPartnerID write SetPartnerID;
-		property ParentID1 : Cardinal   read fParentID1 write SetParentID1;
-		property ParentID2 : Cardinal   read fParentID2 write SetParentID2;
-		property BabyID    : Cardinal   read fBabyID write SetBabyID;
+		property PartnerID : LongWord    read fPartnerID write SetPartnerID;
+		property ParentID1 : LongWord    read fParentID1 write SetParentID1;
+		property ParentID2 : LongWord    read fParentID2 write SetParentID2;
+		property BabyID    : LongWord    read fBabyID write SetBabyID;
 		property Online    : Byte       read fOnline write SetOnline;
-		property HomunID   : Cardinal   read fHomunID write SetHomunID;
+		property HomunID   : LongWord    read fHomunID write SetHomunID;
 
 		property JobName   : string     read fJobName;
 
@@ -233,7 +231,7 @@ type
 		procedure SendSubStat(
 			Mode : word;
 			DataType : word;
-			Value : Cardinal
+			Value : LongWord
 		);
 		procedure SendCharacterStats(UpdateView : boolean = false);
 		constructor Create;
@@ -470,7 +468,7 @@ end;{SetJobLV}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetBaseEXP(Value : Cardinal);
+procedure TCharacter.SetBaseEXP(Value : LongWord);
 begin
 	DataChanged := TRUE;
 	fBaseEXP    := Value;
@@ -489,7 +487,7 @@ end;{SetBaseEXP}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetJobEXP(Value : Cardinal);
+procedure TCharacter.SetJobEXP(Value : LongWord);
 begin
 	DataChanged := TRUE;
 	fJobEXP     := Value;
@@ -508,7 +506,7 @@ end;{SetJobEXP}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetZeny(Value : Cardinal);
+procedure TCharacter.SetZeny(Value : LongWord);
 begin
 	DataChanged := TRUE;
 	fZeny       := Value;
@@ -731,7 +729,7 @@ end;{SetManner}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetPartyID(Value : cardinal);
+procedure TCharacter.SetPartyID(Value : LongWord);
 begin
 	DataChanged := TRUE;
 	fPartyID    := Value;
@@ -750,7 +748,7 @@ end;{SetPartyID}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetGuildID(Value : cardinal);
+procedure TCharacter.SetGuildID(Value : LongWord);
 begin
 	DataChanged := TRUE;
 	fGuildID    := Value;
@@ -769,7 +767,7 @@ end;{SetGuildID}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetPetID(Value : cardinal);
+procedure TCharacter.SetPetID(Value : LongWord);
 begin
 	DataChanged := TRUE;
 	fPetID      := Value;
@@ -1111,7 +1109,7 @@ end;{SetSMapPt}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetPartnerID(Value : Cardinal);
+procedure TCharacter.SetPartnerID(Value : LongWord);
 begin
 	DataChanged := TRUE;
 	fPartnerID  := Value;
@@ -1130,7 +1128,7 @@ end;{SetPartnerID}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetParentID1(Value : Cardinal);
+procedure TCharacter.SetParentID1(Value : LongWord);
 begin
 	DataChanged := TRUE;
 	fParentID1  := Value;
@@ -1149,7 +1147,7 @@ end;{SetParentID}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetParentID2(Value : Cardinal);
+procedure TCharacter.SetParentID2(Value : LongWord);
 begin
 	DataChanged := TRUE;
 	fParentID2  := Value;
@@ -1168,7 +1166,7 @@ end;{SetParentID2}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetBabyID(Value : Cardinal);
+procedure TCharacter.SetBabyID(Value : LongWord);
 begin
 	DataChanged := TRUE;
 	fBabyID     := Value;
@@ -1206,7 +1204,7 @@ end;{SetOnline}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetHomunID(Value : Cardinal);
+procedure TCharacter.SetHomunID(Value : LongWord);
 begin
 	DataChanged := TRUE;
 	fHomunID    := Value;
@@ -1239,7 +1237,7 @@ end;{CalcMaxHP}
 procedure TCharacter.SendSubStat(
 	Mode : word;
 	DataType : word;
-	Value : Cardinal
+	Value : LongWord
 );
 Var
 	WeightPercent  : Integer;
@@ -1247,7 +1245,7 @@ Var
 Begin
 	WriteBufferWord(0, $00b0 + Mode, OutBuffer);
 	WriteBufferWord(2, DataType, OutBuffer);
-	WriteBufferCardinal(4, Value, OutBuffer);
+	WriteBufferLongWord(4, Value, OutBuffer);
 
 	if Online <> 0 then
 	begin
@@ -1258,7 +1256,7 @@ Begin
 	{if (tc.PartyName <> '') and (Mode = 0) and ((DType = 5) or (DType = 6)) then
 	begin
 		WriteBufferWord( 0, $0106);
-		WriteBufferCardinal( 2, tc.ID);
+		WriteBufferLongWord( 2, tc.ID);
 		WriteBufferWord( 6, tc.HP);
 		WriteBufferWord( 8, tc.MAXHP);
 		SendPCmd(tc, OutBuffer, 10, True, True);
@@ -1331,9 +1329,9 @@ Begin
 	for idx := 0 to 5 do
 	begin
 		WriteBufferWord( 0, $0141, OutBuffer);
-		WriteBufferCardinal( 2, 13+idx, OutBuffer);
-		WriteBufferCardinal( 6, ParamBase[idx+1], OutBuffer);
-		WriteBufferCardinal(10, ParamBonus[idx+1], OutBuffer);
+		WriteBufferLongWord( 2, 13+idx, OutBuffer);
+		WriteBufferLongWord( 6, ParamBase[idx+1], OutBuffer);
+		WriteBufferLongWord(10, ParamBonus[idx+1], OutBuffer);
 		SendBuffer(ClientInfo, OutBuffer, 14);
 	end;
 	// Send attack range.
@@ -1402,7 +1400,7 @@ end;{CalcSpeed}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxWeight;
 begin
-  MaxWeight  := Cardinal((ParamBase[STR] - ParamBonus[STR]) * 300) +
+  MaxWeight  := LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
                 ADatabase.StaticData.GetBaseMaxWeight(self);
 end;{CalcMaxWeight}
 //------------------------------------------------------------------------------

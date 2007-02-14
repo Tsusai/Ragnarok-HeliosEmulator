@@ -50,24 +50,24 @@ type
 
 		function CreateChara(
 			var ACharacter : TCharacter;
-			AID : Cardinal;
+			AID : LongWord;
 			NName : string;
 			CharaNum : Integer
 		) : boolean;override;
 
-		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
+		function GetAccountCharas(AccountID : LongWord) : TCharacterList;override;
 
 		function LoadChara(
-			CharaID : Cardinal
+			CharaID : LongWord
 		) : TCharacter;override;
 
 		function GetChara(
-			CharaID : Cardinal;
+			CharaID : LongWord;
 			JanSQLClearTable : boolean = false
 		) : TCharacter;override;
 
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
-		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;override;
+		function CharaExists(AccountID : LongWord; Slot : Word) : Boolean;overload;override;
 		function CharaExists(Name : String) : Boolean;overload;override;
 
 		procedure SaveChara(AChara : TCharacter);override;
@@ -276,7 +276,7 @@ end;//SetAccount
 //
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.GetChara(
-	CharaID : Cardinal;
+	CharaID : LongWord;
 	JanSQLClearTable : boolean = false
 ) : TCharacter;
 begin
@@ -299,7 +299,7 @@ end;
 //		December 18th, 2006 - Tsusai - QueryResult now freed.
 //
 //------------------------------------------------------------------------------
-function TJanSQLGameDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
+function TJanSQLGameDatabase.GetAccountCharas(AccountID : LongWord) : TCharacterList;
 var
 	QueryResult     : TJanRecordSet;
 	Index           : Integer;
@@ -338,7 +338,7 @@ end;
 //		December 18th, 2006 - Tsusai - Result simplified, freed queryresult.
 //
 //------------------------------------------------------------------------------
-function TJanSQLGameDatabase.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
+function TJanSQLGameDatabase.CharaExists(AccountID : LongWord; Slot : Word) : Boolean;
 var
 	ResultIdentifier : Integer;
 begin
@@ -536,7 +536,7 @@ end;//SaveChara
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.CreateChara(
 	var ACharacter : TCharacter;
-	AID : Cardinal;
+	AID : LongWord;
 	NName : string;
 	CharaNum : Integer
 ) : boolean;
@@ -595,7 +595,7 @@ end;//CreateChara
 //
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.LoadChara(
-	CharaID : Cardinal
+	CharaID : LongWord
 ) : TCharacter;
 var
 	APoint      : TPoint;

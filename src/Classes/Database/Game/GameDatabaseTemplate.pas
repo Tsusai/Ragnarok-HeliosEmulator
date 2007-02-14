@@ -38,19 +38,19 @@ type
 
 		function CreateChara(
 			var ACharacter : TCharacter;
-			AID : Cardinal;
+			AID : LongWord;
 			NName : string;
 			CharaNum : Integer
 		) : boolean;virtual;
 
-		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;virtual;
-		function LoadChara(CharaID : Cardinal) : TCharacter;virtual;
+		function GetAccountCharas(AccountID : LongWord) : TCharacterList;virtual;
+		function LoadChara(CharaID : LongWord) : TCharacter;virtual;
 		function GetChara(
-			CharaID : Cardinal;
+			CharaID : LongWord;
 			JanSQLClearTable : boolean = false
 		) : TCharacter;virtual;
 		function DeleteChara(var ACharacter : TCharacter) : boolean;virtual;
-		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;virtual;
+		function CharaExists(AccountID : LongWord; Slot : Word) : Boolean;overload;virtual;
 		function CharaExists(Name : String) : Boolean;overload;virtual;
 
 		procedure SaveChara(AChara : TCharacter);virtual;
@@ -93,20 +93,20 @@ procedure TGameDatabaseTemplate.Disconnect();
 begin
 end;
 
-function TGameDatabaseTemplate.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
+function TGameDatabaseTemplate.GetAccountCharas(AccountID : LongWord) : TCharacterList;
 begin
 	Result := NIL;
 end;
 
 function TGameDatabaseTemplate.GetChara(
-	CharaID : Cardinal;
+	CharaID : LongWord;
 	JanSQLClearTable : boolean = false
 ) : TCharacter;
 begin
 	Result := NIL;
 end;
 
-function TGameDatabaseTemplate.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
+function TGameDatabaseTemplate.CharaExists(AccountID : LongWord; Slot : Word) : Boolean;
 begin
 	Result := FALSE;
 end;
@@ -122,7 +122,7 @@ end;
 
 function TGameDatabaseTemplate.CreateChara(
 	var ACharacter : TCharacter;
-	AID : Cardinal;
+	AID : LongWord;
 	NName : string;
 	CharaNum : Integer
 ) : boolean;
@@ -130,7 +130,7 @@ begin
 	Result := false;
 end;
 
-function TGameDatabaseTemplate.LoadChara(CharaID : Cardinal) : TCharacter;
+function TGameDatabaseTemplate.LoadChara(CharaID : LongWord) : TCharacter;
 begin
 	Result := nil;
 end;

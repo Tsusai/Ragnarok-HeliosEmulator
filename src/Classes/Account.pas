@@ -22,7 +22,7 @@ interface
 		function  GetBanned : boolean;
 		function  GetConnectUntilTime : boolean;
 	public
-		ID : cardinal;
+		ID : LongWord;
 		//Unicode
 		Username        : string[24];
 		Password        : string[24];
@@ -31,8 +31,8 @@ interface
 		Bantime         : TDateTime;
 		UnBanDateTime   : string;
 		LastIP          : string[15];
-		LoginKey        : array [1..2] of cardinal;
-		CharaID         : array [0..8] of Cardinal;
+		LoginKey        : array [1..2] of LongWord;
+		CharaID         : array [0..8] of LongWord;
 		LoginCount      : Integer;
 		LastLoginTime   : TDateTime;
 		Level           : Byte;

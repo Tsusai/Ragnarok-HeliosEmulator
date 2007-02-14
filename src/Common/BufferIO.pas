@@ -21,7 +21,7 @@ uses
 
 	procedure WriteBufferByte(Index:word; ByteIn:byte; var Buffer : TBuffer);
 	procedure WriteBufferWord(Index:word; WordIn:word; var Buffer : TBuffer);
-	procedure WriteBufferCardinal(Index:word; CardinalIn:cardinal; var Buffer : TBuffer);
+	procedure WriteBufferLongWord(Index:word; LongWordIn:LongWord; var Buffer : TBuffer);
 	procedure WriteBufferString(Index:word; StringIn:string; Count:word; var Buffer : TBuffer);
 	procedure WriteBufferPointAndDirection(
 		index:word;
@@ -38,17 +38,17 @@ uses
 
 	function BufferReadByte(Index:word; var Buffer : TBuffer) : byte;
 	function BufferReadWord(Index:word; var Buffer : TBuffer) : word;
-	function BufferReadCardinal(Index:word; var Buffer : TBuffer) : cardinal;
+	function BufferReadLongWord(Index:word; var Buffer : TBuffer) : LongWord;
 	function BufferReadString(Index:word; Count:word; var Buffer : TBuffer) : string;
 	function BufferReadMD5(Index : word; var Buffer : TBuffer) : string;
 	function BufferReadOnePoint(Index:word; var Buffer : TBuffer) : TPoint;
 
 	procedure SendPadding(AClient : TIdContext);
 
-	procedure SendBuffer(var AClient : TIdContext; var Buffer : TBuffer; Size : Cardinal);overload;
-	procedure SendBuffer(var AClient : TInterClient; var Buffer : TBuffer; Size : Cardinal);overload;
-	procedure RecvBuffer(var AClient : TIdContext; var Buffer; Size : Cardinal); overload;
-	procedure RecvBuffer(var AClient : TInterClient; var Buffer; Size : Cardinal);overload;
+	procedure SendBuffer(var AClient : TIdContext; var Buffer : TBuffer; Size : LongWord);overload;
+	procedure SendBuffer(var AClient : TInterClient; var Buffer : TBuffer; Size : LongWord);overload;
+	procedure RecvBuffer(var AClient : TIdContext; var Buffer; Size : LongWord); overload;
+	procedure RecvBuffer(var AClient : TInterClient; var Buffer; Size : LongWord);overload;
 
 implementation
 uses
@@ -73,11 +73,11 @@ PUSHING DATA INTO THE BUFFER METHODS
 		Move(WordIn, Buffer[Index], 2);
 	end;
 
-	//Socket Method WriteBuffer - Writes a Cardinal to the buffer.
-	procedure WriteBufferCardinal(index : word; CardinalIn : cardinal; var Buffer : TBuffer);
+	//Socket Method WriteBuffer - Writes a LongWord to the buffer.
+	procedure WriteBufferLongWord(index : word; LongWordIn : LongWord; var Buffer : TBuffer);
 	begin
-		Assert(Index <= 32766, 'WriteBuffer - Cardinal: index overflow ' + IntToStr(Index));
-		Move(CardinalIn, Buffer[Index], 4);
+		Assert(Index <= 32766, 'WriteBuffer - LongWord: index overflow ' + IntToStr(Index));
+		Move(LongWordIn, Buffer[Index], 4);
 	end;
 
 	//Socket Method WriteBuffer - Writes a String to the buffer.
@@ -105,7 +105,7 @@ PUSHING DATA INTO THE BUFFER METHODS
 		Dir:byte = 0
 	);
 	var
-		l   :cardinal;
+		l   :LongWord;
 		ByteArray  :array[0..3] of byte;
 	begin
 		l := (((xy.X and $3ff) shl 14) or ((xy.Y and $3ff) shl 4));
@@ -154,10 +154,10 @@ READING DATA FROM THE BUFFER METHODS
 		Move(Buffer[Index], Result, 2);
 	end;
 
-	//Socket Method BufferReadCardinal - Reads a Cardinal from the buffer.
-	function BufferReadCardinal(Index:word; var Buffer : TBuffer) : cardinal;
+	//Socket Method BufferReadLongWord - Reads a LongWord from the buffer.
+	function BufferReadLongWord(Index:word; var Buffer : TBuffer) : LongWord;
 	begin
-		Assert(Index <= 32766, 'BufferReadCardinal: Index overflow ' + IntToStr(Index));
+		Assert(Index <= 32766, 'BufferReadLongWord: Index overflow ' + IntToStr(Index));
 		Move(Buffer[Index], Result, 4);
 	end;
 
@@ -195,10 +195,10 @@ READING DATA FROM THE BUFFER METHODS
     Result := Trim(Result);
 	end;
 
-	//Socket Method BufferReadCardinal - Reads one point from the buffer.
+	//Socket Method BufferReadLongWord - Reads one point from the buffer.
 	function BufferReadOnePoint(Index:word; var Buffer : TBuffer) : TPoint;
 	var
-		l   :cardinal;
+		l   :LongWord;
 		bb  :array[0..3] of byte;
 	begin
 		Move(Buffer[index], bb[0], 3);
@@ -220,12 +220,12 @@ PREMADE SENDING OF BUFFER TO CLIENT
 	var
 		ABuf : TBuffer;
 	begin
-		WriteBufferCardinal(0,$00000000,ABuf);
+		WriteBufferLongWord(0,$00000000,ABuf);
 		SendBuffer(AClient,ABuf,4);
 	end;
 
 	//Socket Method SendBuffer - Writes the buffer to the socket.
-	procedure SendBuffer(var AClient : TInterClient; var Buffer : TBuffer; Size : Cardinal);
+	procedure SendBuffer(var AClient : TInterClient; var Buffer : TBuffer; Size : LongWord);
 	var
 		SendBytes : TIdBytes;
 	begin
@@ -234,7 +234,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 	end;
 
 	//Socket Method SendBuffer - Writes the buffer to the socket.
-	procedure SendBuffer(var AClient : TIdContext; var Buffer : TBuffer; Size : Cardinal);
+	procedure SendBuffer(var AClient : TIdContext; var Buffer : TBuffer; Size : LongWord);
 	var
 		SendBytes : TIdBytes;
 	begin
@@ -244,7 +244,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 
 
 	//Socket Method RecvBuffer - Reads the buffer from the socket.
-	procedure RecvBuffer(var AClient : TIdContext; var Buffer; Size : Cardinal);
+	procedure RecvBuffer(var AClient : TIdContext; var Buffer; Size : LongWord);
 	var
 		RecvBytes : TIdBytes;
 	begin
@@ -256,7 +256,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 	end;
 
 		//Socket Method RecvBuffer - Reads the buffer from the socket.
-	procedure RecvBuffer(var AClient : TInterClient; var Buffer; Size : Cardinal);
+	procedure RecvBuffer(var AClient : TInterClient; var Buffer; Size : LongWord);
 	var
 		RecvBytes : TIdBytes;
 	begin

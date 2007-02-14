@@ -36,19 +36,19 @@ type
 
     //procedure ProcessInterPacket(AClient : TIdContext);
 
-		Procedure SetIPCardinal(Value : string);
+		Procedure SetIPLongWord(Value : string);
     Procedure SetPort(Value : Word);
     Function GetStarted() : Boolean;
 
     Procedure LoadOptions;
 
   public
-		IPCardinal    : Cardinal;
+		IPLongWord     : LongWord;
 		ServerName    : String;
 
-    Options : TInterOptions;
+		Options : TInterOptions;
 
-		property IP   : string read fIP write SetIPCardinal;
+		property IP   : string read fIP write SetIPLongWord;
     property Port : Word read fPort write SetPort;
     property Started : Boolean read GetStarted;
 
@@ -233,23 +233,23 @@ end;{LoadOptions}
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//SetIPCardinal   			                                             PROCEDURE
+//SetIPLongWord   			                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //      The Ragnarok client does not connect to a server using the plain x.x.x.x
-//    IP string format.  It uses a cardinal form.  Making the IP a property, we
-//    are able to call a function to go ahead and set the Cardinal form at any
+//    IP string format.  It uses a LongWord form.  Making the IP a property, we
+//    are able to call a function to go ahead and set the LongWord form at any
 //    time.
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TInterServer.SetIPCardinal(Value : string);
+procedure TInterServer.SetIPLongWord(Value : string);
 begin
 	//fIP         := GetIPStringFromHostname(Value);
-	//IPCardinal  := GetCardinalFromIPString(fIP);
-end; //proc SetIPCardinal
+	//IPLongWord  := GetLongWordFromIPString(fIP);
+end; //proc SetIPLongWord
 //------------------------------------------------------------------------------
 
 

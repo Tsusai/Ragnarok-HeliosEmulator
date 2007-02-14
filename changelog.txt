@@ -13,6 +13,13 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 142 -
+[2007/02/09] - Tsusai - Notes/Overview: After some reading of newsgroups, I learned that
+ the Cardinal type (0..4bil number type) is 4 bytes..but its not guaranteed on all OS's and
+ versions of Delphi.  All Cardinals are now LongWords, which are always going to be 4 bytes,
+ and covers the same number range.
+-
+
 - Rev 141 -
 [2007/01/31] - RaX - Added comment headers to event related units. Reorganized the
  CharacterEventThread to get the time before looping, save some api calls.

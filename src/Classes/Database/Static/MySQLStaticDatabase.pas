@@ -49,12 +49,12 @@ type
 
 		Function GetBaseMaxHP(ACharacter : TCharacter) : Word;override;
 		Function GetBaseMaxSP(ACharacter : TCharacter) : Word;override;
-    Function GetBaseMaxWeight(ACharacter : TCharacter) : Cardinal;override;
+    Function GetBaseMaxWeight(ACharacter : TCharacter) : LongWord;override;
 
 		Function GetMapCannotSave(MapName : String) : Boolean;override;
 		Function GetMapZoneID(MapName : String) : Integer;override;
     Function GetMapFlags(MapName : String) : TFlags; override;
-    Function GetMapsForZone(ID : Cardinal) : TStringList; override;
+    Function GetMapsForZone(ID : LongWord) : TStringList; override;
 
 	protected
 		function Connect() : boolean; override;
@@ -255,7 +255,7 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TMySQLStaticDatabase.GetBaseMaxWeight(ACharacter : TCharacter) : Cardinal;
+Function TMySQLStaticDatabase.GetBaseMaxWeight(ACharacter : TCharacter) : LongWord;
 var
 	Success     : Boolean;
 	QueryResult : TMySQLResult;
@@ -406,7 +406,7 @@ end;//GetMapZoneID
 //		January 22nd, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Function TMySQLStaticDatabase.GetMapsForZone(ID : Cardinal) : TStringList;
+Function TMySQLStaticDatabase.GetMapsForZone(ID : LongWord) : TStringList;
 var
 	QueryResult : TMySQLResult;
   Index       : Integer;

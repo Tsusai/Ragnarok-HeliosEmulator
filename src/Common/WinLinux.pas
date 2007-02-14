@@ -22,12 +22,12 @@ uses
 			Partial : string;
 		end;
 
-	function GetCardinalFromIPString(IPString : string) : Cardinal;
+	function GetLongWordFromIPString(IPString : string) : LongWord;
 	function GetIPStringFromHostname(Hostname : String) : TIPSet;
 	procedure SetupTerminationCapturing;
 	procedure KillTerminationCapturing;
 	procedure KillProcess;
-	function GetTick : Cardinal;
+	function GetTick : LongWord;
 	procedure LowerPriority(AThread : TThread);
 	function ExtractFileNameMod(Path : String) : string;
 
@@ -48,18 +48,18 @@ uses
 	Globals;
 
 //------------------------------------------------------------------------------
-//GetCardinalFromIPString                                              FUNCTION
+//GetLongWordFromIPString                                              FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Gets a cardinal IP value from an IP in string form.
+//			Gets a LongWord IP value from an IP in string form.
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-	function GetCardinalFromIPString(IPString : string) : Cardinal;
+	function GetLongWordFromIPString(IPString : string) : LongWord;
 	begin
-		Result := Cardinal(inet_addr(PChar(IPString)));
+		Result := LongWord(inet_addr(PChar(IPString)));
 	end;
 //------------------------------------------------------------------------------
 
@@ -203,7 +203,7 @@ uses
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-	function GetTick : cardinal;
+	function GetTick : LongWord;
 	{$IFDEF LINUX}
 	var
 		LinuxInfo : TSysInfo;

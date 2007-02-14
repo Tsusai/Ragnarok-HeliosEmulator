@@ -23,7 +23,7 @@ uses
 	procedure ZoneSendTickToClient(AClient : TIdContext);
 	procedure ZoneSendObjectNameAndIDBasic(
 		AClient : TIdContext;
-		ID : Cardinal;
+		ID : LongWord;
 		Name : String
 	);
 
@@ -51,7 +51,7 @@ uses
 		ReplyBuffer : TBuffer;
 	begin
 		WriteBufferWord(0, $0073, ReplyBuffer);
-		WriteBufferCardinal(2, GetTick, ReplyBuffer);
+		WriteBufferLongWord(2, GetTick, ReplyBuffer);
 		WriteBufferPointAndDirection(6, ACharacter.Point,ReplyBuffer,ACharacter.Direction);
 		WriteBufferByte(9, 5, ReplyBuffer);
 		WriteBufferByte(10, 5, ReplyBuffer);
@@ -94,7 +94,7 @@ uses
 		ReplyBuffer : TBuffer;
 	begin
 		WriteBufferWord(0, $007f, ReplyBuffer);
-		WriteBufferCardinal(2, GetTick, ReplyBuffer);
+		WriteBufferLongWord(2, GetTick, ReplyBuffer);
 		SendBuffer(AClient, ReplyBuffer, 6);
 	end;//ZoneSendTickToClient
 //------------------------------------------------------------------------------
@@ -111,15 +111,15 @@ uses
 //------------------------------------------------------------------------------
 	procedure ZoneSendObjectNameAndIDBasic(
 		AClient : TIdContext;
-		ID : Cardinal;
+		ID : LongWord;
 		Name : String
 	);
 	var
 		OutBuffer : TBuffer;
 	begin
-		WriteBufferWord    (0, $0095, OutBuffer);
-		WriteBufferCardinal(2, ID, OutBuffer);
-		WriteBufferString  (6, Name, 24, OutBuffer);
+		WriteBufferWord   (0, $0095, OutBuffer);
+		WriteBufferLongWord(2, ID, OutBuffer);
+		WriteBufferString (6, Name, 24, OutBuffer);
 		SendBuffer(AClient, OutBuffer, GetPacketLength($0095));
 	end;//ZoneSendObjectNameAndIDBasic
 //------------------------------------------------------------------------------

@@ -38,8 +38,9 @@ type
     Name : String;
 		Cell : TGraph;
     Size : TPoint;
-    Flags: TFlags;
-    State: TMapMode;
+		Flags: TFlags;
+		State: TMapMode;
+		
 
 		EventList : TEventList;
 

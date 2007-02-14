@@ -47,7 +47,7 @@ type
 		); reintroduce; overload;
 		Destructor Destroy();override;
 
-		function GetAccount(ID    : Cardinal) : TAccount;overload;override;
+		function GetAccount(ID    : LongWord) : TAccount;overload;override;
 		function GetAccount(Name  : string) : TAccount;overload;override;
 
 		procedure RefreshAccountData(var AnAccount : TAccount); override;
@@ -268,7 +268,7 @@ end;//SetAccount
 //		December 27th, 2006 - Tsusai - Reorganized
 //
 //------------------------------------------------------------------------------
-function TJanSQLCommonDatabase.GetAccount(ID: Cardinal) : TAccount;
+function TJanSQLCommonDatabase.GetAccount(ID: LongWord) : TAccount;
 var
 	AnAccount   : TAccount;
 	Index       : Integer;

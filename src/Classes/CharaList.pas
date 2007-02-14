@@ -45,8 +45,8 @@ type
     Procedure Insert(const ACharacter : TCharacter; Index : Integer);
     Procedure Delete(Index : Integer);
     Procedure Clear();
-    Function IndexOf(const CID : Cardinal) : Integer;
-    Function IndexOfAID(const AID : Cardinal) : Integer;
+		Function IndexOf(const CID : LongWord) : Integer;
+		Function IndexOfAID(const AID : LongWord) : Integer;
 
 		Property Count : Integer
 		read MsCount;
@@ -314,7 +314,7 @@ end;{Delete}
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-function TCharacterList.IndexOf(const CID: Cardinal): Integer;
+function TCharacterList.IndexOf(const CID: LongWord): Integer;
 var
   Index : Integer;
 begin
@@ -342,7 +342,7 @@ end;{IndexOf}
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-function TCharacterList.IndexOfAID(const AID: Cardinal): Integer;
+function TCharacterList.IndexOfAID(const AID: LongWord): Integer;
 var
   Index : Integer;
 begin

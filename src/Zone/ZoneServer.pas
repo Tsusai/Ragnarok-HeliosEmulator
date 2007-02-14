@@ -203,9 +203,29 @@ end;{OnConnect}
 procedure TZoneServer.OnDisconnect(AConnection: TIdContext);
 var
 	CharacterIndex : Integer;
+	ACharacter : TCharacter;
+	AMap : TMap;
 begin
-	CharacterIndex := CharacterList.IndexOf(TThreadLink(AConnection.Data).CharacterLink.CID);
-	CharacterList.Delete(CharacterIndex);
+	if AConnection.Data is TThreadLink then
+	begin
+		ACharacter := TThreadLink(AConnection.Data).CharacterLink;
+		ADatabase.GameData.SaveChara(ACharacter);
+		if ACharacter.MapInfo <> nil then
+		begin
+			AMap := ACharacter.MapInfo;
+			CharacterIndex := AMap.Cell[ACharacter.Point.X][ACharacter.Point.Y].Beings.IndexOfObject(ACharacter);
+			if CharacterIndex > -1 then
+			begin
+				AMap.Cell[ACharacter.Point.X][ACharacter.Point.Y].Beings.Delete(CharacterIndex);
+			end;
+		end;
+		CharacterIndex := CharacterList.IndexOf(ACharacter.CID);
+		if CharacterIndex > -1 then
+		begin
+			CharacterList.Delete(CharacterIndex);
+		end;
+	end;
+
 end;{OnDisconnect}
 //------------------------------------------------------------------------------
 

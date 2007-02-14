@@ -92,6 +92,7 @@ uses
 
 implementation
 uses
+	Math,
 	SysUtils,
 	Types,
 	Account,
@@ -100,6 +101,7 @@ uses
 	GameConstants,
 	Globals,
 	MapTypes,
+	Map,
 	ZoneSend,
 	ZoneServer;
 
@@ -167,20 +169,20 @@ uses
 			ReadPts : TReadPts
 	);
 	var
-		AccountID   : Cardinal;
-		CharacterID : Cardinal;
-		ValidateID1 : Cardinal;
-		//ClientTick  : Cardinal;
+		AccountID   : LongWord;
+		CharacterID : LongWord;
+		ValidateID1 : LongWord;
+		//ClientTick  : LongWord;
 		Gender      : Byte;
 		AnAccount   : TAccount;
 		ACharacter  : TCharacter;
 		OutBuffer   : Tbuffer; //temp
 		MapIndex    : Integer;
 	begin
-		AccountID      := BufferReadCardinal(ReadPts[0], Buffer);
-		CharacterID    := BufferReadCardinal(ReadPts[1], Buffer);
-		ValidateID1    := BufferReadCardinal(ReadPts[2], Buffer);
-		{ClientTick     := }BufferReadCardinal(ReadPts[3], Buffer);
+		AccountID      := BufferReadLongWord(ReadPts[0], Buffer);
+		CharacterID    := BufferReadLongWord(ReadPts[1], Buffer);
+		ValidateID1    := BufferReadLongWord(ReadPts[2], Buffer);
+		{ClientTick     := }BufferReadLongWord(ReadPts[3], Buffer);
 		Gender         := BufferReadByte    (ReadPts[4], Buffer);
 
 		AnAccount  := ADatabase.CommonData.GetAccount(AccountID);
@@ -201,8 +203,8 @@ uses
 
 				//Load map cells if they are not already loaded
 				MapIndex := MainProc.ZoneServer.MapList.IndexOf(ACharacter.Map);
-        if MapIndex > -1 then
-        begin
+				if MapIndex > -1 then
+				begin
 					if MainProc.ZoneServer.MapList[MapIndex].State = UNLOADED then
 					begin
 						MainProc.ZoneServer.MapList[MapIndex].Load;
@@ -246,9 +248,48 @@ uses
 	);
 	var
 		OutBuffer : TBuffer;
+		AMap : TMap;
+		MapIndex : Integer;
+		idx1 : integer;
+		idx2 : integer;
+		idx3 : integer;
+		AnObject : TObject;
 	Begin
+		MapIndex := MainProc.ZoneServer.MapList.IndexOf(AChara.Map);
+		if MapIndex > -1 then
+		begin
+			if MainProc.ZoneServer.MapList[MapIndex].State = UNLOADED then
+			begin
+				MainProc.ZoneServer.MapList[MapIndex].Load;
+			end;
+		end;
+		AMap := MainProc.ZoneServer.MapList[MapIndex];
+		AChara.MapInfo := AMap;
+
+		AMap.Cell[AChara.Point.X][AChara.Point.Y].Beings.AddObject(AChara.CID,AChara);
+
+		for idx1 := Min(0,AChara.Point.Y-15) to Max(AChara.Point.Y+15,AMap.Size.Y) do
+		begin
+			for idx2 := Min(0,AChara.Point.X-15) to Max(AChara.Point.X+15,AMap.Size.X) do
+			begin
+				for idx3 := AMap.Cell[idx1][idx2].Beings.Count -1 downto 0 do
+				begin
+					AnObject := AMap.Cell[idx1][idx2].Beings.Objects[idx3];
+					if AnObject is TCharacter then
+					begin
+						if AChara <> AnObject then
+						begin
+							//Send AChara to the other character
+							//Send Character to AChara
+						end;
+					end;
+				end;
+			end;
+		end;
+
 
 		AChara.OnTouchIDs.Clear;
+
 		//Update character options
 		//Clear all vending/trading/etc id storages.
 		//Clear some possible events from the event list.
@@ -358,11 +399,11 @@ uses
 			ReadPts : TReadPts
 	);
 	var
-		ID : Cardinal;
+		ID : LongWord;
 		idx : integer;
 		RecvCharacter : TCharacter;
 	begin
-		ID := BufferReadCardinal(ReadPts[0], InBuffer);
+		ID := BufferReadLongWord(ReadPts[0], InBuffer);
 		idx := MainProc.ZoneServer.CharacterList.IndexOfAID(ID);
 		if idx > -1 then
 		begin

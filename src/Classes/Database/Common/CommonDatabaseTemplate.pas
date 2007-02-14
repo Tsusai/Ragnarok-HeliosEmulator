@@ -32,7 +32,7 @@ type
 	public
 		Constructor Create(EnableCommonDatabase : Boolean); virtual;
 		Destructor Destroy();override;
-		function GetAccount(ID    : Cardinal) : TAccount;overload;virtual;
+		function GetAccount(ID    : LongWord) : TAccount;overload;virtual;
 		function GetAccount(Name  : string) : TAccount;overload;virtual;
 		procedure RefreshAccountData(var AnAccount : TAccount);virtual;
 
@@ -84,7 +84,7 @@ procedure TCommonDatabaseTemplate.Disconnect();
 begin
 end;
 
-function TCommonDatabaseTemplate.GetAccount(ID: Cardinal) : TAccount;
+function TCommonDatabaseTemplate.GetAccount(ID: LongWord) : TAccount;
 begin
 	Result := NIL;
 end;

@@ -312,7 +312,7 @@ end;{OnException}
 	var
 		Buffer  : TBuffer;
 		Index   : integer;
-		Size    : cardinal;
+		Size    : Word;
 	begin
 		//Packet Format...
 		//R 0069 <len>.w <login ID1>.l <account ID>.l <login ID2>.l ?.32B <sex>.B (47 total)
@@ -322,15 +322,15 @@ end;{OnException}
 			Size := 47 + (fCharaServerList.Count * 32);
 			WriteBufferWord(0,$0069,Buffer);
 			WriteBufferWord(2,Size,Buffer);
-			WriteBufferCardinal(4,AnAccount.LoginKey[1],Buffer);
-			WriteBufferCardinal(8,AnAccount.ID,Buffer);
-			WriteBufferCardinal(12,AnAccount.LoginKey[2],Buffer);
-			WriteBufferCardinal(16, 0, Buffer);
+			WriteBufferLongWord(4,AnAccount.LoginKey[1],Buffer);
+			WriteBufferLongWord(8,AnAccount.ID,Buffer);
+			WriteBufferLongWord(12,AnAccount.LoginKey[2],Buffer);
+			WriteBufferLongWord(16, 0, Buffer);
 			WriteBufferString(20, FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz'#0, AnAccount.LastLoginTime), 24, Buffer);
 			WriteBufferWord(44, 0, Buffer);
 			WriteBufferByte(46,AnAccount.GenderNum,Buffer);
 			for Index := 0 to fCharaServerList.Count - 1 do begin
-				WriteBufferCardinal(
+				WriteBufferLongWord(
 					47+(index*32)+0,
 					TCharaServerInfo(fCharaServerList.Objects[Index]).Address(
 						AClient.Binding.PeerIP

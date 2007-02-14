@@ -49,21 +49,21 @@ type
 
 		function CreateChara(
 			var ACharacter : TCharacter;
-			AID : Cardinal;
+			AID : LongWord;
 			NName : string;
 			CharaNum : Integer
 		) : boolean;override;
 
-		function GetAccountCharas(AccountID : Cardinal) : TCharacterList;override;
-		function LoadChara(CharaID : Cardinal) : TCharacter;override;
+		function GetAccountCharas(AccountID : LongWord) : TCharacterList;override;
+		function LoadChara(CharaID : LongWord) : TCharacter;override;
 
 		function GetChara(
-			CharaID : Cardinal;
+			CharaID : LongWord;
 			JanSQLClearTable : boolean = false
 		) : TCharacter;override;
 
 		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
-		function CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;overload;override;
+		function CharaExists(AccountID : LongWord; Slot : Word) : Boolean;overload;override;
 		function CharaExists(Name : String) : Boolean;overload;override;
 
 		procedure SaveChara(AChara : TCharacter);override;
@@ -247,7 +247,7 @@ end;
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.GetChara(
-	CharaID : Cardinal;
+	CharaID : LongWord;
 	//JanSQLClearTable is never used.
 	JanSQLClearTable : boolean = false
 ) : TCharacter;
@@ -268,7 +268,7 @@ end;
 //		December 18th, 2006 - Tsusai - Freed result.
 //
 //------------------------------------------------------------------------------
-function TMySQLGameDatabase.GetAccountCharas(AccountID : Cardinal) : TCharacterList;
+function TMySQLGameDatabase.GetAccountCharas(AccountID : LongWord) : TCharacterList;
 var
 	QueryResult     : TMySQLResult;
 	Success         : Boolean;
@@ -308,7 +308,7 @@ end;
 //		December 18th, 2006 - Tsusai - Simplified Result, freed Queryresult
 //
 //------------------------------------------------------------------------------
-function TMySQLGameDatabase.CharaExists(AccountID : Cardinal; Slot : Cardinal) : Boolean;
+function TMySQLGameDatabase.CharaExists(AccountID : LongWord; Slot : Word) : Boolean;
 var
 	QueryResult : TMySQLResult;
 	Success     : Boolean;
@@ -497,7 +497,7 @@ end;
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.CreateChara(
 	var ACharacter : TCharacter;
-	AID : Cardinal;
+	AID : LongWord;
 	NName : string;
 	CharaNum : Integer
 ) : boolean;
@@ -538,7 +538,7 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function TMySQLGameDatabase.LoadChara(CharaID : Cardinal) : TCharacter;
+function TMySQLGameDatabase.LoadChara(CharaID : LongWord) : TCharacter;
 var
 	Success     : Boolean;
 	APoint      : TPoint;

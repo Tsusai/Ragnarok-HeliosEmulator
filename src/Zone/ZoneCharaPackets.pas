@@ -50,7 +50,7 @@ uses
 		OutBuffer : TBuffer;
 	begin
 		WriteBufferWord(0, $2100, OutBuffer);
-		WriteBufferCardinal(2, ZoneServer.Options.ID, OutBuffer);
+		WriteBufferLongWord(2, ZoneServer.Options.ID, OutBuffer);
 		WriteBufferWord(6, ZoneServer.Port, OutBuffer);
 		WriteBufferMD5String(8, GetMD5(ZoneServer.Options.CharaKey), OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2100));

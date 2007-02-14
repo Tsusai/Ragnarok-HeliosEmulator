@@ -23,7 +23,7 @@ uses
 type TBeing = class
 	private
 	public
-		ID  : Cardinal;
+		ID        : LongWord;
 		Name      : string;
 		JID       : Word;
 		BaseLV    : Byte;

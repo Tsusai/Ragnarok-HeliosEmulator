@@ -322,7 +322,7 @@ end;{LoginClientRead}
 //------------------------------------------------------------------------------
 procedure TCharacterServer.SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
 var
-	AccountID   : Cardinal;
+	AccountID   : LongWord;
 	AnAccount   : TAccount;
 	ReplyBuffer : TBuffer;
 	ACharacter  : TCharacter;
@@ -334,15 +334,15 @@ var
 begin
 	Count     := 0;
 	Ver       := 24;
-	AccountID := BufferReadCardinal(2, ABuffer);
+	AccountID := BufferReadLongWord(2, ABuffer);
 	AnAccount := ADatabase.CommonData.GetAccount(AccountID);
 
 	if Assigned(AnAccount) then
 	begin
 		if AnAccount.ID = AccountID then
 		begin
-			if  (AnAccount.LoginKey[1] = BufferReadCardinal(6,  ABuffer)) and
-				(AnAccount.LoginKey[2] = BufferReadCardinal(10, ABuffer)) then
+			if  (AnAccount.LoginKey[1] = BufferReadLongWord(6,  ABuffer)) and
+				(AnAccount.LoginKey[2] = BufferReadLongWord(10, ABuffer)) then
 			begin
 				//LINK the account to the client connection for the other procedures
 				TThreadLink(AClient.Data).AccountLink := AnAccount;
@@ -360,16 +360,16 @@ begin
 						begin
 							FillChar(ReplyBuffer[Ver+(Count*106)], 106, 0);
 
-							WriteBufferCardinal(Ver+(Count*106)+  0, CID,ReplyBuffer);
-							WriteBufferCardinal(Ver+(Count*106)+  4, BaseEXP,ReplyBuffer);
-							WriteBufferCardinal(Ver+(Count*106)+  8, Zeny,ReplyBuffer);
-							WriteBufferCardinal(Ver+(Count*106)+ 12, JobEXP,ReplyBuffer);
-							WriteBufferCardinal(Ver+(Count*106)+ 16, JobLV,ReplyBuffer);
-							WriteBufferCardinal(Ver+(Count*106)+ 20, 0,ReplyBuffer);
-							WriteBufferCardinal(Ver+(Count*106)+ 24, 0,ReplyBuffer);
-							WriteBufferCardinal(Ver+(Count*106)+ 28, Option,ReplyBuffer);
-							WriteBufferCardinal(Ver+(Count*106)+ 32, Karma,ReplyBuffer);
-							WriteBufferCardinal(Ver+(Count*106)+ 36, Manner,ReplyBuffer);
+							WriteBufferLongWord(Ver+(Count*106)+  0, CID,ReplyBuffer);
+							WriteBufferLongWord(Ver+(Count*106)+  4, BaseEXP,ReplyBuffer);
+							WriteBufferLongWord(Ver+(Count*106)+  8, Zeny,ReplyBuffer);
+							WriteBufferLongWord(Ver+(Count*106)+ 12, JobEXP,ReplyBuffer);
+							WriteBufferLongWord(Ver+(Count*106)+ 16, JobLV,ReplyBuffer);
+							WriteBufferLongWord(Ver+(Count*106)+ 20, 0,ReplyBuffer);
+							WriteBufferLongWord(Ver+(Count*106)+ 24, 0,ReplyBuffer);
+							WriteBufferLongWord(Ver+(Count*106)+ 28, Option,ReplyBuffer);
+							WriteBufferLongWord(Ver+(Count*106)+ 32, Karma,ReplyBuffer);
+							WriteBufferLongWord(Ver+(Count*106)+ 36, Manner,ReplyBuffer);
 
 							WriteBufferWord(Ver+(Count*106)+ 40, StatusPts,ReplyBuffer);
 							WriteBufferWord(Ver+(Count*106)+ 42, HP,ReplyBuffer);
@@ -487,9 +487,9 @@ begin
 			ZServerInfo := TZoneServerInfo(fZoneServerList.Objects[idx]);
 
 			WriteBufferWord(0, $0071, OutBuffer);
-			WriteBufferCardinal(2, ACharacter.CID, OutBuffer);
+			WriteBufferLongWord(2, ACharacter.CID, OutBuffer);
 			WriteBufferString(6, ACharacter.Map + '.rsw', 16, OutBuffer);
-			WriteBufferCardinal(22,
+			WriteBufferLongWord(22,
 				ZServerInfo.Address(AClient.Binding.PeerIP
 				),
 				OutBuffer
@@ -652,16 +652,16 @@ begin
 				ADatabase.GameData.SaveChara(ACharacter);
 				with ACharacter do begin
 					WriteBufferWord(0, $006d,ReplyBuffer);
-					WriteBufferCardinal(2+  0, CID,ReplyBuffer);
-					WriteBufferCardinal(2+  4, BaseEXP,ReplyBuffer);
-					WriteBufferCardinal(2+  8, Zeny,ReplyBuffer);
-					WriteBufferCardinal(2+ 12, JobEXP,ReplyBuffer);
-					WriteBufferCardinal(2+ 16, JobLV,ReplyBuffer);
-					WriteBufferCardinal(2+ 20, 0,ReplyBuffer);
-					WriteBufferCardinal(2+ 24, 0,ReplyBuffer);
-					WriteBufferCardinal(2+ 28, Option,ReplyBuffer);
-					WriteBufferCardinal(2+ 32, Karma,ReplyBuffer);
-					WriteBufferCardinal(2+ 36, Manner,ReplyBuffer);
+					WriteBufferLongWord(2+  0, CID,ReplyBuffer);
+					WriteBufferLongWord(2+  4, BaseEXP,ReplyBuffer);
+					WriteBufferLongWord(2+  8, Zeny,ReplyBuffer);
+					WriteBufferLongWord(2+ 12, JobEXP,ReplyBuffer);
+					WriteBufferLongWord(2+ 16, JobLV,ReplyBuffer);
+					WriteBufferLongWord(2+ 20, 0,ReplyBuffer);
+					WriteBufferLongWord(2+ 24, 0,ReplyBuffer);
+					WriteBufferLongWord(2+ 28, Option,ReplyBuffer);
+					WriteBufferLongWord(2+ 32, Karma,ReplyBuffer);
+					WriteBufferLongWord(2+ 36, Manner,ReplyBuffer);
 					WriteBufferWord(2+ 40, StatusPts,ReplyBuffer);
 					WriteBufferWord(2+ 42, HP,ReplyBuffer);
 					WriteBufferWord(2+ 44, MAXHP,ReplyBuffer);
@@ -717,7 +717,7 @@ procedure TCharacterServer.DeleteChara(
 	var ABuffer : Tbuffer
 );
 var
-	CharacterID : Cardinal;
+	CharacterID : LongWord;
 	EmailOrID   : string;
 	AnAccount   : TAccount;
 	ACharacter  : TCharacter;
@@ -731,7 +731,7 @@ var
 	end;
 
 begin
-	CharacterID := BufferReadCardinal(2,ABuffer);
+	CharacterID := BufferReadLongWord(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TThreadLink(AClient.Data).AccountLink;
 	ACharacter := ADatabase.GameData.GetChara(CharacterID,true);
@@ -764,14 +764,14 @@ var
 	Password : string;
 	Validated : byte;
 	ZServerInfo : TZoneServerInfo;
-	ID : Cardinal;
+	ID : LongWord;
 begin
 	Validated := 0; //Assume true
 	MainProc.Console(
 		'[Character Server] - Reading Zone Server connection from ' +
 		AClient.Binding.PeerIP
 	);
-	ID := BufferReadCardinal(2,InBuffer);
+	ID := BufferReadLongWord(2,InBuffer);
 	Password := BufferReadMD5(8,InBuffer);
 
 	if (fZoneServerList.IndexOf(ID) > -1) then

@@ -38,12 +38,12 @@ type
 
 		Function GetBaseMaxHP(ACharacter : TCharacter) : Word;virtual;
 		Function GetBaseMaxSP(ACharacter : TCharacter) : Word;virtual;
-    Function GetBaseMaxWeight(ACharacter : TCharacter) : Cardinal;virtual;
+		Function GetBaseMaxWeight(ACharacter : TCharacter) : LongWord;virtual;
 
 		Function GetMapCannotSave(MapName : String) : Boolean;virtual;
 		Function GetMapZoneID(MapName : String) : Integer;virtual;
     Function GetMapFlags(MapName : String) : TFlags;virtual;
-    Function GetMapsForZone(ZoneID : Cardinal)  : TStringList;virtual;
+		Function GetMapsForZone(ZoneID : LongWord)  : TStringList;virtual;
 	protected
 		function Connect() : boolean; virtual;
 		procedure Disconnect();virtual;
@@ -92,7 +92,7 @@ begin
 	Result := 0;
 end;
 
-Function TStaticDatabaseTemplate.GetBaseMaxWeight(ACharacter : TCharacter) : Cardinal;
+Function TStaticDatabaseTemplate.GetBaseMaxWeight(ACharacter : TCharacter) : LongWord;
 begin
 	Result := 0;
 end;
@@ -114,7 +114,7 @@ begin
   Result := Flags;
 end;
 
-Function TStaticDatabaseTemplate.GetMapsForZone(ZoneID : Cardinal)  : TStringList;
+Function TStaticDatabaseTemplate.GetMapsForZone(ZoneID : LongWord)  : TStringList;
 begin
   Result := TStringList.Create;
 end;

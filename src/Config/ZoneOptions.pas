@@ -23,7 +23,7 @@ interface
 		TZoneOptions = class(TMemIniFile)
 		private
 //private variables
-      fID           : Cardinal;
+      fID           : LongWord;
 			fPort		      : Word;
 			fEnabled      : boolean;
 			fWANIP      	: String;
@@ -47,7 +47,7 @@ interface
 		public
       //Server
       property Enabled : boolean read fEnabled;
-      property ID      : Cardinal read fID;
+			property ID      : LongWord read fID;
 
 			//Communication
       property Port    : Word read fPort write SetPort;
