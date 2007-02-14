@@ -102,6 +102,7 @@ uses
 	Globals,
 	MapTypes,
 	Map,
+	TCPServerRoutines,
 	ZoneSend,
 	ZoneServer;
 
@@ -218,7 +219,7 @@ uses
 				//Friendslist placeholder
 				WriteBufferWord(0, $0201, OutBuffer);
 				WriteBufferWord(2, 4, OutBuffer);
-				SendBuffer(ACharacter.ClientInfo, OutBuffer, 4);
+				SendBuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($0201,Version));
 
 			end else
 			begin
@@ -314,22 +315,22 @@ uses
 		//skilllist placeholder
 		WriteBufferWord(0, $010F, OutBuffer);
 		WriteBufferWord(2, 4, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
+		SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($010F,AChara.ClientVersion));
 
 		AChara.SendCharacterStats;
 
 		//Inventory Placeholder
 		WriteBufferWord(0, $00a3, OutBuffer);
 		WriteBufferWord(2, 4, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
+		SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($00a3,AChara.ClientVersion));
 		//Equip Placeholder
 		WriteBufferWord(0, $00a4, OutBuffer);
 		WriteBufferWord(2, 4, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
+		SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($00a4,AChara.ClientVersion));
 		//Arrow Placeholder
 		WriteBufferWord(0, $013c, OutBuffer);
 		WriteBufferWord(2, 0, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
+		SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($013c,AChara.ClientVersion));
 
 		//Weather updates
 		//Various other tweaks
@@ -356,7 +357,7 @@ uses
 			ReadPts : TReadPts
 	);
 	Begin
-		ZoneSendTickToClient(AChara.ClientInfo);
+		ZoneSendTickToClient(AChara);
 	end;//RecvTick
 //------------------------------------------------------------------------------
 
@@ -412,7 +413,7 @@ uses
 			{guild version packet}
 			{else}
 			ZoneSendObjectNameAndIDBasic(
-				AChara.ClientInfo,
+				AChara,
 				RecvCharacter.ID,
 				RecvCharacter.Name
 			);

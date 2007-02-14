@@ -21,7 +21,7 @@ uses
 	function ActivateClient(var AClient : TInterClient) : Boolean;
 	procedure DeActivateClient(var AClient : TInterClient);
 
-  Function GetPacketLength(ID : Word; Version : Integer = 0) : Integer;
+  Function GetPacketLength(ID : Word; Version : Word = 0) : LongWord;
   
 implementation
 uses
@@ -158,7 +158,7 @@ end;{DeActivateClient}
 //		December 22nd, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Function GetPacketLength(ID : Word; Version : Integer = 0) : Integer;
+Function GetPacketLength(ID : Word; Version : Word = 0) : LongWord;
 var
   Index           : Integer;
 	CodebaseLength  : Integer;

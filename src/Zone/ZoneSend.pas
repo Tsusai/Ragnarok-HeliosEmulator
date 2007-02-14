@@ -20,9 +20,9 @@ uses
 
 	procedure ZoneSendMapConnectReply(ACharacter : TCharacter);
 	procedure ZoneSendMapConnectDeny(AClient : TIdContext);
-	procedure ZoneSendTickToClient(AClient : TIdContext);
+	procedure ZoneSendTickToClient(ACharacter : TCharacter);
 	procedure ZoneSendObjectNameAndIDBasic(
-		AClient : TIdContext;
+		ACharacter : TCharacter;
 		ID : LongWord;
 		Name : String
 	);
@@ -55,7 +55,7 @@ uses
 		WriteBufferPointAndDirection(6, ACharacter.Point,ReplyBuffer,ACharacter.Direction);
 		WriteBufferByte(9, 5, ReplyBuffer);
 		WriteBufferByte(10, 5, ReplyBuffer);
-		SendBuffer(ACharacter.ClientInfo,ReplyBuffer,11);
+		SendBuffer(ACharacter.ClientInfo,ReplyBuffer,GetPacketLength($0073,ACharacter.ClientVersion));
 	end;//ZoneSendMapConnectReply
 //------------------------------------------------------------------------------
 
@@ -75,7 +75,7 @@ uses
 	begin
 		WriteBufferWord(0, $0074, ReplyBuffer);
 		WriteBufferByte(2, 0 ,    ReplyBuffer);
-		SendBuffer(AClient,ReplyBuffer,3);
+		SendBuffer(AClient,ReplyBuffer,GetPacketLength($0074));
 	end;//ZoneSendMapConnectReply
 //------------------------------------------------------------------------------
 
@@ -89,13 +89,13 @@ uses
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header;
 //------------------------------------------------------------------------------
-	procedure ZoneSendTickToClient(AClient : TIdContext);
+	procedure ZoneSendTickToClient(ACharacter : TCharacter);
 	var
 		ReplyBuffer : TBuffer;
 	begin
 		WriteBufferWord(0, $007f, ReplyBuffer);
 		WriteBufferLongWord(2, GetTick, ReplyBuffer);
-		SendBuffer(AClient, ReplyBuffer, 6);
+		SendBuffer(ACharacter.ClientInfo, ReplyBuffer, GetPacketLength($007f,ACharacter.ClientVersion));
 	end;//ZoneSendTickToClient
 //------------------------------------------------------------------------------
 
@@ -110,7 +110,7 @@ uses
 //    January 18th, 2007 - RaX - Created Header;
 //------------------------------------------------------------------------------
 	procedure ZoneSendObjectNameAndIDBasic(
-		AClient : TIdContext;
+		ACharacter : TCharacter;
 		ID : LongWord;
 		Name : String
 	);
@@ -120,7 +120,7 @@ uses
 		WriteBufferWord   (0, $0095, OutBuffer);
 		WriteBufferLongWord(2, ID, OutBuffer);
 		WriteBufferString (6, Name, 24, OutBuffer);
-		SendBuffer(AClient, OutBuffer, GetPacketLength($0095));
+		SendBuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($0095,ACharacter.ClientVersion));
 	end;//ZoneSendObjectNameAndIDBasic
 //------------------------------------------------------------------------------
 end.

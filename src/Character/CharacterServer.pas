@@ -495,13 +495,13 @@ begin
 				OutBuffer
 			);
 			WriteBufferWord(26, ZServerInfo.Port, OutBuffer);
-			SendBuffer(AClient, OutBuffer, 28);
+			SendBuffer(AClient, OutBuffer, GetPacketLength($0071));
 		end else
 		begin
 			//Server offline error goes here
 			WriteBufferWord(0, $0081, Outbuffer);
 			WriteBufferByte(2, 03, OutBuffer);
-			SendBuffer(AClient, OutBuffer, 3);
+			SendBuffer(AClient, OutBuffer, GetPacketLength($0081));
 		end;
 	end;
 

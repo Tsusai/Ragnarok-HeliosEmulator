@@ -248,6 +248,7 @@ uses
 	//Helios
 	BufferIO,
 	Globals,
+	TCPServerRoutines,
 	PacketTypes
 	;
 
@@ -1249,7 +1250,7 @@ Begin
 
 	if Online <> 0 then
 	begin
-		SendBuffer(ClientInfo, OutBuffer, 8);
+		SendBuffer(ClientInfo, OutBuffer, GetPacketLength($00b0+Mode,ClientVersion));
 	end;
 
 	//Party Info from prometheus
@@ -1308,7 +1309,7 @@ Begin
 	WriteBufferWord(38, Critical, OutBuffer);
 	WriteBufferWord(40, ASpeed, OutBuffer);
 	WriteBufferWord(42, 0, OutBuffer);
-	SendBuffer(ClientInfo, OutBuffer, 44);
+	SendBuffer(ClientInfo, OutBuffer, GetPacketLength($00bd,ClientVersion));
 
 	// Update base XP
 	SendSubStat(1, 1, BaseEXP);
@@ -1332,12 +1333,12 @@ Begin
 		WriteBufferLongWord( 2, 13+idx, OutBuffer);
 		WriteBufferLongWord( 6, ParamBase[idx+1], OutBuffer);
 		WriteBufferLongWord(10, ParamBonus[idx+1], OutBuffer);
-		SendBuffer(ClientInfo, OutBuffer, 14);
+		SendBuffer(ClientInfo, OutBuffer, GetPacketLength($0141,ClientVersion));
 	end;
 	// Send attack range.
 	WriteBufferWord(0, $013a, OutBuffer);
 	WriteBufferWord(2, AttackRange, OutBuffer);
-	SendBuffer(ClientInfo, OutBuffer, 4);
+	SendBuffer(ClientInfo, OutBuffer, GetPacketLength($013a,ClientVersion));
 
 	// Update the character's view packets if necessary.
 	if UpdateView then
