@@ -13,8 +13,15 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 145 -
+[2007/02/19] - Tsusai - Notes/Overview: Added CRT units.  Thse will allow for colored text
+ when coded in.
+[2007/02/19] - Tsusai - Made Console folder.  Moved Console.pas here, and added 
+ WinConsole.pas (Windows CRT), LinCRT and NCurses (Linux).
+-
+
 - Rev 144 -
-[2007/02/14] - Tsusai - Notes/Overview: Enabled loading the resource data for icons.  Shows
+[2007/02/19] - Tsusai - Notes/Overview: Enabled loading the resource data for icons.  Shows
  default Delphi 7 Project icon right now.
 -
 

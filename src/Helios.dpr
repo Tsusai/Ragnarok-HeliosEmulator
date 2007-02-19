@@ -61,6 +61,12 @@ compile for linux, at the same time*}
 //------------------------------------------------------------------------------
 	{$IFDEF MSWINDOWS}
 	{$R *.res}
+
+	//Console Related Units
+	Console in 'Console\Console.pas',
+	CRT in 'Console\CRT.pas',
+	WinConsole in 'Console\WinCRT\WinConsole.pas',
+
 	//Login Server
 	LoginServer in 'Login\LoginServer.pas',
 
@@ -159,6 +165,13 @@ compile for linux, at the same time*}
 //                            Linux Definitions
 //------------------------------------------------------------------------------
 	{$IFDEF LINUX}
+
+	//Console Related Units
+	Console in 'Console/Console.pas',
+	CRT in 'Console/CRT.pas',
+	LinCRT in 'Console/LinCRT/LinCRT.pas',
+	NCurses in 'Console/LinCRT/NCurses.pas',
+	
 	//Login Server
 	LoginServer in 'Login/LoginServer.pas',
 
@@ -253,8 +266,7 @@ compile for linux, at the same time*}
 //------------------------------------------------------------------------------
 //                              Definitions for both.
 //------------------------------------------------------------------------------
-	SysUtils,
-	Console in 'Console.pas';
+	SysUtils;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
