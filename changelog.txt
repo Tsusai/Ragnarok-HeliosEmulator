@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 144 -
+[2007/02/14] - Tsusai - Notes/Overview: Enabled loading the resource data for icons.  Shows
+ default Delphi 7 Project icon right now.
+-
+
 - Rev 143 -
 [2007/02/14] - Tsusai - Notes/Overview: Updated some SendBuffer calls to use GetPacketLength.
 [2007/02/14] - Tsusai - Updated CharacterServer, Character, ZoneRecv, and ZoneSend to use 

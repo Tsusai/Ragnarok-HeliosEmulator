@@ -60,6 +60,7 @@ compile for linux, at the same time*}
 //                            Windows Definitions
 //------------------------------------------------------------------------------
 	{$IFDEF MSWINDOWS}
+	{$R *.res}
 	//Login Server
 	LoginServer in 'Login\LoginServer.pas',
 
