@@ -52,7 +52,6 @@ interface
 implementation
 uses
 	SysUtils,
-	Console,
 	Globals;
 
 //------------------------------------------------------------------------------

@@ -13,6 +13,13 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+
+- Rev 150 -
+[2007/02/20] - RaX - Fixed Kylix not liking a unit and a variable having the same name...
+[2007/02/20] - RaX - Renamed Console to Terminal.pas. Removed Unused uses of Console.
+-
+
+
 - Rev 149 -
 [2007/02/20] - RaX - Unfortunately, because of my brain at 3am, I forgot to commit main.pas
  so rev 148 is broken. Sorry =(.

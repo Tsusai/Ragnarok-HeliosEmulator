@@ -63,7 +63,7 @@ compile for linux, at the same time*}
 	{$R *.res}
 
 	//Console Related Units
-	Console in 'Console\Console.pas',
+	Terminal in 'Console\Terminal.pas',
 	CRT in 'Console\CRT.pas',
 	WinConsole in 'Console\WinCRT\WinConsole.pas',
 
@@ -167,7 +167,7 @@ compile for linux, at the same time*}
 	{$IFDEF LINUX}
 
 	//Console Related Units
-	Console in 'Console/Console.pas',
+	Terminal in 'Console/Terminal.pas',
 	CRT in 'Console/CRT.pas',
 	LinCRT in 'Console/LinCRT/LinCRT.pas',
 	NCurses in 'Console/LinCRT/NCurses.pas',

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//Console()				                                                         UNIT
+//Terminal				                                                         UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //			This unit contains the Console unit, an object for managing console
@@ -9,7 +9,7 @@
 //		September 19th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-unit Console;
+unit Terminal;
 
 interface
 

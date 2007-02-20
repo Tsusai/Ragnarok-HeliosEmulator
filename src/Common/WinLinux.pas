@@ -43,7 +43,6 @@ uses
 	Libc,
 	{$ENDIF}
 	SysUtils,
-	Console,
 	Version,
 	Globals;
 

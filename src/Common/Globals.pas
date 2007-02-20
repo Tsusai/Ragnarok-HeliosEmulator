@@ -17,7 +17,7 @@ uses
 	Commands,
   CharaList,
 	Database,
-	Console
+	Terminal
   ;
 
 

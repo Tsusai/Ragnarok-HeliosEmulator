@@ -33,8 +33,7 @@ uses
 	BufferIO,
 	PacketTypes,
 	TCPServerRoutines,
-	WinLinux,
-  Console;
+	WinLinux;
 
 //------------------------------------------------------------------------------
 //ZoneSendMapConnectReply                                             PROCEDURE

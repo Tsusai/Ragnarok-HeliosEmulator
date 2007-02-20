@@ -72,7 +72,6 @@ type
 implementation
 uses
 	SysUtils,
-	Console,
 	Globals,
 	WinLinux,
 	IdStack;
