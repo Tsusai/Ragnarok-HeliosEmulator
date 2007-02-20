@@ -6,7 +6,7 @@
 //		output.
 //
 //	Changes -
-//		September 19th, 2006 - RaX - Created Header.
+//		September 19th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
 unit Console;
@@ -19,19 +19,22 @@ uses
 type
 
 //------------------------------------------------------------------------------
-//TMainProc                                                               CLASS
+//TConsole                                                               CLASS
 //------------------------------------------------------------------------------
 	TConsole = class
+	private
+		LineColor : Boolean;
+
 	public
-		procedure Write(
-										AString : String;
-										Text : Byte = CRTBlack;
-										Background : Byte = CRTWhite
-		);
 		procedure WriteLn(
 										AString : String;
-										Text : Byte = CRTBlack;
-										Background : Byte = CRTWhite
+										TextColor : Byte = CRTWhite
+		);
+
+		procedure Message(
+			AString			: String;
+			From				: String = 'General';
+			MessageType : Byte = 255
 		);
 
 		Constructor Create;
@@ -39,10 +42,11 @@ type
 	end;{TMainProc}
 //------------------------------------------------------------------------------
 
-
 implementation
 uses
-	SyncObjs;
+	SyncObjs,
+	Globals,
+	Main;
 
 var
 	CriticalSection : TCriticalSection;
@@ -55,13 +59,14 @@ var
 //			Creates our critical section for managing console output.
 //
 //	Changes -
-//		February 19th, 2007 - RaX - Created Header.
+//		February 19th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
 Constructor TConsole.Create;
 begin
 	inherited;
-	CRT.TextBackground(CRTWhite);
+	LineColor := FALSE;
+	CRT.TextBackground(CRTBlack);
 	CriticalSection := TCriticalSection.Create;
 end;//Create
 //------------------------------------------------------------------------------
@@ -74,7 +79,7 @@ end;//Create
 //			frees up out object
 //
 //	Changes -
-//		February 19th, 2007 - RaX - Created Header.
+//		February 19th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
 Destructor TConsole.Destroy;
@@ -86,25 +91,24 @@ end;//Destroy
 
 
 //------------------------------------------------------------------------------
-//TConsole.Write()                                                 PROCEDURE
+//TConsole.WriteLn()                                                 PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Alias of Write.
+//			Alias of WriteLn.
 //
 //	Changes -
-//		February 19th, 2007 - RaX - Created Header.
+//		February 19th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TConsole.Write(
-	AString 	: String;
-	Text 			: Byte = CRTBlack;
-	Background: Byte = CRTWhite
+procedure TConsole.WriteLn(
+	AString 		: String;
+	TextColor		: Byte = CRTWhite
 	);
 begin
 	CriticalSection.Enter;
 
-	CRT.TextColor(Text);
-	System.Write(AString);
+	CRT.TextColor(TextColor);
+	System.Writeln(AString);
 
 	CriticalSection.Leave;
 end;
@@ -112,25 +116,167 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TConsole.WriteLn()                                                 PROCEDURE
+//TConsole.Message()                                                 PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Alias of WriteLn.
+//			All Server messages will be displayed through here.
 //
 //	Changes -
-//		February 19th, 2007 - RaX - Created Header.
+//		February 19th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TConsole.WriteLn(
-	AString 	: String;
-	Text 			: Byte = CRTBlack;
-	Background: Byte = CRTWhite
+procedure TConsole.Message(
+	AString 		: String;
+	From				: String = 'General';
+	MessageType : Byte = 255
 	);
+var
+	Index : Integer;
+	Color : Byte;
+
 begin
 	CriticalSection.Enter;
+	if LineColor then
+	begin
+		Color := CRTGray;
+	end else
+	begin
+		Color := CRTWhite;
+	end;
 
-	CRT.TextColor(Text);
-	System.WriteLn(AString);
+	//Output based on message type.
+	case MessageType of
+
+	MS_INFO ://Information
+		begin
+			if MainProc.Options.ShowInfo then
+			begin
+				CRT.TextColor(CRTWhite);
+				System.Write('[');
+
+				CRT.TextColor(CRTGray);
+				System.Write(From);
+
+				CRT.TextColor(CRTWhite);
+				System.Write(']');
+
+				for Index := Length(From) to 15 do
+				begin
+					System.Write(' ');
+				end;
+
+				System.Write(' -INFO  : ');
+
+				CRT.TextColor(Color);
+				System.Writeln(AString);
+			end;
+		end;
+
+	MS_NOTICE ://Notice
+		begin
+			if MainProc.Options.ShowNotice then
+			begin
+				CRT.TextColor(CRTWhite);
+				System.Write('[');
+
+				CRT.TextColor(CRTCyan);
+				System.Write(From);
+
+				CRT.TextColor(CRTWhite);
+				System.Write(']');
+
+				for Index := Length(From) to 15 do
+				begin
+					System.Write(' ');
+				end;
+
+				System.Write(' -NOTICE: ');
+
+				CRT.TextColor(Color);
+				System.Writeln(AString);
+			end;
+		end;
+
+	MS_WARNING ://Warning
+		begin
+			if MainProc.Options.ShowWarning then
+			begin
+				CRT.TextColor(CRTWhite);
+				System.Write('[');
+
+				CRT.TextColor(CRTYellow);
+				System.Write(From);
+
+				CRT.TextColor(CRTWhite);
+				System.Write(']');
+
+				for Index := Length(From) to 15 do
+				begin
+					System.Write(' ');
+				end;
+
+				System.Write(' -WARNING: ');
+
+				CRT.TextColor(Color);
+				System.Writeln(AString);
+			end;
+		end;
+
+	MS_ERROR ://Error
+		begin
+			if MainProc.Options.ShowError then
+			begin
+				CRT.TextColor(CRTWhite);
+				System.Write('[');
+
+				CRT.TextColor(CRTRed);
+				System.Write(From);
+
+				CRT.TextColor(CRTWhite);
+				System.Write(']');
+
+				for Index := Length(From) to 15 do
+				begin
+					System.Write(' ');
+				end;
+
+				System.Write(' -ERROR : ');
+
+				CRT.TextColor(Color);
+				System.Writeln(AString);
+			end;
+		end;
+
+	else //everything else
+		begin
+			CRT.TextColor(CRTWhite);
+			System.Write('[');
+
+			CRT.TextColor(CRTWhite);
+			System.Write(From);
+
+			CRT.TextColor(CRTWhite);
+			System.Write(']');
+
+			for Index := Length(From) to 15 do
+			begin
+				System.Write(' ');
+			end;
+
+			System.Write(' - ');
+
+			CRT.TextColor(Color);
+			System.Writeln(AString);
+		end;
+	end;
+
+	if LineColor = TRUE then
+	begin
+		LineColor := FALSE;
+	end else
+	begin
+		LineColor := TRUE;
+	end;
 
 	CriticalSection.Leave;
 end;

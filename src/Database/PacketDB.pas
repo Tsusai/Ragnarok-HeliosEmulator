@@ -417,7 +417,7 @@ Begin
 		packet_db.Free;
 		PacketInfo.Free;
 	end else begin
-		MainProc.Console.WriteLn('*** Database/packet_db.txt was not found.  Please fix.');
+		Console.WriteLn('*** Database/packet_db.txt was not found.  Please fix.');
 	end;
 End; (* Proc Load_PacketDB
 *-----------------------------------------------------------------------------*)

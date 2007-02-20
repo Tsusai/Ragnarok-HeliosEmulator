@@ -155,7 +155,7 @@ begin
 
 	if NOT Connection.Connect then
 	begin
-		MainProc.Console.WriteLn('*****Could not connect to mySQL database server.');
+		Console.WriteLn('*****Could not connect to mySQL database server.');
 	end else
 	begin
 		Result := true;
@@ -184,7 +184,7 @@ begin
 	Result := Connection.query(QString,StoreResult,ExecutedOK);
 	if not ExecutedOK then
 	begin
-		MainProc.Console.WriteLn('MySQL Query error: ' + QString);
+		Console.Message('MySQL Query error: ' + QString, 'Common Database', MS_ERROR);
 	end;
 end;//SendQuery
 //------------------------------------------------------------------------------

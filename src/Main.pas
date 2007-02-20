@@ -18,11 +18,10 @@ uses
   Database,
   LoginServer,
 	CharacterServer,
-  InterServer,
+	InterServer,
   ZoneServer,
   HeliosOptions,
-	Version,
-	Console;
+	Version;
 
 type
 
@@ -39,8 +38,6 @@ type
 		InterServer 		: TInterServer;
 
 		Options         : THeliosOptions;
-
-		Console					: TConsole;
 
     procedure LoadOptions;
 
@@ -92,6 +89,8 @@ var
 begin
 	Run := TRUE;
 
+	PreloadOK := InitGlobals;
+
 	Console.WriteLn('  _    _          _   _                ');
 	Console.WriteLn(' | |  | |        | | (_)               ');
 	Console.WriteLn(' | |__| |   ___  | |  _    ___    ___  ');
@@ -107,7 +106,6 @@ begin
 	AppPath  := ExtractFilePath(ParamStr(0));
 
 	SetupTerminationCapturing;
-	PreloadOK := InitGlobals;
 
   LoadOptions;
 
@@ -135,7 +133,7 @@ begin
 			ZoneServer.Start;
 		end;
 
-		MainProc.Console.WriteLn('');
+		Console.WriteLn('');
 
 		Console.WriteLn('- Startup Success');
 		Console.WriteLn('  For a list of console commands, input "/help".');
@@ -254,9 +252,6 @@ end;{LoadOptions}
 constructor TMainProc.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
-
-	Console 				 := TConsole.Create;
-
   LoginServer      := TLoginServer.Create;
   CharacterServer  := TCharacterServer.Create;
   InterServer      := TInterServer.Create;
@@ -281,8 +276,6 @@ begin
   InterServer.Free;
   CharacterServer.Free;
 	LoginServer.Free;
-
-	Console.Free;
 	inherited Destroy;
 end;{TMainProc.Destroy}
 //------------------------------------------------------------------------------

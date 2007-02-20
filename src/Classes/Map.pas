@@ -387,7 +387,7 @@ Begin
 
   if MapTag <> 'PrometheusMap' then //Check type
   begin
-		MainProc.Console.WriteLn('The Map :'+Path+' is not a Prometheus Map.');
+		Console.WriteLn('The Map :'+Path+' is not a Prometheus Map.');
     Result := False;
   end;
 
@@ -395,7 +395,7 @@ Begin
 
   if AByte <> 1 then
   begin
-		MainProc.Console.WriteLn('The Map :'+Path+' failed the version check.');
+		Console.WriteLn('The Map :'+Path+' failed the version check.');
     Result := False;
   end;
 
@@ -406,7 +406,7 @@ Begin
   //check size.
   if NOT (InRange(MapSize.X, 0, 511) AND InRange(MapSize.Y, 0, 511)) then
   begin
-    MainProc.Console.WriteLn('The Map :'+Path+'''s size is out of range.');
+    Console.WriteLn('The Map :'+Path+'''s size is out of range.');
     Result := False;
   end;
 

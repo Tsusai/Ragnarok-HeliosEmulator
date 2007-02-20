@@ -12,6 +12,14 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+
+- Rev 147 -
+[2007/02/20] - RaX - Implemented typed console messages. Each displays differently
+ automagically in the console based on a constant passed to the Console.Message routine.
+[2007/02/20] - RaX - Console is now a global rather than being attached to mainproc.
+[2007/02/20] - RaX - Slightly reworded messages to conform.
+-
+
 - Rev 146 -
 [2007/02/19] - RaX - Moved Console.pas's contents to trunk/src/Main.pas.
 [2007/02/19] - RaX - Added TConsole to Console.pas - a wrapper for console output.

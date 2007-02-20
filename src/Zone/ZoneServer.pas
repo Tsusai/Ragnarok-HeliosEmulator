@@ -284,7 +284,7 @@ begin
 		CharacterEventThread.Start;
   end else
   begin
-		MainProc.Console.WriteLn('Zone Server : Cannot Start():: Zone Server already running!');
+		Console.Message('Cannot Start():: Zone Server already running!', 'Zone Server', MS_ERROR);
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -320,7 +320,7 @@ begin
 		Options.Free;
   end else
   begin
-		MainProc.Console.WriteLn('Zone Server : Cannot Stop():: Zone Server is not running!');
+		Console.Message('Cannot Stop():: Zone Server is not running!', 'Zone Server', MS_ERROR);
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -484,14 +484,14 @@ Begin
 			if NOT Found then
 			begin
 				//They can't get in, so prevent the rest of their useless packets from parsing
-				MainProc.Console.WriteLn(
+				Console.Message(
 					'Someone with the IP '+
 					AClient.Binding.PeerIP +
 					' attempted to send a packet '+
 					IntToHex(packetID, 4) +
-					' with a length of ' + IntToStr(Lth)
+					' with a length of ' + IntToStr(Lth), 'Zone Server', MS_WARNING
 				);
-				MainProc.Console.WriteLn(
+				Console.WriteLn(
 					'Reason for this response: Unsupported ' +
 					'client or a bot attempted to connect.'
 				);
@@ -553,7 +553,7 @@ var
   AMap      : TMap;
   MapNames  : TStringList;
 begin
-	MainProc.Console.WriteLn('      - Loading Maps...');
+	Console.WriteLn('      - Loading Maps...');
   MapNames := ADatabase.StaticData.GetMapsForZone(Options.ID);
   for Index := 0 to MapNames.Count - 1 do
   begin
@@ -566,10 +566,10 @@ begin
       end;
     end else
     begin
-			MainProc.Console.WriteLn('      - Map '+MapNames[Index]+'.pms does not exist in the ./Maps directory');
+			Console.WriteLn('      - Map '+MapNames[Index]+'.pms does not exist in the ./Maps directory');
     end;
   end;
-	MainProc.Console.WriteLn('      - Maps Loaded!');
+	Console.WriteLn('      - Maps Loaded!');
 end;{LoadMaps}
 //------------------------------------------------------------------------------
 
@@ -657,18 +657,18 @@ begin
 			//If validated.
 			if Response = 0 then
 			begin
-				MainProc.Console.WriteLn('[Zone Server]      - Verified with Character Server, '+
-					'sending details.');
+				Console.Message('Verified with Character Server, '+
+					'sending details.', 'Zone Server', MS_NOTICE);
 				SendZoneWANIPToChara(ToCharaTCPClient,Self);
 				SendZoneLANIPToChara(ToCharaTCPClient,Self);
 				SendZoneOnlineUsersToChara(ToCharaTCPClient,Self);
 			end else
 			begin
 				case Response of
-				1 : MainProc.Console.WriteLn('[Zone Server]      - Failed to verify with Character Server. ID already in use.');
-				2 : MainProc.Console.WriteLn('[Zone Server]      - Failed to verify with Character Server. Invalid security key.');
+				1 : Console.Message('Failed to verify with Character Server. ID already in use.', 'Zone Server', MS_WARNING);
+				2 : Console.Message('Failed to verify with Character Server. Invalid security key.', 'Zone Server', MS_WARNING);
 				end;
-				MainProc.Console.WriteLn('[Zone Server]      - Stopping...');
+				Console.Message('Stopping...', 'Zone Server', MS_NOTICE);
 				Stop;
 			end;
 		end;

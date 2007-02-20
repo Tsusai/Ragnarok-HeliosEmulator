@@ -200,8 +200,8 @@ begin
 	  LANIP := Options.LANIP;
   end else
   begin
-		MainProc.Console.WriteLn('Character Server : Cannot Start():: Character Server is already running!');
-  end;
+		Console.Message('Cannot Start():: Character Server is already running!', 'Character Server', MS_ERROR);
+	end;
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -236,7 +236,7 @@ begin
     Options.Free;
   end else
   begin
-		MainProc.Console.WriteLn('Character Server : Cannot Stop():: Character Server is not running');
+		Console.Message('Cannot Stop():: Character Server is not running', 'Character Server', MS_ERROR);
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -286,15 +286,15 @@ begin
 			Response := BufferReadByte(2,ABuffer);
 			if Boolean(Response) then
 			begin
-				MainProc.Console.WriteLn('[Character Server] - Verified with Login Server, '+
-					'sending details.');
+				Console.Message('Verified with Login Server, '+
+					'sending details.', 'Character Server', MS_NOTICE);
 				SendCharaWANIPToLogin(CharaToLoginClient,Self);
 				SendCharaLANIPToLogin(CharaToLoginClient,Self);
 				SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
 			end else
 			begin
-				MainProc.Console.WriteLn('[Character Server] - Failed to verify with Login Server. Invalid Security Key');
-				MainProc.Console.WriteLn('[Character Server] - Stopping...');
+				Console.Message('Failed to verify with Login Server. Invalid Security Key', 'Character Server', MS_ERROR);
+				Console.Message('Stopping...', 'Character Server', MS_NOTICE);
 				Stop;
 			end;
 		end;
@@ -417,10 +417,10 @@ begin
 				WriteBufferByte(2, 01, ReplyBuffer);
 				SendBuffer(AClient,ReplyBuffer,GetPacketLength($0081));
 
-				MainProc.Console.WriteLn(
-					'[Character Server] - Connecting RO client from '+
+				Console.Message(
+					'Connecting RO client from '+
 					AClient.Binding.PeerIP +
-					' did not pass key validation.'
+					' did not pass key validation.', 'Character Server', MS_WARNING
 				);
 			end;
 		end;
@@ -767,28 +767,28 @@ var
 	ID : LongWord;
 begin
 	Validated := 0; //Assume true
-	MainProc.Console.WriteLn(
-		'[Character Server] - Reading Zone Server connection from ' +
-		AClient.Binding.PeerIP
+	Console.Message(
+		'Reading Zone Server connection from ' +
+		AClient.Binding.PeerIP, 'Character Server', MS_NOTICE
 	);
 	ID := BufferReadLongWord(2,InBuffer);
 	Password := BufferReadMD5(8,InBuffer);
 
 	if (fZoneServerList.IndexOf(ID) > -1) then
 	begin
-		MainProc.Console.WriteLn('[Character Server] - Zone Server failed verification. ID already in use.');
+		Console.Message('Zone Server failed verification. ID already in use.', 'Character Server', MS_WARNING);
 		Validated := 1;
 	end;
 
 	if (Password <> GetMD5(Options.Key)) then
 	begin
-		MainProc.Console.WriteLn('[Character Server] - Zone Server failed verification. Invalid Security Key.');
+		Console.Message('Zone Server failed verification. Invalid Security Key.', 'Character Server', MS_WARNING);
 		Validated := 2;
 	end;
 
 	if Validated = 0 then
 	begin
-		MainProc.Console.WriteLn('[Character Server] - Zone Server connection validated.');
+		Console.Message('Zone Server connection validated.','Character Server', MS_INFO);
 
 		ZServerInfo :=  TZoneServerInfo.Create;
 		ZServerInfo.ZoneID := ID;
@@ -867,7 +867,7 @@ begin
 					Size := BufferReadWord(2,ABuffer);
 					RecvBuffer(AClient,ABuffer[4],Size-4);
 					TZoneServerLink(AClient.Data).Info.WAN := BufferReadString(4,Size-4,ABuffer);
-					MainProc.Console.WriteLn('[Character Server] - Received updated Zone Server WANIP.');
+					Console.Message('Received updated Zone Server WANIP.', 'Character Server', MS_NOTICE);
 				end;
 			end;
 		$2103: // Zone Server sending new LAN location details
@@ -878,7 +878,7 @@ begin
 					Size := BufferReadWord(2,ABuffer);
 					RecvBuffer(AClient,ABuffer[4],Size-4);
 					TZoneServerLink(AClient.Data).Info.LAN := BufferReadString(4,Size-4,ABuffer);
-					MainProc.Console.WriteLn('[Character Server] - Received updated Zone Server LANIP.');
+					Console.Message('Received updated Zone Server LANIP.', 'Character Server', MS_NOTICE);
 				end;
 			end;
 		$2104: // Zone Server sending new Online User count
@@ -887,12 +887,12 @@ begin
 				begin
 					RecvBuffer(AClient,ABuffer[2],GetPacketLength($2104)-2);
 					//TZoneServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
-					MainProc.Console.WriteLn('[Character Server] - Received updated Zone Server Online Users.');
+					Console.Message('Received updated Zone Server Online Users.', 'Character Server', MS_NOTICE);
 				end;
 			end;
 		else
 			begin
-				MainProc.Console.WriteLn('[Character Server] - Unknown Character Server Packet : ' + IntToHex(PacketID,4));
+				Console.Message('Unknown Character Server Packet : ' + IntToHex(PacketID,4), 'Character Server', MS_WARNING);
 			end;
 		end;
 	end;

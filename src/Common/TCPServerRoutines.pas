@@ -30,7 +30,7 @@ uses
 	IdException,
 	IdContext,
 	Classes,
-	Main,
+	Globals,
 	PacketDB;
 
 //------------------------------------------------------------------------------
@@ -57,18 +57,18 @@ begin
 		AServer := TIdTCPServer.Create;
 	end;
 	Result := true;
-	MainProc.Console.WriteLn(Format(LOADING, [Name]));
+	Console.WriteLn(Format(LOADING, [Name]));
 	try
 		AServer.Active := True;
 	except
 		on EIdCouldNotBindSocket do
 		begin
-			MainProc.Console.WriteLn(Format(PORT_ERR, [Name, AServer.DefaultPort]));
+			Console.WriteLn(Format(PORT_ERR, [Name, AServer.DefaultPort]));
 			Result := false;
 			Exit;
 		end;
 	end;
-	MainProc.Console.WriteLn(Format(LOADED, [Name]));
+	Console.WriteLn(Format(LOADED, [Name]));
 end;{ActivateServer}
 //------------------------------------------------------------------------------
 
@@ -96,11 +96,11 @@ begin
 	begin
 		if AServer.Active then
 		begin
-			MainProc.Console.WriteLn(Format(TERMINATING, [Name]));
+			Console.WriteLn(Format(TERMINATING, [Name]));
 			AServer.Active := false;
 		end;
 		AServer.Bindings.Clear;
-		MainProc.Console.WriteLn(Format(TERMINATED, [Name]));
+		Console.WriteLn(Format(TERMINATED, [Name]));
 	end;
 end;{DeActivateServer}
 //------------------------------------------------------------------------------

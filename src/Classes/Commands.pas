@@ -115,9 +115,9 @@ begin
 					Values.Free;
 				end;
 				if Error <> '' then begin  //Display Errors
-					MainProc.Console.WriteLn('Command ' + Command + ' failed - ' + Error)
+					Console.WriteLn('Command ' + Command + ' failed - ' + Error)
 				end else begin
-					MainProc.Console.WriteLn('Command ' + Command + ' success!');
+					Console.WriteLn('Command ' + Command + ' success!');
 				end;
 			end;
 		finally
@@ -140,14 +140,14 @@ end;{TCommands.Parse}
 //------------------------------------------------------------------------------
 function TCommands.Help : String;
 begin
-	MainProc.Console.WriteLn('The available console commands are as follows...');
-	MainProc.Console.WriteLn('--------------------------------------');
-	MainProc.Console.WriteLn('/start - starts a server');
-	MainProc.Console.WriteLn('/stop - stops a server');
-	MainProc.Console.WriteLn('/restart - restarts all enabled servers');
-	MainProc.Console.WriteLn('/exit - exits the program');
-	MainProc.Console.WriteLn('/help - lists all console commands');
-	MainProc.Console.WriteLn('--------------------------------------');
+	Console.WriteLn('The available console commands are as follows...');
+	Console.WriteLn('--------------------------------------');
+	Console.WriteLn('/start - starts a server');
+	Console.WriteLn('/stop - stops a server');
+	Console.WriteLn('/restart - restarts all enabled servers');
+	Console.WriteLn('/exit - exits the program');
+	Console.WriteLn('/help - lists all console commands');
+	Console.WriteLn('--------------------------------------');
 	Result := '';
 end;{TCommands.Help}
 //------------------------------------------------------------------------------
@@ -226,9 +226,9 @@ begin
   end else
   begin
     //display help for Start()
-		MainProc.Console.WriteLn('Using /Start...');
-		MainProc.Console.WriteLn('"/Start <ServerName>" - starts <ServerName>');
-		MainProc.Console.WriteLn('ServerName can be "Login", "Character", "Zone", or "Inter"');
+		Console.WriteLn('Using /Start...');
+		Console.WriteLn('"/Start <ServerName>" - starts <ServerName>');
+		Console.WriteLn('ServerName can be "Login", "Character", "Zone", or "Inter"');
   end;
 
 end;{Start}
@@ -272,9 +272,9 @@ begin
   end else
   begin
     //display help for Stop()
-		MainProc.Console.WriteLn('Using /Stop...');
-		MainProc.Console.WriteLn('"/Stop <ServerName>" - stops <ServerName>');
-		MainProc.Console.WriteLn('ServerName can be "Login", "Character", "Zone", or "Inter"');
+		Console.WriteLn('Using /Stop...');
+		Console.WriteLn('"/Stop <ServerName>" - stops <ServerName>');
+		Console.WriteLn('ServerName can be "Login", "Character", "Zone", or "Inter"');
   end;
 
 end;{Stop}

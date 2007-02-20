@@ -23,15 +23,25 @@ interface
 		THeliosOptions = class(TMemIniFile)
 		private
 //private variables
+			fInfoEnabled       : boolean;
+			fNoticeEnabled     : boolean;
+			fWarningEnabled    : boolean;
+			fErrorEnabled      : boolean;
+
 			fLoginEnabled      : boolean;
-      fCharaEnabled      : boolean;
-      fInterEnabled      : boolean;
-      fZoneEnabled       : boolean;
+			fCharaEnabled      : boolean;
+			fInterEnabled      : boolean;
+			fZoneEnabled       : boolean;
 
 		public
-      property LoginEnabled : boolean read fLoginEnabled;
+			property ShowInfo : boolean read fInfoEnabled;
+			property ShowNotice : boolean read fNoticeEnabled;
+			property ShowWarning : boolean read fWarningEnabled;
+			property ShowError : boolean read fErrorEnabled;
+
+			property LoginEnabled : boolean read fLoginEnabled;
       property CharaEnabled : boolean read fCharaEnabled;
-      property InterEnabled : boolean read fInterEnabled;
+			property InterEnabled : boolean read fInterEnabled;
       property ZoneEnabled : boolean read fZoneEnabled;
 
 			//Public methods
@@ -62,15 +72,28 @@ implementation
 	var
 		Section    : TStringList;
 
-    //--------------------------------------------------------------------------
-    //LoadLogin                                               SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadConsole                                               SUB PROCEDURE
+		//--------------------------------------------------------------------------
+		procedure LoadConsole;
+		begin
+			ReadSectionValues('Console', Section);
+			fInfoEnabled := StrToBoolDef(Section.Values['ShowInfo'] ,true);
+			fNoticeEnabled := StrToBoolDef(Section.Values['ShowNotice'] ,true);
+			fWarningEnabled := StrToBoolDef(Section.Values['ShowWarning'] ,true);
+			fErrorEnabled := StrToBoolDef(Section.Values['ShowError'] ,true);
+		end;{Subroutine LoadLogin}
+		//--------------------------------------------------------------------------
+
+		//--------------------------------------------------------------------------
+		//LoadLogin                                               SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadLogin;
 		begin
 			ReadSectionValues('Login', Section);
 			fLoginEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
 		end;{Subroutine LoadLogin}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
     //--------------------------------------------------------------------------
@@ -111,6 +134,8 @@ implementation
 		Section.QuoteChar := '"';
 		Section.Delimiter := ',';
 
+		LoadConsole;
+
 		LoadLogin;
     LoadChara;
     LoadInter;
@@ -134,7 +159,13 @@ implementation
 //------------------------------------------------------------------------------
 	procedure THeliosOptions.Save;
 	begin
-    //Login
+		//Console
+		WriteString('Console','ShowInfo',BoolToStr(fInfoEnabled));
+		WriteString('Console','ShowNotice',BoolToStr(fNoticeEnabled));
+		WriteString('Console','ShowWarning',BoolToStr(fWarningEnabled));
+		WriteString('Console','ShowError',BoolToStr(fErrorEnabled));
+
+		//Login
 		WriteString('Login','Enabled',BoolToStr(LoginEnabled));
 
     //Chara

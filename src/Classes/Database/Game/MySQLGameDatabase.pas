@@ -161,7 +161,7 @@ begin
 
 	if NOT Connection.Connect then
 	begin
-		MainProc.Console.WriteLn('*****Could not connect to mySQL database server.');
+		Console.WriteLn('*****Could not connect to mySQL database server.');
 		Result := false;
 	end;
 
@@ -177,7 +177,7 @@ begin
 	Result := Connection.query(QString,StoreResult,ExecutedOK);
 	if not ExecutedOK then
 	begin
-		MainProc.Console.WriteLn('MySQL Query error: ' + QString);
+		Console.Message('MySQL Query error: ' + QString, 'Game Database', MS_ERROR);
 	end;
 end;
 

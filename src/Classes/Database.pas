@@ -126,8 +126,8 @@ begin
 			end;
 
 		else begin //anything else
-			MainProc.Console.WriteLn('COMMON DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
-			MainProc.Console.WriteLn('     See ServerOptions.ini for configuration options.');
+			Console.WriteLn('COMMON DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
+			Console.WriteLn('     See ServerOptions.ini for configuration options.');
 		end;
   end;
 	//Game
@@ -143,8 +143,8 @@ begin
 			end;
 
     else begin //anything else
-			MainProc.Console.WriteLn('GAME DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
-			MainProc.Console.WriteLn('     See ServerOptions.ini for configuration options.');
+			Console.WriteLn('GAME DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
+			Console.WriteLn('     See ServerOptions.ini for configuration options.');
 		end;
 	end;
   //Static
@@ -160,8 +160,8 @@ begin
 			end;
 
 		else begin //anything else
-			MainProc.Console.WriteLn('STATIC DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
-			MainProc.Console.WriteLn('     See ServerOptions.ini for configuration options.');
+			Console.WriteLn('STATIC DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
+			Console.WriteLn('     See ServerOptions.ini for configuration options.');
 		end;
 	end;
 	LoadedOK := (CommonOK and GameOK and StaticOK);

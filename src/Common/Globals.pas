@@ -16,7 +16,8 @@ uses
 	//Helios
 	Commands,
   CharaList,
-  Database
+	Database,
+	Console
   ;
 
 
@@ -34,6 +35,7 @@ uses
 //                              Global Variables
 //------------------------------------------------------------------------------
 var
+	Console					: TConsole;
 	Command         : TCommands;
 	AppPath         : String;
 
@@ -44,6 +46,12 @@ var
   ADatabase       : TDatabase;
 //------------------------------------------------------------------------------
 
+const
+	//message types
+	MS_INFO			= 0;
+	MS_NOTICE		= 1;
+	MS_WARNING	= 2;
+	MS_ERROR		= 3;
 
 implementation
 	uses
@@ -100,6 +108,8 @@ var
 begin
   DatabaseLoaded := false; //assume the database connections failed!
 
+	Console := TConsole.Create;
+
 	AccountList     := TStringList.Create;
 
 	ADatabase       := TDatabase.Create(TRUE,TRUE,TRUE,DatabaseLoaded);
@@ -121,7 +131,7 @@ end; {InitGlobals}
 procedure DestroyGlobals;
 begin
 	AccountList.Free;
-
+	Console.Free;
   ADatabase.Free;
 end;{DestroyGlobals}
 //------------------------------------------------------------------------------

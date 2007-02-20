@@ -375,7 +375,7 @@ uses
 		
 		if true {Various checks (not sitting)} then
 		begin
-			MainProc.Console.WriteLn(Format('X%d Y%d recieved',[DestPoint.X,DestPoint.Y]));
+			Console.WriteLn(Format('X%d Y%d recieved',[DestPoint.X,DestPoint.Y]));
 			{if AChara.MapInfo.GetPath(AChara.Point,DestPoint,) then
 			begin
 			end;}
