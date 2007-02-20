@@ -215,7 +215,7 @@ end;{Start}
 //------------------------------------------------------------------------------
 procedure TLoginServer.OnConnect(AConnection: TIdContext);
 begin
-	//MainProc.Console('Connection from ' + AConnection.Connection.Socket.Binding.PeerIP);
+	//Console.Message('Connection from ' + AConnection.Connection.Socket.Binding.PeerIP. 'Login Server', MS_INFO);
 end;{LoginServerConnect}
 //------------------------------------------------------------------------------
 

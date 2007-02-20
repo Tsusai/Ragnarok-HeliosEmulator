@@ -13,12 +13,15 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 151 -
+[2007/02/20] - RaX - Forgot to change a 2-3 MainProc.Console messages on the linux side,
+ fixed.
+-
 
 - Rev 150 -
 [2007/02/20] - RaX - Fixed Kylix not liking a unit and a variable having the same name...
 [2007/02/20] - RaX - Renamed Console to Terminal.pas. Removed Unused uses of Console.
 -
-
 
 - Rev 149 -
 [2007/02/20] - RaX - Unfortunately, because of my brain at 3am, I forgot to commit main.pas
