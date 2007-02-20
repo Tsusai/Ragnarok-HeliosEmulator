@@ -13,7 +13,13 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
-- Rev 148 -
+- Rev 149 -
+[2007/02/20] - RaX - Unfortunately, because of my brain at 3am, I forgot to commit main.pas
+ so rev 148 is broken. Sorry =(.
+[2007/02/20] - RaX - Changed Error colors to red instead of burgundy.
+-
+
+- Rev 148 - BROKEN
 [2007/02/20] - RaX - Fixed termination. Helios now checks to see if it is done loading
  before a user can shut it down. If an administrator attempts to shut it down, it will write
  a message informing the administrator that he/she must wait until helios is done starting

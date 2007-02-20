@@ -229,7 +229,7 @@ begin
 				CRT.TextColor(CRTWhite);
 				System.Write('[');
 
-				CRT.TextColor(CRTRed);
+				CRT.TextColor(CRTLightRed);
 				System.Write(From);
 
 				CRT.TextColor(CRTWhite);

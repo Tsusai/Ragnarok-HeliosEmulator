@@ -31,6 +31,7 @@ type
 	TMainProc = class(TComponent)
 	public
 		Run : Boolean;
+		Loaded : Boolean;
 
 		LoginServer 		: TLoginServer;
 		CharacterServer : TCharacterServer;
@@ -107,7 +108,7 @@ begin
 
 	SetupTerminationCapturing;
 
-  LoadOptions;
+	LoadOptions;
 
 	if PreloadOK then
 	begin
@@ -154,6 +155,7 @@ begin
   begin
     ZoneServer.ConnectToCharacter;
 	end;
+	Loaded := TRUE;
 end;{TMainProc.Startup}
 //------------------------------------------------------------------------------
 
@@ -174,12 +176,13 @@ end;{TMainProc.Startup}
 //------------------------------------------------------------------------------
 procedure TMainProc.Shutdown;
 begin
+	Loaded := FALSE;
 	Console.WriteLn('- Helios is shutting down...');
 	//Go backwards (so zone doesn't try and connect to character while shutting down)
 
 	//Disconnect clients.
   ZoneServer.Stop;
-  InterServer.Stop;
+	InterServer.Stop;
   CharacterServer.Stop;
   LoginServer.Stop;
 
@@ -252,7 +255,8 @@ end;{LoadOptions}
 constructor TMainProc.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
-  LoginServer      := TLoginServer.Create;
+	Loaded := FALSE;
+	LoginServer      := TLoginServer.Create;
   CharacterServer  := TCharacterServer.Create;
   InterServer      := TInterServer.Create;
 	ZoneServer       := TZoneServer.Create;
@@ -272,7 +276,7 @@ end;{TMainProc.Create}
 //------------------------------------------------------------------------------
 destructor  TMainProc.Destroy;
 begin
-  ZoneServer.Free;
+	ZoneServer.Free;
   InterServer.Free;
   CharacterServer.Free;
 	LoginServer.Free;
