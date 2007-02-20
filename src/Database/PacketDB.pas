@@ -54,7 +54,7 @@ uses
 	SysUtils,
 	Classes,
 
-	Console,
+	Main,
 	Globals,
 	ZoneRecv;
 
@@ -417,7 +417,7 @@ Begin
 		packet_db.Free;
 		PacketInfo.Free;
 	end else begin
-		MainProc.Console('*** Database/packet_db.txt was not found.  Please fix.');
+		MainProc.Console.WriteLn('*** Database/packet_db.txt was not found.  Please fix.');
 	end;
 End; (* Proc Load_PacketDB
 *-----------------------------------------------------------------------------*)

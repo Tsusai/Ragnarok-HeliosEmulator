@@ -88,7 +88,7 @@ uses
 	//Helios
 	BufferIO,
 	WinLinux,
-	Console,
+	Main,
 	PacketDB,
 	Globals,
   Map,
@@ -284,7 +284,7 @@ begin
 		CharacterEventThread.Start;
   end else
   begin
-    MainProc.Console('Zone Server : Cannot Start():: Zone Server already running!');
+		MainProc.Console.WriteLn('Zone Server : Cannot Start():: Zone Server already running!');
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -320,7 +320,7 @@ begin
 		Options.Free;
   end else
   begin
-    MainProc.Console('Zone Server : Cannot Stop():: Zone Server is not running!');
+		MainProc.Console.WriteLn('Zone Server : Cannot Stop():: Zone Server is not running!');
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -484,14 +484,14 @@ Begin
 			if NOT Found then
 			begin
 				//They can't get in, so prevent the rest of their useless packets from parsing
-				MainProc.Console(
+				MainProc.Console.WriteLn(
 					'Someone with the IP '+
 					AClient.Binding.PeerIP +
 					' attempted to send a packet '+
 					IntToHex(packetID, 4) +
 					' with a length of ' + IntToStr(Lth)
 				);
-				MainProc.Console(
+				MainProc.Console.WriteLn(
 					'Reason for this response: Unsupported ' +
 					'client or a bot attempted to connect.'
 				);
@@ -553,7 +553,7 @@ var
   AMap      : TMap;
   MapNames  : TStringList;
 begin
-  MainProc.Console('      - Loading Maps...');
+	MainProc.Console.WriteLn('      - Loading Maps...');
   MapNames := ADatabase.StaticData.GetMapsForZone(Options.ID);
   for Index := 0 to MapNames.Count - 1 do
   begin
@@ -566,10 +566,10 @@ begin
       end;
     end else
     begin
-      MainProc.Console('      - Map '+MapNames[Index]+'.pms does not exist in the ./Maps directory');
+			MainProc.Console.WriteLn('      - Map '+MapNames[Index]+'.pms does not exist in the ./Maps directory');
     end;
   end;
-  MainProc.Console('      - Maps Loaded!');
+	MainProc.Console.WriteLn('      - Maps Loaded!');
 end;{LoadMaps}
 //------------------------------------------------------------------------------
 
@@ -657,7 +657,7 @@ begin
 			//If validated.
 			if Response = 0 then
 			begin
-				MainProc.Console('[Zone Server]      - Verified with Character Server, '+
+				MainProc.Console.WriteLn('[Zone Server]      - Verified with Character Server, '+
 					'sending details.');
 				SendZoneWANIPToChara(ToCharaTCPClient,Self);
 				SendZoneLANIPToChara(ToCharaTCPClient,Self);
@@ -665,10 +665,10 @@ begin
 			end else
 			begin
 				case Response of
-				1 : MainProc.Console('[Zone Server]      - Failed to verify with Character Server. ID already in use.');
-				2 : MainProc.Console('[Zone Server]      - Failed to verify with Character Server. Invalid security key.');
+				1 : MainProc.Console.WriteLn('[Zone Server]      - Failed to verify with Character Server. ID already in use.');
+				2 : MainProc.Console.WriteLn('[Zone Server]      - Failed to verify with Character Server. Invalid security key.');
 				end;
-				MainProc.Console('[Zone Server]      - Stopping...');
+				MainProc.Console.WriteLn('[Zone Server]      - Stopping...');
 				Stop;
 			end;
 		end;

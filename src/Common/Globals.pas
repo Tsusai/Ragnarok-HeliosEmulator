@@ -52,7 +52,7 @@ implementation
 		SysUtils,
 		//Helios
 		WinLinux,
-		Console,
+		Main,
 		PacketDB,
 		//3rd Party
 		IdHashMessageDigest;

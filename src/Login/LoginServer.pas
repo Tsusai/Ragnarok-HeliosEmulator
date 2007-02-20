@@ -85,7 +85,7 @@ uses
 	BufferIO,
 	CharacterServerInfo,
 	StrUtils,
-	Console,
+	Main,
 	TCPServerRoutines;
 
 const
@@ -161,7 +161,7 @@ begin
 	  ActivateServer('Login',TCPServer);
   end else
   begin
-    MainProc.Console('Login Server : Cannot start():: Login server is already running.');
+		MainProc.Console.WriteLn('Login Server : Cannot start():: Login server is already running.');
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -196,7 +196,7 @@ begin
     Options.Free;
   end else
   begin
-    MainProc.Console('Login Server : Cannot Stop():: Login server is not running.');
+		MainProc.Console.WriteLn('Login Server : Cannot Stop():: Login server is not running.');
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -413,7 +413,7 @@ end;{OnException}
 		AccountPassword : string;
 		MD5Key    : string;
 	begin
-		MainProc.Console(
+		MainProc.Console.WriteLn(
 			'[Login Server]     - RO Client connection from ' +
 			AClient.Binding.PeerIP
 		);
@@ -493,7 +493,7 @@ end;{OnException}
 		Port : word;
 		CServerInfo : TCharaServerInfo;
 	begin
-		MainProc.Console(
+		MainProc.Console.WriteLn(
 			'[Login Server]     - Reading Character Server connection from ' +
 			AClient.Binding.PeerIP
 		);
@@ -501,13 +501,13 @@ end;{OnException}
 
 		if Password <> GetMD5(Options.Key) then
 		begin
-			MainProc.Console('[Login Server]     - Character Server failed verification: Invalid Security Key.');
+			MainProc.Console.WriteLn('[Login Server]     - Character Server failed verification: Invalid Security Key.');
 			Validated := false;
 		end;
 
 		if Validated then
 		begin
-			MainProc.Console('[Login Server]     - Character Server connection validated.');
+			MainProc.Console.WriteLn('[Login Server]     - Character Server connection validated.');
 			Servername := BufferReadString(18,24,InBuffer);
 			Port := BufferReadWord(42,InBuffer);
 			CServerInfo := TCharaServerInfo.Create;
@@ -588,7 +588,7 @@ end;{OnException}
 					Size := BufferReadWord(2,Buffer);
 					RecvBuffer(AClient,Buffer[4],Size-4);
 					TCharaServerLink(AClient.Data).Info.WAN := BufferReadString(4,Size-4,Buffer);
-					MainProc.Console('[Login Server]     - Received updated Character Server WANIP.');
+					MainProc.Console.WriteLn('[Login Server]     - Received updated Character Server WANIP.');
 				end;
 			end;
 		$2003:
@@ -599,7 +599,7 @@ end;{OnException}
 					Size := BufferReadWord(2,Buffer);
 					RecvBuffer(AClient,Buffer[4],Size-4);
 					TCharaServerLink(AClient.Data).Info.LAN := BufferReadString(4,Size-4,Buffer);
-					MainProc.Console('[Login Server]     - Received updated Character Server LANIP.');
+					MainProc.Console.WriteLn('[Login Server]     - Received updated Character Server LANIP.');
 				end;
 			end;
 		$2004:
@@ -608,12 +608,12 @@ end;{OnException}
 				begin
 					RecvBuffer(AClient,Buffer[2],GetPacketLength($2004)-2);
 					TCharaServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,Buffer);
-					MainProc.Console('[Login Server]     - Received updated Character Server Online Users.');
+					MainProc.Console.WriteLn('[Login Server]     - Received updated Character Server Online Users.');
 				end;
 			end;
 		else
 			begin
-				MainProc.Console('[Login Server]     - Unknown Login Packet : ' + IntToHex(ID,4));
+				MainProc.Console.WriteLn('[Login Server]     - Unknown Login Packet : ' + IntToHex(ID,4));
 			end;
 		end;
 	end;  // Proc SendCharacterServers

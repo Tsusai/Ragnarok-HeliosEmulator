@@ -2,8 +2,8 @@
 //Console()				                                                         UNIT
 //------------------------------------------------------------------------------
 //	What it does-
-//			This is the main process, it handles each server and the starting/
-//    stopping of each.
+//			This unit contains the Console unit, an object for managing console
+//		output.
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
@@ -14,291 +14,126 @@ unit Console;
 interface
 
 uses
-	Classes,
-  Database,
-  LoginServer,
-	CharacterServer,
-  InterServer,
-  ZoneServer,
-  HeliosOptions,
-	Version;
+	CRT;
 
 type
 
 //------------------------------------------------------------------------------
 //TMainProc                                                               CLASS
 //------------------------------------------------------------------------------
-	TMainProc = class(TComponent)
+	TConsole = class
 	public
-		Run : Boolean;
+		procedure Write(
+										AString : String;
+										Text : Byte = CRTBlack;
+										Background : Byte = CRTWhite
+		);
+		procedure WriteLn(
+										AString : String;
+										Text : Byte = CRTBlack;
+										Background : Byte = CRTWhite
+		);
 
-		LoginServer 		: TLoginServer;
-		CharacterServer : TCharacterServer;
-		ZoneServer  		: TZoneServer;
-		InterServer 		: TInterServer;
-
-		Options         : THeliosOptions;
-
-		procedure Console(Line : string);
-
-    procedure LoadOptions;
-
-		procedure Startup;
-		procedure Shutdown;
-
-		procedure ThirdPartyCredits;
-
-		constructor Create(AOwner : TComponent); override;
-		destructor  Destroy; override;
+		Constructor Create;
+		Destructor Destroy;override;
 	end;{TMainProc}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//                            Published Variables
-//------------------------------------------------------------------------------
-var
-	MainProc : TMainProc;
 //------------------------------------------------------------------------------
 
 
 implementation
 uses
-	SysUtils,
-	{Helios}
-	Globals,
-	CharacterServerInfo,
-	WinLinux
-	{Third Party}
-	;
+	SyncObjs;
 
-//------------------------------------------------------------------------------
-//TMainProc.Console()                                                 PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Alias of WriteLn. Makes a bit more sense here =)
-//
-//	Changes -
-//		September 19th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TMainProc.Console(Line : string);
-begin
-	WriteLn(Line);
-end;{TMainProc.Console}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TMainProc.StartUp()                                                 PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Initializes each server to it's default values, then it activates them.
-//
-//	Changes -
-//		September 19th, 2006 - RaX - Created Header.
-//		January 20th, 2007 - Tsusai - If server passes PreLoad check (packet_db
-//			and database connect), then start the servers.  Readded Failed to 
-//			Start message.
-//
-//------------------------------------------------------------------------------
-procedure TMainProc.Startup;
 var
-	PreloadOK : boolean;
-begin
-  Run := TRUE;
-
-  MainProc.Console('  _    _          _   _                ');
-	MainProc.Console(' | |  | |        | | (_)               ');
-	MainProc.Console(' | |__| |   ___  | |  _    ___    ___  ');
-	MainProc.Console(' |  __  |  / _ \ | | | |  / _ \  / __| ');
-	MainProc.Console(' | |  | | |  __/ | | | | | (_) | \__ \ ');
-	MainProc.Console(' |_|  |_|  \___| |_| |_|  \___/  |___/ ');
-
-  ThirdPartyCredits; //Load external credits file.
-
-	MainProc.Console(Format('- %s is starting...',[HeliosVersion]));
-  MainProc.Console('');
-
-	AppPath  := ExtractFilePath(ParamStr(0));
-
-	SetupTerminationCapturing;
-	PreloadOK := InitGlobals;
-
-  LoadOptions;
-
-	if PreloadOK then
-	begin
-
-		//Start and create Enabled Servers
-		if Options.LoginEnabled then
-		begin
-			LoginServer.Start;
-		end;
-		//NOTE: Prior
-		if Options.CharaEnabled then
-		begin
-			CharacterServer.Start;
-		end;
-
-		if Options.InterEnabled then
-		begin
-			InterServer.Start;
-		end;
-
-		if Options.ZoneEnabled then
-		begin
-			ZoneServer.Start;
-		end;
-
-	  MainProc.Console('');
-
-		Console('- Startup Success');
-		Console('  For a list of console commands, input "/help".');
-	end else
-	begin
-		Console('- Startup Failed');
-		Console('  Please see what error was mentioned above, close this program '+
-			'and correct');
-	end;
-	Console('');
-
-  //Link Enabled Servers
-  if Options.CharaEnabled then
-  begin
-    CharacterServer.ConnectToLogin;
-  end;
-  if Options.ZoneEnabled then
-  begin
-    ZoneServer.ConnectToCharacter;
-	end;
-end;{TMainProc.Startup}
-//------------------------------------------------------------------------------
+	CriticalSection : TCriticalSection;
 
 
 //------------------------------------------------------------------------------
-//TMainProc.Shutdown()                                             PROCEDURE
+//TConsole.Create()                                                 CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
-//			Gracefully disconnects clients, Saves online characters,  then calls
-//    Destroy Globals.
+//			Creates our critical section for managing console output.
 //
 //	Changes -
-//		September 19th, 2006 - RaX - Created Header.
-//		January 20th, 2007 - Tsusai - Reversed shutdown order so server clients
-//			aren't disconnected and attempt to reconnect (cleaner shutdown 
-//			messages)
+//		February 19th, 2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TMainProc.Shutdown;
+Constructor TConsole.Create;
 begin
-	Console('- Helios is shutting down...');
-	//Go backwards (so zone doesn't try and connect to character while shutting down)
-
-	//Disconnect clients.
-  ZoneServer.Stop;
-  InterServer.Stop;
-  CharacterServer.Stop;
-  LoginServer.Stop;
-
-  Options.Save;
-  Options.Free;
-
-	//Make sure globals are Free'd on Application exit.
-	DestroyGlobals;
-end;{TMainProc.Shutdown}
+	inherited;
+	CRT.TextBackground(CRTWhite);
+	CriticalSection := TCriticalSection.Create;
+end;//Create
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TMainProc.ThirdPartyCredits()                                       PROCEDURE
+//TConsole.Destroy()                                                 DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
-//			Writes the credits defined in thirdparty.txt to the console.
+//			frees up out object
 //
 //	Changes -
-//		September 19th, 2006 - RaX - Created Header.
+//		February 19th, 2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TMainProc.ThirdPartyCredits;
-var
-	ThirdParty  : TStringList;
-	LineIndex   : Integer;
+Destructor TConsole.Destroy;
 begin
-	if FileExists(AppPath + '3rdParty.txt') then
-	begin
-		ThirdParty := TStringList.Create;
-		ThirdParty.LoadFromFile(AppPath + '3rdParty.txt');
-		for LineIndex := 0 to ThirdParty.Count - 1 do
-		begin
-			Console('  '+ThirdParty.Strings[LineIndex]);
-		end;
-		ThirdParty.Free;
-	end;
-end;{TMainProc.ThirdPartyCredits}
+	CriticalSection.Free;
+	inherited;
+end;//Destroy
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//LoadOptions                                                         PROCEDURE
+//TConsole.Write()                                                 PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Creates and Loads the inifile.
+//			Alias of Write.
 //
 //	Changes -
-//		January 4th, 2007 - RaX - Created Header.
+//		February 19th, 2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Procedure TMainProc.LoadOptions;
+procedure TConsole.Write(
+	AString 	: String;
+	Text 			: Byte = CRTBlack;
+	Background: Byte = CRTWhite
+	);
 begin
-  Options    := THeliosOptions.Create('./Helios.ini');
+	CriticalSection.Enter;
 
-	Options.Load;
-end;{LoadOptions}
+	CRT.TextColor(Text);
+	System.Write(AString);
+
+	CriticalSection.Leave;
+end;
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
-//TMainProc.Create()                                                CONSTRUCTOR
+//TConsole.WriteLn()                                                 PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Initializes the servers and starts them.
+//			Alias of WriteLn.
 //
 //	Changes -
-//		September 19th, 2006 - RaX - Created Header.
+//		February 19th, 2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-constructor TMainProc.Create(AOwner : TComponent);
+procedure TConsole.WriteLn(
+	AString 	: String;
+	Text 			: Byte = CRTBlack;
+	Background: Byte = CRTWhite
+	);
 begin
-	inherited Create(AOwner);
+	CriticalSection.Enter;
 
-  LoginServer      := TLoginServer.Create;
-  CharacterServer  := TCharacterServer.Create;
-  InterServer      := TInterServer.Create;
-	ZoneServer       := TZoneServer.Create;
-end;{TMainProc.Create}
-//------------------------------------------------------------------------------
+	CRT.TextColor(Text);
+	System.WriteLn(AString);
 
-
+	CriticalSection.Leave;
+end;
 //------------------------------------------------------------------------------
-//TMainProc.Destroy()                                               DESTRUCTOR
-//------------------------------------------------------------------------------
-//	What it does-
-//			Shutdown all servers and free em' up!
-//
-//	Changes -
-//		September 19th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-destructor  TMainProc.Destroy;
-begin
-  ZoneServer.Free;
-  InterServer.Free;
-  CharacterServer.Free;
-	LoginServer.Free;
-
-	inherited Destroy;
-end;{TMainProc.Destroy}
-//------------------------------------------------------------------------------
-
 
 end{Console}.

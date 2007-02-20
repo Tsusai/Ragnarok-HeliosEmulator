@@ -61,7 +61,7 @@ implementation
 
 uses
 	//Helios
-  Console,
+	Main,
 	WinLinux,
 	Database,
 	Globals,
@@ -184,7 +184,7 @@ begin
     ActivateServer('Inter',TCPServer);
   end else
   begin
-    MainProc.Console('Inter Server : Cannot Start():: Inter Server already running!');
+		MainProc.Console.WriteLn('Inter Server : Cannot Start():: Inter Server already running!');
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -209,7 +209,7 @@ begin
     Options.Free;
   end else
   begin
-    MainProc.Console('Inter Server : Cannot Start():: Inter Server not running.');
+    MainProc.Console.WriteLn('Inter Server : Cannot Start():: Inter Server not running.');
   end;
 end;{Start}
 //------------------------------------------------------------------------------

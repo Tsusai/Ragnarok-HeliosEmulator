@@ -266,6 +266,9 @@ compile for linux, at the same time*}
 //------------------------------------------------------------------------------
 //                              Definitions for both.
 //------------------------------------------------------------------------------
+	//Main Unit
+	Main in 'Main.pas',
+
 	SysUtils;
 //------------------------------------------------------------------------------
 
@@ -299,7 +302,8 @@ begin
 
 	{Begin Main Loop}
 	{Must keep application alive!}
-	while MainProc.Run do begin
+	while MainProc.Run do
+	begin
 		ReadLn(AnInput);
 		Command.Parse(AnInput);
 	end;

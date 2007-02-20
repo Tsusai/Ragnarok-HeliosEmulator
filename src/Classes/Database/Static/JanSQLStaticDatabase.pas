@@ -71,7 +71,7 @@ implementation
 		Types,
 		GameConstants,
 		Globals,
-		Console,
+		Main,
 		SysUtils,
     Math;
 
@@ -168,16 +168,16 @@ begin
 		ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.StaticHost]));
 	end else
 	begin
-		MainProc.Console('');
-		MainProc.Console('The database at '+Parent.Options.StaticHost+' does not exist!');
-		MainProc.Console('Please ensure that you have correctly configured your ini file');
+		MainProc.Console.WriteLn('');
+		MainProc.Console.WriteLn('The database at '+Parent.Options.StaticHost+' does not exist!');
+		MainProc.Console.WriteLn('Please ensure that you have correctly configured your ini file');
 		Result := false;
 	end;
 
 	if ResultIdentifier = 0 then
 	begin
-		MainProc.Console('*****Could not open text database. Error : ' + Database.Error);
-		MainProc.Console(Parent.Options.StaticHost);
+		MainProc.Console.WriteLn('*****Could not open text database. Error : ' + Database.Error);
+		MainProc.Console.WriteLn(Parent.Options.StaticHost);
 		Result := false;
 	end else
 	begin
@@ -206,8 +206,8 @@ begin
 	Result := Database.SQLDirect(QString);
 	if (Result = 0) AND (Database.Error <> 'SELECT FROM: no records') then
 	begin
-		MainProc.Console('Text Query error: ' + QString);
-    MainProc.Console(Database.Error);
+		MainProc.Console.WriteLn('Text Query error: ' + QString);
+    MainProc.Console.WriteLn(Database.Error);
 	end;
 end;//SendQuery
 //------------------------------------------------------------------------------

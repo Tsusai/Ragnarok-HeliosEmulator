@@ -74,6 +74,7 @@ uses
 		{$IFDEF LINUX}
 		LinCRT.TextBackground(Color);
 		{$ENDIF}
+		ClrScr;
 	end;
 
 	// Gets text background color.

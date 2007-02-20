@@ -40,7 +40,7 @@ implementation
 
 	uses
 		SysUtils,
-		Console,
+		Main,
     LoginServer,
     CharacterServer,
     InterServer,
@@ -115,9 +115,9 @@ begin
 					Values.Free;
 				end;
 				if Error <> '' then begin  //Display Errors
-					MainProc.Console('Command ' + Command + ' failed - ' + Error)
+					MainProc.Console.WriteLn('Command ' + Command + ' failed - ' + Error)
 				end else begin
-					MainProc.Console('Command ' + Command + ' success!');
+					MainProc.Console.WriteLn('Command ' + Command + ' success!');
 				end;
 			end;
 		finally
@@ -140,14 +140,14 @@ end;{TCommands.Parse}
 //------------------------------------------------------------------------------
 function TCommands.Help : String;
 begin
-	MainProc.Console('The available console commands are as follows...');
-	MainProc.Console('--------------------------------------');
-  MainProc.Console('/start - starts a server');
-  MainProc.Console('/stop - stops a server');
-	MainProc.Console('/restart - restarts all enabled servers');
-	MainProc.Console('/exit - exits the program');
-	MainProc.Console('/help - lists all console commands');
-	MainProc.Console('--------------------------------------');
+	MainProc.Console.WriteLn('The available console commands are as follows...');
+	MainProc.Console.WriteLn('--------------------------------------');
+	MainProc.Console.WriteLn('/start - starts a server');
+	MainProc.Console.WriteLn('/stop - stops a server');
+	MainProc.Console.WriteLn('/restart - restarts all enabled servers');
+	MainProc.Console.WriteLn('/exit - exits the program');
+	MainProc.Console.WriteLn('/help - lists all console commands');
+	MainProc.Console.WriteLn('--------------------------------------');
 	Result := '';
 end;{TCommands.Help}
 //------------------------------------------------------------------------------
@@ -226,9 +226,9 @@ begin
   end else
   begin
     //display help for Start()
-    MainProc.Console('Using /Start...');
-    MainProc.Console('"/Start <ServerName>" - starts <ServerName>');
-    MainProc.Console('ServerName can be "Login", "Character", "Zone", or "Inter"');
+		MainProc.Console.WriteLn('Using /Start...');
+		MainProc.Console.WriteLn('"/Start <ServerName>" - starts <ServerName>');
+		MainProc.Console.WriteLn('ServerName can be "Login", "Character", "Zone", or "Inter"');
   end;
 
 end;{Start}
@@ -267,14 +267,14 @@ begin
       MainProc.ZoneServer.Stop;
     end else
     begin
-      Result := Values[0] + ' is not a valid server';
+			Result := Values[0] + ' is not a valid server';
     end;
   end else
   begin
     //display help for Stop()
-    MainProc.Console('Using /Stop...');
-    MainProc.Console('"/Stop <ServerName>" - stops <ServerName>');
-    MainProc.Console('ServerName can be "Login", "Character", "Zone", or "Inter"');
+		MainProc.Console.WriteLn('Using /Stop...');
+		MainProc.Console.WriteLn('"/Stop <ServerName>" - stops <ServerName>');
+		MainProc.Console.WriteLn('ServerName can be "Login", "Character", "Zone", or "Inter"');
   end;
 
 end;{Stop}

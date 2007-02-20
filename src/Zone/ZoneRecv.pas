@@ -97,7 +97,7 @@ uses
 	Types,
 	Account,
 	BufferIO,
-	Console,
+	Main,
 	GameConstants,
 	Globals,
 	MapTypes,
@@ -375,7 +375,7 @@ uses
 		
 		if true {Various checks (not sitting)} then
 		begin
-			MainProc.Console(Format('X%d Y%d recieved',[DestPoint.X,DestPoint.Y]));
+			MainProc.Console.WriteLn(Format('X%d Y%d recieved',[DestPoint.X,DestPoint.Y]));
 			{if AChara.MapInfo.GetPath(AChara.Point,DestPoint,) then
 			begin
 			end;}

@@ -12,6 +12,10 @@ Developers & Contributers
 - RaX
 
 -------------------------------------------------------------------------------------------
+- Rev 146 -
+[2007/02/19] - RaX - Moved Console.pas's contents to trunk/src/Main.pas.
+[2007/02/19] - RaX - Added TConsole to Console.pas - a wrapper for console output.
+-
 
 - Rev 145 -
 [2007/02/19] - Tsusai - Notes/Overview: Added CRT units.  Thse will allow for colored text

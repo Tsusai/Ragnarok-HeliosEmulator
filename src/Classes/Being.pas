@@ -35,6 +35,7 @@ type TBeing = class
 		SP        : Word;
 		Option    : Word;
 		Map       : string;
+		MapPointer: Pointer;
 		Point     : TPoint;
 		Speed : word;
 

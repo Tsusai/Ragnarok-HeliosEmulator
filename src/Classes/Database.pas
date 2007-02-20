@@ -55,7 +55,7 @@ type
 implementation
 
 uses
-	Console,
+	Main,
 	Globals,
 	DatabaseConstants,
 	MySQLCommonDatabase,
@@ -126,8 +126,8 @@ begin
 			end;
 
 		else begin //anything else
-			MainProc.Console('COMMON DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
-			MainProc.Console('     See ServerOptions.ini for configuration options.');
+			MainProc.Console.WriteLn('COMMON DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
+			MainProc.Console.WriteLn('     See ServerOptions.ini for configuration options.');
 		end;
   end;
 	//Game
@@ -143,8 +143,8 @@ begin
 			end;
 
     else begin //anything else
-			MainProc.Console('GAME DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
-			MainProc.Console('     See ServerOptions.ini for configuration options.');
+			MainProc.Console.WriteLn('GAME DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
+			MainProc.Console.WriteLn('     See ServerOptions.ini for configuration options.');
 		end;
 	end;
   //Static
@@ -160,8 +160,8 @@ begin
 			end;
 
 		else begin //anything else
-			MainProc.Console('STATIC DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
-			MainProc.Console('     See ServerOptions.ini for configuration options.');
+			MainProc.Console.WriteLn('STATIC DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
+			MainProc.Console.WriteLn('     See ServerOptions.ini for configuration options.');
 		end;
 	end;
 	LoadedOK := (CommonOK and GameOK and StaticOK);
