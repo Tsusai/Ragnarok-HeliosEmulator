@@ -149,11 +149,17 @@ end;{DestroyGlobals}
 //------------------------------------------------------------------------------
 procedure TerminateApplication;
 begin
-	KillTerminationCapturing;
-	Command.Free;
-	MainProc.Shutdown;
-	FreeAndNil(MainProc);
-	KillProcess;
+	if MainProc.Loaded then
+	begin
+		KillTerminationCapturing;
+		Command.Free;
+		MainProc.Shutdown;
+		FreeAndNil(MainProc);
+		KillProcess;
+	end else
+	begin
+		Console.Message('Please wait to shutdown helios until after it has finished starting/stopping', 'System', MS_ERROR);
+  end;
 end;{TerminateApplication}
 //------------------------------------------------------------------------------
 

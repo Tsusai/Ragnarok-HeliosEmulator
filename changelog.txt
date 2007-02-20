@@ -13,6 +13,13 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 148 -
+[2007/02/20] - RaX - Fixed termination. Helios now checks to see if it is done loading
+ before a user can shut it down. If an administrator attempts to shut it down, it will write
+ a message informing the administrator that he/she must wait until helios is done starting
+ before he/she can stop it.
+-
+
 - Rev 147 -
 [2007/02/20] - RaX - Implemented typed console messages. Each displays differently
  automagically in the console based on a constant passed to the Console.Message routine.
