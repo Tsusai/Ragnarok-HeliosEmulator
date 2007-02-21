@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 153 -
+[2007/02/20] - RaX - Reverted rev 133's Pathing changes.
+-
+
 - Rev 152 -
 [2007/02/20] - Tsusai - Notes/Overview: Walking mechanics somewhat in place..waiting on
  Pathing fixes.  Also some bug fixes from a few mistakes in Rev 143.

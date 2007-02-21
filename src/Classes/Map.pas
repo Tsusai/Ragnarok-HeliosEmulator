@@ -24,15 +24,13 @@ type
 //------------------------------------------------------------------------------
   TMap = class(TObject)
 	private
-    Path : String;
-    Procedure GetArea(
-      const APoint : TPoint;
-      var AnArea : TGraph;
-      var XMod : Integer;
-      var YMod : Integer;
-      var XAreaMax : Integer;
-      var YAreaMax : Integer
-    );
+		Path : String;
+procedure GetArea(
+	const APoint : TPoint;
+	var AnArea : TGraph;
+	var XMod : Integer;
+	var YMod : Integer
+);
 
 	public
     Name : String;
@@ -136,11 +134,13 @@ end;
 //  Changes -
 //    November 1st, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-procedure TMap.GetArea(const APoint : TPoint; var AnArea : TGraph; var XMod : Integer; var YMod : Integer; var XAreaMax : Integer; var YAreaMax : Integer);
+procedure TMap.GetArea(const APoint : TPoint; var AnArea : TGraph; var XMod : Integer; var YMod : Integer);
 var
 	Index			: Integer;
 	XMax			: Integer;//last point in x axis on map
 	YMax			: Integer;//last point in y axis on map
+	XAreaMax	: Integer;//last x point in area
+	YAreaMax	: Integer;//last y point in area
 begin
 	XMax := Length(Cell)-1;
 	YMax := Length(Cell[0])-1;
@@ -197,7 +197,6 @@ begin
 end;
 //------------------------------------------------------------------------------
 
-
 //------------------------------------------------------------------------------
 //TMap.GetPath()                                                      FUNCTION
 //------------------------------------------------------------------------------
@@ -251,7 +250,9 @@ begin
 
 
 	//Get Our Area and area constraints
-	GetArea(StartPoint, AnArea, XMod, YMod, XMax, YMax);
+	GetArea(StartPoint, AnArea, XMod, YMod);
+	XMax          := Length(AnArea);
+	YMax          := Length(AnArea[0]);
 
 	//initialize our first flood item
 	AFloodItem.Position:= StartPoint;
@@ -337,6 +338,7 @@ begin
   end;
 end;
 //------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //IsBlocked()                                                     FUNCTION
