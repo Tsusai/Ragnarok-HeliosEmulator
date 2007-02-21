@@ -59,6 +59,7 @@ implementation
 		DateUtils,
 		SysUtils,
 		//Helios
+		CRT,
 		WinLinux,
 		Main,
 		PacketDB,
@@ -151,6 +152,7 @@ procedure TerminateApplication;
 begin
 	if MainProc.Loaded then
 	begin
+		EndCRT;
 		KillTerminationCapturing;
 		Command.Free;
 		MainProc.Shutdown;

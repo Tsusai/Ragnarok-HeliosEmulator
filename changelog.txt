@@ -13,6 +13,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 154 -
+[2007/02/20] - Tsusai - Notes/Overview: Implemented the StartCRT and EndCRT.
+[2007/02/20] - Tsusai - Helios.dpr : Added StartCRT here.
+[2007/02/20] - Tsusai - Globals - TerminateApplication : Added EndCRT here.
+-
+
 - Rev 153 -
 [2007/02/20] - RaX - Reverted rev 133's Pathing changes.
 -

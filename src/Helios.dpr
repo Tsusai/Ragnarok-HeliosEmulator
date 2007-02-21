@@ -295,6 +295,7 @@ var
 begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;
+	SetupCRT;
 	Command := TCommands.Create;
 	MainProc := TMainProc.Create(nil); //Form replacement
 
