@@ -13,6 +13,26 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 152 -
+[2007/02/20] - Tsusai - Notes/Overview: Walking mechanics somewhat in place..waiting on
+ Pathing fixes.  Also some bug fixes from a few mistakes in Rev 143.
+ Added the icon passed to me from RaX.  Only shows up in windows (only compiles in with the
+ windows compiler).
+[2007/02/20] - Tsusai - Being - Added Walking procedure.
+[2007/02/20] - Tsusai - Map - TMap.LoadfromFile - Added the setting of the TMap.Path here.
+[2007/02/20] - Tsusai - BufferIO - Added WriteBufferTwoPoints
+[2007/02/20] - Tsusai - CRT - Added SetupCRT and EndCRT.  Will be implemented into the code
+ later.  Handles the setup of the CRT units (Really just for linux, but need to keep it and
+ call it from CRT wrapper).
+[2007/02/20] - Tsusai - PacketDB - Commented out the walk packet for now.
+[2007/02/20] - Tsusai - ZoneRecv - CharacterWalkRequest - Added more code.
+[2007/02/20] - Tsusai - ZoneRecv - Various fixes of GetPacketLength back to 4 (it would return
+ -1 for the packets that have a variable length).
+[2007/02/20] - Tsusai - ZoneSend - Added ZoneSendWalkReply.
+[2007/02/20] - Tsusai - zoneServer - TZoneServer.LoadMaps - Fixed bug where the map name was
+ not stored in the TMap.
+-
+
 - Rev 151 -
 [2007/02/20] - RaX - Forgot to change a 2-3 MainProc.Console messages on the linux side,
  fixed.

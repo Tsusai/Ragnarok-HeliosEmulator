@@ -29,6 +29,12 @@ uses
 		var Buffer : TBuffer;
 		Dir:byte = 0
 	);
+	procedure WriteBufferTwoPoints(
+		index:word;
+		Point1:TPoint;
+		Point2:TPoint;
+		var Buffer : TBuffer
+	);
 	procedure WriteBufferMD5String(
 		Index:word;
 		MD5String:string;
@@ -96,6 +102,29 @@ PUSHING DATA INTO THE BUFFER METHODS
 			end;
 			Move(StringIn[1], Buffer[Index], StrLength);
 		end;
+	end;
+
+	//No..fucking clue...taken from Prometheus
+	procedure WriteBufferTwoPoints(
+		index:word;
+		Point1:TPoint;
+		Point2:TPoint;
+		var Buffer : TBuffer
+	);
+	Var
+		i :int64;
+		bb  :array[0..5] of byte;
+	Begin
+		i := (((int64(Point2.X) and $3ff) shl 30) or ((int64(Point2.Y) and $3ff) shl 20) or
+					((int64(Point1.X) and $3ff) shl 10) or  (int64(Point1.Y) and $3ff));
+		Move(i, bb[0], 5);
+		bb[5] := bb[0];
+		bb[0] := bb[4];
+		bb[4] := bb[5];
+		bb[5] := bb[1];
+		bb[1] := bb[3];
+		bb[3] := bb[5];
+		Move(bb[0], Buffer[index], 5);
 	end;
 
 	procedure WriteBufferPointAndDirection(

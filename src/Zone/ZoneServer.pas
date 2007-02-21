@@ -556,12 +556,13 @@ begin
 	Console.WriteLn('      - Loading Maps...');
   MapNames := ADatabase.StaticData.GetMapsForZone(Options.ID);
   for Index := 0 to MapNames.Count - 1 do
-  begin
-    AMap := TMap.Create;
-    if FileExists('./Maps/'+MapNames[Index]+'.pms') then
-    begin
+	begin
+		if FileExists('./Maps/'+MapNames[Index]+'.pms') then
+		begin
+			AMap := TMap.Create;
       if AMap.LoadFromFile('./Maps/'+MapNames[Index]+'.pms') then
-      begin
+			begin
+				AMap.Name := MapNames[Index];
         MapList.Add(AMap);
       end;
     end else

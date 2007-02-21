@@ -15,7 +15,8 @@ uses
 	Types,
 	GameConstants,
 	Map,
-	EventList;
+	EventList,
+	PointList;
 
 //------------------------------------------------------------------------------
 //TBeing                                                                  CLASS
@@ -64,7 +65,11 @@ type TBeing = class
 
 		MapInfo : TMap;
 		EventList : TEventList;
+		Path      : TPointList;
+		PathIndex : Word;
+		MoveTick : LongWord;
 
+		procedure Walk;
 		Constructor Create();
 		Destructor Destroy();override;
 end;{TBeing}
@@ -72,16 +77,149 @@ end;{TBeing}
 
 
 implementation
+uses
+	Character,
+	Math,
+	WinLinux;
+
+procedure TBeing.Walk;
+var
+	spd : word;
+	OldPt : TPoint;
+	ABeing : TBeing;
+	dx : ShortInt;
+	dy : ShortInt;
+	idxY : ShortInt;
+	idxX : ShortInt;
+	BIdx : integer;
+begin
+	//Setup first speed
+	OldPt := Point;
+	Point := Path[PathIndex];
+	dx := Point.X - OldPt.X;
+	dy := Point.Y - OldPt.Y;
+	if not (abs(dx) = abs(dy)) then
+	begin
+		spd := Speed * 7 div 5;
+	end else begin
+		spd := Speed;
+	end;
+
+	MoveTick := GetTick + spd;
+
+	while {Gamestate = walking}true do
+	begin
+		if GetTick < Movetick then Continue; //haven't made it to the next cell yet
+//			for loop := 1 to Integer((Gettime - Movetick) div spd) do
+//			begin
+//			OltPt := Point;
+//			Point := Path[PathIndex];
+//			dx := Point.X - OltPt.X;
+//			dy := Point.Y - OltPt.Y;
+
+		PathIndex := Min(PathIndex + 1, Path.Count-1);
+
+		//16 covers the old 15x15 grid, no matter which dir we go I think
+		for idxY := Max(OldPt.Y-16,0) to Min(OldPt.Y+16,MapInfo.Size.Y) do
+		begin
+			for idxX := Max(OldPt.X-16,0) to Min(OldPt.X+16,MapInfo.Size.X) do
+			begin
+				for BIdx := MapInfo.Cell[idxX][idxY].Beings.Count - 1 to 0 do
+				begin
+					ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BIdx] as TBeing;
+
+					if Self = ABeing then continue;
+
+					if ((dx <> 0) and (abs(OldPt.Y - ABeing.Point.Y) < 16) and (OldPt.X = ABeing.Point.X + dx * 15)) OR
+						((dy <> 0) and (abs(OldPt.X - ABeing.Point.X) < 16) and (OldPt.Y = ABeing.Point.Y + dy * 15)) then
+					begin
+						//Packets for base being if its a character
+						if Self is TCharacter then
+						begin
+							if ABeing is TCharacter then
+							begin
+								//Send First Being disapearing to ABeing
+							end;
+							//if ABeing is NPC
+							//Special npc packets
+							//else
+							//Send basic disapear packet of ABeing to First Being
+						end;
+					end;
+
+					if ((dx <> 0) and (abs(Point.Y - ABeing.Point.Y) < 16) and (Point.X = ABeing.Point.X - dx * 15)) or
+						((dy <> 0) and (abs(Point.X - ABeing.Point.X) < 16) and (Point.Y = ABeing.Point.Y - dy * 15)) then
+					begin
+						if Self is TCharacter then
+						begin
+							if ABeing is TCharacter then
+							begin
+								//Send First Being apearing to ABeing
+								{if Point in range with ABeing, 15 then
+								begin
+									SendWalking packet
+								end;}
+							end;
+							//if ABeing is NPC
+							//Special npc packets
+							//else
+							//Send basic Appear packet of ABeing to First Being
+						end;
+					end;
+				end;
+			end;
+		end;
+
+		if (PathIndex = Path.Count - 1) {or (GameState = charaStand)} then
+		begin
+			{if GameState = charaStand then
+			begin
+				//UpdateLocation
+				//So we can make as if we just steped on a trap or were frozen, etc, stop where
+				//we are and update location.
+			end;}
+
+			//GameState := charaStand;
+
+			{if (AChara.Skill[144].Lv = 0) then
+			begin
+				HPTick := Tick;
+			end;
+
+			HPRTick := Tick - 500;
+			SPRTick := Tick;
+			PathIndex := 0;}
+
+			Break;
+		end;
+
+		//Setup first speed
+		OldPt := Point;
+		Point := Path[PathIndex];
+		dx := Point.X - OldPt.X;
+		dy := Point.Y - OldPt.Y;
+		if not (abs(dx) = abs(dy)) then
+		begin
+			spd := Speed * 7 div 5;
+		end else begin
+			spd := Speed;
+		end;
+
+		MoveTick := MoveTick + spd;
+	end;
+end;
 
 Constructor TBeing.Create;
 begin
 	inherited;
 	EventList := TEventList.Create(TRUE);
+	Path := TPointList.Create;
 end;
 
 Destructor TBeing.Destroy;
 begin
 	inherited;
 	EventList.Free;
+	Path.Free;
 end;
 end.

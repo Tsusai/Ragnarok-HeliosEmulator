@@ -22,6 +22,9 @@ const
 	CRTWhite        = 15;
 	CRTBlink        = 128;
 
+	procedure SetupCRT;
+	procedure EndCRT;
+
 	// Sets text foreground color.
 	procedure TextColor(Color: Byte); overload;
 
@@ -42,6 +45,20 @@ uses
 	{$IFDEF LINUX}
 	LinCRT;
 	{$ENDIF}
+
+	procedure SetupCRT;
+	begin
+		{$IFDEF LINUX}
+		LinCRT.InitLinCRT;
+		{$ENDIF}
+	end;
+
+	procedure EndCRT;
+	begin
+		{$IFDEF LINUX}
+		LinCRT.DoneLinCRT;
+		{$ENDIF}
+	end;
 
 	// Sets text foreground color.
 	procedure TextColor(Color: Byte);
@@ -87,5 +104,6 @@ uses
 		Result := (LinCRT.TextAttr and $F8) shr 4;
 		{$ENDIF}
 	end;
+
 
 end.

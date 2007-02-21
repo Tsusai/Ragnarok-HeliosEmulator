@@ -103,6 +103,7 @@ uses
 	MapTypes,
 	Map,
 	TCPServerRoutines,
+	WinLinux,
 	ZoneSend,
 	ZoneServer;
 
@@ -219,7 +220,7 @@ uses
 				//Friendslist placeholder
 				WriteBufferWord(0, $0201, OutBuffer);
 				WriteBufferWord(2, 4, OutBuffer);
-				SendBuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($0201,Version));
+				SendBuffer(ACharacter.ClientInfo, OutBuffer, 4);
 
 			end else
 			begin
@@ -269,9 +270,9 @@ uses
 
 		AMap.Cell[AChara.Point.X][AChara.Point.Y].Beings.AddObject(AChara.CID,AChara);
 
-		for idx1 := Min(0,AChara.Point.Y-15) to Max(AChara.Point.Y+15,AMap.Size.Y) do
+		for idx1 := Max(0,AChara.Point.Y-15) to Min(AChara.Point.Y+15,AMap.Size.Y) do
 		begin
-			for idx2 := Min(0,AChara.Point.X-15) to Max(AChara.Point.X+15,AMap.Size.X) do
+			for idx2 := Max(0,AChara.Point.X-15) to Min(AChara.Point.X+15,AMap.Size.X) do
 			begin
 				for idx3 := AMap.Cell[idx1][idx2].Beings.Count -1 downto 0 do
 				begin
@@ -315,18 +316,18 @@ uses
 		//skilllist placeholder
 		WriteBufferWord(0, $010F, OutBuffer);
 		WriteBufferWord(2, 4, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($010F,AChara.ClientVersion));
+		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
 
 		AChara.SendCharacterStats;
 
 		//Inventory Placeholder
 		WriteBufferWord(0, $00a3, OutBuffer);
 		WriteBufferWord(2, 4, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($00a3,AChara.ClientVersion));
+		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
 		//Equip Placeholder
 		WriteBufferWord(0, $00a4, OutBuffer);
 		WriteBufferWord(2, 4, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($00a4,AChara.ClientVersion));
+		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
 		//Arrow Placeholder
 		WriteBufferWord(0, $013c, OutBuffer);
 		WriteBufferWord(2, 0, OutBuffer);
@@ -372,13 +373,21 @@ uses
 		DestPoint : TPoint;
 	begin
 		DestPoint := BufferReadOnePoint(ReadPts[0], InBuffer);
-		
+
 		if true {Various checks (not sitting)} then
 		begin
 			Console.WriteLn(Format('X%d Y%d recieved',[DestPoint.X,DestPoint.Y]));
-			{if AChara.MapInfo.GetPath(AChara.Point,DestPoint,) then
+			if AChara.MapInfo.GetPath(AChara.Point,DestPoint,AChara.Path) then
 			begin
-			end;}
+				//send packet
+				AChara.PathIndex := 0;
+				AChara.DestinationPoint := AChara.Path.Items[AChara.Path.Count -1];
+				ZoneSendWalkReply(AChara);
+				if not (AChara.CharaState = charawalking) then
+				begin
+					
+				end;
+			end;
 		end;
 	end;
 

@@ -97,7 +97,7 @@ const
 Constructor TMap.Create();
 begin
 	inherited;
-  State := UNLOADED;
+	State := UNLOADED;
   //Set Size to 0
 	Size.X := 0;
 	Size.Y := 0;
@@ -382,6 +382,7 @@ Begin
 
   MapFile := TMemoryStream.Create;
   MapFile.LoadFromFile(Path);
+	Self.Path := Path;
 
   MapFile.Read(MapTag[1], 13);
 

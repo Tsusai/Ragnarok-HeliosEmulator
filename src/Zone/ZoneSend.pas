@@ -21,6 +21,7 @@ uses
 	procedure ZoneSendMapConnectReply(ACharacter : TCharacter);
 	procedure ZoneSendMapConnectDeny(AClient : TIdContext);
 	procedure ZoneSendTickToClient(ACharacter : TCharacter);
+	procedure ZoneSendWalkReply(ACharacter : TCharacter);
 	procedure ZoneSendObjectNameAndIDBasic(
 		ACharacter : TCharacter;
 		ID : LongWord;
@@ -98,6 +99,16 @@ uses
 	end;//ZoneSendTickToClient
 //------------------------------------------------------------------------------
 
+	procedure ZoneSendWalkReply(ACharacter : TCharacter);
+	var
+		ReplyBuffer : TBuffer;
+	begin
+		WriteBufferWord(0, $0087, ReplyBuffer);
+		WriteBufferLongWord(2, ACharacter.MoveTick, ReplyBuffer);
+		WriteBufferTwoPoints( 6, ACharacter.DestinationPoint, ACharacter.Point, ReplyBuffer);
+		WriteBufferByte(11, 0, ReplyBuffer);
+		SendBuffer(ACharacter.ClientInfo, ReplyBuffer, GetPacketLength($0087, ACharacter.ClientVersion));
+	end;
 
 //------------------------------------------------------------------------------
 //ZoneSendObjectNameAndIDBasic                                        PROCEDURE
