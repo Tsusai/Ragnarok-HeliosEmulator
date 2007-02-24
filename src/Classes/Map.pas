@@ -25,12 +25,6 @@ type
   TMap = class(TObject)
 	private
 		Path : String;
-procedure GetArea(
-	const APoint : TPoint;
-	var AnArea : TGraph;
-	var XMod : Integer;
-	var YMod : Integer
-);
 
 	public
     Name : String;
@@ -44,6 +38,10 @@ procedure GetArea(
 
 		Constructor Create();
 		Destructor Destroy();override;
+
+		Function IsBlocked(
+			const APoint : TPoint
+		) : boolean;
 
     Function LoadFromFile(Path : String) : Boolean;
     Procedure Load;
@@ -67,12 +65,6 @@ uses
 	Main,
 	Globals,
 	WinLinux;
-
-//checks to see if a cell is blocked.
-	function IsBlocked(
-		const AGraph : TGraph;
-		const APoint : TPoint
-	) : boolean; Forward;
 
 const
 	//this array holds the possible directions from a point.
@@ -123,79 +115,6 @@ begin
 end;
 //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-//TMap.GetArea()                                                     PROCEDURE
-//------------------------------------------------------------------------------
-//  What it does -
-//      It fills the TGraph, AnArea, with the contents of TMap.Cell based on
-//		the distance defined by CHAR_CLICKAREA away from the character in the 4
-//		cardinal directions.
-//
-//  Changes -
-//    November 1st, 2006 - RaX - Created.
-//------------------------------------------------------------------------------
-procedure TMap.GetArea(const APoint : TPoint; var AnArea : TGraph; var XMod : Integer; var YMod : Integer);
-var
-	Index			: Integer;
-	XMax			: Integer;//last point in x axis on map
-	YMax			: Integer;//last point in y axis on map
-	XAreaMax	: Integer;//last x point in area
-	YAreaMax	: Integer;//last y point in area
-begin
-	XMax := Length(Cell)-1;
-	YMax := Length(Cell[0])-1;
-
-	//first, we get our areas position(really nasty condition follows)
-	//get XMod and XAreaMax
-	if (APoint.X-CHAR_CLICKAREA >= 0) AND (APoint.X+CHAR_CLICKAREA <= XMax) then
-	begin
-		XMod := APoint.X - CHAR_CLICKAREA;
-		XAreaMax := APoint.X + CHAR_CLICKAREA;
-	end else
-	if (APoint.X - CHAR_CLICKAREA < 0) AND (APoint.X + CHAR_CLICKAREA <= XMax) then
-	begin
-		XMod := 0;
-		XAreaMax := APoint.X + CHAR_CLICKAREA;
-	end else
-	if (APoint.X - CHAR_CLICKAREA >= 0) AND (APoint.X + CHAR_CLICKAREA > XMax) then
-	begin
-		XMod := APoint.X - CHAR_CLICKAREA;
-		XAreaMax := XMax;
-	end else
-	begin
-		XMod := 0;
-		XAreaMax := XMax;
-	end;
-
-	//Get YMod and YAreaMax
-		if (APoint.Y-CHAR_CLICKAREA >= 0) AND (APoint.Y+CHAR_CLICKAREA <= YMax) then
-	begin
-		YMod := APoint.Y - CHAR_CLICKAREA;
-		YAreaMax := APoint.Y + CHAR_CLICKAREA;
-	end else
-	if (APoint.Y - CHAR_CLICKAREA < 0) AND (APoint.Y + CHAR_CLICKAREA <= YMax) then
-	begin
-		YMod := 0;
-		YAreaMax := APoint.Y + CHAR_CLICKAREA;
-	end else
-	if (APoint.Y - CHAR_CLICKAREA >= 0) AND (APoint.Y + CHAR_CLICKAREA > YMax) then
-	begin
-		YMod := APoint.Y - CHAR_CLICKAREA;
-		YAreaMax := YMax;
-	end else
-	begin
-		YMod := 0;
-		YAreaMax := YMax;
-	end;
-
-	//finally, build our area
-	AnArea := copy(Cell,XMod,XAreaMax);
-	for Index := XMod to (XAreaMax) do
-	begin
-		AnArea[Index-XMod] := copy(Cell[Index], YMod, YAreaMax);
-	end;
-end;
-//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //TMap.GetPath()                                                      FUNCTION
@@ -219,43 +138,39 @@ function TMap.GetPath(
 	var APath : TPointList
 ) : boolean;
 var
-	AFloodList				: TFloodList;
-	AFloodListLength	: Integer;
-  NewFloodList			: TFloodList;
-	NewFloodListLength: Integer;
+	AFloodList				: TFloodList;//our main flood list which we spawn newflooditems from
+	AFloodListLength	: Integer;//the length of afloodlist
+	NewFloodList			: TFloodList;//Our list of new flood items.
+	NewFloodListLength: Integer;//The length of the newflooditem list.
 	AFloodItem				: TFloodItem;
-	ClosestPath				: TFloodItem;
+	ClosestPath				: TFloodItem;//the point closest to the destination.
 	NewFloodItem			: TFloodItem;
 	APoint						: TPoint;
 	Index							: Integer;
 	DirectionIndex		: Integer;
 	PossiblePosition  : TPoint;
-  AnArea						: TGraph;//our search area
-	XMod							: Integer;//x offset in AnArea from the point in TMap.Cell
-	YMod							: Integer;//y offset in AnArea from the point in TMap.Cell
-	XMax							: Integer;//maximum y value in our area
-	YMax							: Integer;//maximum x value in our area
+	AnArea						: TGraph;
+	AnAreaSize				: TPoint;
+	XMod							: Integer;
+	YMod							: Integer;
 
 begin
 	Result := false;
-	//check to make sure we're wasting clock cycles for a reason...
-	//(checking to see if the endpoint is within range);
-	if ((StartPoint.X + CHAR_CLICKAREA) < EndPoint.X) OR
-		 ((StartPoint.X - CHAR_CLICKAREA) > EndPoint.X) OR
-		 ((StartPoint.Y + CHAR_CLICKAREA) < EndPoint.Y) OR
-		 ((StartPoint.Y - CHAR_CLICKAREA) > EndPoint.Y) then
+
+	//grab our area
+	XMod := StartPoint.X-CHAR_CLICKAREA;
+	YMod := StartPoint.Y-CHAR_CLICKAREA;
+	AnArea := Copy(Cell, Max(XMod, 0), Min((CHAR_CLICKAREA*2)+1, Abs(XMod - Size.X)));
+	for Index := 0 to Length(AnArea)-1 do
 	begin
-		Exit;
+		AnArea[Index] := Copy(Cell[XMod+Index], Max(YMod, 0), Min((CHAR_CLICKAREA*2)+1, Abs(YMod - Size.Y)));
 	end;
-
-
-	//Get Our Area and area constraints
-	GetArea(StartPoint, AnArea, XMod, YMod);
-	XMax          := Length(AnArea);
-	YMax          := Length(AnArea[0]);
+	AnAreaSize := Point(Length(AnArea),Length(AnArea[0]));
 
 	//initialize our first flood item
-	AFloodItem.Position:= StartPoint;
+	AFloodItem.Position.X := StartPoint.X-AnArea[0][0].Position.X;
+	Console.Message(Format('Current Point Map Position : %d,%d', [AnArea[0][0].Position.X,AnArea[0][0].Position.Y]),'PATHING DEBUG',MS_WARNING);
+	AFloodItem.Position.Y := StartPoint.Y-AnArea[0][0].Position.Y;
 	AFloodItem.PathLength := 0;
 
 	//initialize our closest path
@@ -284,30 +199,28 @@ begin
 				PossiblePosition.X := AFloodItem.Position.X + Directions[DirectionIndex].X;
 				PossiblePosition.Y	:= AFloodItem.Position.Y + Directions[DirectionIndex].Y;
 				//check if coordinates are in range
-				if    (PossiblePosition.X >= 0) AND (PossiblePosition.X < XMax)
-					AND (PossiblePosition.Y >= 0) AND (PossiblePosition.Y < YMax) then
+				if    (PossiblePosition.X >= 0) AND (PossiblePosition.X < AnAreaSize.X)
+					AND (PossiblePosition.Y >= 0) AND (PossiblePosition.Y < AnAreaSize.Y) then
 				begin
 					//check if the square is passable, if it is...
-					if not IsBlocked(AnArea,PossiblePosition) then
+					if (NOT IsBlocked(AnArea[PossiblePosition.X][PossiblePosition.Y].Position)) then
 					begin
 						//build our flood item.
 						NewFloodItem.Position := PossiblePosition;
 						NewFloodItem.Path := AFloodItem.Path;
 						NewFloodItem.PathLength := AFloodItem.PathLength;
-						APoint.X := NewFloodItem.Position.X;
-						APoint.Y := NewFloodItem.Position.Y;
+						APoint:= NewFloodItem.Position;
 						inc(NewFloodItem.PathLength);
 						SetLength(NewFloodItem.Path, NewFloodItem.PathLength);
-						NewFloodItem.Path[NewFloodItem.PathLength-1] := APoint;
+						NewFloodItem.Path[NewFloodItem.PathLength-1] := AnArea[PossiblePosition.X][PossiblePosition.Y].Position;
 						//add it to the NewFloodList
 						inc(NewFloodListLength);
 						SetLength(NewFloodList, NewFloodListLength);
 						NewFloodList[NewFloodListLength-1] := NewFloodItem;
-						//set it's position impassable in our area so we don't search it anymore
-						AnArea[NewFloodItem.Position.X][NewFloodItem.Position.Y].Attribute := 1;
+
 
 						//check to see if we've found the end point... if we have...
-						if (NewFloodItem.Position.X = EndPoint.X) AND (NewFloodItem.Position.Y = EndPoint.Y) then
+						if PointsEqual(AnArea[NewFloodItem.Position.X][NewFloodItem.Position.Y].Position, EndPoint) then
 						begin
 							//congratulations, we've done it.
 							APath.Assign(NewFloodItem.Path);
@@ -318,7 +231,7 @@ begin
 							 (abs(ClosestPath.Position.X-EndPoint.X)+abs(ClosestPath.Position.Y-EndPoint.Y)) then
 						begin
 							ClosestPath := NewFloodItem;
-            end;
+						end;
 					end;
 				end;
 				//start propagating our next flood item in the next direction.
@@ -334,8 +247,12 @@ begin
 	//use closest path
 	if NOT Result then
 	begin
-		APath.Assign(ClosestPath.Path);
-  end;
+		if Length(ClosestPath.Path) > 0 then
+		begin
+			Result := TRUE;
+			APath.Assign(ClosestPath.Path);
+		end;
+	end;
 end;
 //------------------------------------------------------------------------------
 
@@ -349,12 +266,12 @@ end;
 //  Changes -
 //    November 1st, 2006 - Tsusai - Created.
 //------------------------------------------------------------------------------
-function IsBlocked(const AGraph : TGraph; const APoint : TPoint) : boolean;
+function TMap.IsBlocked(const APoint : TPoint) : boolean;
 begin
 	//Assume it is not.
 	Result := false;
-	if (AGraph[APoint.X][APoint.Y].Attribute in [1,5]) OR
-		(AGraph[APoint.X][APoint.Y].ObstructionCount > 0 ) then
+	if (Cell[APoint.X][APoint.Y].Attribute in [1,5]) OR
+		(Cell[APoint.X][APoint.Y].ObstructionCount > 0 ) then
 	begin
 		Result := true
 	end;
@@ -452,8 +369,9 @@ Begin
   SetLength(Cell, Size.X, Size.Y);
   for YIndex := 0 to Size.Y - 1 do begin
     for XIndex := 0 to Size.X - 1 do begin
-      MapFile.Read(Cell[XIndex][YIndex].Attribute,1);
-      Cell[XIndex][YIndex].ObstructionCount := 0;
+			MapFile.Read(Cell[XIndex][YIndex].Attribute,1);
+			Cell[XIndex][YIndex].Position := Point(XIndex, YIndex);
+			Cell[XIndex][YIndex].ObstructionCount := 0;
       Cell[XIndex][YIndex].Beings := TIntList32.Create;
     end;
   end;

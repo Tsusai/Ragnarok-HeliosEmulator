@@ -376,7 +376,6 @@ uses
 
 		if true {Various checks (not sitting)} then
 		begin
-			Console.WriteLn(Format('X%d Y%d recieved',[DestPoint.X,DestPoint.Y]));
 			if AChara.MapInfo.GetPath(AChara.Point,DestPoint,AChara.Path) then
 			begin
 				//send packet

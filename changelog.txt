@@ -13,6 +13,13 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 155 -
+[2007/02/24] - RaX - Fixed pathing, Got rid of GetArea, added IsBlocked as a member of TMap.
+ Tsusai - ProcessZonePacket, after a successfull walk request, gets stuck in an infinite,
+ REALLY stinkin' fast loop that leaks memory all over the place - investigate?
+ Oh yeah, characters can walk.
+-
+
 - Rev 154 -
 [2007/02/20] - Tsusai - Notes/Overview: Implemented the StartCRT and EndCRT.
 [2007/02/20] - Tsusai - Helios.dpr : Added StartCRT here.

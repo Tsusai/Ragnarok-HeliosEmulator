@@ -56,6 +56,8 @@ type
 
 	//graph related types
 	TCell = record
+		//The place in a graph the cell is
+		Position : TPoint;
     //what kind of tile is it
 		Attribute       : Byte;
 		//Tsusai 11/09/06: Keep track of the number of things in the way, like icewall(s)
