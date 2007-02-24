@@ -13,6 +13,17 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 156 -
+[2007/02/24] - RaX - Overview : Added log to file for console messages configureable by the
+ administrator.
+[2007/02/24] - RaX - Added ConsoleConfig.pas - broke out console related ini entries from
+ HeliosConfig.pas.
+[2007/02/24] - RaX - Added new constant, MS_DEBUG, to globals for handling debug messages.
+[2007/02/24] - RaX - Reorganized TConsole.Message to be faster and handle messages better.
+[2007/02/24] - RaX - Added TConsole.WriteDebug which appends an entry with a timestamp for
+ each message which meets the criteria defined in Console.ini.
+-
+
 - Rev 155 -
 [2007/02/24] - RaX - Fixed pathing, Got rid of GetArea, added IsBlocked as a member of TMap.
  Tsusai - ProcessZonePacket, after a successfull walk request, gets stuck in an infinite,

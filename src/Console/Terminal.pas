@@ -14,7 +14,8 @@ unit Terminal;
 interface
 
 uses
-	CRT;
+	CRT,
+	ConsoleOptions;
 
 type
 
@@ -25,7 +26,11 @@ type
 	private
 		LineColor : Boolean;
 
+		Procedure WriteDebug(AString : String; From : String);
+
 	public
+		Options : TConsoleOptions;
+
 		procedure WriteLn(
 										AString : String;
 										TextColor : Byte = CRTWhite
@@ -46,14 +51,16 @@ implementation
 uses
 	SyncObjs,
 	Globals,
-	Main;
+	Main,
+	SysUtils,
+	Classes;
 
 var
 	CriticalSection : TCriticalSection;
 
 
 //------------------------------------------------------------------------------
-//TConsole.Create()                                                 CONSTRUCTOR
+//Create()                                                 				CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Creates our critical section for managing console output.
@@ -65,15 +72,19 @@ var
 Constructor TConsole.Create;
 begin
 	inherited;
+	Options := TConsoleOptions.Create('./Console.ini');
+	Options.Load;
+	
 	LineColor := FALSE;
 	CRT.TextBackground(CRTBlack);
+	
 	CriticalSection := TCriticalSection.Create;
 end;//Create
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TConsole.Destroy()                                                 DESTRUCTOR
+//Destroy()					                                                 DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			frees up out object
@@ -85,6 +96,9 @@ end;//Create
 Destructor TConsole.Destroy;
 begin
 	CriticalSection.Free;
+
+	Options.Save;
+	Options.Free;
 	inherited;
 end;//Destroy
 //------------------------------------------------------------------------------
@@ -116,13 +130,14 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TConsole.Message()                                                 PROCEDURE
+//Message()                                                 				PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			All Server messages will be displayed through here.
 //
 //	Changes -
 //		February 19th, 2007 - RaX - Created.
+//		February 24th, 2007 - RaX - Reorganized for simplicity and speed.
 //
 //------------------------------------------------------------------------------
 procedure TConsole.Message(
@@ -131,155 +146,167 @@ procedure TConsole.Message(
 	MessageType : Byte = 255
 	);
 var
-	Index : Integer;
-	Color : Byte;
+	Index				: Integer;
+	FromColor		: Byte;
+	TypeString	: String;
+	Color				: Byte;
+	ShowMessage	: Boolean;
 
 begin
-	CriticalSection.Enter;
-	if LineColor then
-	begin
-		Color := CRTGray;
-	end else
-	begin
-		Color := CRTWhite;
-	end;
-
+	//Initialize our variables...
+	FromColor		:= CRTWhite;
+	TypeString	:= ' - ';
+	ShowMessage := FALSE;
 	//Output based on message type.
 	case MessageType of
 
 	MS_INFO ://Information
 		begin
-			if MainProc.Options.ShowInfo then
+			if Options.ShowInfo then
 			begin
-				CRT.TextColor(CRTWhite);
-				System.Write('[');
-
-				CRT.TextColor(CRTGray);
-				System.Write(From);
-
-				CRT.TextColor(CRTWhite);
-				System.Write(']');
-
-				for Index := Length(From) to 15 do
-				begin
-					System.Write(' ');
-				end;
-
-				System.Write(' -INFO  : ');
-
-				CRT.TextColor(Color);
-				System.Writeln(AString);
+				ShowMessage := TRUE;
+				FromColor		:= CRTGray;
+				TypeString	:= ' :INFO   - ';
 			end;
 		end;
 
 	MS_NOTICE ://Notice
 		begin
-			if MainProc.Options.ShowNotice then
+			if Options.ShowNotices then
 			begin
-				CRT.TextColor(CRTWhite);
-				System.Write('[');
-
-				CRT.TextColor(CRTCyan);
-				System.Write(From);
-
-				CRT.TextColor(CRTWhite);
-				System.Write(']');
-
-				for Index := Length(From) to 15 do
-				begin
-					System.Write(' ');
-				end;
-
-				System.Write(' -NOTICE: ');
-
-				CRT.TextColor(Color);
-				System.Writeln(AString);
+				ShowMessage := TRUE;
+				FromColor		:= CRTCyan;
+				TypeString	:= ' :NOTICE - ';
 			end;
 		end;
 
 	MS_WARNING ://Warning
 		begin
-			if MainProc.Options.ShowWarning then
+			if Options.ShowWarnings then
 			begin
-				CRT.TextColor(CRTWhite);
-				System.Write('[');
-
-				CRT.TextColor(CRTYellow);
-				System.Write(From);
-
-				CRT.TextColor(CRTWhite);
-				System.Write(']');
-
-				for Index := Length(From) to 15 do
-				begin
-					System.Write(' ');
-				end;
-
-				System.Write(' -WARNING: ');
-
-				CRT.TextColor(Color);
-				System.Writeln(AString);
+				ShowMessage := TRUE;
+				FromColor		:= CRTYellow;
+				TypeString	:= ' :WARNING- ';
 			end;
 		end;
 
 	MS_ERROR ://Error
 		begin
-			if MainProc.Options.ShowError then
+			if Options.ShowErrors then
 			begin
-				CRT.TextColor(CRTWhite);
-				System.Write('[');
-
-				CRT.TextColor(CRTLightRed);
-				System.Write(From);
-
-				CRT.TextColor(CRTWhite);
-				System.Write(']');
-
-				for Index := Length(From) to 15 do
-				begin
-					System.Write(' ');
-				end;
-
-				System.Write(' -ERROR : ');
-
-				CRT.TextColor(Color);
-				System.Writeln(AString);
+				ShowMessage := TRUE;
+				FromColor		:= CRTLightRed;
+				TypeString	:= ' :ERROR  - ';
 			end;
 		end;
 
-	else //everything else
+	MS_DEBUG ://DEBUG lines
 		begin
-			CRT.TextColor(CRTWhite);
-			System.Write('[');
-
-			CRT.TextColor(CRTWhite);
-			System.Write(From);
-
-			CRT.TextColor(CRTWhite);
-			System.Write(']');
-
-			for Index := Length(From) to 15 do
+			if Options.ShowDebug then
 			begin
-				System.Write(' ');
+      	ShowMessage := TRUE;
+				FromColor		:= CRTGray;
+				TypeString	:= ' :DEBUG  - ';
 			end;
-
-			System.Write(' - ');
-
-			CRT.TextColor(Color);
-			System.Writeln(AString);
 		end;
 	end;
 
-	if LineColor = TRUE then
+	if ShowMessage then
 	begin
-		LineColor := FALSE;
-	end else
-	begin
-		LineColor := TRUE;
-	end;
+		//Alternating line colors
+		if LineColor then
+		begin
+			Color := CRTGray;
+		end else
+		begin
+			Color := CRTWhite;
+		end;
 
-	CriticalSection.Leave;
+		//If the From string is over 15 characters, we truncate the last few.
+		if Length(From) > 17 then
+		begin
+			SetLength(From, 17);
+		end;
+
+		//Enter a critical section to avoid mixed messages.
+		CriticalSection.Enter;
+
+		//Set our random characters color
+		CRT.TextColor(CRTWhite);
+		System.Write('[');
+
+		//Set our From color, the server/routine this message is being sent from.
+		CRT.TextColor(FromColor);
+		System.Write(From);
+
+		//Set our Random character color, again.
+		CRT.TextColor(CRTWhite);
+		System.Write(']');
+
+		//Match up the messages no matter how long the from string is by adding spaces
+		for Index := Length(From) to 15 do
+		begin
+			System.Write(' ');
+		end;
+
+		//Write the type of message
+		System.Write(TypeString);
+
+		//write the body of the message
+		CRT.TextColor(Color);
+		System.Writeln(AString);
+
+		//Write our log entry if applicable
+		if Options.LogsEnabled then
+		begin
+			WriteDebug(AString, From);
+		end;
+
+		//Leave our critical section
+		CriticalSection.Leave;
+
+		//Alternate our line colors
+		if LineColor = TRUE then
+		begin
+			LineColor := FALSE;
+		end else
+		begin
+			LineColor := TRUE;
+		end;
+	end;
 end;
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//WriteDebug()                                               			  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Writes a debug message to file.
+//
+//	Changes -
+//		February 24th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Procedure TConsole.WriteDebug(AString: string; From: string);
+var
+	DebugFile : TextFile;
+begin
+	AssignFile(DebugFile, Options.LogsFileName);
+
+	if NOT FileExists(Options.LogsFileName) then
+	begin
+		ReWrite(DebugFile);
+		CloseFile(DebugFile);
+	end;
+	// Open to append a enw log entry
+	Append(DebugFile);
+
+	// Write this final line
+	System.WriteLn(DebugFile, Format('[%s %s] - %s - %s', [DateToStr(Date),TimeToStr(Time),From, AString]));
+
+	// Close the file
+	CloseFile(DebugFile);
+end;
+//------------------------------------------------------------------------------
 end{Console}.

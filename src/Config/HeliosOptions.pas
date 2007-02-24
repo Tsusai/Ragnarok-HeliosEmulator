@@ -23,10 +23,6 @@ interface
 		THeliosOptions = class(TMemIniFile)
 		private
 //private variables
-			fInfoEnabled       : boolean;
-			fNoticeEnabled     : boolean;
-			fWarningEnabled    : boolean;
-			fErrorEnabled      : boolean;
 
 			fLoginEnabled      : boolean;
 			fCharaEnabled      : boolean;
@@ -34,11 +30,6 @@ interface
 			fZoneEnabled       : boolean;
 
 		public
-			property ShowInfo : boolean read fInfoEnabled;
-			property ShowNotice : boolean read fNoticeEnabled;
-			property ShowWarning : boolean read fWarningEnabled;
-			property ShowError : boolean read fErrorEnabled;
-
 			property LoginEnabled : boolean read fLoginEnabled;
       property CharaEnabled : boolean read fCharaEnabled;
 			property InterEnabled : boolean read fInterEnabled;
@@ -72,18 +63,6 @@ implementation
 	var
 		Section    : TStringList;
 
-		//--------------------------------------------------------------------------
-		//LoadConsole                                               SUB PROCEDURE
-		//--------------------------------------------------------------------------
-		procedure LoadConsole;
-		begin
-			ReadSectionValues('Console', Section);
-			fInfoEnabled := StrToBoolDef(Section.Values['ShowInfo'] ,true);
-			fNoticeEnabled := StrToBoolDef(Section.Values['ShowNotice'] ,true);
-			fWarningEnabled := StrToBoolDef(Section.Values['ShowWarning'] ,true);
-			fErrorEnabled := StrToBoolDef(Section.Values['ShowError'] ,true);
-		end;{Subroutine LoadLogin}
-		//--------------------------------------------------------------------------
 
 		//--------------------------------------------------------------------------
 		//LoadLogin                                               SUB PROCEDURE
@@ -134,8 +113,6 @@ implementation
 		Section.QuoteChar := '"';
 		Section.Delimiter := ',';
 
-		LoadConsole;
-
 		LoadLogin;
     LoadChara;
     LoadInter;
@@ -159,12 +136,6 @@ implementation
 //------------------------------------------------------------------------------
 	procedure THeliosOptions.Save;
 	begin
-		//Console
-		WriteString('Console','ShowInfo',BoolToStr(fInfoEnabled));
-		WriteString('Console','ShowNotice',BoolToStr(fNoticeEnabled));
-		WriteString('Console','ShowWarning',BoolToStr(fWarningEnabled));
-		WriteString('Console','ShowError',BoolToStr(fErrorEnabled));
-
 		//Login
 		WriteString('Login','Enabled',BoolToStr(LoginEnabled));
 

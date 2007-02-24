@@ -52,6 +52,7 @@ const
 	MS_NOTICE		= 1;
 	MS_WARNING	= 2;
 	MS_ERROR		= 3;
+	MS_DEBUG		= 4;
 
 implementation
 	uses

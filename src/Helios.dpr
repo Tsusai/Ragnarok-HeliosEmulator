@@ -143,6 +143,7 @@ compile for linux, at the same time*}
 	InterOptions in 'Config\InterOptions.pas',
 	ZoneOptions in 'Config\ZoneOptions.pas',
 	DatabaseOptions in 'Config\DatabaseOptions.pas',
+	ConsoleOptions in 'Config\ConsoleOptions.pas',
 
   //Types
   MapTypes in 'Common\MapTypes.pas',
@@ -248,6 +249,7 @@ compile for linux, at the same time*}
 	InterOptions in 'Config/InterOptions.pas',
 	ZoneOptions in 'Config/ZoneOptions.pas',
 	DatabaseOptions in 'Config/DatabaseOptions.pas',
+	ConsoleOptions in 'Config/ConsoleOptions.pas',
 
   //Types
   MapTypes in 'Common/MapTypes.pas',
