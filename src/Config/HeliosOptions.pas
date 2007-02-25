@@ -23,17 +23,24 @@ interface
 		THeliosOptions = class(TMemIniFile)
 		private
 //private variables
+			fMapDirectory				: String;
+			fDatabaseDirectory	: String;
+			fConfigDirectory		: String;
 
-			fLoginEnabled      : boolean;
-			fCharaEnabled      : boolean;
-			fInterEnabled      : boolean;
-			fZoneEnabled       : boolean;
+			fLoginEnabled				: Boolean;
+			fCharaEnabled				: Boolean;
+			fInterEnabled				: Boolean;
+			fZoneEnabled				: Boolean;
 
 		public
-			property LoginEnabled : boolean read fLoginEnabled;
-      property CharaEnabled : boolean read fCharaEnabled;
-			property InterEnabled : boolean read fInterEnabled;
-      property ZoneEnabled : boolean read fZoneEnabled;
+			property MapDirectory				: String read fMapDirectory;
+			property DatabaseDirectory	: String read fDatabaseDirectory;
+			property ConfigDirectory		: String read fConfigDirectory;
+
+			property LoginEnabled	: Boolean read fLoginEnabled;
+			property CharaEnabled	: Boolean read fCharaEnabled;
+			property InterEnabled	: Boolean read fInterEnabled;
+			property ZoneEnabled	: Boolean read fZoneEnabled;
 
 			//Public methods
 			procedure Load;
@@ -44,7 +51,8 @@ interface
 implementation
 	uses
 		Classes,
-		SysUtils;
+		SysUtils,
+		WinLinux;
 
 //------------------------------------------------------------------------------
 //Load()                                               PROCEDURE
@@ -62,6 +70,32 @@ implementation
 	procedure THeliosOptions.Load;
 	var
 		Section    : TStringList;
+
+
+		//--------------------------------------------------------------------------
+		//LoadFolderStructure                                      SUB PROCEDURE
+    //--------------------------------------------------------------------------
+		procedure LoadFolderStructure;
+		begin
+			ReadSectionValues('Folder Structure', Section);
+			if NOT IsValidFolderName(Section.Values['Maps']) then
+			begin
+				Section.Values['Maps']	:= './Maps';
+			end;
+			if NOT IsValidFolderName(Section.Values['Database']) then
+			begin
+				Section.Values['Database']	:= './Database';
+			end;
+			if NOT IsValidFolderName(Section.Values['Configuration']) then
+			begin
+				Section.Values['Configuration']	 := './Configuration';
+			end;
+			
+			fMapDirectory				:= Section.Values['Maps'];
+			fDatabaseDirectory	:= Section.Values['Database'];
+			fConfigDirectory		:= Section.Values['Configuration'];
+		end;{Subroutine LoadZone}
+    //--------------------------------------------------------------------------
 
 
 		//--------------------------------------------------------------------------
@@ -97,7 +131,7 @@ implementation
     //--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
     //LoadZone                                               SUB PROCEDURE
     //--------------------------------------------------------------------------
 		procedure LoadZone;
@@ -112,6 +146,8 @@ implementation
 
 		Section.QuoteChar := '"';
 		Section.Delimiter := ',';
+
+		LoadFolderStructure;
 
 		LoadLogin;
     LoadChara;
@@ -136,6 +172,11 @@ implementation
 //------------------------------------------------------------------------------
 	procedure THeliosOptions.Save;
 	begin
+		//Folder Structure
+		WriteString('Folder Structure','Maps',MapDirectory);
+		WriteString('Folder Structure','Database',DatabaseDirectory);
+		WriteString('Folder Structure','Configuration',ConfigDirectory);
+		
 		//Login
 		WriteString('Login','Enabled',BoolToStr(LoginEnabled));
 

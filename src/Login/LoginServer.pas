@@ -161,7 +161,7 @@ begin
 		ActivateServer('Login',TCPServer);
   end else
 	begin
-		Console.Message('Cannot start():: Login server is already running.', 'Login Server', MS_ERROR);
+		Console.Message('Cannot start():: Login server is already running.', 'Login Server', MS_INFO);
 	end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -196,7 +196,7 @@ begin
     Options.Free;
   end else
   begin
-		Console.Message('Cannot Stop():: Login server is not running.', 'Login Server', MS_ERROR);
+		Console.Message('Cannot Stop():: Login server is not running.', 'Login Server', MS_INFO);
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -503,7 +503,7 @@ end;{OnException}
 		begin
 			Console.Message('Character Server failed verification: Invalid Security Key.',
 				'Login Server',
-				MS_ERROR);
+				MS_INFO);
 			Validated := false;
 		end;
 
@@ -634,7 +634,7 @@ end;{OnException}
 //------------------------------------------------------------------------------
 Procedure TLoginServer.LoadOptions;
 begin
-	Options    := TLoginOptions.Create('./Login.ini');
+	Options    := TLoginOptions.Create(MainProc.Options.ConfigDirectory+'/Login.ini');
 
 	Options.Load;
 end;{LoadOptions}

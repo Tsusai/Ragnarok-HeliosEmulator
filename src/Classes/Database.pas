@@ -208,7 +208,7 @@ begin
     FreeAndNIL(Options);
   end;
 
-  Options    := TDatabaseOptions.Create('./Database.ini');
+  Options    := TDatabaseOptions.Create(MainProc.Options.ConfigDirectory+'/Database.ini');
 
 	Options.Load;
 end;{LoadOptions}

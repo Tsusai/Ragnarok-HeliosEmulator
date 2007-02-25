@@ -37,8 +37,10 @@ uses
 var
 	Console					: TConsole;
 	Command         : TCommands;
-	AppPath         : String;
 
+	AppPath         : String;
+	ExeName					: String;
+	
 	AccountList     : TStringList;
 
 	LastAccountID   : Integer;
@@ -110,8 +112,6 @@ var
 begin
   DatabaseLoaded := false; //assume the database connections failed!
 
-	Console := TConsole.Create;
-
 	AccountList     := TStringList.Create;
 
 	ADatabase       := TDatabase.Create(TRUE,TRUE,TRUE,DatabaseLoaded);
@@ -133,7 +133,6 @@ end; {InitGlobals}
 procedure DestroyGlobals;
 begin
 	AccountList.Free;
-	Console.Free;
   ADatabase.Free;
 end;{DestroyGlobals}
 //------------------------------------------------------------------------------

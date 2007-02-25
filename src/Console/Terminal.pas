@@ -3,7 +3,10 @@
 //------------------------------------------------------------------------------
 //	What it does-
 //			This unit contains the Console unit, an object for managing console
-//		output.
+//		output. This class uses a TCriticalSection to manage both console output
+//		and log output. This ensures that we won't get any access violations from
+//		file access and that our console messages, while being protected to begin
+//		with, will output correctly and not "mix" together in the console window.
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created.
@@ -26,7 +29,7 @@ type
 	private
 		LineColor : Boolean;
 
-		Procedure WriteDebug(AString : String; From : String);
+		Procedure WriteLogEntry(AString : String; From : String; MessageType : Byte);
 
 	public
 		Options : TConsoleOptions;
@@ -38,8 +41,8 @@ type
 
 		procedure Message(
 			AString			: String;
-			From				: String = 'General';
-			MessageType : Byte = 255
+			From				: String	= 'General';
+			MessageType : Byte		= 255
 		);
 
 		Constructor Create;
@@ -63,7 +66,7 @@ var
 //Create()                                                 				CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
-//			Creates our critical section for managing console output.
+//			Creates our critical section for managing console + log output.
 //
 //	Changes -
 //		February 19th, 2007 - RaX - Created.
@@ -72,7 +75,7 @@ var
 Constructor TConsole.Create;
 begin
 	inherited;
-	Options := TConsoleOptions.Create('./Console.ini');
+	Options := TConsoleOptions.Create(MainProc.Options.ConfigDirectory+'/'+'Console.ini');
 	Options.Load;
 	
 	LineColor := FALSE;
@@ -204,7 +207,7 @@ begin
 		begin
 			if Options.ShowDebug then
 			begin
-      	ShowMessage := TRUE;
+				ShowMessage := TRUE;
 				FromColor		:= CRTGray;
 				TypeString	:= ' :DEBUG  - ';
 			end;
@@ -259,7 +262,7 @@ begin
 		//Write our log entry if applicable
 		if Options.LogsEnabled then
 		begin
-			WriteDebug(AString, From);
+			WriteLogentry(AString, From, MessageType);
 		end;
 
 		//Leave our critical section
@@ -279,34 +282,83 @@ end;
 
 
 //------------------------------------------------------------------------------
-//WriteDebug()                                               			  PROCEDURE
+//WriteLogEntry()                                               			  PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Writes a debug message to file.
+//			Writes a log message to file.
 //
 //	Changes -
 //		February 24th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Procedure TConsole.WriteDebug(AString: string; From: string);
+Procedure TConsole.WriteLogEntry(AString: string; From: string; MessageType : Byte);
 var
-	DebugFile : TextFile;
+	DebugFile		: TextFile;
+	LogMessage	: Boolean;
 begin
-	AssignFile(DebugFile, Options.LogsFileName);
+	LogMessage := FALSE;
 
-	if NOT FileExists(Options.LogsFileName) then
+	case MessageType of
+
+	MS_INFO ://Information
+		begin
+			if Options.LogInfo then
+			begin
+				LogMessage := TRUE;
+			end;
+		end;
+
+	MS_NOTICE ://Notice
+		begin
+			if Options.LogNotices then
+			begin
+				LogMessage := TRUE;
+			end;
+		end;
+
+	MS_WARNING ://Warning
+		begin
+			if Options.LogWarnings then
+			begin
+				LogMessage := TRUE;
+			end;
+		end;
+
+	MS_ERROR ://Error
+		begin
+			if Options.LogErrors then
+			begin
+				LogMessage := TRUE;
+			end;
+		end;
+
+	MS_DEBUG ://DEBUG lines
+		begin
+			if Options.LogDebug then
+			begin
+				LogMessage := TRUE;
+			end;
+		end;
+	end;
+
+	if LogMessage then
 	begin
-		ReWrite(DebugFile);
+		AssignFile(DebugFile, Options.LogsFileName);
+
+		if NOT FileExists(Options.LogsFileName) then
+		begin
+			ReWrite(DebugFile);
+			CloseFile(DebugFile);
+		end;
+		// Open to append a enw log entry
+		Append(DebugFile);
+
+		// Write this final line
+		System.WriteLn(DebugFile, Format('[%s %s] - %s - %s', [DateToStr(Date),TimeToStr(Time),From, AString]));
+
+		// Close the file
 		CloseFile(DebugFile);
 	end;
-	// Open to append a enw log entry
-	Append(DebugFile);
-
-	// Write this final line
-	System.WriteLn(DebugFile, Format('[%s %s] - %s - %s', [DateToStr(Date),TimeToStr(Time),From, AString]));
-
-	// Close the file
-	CloseFile(DebugFile);
 end;
 //------------------------------------------------------------------------------
 end{Console}.

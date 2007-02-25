@@ -284,7 +284,7 @@ begin
 		CharacterEventThread.Start;
   end else
   begin
-		Console.Message('Cannot Start():: Zone Server already running!', 'Zone Server', MS_ERROR);
+		Console.Message('Cannot Start():: Zone Server already running!', 'Zone Server', MS_INFO);
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -320,7 +320,7 @@ begin
 		Options.Free;
   end else
   begin
-		Console.Message('Cannot Stop():: Zone Server is not running!', 'Zone Server', MS_ERROR);
+		Console.Message('Cannot Stop():: Zone Server is not running!', 'Zone Server', MS_INFO);
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -531,7 +531,7 @@ End;{ProcessZonePacket}
 //------------------------------------------------------------------------------
 Procedure TZoneServer.LoadOptions;
 begin
-	Options    := TZoneOptions.Create('./Zone.ini');
+	Options    := TZoneOptions.Create(MainProc.Options.ConfigDirectory+'/Zone.ini');
 	Options.Load;
 end;{LoadOptions}
 //------------------------------------------------------------------------------
@@ -557,17 +557,17 @@ begin
   MapNames := ADatabase.StaticData.GetMapsForZone(Options.ID);
   for Index := 0 to MapNames.Count - 1 do
 	begin
-		if FileExists('./Maps/'+MapNames[Index]+'.pms') then
+		if FileExists(MainProc.Options.MapDirectory+'/'+MapNames[Index]+'.pms') then
 		begin
 			AMap := TMap.Create;
-      if AMap.LoadFromFile('./Maps/'+MapNames[Index]+'.pms') then
+			if AMap.LoadFromFile(MainProc.Options.MapDirectory+'/'+MapNames[Index]+'.pms') then
 			begin
 				AMap.Name := MapNames[Index];
         MapList.Add(AMap);
       end;
     end else
     begin
-			Console.WriteLn('      - Map '+MapNames[Index]+'.pms does not exist in the ./Maps directory');
+			Console.WriteLn('      - Map '+MainProc.Options.MapDirectory+'/'+MapNames[Index]+'.pms does not exist!');
     end;
   end;
 	Console.WriteLn('      - Maps Loaded!');

@@ -30,7 +30,7 @@ uses
 	function GetTick : LongWord;
 	procedure LowerPriority(AThread : TThread);
 	function ExtractFileNameMod(Path : String) : string;
-
+	function IsValidFolderName(FolderName : String) :Boolean;
 
 implementation
 uses
@@ -218,6 +218,17 @@ uses
 	end;{GetTick}
 //----------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetTick                                                              FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets current time in milliseconds since system start.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	procedure LowerPriority(AThread : TThread);
 	begin
 		{$IFDEF MSWINDOWS}
@@ -229,7 +240,19 @@ uses
 		//root only restrictions.  This will be blank for now.
 		{$ENDIF}
 	end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetTick                                                              FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets current time in milliseconds since system start.
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
 	function ExtractFileNameMod(Path : String) : string;
 	begin
 		//Tsusai 012507: ExtractFileName does not like / in windows paths,
@@ -240,5 +263,43 @@ uses
 		{$ENDIF}
 		Result := ExtractFileName(Path);
 	end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//IsValidFolderName                                                    FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Checks to see if a folder name is void of banned characters, if it isn't
+//		it returns FALSE.
+//
+//	Changes -
+//		February 25th, 2006 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+function IsValidFolderName(FolderName : String) : Boolean;
+const
+//Tsusai - if the forbidden characters are different in linux, change this.
+	ForbiddenChars  : set of Char = ['<', '>', '|', '"', ':', '*', '?'];
+var
+	Index : Integer;
+begin
+	Result := TRUE;
+
+	if FolderName = '' then
+	begin
+		Result := FALSE;
+		Exit;
+	end;
+
+	for Index := 1 to Length(FolderName) do
+	begin
+		if (FolderName[Index] in ForbiddenChars) then
+		begin
+			Result := FALSE;
+			Exit;
+		end;
+	end;
+end;
+//------------------------------------------------------------------------------
 end.

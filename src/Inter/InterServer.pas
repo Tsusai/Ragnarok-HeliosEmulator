@@ -184,7 +184,7 @@ begin
     ActivateServer('Inter',TCPServer);
   end else
   begin
-		Console.Message('Cannot Start():: Inter Server already running!', 'Inter Server', MS_ERROR);
+		Console.Message('Cannot Start():: Inter Server already running!', 'Inter Server', MS_INFO);
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -209,7 +209,7 @@ begin
     Options.Free;
   end else
   begin
-    Console.Message('Cannot Start():: Inter Server not running.', 'Inter Server', MS_ERROR);
+    Console.Message('Cannot Start():: Inter Server not running.', 'Inter Server', MS_INFO);
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -227,7 +227,7 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TInterServer.LoadOptions;
 begin
-  Options    := TInterOptions.Create('./Inter.ini');
+  Options    := TInterOptions.Create(MainProc.Options.ConfigDirectory+'/Inter.ini');
 	Options.Load;
 end;{LoadOptions}
 //------------------------------------------------------------------------------

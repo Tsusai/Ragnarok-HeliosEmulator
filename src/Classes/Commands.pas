@@ -27,7 +27,8 @@ type
   public
     Procedure Parse(InputText : String);
 
-  private
+	private
+		function Credits : String;
     function Help : String;
     //function Reload() : String;
     function Restart() : String;
@@ -48,7 +49,7 @@ implementation
     Globals;
 
 //------------------------------------------------------------------------------
-//TCommands.Parse()				                                           PROCEDURE
+//Parse()				                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Parses InputText for commands. Sets MainProc.Run which determines
@@ -88,8 +89,12 @@ begin
 						Error   := '';
 					end else
           if Command = '/reload' then
-          begin
+					begin
 						Error   := 'Reload not setup till all DB is done';//ADataBase.Reload;
+					end else
+					if Command = '/credits' then
+          begin
+						Error   := Credits;
 					end else
           if Command = '/help' then
           begin
@@ -115,9 +120,9 @@ begin
 					Values.Free;
 				end;
 				if Error <> '' then begin  //Display Errors
-					Console.WriteLn('Command ' + Command + ' failed - ' + Error)
+					Console.Message('Command ' + Command + ' failed - ' + Error, 'Command Parser', MS_INFO)
 				end else begin
-					Console.WriteLn('Command ' + Command + ' success!');
+					Console.Message('Command ' + Command + ' success!', 'Command Parser', MS_INFO);
 				end;
 			end;
 		finally
@@ -129,7 +134,36 @@ end;{TCommands.Parse}
 
 
 //------------------------------------------------------------------------------
-//TCommands.Help()				                                             FUNCTION
+//Credits()				                                             				FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Displays third party credits for Helios.
+//
+//	Changes -
+//		February 25th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+Function TCommands.Credits;
+var
+	ThirdParty  : TStringList;
+	LineIndex   : Integer;
+begin
+	if FileExists(AppPath + '3rdParty.txt') then
+	begin
+		ThirdParty := TStringList.Create;
+		ThirdParty.LoadFromFile(AppPath + '3rdParty.txt');
+		for LineIndex := 0 to ThirdParty.Count - 1 do
+		begin
+			Console.WriteLn('  '+ThirdParty.Strings[LineIndex]);
+		end;
+		ThirdParty.Free;
+	end;
+end;//Credits
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Help()				                                             FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Writes a list of commands to the console.
@@ -149,12 +183,12 @@ begin
 	Console.WriteLn('/help - lists all console commands');
 	Console.WriteLn('--------------------------------------');
 	Result := '';
-end;{TCommands.Help}
+end;{Help}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TCommands.Reload()				                                          FUNCTION
+//Reload()				                                          FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Will(in the future) free up and reload the Databases.
@@ -166,12 +200,12 @@ end;{TCommands.Help}
 {function TCommands.Reload() : String;
 begin
 	//To be done when all DB is done.  One swoop kill
-end;{TCommands.Reload}
+end;{Reload}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TCommands.Restart() 		                                             FUNCTION
+//Restart() 		                                             FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Restarts all enabled servers.
@@ -185,12 +219,12 @@ begin
 	MainProc.Shutdown;
 	MainProc.Startup;
 	Result := '';
-end;{TCommands.Restart}
+end;{Restart}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//TCommands.Start() 		                                             FUNCTION
+//Start() 		                                             FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Starts a server.
@@ -236,7 +270,7 @@ end;{Start}
 
 
 //------------------------------------------------------------------------------
-//TCommands.Stop() 		                                                 FUNCTION
+//Stop() 		                                                 FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Stops a server.

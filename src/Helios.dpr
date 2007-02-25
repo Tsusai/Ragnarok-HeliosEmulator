@@ -298,9 +298,19 @@ begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;
 	SetupCRT;
-	Command := TCommands.Create;
+
+	//Initialize our exe related paths and names before initializing other globals
+	AppPath		:= ExtractFilePath(ParamStr(0));
+	ExeName		:= ExtractFileNameMod(ParamStr(0));
+
+	//Create our main process.
 	MainProc := TMainProc.Create(nil); //Form replacement
 
+	//Setup console interface and command parser.
+	Console := TConsole.Create;
+	Command := TCommands.Create;
+
+	//Initialize our Main Process
 	MainProc.Startup; //Form Create replacement
 
 	{Begin Main Loop}
@@ -311,6 +321,7 @@ begin
 		Command.Parse(AnInput);
 	end;
 	{End Main Loop}
-
+	
+	Console.Free;
 	TerminateApplication;
 end{Helios}.

@@ -13,6 +13,29 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 157 -
+[2007/02/24] - RaX - Overview : Finished log configuration by adding the ability to set
+ which types of messages are logged. Added ability to configure which directories are used
+ (Maps/Database/Configuration Directories). Made all ini files create in the configuration
+ directory set in Helios.ini, which now retains the name of the .exe so, in effect, an
+ administrator could run multiple exe's in one folder by setting the folder names difrerently.
+[2007/02/24] - RaX - Reorganized MainProc.Startup, moved Header into DisplayHeader.
+[2007/02/24] - RaX - Added a few global initializations and the Console object creation to
+ the body of Helios.dpr.
+[2007/02/24] - RaX - Added Directories to HeliosConfig.pas.
+[2007/02/25] - RaX - Changed Command errors to be type Information for logging purposes.
+[2007/02/25] - RaX - Added IsValidFolderName to WinLinux to make sure folder names supplied
+ in Helios.ini do not contain invalid characters for the filesystem Helios is on.
+[2007/02/25] - RaX - Implemented Directory variables throughout Helios.
+[2007/02/25] - RaX - Added EnsureFileStructure to MainProc. This routine makes sure the supplied
+ required directories exist and if they don't, it creates them.
+[2007/02/25] - RaX - Helios can now start by itself in a directory with no resources whatsoever
+ and not crash.
+[2007/02/25] - RaX - Removed a debug line I had forgotten about in Map.pas.
+[2007/02/25] - RaX - Console was being free'd in Destroy Globals, so when an administrator
+ used command /restart, the server would crash. Fixed.
+-
+
 - Rev 156 -
 [2007/02/24] - RaX - Overview : Added log to file for console messages configureable by the
  administrator.

@@ -169,7 +169,6 @@ begin
 
 	//initialize our first flood item
 	AFloodItem.Position.X := StartPoint.X-AnArea[0][0].Position.X;
-	Console.Message(Format('Current Point Map Position : %d,%d', [AnArea[0][0].Position.X,AnArea[0][0].Position.Y]),'PATHING DEBUG',MS_WARNING);
 	AFloodItem.Position.Y := StartPoint.Y-AnArea[0][0].Position.Y;
 	AFloodItem.PathLength := 0;
 

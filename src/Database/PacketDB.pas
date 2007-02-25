@@ -98,12 +98,12 @@ Var
 	PacketInfo : TStringList;
 	ReadPtInfo : TStringList;
 Begin
-	Result := FileExists(AppPath + 'Database/packet_db.txt');
+	Result := FileExists(MainProc.Options.DatabaseDirectory+'/'+'packet_db.txt');
 	if Result then
 	begin
 		//load the packet_db file
 		packet_db := TStringList.Create;
-		packet_db.LoadFromFile(AppPath + 'Database/packet_db.txt');
+		packet_db.LoadFromFile(MainProc.Options.DatabaseDirectory+'/'+'packet_db.txt');
 
 		CB := 0;
 		PK := 0;
@@ -417,7 +417,7 @@ Begin
 		packet_db.Free;
 		PacketInfo.Free;
 	end else begin
-		Console.WriteLn('*** Database/packet_db.txt was not found.  Please fix.');
+		Console.WriteLn('*** '+MainProc.Options.DatabaseDirectory+'/'+'packet_db.txt was not found.');
 	end;
 End; (* Proc Load_PacketDB
 *-----------------------------------------------------------------------------*)

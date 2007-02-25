@@ -200,7 +200,7 @@ begin
 	  LANIP := Options.LANIP;
   end else
   begin
-		Console.Message('Cannot Start():: Character Server is already running!', 'Character Server', MS_ERROR);
+		Console.Message('Cannot Start():: Character Server is already running!', 'Character Server', MS_INFO);
 	end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -236,7 +236,7 @@ begin
     Options.Free;
   end else
   begin
-		Console.Message('Cannot Stop():: Character Server is not running', 'Character Server', MS_ERROR);
+		Console.Message('Cannot Stop():: Character Server is not running', 'Character Server', MS_INFO);
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -931,7 +931,7 @@ end;//ConnectToLogin
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.LoadOptions;
 begin
-	Options    := TCharaOptions.Create('./Character.ini');
+	Options    := TCharaOptions.Create(MainProc.Options.ConfigDirectory+'/Character.ini');
 
 	Options.Load;
 end;{LoadOptions}
