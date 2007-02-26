@@ -18,7 +18,8 @@ interface
 
 uses
 	CRT,
-	ConsoleOptions;
+	ConsoleOptions,
+	Commands;
 
 type
 
@@ -32,13 +33,17 @@ type
 		Procedure WriteLogEntry(AString : String; From : String; MessageType : Byte);
 
 	public
-		Options : TConsoleOptions;
-
+		Options					: TConsoleOptions;
+		Commands				: TCommands;
+		EnableCommands	: Boolean;
 		procedure WriteLn(
-										AString : String;
-										TextColor : Byte = CRTWhite
+			AString 		: String;
+			TextColor 	: Byte = CRTWhite
 		);
 
+		procedure ReadLn(
+			var AString 		: String
+		);
 		procedure Message(
 			AString			: String;
 			From				: String	= 'General';
@@ -75,6 +80,7 @@ var
 Constructor TConsole.Create;
 begin
 	inherited;
+	EnableCommands  := TRUE;
 	Options := TConsoleOptions.Create(MainProc.Options.ConfigDirectory+'/'+'Console.ini');
 	Options.Load;
 	
@@ -128,6 +134,32 @@ begin
 	System.Writeln(AString);
 
 	CriticalSection.Leave;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ReadLn()                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Alias of WriteLn.
+//
+//	Changes -
+//		February 19th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TConsole.ReadLn(
+	var AString 		: String
+	);
+begin
+	System.ReadLn(AString);
+	if EnableCommands then
+	begin
+		self.Commands.Parse(AString);
+	end else
+	begin
+		self.Message('Console Commands are disabled. Check above for errors.', 'Command Parser', MS_INFO)
+  end;
 end;
 //------------------------------------------------------------------------------
 
@@ -216,14 +248,6 @@ begin
 
 	if ShowMessage then
 	begin
-		//Alternating line colors
-		if LineColor then
-		begin
-			Color := CRTGray;
-		end else
-		begin
-			Color := CRTWhite;
-		end;
 
 		//If the From string is over 15 characters, we truncate the last few.
 		if Length(From) > 17 then
@@ -255,18 +279,25 @@ begin
 		//Write the type of message
 		System.Write(TypeString);
 
+		//Alternating line colors
+		if LineColor then
+		begin
+			Color := CRTGray;
+		end else
+		begin
+			Color := CRTWhite;
+		end;
+
 		//write the body of the message
 		CRT.TextColor(Color);
 		System.Writeln(AString);
-
+		CRT.TextColor(CRTWhite);//reset the color to default
+		
 		//Write our log entry if applicable
 		if Options.LogsEnabled then
 		begin
-			WriteLogentry(AString, From, MessageType);
+			WriteLogEntry(AString, From, MessageType);
 		end;
-
-		//Leave our critical section
-		CriticalSection.Leave;
 
 		//Alternate our line colors
 		if LineColor = TRUE then
@@ -276,6 +307,9 @@ begin
 		begin
 			LineColor := TRUE;
 		end;
+
+		//Leave our critical section
+		CriticalSection.Leave;
 	end;
 end;
 //------------------------------------------------------------------------------

@@ -143,9 +143,6 @@ var
 	PreloadOK : boolean;
 begin
 	Run := TRUE;
-	SetupTerminationCapturing;
-
-	DisplayHeader;
 
 	PreloadOK := InitGlobals;
 
@@ -173,6 +170,10 @@ begin
 			ZoneServer.Start;
 		end;
 
+		Console.WriteLn('- Startup Success');
+		Console.WriteLn('  For a list of console commands, input "/help".');
+		Console.WriteLn('');
+
 		//Link Enabled Servers
 		if Options.CharaEnabled then
 		begin
@@ -182,17 +183,14 @@ begin
 		begin
 			ZoneServer.ConnectToCharacter;
 		end;
-		Console.WriteLn('');
-
-		Console.WriteLn('- Startup Success');
-		Console.WriteLn('  For a list of console commands, input "/help".');
+		
 	end else
 	begin
+		Console.EnableCommands := FALSE;//disable console commands.
 		Console.WriteLn('- Startup Failed');
 		Console.WriteLn('  Please see what error was mentioned above, close this program '+
 			'and correct');
 	end;
-	Console.WriteLn('');
 
 	Loaded := TRUE;
 end;{TMainProc.Startup}

@@ -110,7 +110,7 @@ function InitGlobals : boolean;
 var
 	DatabaseLoaded : boolean;
 begin
-  DatabaseLoaded := false; //assume the database connections failed!
+	DatabaseLoaded := false; //assume the database connections failed!
 
 	AccountList     := TStringList.Create;
 

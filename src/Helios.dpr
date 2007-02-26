@@ -298,8 +298,9 @@ begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;
 	SetupCRT;
+	SetupTerminationCapturing;
 
-	//Initialize our exe related paths and names before initializing other globals
+	//setup our paths before anything else is done.
 	AppPath		:= ExtractFilePath(ParamStr(0));
 	ExeName		:= ExtractFileNameMod(ParamStr(0));
 
@@ -308,7 +309,9 @@ begin
 
 	//Setup console interface and command parser.
 	Console := TConsole.Create;
-	Command := TCommands.Create;
+
+	//Show our header ONCE
+	MainProc.DisplayHeader;
 
 	//Initialize our Main Process
 	MainProc.Startup; //Form Create replacement
@@ -317,8 +320,7 @@ begin
 	{Must keep application alive!}
 	while MainProc.Run do
 	begin
-		ReadLn(AnInput);
-		Command.Parse(AnInput);
+		Console.ReadLn(AnInput);
 	end;
 	{End Main Loop}
 	
