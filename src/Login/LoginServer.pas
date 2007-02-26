@@ -161,7 +161,7 @@ begin
 		ActivateServer('Login',TCPServer);
   end else
 	begin
-		Console.Message('Cannot start():: Login server is already running.', 'Login Server', MS_INFO);
+		Console.Message('Cannot start():: Login server is already running.', 'Login Server', MS_ALERT);
 	end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -196,7 +196,7 @@ begin
     Options.Free;
   end else
   begin
-		Console.Message('Cannot Stop():: Login server is not running.', 'Login Server', MS_INFO);
+		Console.Message('Cannot Stop():: Login server is not running.', 'Login Server', MS_ALERT);
   end;
 end;{Start}
 //------------------------------------------------------------------------------

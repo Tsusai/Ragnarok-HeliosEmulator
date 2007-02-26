@@ -13,6 +13,16 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 159 -
+[2007/02/26] - RaX - Overview : And more console and startup tweaks!
+[2007/02/26] - RaX - Added new Message type, MS_ALERT, for non-loggable messages(command
+ results, etc.).
+[2007/02/26] - RaX - Implemented MS_ALERT type messages in Commands.
+[2007/02/26] - RaX - Fixed bug with /exit command, Helios would not exit cleanly because
+ the Console object was being free'd before MainProc was free'd. Fixed by including
+ Console.Free in TerminateApplication.
+-
+
 - Rev 158 -
 [2007/02/25] - RaX - Overview : Further console and startup tweaks.
 [2007/02/25] - RaX - Fixed line color issue, didn't include part of the necessary code in

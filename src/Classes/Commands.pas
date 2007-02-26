@@ -120,9 +120,9 @@ begin
 					Values.Free;
 				end;
 				if Error <> '' then begin  //Display Errors
-					Console.Message('Command ' + Command + ' failed - ' + Error, 'Command Parser', MS_INFO)
+					Console.Message('Command ' + Command + ' failed - ' + Error, 'Command Parser', MS_ALERT)
 				end else begin
-					Console.Message('Command ' + Command + ' success!', 'Command Parser', MS_INFO);
+					Console.Message('Command ' + Command + ' success!', 'Command Parser', MS_ALERT);
 				end;
 			end;
 		finally
@@ -305,7 +305,7 @@ begin
     end;
   end else
   begin
-    //display help for Stop()
+		//display help for Stop()
 		Console.WriteLn('Using /Stop...');
 		Console.WriteLn('"/Stop <ServerName>" - stops <ServerName>');
 		Console.WriteLn('ServerName can be "Login", "Character", "Zone", or "Inter"');

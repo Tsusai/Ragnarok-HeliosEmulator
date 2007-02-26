@@ -200,7 +200,7 @@ begin
 	  LANIP := Options.LANIP;
   end else
   begin
-		Console.Message('Cannot Start():: Character Server is already running!', 'Character Server', MS_INFO);
+		Console.Message('Cannot Start():: Character Server is already running!', 'Character Server', MS_ALERT);
 	end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -236,7 +236,7 @@ begin
     Options.Free;
   end else
   begin
-		Console.Message('Cannot Stop():: Character Server is not running', 'Character Server', MS_INFO);
+		Console.Message('Cannot Stop():: Character Server is not running', 'Character Server', MS_ALERT);
   end;
 end;{Start}
 //------------------------------------------------------------------------------

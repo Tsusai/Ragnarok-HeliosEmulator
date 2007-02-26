@@ -297,7 +297,9 @@ var
 begin
 	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 	Randomize;
+	//Setup our CRT controller
 	SetupCRT;
+	//Allow Helios to capture termination messages
 	SetupTerminationCapturing;
 
 	//setup our paths before anything else is done.
@@ -323,7 +325,7 @@ begin
 		Console.ReadLn(AnInput);
 	end;
 	{End Main Loop}
-	
-	Console.Free;
+
+	//Terminate the process cleanly.
 	TerminateApplication;
 end{Helios}.

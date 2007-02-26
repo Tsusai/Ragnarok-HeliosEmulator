@@ -184,7 +184,7 @@ begin
     ActivateServer('Inter',TCPServer);
   end else
   begin
-		Console.Message('Cannot Start():: Inter Server already running!', 'Inter Server', MS_INFO);
+		Console.Message('Cannot Start():: Inter Server already running!', 'Inter Server', MS_ALERT);
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -209,7 +209,7 @@ begin
     Options.Free;
   end else
   begin
-    Console.Message('Cannot Start():: Inter Server not running.', 'Inter Server', MS_INFO);
+    Console.Message('Cannot Start():: Inter Server not running.', 'Inter Server', MS_ALERT);
   end;
 end;{Start}
 //------------------------------------------------------------------------------

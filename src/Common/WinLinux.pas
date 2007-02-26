@@ -185,7 +185,7 @@ uses
 		TerminateProcess(GetCurrentProcess, 0);
 		{$ENDIF}
 		{$IFDEF LINUX}
-		Console.Message('Helios will generate a QUIT message.  Please ignore.', 'System', MS_INFO);
+		WriteLn('Helios will generate a QUIT message.  Please ignore.');
 		kill(getpid,SIGQUIT);
 		{$ENDIF}
 	end;{KillProcess}

@@ -94,8 +94,7 @@ begin
 	//Get the current "Tick" or time.
 	CurrentTime := GetTick;
 
-	//Enter a critical section to avoid access violations.
-	CriticalSection.Enter;
+
 
 	//Loop through the character list
 	for CharacterIndex := CharacterList.Count - 1 downto 0 do
@@ -106,17 +105,19 @@ begin
 			//Check to see if the event needs to be fired.
 			if CurrentTime <= CharacterList[CharacterIndex].EventList[EventIndex].ExpiryTime then
 			begin
+				//Enter a critical section to avoid access violations.
+				CriticalSection.Enter;
 				//If it does, execute the event, then delete it from the list.
 				//(The list "owns" the events, so this does not leak)
 				CharacterList[CharacterIndex].EventList[EventIndex].Execute;
 				CharacterList[CharacterIndex].EventList.Delete(EventIndex);
+				CriticalSection.Leave;
 			end;
 		end;
 	end;
 
 	//Exit our critical section and sleep for 1ms (OS dependant, actually 55ms on
 	//win32) If anyone has a better way to wait between events, let me know!
-	CriticalSection.Leave;
 	Sleep(1);
 end;//Run
 //------------------------------------------------------------------------------

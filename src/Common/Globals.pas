@@ -36,7 +36,6 @@ uses
 //------------------------------------------------------------------------------
 var
 	Console					: TConsole;
-	Command         : TCommands;
 
 	AppPath         : String;
 	ExeName					: String;
@@ -55,6 +54,7 @@ const
 	MS_WARNING	= 2;
 	MS_ERROR		= 3;
 	MS_DEBUG		= 4;
+	MS_ALERT		= 5;
 
 implementation
 	uses
@@ -154,13 +154,14 @@ begin
 	begin
 		EndCRT;
 		KillTerminationCapturing;
-		Command.Free;
 		MainProc.Shutdown;
 		FreeAndNil(MainProc);
+		//Free up console handler.
+		Console.Free;
 		KillProcess;
 	end else
 	begin
-		Console.Message('Please wait to shutdown helios until after it has finished starting/stopping', 'System', MS_ERROR);
+		Console.Message('Please wait to shutdown helios until after it has finished starting/stopping', 'System', MS_ALERT);
   end;
 end;{TerminateApplication}
 //------------------------------------------------------------------------------

@@ -1,13 +1,30 @@
 //------------------------------------------------------------------------------
 //Terminal				                                                         UNIT
 //------------------------------------------------------------------------------
-//	What it does-
+//	What it does -
 //			This unit contains the Console unit, an object for managing console
 //		output. This class uses a TCriticalSection to manage both console output
 //		and log output. This ensures that we won't get any access violations from
 //		file access and that our console messages, while being protected to begin
 //		with, will output correctly and not "mix" together in the console window.
 //
+//	Documentation -
+//			Here is a short list of possible message types and their uses.
+//		MS_INFO - this is information that an administrator would usually want to
+//			see, such as when and if the zone server connects to the character, or
+//			a console command's error message.
+//		MS_NOTICE - this is a notice letting an administrator know what is going
+//			on internally. This includes things like when a character server starts
+//			reading a zone server's connection.
+//		MS_WARNING - This includes all messages that could be potentially bad,
+//			such as when an unidentified packet is received.
+//		MS_ERROR - This is for use only when a message is worthy of stopping a
+//			server, such as when a database cannot be queried, etc.
+//		MS_DEBUG - Debug messages. Developers use at your own descretion.
+//		MS_ALERT - Alerts are any other sort of information that needs to be shown
+//			to an administrator. These sorts of messages cannot be logged and so
+//			should not be used to convey any sort of vital information.
+
 //	Changes -
 //		September 19th, 2006 - RaX - Created.
 //
@@ -158,7 +175,7 @@ begin
 		self.Commands.Parse(AString);
 	end else
 	begin
-		self.Message('Console Commands are disabled. Check above for errors.', 'Command Parser', MS_INFO)
+		self.Message('Console Commands are disabled. Check above for errors.', 'Command Parser', MS_ALERT)
   end;
 end;
 //------------------------------------------------------------------------------
@@ -243,6 +260,13 @@ begin
 				FromColor		:= CRTGray;
 				TypeString	:= ' :DEBUG  - ';
 			end;
+		end;
+
+	MS_ALERT ://Alerts to internal events. NOT AN ERROR.
+		begin
+			ShowMessage := TRUE;
+			FromColor		:= CRTLightCyan;
+			TypeString	:= ' :ALERT  - ';
 		end;
 	end;
 

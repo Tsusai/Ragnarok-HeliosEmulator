@@ -284,7 +284,7 @@ begin
 		CharacterEventThread.Start;
   end else
   begin
-		Console.Message('Cannot Start():: Zone Server already running!', 'Zone Server', MS_INFO);
+		Console.Message('Cannot Start():: Zone Server already running!', 'Zone Server', MS_ALERT);
   end;
 end;{Start}
 //------------------------------------------------------------------------------
@@ -304,7 +304,13 @@ Procedure TZoneServer.Stop();
 begin
   if Started then
 	begin
-		CharacterEventThread.Stop;
+		CharacterEventThread.Terminate;
+		while NOT CharacterEventThread.Terminated do
+		begin
+			Sleep(1);
+    end;
+		
+
     //deactivate server and clients.
 	  DeActivateServer('Zone', TCPServer);
 	  DeActivateClient(ToCharaTCPClient);
@@ -320,7 +326,7 @@ begin
 		Options.Free;
   end else
   begin
-		Console.Message('Cannot Stop():: Zone Server is not running!', 'Zone Server', MS_INFO);
+		Console.Message('Cannot Stop():: Zone Server is not running!', 'Zone Server', MS_ALERT);
   end;
 end;{Start}
 //------------------------------------------------------------------------------
