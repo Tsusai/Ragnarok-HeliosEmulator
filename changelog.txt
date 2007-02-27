@@ -13,6 +13,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 160 -
+[2007/02/26] - RaX - Accidentally removed a vital line of code from pathing along the way
+ somewhere. Now fixed.
+[2007/02/26] - RaX - Added CHAR_SHOWAREA to gameconstants, implemented in TBeing.Walk.
+-
+
 - Rev 159 -
 [2007/02/26] - RaX - Overview : And more console and startup tweaks!
 [2007/02/26] - RaX - Added new Message type, MS_ALERT, for non-loggable messages(command

@@ -14,8 +14,10 @@ unit GameConstants;
 interface
 const
 
-	CHAR_CLICKAREA = 16;//the distance away a character can click from itself
+	CHAR_CLICKAREA	= 16;//the distance away a character can click from itself
 											//CHAR_CLICKAREA used in Map.pas - Pathing.
+	CHAR_SHOWAREA		= 16; //The distance away from the character in which other
+                      	//other beings are able to be seen.
 
 	L_HAND = 1;
 	R_HAND = 0;

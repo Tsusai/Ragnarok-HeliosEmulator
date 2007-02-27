@@ -98,6 +98,8 @@ begin
 	Point := Path[PathIndex];
 	dx := Point.X - OldPt.X;
 	dy := Point.Y - OldPt.Y;
+	//Check to see if we're moving diagonally, if we are, we adjust the speed
+	//accordingly.
 	if not (abs(dx) = abs(dy)) then
 	begin
 		spd := Speed * 7 div 5;
@@ -105,6 +107,7 @@ begin
 		spd := Speed;
 	end;
 
+	//Apply speed adjustments.
 	MoveTick := GetTick + spd;
 
 	while {Gamestate = walking}true do
@@ -120,18 +123,18 @@ begin
 		PathIndex := Min(PathIndex + 1, Path.Count-1);
 
 		//16 covers the old 15x15 grid, no matter which dir we go I think
-		for idxY := Max(OldPt.Y-16,0) to Min(OldPt.Y+16,MapInfo.Size.Y) do
+		for idxY := Max(OldPt.Y-CHAR_SHOWAREA,0) to Min(OldPt.Y+CHAR_SHOWAREA,MapInfo.Size.Y) do
 		begin
-			for idxX := Max(OldPt.X-16,0) to Min(OldPt.X+16,MapInfo.Size.X) do
+			for idxX := Max(OldPt.X-CHAR_SHOWAREA,0) to Min(OldPt.X+CHAR_SHOWAREA,MapInfo.Size.X) do
 			begin
 				for BIdx := MapInfo.Cell[idxX][idxY].Beings.Count - 1 to 0 do
 				begin
 					ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BIdx] as TBeing;
 
-					if Self = ABeing then continue;
+					if Self = ABeing then Continue;
 
-					if ((dx <> 0) and (abs(OldPt.Y - ABeing.Point.Y) < 16) and (OldPt.X = ABeing.Point.X + dx * 15)) OR
-						((dy <> 0) and (abs(OldPt.X - ABeing.Point.X) < 16) and (OldPt.Y = ABeing.Point.Y + dy * 15)) then
+					if ((dx <> 0) and (abs(OldPt.Y - ABeing.Point.Y) < CHAR_SHOWAREA) and (OldPt.X = ABeing.Point.X + dx * (CHAR_SHOWAREA-1))) OR
+						((dy <> 0) and (abs(OldPt.X - ABeing.Point.X) < CHAR_SHOWAREA) and (OldPt.Y = ABeing.Point.Y + dy * (CHAR_SHOWAREA-1))) then
 					begin
 						//Packets for base being if its a character
 						if Self is TCharacter then
@@ -147,8 +150,8 @@ begin
 						end;
 					end;
 
-					if ((dx <> 0) and (abs(Point.Y - ABeing.Point.Y) < 16) and (Point.X = ABeing.Point.X - dx * 15)) or
-						((dy <> 0) and (abs(Point.X - ABeing.Point.X) < 16) and (Point.Y = ABeing.Point.Y - dy * 15)) then
+					if ((dx <> 0) and (abs(Point.Y - ABeing.Point.Y) < CHAR_SHOWAREA) and (Point.X = ABeing.Point.X - dx * (CHAR_SHOWAREA-1))) or
+						((dy <> 0) and (abs(Point.X - ABeing.Point.X) < CHAR_SHOWAREA) and (Point.Y = ABeing.Point.Y - dy * (CHAR_SHOWAREA-1))) then
 					begin
 						if Self is TCharacter then
 						begin

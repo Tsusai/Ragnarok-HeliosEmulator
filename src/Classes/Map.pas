@@ -217,6 +217,8 @@ begin
 						SetLength(NewFloodList, NewFloodListLength);
 						NewFloodList[NewFloodListLength-1] := NewFloodItem;
 
+						//set it impassable in the area to prevent an unecessary amount of items being generated.
+						AnArea[PossiblePosition.X][PossiblePosition.Y].Attribute := 1;
 
 						//check to see if we've found the end point... if we have...
 						if PointsEqual(AnArea[NewFloodItem.Position.X][NewFloodItem.Position.Y].Position, EndPoint) then
