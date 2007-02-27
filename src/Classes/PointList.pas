@@ -1,77 +1,80 @@
 //------------------------------------------------------------------------------
-//PointList                                                               UNIT
+//PointList                                                            UNIT
 //------------------------------------------------------------------------------
 //  What it does -
 //      A list of TPoints
 //
 //  Changes -
-//    October 30th, 2006 - RaX - Created.
+//    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 unit PointList;
 
 interface
 uses
-  Types;
+	SyncObjs,
+	Types;
 
 type
 	PPoint = ^TPoint;
 
 //------------------------------------------------------------------------------
-//TPointList                                                              CLASS
+//TPointList                                                          CLASS
 //------------------------------------------------------------------------------
-	TPointList = class
+	TPointList = Class(TObject)
 
-	private
-		MsCount : Integer; // Count of Points in the list
+	Private
+		MsCount  : Integer; // Count of Points in the list
 		MaxCount : Integer; // Maximum Points that can fit into current storage
 		MemStart : Pointer; // Start of the memory holding the list
 		NextSlot : PPoint; // Points to the next free slot in memory
 
-		function GetValue(Index : Integer) : TPoint;
-    procedure SetValue(Index : Integer; Value : TPoint);
-		procedure Expand(const Size : Integer);
-    procedure Shrink(const Size : Integer);
+		CriticalSection : TCriticalSection;
 
-	public
-		property Items[Index : Integer] : TPoint
+		Function GetValue(Index : Integer) : TPoint;
+    Procedure SetValue(Index : Integer; Value : TPoint);
+		Procedure Expand(const Size : Integer);
+    Procedure Shrink(const Size : Integer);
+
+	Public
+		Constructor Create();
+		Destructor Destroy; override;
+		Property Items[Index : Integer] : TPoint
 		read GetValue write SetValue;default;
-    procedure Assign(AnArray : array of TPoint);overload;
 
-	published
-		constructor Create;
-		destructor Destroy; override;
-		procedure Add(const APoint : TPoint);
-    procedure Insert(const APoint : TPoint; Index : Integer);
-    procedure Delete(Index : Integer);
-    procedure Clear();
-    function IndexOf(const APoint : TPoint) : Integer;
-    procedure Assign(APointList : TPointList);overload;
-		property Count : Integer
+
+		Procedure Add(const APoint : TPoint);
+		Procedure Delete(Index : Integer);
+		Procedure Clear();
+
+		Property Count : Integer
 		read MsCount;
 	end;
 //------------------------------------------------------------------------------
 
 
 implementation
-uses
-  Classes;
+
 const
-	ALLOCATE_SIZE = 20; // How many points to store in each incremental memory block
+	ALLOCATE_SIZE = 20; // How many Points to store in each incremental memory block
 
 //------------------------------------------------------------------------------
 //Create                                                            CONSTRUCTOR
 //------------------------------------------------------------------------------
 //  What it does -
-//      Initializes our pointlist. Creates a storage area.
+//      Initializes our Pointlist. Creates a storage area.
 //
 //  Changes -
-//    December 22nd, 2006 - RaX - Created Header.
+//    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-constructor TPointList.Create;
+constructor TPointList.Create();
 begin
-	MsCount  := 0; // No numbers in the list yet
+	CriticalSection := TCriticalSection.Create;
+	CriticalSection.Enter;
+	inherited Create;
+	MsCount  := 0; // No Points in the list yet
   MaxCount := 0; //no mem yet!
 	MemStart := NIL;//no memory yet
+	CriticalSection.Leave;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -83,14 +86,18 @@ end;{Create}
 //      Destroys our list and frees any memory used.
 //
 //  Changes -
-//    December 22nd, 2006 - RaX - Created Header.
+//    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 destructor TPointList.Destroy;
 begin
+	CriticalSection.Enter;
+
 	// Free the allocated memory
 	FreeMem(MemStart);
 
 	// Call TObject destructor
+	CriticalSection.Leave;
+	CriticalSection.Free;
 	inherited;
 end;{Destroy}
 //------------------------------------------------------------------------------
@@ -100,10 +107,10 @@ end;{Destroy}
 //Expand                                                              PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
-//      Increases the memory area size by Size TPoints.
+//      Increases the memory area size by Size Address.
 //
 //  Changes -
-//    December 22nd, 2006 - RaX - Created Header.
+//    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure TPointList.Expand(const Size : Integer);
 var
@@ -111,6 +118,7 @@ var
 	OldPointer, NewPointer : PPoint;
 	Index : Integer;
 begin
+	CriticalSection.Enter;
 	// First allocate a new, bigger memory space
 	GetMem(NewMemoryStart, (MaxCount + Size) * SizeOf(TPoint));
 	if(Assigned(MemStart)) then
@@ -120,7 +128,7 @@ begin
 	  NewPointer := NewMemoryStart;
 	  for Index := 1 to MaxCount do
 	  begin
-		  // Copy one number at a time
+		  // Copy one Point at a time
 		  NewPointer^ := OldPointer^;
 		  Inc(OldPointer);
 		  Inc(NewPointer);
@@ -134,6 +142,7 @@ begin
 	NextSlot := MemStart;
 	Inc(NextSlot, MaxCount);
 	Inc(MaxCount, Size);
+	CriticalSection.Leave;
 end;{Expand}
 //------------------------------------------------------------------------------
 
@@ -142,10 +151,10 @@ end;{Expand}
 //Shrink                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
-//      Decreases the memory area size by Size TPoints.
+//      Decreases the memory area size by Size PPoint.
 //
 //  Changes -
-//    December 22nd, 2006 - RaX - Created Header.
+//    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure TPointList.Shrink(const Size: Integer);
 var
@@ -153,6 +162,7 @@ var
 	OldPointer, NewPointer : PPoint;
 	Index : Integer;
 begin
+	CriticalSection.Enter;
   if MaxCount > Size then
   begin
     //first allocate a new, smaller memory space
@@ -164,7 +174,7 @@ begin
 	    NewPointer := NewMemoryStart;
 	    for Index := 1 to MaxCount do
 	    begin
-		    // Copy one number at a time
+		    // Copy one Point at a time
 		    NewPointer^ := OldPointer^;
 		    Inc(OldPointer);
 		    Inc(NewPointer);
@@ -178,7 +188,8 @@ begin
 	  NextSlot := MemStart;
 	  Inc(NextSlot, MaxCount);
 	  Inc(MaxCount, Size);
-  end;
+	end;
+	CriticalSection.Leave;
 end;{Shrink}
 //------------------------------------------------------------------------------
 
@@ -190,66 +201,25 @@ end;{Shrink}
 //      Adds a TPoint to the list.
 //
 //  Changes -
-//    December 22nd, 2006 - RaX - Created Header.
+//    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure TPointList.Add(const APoint : TPoint);
 begin
-	// If we do not have enough space to add the number, then get more space!
+	CriticalSection.Enter;
+	// If we do not have enough space to add the Point, then get more space!
 	if MsCount = MaxCount then
 	begin
 		Expand(ALLOCATE_SIZE);
 	end;
 
-	// Now we can safely add the number to the list
+	// Now we can safely add the Point to the list
 	NextSlot^ := APoint;
 
 	// And update things to suit
 	Inc(MsCount);
 	Inc(NextSlot);
+	CriticalSection.Leave;
 end;{Add}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//Insert                                                              PROCEDURE
-//------------------------------------------------------------------------------
-//  What it does -
-//      Inserts a TPoint at Index Position.
-//
-//  Changes -
-//    December 22nd, 2006 - RaX - Created Header.
-//------------------------------------------------------------------------------
-procedure TPointList.Insert(const APoint : TPoint; Index: Integer);
-var
-  CurrentPoint  : PPoint;
-  NextPoint     : PPoint;
-  TempPoint     : TPoint;
-  TempPoint2    : TPoint;
-begin
-  if MaxCount = (MsCount+1) then
-  begin
-    Expand(ALLOCATE_SIZE);
-  end;
-
-  CurrentPoint := MemStart;
-  Inc(CurrentPoint, Index);
-  NextPoint := CurrentPoint;
-  Inc(NextPoint, 1);
-  TempPoint := APoint;
-  for Index := Index to MsCount - 1 do
-  begin
-    TempPoint2 := NextPoint^;
-    NextPoint^ := CurrentPoint^;
-    CurrentPoint^ := TempPoint;
-    TempPoint := TempPoint2;
-    Inc(CurrentPoint, 1);
-    Inc(NextPoint, 1);
-  end;
-  CurrentPoint^ := TempPoint;
-
-  Inc(MsCount);
-  Inc(NextSlot);
-end;{Insert}
 //------------------------------------------------------------------------------
 
 
@@ -260,15 +230,16 @@ end;{Insert}
 //      Removes a TPoint at Index from the list.
 //
 //  Changes -
-//    December 22nd, 2006 - RaX - Created Header.
+//    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure TPointList.Delete(Index : Integer);
 var
   CurrentItem : PPoint;
   NextItem    : PPoint;
 begin
-	//
-	if (MaxCount-ALLOCATE_SIZE) = (MsCount-1) then
+	CriticalSection.Enter;
+  
+	if (MaxCount-ALLOCATE_SIZE) = (MsCount) then
 	begin
 		Shrink(ALLOCATE_SIZE);
 	end;
@@ -280,38 +251,10 @@ begin
     Inc(NextItem,1);
     CurrentItem^ := NextItem^;
   end;
-  Dec(NextSlot, 1);
+  Dec(MsCount,  1);
+	Dec(NextSlot, 1);
+	CriticalSection.Leave;
 end;{Delete}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//IndexOf                                                              FUNCTION
-//------------------------------------------------------------------------------
-//  What it does -
-//      Returns the index in the list of the TPoint;
-//
-//  Changes -
-//    December 22nd, 2006 - RaX - Created Header.
-//------------------------------------------------------------------------------
-function TPointList.IndexOf(const APoint: TPoint): Integer;
-var
-  Found : Boolean;
-  Index : Integer;
-begin
-  Index := MsCount;
-  Found := FALSE;
-  Result := -1;
-  while (Index >= 0) AND (NOT Found) do
-  begin
-    if PointsEqual(GetValue(Index),APoint) then
-    begin
-      Found := TRUE;
-      Result := Index;
-    end;
-    dec(Index);
-  end;
-end;{IndexOf}
 //------------------------------------------------------------------------------
 
 
@@ -322,63 +265,22 @@ end;{IndexOf}
 //      Clears the list.
 //
 //  Changes -
-//    December 22nd, 2006 - RaX - Created Header.
+//    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure TPointList.Clear;
 begin
+	CriticalSection.Enter;
+
   // Free the allocated memory
   if Assigned(MemStart) then
   begin
     FreeMem(MemStart);
-    MsCount  := 0; // No numbers in the list yet
-    MaxCount := 0; //no max size
+    MsCount  := 0;  // No Points in the list yet
+		MaxCount := 0;  //no max size
     MemStart := NIL;//no memory yet
-  end
+	end;
+	CriticalSection.Leave;
 end;{Clear}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//Assign                                                              PROCEDURE
-//------------------------------------------------------------------------------
-//  What it does -
-//      Assign the list the same values as another list.
-//
-//  Changes -
-//    December 22nd, 2006 - RaX - Created Header.
-//------------------------------------------------------------------------------
-procedure TPointList.Assign(APointList : TPointList);
-var
-  Index : Integer;
-begin
-  Clear;
-  for Index := 0 to APointList.Count-1 do
-  begin
-    Add(APointList[Index]);
-  end;
-end;{Assign}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//Assign                                                              PROCEDURE
-//------------------------------------------------------------------------------
-//  What it does -
-//      Adds all the items in an array to the list.
-//
-//  Changes -
-//    December 22nd, 2006 - RaX - Created Header.
-//------------------------------------------------------------------------------
-procedure TPointList.Assign(AnArray : array of TPoint);
-var
-  Index : Integer;
-begin
-  Clear;
-  for Index := 0 to Length(AnArray)-1 do
-  begin
-    Add(AnArray[Index]);
-  end;
-end;
 //------------------------------------------------------------------------------
 
 
@@ -386,10 +288,10 @@ end;
 //GetValue                                                             FUNCTION
 //------------------------------------------------------------------------------
 //  What it does -
-//      Returns a TPoint (not a pointer) at the index.
+//      Returns a TPoint at the index.
 //
 //  Changes -
-//    December 22nd, 2006 - RaX - Created Header.
+//    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 function TPointList.GetValue(Index : Integer): TPoint;
 var
@@ -411,17 +313,18 @@ end;{GetValue}
 //      Sets a TPoint into the list at Index.
 //
 //  Changes -
-//    December 22nd, 2006 - RaX - Created Header.
+//    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure TPointList.SetValue(Index : Integer; Value : TPoint);
 var
 	PointPtr : PPoint;
 begin
+	CriticalSection.Enter;
 	// Simply set the value at the given TPoint index position
 	PointPtr := MemStart;
 	Inc(PointPtr, Index); // Point to the index'th TPoint in storage
-  PointPtr^ := Value;
+	PointPtr^ := Value;
+	CriticalSection.Leave;
 end;{SetValue}
 //------------------------------------------------------------------------------
 end.
-

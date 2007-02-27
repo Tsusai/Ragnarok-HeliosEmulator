@@ -521,6 +521,8 @@ Begin
 			end;
 		end;
 	end;
+	//Sleep to free up the processor.
+	Sleep(1);
 End;{ProcessZonePacket}
 //------------------------------------------------------------------------------
 

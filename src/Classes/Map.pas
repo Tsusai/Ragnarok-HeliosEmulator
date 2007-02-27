@@ -40,7 +40,8 @@ type
 		Destructor Destroy();override;
 
 		Function IsBlocked(
-			const APoint : TPoint
+			const APoint : TPoint;
+			AGraph : TGraph = NIL
 		) : boolean;
 
     Function LoadFromFile(Path : String) : Boolean;
@@ -153,6 +154,7 @@ var
 	AnAreaSize				: TPoint;
 	XMod							: Integer;
 	YMod							: Integer;
+  PathIndex: Integer;
 
 begin
 	Result := false;
@@ -180,12 +182,13 @@ begin
 	SetLength(AFloodList, AFloodListLength);
 	AFloodList[AFloodListLength-1] := AFloodItem;
 
-	//while we havn't found the end point...
+	//while we havn't found the end point and still have cells unsearched...
 	while (AFloodListLength > 0) AND (NOT Result) do
 	begin
 		//reinitialize Index and NewFloodListLen for each AFloodList
 		Index := 0;
 		NewFloodListLength := 0;
+		//loop through each FloodItem
 		while (Index < AFloodListLength) AND (NOT Result) do
 		begin
 			//initialize our flooditem which we will propagate from.
@@ -202,7 +205,7 @@ begin
 					AND (PossiblePosition.Y >= 0) AND (PossiblePosition.Y < AnAreaSize.Y) then
 				begin
 					//check if the square is passable, if it is...
-					if (NOT IsBlocked(AnArea[PossiblePosition.X][PossiblePosition.Y].Position)) then
+					if (NOT IsBlocked(PossiblePosition, AnArea)) then
 					begin
 						//build our flood item.
 						NewFloodItem.Position := PossiblePosition;
@@ -223,8 +226,10 @@ begin
 						//check to see if we've found the end point... if we have...
 						if PointsEqual(AnArea[NewFloodItem.Position.X][NewFloodItem.Position.Y].Position, EndPoint) then
 						begin
-							//congratulations, we've done it.
-							APath.Assign(NewFloodItem.Path);
+							for PathIndex := 0 to Length(NewFloodItem.Path) - 1 do
+							begin
+								APath.Add(NewFloodItem.Path[PathIndex]);
+							end;
 							Result  := TRUE;
 							Exit;
 						end else
@@ -251,7 +256,10 @@ begin
 		if Length(ClosestPath.Path) > 0 then
 		begin
 			Result := TRUE;
-			APath.Assign(ClosestPath.Path);
+			for PathIndex := 0 to Length(NewFloodItem.Path) - 1 do
+			begin
+				APath.Add(ClosestPath.Path[PathIndex]);
+			end;
 		end;
 	end;
 end;
@@ -267,12 +275,16 @@ end;
 //  Changes -
 //    November 1st, 2006 - Tsusai - Created.
 //------------------------------------------------------------------------------
-function TMap.IsBlocked(const APoint : TPoint) : boolean;
+function TMap.IsBlocked(const APoint : TPoint; AGraph : TGraph = NIL) : boolean;
 begin
+	if NOT Assigned(AGraph) then
+	begin
+		AGraph := Cell;
+  end;
 	//Assume it is not.
 	Result := false;
-	if (Cell[APoint.X][APoint.Y].Attribute in [1,5]) OR
-		(Cell[APoint.X][APoint.Y].ObstructionCount > 0 ) then
+	if (AGraph[APoint.X][APoint.Y].Attribute in [1,5]) OR
+		(AGraph[APoint.X][APoint.Y].ObstructionCount > 0 ) then
 	begin
 		Result := true
 	end;

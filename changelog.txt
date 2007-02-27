@@ -13,6 +13,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 161 -
+[2007/02/27] - RaX - Fixed pathing randomly using all available ram, that vital line of
+ code was also unimplemented, apparently I had committed one of my tests back in the day =(
+[2007/02/27] - RaX - Added a Sleep(1) to the end of ProcessZonePacket to free up the
+ processor.
+[2007/02/27] - RaX - Made a few efficiency changes to PointList, removed Assign.
+-
+
 - Rev 160 -
 [2007/02/26] - RaX - Accidentally removed a vital line of code from pathing along the way
  somewhere. Now fixed.

@@ -384,7 +384,7 @@ uses
 				ZoneSendWalkReply(AChara);
 				if not (AChara.CharaState = charawalking) then
 				begin
-					
+
 				end;
 			end;
 		end;
