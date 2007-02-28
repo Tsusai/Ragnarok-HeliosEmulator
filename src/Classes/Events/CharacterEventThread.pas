@@ -35,7 +35,8 @@ type
 implementation
 uses
 	SysUtils,
-	WinLinux;
+	WinLinux,
+	Main;
 
 //------------------------------------------------------------------------------
 //Create                                                          	CONSTRUCTOR
@@ -115,10 +116,8 @@ begin
 			end;
 		end;
 	end;
-
-	//Exit our critical section and sleep for 1ms (OS dependant, actually 55ms on
-	//win32) If anyone has a better way to wait between events, let me know!
-	Sleep(1);
+	//Free up the processor
+	Sleep(MainProc.ZoneServer.Options.EventTick);
 end;//Run
 //------------------------------------------------------------------------------
 end.

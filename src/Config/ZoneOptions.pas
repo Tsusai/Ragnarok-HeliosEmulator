@@ -37,6 +37,17 @@ interface
       fInterPort    : Word;
       fInterKey     : String;
 
+			fZoneTick			: Integer;//The amount of time in milliseconds to sleep
+															// between packet processes.
+			fEventTick		: Integer;//The amount of time in milliseconds to sleep
+															// between event processes.
+			fCharClickArea: Integer;//The number of cells away from a character that
+															//They can click to move to.
+			fCharShowArea	: Integer;//The distance in cells away from a character that
+                            	//other entities appear in.
+
+
+
 //Gets/Sets
 			procedure SetPort(Value : Word);
 			procedure SetWANIP(Value : String);
@@ -62,6 +73,11 @@ interface
 
       //Options
 
+			//Performance
+			property ZoneTick			: Integer read fZoneTick;
+			property EventTick		: Integer read fEventTick;
+			property CharClickArea: Integer read fCharClickArea;
+			property CharShowArea	: Integer read fCharShowArea;
 
 			//Public methods
 			procedure Load;
@@ -154,6 +170,18 @@ implementation
 		end;{Subroutine LoadSecurity}
     //--------------------------------------------------------------------------
 
+		//--------------------------------------------------------------------------
+		//LoadPerformance                                             SUB PROCEDURE
+    //--------------------------------------------------------------------------
+		procedure LoadPerformance;
+		begin
+			ReadSectionValues('Performance', Section);
+			fZoneTick			:= StrToIntDef(Section.Values['Zone Tick'], 10);
+			fEventTick		:= StrToIntDef(Section.Values['Event Tick'], 10);
+			fCharClickArea:= StrToIntDef(Section.Values['Click Area'], 16);
+			fCharShowArea	:= StrToIntDef(Section.Values['Show Area'], 16);
+		end;{Subroutine LoadPerformance}
+		//--------------------------------------------------------------------------
 
     //--------------------------------------------------------------------------
     //LoadOptions                                               SUB PROCEDURE
@@ -173,7 +201,8 @@ implementation
 
 		LoadServer;
     LoadCommunication;
-    LoadSecurity;
+		LoadSecurity;
+		LoadPerformance;
     LoadOptions;
 
 		Section.Free;
@@ -209,11 +238,17 @@ implementation
 
     WriteString('Communication','InterIP',fInterIP);
 		WriteString('Communication','InterPort',IntToStr(fInterPort));
-    WriteString('Communication','InterKey',fInterKey);
+		WriteString('Communication','InterKey',fInterKey);
 
     //Security
 
-    //Options
+		//Performance
+		WriteString('Performance','Zone Tick',IntToStr(fZoneTick));
+		WriteString('Performance','Event Tick',IntToStr(fEventTick));
+		WriteString('Performance','Click Area',IntToStr(fCharClickArea));
+		WriteString('Performance','ShowArea',IntToStr(fCharShowArea));
+
+		//Options
 
 		UpdateFile;
 	end;{Save}

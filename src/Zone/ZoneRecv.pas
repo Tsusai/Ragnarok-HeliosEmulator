@@ -363,12 +363,22 @@ uses
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//CharaWalkRequest                                                    PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Processes a Character's request to walk to a certain point.
+//
+//  Changes -
+//    Rebruary 27th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
 	procedure CharacterWalkRequest(
-			AChara : TCharacter;
-			InBuffer : TBuffer;
+			AChara		: TCharacter;
+			InBuffer	: TBuffer;
 		const
-			ReadPts : TReadPts
+			ReadPts		: TReadPts
 	);
+
 	var
 		DestPoint : TPoint;
 	begin
@@ -388,7 +398,8 @@ uses
 				end;
 			end;
 		end;
-	end;
+	end;//CharaWalkRequest
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------

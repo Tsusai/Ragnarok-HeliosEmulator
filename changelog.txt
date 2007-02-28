@@ -13,6 +13,15 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 162 -
+[2007/02/27] - RaX - Added routine headers to new routines written by Tsusai.
+[2007/02/27] - RaX - Removed Char_clickarea and Char_Showarea constants from gameconstants
+[2007/02/27] - RaX - Replaced constants with entried in zone.ini under performance.
+[2007/02/27] - RaX - Added Zone Tick and Event Tick options in zone.ini under performance,
+ these are also implemented as the amount of time to sleep in milliseconds between
+ packet processes for zone tick, and event processes for event tick.
+-
+
 - Rev 161 -
 [2007/02/27] - RaX - Fixed pathing randomly using all available ram, that vital line of
  code was also unimplemented, apparently I had committed one of my tests back in the day =(

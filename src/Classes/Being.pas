@@ -80,8 +80,20 @@ implementation
 uses
 	Character,
 	Math,
-	WinLinux;
+	WinLinux,
+	Main;
 
+
+//------------------------------------------------------------------------------
+//Walk								                                                PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      The internal walk routine, moves a character cell by cell attempting to
+//		follow the way the client is moving on screen.
+//
+//  Changes -
+//    February 27th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
 procedure TBeing.Walk;
 var
 	spd : word;
@@ -123,9 +135,9 @@ begin
 		PathIndex := Min(PathIndex + 1, Path.Count-1);
 
 		//16 covers the old 15x15 grid, no matter which dir we go I think
-		for idxY := Max(OldPt.Y-CHAR_SHOWAREA,0) to Min(OldPt.Y+CHAR_SHOWAREA,MapInfo.Size.Y) do
+		for idxY := Max(OldPt.Y-MainProc.ZoneServer.Options.CharShowArea,0) to Min(OldPt.Y+MainProc.ZoneServer.Options.CharShowArea,MapInfo.Size.Y) do
 		begin
-			for idxX := Max(OldPt.X-CHAR_SHOWAREA,0) to Min(OldPt.X+CHAR_SHOWAREA,MapInfo.Size.X) do
+			for idxX := Max(OldPt.X-MainProc.ZoneServer.Options.CharShowArea,0) to Min(OldPt.X+MainProc.ZoneServer.Options.CharShowArea,MapInfo.Size.X) do
 			begin
 				for BIdx := MapInfo.Cell[idxX][idxY].Beings.Count - 1 to 0 do
 				begin
@@ -133,8 +145,8 @@ begin
 
 					if Self = ABeing then Continue;
 
-					if ((dx <> 0) and (abs(OldPt.Y - ABeing.Point.Y) < CHAR_SHOWAREA) and (OldPt.X = ABeing.Point.X + dx * (CHAR_SHOWAREA-1))) OR
-						((dy <> 0) and (abs(OldPt.X - ABeing.Point.X) < CHAR_SHOWAREA) and (OldPt.Y = ABeing.Point.Y + dy * (CHAR_SHOWAREA-1))) then
+					if ((dx <> 0) and (abs(OldPt.Y - ABeing.Point.Y) < MainProc.ZoneServer.Options.CharShowArea) and (OldPt.X = ABeing.Point.X + dx * (MainProc.ZoneServer.Options.CharShowArea-1))) OR
+						((dy <> 0) and (abs(OldPt.X - ABeing.Point.X) < MainProc.ZoneServer.Options.CharShowArea) and (OldPt.Y = ABeing.Point.Y + dy * (MainProc.ZoneServer.Options.CharShowArea-1))) then
 					begin
 						//Packets for base being if its a character
 						if Self is TCharacter then
@@ -150,8 +162,8 @@ begin
 						end;
 					end;
 
-					if ((dx <> 0) and (abs(Point.Y - ABeing.Point.Y) < CHAR_SHOWAREA) and (Point.X = ABeing.Point.X - dx * (CHAR_SHOWAREA-1))) or
-						((dy <> 0) and (abs(Point.X - ABeing.Point.X) < CHAR_SHOWAREA) and (Point.Y = ABeing.Point.Y - dy * (CHAR_SHOWAREA-1))) then
+					if ((dx <> 0) and (abs(Point.Y - ABeing.Point.Y) < MainProc.ZoneServer.Options.CharShowArea) and (Point.X = ABeing.Point.X - dx * (MainProc.ZoneServer.Options.CharShowArea-1))) or
+						((dy <> 0) and (abs(Point.X - ABeing.Point.X) < MainProc.ZoneServer.Options.CharShowArea) and (Point.Y = ABeing.Point.Y - dy * (MainProc.ZoneServer.Options.CharShowArea-1))) then
 					begin
 						if Self is TCharacter then
 						begin
@@ -210,19 +222,42 @@ begin
 
 		MoveTick := MoveTick + spd;
 	end;
-end;
+end;//Walk
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//Create							                                                PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Creates our TBeing.
+//
+//  Changes -
+//    February 27th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
 Constructor TBeing.Create;
 begin
 	inherited;
 	EventList := TEventList.Create(TRUE);
 	Path := TPointList.Create;
 end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//Destroy							                                                PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Destroys our TBeing
+//
+//  Changes -
+//    February 27th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
 Destructor TBeing.Destroy;
 begin
 	inherited;
 	EventList.Free;
 	Path.Free;
 end;
+//------------------------------------------------------------------------------
 end.

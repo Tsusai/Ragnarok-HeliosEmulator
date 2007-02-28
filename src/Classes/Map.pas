@@ -160,12 +160,12 @@ begin
 	Result := false;
 
 	//grab our area
-	XMod := StartPoint.X-CHAR_CLICKAREA;
-	YMod := StartPoint.Y-CHAR_CLICKAREA;
-	AnArea := Copy(Cell, Max(XMod, 0), Min((CHAR_CLICKAREA*2)+1, Abs(XMod - Size.X)));
+	XMod := StartPoint.X-MainProc.ZoneServer.Options.CharClickArea;
+	YMod := StartPoint.Y-MainProc.ZoneServer.Options.CharClickArea;
+	AnArea := Copy(Cell, Max(XMod, 0), Min((MainProc.ZoneServer.Options.CharClickArea*2)+1, Abs(XMod - Size.X)));
 	for Index := 0 to Length(AnArea)-1 do
 	begin
-		AnArea[Index] := Copy(Cell[XMod+Index], Max(YMod, 0), Min((CHAR_CLICKAREA*2)+1, Abs(YMod - Size.Y)));
+		AnArea[Index] := Copy(Cell[XMod+Index], Max(YMod, 0), Min((MainProc.ZoneServer.Options.CharClickArea*2)+1, Abs(YMod - Size.Y)));
 	end;
 	AnAreaSize := Point(Length(AnArea),Length(AnArea[0]));
 

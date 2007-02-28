@@ -99,6 +99,16 @@ uses
 	end;//ZoneSendTickToClient
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ZoneSendWalkReply		                                                PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Sends a packet that tells the client to go ahead and walk.
+//
+//  Changes -
+//    February 27th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
 	procedure ZoneSendWalkReply(ACharacter : TCharacter);
 	var
 		ReplyBuffer : TBuffer;
@@ -108,7 +118,9 @@ uses
 		WriteBufferTwoPoints( 6, ACharacter.DestinationPoint, ACharacter.Point, ReplyBuffer);
 		WriteBufferByte(11, 0, ReplyBuffer);
 		SendBuffer(ACharacter.ClientInfo, ReplyBuffer, GetPacketLength($0087, ACharacter.ClientVersion));
-	end;
+	end;//ZoneSendWalkReply
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //ZoneSendObjectNameAndIDBasic                                        PROCEDURE
