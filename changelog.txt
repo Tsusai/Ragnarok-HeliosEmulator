@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 163 -
+[2007/02/28] - Tsusai - Notes/Overview: Fixed scrolling in Linux 
+[2007/02/28] - Tsusai - CRT - SetupCRT: Added the enabling of scrolling for linux.
+-
+
 - Rev 162 -
 [2007/02/27] - RaX - Added routine headers to new routines written by Tsusai.
 [2007/02/27] - RaX - Removed Char_clickarea and Char_Showarea constants from gameconstants

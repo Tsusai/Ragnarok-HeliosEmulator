@@ -50,6 +50,7 @@ uses
 	begin
 		{$IFDEF LINUX}
 		LinCRT.InitLinCRT;
+    LinCRT.SetScrollWnd(true);
 		{$ENDIF}
 	end;
 
