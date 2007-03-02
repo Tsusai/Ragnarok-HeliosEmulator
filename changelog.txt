@@ -13,6 +13,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 165 -
+[2007/03/02] - RaX - Overview: Created basic MSSQL database interface, all it does right
+ now is dynamically load the library and set up the routine pointers.
+[2007/03/02] - RaX - Added Common/3rdParty/MSSQL/mssql32_mod.pas - modified by Tsusai.
+[2007/03/02] - RaX - Added Classes/MSSQL.pas - a wrapper class for mssql32_mod which is a 
+ dll template.
+-
+
 - Rev 164 -
 [2007/03/01] - Tsusai - Notes/Overview: Unit Uses cleanup.
 -

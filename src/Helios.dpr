@@ -7,7 +7,7 @@
 //
 //  License -
 //------------------------------------------------------------------------------
-//                 Project Helios - Copyright (c) 2005-2006
+//                 Project Helios - Copyright (c) 2005-2007
 //
 //    Contributors(A-Z) -
 //        Matthew Mazanec (Tsusai - tsusai at gmail dot com)
@@ -121,13 +121,13 @@ compile for linux, at the same time*}
 	MySQLStaticDatabase in 'Classes\Database\Static\MySQLStaticDatabase.pas',
 
 	//Database Clients
-		//jansql
+	//jansql
 	janSQL in 'Common\3rdParty\JanSQL\janSQL.pas',
 	janSQLExpression2 in 'Common\3rdParty\JanSQL\janSQLExpression2.pas',
 	janSQLStrings in 'Common\3rdParty\JanSQL\janSQLStrings.pas',
 	janSQLTokenizer in 'Common\3rdParty\JanSQL\janSQLTokenizer.pas',
 	mwStringHashList in 'Common\3rdParty\JanSQL\mwStringHashList.pas',
-		//mysql
+	//mysql
 	uMysqlClient in 'Common\3rdParty\MySQL\uMysqlClient.pas',
 	uMysqlCT in 'Common\3rdParty\MySQL\uMysqlCT.pas',
 	uMysqlErrors in 'Common\3rdParty\MySQL\uMysqlErrors.pas',
@@ -135,6 +135,9 @@ compile for linux, at the same time*}
 	uMysqlNewPassword in 'Common\3rdParty\MySQL\uMysqlNewPassword.pas',
 	umysqlsha1 in 'Common\3rdParty\MySQL\umysqlsha1.pas',
 	uMysqlVio in 'Common\3rdParty\MySQL\uMysqlVio.pas',
+	//mssql
+	MSSQL in 'Classes\MSSQL.pas',
+	mssql32_mod in 'Common\3rdParty\MSSQL\mssql32_mod.pas',
 
 	//Configuration
 	HeliosOptions in 'Config\HeliosOptions.pas',
@@ -241,6 +244,9 @@ compile for linux, at the same time*}
 	uMysqlNewPassword in 'Common/3rdParty/MySQL/uMysqlNewPassword.pas',
 	umysqlsha1 in 'Common/3rdParty/MySQL/umysqlsha1.pas',
 	uMysqlVio in 'Common/3rdParty/MySQL/uMysqlVio.pas',
+	//mssql
+	MSSQL in 'Classes/MSSQL.pas',
+	mssql32_mod in 'Common/3rdParty/MSSQL/mssql32_mod.pas',
 
 	//Configuration
 	HeliosOptions in 'Config/HeliosOptions.pas',
@@ -290,7 +296,7 @@ compile for linux, at the same time*}
 //      termination of that loop, the program will shut down.
 
 //  Changes -
-//    September 21st - RaX - Created Header.
+//    September 21st, 2006 - RaX - Created Header.
 //------------------------------------------------------------------------------
 var
 	AnInput   : string;
@@ -310,8 +316,9 @@ begin
 	MainProc := TMainProc.Create(nil); //Form replacement
 
 	//Setup console interface and command parser.
+	//This has to be set up here because It relies on the options in MainProc.
 	Console := TConsole.Create;
-
+	
 	//Show our header ONCE
 	MainProc.DisplayHeader;
 

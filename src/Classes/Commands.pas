@@ -180,6 +180,7 @@ begin
 	Console.WriteLn('/stop - stops a server');
 	Console.WriteLn('/restart - restarts all enabled servers');
 	Console.WriteLn('/exit - exits the program');
+	Console.WriteLn('/credits - displays our credits.');
 	Console.WriteLn('/help - lists all console commands');
 	Console.WriteLn('--------------------------------------');
 	Result := '';
