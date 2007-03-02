@@ -15,13 +15,11 @@ interface
 
 uses
 	Classes,
-  Database,
   LoginServer,
 	CharacterServer,
 	InterServer,
   ZoneServer,
-  HeliosOptions,
-	Version;
+	HeliosOptions;
 
 type
 
@@ -69,8 +67,7 @@ uses
 	SysUtils,
 	{Helios}
 	Globals,
-	CharacterServerInfo,
-	WinLinux
+	Version
 	{Third Party}
 	;
 

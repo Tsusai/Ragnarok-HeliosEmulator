@@ -14,8 +14,6 @@ unit MySQLCommonDatabase;
 interface
 uses
 	CommonDatabaseTemplate,
-	Character,
-	CharaList,
 	Account,
 	uMysqlClient,
 	Database;
@@ -75,10 +73,7 @@ type
 
 implementation
 	uses
-		Types,
-		GameConstants,
 		Globals,
-		Main,
 		SysUtils,
 		Classes;
 //------------------------------------------------------------------------------

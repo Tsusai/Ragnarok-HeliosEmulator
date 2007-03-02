@@ -93,7 +93,6 @@ uses
 implementation
 uses
 	Math,
-	SysUtils,
 	Types,
 	Account,
 	BufferIO,
@@ -103,7 +102,6 @@ uses
 	MapTypes,
 	Map,
 	TCPServerRoutines,
-	WinLinux,
 	ZoneSend,
 	ZoneServer;
 

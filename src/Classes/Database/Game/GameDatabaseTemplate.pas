@@ -15,7 +15,6 @@ unit GameDatabaseTemplate;
 interface
 uses
 	Character,
-	Account,
 	CharaList;
 type
 //------------------------------------------------------------------------------

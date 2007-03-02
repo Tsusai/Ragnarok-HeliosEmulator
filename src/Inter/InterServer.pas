@@ -13,11 +13,10 @@ unit InterServer;
 interface
 
 uses
-  IdTCPServer,
-  IdTCPClient,
+	IdTCPServer,
   IdContext,
 	SysUtils,
-  InterOptions;
+	InterOptions;
 
 type
 	TInterServer = class
@@ -31,8 +30,8 @@ type
 
     Procedure OnExecute(AConnection: TIdContext);
     Procedure OnConnect(AConnection: TIdContext);
-    Procedure OnException(AConnection: TIdContext;
-      AException: Exception);
+		Procedure OnException(AConnection: TIdContext;
+			AException: Exception);
 
     //procedure ProcessInterPacket(AClient : TIdContext);
 
@@ -62,8 +61,6 @@ implementation
 uses
 	//Helios
 	Main,
-	WinLinux,
-	Database,
 	Globals,
 	TCPServerRoutines,
 	//3rd

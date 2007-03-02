@@ -22,8 +22,7 @@ uses
 	List32,
 	SysUtils,
 	PacketTypes,
-	CharaOptions,
-	CharaList;
+	CharaOptions;
 
 type
 //------------------------------------------------------------------------------
@@ -84,6 +83,7 @@ type
 implementation
 uses
 	//Helios
+	CharaList,
 	CharaLoginPackets,
 	ZoneCharaPackets,
 	BufferIO,

@@ -14,8 +14,6 @@ unit JanSQLCommonDatabase;
 interface
 uses
 	CommonDatabaseTemplate,
-	Character,
-	CharaList,
 	Account,
 	janSQL,
   Database;
@@ -73,13 +71,9 @@ type
 
 implementation
 	uses
-		Types,
-		GameConstants,
-		Globals,
-		Main,
-		SysUtils,
 		Classes,
-		Math;
+		Globals,
+		SysUtils;
 
 
 //------------------------------------------------------------------------------

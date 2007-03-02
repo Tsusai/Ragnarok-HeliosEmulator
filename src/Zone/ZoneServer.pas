@@ -20,7 +20,6 @@ uses
 	PacketTypes,
 	Character,
 	ZoneOptions,
-  Classes,
 	MapList,
 	CharaList,
 	CharacterEventThread;
@@ -65,7 +64,7 @@ type
 
 		Options       : TZoneOptions;
 
-    MapList       : TMapList;
+		MapList       : TMapList;
 		CharacterList : TCharacterList;
 
 		CharacterEventThread : TCharacterEventThread;
@@ -85,9 +84,9 @@ type
 implementation
 
 uses
+  Classes,
 	//Helios
 	BufferIO,
-	WinLinux,
 	Main,
 	PacketDB,
 	Globals,

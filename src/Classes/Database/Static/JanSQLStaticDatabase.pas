@@ -15,8 +15,6 @@ interface
 uses
 	StaticDatabaseTemplate,
 	Character,
-	CharaList,
-	Account,
 	janSQL,
   Database,
   MapTypes,
@@ -68,12 +66,8 @@ type
 
 implementation
 	uses
-		Types,
-		GameConstants,
 		Globals,
-		Main,
-		SysUtils,
-    Math;
+		SysUtils;
 
 
 //------------------------------------------------------------------------------

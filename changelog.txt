@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 164 -
+[2007/03/01] - Tsusai - Notes/Overview: Unit Uses cleanup.
+-
+
 - Rev 163 -
 [2007/02/28] - Tsusai - Notes/Overview: Fixed scrolling in Linux 
 [2007/02/28] - Tsusai - CRT - SetupCRT: Added the enabling of scrolling for linux.

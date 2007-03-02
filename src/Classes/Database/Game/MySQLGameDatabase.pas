@@ -16,9 +16,9 @@ uses
 	GameDatabaseTemplate,
 	Character,
 	CharaList,
-	Account,
 	uMysqlClient,
 	Database;
+
 type
 //------------------------------------------------------------------------------
 //TMySQLGameDatabase			                                                           CLASS
@@ -81,13 +81,13 @@ type
 
 implementation
 	uses
+		Account,
 		Types,
 		Math,
 		GameConstants,
 		Globals,
-		Main,
-		SysUtils,
-		Classes;
+		SysUtils;
+		
 //------------------------------------------------------------------------------
 //TMySQLGameDatabase.Create()                                          CONSTRUCTOR
 //------------------------------------------------------------------------------

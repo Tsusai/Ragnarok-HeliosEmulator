@@ -16,7 +16,6 @@ uses
 	GameDatabaseTemplate,
 	Character,
 	CharaList,
-	Account,
 	janSQL,
 	Database;
 
@@ -83,12 +82,11 @@ type
 
 implementation
 	uses
+		Account,
 		Types,
 		GameConstants,
 		Globals,
-		Main,
 		SysUtils,
-		Classes,
 		Math;
 
 

@@ -69,10 +69,7 @@ type
 
 implementation
 	uses
-		Types,
-		GameConstants,
 		Globals,
-		Main,
 		SysUtils;
 //------------------------------------------------------------------------------
 //TMySQLStaticDatabase.Create()                                          CONSTRUCTOR

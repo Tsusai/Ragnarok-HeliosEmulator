@@ -77,8 +77,7 @@ uses
 	SyncObjs,
 	Globals,
 	Main,
-	SysUtils,
-	Classes;
+	SysUtils;
 
 var
 	CriticalSection : TCriticalSection;

@@ -14,8 +14,6 @@ uses
 	//IDE
 	Classes,
 	//Helios
-	Commands,
-  CharaList,
 	Database,
 	Terminal
   ;

@@ -12,9 +12,8 @@ unit Map;
 interface
 
 uses
-  Types,
+	Types,
 	PointList,
-  List32,
 	MapTypes,
 	EventList;
 
@@ -29,7 +28,7 @@ type
 	public
     Name : String;
 		Cell : TGraph;
-    Size : TPoint;
+		Size : TPoint;
 		Flags: TFlags;
 		State: TMapMode;
 		
@@ -44,7 +43,7 @@ type
 			AGraph : TGraph = NIL
 		) : boolean;
 
-    Function LoadFromFile(Path : String) : Boolean;
+		Function LoadFromFile(Path : String) : Boolean;
     Procedure Load;
     Procedure Unload;
 
@@ -59,10 +58,9 @@ end;
 
 implementation
 uses
-  GameConstants,
-  Classes,
-  SysUtils,
-  Math,
+	Classes,
+	Math,
+	List32,
 	Main,
 	Globals,
 	WinLinux;

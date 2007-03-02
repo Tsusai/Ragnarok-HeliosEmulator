@@ -26,9 +26,7 @@ uses
 implementation
 uses
 	SysUtils,
-	StrUtils,
 	IdException,
-	IdContext,
 	Classes,
 	Globals,
 	PacketDB;

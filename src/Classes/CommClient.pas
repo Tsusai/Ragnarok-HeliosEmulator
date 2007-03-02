@@ -72,9 +72,7 @@ type
 implementation
 uses
 	SysUtils,
-	Globals,
-	WinLinux,
-	IdStack;
+	WinLinux;
 
 //------------------------------------------------------------------------------
 //Run                                                            PROCEDURE
