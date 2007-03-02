@@ -25,6 +25,10 @@ uMySQLClient, by Cristian Nicola - GNU Licensed,
   their software (uMySQLClient) under the use
   of their FLOSS Exceptions
 
+MSSQL Client Library routine loading, By Ed Lyk.
+  Ed Lyk 1997-08-27
+  elyk@sprynet.com
+
 List32, Copyright 2001, Gary Darby, Intellitech
  Systems Inc., www.DelphiForFun.org
  

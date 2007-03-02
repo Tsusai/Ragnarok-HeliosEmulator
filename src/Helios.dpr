@@ -136,8 +136,7 @@ compile for linux, at the same time*}
 	umysqlsha1 in 'Common\3rdParty\MySQL\umysqlsha1.pas',
 	uMysqlVio in 'Common\3rdParty\MySQL\uMysqlVio.pas',
 	//mssql
-	MSSQL in 'Classes\MSSQL.pas',
-	mssql32_mod in 'Common\3rdParty\MSSQL\mssql32_mod.pas',
+	MSSQLClient in 'Common\3rdParty\MSSQL\MSSQLClient.pas',
 
 	//Configuration
 	HeliosOptions in 'Config\HeliosOptions.pas',
@@ -245,8 +244,7 @@ compile for linux, at the same time*}
 	umysqlsha1 in 'Common/3rdParty/MySQL/umysqlsha1.pas',
 	uMysqlVio in 'Common/3rdParty/MySQL/uMysqlVio.pas',
 	//mssql
-	MSSQL in 'Classes/MSSQL.pas',
-	mssql32_mod in 'Common/3rdParty/MSSQL/mssql32_mod.pas',
+	MSSQLClient in 'Common/3rdParty/MSSQL/MSSQLClient.pas',
 
 	//Configuration
 	HeliosOptions in 'Config/HeliosOptions.pas',

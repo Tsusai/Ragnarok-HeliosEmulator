@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 166 -
+[2007/03/02] - RaX - Merged the two MSSQL client files. Added credits.
+-
+
 - Rev 165 -
 [2007/03/02] - RaX - Overview: Created basic MSSQL database interface, all it does right
  now is dynamically load the library and set up the routine pointers.
