@@ -1,0 +1,8 @@
+[03/07/07] Tsusai
+ PROBLEM: kRO exes from Oct 2006 increased a packet size of the character information
+  packets used in creation's display and normal display from 106 to 108.   Currently there is no
+  way to dynamicly check like what is possible for the zone.
+ POSSIBLE SOLUTIONS:
+  1) Modify the packet_db using the October 2006 client as the base.
+  2) Character server ini flag, denoting if October 2006 and newer clients will be used.  This would
+     be an one way or another.

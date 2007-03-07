@@ -13,6 +13,26 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 167 -
+[2007/03/07] - Tsusai - Notes/Overview: Fixed inheritance between some of the TBeing and 
+ TCharacter parts.
+[2007/03/07] - Tsusai - Updated the resource file with the new icon.  Added the icon itself.
+[2007/03/07] - Tsusai - Being - TBeing: Refined Walk to run once per point.  Adds event for
+ the next point.  Added properties to fields such as JID and Name.
+[2007/03/07] - Tsusai - Character - TCharacter: Set all Set*** to override its TBeing settings.
+[2007/03/07] - Tsusai - Map - TMap.GetPath: Clears the result path before writing to it from
+ the temp path.
+[2007/03/07] - Tsusai - CharacterEventThread: Changed to use LongWord for tick times instead
+ of TDateTime.
+[2007/03/07] - Tsusai - Event & EventList: Any/all TEvents changed to TRootEvent.  SyncObjs
+ has a TEvent in it, so to prevent any odd conflicts, this was done.
+[2007/03/07] - Tsusai - MovementEvent - TMovementEvent: Added Create to take on a TBeing, 
+ and calls that tbeing's Walk method
+[2007/03/07] - Tsusai - ZoneSend - ZoneSendCharaWalkReply: Changed parameters
+[2007/03/07] - Tsusai - ZoneRecv - CharaWalkRequest: Added more code to support it.
+[2007/03/07] - Tsusai - Added BUGS and TODO.
+-
+
 - Rev 166 -
 [2007/03/02] - RaX - Merged the two MSSQL client files. Added credits.
 -

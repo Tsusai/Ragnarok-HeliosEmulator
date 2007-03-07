@@ -2,7 +2,7 @@
 //EventList                                                            UNIT
 //------------------------------------------------------------------------------
 //  What it does -
-//      A list of TEvents
+//      A list of TRootEvents
 //
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
@@ -15,7 +15,7 @@ uses
 	Event;
 
 type
-	PEvent = ^TEvent;
+	PEvent = ^TRootEvent;
 
 //------------------------------------------------------------------------------
 //TEventList                                                          CLASS
@@ -32,19 +32,19 @@ type
 
 		CriticalSection : TCriticalSection;
 
-		Function GetValue(Index : Integer) : TEvent;
-    Procedure SetValue(Index : Integer; Value : TEvent);
+		Function GetValue(Index : Integer) : TRootEvent;
+    Procedure SetValue(Index : Integer; Value : TRootEvent);
 		Procedure Expand(const Size : Integer);
     Procedure Shrink(const Size : Integer);
 
 	Public
     Constructor Create(OwnsEvents : Boolean);
 		Destructor Destroy; override;
-		Property Items[Index : Integer] : TEvent
-		read GetValue write SetValue;default;
+		Property Items[Index : Integer] : TRootEvent
+			read GetValue write SetValue;default;
 
 
-		Procedure Add(const AEvent : TEvent);
+		Procedure Add(const AEvent : TRootEvent);
 		Procedure Delete(Index : Integer);
 		Procedure Clear();
 
@@ -133,7 +133,7 @@ var
 begin
 	CriticalSection.Enter;
 	// First allocate a new, bigger memory space
-	GetMem(NewMemoryStart, (MaxCount + Size) * SizeOf(TEvent));
+	GetMem(NewMemoryStart, (MaxCount + Size) * SizeOf(TRootEvent));
 	if(Assigned(MemStart)) then
 	begin
 	  // Copy the data from the old memory here
@@ -179,7 +179,7 @@ begin
   if MaxCount > Size then
   begin
     //first allocate a new, smaller memory space
-    GetMem(NewMemoryStart, (MaxCount - Size) * SizeOf(TEvent));
+    GetMem(NewMemoryStart, (MaxCount - Size) * SizeOf(TRootEvent));
     if(Assigned(MemStart)) then
 	  begin
 	    // Copy the data from the old memory here
@@ -211,12 +211,12 @@ end;{Shrink}
 //Add                                                                 PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
-//      Adds a TEvent to the list.
+//      Adds a TRootEvent to the list.
 //
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-procedure TEventList.Add(const AEvent : TEvent);
+procedure TEventList.Add(const AEvent : TRootEvent);
 begin
 	CriticalSection.Enter;
 	// If we do not have enough space to add the Event, then get more space!
@@ -240,7 +240,7 @@ end;{Add}
 //Delete                                                              PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
-//      Removes a TEvent at Index from the list.
+//      Removes a TRootEvent at Index from the list.
 //
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
@@ -316,20 +316,20 @@ end;{Clear}
 //GetValue                                                             FUNCTION
 //------------------------------------------------------------------------------
 //  What it does -
-//      Returns a TEvent at the index.
+//      Returns a TRootEvent at the index.
 //
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-function TEventList.GetValue(Index : Integer): TEvent;
+function TEventList.GetValue(Index : Integer): TRootEvent;
 var
 	EventPtr : PEvent;
 begin
-	// Simply get the value at the given TEvent index position
+	// Simply get the value at the given TRootEvent index position
 	EventPtr := MemStart;
-	Inc(EventPtr, Index); // Point to the index'th TEvent in storage
+	Inc(EventPtr, Index); // Point to the index'th TRootEvent in storage
 
-	Result := EventPtr^; // And get the TEvent it points to
+	Result := EventPtr^; // And get the TRootEvent it points to
 end;{GetValue}
 //------------------------------------------------------------------------------
 
@@ -338,19 +338,19 @@ end;{GetValue}
 //SetValue                                                            PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
-//      Sets a TEvent into the list at Index.
+//      Sets a TRootEvent into the list at Index.
 //
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-procedure TEventList.SetValue(Index : Integer; Value : TEvent);
+procedure TEventList.SetValue(Index : Integer; Value : TRootEvent);
 var
 	EventPtr : PEvent;
 begin
 	CriticalSection.Enter;
-	// Simply set the value at the given TEvent index position
+	// Simply set the value at the given TRootEvent index position
 	EventPtr := MemStart;
-	Inc(EventPtr, Index); // Point to the index'th TEvent in storage
+	Inc(EventPtr, Index); // Point to the index'th TRootEvent in storage
 	EventPtr^ := Value;
 	CriticalSection.Leave;
 end;{SetValue}

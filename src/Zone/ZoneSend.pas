@@ -13,6 +13,7 @@ unit ZoneSend;
 
 interface
 uses
+	Types,
 	Character,
 	{Third Party}
 	IdContext
@@ -21,7 +22,7 @@ uses
 	procedure ZoneSendMapConnectReply(ACharacter : TCharacter);
 	procedure ZoneSendMapConnectDeny(AClient : TIdContext);
 	procedure ZoneSendTickToClient(ACharacter : TCharacter);
-	procedure ZoneSendWalkReply(ACharacter : TCharacter);
+	procedure ZoneSendWalkReply(ACharacter : TCharacter; DestPoint : TPoint);
 	procedure ZoneSendObjectNameAndIDBasic(
 		ACharacter : TCharacter;
 		ID : LongWord;
@@ -109,13 +110,13 @@ uses
 //  Changes -
 //    February 27th, 2007 - RaX - Created Header;
 //------------------------------------------------------------------------------
-	procedure ZoneSendWalkReply(ACharacter : TCharacter);
+	procedure ZoneSendWalkReply(ACharacter : TCharacter; DestPoint : TPoint);
 	var
 		ReplyBuffer : TBuffer;
 	begin
 		WriteBufferWord(0, $0087, ReplyBuffer);
 		WriteBufferLongWord(2, ACharacter.MoveTick, ReplyBuffer);
-		WriteBufferTwoPoints( 6, ACharacter.DestinationPoint, ACharacter.Point, ReplyBuffer);
+		WriteBufferTwoPoints( 6, DestPoint, ACharacter.Point, ReplyBuffer);
 		WriteBufferByte(11, 0, ReplyBuffer);
 		SendBuffer(ACharacter.ClientInfo, ReplyBuffer, GetPacketLength($0087, ACharacter.ClientVersion));
 	end;//ZoneSendWalkReply

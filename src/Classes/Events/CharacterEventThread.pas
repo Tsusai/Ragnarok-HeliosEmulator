@@ -34,6 +34,7 @@ type
 
 implementation
 uses
+	Event,
 	SysUtils,
 	WinLinux,
 	Main;
@@ -89,13 +90,11 @@ Procedure TCharacterEventThread.Run;
 var
 	CharacterIndex	: Integer;
 	EventIndex			: Integer;
-	CurrentTime			: Int64;
+	CurrentTime			: LongWord;
+	AEvent          : TRootEvent;
 begin
-	inherited;
 	//Get the current "Tick" or time.
 	CurrentTime := GetTick;
-
-
 
 	//Loop through the character list
 	for CharacterIndex := CharacterList.Count - 1 downto 0 do
@@ -109,7 +108,7 @@ begin
 				//Enter a critical section to avoid access violations.
 				CriticalSection.Enter;
 				//If it does, execute the event, then delete it from the list.
-				//(The list "owns" the events, so this does not leak)
+				//(The list "owns" the events, so this does not leak)   {not right now though}
 				CharacterList[CharacterIndex].EventList[EventIndex].Execute;
 				CharacterList[CharacterIndex].EventList.Delete(EventIndex);
 				CriticalSection.Leave;

@@ -93,6 +93,7 @@ uses
 implementation
 uses
 	Math,
+	MovementEvent,
 	Types,
 	Account,
 	BufferIO,
@@ -102,6 +103,7 @@ uses
 	MapTypes,
 	Map,
 	TCPServerRoutines,
+	WinLinux,
 	ZoneSend,
 	ZoneServer;
 
@@ -266,7 +268,7 @@ uses
 		AMap := MainProc.ZoneServer.MapList[MapIndex];
 		AChara.MapInfo := AMap;
 
-		AMap.Cell[AChara.Point.X][AChara.Point.Y].Beings.AddObject(AChara.CID,AChara);
+		AMap.Cell[AChara.Point.X][AChara.Point.Y].Beings.AddObject(AChara.ID,AChara);
 
 		for idx1 := Max(0,AChara.Point.Y-15) to Min(AChara.Point.Y+15,AMap.Size.Y) do
 		begin
@@ -376,9 +378,12 @@ uses
 		const
 			ReadPts		: TReadPts
 	);
-
 	var
+		MoveEvent : TMovementEvent;
 		DestPoint : TPoint;
+		dx : SmallInt;
+		dy : SmallInt;
+		spd : LongWord;
 	begin
 		DestPoint := BufferReadOnePoint(ReadPts[0], InBuffer);
 
@@ -386,13 +391,30 @@ uses
 		begin
 			if AChara.MapInfo.GetPath(AChara.Point,DestPoint,AChara.Path) then
 			begin
-				//send packet
-				AChara.PathIndex := 0;
-				AChara.DestinationPoint := AChara.Path.Items[AChara.Path.Count -1];
-				ZoneSendWalkReply(AChara);
+				with AChara do
+				begin
+					Console.Message('Path Changed','ZoneRecv',MS_DEBUG);
+					AChara.CharaState := charaStanding;
+					AChara.PathIndex := 0;
+					//Setup first speed
+					dx := Path[0].X - Point.X;
+					dy := Path[0].Y - Point.Y;
+					//Check to see if we're moving diagonally, if we are, we adjust the speed
+					//accordingly.
+					if (abs(dx) = abs(dy)) and (abs(dx) = 1) then
+					begin
+						spd := Speed * 7 div 5;
+					end else begin
+						spd := Speed;
+					end;
+				end;
+				AChara.MoveTick := GetTick + spd;
+				ZoneSendWalkReply(AChara,DestPoint);
 				if not (AChara.CharaState = charawalking) then
 				begin
-
+					MoveEvent := TMovementEvent.Create(AChara);
+					MoveEvent.ExpiryTime := AChara.MoveTick;
+					AChara.EventList.Add(MoveEvent);
 				end;
 			end;
 		end;

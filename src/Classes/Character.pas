@@ -32,21 +32,11 @@ type
 	type TCharacter = class(TBeing)
 	private
 		fCharacterNumber  : Byte;
-		fName             : String;
-		fJID              : Word;
-		fBaseLV           : Byte;
-		fJobLV            : Byte;
 		fBaseEXP          : LongWord;
 		fJobEXP           : LongWord;
 		fZeny             : LongWord;
-		fParamBase        : Array[STR..LUK] of Byte;
-		fMaxHP            : Word;
-		fHP               : Word;
-		fMaxSP            : Word;
-		fSP               : Word;
 		fStatusPts        : Word;
 		fSkillPts         : Word;
-		fOption           : Word;
 		fKarma            : Word;
 		fManner           : Word;
 		fPartyID          : LongWord;
@@ -57,16 +47,14 @@ type
 		fClothesColor     : Word;
 		fRightHand        : Word;
 		fLeftHand         : Word;
-    fArmor            : Word;
-    fGarment          : Word;
+		fArmor            : Word;
+		fGarment          : Word;
 		fShoes            : Word;
-    fAccessory1       : Word;
-    fAccessory2       : Word;
+		fAccessory1       : Word;
+		fAccessory2       : Word;
 		fHeadTop          : Word;
 		fHeadMid          : Word;
 		fHeadBottom       : Word;
-		fMap              : String;
-		fMapPt            : TPoint;
 		fSaveMap          : String;
 		fSaveMapPt        : TPoint;
 		fPartnerID        : LongWord;
@@ -85,22 +73,25 @@ type
 	protected
 		procedure SetSaveTime(Value : boolean);
 		procedure SetCharaState(Value : TCharaState);
-
 		procedure SetCharaNum(Value : byte);
-		procedure SetName(Value : string);
-		procedure SetClass(Value : word);
-		procedure SetBaseLV(Value : byte);
-		procedure SetJobLV(Value : byte);
-		procedure SetBaseEXP(Value : LongWord);
-		procedure SetJobEXP(Value : LongWord);
-		procedure SetZeny(Value : LongWord);
-		function  GetBaseStats(Index : Byte) : byte;
-		procedure SetBaseStats(Index: byte; Value: byte);
-		procedure SetMaxHP(Value : word);
-		procedure SetHP(Value : word);
-		procedure SetMaxSP(Value : word);
-		procedure SetSP(Value : word);
-		Procedure SetOption(Value : word);
+
+		procedure SetName(Value : string); override;
+		procedure SetClass(Value : word); override;
+		procedure SetBaseLV(Value : byte); override;
+		procedure SetJobLV(Value : byte); override;
+		procedure SetBaseEXP(Value : LongWord); override;
+		procedure SetJobEXP(Value : LongWord); override;
+		procedure SetZeny(Value : LongWord); override;
+		function  GetBaseStats(Index : Byte) : byte; override;
+		procedure SetBaseStats(Index: byte; Value: byte); override;
+		procedure SetMaxHP(Value : word); override;
+		procedure SetHP(Value : word); override;
+		procedure SetMaxSP(Value : word); override;
+		procedure SetSP(Value : word); override;
+		Procedure SetOption(Value : word); override;
+		procedure SetMap(Value : string); override;
+		procedure SetMapPt(Value : TPoint); override;
+
 		Procedure SetKarma(Value : word);
 		Procedure SetManner(Value : word);
 		Procedure SetPartyID(Value : LongWord);
@@ -112,17 +103,15 @@ type
 		Procedure SetRightHand(Value : word);
 		Procedure SetLeftHand(Value : word);
 		Procedure SetArmor(Value : Word);
-    Procedure SetGarment(Value : Word);
+		Procedure SetGarment(Value : Word);
 		Procedure SetShoes(Value : Word);
-    Procedure SetAccessory1(Value : Word);
-    Procedure SetAccessory2(Value : Word);
+		Procedure SetAccessory1(Value : Word);
+		Procedure SetAccessory2(Value : Word);
 		Procedure SetHeadTop(Value : word);
 		Procedure SetHeadMid(Value : word);
 		Procedure SetHeadBottom(Value : word);
 		procedure SetStatusPts(Value : word);
 		procedure SetSkillPts(Value : word);
-		procedure SetMap(Value : string);
-		procedure SetMapPt(Value : TPoint);
 		procedure SetSMap(Value : string);
 		procedure SetSMapPt(Value : TPoint);
 		procedure SetPartnerID(Value : LongWord);
@@ -134,7 +123,6 @@ type
 
 	public
 		CID : LongWord;
-		Speed : word; //Not in MySQL...odd...
 		Account : TAccount;
 		Direction : byte;
 
@@ -171,23 +159,10 @@ type
 
 		OnTouchIDs : TIntList32;
 
+
 		property DataChanged : boolean  read fDataChanged write SetSaveTime;
 		property CharaState  : TCharaState read fCharaState write SetCharaState;
 		//For timed save procedure to activate.
-		{$WARNINGS OFF}
-		property Name      : string     read fName write SetName;
-		property JID       : Word       read fJID write SetClass;
-		property BaseLV    : Byte       read fBaseLV write SetBaseLV;
-		property JobLV     : Byte       read fJobLV write SetJobLV;
-		property ParamBase[Index : byte] : byte read GetBaseStats write SetBaseStats;
-		property MaxHP     : Word       read fMaxHP write SetMaxHP;
-		property HP        : Word       read fHP write SetHP;
-		property MaxSP     : Word       read fMaxSP write SetMaxSP;
-		property SP        : Word       read fSP write SetSP;
-		property Option    : Word       read fOption write SetOption;
-		property Map       : string     read fMap write SetMap;
-		property Point     : TPoint     read fMapPt write SetMapPt;
-		{$WARNINGS ON}
 		property BaseEXP   : LongWord    read fBaseEXP write SetBaseEXP;
 		property JobEXP    : LongWord    read fJobEXP write SetJobEXP;
 		property Zeny      : LongWord    read fZeny write SetZeny;
@@ -223,9 +198,9 @@ type
 
 		property JobName   : string     read fJobName;
 
-		procedure CalcMaxHP;
-		procedure CalcMaxSP;
-		procedure CalcSpeed;
+		procedure CalcMaxHP; override;
+		procedure CalcMaxSP; override;
+		procedure CalcSpeed; override;
 		procedure CalcMaxWeight;
 
 		procedure SendSubStat(
@@ -312,7 +287,7 @@ end;{SetCharaNum}
 procedure TCharacter.SetName(Value : string);
 begin
 	DataChanged := TRUE;
-	fName       := Value;
+	fName := Value;
 end;{SetName}
 //------------------------------------------------------------------------------
 
@@ -331,7 +306,7 @@ end;{SetName}
 procedure TCharacter.SetClass(Value : Word);
 begin
 	DataChanged := TRUE;
-	fJID        := Value;
+	fJID := Value;
 
 	case fJID of
 		JOB_NOVICE     :  fJobName := 'Novice';
@@ -434,7 +409,7 @@ end;{SetClass}
 procedure TCharacter.SetBaseLV(Value : byte);
 begin
 	DataChanged := TRUE;
-	fBaseLV     := Value;
+	fBaseLV := Value;
 end;{SetBaseLV}
 //------------------------------------------------------------------------------
 
@@ -1037,7 +1012,7 @@ end;{SetHeadBottom}
 procedure TCharacter.SetMap(Value : string);
 begin
 	DataChanged := TRUE;
-	fMap        := Value;
+	fMap := Value;
 end;{SetMap}
 //------------------------------------------------------------------------------
 
@@ -1401,7 +1376,7 @@ end;{CalcSpeed}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxWeight;
 begin
-  MaxWeight  := LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
+	MaxWeight  := LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
                 ADatabase.StaticData.GetBaseMaxWeight(self);
 end;{CalcMaxWeight}
 //------------------------------------------------------------------------------

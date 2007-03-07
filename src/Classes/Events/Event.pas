@@ -18,8 +18,8 @@ type
 //------------------------------------------------------------------------------
 //TEvent
 //------------------------------------------------------------------------------
-	TEvent = class
-		ExpiryTime	: TDateTime;//The time at which this event is set to go off
+	TRootEvent = class
+		ExpiryTime	: LongWord;//The time at which this event is set to go off
 		Procedure Execute; Virtual;
 	end;
 //------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ implementation
 //		January 31st, 2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Procedure TEvent.Execute;
+Procedure TRootEvent.Execute;
 begin
 end;//Execute
 //------------------------------------------------------------------------------

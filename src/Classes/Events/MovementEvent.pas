@@ -13,18 +13,25 @@ unit MovementEvent;
 interface
 
 uses
+	Being,
 	Event;
 
 type
 //------------------------------------------------------------------------------
 //TMovementEvent
 //------------------------------------------------------------------------------
-	TMovementEvent = class(TEvent)
+	TMovementEvent = class(TRootEvent)
+	private
+		ABeing : TBeing;
+	public
 		Procedure Execute; override;
-  end;
+		constructor Create(Being : TBeing); reintroduce;
+	end;
 //------------------------------------------------------------------------------
 
 implementation
+uses
+	Globals;
 
 //------------------------------------------------------------------------------
 //Execute																																	UNIT
@@ -39,8 +46,15 @@ implementation
 //------------------------------------------------------------------------------
 Procedure TMovementEvent.Execute;
 begin
-	inherited;
-	WriteLn('MovementEvent Executed!');
+	Console.Message('Executed!','Movement Event',MS_DEBUG);
+	ABeing.Walk;
 end;//Execute
 //------------------------------------------------------------------------------
+
+constructor TMovementEvent.Create(Being : TBeing);
+begin
+	inherited Create;
+	Self.ABeing := Being;
+end;
+
 end.

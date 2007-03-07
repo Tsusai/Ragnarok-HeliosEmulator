@@ -224,6 +224,7 @@ begin
 						//check to see if we've found the end point... if we have...
 						if PointsEqual(AnArea[NewFloodItem.Position.X][NewFloodItem.Position.Y].Position, EndPoint) then
 						begin
+							APath.Clear;
 							for PathIndex := 0 to Length(NewFloodItem.Path) - 1 do
 							begin
 								APath.Add(NewFloodItem.Path[PathIndex]);
