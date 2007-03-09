@@ -13,6 +13,15 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 168 -
+[2007/03/08] - RaX - Fixed pathing events firing all at once
+[2007/03/08] - RaX - Adjusted pathing, removed getting the closest path.
+[2007/03/08] - RaX - Added removing existing walking events if a new walk request comes in.
+[2007/03/08] - RaX - Removed debug messages, no longer needed.
+[2007/03/08] - RaX - small timing issue remains, server is one step ahead of the client...
+ sometimes....
+-
+
 - Rev 167 -
 [2007/03/07] - Tsusai - Notes/Overview: Fixed inheritance between some of the TBeing and 
  TCharacter parts.

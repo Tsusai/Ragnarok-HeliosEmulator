@@ -381,9 +381,10 @@ uses
 	var
 		MoveEvent : TMovementEvent;
 		DestPoint : TPoint;
-		dx : SmallInt;
-		dy : SmallInt;
-		spd : LongWord;
+		dx 				: SmallInt;
+		dy 				: SmallInt;
+		spd 			: LongWord;
+		Index			: Integer;
 	begin
 		DestPoint := BufferReadOnePoint(ReadPts[0], InBuffer);
 
@@ -393,7 +394,6 @@ uses
 			begin
 				with AChara do
 				begin
-					Console.Message('Path Changed','ZoneRecv',MS_DEBUG);
 					AChara.CharaState := charaStanding;
 					AChara.PathIndex := 0;
 					//Setup first speed
@@ -407,14 +407,23 @@ uses
 					end else begin
 						spd := Speed;
 					end;
-				end;
-				AChara.MoveTick := GetTick + spd;
-				ZoneSendWalkReply(AChara,DestPoint);
-				if not (AChara.CharaState = charawalking) then
-				begin
+
+					AChara.MoveTick := GetTick + spd;
+
+					//Remove previous movement events from the event list
+					for Index := AChara.EventList.Count -1 downto 0 do
+					begin
+						if AChara.EventList.Items[Index] is TMovementEvent then
+						begin
+							AChara.EventList.Delete(Index);
+						end;
+					end;
+
 					MoveEvent := TMovementEvent.Create(AChara);
 					MoveEvent.ExpiryTime := AChara.MoveTick;
 					AChara.EventList.Add(MoveEvent);
+
+					ZoneSendWalkReply(AChara,DestPoint);
 				end;
 			end;
 		end;

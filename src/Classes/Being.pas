@@ -151,10 +151,8 @@ begin
 	MapInfo.Cell[Point.X,Point.Y].Beings.Delete(
 		MapInfo.Cell[Point.X,Point.Y].Beings.IndexOfObject(Self));
 
-	Console.Message(Format('Old (%d,%d) Index: %d Count: %d',[Point.X,Point.Y,PathIndex,Path.Count]),'TBeing.Walk',MS_DEBUG);
 	OldPt := Point;
 	Point := Path[PathIndex];
-	Console.Message(Format('New (%d,%d) Index: %d Count: %d',[Point.X,Point.Y,PathIndex,Path.Count]),'TBeing.Walk',MS_DEBUG);
 
 	MapInfo.Cell[Point.X,Point.Y].Beings.AddObject(Self.ID,Self);
 
@@ -221,7 +219,6 @@ begin
 
 	if (PathIndex = Path.Count - 1) then
 	begin
-		Console.Message('Path Ended','TBeing.Walk',MS_DEBUG);
 		if Self is TCharacter then
 		begin
 			TCharacter(Self).CharaState := charaStanding;
@@ -247,7 +244,6 @@ begin
 		PathIndex := 0;}
 	end else
 	begin
-		Console.Message('Adding Next Event','TBeing.Walk',MS_DEBUG);
 		//Setup first speed
 		PathIndex := Min(PathIndex+1,Path.Count-1);
 		dx := Path[PathIndex].X - Point.X;

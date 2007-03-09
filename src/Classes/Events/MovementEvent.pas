@@ -46,7 +46,6 @@ uses
 //------------------------------------------------------------------------------
 Procedure TMovementEvent.Execute;
 begin
-	Console.Message('Executed!','Movement Event',MS_DEBUG);
 	ABeing.Walk;
 end;//Execute
 //------------------------------------------------------------------------------

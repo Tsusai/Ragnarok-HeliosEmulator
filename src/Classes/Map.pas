@@ -142,7 +142,6 @@ var
 	NewFloodList			: TFloodList;//Our list of new flood items.
 	NewFloodListLength: Integer;//The length of the newflooditem list.
 	AFloodItem				: TFloodItem;
-	ClosestPath				: TFloodItem;//the point closest to the destination.
 	NewFloodItem			: TFloodItem;
 	APoint						: TPoint;
 	Index							: Integer;
@@ -171,9 +170,6 @@ begin
 	AFloodItem.Position.X := StartPoint.X-AnArea[0][0].Position.X;
 	AFloodItem.Position.Y := StartPoint.Y-AnArea[0][0].Position.Y;
 	AFloodItem.PathLength := 0;
-
-	//initialize our closest path
-	ClosestPath := AFloodItem;
 
 	//initialize our flood lists
 	AFloodListLength := 1;
@@ -232,11 +228,6 @@ begin
 							Result  := TRUE;
 							Exit;
 						end else
-						if (abs(NewFloodItem.Position.X-EndPoint.X)+abs(NewFloodItem.Position.Y-EndPoint.Y)) <
-							 (abs(ClosestPath.Position.X-EndPoint.X)+abs(ClosestPath.Position.Y-EndPoint.Y)) then
-						begin
-							ClosestPath := NewFloodItem;
-						end;
 					end;
 				end;
 				//start propagating our next flood item in the next direction.
@@ -248,18 +239,6 @@ begin
 		//swap our arrays around to propagate the next generation.
 		AFloodList := NewFloodList;
 		AFloodListLength := NewFloodListLength;
-	end;
-	//use closest path
-	if NOT Result then
-	begin
-		if Length(ClosestPath.Path) > 0 then
-		begin
-			Result := TRUE;
-			for PathIndex := 0 to Length(NewFloodItem.Path) - 1 do
-			begin
-				APath.Add(ClosestPath.Path[PathIndex]);
-			end;
-		end;
 	end;
 end;
 //------------------------------------------------------------------------------

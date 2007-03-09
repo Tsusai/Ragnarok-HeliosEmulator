@@ -91,7 +91,7 @@ var
 	CharacterIndex	: Integer;
 	EventIndex			: Integer;
 	CurrentTime			: LongWord;
-	AEvent          : TRootEvent;
+
 begin
 	//Get the current "Tick" or time.
 	CurrentTime := GetTick;
@@ -103,7 +103,7 @@ begin
 		for EventIndex := CharacterList[CharacterIndex].EventList.Count - 1 downto 0 do
 		begin
 			//Check to see if the event needs to be fired.
-			if CurrentTime <= CharacterList[CharacterIndex].EventList[EventIndex].ExpiryTime then
+			if CurrentTime >= CharacterList[CharacterIndex].EventList[EventIndex].ExpiryTime then
 			begin
 				//Enter a critical section to avoid access violations.
 				CriticalSection.Enter;
