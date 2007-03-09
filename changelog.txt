@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 169 -
+[2007/03/09] - [Shin] - Added map 06guildr.
+[2007/03/09] - [Shin] - Updated map database, ve_in2 needed to be ve_in02.
+-
+
 - Rev 168 -
 [2007/03/08] - RaX - Fixed pathing events firing all at once
 [2007/03/08] - RaX - Adjusted pathing, removed getting the closest path.
