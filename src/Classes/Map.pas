@@ -15,7 +15,8 @@ uses
 	Types,
 	PointList,
 	MapTypes,
-	EventList;
+	EventList,
+	SysUtils;
 
 type
 //------------------------------------------------------------------------------
@@ -136,110 +137,124 @@ function TMap.GetPath(
 	const EndPoint    : TPoint;
 	var APath : TPointList
 ) : boolean;
+
 var
-	AFloodList				: TFloodList;//our main flood list which we spawn newflooditems from
-	AFloodListLength	: Integer;//the length of afloodlist
-	NewFloodList			: TFloodList;//Our list of new flood items.
-	NewFloodListLength: Integer;//The length of the newflooditem list.
+	AFloodList				: TList;
 	AFloodItem				: TFloodItem;
 	NewFloodItem			: TFloodItem;
-	APoint						: TPoint;
 	Index							: Integer;
 	DirectionIndex		: Integer;
-	PossiblePosition  : TPoint;
-	AnArea						: TGraph;
-	AnAreaSize				: TPoint;
+	PossiblePosition	: TPoint;
+	CharClickArea			: Integer;
+
+	CostTick					: Cardinal;
+
 	XMod							: Integer;
 	YMod							: Integer;
-  PathIndex: Integer;
+
+	AnArea						: TGraph;
+	AnAreaSize				: TPoint;
+
+	Done							: Boolean;
+	EndPointMod				: TPoint;
 
 begin
-	Result := false;
+	Result				:= FALSE;
+	Done 					:= FALSE;
+	CostTick			:=  0;
+	CharClickArea := MainProc.ZoneServer.Options.CharClickArea;
+	AFloodItem		:= TFloodItem.Create;
+	AFloodList		:= TList.Create;
 
 	//grab our area
-	XMod := StartPoint.X-MainProc.ZoneServer.Options.CharClickArea;
-	YMod := StartPoint.Y-MainProc.ZoneServer.Options.CharClickArea;
-	AnArea := Copy(Cell, Max(XMod, 0), Min((MainProc.ZoneServer.Options.CharClickArea*2)+1, Abs(XMod - Size.X)));
+	XMod := EndPoint.X-CharClickArea;
+	YMod := EndPoint.Y-CharClickArea;
+	AnArea := Copy(Cell, Max(XMod, 0), Min((CharClickArea*2)+1, Abs(XMod - Size.X)));
 	for Index := 0 to Length(AnArea)-1 do
 	begin
-		AnArea[Index] := Copy(Cell[XMod+Index], Max(YMod, 0), Min((MainProc.ZoneServer.Options.CharClickArea*2)+1, Abs(YMod - Size.Y)));
+		AnArea[Index] := Copy(Cell[XMod+Index], Max(YMod, 0), Min((CharClickArea*2)+1, Abs(YMod - Size.Y)));
 	end;
 	AnAreaSize := Point(Length(AnArea),Length(AnArea[0]));
 
+	EndPointMod := Point(StartPoint.X-Abs(XMod),StartPoint.Y-Abs(YMod));
+
 	//initialize our first flood item
-	AFloodItem.Position.X := StartPoint.X-AnArea[0][0].Position.X;
-	AFloodItem.Position.Y := StartPoint.Y-AnArea[0][0].Position.Y;
-	AFloodItem.PathLength := 0;
+	AFloodItem.Position.X := EndPoint.X-abs(XMod);
+	AFloodItem.Position.Y := EndPoint.Y-abs(YMod);
+	AFloodItem.Cost := 0;
+	AFloodList.Add(AFloodItem);
 
-	//initialize our flood lists
-	AFloodListLength := 1;
-	SetLength(AFloodList, AFloodListLength);
-	AFloodList[AFloodListLength-1] := AFloodItem;
-
-	//while we havn't found the end point and still have cells unsearched...
-	while (AFloodListLength > 0) AND (NOT Result) do
+	While (NOT Result) AND (NOT Done) do
 	begin
-		//reinitialize Index and NewFloodListLen for each AFloodList
-		Index := 0;
-		NewFloodListLength := 0;
-		//loop through each FloodItem
-		while (Index < AFloodListLength) AND (NOT Result) do
+		Index := AFloodList.Count;
+		While (Index > 0) AND (NOT Result) do
 		begin
-			//initialize our flooditem which we will propagate from.
-			AFloodItem  := AFloodList[Index];
-			//loop through each direction, create a new flood item for each.
-			DirectionIndex := 0;
-			while (DirectionIndex < 8) AND (NOT Result) do
+			Dec(Index);
+			AFloodItem := AFloodList[Index];
+			if AFloodItem.Cost <= CostTick then
 			begin
-				//get the expected position of our new flood item
-				PossiblePosition.X := AFloodItem.Position.X + Directions[DirectionIndex].X;
-				PossiblePosition.Y	:= AFloodItem.Position.Y + Directions[DirectionIndex].Y;
-				//check if coordinates are in range
-				if    (PossiblePosition.X >= 0) AND (PossiblePosition.X < AnAreaSize.X)
-					AND (PossiblePosition.Y >= 0) AND (PossiblePosition.Y < AnAreaSize.Y) then
+				DirectionIndex := 8;
+				While (DirectionIndex > 0) AND (NOT Result) do
 				begin
-					//check if the square is passable, if it is...
-					if (NOT IsBlocked(PossiblePosition, AnArea)) then
+					Dec(DirectionIndex);
+					PossiblePosition.X := AFloodItem.Position.X + Directions[DirectionIndex].X;
+					PossiblePosition.Y := AFloodItem.Position.Y + Directions[DirectionIndex].Y;
+
+					//Make sure the new point is inside our search boundaries.
+					if	(PossiblePosition.X < AnAreaSize.X) AND
+							(PossiblePosition.X >= 0)						AND
+							(PossiblePosition.Y < AnAreaSize.Y) AND
+							(PossiblePosition.Y >= 0)						then
 					begin
-						//build our flood item.
-						NewFloodItem.Position := PossiblePosition;
-						NewFloodItem.Path := AFloodItem.Path;
-						NewFloodItem.PathLength := AFloodItem.PathLength;
-						APoint:= NewFloodItem.Position;
-						inc(NewFloodItem.PathLength);
-						SetLength(NewFloodItem.Path, NewFloodItem.PathLength);
-						NewFloodItem.Path[NewFloodItem.PathLength-1] := AnArea[PossiblePosition.X][PossiblePosition.Y].Position;
-						//add it to the NewFloodList
-						inc(NewFloodListLength);
-						SetLength(NewFloodList, NewFloodListLength);
-						NewFloodList[NewFloodListLength-1] := NewFloodItem;
-
-						//set it impassable in the area to prevent an unecessary amount of items being generated.
-						AnArea[PossiblePosition.X][PossiblePosition.Y].Attribute := 1;
-
-						//check to see if we've found the end point... if we have...
-						if PointsEqual(AnArea[NewFloodItem.Position.X][NewFloodItem.Position.Y].Position, EndPoint) then
+						//make sure we can move to the new point.
+						if NOT IsBlocked(PossiblePosition, AnArea) then
 						begin
-							APath.Clear;
-							for PathIndex := 0 to Length(NewFloodItem.Path) - 1 do
+							//Create and add our new flood item
+							NewFloodItem := TFloodItem.Create;
+
+							NewFloodItem.Path.Assign(AFloodItem.Path);
+							NewFloodItem.Path.Add(AnArea[PossiblePosition.X][PossiblePosition.Y].Position);
+
+							NewFloodItem.Position		:= PossiblePosition;
+
+							if not (abs(Directions[DirectionIndex].X) = abs(Directions[DirectionIndex].Y)) then
 							begin
-								APath.Add(NewFloodItem.Path[PathIndex]);
+								NewFloodItem.Cost	:= AFloodItem.Cost + 5;
+							end else begin
+								NewFloodItem.Cost	:= AFloodItem.Cost + 7;
 							end;
-							Result  := TRUE;
-							Exit;
-						end else
+
+							AFloodList.Add(NewFloodItem);
+
+							AnArea[NewFloodItem.Position.X][NewFloodItem.Position.Y].Attribute := 1;
+
+							if PointsEqual(NewFloodItem.Position, EndPointMod) then
+							begin
+								Result	:= TRUE;
+								APath.Assign(NewFloodItem.Path);
+							end;
+						end;
 					end;
 				end;
-				//start propagating our next flood item in the next direction.
-				inc(DirectionIndex);
+				TFloodItem(AFloodList[Index]).Free;
+				AFloodList.Delete(Index);
 			end;
-			//go to the next item in AFloodList
-			inc(Index);
 		end;
-		//swap our arrays around to propagate the next generation.
-		AFloodList := NewFloodList;
-		AFloodListLength := NewFloodListLength;
+
+		if (AFloodList.Count = 0) then
+		begin
+			Done := TRUE;
+		end;
+
+		Inc(CostTick);
 	end;
+
+	//Free our lists + items
+	for Index := 0 to AFloodList.Count - 1 do
+	begin
+		TFloodItem(AFloodList[Index]).Free;
+	end;
+	AFloodList.Free;
 end;
 //------------------------------------------------------------------------------
 
@@ -258,7 +273,7 @@ begin
 	if NOT Assigned(AGraph) then
 	begin
 		AGraph := Cell;
-  end;
+	end;
 	//Assume it is not.
 	Result := false;
 	if (AGraph[APoint.X][APoint.Y].Attribute in [1,5]) OR

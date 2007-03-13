@@ -12,7 +12,8 @@ unit MapTypes;
 interface
 uses
   Types,
-  List32;
+	List32,
+	PointList;
 
 type
 
@@ -58,24 +59,38 @@ type
 	TCell = record
 		//The place in a graph the cell is
 		Position : TPoint;
-    //what kind of tile is it
+		//what kind of tile is it
 		Attribute       : Byte;
 		//Tsusai 11/09/06: Keep track of the number of things in the way, like icewall(s)
 		ObstructionCount: Byte;
     //TBeings in this cell (NPC/Mob/Chara)
-    Beings    : TIntList32;
+		Beings    : TIntList32;
 	end;
 
 	TGraph = array of array of TCell;
 
-	//flood types
-	TFloodItem = record
-		Position : TPoint;
-		Path : array of TPoint;
-		PathLength : Integer;
-	end;
+	TFloodItem = class
+		public
+			Path					: TPointList;
+			Position			: TPoint;
+			Cost					: Cardinal;
 
-	TFloodList = array of TFloodItem;
-
+			Constructor Create;
+			Destructor Destroy; override;
+  end;
 implementation
+
+Constructor TFloodItem.Create;
+begin
+	inherited;
+	Path		:= TPointList.Create;
+	Cost		:= 0;
+end;
+
+Destructor TFloodItem.Destroy;
+begin
+	Path.Free;
+	inherited;
+end;
+
 end.

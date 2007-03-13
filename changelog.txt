@@ -13,6 +13,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 170 -
+[2007/03/13] - RaX - Remade the Pathing algorithm, now behaves exactly like Aegis. Timing
+ issue still remains - Tsusai, take a look?
+-
+
 - Rev 169 -
 [2007/03/09] - [Shin] - Added map 06guildr.
 [2007/03/09] - [Shin] - Updated map database, ve_in2 needed to be ve_in02.

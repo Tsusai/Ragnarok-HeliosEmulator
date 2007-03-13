@@ -46,6 +46,8 @@ type
 		Procedure Delete(Index : Integer);
 		Procedure Clear();
 
+		Procedure Assign(APointList : TPointList);
+
 		Property Count : Integer
 		read MsCount;
 	end;
@@ -187,7 +189,7 @@ begin
 	  MemStart := NewMemoryStart;
 	  NextSlot := MemStart;
 	  Inc(NextSlot, MaxCount);
-	  Inc(MaxCount, Size);
+		Inc(MaxCount, Size);
 	end;
 	CriticalSection.Leave;
 end;{Shrink}
@@ -220,6 +222,28 @@ begin
 	Inc(NextSlot);
 	CriticalSection.Leave;
 end;{Add}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Assign                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Assigns the point list another point lists items.
+//
+//  Changes -
+//    March 12th, 2007 - RaX - Created.
+//------------------------------------------------------------------------------
+procedure TPointList.Assign(APointList : TPointList);
+var
+	Index : Integer;
+begin
+	Self.Clear;
+	for Index := 0 to APointList.Count - 1 do
+	begin
+		Self.Add(APointList[Index]);
+	end;
+end;{Assign}
 //------------------------------------------------------------------------------
 
 
