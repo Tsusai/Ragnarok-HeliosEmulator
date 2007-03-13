@@ -206,9 +206,10 @@ implementation
 //SetWANIP()                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//
+//		Property Set Routine for WAN IP, then write to .ini
 //	Changes -
 //		November 29th, 2006 - RaX - Created.
+//		March 13th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 	procedure TInterOptions.SetWANIP(Value : String);
@@ -226,9 +227,10 @@ implementation
 //SetLANIP()                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//
+//		Property Set Routine for LAN IP, then write to .ini
 //	Changes -
 //		November 29th, 2006 - RaX - Created.
+//		March 13th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 	procedure TInterOptions.SetLANIP(Value : String);

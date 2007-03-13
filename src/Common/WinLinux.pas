@@ -220,13 +220,15 @@ uses
 
 
 //------------------------------------------------------------------------------
-//GetTick                                                              FUNCTION
+//LowerPriority                                                        PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Gets current time in milliseconds since system start.
+//			Set Helios process to lowest Priority, it also affects
+//		performance.
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		March 13th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 	procedure LowerPriority(AThread : TThread);
@@ -244,13 +246,14 @@ uses
 
 
 //------------------------------------------------------------------------------
-//GetTick                                                              FUNCTION
+//ExtractFileNameMod                                                    FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Gets current time in milliseconds since system start.
+//			Extract filename from a string
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		March 13th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 	function ExtractFileNameMod(Path : String) : string;

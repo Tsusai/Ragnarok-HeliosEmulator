@@ -246,12 +246,24 @@ begin
 end;{SetSaveTime}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SetCharaState                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets Character State
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SetCharaState(Value : TCharaState);
 begin
 	//Need to add easy to get to codes (STANCE_MOVE from prometheus)
 	//usually used for packets
 	fCharaState := value;
 end;
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
@@ -418,11 +430,12 @@ end;{SetBaseLV}
 //SetJobLV                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Name to Value. Also, lets our object know that data has
+//			Sets the JobLV to Value. Also, lets our object know that data has
 //    changed.
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		March 12th, 2007 - Aeomin - Fix Header Typo
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.SetJobLV(Value : byte);
@@ -1209,6 +1222,18 @@ begin
 end;{CalcMaxHP}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SendSubStat                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Send sub state defined by Mode(speed, Def,MDef etc...)
+//                And send party info, Recalculate Weight
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
 //Mode is either 0 or 1, since its $00b0 or $00b1 (Its $00b0 + Mode)
 procedure TCharacter.SendSubStat(
 	Mode : word;
@@ -1247,7 +1272,19 @@ Begin
 		//UpdateIcon(36, (WeightPercent >= 90)); //90% overweight icon
 	end;
 end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SendCharacterStats                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Send chatacter stats, Such speed,hp(max),sp(max).. and tons of it
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
 procedure TCharacter.SendCharacterStats(UpdateView : boolean = false);
 Var
 	idx :integer;
@@ -1329,6 +1366,8 @@ Begin
 		end;}
 	end;
 End;
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //CalcMaxSP                                                           PROCEDURE

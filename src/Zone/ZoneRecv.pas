@@ -98,6 +98,7 @@ uses
 	Account,
 	BufferIO,
 	Main,
+	SysUtils,
 	GameConstants,
 	Globals,
 	MapTypes,
@@ -385,11 +386,13 @@ uses
 		dy 				: SmallInt;
 		spd 			: LongWord;
 		Index			: Integer;
+
 	begin
 		DestPoint := BufferReadOnePoint(ReadPts[0], InBuffer);
 
 		if true {Various checks (not sitting)} then
 		begin
+
 			if AChara.MapInfo.GetPath(AChara.Point,DestPoint,AChara.Path) then
 			begin
 				with AChara do

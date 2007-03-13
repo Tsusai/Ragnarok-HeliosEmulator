@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//JanSQLGameDatabase		                                                        UNIT
+//JanSQLGameDatabase	                                                    UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //			This is one of our database objects which enabled Helios to use a TEXT
@@ -20,7 +20,7 @@ uses
 	Database;
 
 //------------------------------------------------------------------------------
-//TJanSQLGameDatabase			                                                           CLASS
+//TJanSQLGameDatabase			                                   CLASS
 //------------------------------------------------------------------------------
 //	What it does-
 //			This is a child class for our database object system. It allows Helios
@@ -91,7 +91,7 @@ implementation
 
 
 //------------------------------------------------------------------------------
-//TJanSQLGameDatabase.Create()                                          CONSTRUCTOR
+//TJanSQLGameDatabase.Create                                         CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes our connection object.
@@ -120,7 +120,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TJanSQLGameDatabase.Destroy()                                          DESTRUCTOR
+//TJanSQLGameDatabase.Destroy                                         DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys our connection object.
@@ -139,7 +139,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TJanSQLGameDatabase.Disconnect()                                        Procedure
+//TJanSQLGameDatabase.Disconnect()                                      Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys the TEXT Connection.
@@ -156,7 +156,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TJanSQLGameDatabase.Connect()                                            Procedure
+//TJanSQLGameDatabase.Connect()                                        Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes the TEXT Connection.
@@ -201,7 +201,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TJanSQLGameDatabase.SendQuery()                                          Function
+//TJanSQLGameDatabase.SendQuery()                                       Function
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sends a query to the jansql object.
@@ -227,7 +227,7 @@ end;//SendQuery
 
 
 //------------------------------------------------------------------------------
-//TJanSQLGameDatabase.SetAccount()                                        Procedure
+//TJanSQLGameDatabase.SetAccount()                                     Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Builds a taccount object from a query result.
@@ -262,15 +262,16 @@ end;//SetAccount
 
 
 //------------------------------------------------------------------------------
-//TJanSQLGameDatabase.GetChara()                                           FUNCTION
+//TJanSQLGameDatabase.GetChara()                                        FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Doesn't do anything yet.
+//			Fetch Character based on Character ID, return as TCharacter
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
 //		January 12th, 2007 - Tsusai - Now recieves an option to clear the table
 //			or not
+//		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.GetChara(
@@ -287,14 +288,15 @@ end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TJanSQLGameDatabase.GetAccountCharas()                                   FUNCTION
+//TJanSQLGameDatabase.GetAccountCharas()                                FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Doesn't do anything yet.
+//			Fetch Character List of an account using that account ID.
 //
 //	Changes -
 //		October 5th, 2006 - RaX - Created.
 //		December 18th, 2006 - Tsusai - QueryResult now freed.
+//		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.GetAccountCharas(AccountID : LongWord) : TCharacterList;
@@ -326,14 +328,16 @@ end;
 //-----------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TJanSQLGameDatabase.CharaExists()                                         FUNCTION
+//TJanSQLGameDatabase.CharaExists()                                     FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Doesn't do anything yet.
+//			Checking whether character is exist or not based on
+//        Account ID and Slot Number, return as BOOLEAN
 //
 //	Changes -
 //		October 6th, 2006 - RaX - Created.
 //		December 18th, 2006 - Tsusai - Result simplified, freed queryresult.
+//		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.CharaExists(AccountID : LongWord; Slot : Word) : Boolean;
@@ -360,11 +364,13 @@ end;
 //TJanSQLGameDatabase.CharaExists()                                         FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Doesn't do anything yet.
+//			checking whether character is exist or not based on
+//        Character Name, return as BOOLEAN
 //
 //	Changes -
 //		October 6th, 2006 - RaX - Created.
 //		December 18th, 2006 - Tsusai - Simplified Result, freed query result
+//		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.CharaExists(Name : String) : Boolean;
@@ -682,7 +688,7 @@ end;//LoadChara
 
 
 //------------------------------------------------------------------------------
-//TJanSQLGameDatabase.DeleteChara()                                        FUNCTION
+//TJanSQLGameDatabase.DeleteChara()                                     FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Deletes a character from the database.

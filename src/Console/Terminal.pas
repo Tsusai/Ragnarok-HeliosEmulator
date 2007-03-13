@@ -155,13 +155,14 @@ end;
 
 
 //------------------------------------------------------------------------------
-//ReadLn()                                                 PROCEDURE
+//ReadLn()                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Alias of WriteLn.
+//			Alias of ReadLn.
 //
 //	Changes -
 //		February 19th, 2007 - RaX - Created.
+//		March 13th, 2007 - Aeomin - Fix Header Typo
 //
 //------------------------------------------------------------------------------
 procedure TConsole.ReadLn(

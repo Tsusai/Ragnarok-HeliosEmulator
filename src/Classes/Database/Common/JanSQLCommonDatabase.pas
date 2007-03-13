@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//JanSQLCommonDatabase		                                                        UNIT
+//JanSQLCommonDatabase		                                            UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //			This is one of our database objects which enabled Helios to use a TEXT
@@ -19,7 +19,7 @@ uses
   Database;
 
 //------------------------------------------------------------------------------
-//TJanSQLCommonDatabase			                                                           CLASS
+//TJanSQLCommonDatabase			                                   CLASS
 //------------------------------------------------------------------------------
 //	What it does-
 //			This is a child class for our database object system. It allows Helios
@@ -77,7 +77,7 @@ implementation
 
 
 //------------------------------------------------------------------------------
-//Create()                 								                         CONSTRUCTOR
+//Create()                 					     CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes our connection object.
@@ -106,7 +106,7 @@ end;//Create
 
 
 //------------------------------------------------------------------------------
-//Destroy()								                                           DESTRUCTOR
+//Destroy()							      DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys our connection object.
@@ -125,7 +125,7 @@ end;//Destroy
 
 
 //------------------------------------------------------------------------------
-//Disconnect()								                                        Procedure
+//Disconnect()							       Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys the TEXT Connection.
@@ -142,7 +142,7 @@ end;//Disconnect
 
 
 //------------------------------------------------------------------------------
-//Connect() 							                                            Procedure
+//Connect() 							       Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes the TEXT Connection.
@@ -187,7 +187,7 @@ end;//Connect
 
 
 //------------------------------------------------------------------------------
-//SendQuery()								                                           Function
+//SendQuery()							        Function
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sends a query to the jansql object.
@@ -213,7 +213,7 @@ end;//SendQuery
 
 
 //------------------------------------------------------------------------------
-//SetAccount()								                                        Procedure
+//SetAccount()							       Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Builds a taccount object from a query result.
@@ -248,7 +248,7 @@ end;//SetAccount
 
 
 //------------------------------------------------------------------------------
-//GetAccount()							                                OVERLOADED FUNCTION
+//GetAccount()					             OVERLOADED FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			This function returns a TAccount type and is used for loading up an
@@ -257,7 +257,7 @@ end;//SetAccount
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
 //		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
-//													set the data
+//					       set the data
 //		December 18th, 2006 - Tsusai - Corrected query string syntax
 //		December 27th, 2006 - Tsusai - Reorganized
 //
@@ -304,7 +304,7 @@ end;//GetAccount
 
 
 //------------------------------------------------------------------------------
-//GetAccount()							                               OVERLOADED FUNCTION
+//GetAccount()						     OVERLOADED FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			This function returns a TAccount type and is used for loading up an
@@ -313,7 +313,7 @@ end;//GetAccount
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
 //		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
-//													set the data
+//					       set the data
 //		December 18th, 2006 - Tsusai - Corrected query syntax
 //		December 27th, 2006 - Tsusai - Reorganized
 //
@@ -360,7 +360,7 @@ end;//GetAccount
 
 
 //------------------------------------------------------------------------------
-//AccountExists()						                                					 FUNCTION
+//AccountExists()						        FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Checks to see if an account exists in the database.
@@ -386,13 +386,15 @@ end;//AccountExists
 
 
 //------------------------------------------------------------------------------
-//SaveAccount() 									                                    Procedure
+//SaveAccount() 						       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Doesn't do anything yet.
+//		Save an account based on TAccount, Generate SQL Query and send
+//            to SQL via SendQuery.
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 procedure TJanSQLCommonDatabase.SaveAccount(AnAccount: TAccount);
@@ -439,7 +441,7 @@ end;//SaveAccount
 
 
 //------------------------------------------------------------------------------
-//CreateAccount							                               						FUNCTION
+//CreateAccount                                                         FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Creates an account.
@@ -468,7 +470,7 @@ end;//CreateAccount
 
 
 //------------------------------------------------------------------------------
-//RefreshAccountData()							                                 Procedure
+//RefreshAccountData()					               Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Retrieves all needed data regardless of if its in memory or not.

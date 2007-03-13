@@ -151,6 +151,17 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TMySQLStaticDatabase.SendQuery()                                     Function
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sends a query to the mysql object.
+//
+//	Changes -
+//		December 17th, 2006 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
 function TMySQLStaticDatabase.SendQuery(
 	const QString : string;
 	StoreResult : boolean;

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//MySQLCommonDatabase		                                                        UNIT
+//MySQLCommonDatabase		                                            UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //			This is one of our database objects which enabled Helios to use a MySQL
@@ -19,7 +19,7 @@ uses
 	Database;
 type
 //------------------------------------------------------------------------------
-//TMySQLCommonDatabase			                                                           CLASS
+//TMySQLCommonDatabase			                                   CLASS
 //------------------------------------------------------------------------------
 //	What it does-
 //			This is a child class for our database object system. It allows Helios
@@ -77,7 +77,7 @@ implementation
 		SysUtils,
 		Classes;
 //------------------------------------------------------------------------------
-//Create()								                                          CONSTRUCTOR
+//Create()							     CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes our connection object.
@@ -105,7 +105,7 @@ end;//Create
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//Destroy()								                                          DESTRUCTOR
+//Destroy()							      DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys our connection object.
@@ -124,7 +124,7 @@ end;//Destroy
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//Connect()								                                            Procedure
+//Connect()							        FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes the MySQL Connection.
@@ -161,7 +161,7 @@ end;//Connect
 
 
 //------------------------------------------------------------------------------
-//SendQuery()								                                           Function
+//SendQuery()			                                        FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sends a query.
@@ -186,7 +186,7 @@ end;//SendQuery
 
 
 //------------------------------------------------------------------------------
-//Disconnect()							                                         Procedure
+//Disconnect()							       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys the MySQL Connection.
@@ -206,7 +206,7 @@ end;//Disconnect
 
 
 //------------------------------------------------------------------------------
-//SetAccount()							                                          PROCEDURE
+//SetAccount()							       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Builds a taccount object from a query result.
@@ -241,7 +241,7 @@ end;//SetAccount
 
 
 //------------------------------------------------------------------------------
-//GetAccount()							                                OVERLOADED FUNCTION
+//GetAccount()					             OVERLOADED FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			This function returns a TAccount type and is used for loading up an
@@ -250,7 +250,7 @@ end;//SetAccount
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
 //		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
-//													set the data
+//					       set the data
 //		December 27th, 2006 - Tsusai - Reorganized
 //
 //------------------------------------------------------------------------------
@@ -294,7 +294,7 @@ end;//GetAccount
 
 
 //------------------------------------------------------------------------------
-//GetAccount()							                                OVERLOADED FUNCTION
+//GetAccount()					             OVERLOADED FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			This function returns a TAccount type and is used for loading up an
@@ -303,7 +303,7 @@ end;//GetAccount
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
 //		November 13th, 2005 - Tsusai - now calls a shared TAccount routine to
-//													set the data
+//					       set the data
 //		December 27th, 2006 - Tsusai - Reorganized
 //
 //------------------------------------------------------------------------------
@@ -347,7 +347,7 @@ end;//GetAccount
 
 
 //------------------------------------------------------------------------------
-//AccountExists()						                                					 FUNCTION
+//AccountExists                                                         FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Checks to see if an account exists in the database.
@@ -376,13 +376,15 @@ end;//AccountExists
 
 
 //------------------------------------------------------------------------------
-//SaveAccount()									                                     Procedure
+//SaveAccount()		                                               PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Doesn't do anything yet.
+//		Save an account based on TAccount, Generate SQL Query and send
+//            to SQL via SendQuery.
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 procedure TMySQLCommonDatabase.SaveAccount(AnAccount: TAccount);
@@ -425,7 +427,7 @@ end;//SaveAccount
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//CreateAccount							                               						FUNCTION
+//CreateAccount								FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Creates an account.
@@ -452,7 +454,7 @@ end;//CreateAccount
 
 
 //------------------------------------------------------------------------------
-//RefreshAccountData()								                                PROCEDURE
+//RefreshAccountData                                                   PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //

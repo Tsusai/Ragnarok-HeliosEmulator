@@ -263,12 +263,13 @@ implementation
 
 
 //------------------------------------------------------------------------------
-//SetWANIP()                                       PROCEDURE
+//SetWANIP()                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//
+//		Property Set Routine for WAN IP of Character Server
 //	Changes -
 //		November 29th, 2006 - RaX - Created.
+//		March 13th, 2007 - Aeomin - Modify Header.
 //
 //------------------------------------------------------------------------------
 	procedure TCharaOptions.SetWANIP(Value : String);
@@ -283,12 +284,13 @@ implementation
 
 
 //------------------------------------------------------------------------------
-//SetLANIP()                                       PROCEDURE
+//SetLANIP()                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//
+//		Property Set Routine for LAN IP of Character Server
 //	Changes -
 //		November 29th, 2006 - RaX - Created.
+//		March 13th, 2007 - Aeomin - Modify Header.
 //
 //------------------------------------------------------------------------------
 	procedure TCharaOptions.SetLANIP(Value : String);
@@ -350,9 +352,10 @@ implementation
 //SetLoginPort()                                                     PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//
+//		Property Set Routine for Login Server Port.
 //	Changes -
 //		November 29th, 2006 - RaX - Created.
+//		March 13th, 2007 - Aeomin - Modify Header.
 //
 //------------------------------------------------------------------------------
 	procedure TCharaOptions.SetLoginPort(Value : Word);
@@ -369,7 +372,7 @@ implementation
 //SetLoginIP()                                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//
+//		Property Set Routine for Login Server IP.
 //	Changes -
 //		November 29th, 2006 - RaX - Created.
 //

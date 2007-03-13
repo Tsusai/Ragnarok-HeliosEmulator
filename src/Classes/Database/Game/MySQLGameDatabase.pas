@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//MySQLGameDatabase		                                                        UNIT
+//MySQLGameDatabase		                                            UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //			This is one of our database objects which enabled Helios to use a MySQL
@@ -21,7 +21,7 @@ uses
 
 type
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase			                                                           CLASS
+//TMySQLGameDatabase			                                   CLASS
 //------------------------------------------------------------------------------
 //	What it does-
 //			This is a child class for our database object system. It allows Helios
@@ -89,7 +89,7 @@ implementation
 		SysUtils;
 		
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase.Create()                                          CONSTRUCTOR
+//TMySQLGameDatabase.Create()                                        CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes our connection object.
@@ -117,7 +117,7 @@ end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase.Destroy()                                          DESTRUCTOR
+//TMySQLGameDatabase.Destroy()                                        DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys our connection object.
@@ -135,7 +135,7 @@ end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase.Connect()                                            Procedure
+//TMySQLGameDatabase.Connect()                               PROTECTED PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes the MySQL Connection.
@@ -168,6 +168,17 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SendQuery			                              PROTECTED FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//                  Send SQL Query to Mysql database and return with TMySQLResult
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
 function TMySQLGameDatabase.SendQuery(
 	const QString : string;
 	StoreResult : boolean;
@@ -180,9 +191,11 @@ begin
 		Console.Message('MySQL Query error: ' + QString, 'Game Database', MS_ERROR);
 	end;
 end;
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase.Disconnect()                                         Procedure
+//TMySQLGameDatabase.Disconnect()                            PROTECTED PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys the MySQL Connection.
@@ -202,10 +215,10 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase.SetAccount()                                         PROCEDURE
+//TMySQLGameDatabase.SetAccount()                                      PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Builds a taccount object from a query result.
+//			Builds a TAccount object from a query result.
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
@@ -237,13 +250,14 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase.GetChara()                                           FUNCTION
+//TMySQLGameDatabase.GetChara()                                         FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Doesn't do anything yet.
+//			Fetch Character based on Character ID and return with TCharacter
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.GetChara(
@@ -258,14 +272,16 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase.GetAccountCharas()                                   FUNCTION
+//TMySQLGameDatabase.GetAccountCharas()                                 FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Doesn't do anything yet.
+//			Fetch Character List of an account using that account ID
+//			and return with TCharacterList
 //
 //	Changes -
 //		October 5th, 2006 - RaX - Created.
 //		December 18th, 2006 - Tsusai - Freed result.
+//		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.GetAccountCharas(AccountID : LongWord) : TCharacterList;
@@ -298,14 +314,16 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase.CharaExists()                                         FUNCTION
+//TMySQLGameDatabase.CharaExists()                                      FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Doesn't do anything yet.
+//			Checking whether character is exist or not based on
+//        Account ID and Slot Number, return as BOOLEAN
 //
 //	Changes -
 //		October 6th, 2006 - RaX - Created.
 //		December 18th, 2006 - Tsusai - Simplified Result, freed Queryresult
+//		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.CharaExists(AccountID : LongWord; Slot : Word) : Boolean;
@@ -327,14 +345,16 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase.CharaExists()                                         FUNCTION
+//TMySQLGameDatabase.CharaExists()                                      FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Doesn't do anything yet.
+//			Checking whether character is exist or not based on
+//        Character Name, return as BOOLEAN
 //
 //	Changes -
 //		October 6th, 2006 - RaX - Created.
 //		December 18th, 2006 - Tsusai - Simplified Result, freed queryresult
+//		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.CharaExists(Name : String) : Boolean;
@@ -356,13 +376,15 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase.SaveChara()                                     Procedure
+//TMySQLGameDatabase.SaveChara()                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Doesn't do anything yet.
+//			Save character data to database use data from TCharacter
+//        Character Name, return as BOOLEAN
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 procedure TMySQLGameDatabase.SaveChara(AChara : TCharacter);
@@ -486,10 +508,10 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase.CreateChara()                                       PROCEDURE
+//TMySQLGameDatabase.CreateChara()                                     PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Create's a character in teh database.
+//			Creates a character in the database.
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
@@ -529,7 +551,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase.LoadChara()                                         PROCEDURE
+//TMySQLGameDatabase.LoadChara()                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Gets a Character from the database.
@@ -628,7 +650,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLGameDatabase.DeleteChara()                                       PROCEDURE
+//TMySQLGameDatabase.DeleteChara()                                     PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Deletes a character from the database.

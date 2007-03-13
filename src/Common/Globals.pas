@@ -246,10 +246,11 @@ end;{IncSecond}
 //IncMinute                                                            FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Adds a second to a TDateTime type.
+//			Adds a minute to a TDateTime type.
 //
 //	Changes -
 //		January 4th, 2007 - RaX - Created Header.
+//		March 13th, 2007 - Aeomin - Fix type.
 //
 //------------------------------------------------------------------------------
 function IncMinute(const AValue: TDateTime;

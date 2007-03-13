@@ -58,11 +58,12 @@ uses
 //SetGender                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Takes the Char from the SQL table (M or F) and figures out what to set
+//			Set fGender in local Class (M = 1 , F = 0)
 //    GenderNum at.
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		March 12th, 2007 - Aeomin - Modify Header.
 //
 //------------------------------------------------------------------------------
 procedure TAccount.SetGender(Value : Char);

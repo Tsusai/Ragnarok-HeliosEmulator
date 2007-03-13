@@ -281,9 +281,10 @@ implementation
 //SetWANIP()                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//
+//		Property Set Routine for WAN IP, and save to .ini
 //	Changes -
 //		November 29th, 2006 - RaX - Created.
+//		March 13th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 	procedure TZoneOptions.SetWANIP(Value : String);
@@ -301,9 +302,10 @@ implementation
 //SetLANIP()                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//
+//		Property Set Routine for LAN IP, and save to .ini
 //	Changes -
 //		November 29th, 2006 - RaX - Created.
+//		March 13th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 	procedure TZoneOptions.SetLANIP(Value : String);
@@ -320,9 +322,10 @@ implementation
 //SetCharaPort()                                                     PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//
+//		Property Set Routine for Character Server Port, and save to .ini
 //	Changes -
 //		January 14th, 2007 - Tsusai - Created.
+//		March 13th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 	procedure TZoneOptions.SetCharaPort(Value : Word);
@@ -339,9 +342,10 @@ implementation
 //SetCharaIP()                                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//
+//		Property Set Routine for Character Server IP, and save to .ini
 //	Changes -
 //		January 14th, 2007 - Tsusai - Created.
+//		March 13th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
 	procedure TZoneOptions.SetCharaIP(Value : String);

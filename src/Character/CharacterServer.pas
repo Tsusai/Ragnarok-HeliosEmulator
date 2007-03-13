@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//CharacterServer			                                                UNIT
+//CharacterServer			                                    UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //      The Character Server Class.
@@ -309,7 +309,7 @@ end;{LoginClientRead}
 //	What it does-
 //      Verifies the new connection by checking the account ID which is received
 //    and the two random keys generated during login. Upon validation, check
-//    database for any/all created characters.
+//    database for any/all created characters. If found any, send to client.
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
@@ -318,6 +318,7 @@ end;{LoginClientRead}
 //		January 3rd, 2007 - Tsusai - Added console messages.
 //		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
 //			IdContext.Binding shortcut
+//		March 12th, 2007 - Aeomin - Modificaion Header.
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
@@ -753,9 +754,20 @@ begin
 end;{DeleteChara}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//VerifyZoneServer                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Verify request connection from zone server
+//
+//	Changes -
 //		January 14th, 2007 - Tsusai -  Added
 //		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
 //			IdContext.Binding shortcut
+//		March 12th, 2007 - Aeomin - Fix the header.
+//
+//------------------------------------------------------------------------------
 procedure TCharacterServer.VerifyZoneServer(
 	AClient : TIdContext;
 	InBuffer : TBuffer
@@ -799,6 +811,7 @@ begin
 	end;
 	SendValidateFlagToZone(AClient,Validated);
 end;
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
@@ -978,11 +991,13 @@ end;{SetPort}
 //OnDisconnect()                                                         EVENT
 //------------------------------------------------------------------------------
 //	What it does-
-//		  Executes when a client disconnects from the login server. Removes
-//    disconnected zone servers from the list.
+//		  Executes when a client disconnects from the character server.
+//		Removes disconnected zone servers from the list.
 //
 //	Changes -
 //		January 10th, 2007 - Tsusai - Created Header.
+//		March 12th, 2007 - Aeomin - Fix header (should be character
+//						server not login server)
 //
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.OnDisconnect(AConnection: TIdContext);

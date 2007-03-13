@@ -1,12 +1,12 @@
-(*------------------------------------------------------------------------------
-Socket
-RaX 2006
-
-Description:
- Unit contains all incoming and outgoing packet procedures to place data in and
-	out of a databuffer.  Everything here is self explanitory and should not be
-	changed anytime soon.
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//BufferIO                                                                  UNIT
+//------------------------------------------------------------------------------
+//	What it does-
+//			Unit contains all incoming and outgoing packet procedures
+//            to place data in and out of a databuffer.  Everything here is self explanitory
+//            and should not be changed anytime soon.
+//
+//------------------------------------------------------------------------------
 unit BufferIO;
 
 interface
@@ -62,9 +62,9 @@ uses
 	SysUtils,
 	{Third Party}
 	IdGlobal;
-(*------------------------------------------------------------------------------
-PUSHING DATA INTO THE BUFFER METHODS
-------------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//PUSHING DATA INTO THE BUFFER METHODS                                PROCEDURES
+//------------------------------------------------------------------------------
 	//Socket Method WriteBuffer - Writes a Byte to the buffer.
 	procedure WriteBufferByte(Index:word; ByteIn:byte; var Buffer : TBuffer);
 	begin
@@ -144,20 +144,31 @@ PUSHING DATA INTO THE BUFFER METHODS
 		ByteArray[2] := ByteArray[3];
 		ByteArray[2] := (ByteArray[2] or (Dir and $f));
 		Move(ByteArray[0], Buffer[index], 3);
-	End; (* Proc WriteBufferPointAndDirection
-*-----------------------------------------------------------------------------*)
+	End; (* Proc WriteBufferPointAndDirection *)
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//WriteBufferMD5String                                                  FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//	A MD5 string has 32 individual characters, each 2 make a byte.  This string
+//	needs to be dumped as is without conversions to the buffer.  The loop grabs
+//	every two characters in the string as is (lets say 9C).  It then puts a $ in
+//	front to denote it is a hex string to delphi, then that number is written to
+//	the buffer as one byte.
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Moved Header
+//
+//------------------------------------------------------------------------------
 	procedure WriteBufferMD5String(Index:word; MD5String:string; var Buffer : TBuffer);
 	var
 		cnt : integer;
 		AByte : byte;
 	begin
 	{for header:
-	A MD5 string has 32 individual characters, each 2 make a byte.  This string
-	needs to be dumped as is without conversions to the buffer.  The loop grabs
-	every two characters in the string as is (lets say 9C).  It then puts a $ in
-	front to denote it is a hex string to delphi, then that number is written to
-	the buffer as one byte.}
+	}
 		for cnt := 0 to 15 do
 		begin
 			AByte := StrToIntDef( ('$' + MD5String[cnt*2+1] + MD5String[cnt*2+2]), 0);
@@ -191,7 +202,7 @@ READING DATA FROM THE BUFFER METHODS
 	end;
 
 //------------------------------------------------------------------------------
-//ReadMD5Password                                                     FUNCTION
+//ReadMD5Password                                                       FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Reads MD5Bytes and makes it into a string.  Its 16 bytes long.
@@ -214,7 +225,17 @@ READING DATA FROM THE BUFFER METHODS
 	end;//ReadMD5Password
 //------------------------------------------------------------------------------
 
-	//Socket Method BufferReadString - Reads a String from the buffer.
+
+//------------------------------------------------------------------------------
+//BufferReadString                                                      FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//		Socket Method BufferReadString - Reads a String from the buffer.
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Reformat Header.
+//
+//------------------------------------------------------------------------------
 	function BufferReadString(Index:word; Count:word; var Buffer : TBuffer):string;
 	begin
 		Assert(Index <= 32767, 'BufferReadString: Index overflow ' + IntToStr(Index));
@@ -223,8 +244,19 @@ READING DATA FROM THE BUFFER METHODS
     Move(Buffer[Index], Result[1], Count);
     Result := Trim(Result);
 	end;
+//------------------------------------------------------------------------------
 
-	//Socket Method BufferReadLongWord - Reads one point from the buffer.
+
+//------------------------------------------------------------------------------
+//BufferReadOnePoint                                                    FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//		Socket Method BufferReadLongWord - Reads one point from the buffer.
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Reformat Header.
+//
+//------------------------------------------------------------------------------
 	function BufferReadOnePoint(Index:word; var Buffer : TBuffer) : TPoint;
 	var
 		l   :LongWord;
@@ -239,12 +271,25 @@ READING DATA FROM THE BUFFER METHODS
 		Result.Y :=  (l and $003ff);
 		Result.X := ((l and $ffc00) shr 10);
 	end;
+//------------------------------------------------------------------------------
+
 
 (*------------------------------------------------------------------------------
 PREMADE SENDING OF BUFFER TO CLIENT
 ------------------------------------------------------------------------------*)
-	//Padding Packet,
-	//used for antibot/antihack upon charaserv and mapserv connections
+
+
+//------------------------------------------------------------------------------
+//SendPadding                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//	    Padding Packet,
+//	    used for antibot/antihack upon charaserv and mapserv connections
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Reformat Header.
+//
+//------------------------------------------------------------------------------
 	procedure SendPadding(AClient : TIdContext);
 	var
 		ABuf : TBuffer;

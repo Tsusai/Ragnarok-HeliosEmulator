@@ -1,3 +1,14 @@
+//------------------------------------------------------------------------------
+//CharaLoginPackets			                                    UNIT
+//------------------------------------------------------------------------------
+//	What it does-
+//      This unit is used to send packets out from Character Server to client
+//   or other server(s)
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
 unit CharaLoginPackets;
 
 interface
@@ -21,7 +32,16 @@ uses
 	Globals,
 	PacketTypes,
 	TCPServerRoutines;
-
+//------------------------------------------------------------------------------
+//ValidateWithLoginServer                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Send verification to Login Server.
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
 	procedure ValidateWithLoginServer(
 		AClient : TInterClient;
 		CharacterServer : TCharacterServer
@@ -35,7 +55,20 @@ uses
 		WriteBufferWord(42, CharacterServer.WANPort, OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2000));
 	end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SendValidateFlagToChara                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			An exception procedure which used by Login Server.
+//	Tell Character Server whether the request is validated or not.
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
 	procedure SendValidateFlagToChara(AClient : TIdContext; Validated : boolean);
 	var
 		OutBuffer : TBuffer;
@@ -44,7 +77,19 @@ uses
 		WriteBufferByte(2, Byte(Validated), OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2001));
 	end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SendCharaWANIPToLogin                                                PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send the WAN IP of Character Server to Login Server.
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
 	procedure SendCharaWANIPToLogin(
 		AClient : TInterClient;
 		CharacterServer : TCharacterServer
@@ -59,7 +104,19 @@ uses
 		WriteBufferString(4,CharacterServer.WANIP,Size,OutBuffer);
 		SendBuffer(AClient,OutBuffer,Size+4);
 	end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SendCharaLANIPToLogin                                                PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send the LAN IP of Character Server to Login Server.
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
 	procedure SendCharaLANIPToLogin(
 		AClient : TInterClient;
 		CharacterServer : TCharacterServer
@@ -74,7 +131,19 @@ uses
 		WriteBufferString(4,CharacterServer.LANIP,Size,OutBuffer);
 		SendBuffer(AClient,OutBuffer,Size+4);
 	end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SendCharaLANIPToLogin                                                PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send the number of online players to Login Server.
+//
+//	Changes -
+//		March 12th, 2007 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
 	procedure SendCharaOnlineUsersToLogin(
 		AClient : TInterClient;
 		CharacterServer : TCharacterServer
@@ -86,6 +155,6 @@ uses
 		WriteBufferWord(2,CharacterServer.OnlineUsers,OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2004));
 	end;
-
+//------------------------------------------------------------------------------
 end.
  
