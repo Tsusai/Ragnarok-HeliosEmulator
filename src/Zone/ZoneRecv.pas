@@ -269,11 +269,11 @@ uses
 		AMap := MainProc.ZoneServer.MapList[MapIndex];
 		AChara.MapInfo := AMap;
 
-		AMap.Cell[AChara.Point.X][AChara.Point.Y].Beings.AddObject(AChara.ID,AChara);
+		AMap.Cell[AChara.Position.X][AChara.Position.Y].Beings.AddObject(AChara.ID,AChara);
 
-		for idx1 := Max(0,AChara.Point.Y-15) to Min(AChara.Point.Y+15,AMap.Size.Y) do
+		for idx1 := Max(0,AChara.Position.Y-15) to Min(AChara.Position.Y+15,AMap.Size.Y) do
 		begin
-			for idx2 := Max(0,AChara.Point.X-15) to Min(AChara.Point.X+15,AMap.Size.X) do
+			for idx2 := Max(0,AChara.Position.X-15) to Min(AChara.Position.X+15,AMap.Size.X) do
 			begin
 				for idx3 := AMap.Cell[idx1][idx2].Beings.Count -1 downto 0 do
 				begin
@@ -382,8 +382,6 @@ uses
 	var
 		MoveEvent : TMovementEvent;
 		DestPoint : TPoint;
-		dx 				: SmallInt;
-		dy 				: SmallInt;
 		spd 			: LongWord;
 		Index			: Integer;
 
@@ -393,25 +391,10 @@ uses
 		if true {Various checks (not sitting)} then
 		begin
 
-			if AChara.MapInfo.GetPath(AChara.Point,DestPoint,AChara.Path) then
+			if AChara.MapInfo.GetPath(AChara.Position, DestPoint, AChara.Path) then
 			begin
 				with AChara do
 				begin
-					AChara.CharaState := charaStanding;
-					AChara.PathIndex := 0;
-					//Setup first speed
-					dx := Path[0].X - Point.X;
-					dy := Path[0].Y - Point.Y;
-					//Check to see if we're moving diagonally, if we are, we adjust the speed
-					//accordingly.
-					if (abs(dx) = abs(dy)) and (abs(dx) = 1) then
-					begin
-						spd := Speed * 7 div 5;
-					end else begin
-						spd := Speed;
-					end;
-
-					AChara.MoveTick := GetTick + spd;
 
 					//Remove previous movement events from the event list
 					for Index := AChara.EventList.Count -1 downto 0 do
@@ -421,6 +404,21 @@ uses
 							AChara.EventList.Delete(Index);
 						end;
 					end;
+
+					AChara.CharaState := charaStanding;
+					AChara.PathIndex := 0;
+
+					//Setup first speed
+					//Check to see if we're moving diagonally, if we are, we adjust the speed
+					//accordingly.
+					if NOT (Direction in Diagonals) then
+					begin
+						spd := Speed * 7 div 5;
+					end else begin
+						spd := Speed;
+					end;
+
+					AChara.MoveTick := GetTick + spd;
 
 					MoveEvent := TMovementEvent.Create(AChara);
 					MoveEvent.ExpiryTime := AChara.MoveTick;

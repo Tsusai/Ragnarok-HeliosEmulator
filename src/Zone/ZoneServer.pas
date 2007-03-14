@@ -212,10 +212,10 @@ begin
 		if ACharacter.MapInfo <> nil then
 		begin
 			AMap := ACharacter.MapInfo;
-			CharacterIndex := AMap.Cell[ACharacter.Point.X][ACharacter.Point.Y].Beings.IndexOfObject(ACharacter);
+			CharacterIndex := AMap.Cell[ACharacter.Position.X][ACharacter.Position.Y].Beings.IndexOfObject(ACharacter);
 			if CharacterIndex > -1 then
 			begin
-				AMap.Cell[ACharacter.Point.X][ACharacter.Point.Y].Beings.Delete(CharacterIndex);
+				AMap.Cell[ACharacter.Position.X][ACharacter.Position.Y].Beings.Delete(CharacterIndex);
 			end;
 		end;
 		CharacterIndex := CharacterList.IndexOf(ACharacter.CID);

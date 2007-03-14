@@ -12,6 +12,9 @@
 unit GameConstants;
  
 interface
+uses
+	Types;
+
 const
 
 	L_HAND = 1;
@@ -26,7 +29,29 @@ const
 	INT = 3;  //Intelligence - Increases magic attack and magic defense.
 	DEX = 4;  //Dexterity - Increases accuracy and stabilizes the amount of damage done by a weapon. As well as lowers the cast time to some skills/spells.
 	LUK = 6;  //Luck - Increases Critical hits and perfect dodge rate, and brings about lots of luck.
- 
+
+
+//------------------------------------------------------------------------------
+//                             Movement Constants
+//------------------------------------------------------------------------------
+	Directions : array[0..7] of TPoint = (
+		(X:0;Y:1),(X:1;Y:1),(X:1;Y:0),(X:1;Y:-1),
+		(X:0;Y:-1),(X:-1;Y:-1),(X:-1;Y:0),(X:-1;Y:1)
+	);
+
+	NORTH			= 0;
+	NORTHEAST	= 1;
+	EAST			= 2;
+	SOUTHEAST = 3;
+	SOUTH			= 4;
+	SOUTHWEST	= 5;
+	WEST			= 6;
+	NORTHWEST	= 7;
+
+	Diagonals = [NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST];
+
+
+
 //------------------------------------------------------------------------------
 //                             Character Job Constants
 //------------------------------------------------------------------------------

@@ -64,16 +64,8 @@ uses
 	List32,
 	Main,
 	Globals,
+	GameConstants,
 	WinLinux;
-
-const
-	//this array holds the possible directions from a point.
-  //shouldn't be needed anywhere else, and shouldn't need to be changed.
-  //therefore, it's here instead of in GameConstants =)
-	Directions : array[0..7] of TPoint = (
-		(X:0;Y:1),(X:1;Y:1),(X:1;Y:0),(X:1;Y:-1),
-		(X:0;Y:-1),(X:-1;Y:-1),(X:-1;Y:0),(X:-1;Y:1)
-	);
 
 //------------------------------------------------------------------------------
 //TMap.Create()

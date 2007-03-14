@@ -90,7 +90,7 @@ type
 		procedure SetSP(Value : word); override;
 		Procedure SetOption(Value : word); override;
 		procedure SetMap(Value : string); override;
-		procedure SetMapPt(Value : TPoint); override;
+		procedure SetPosition(Value : TPoint); override;
 
 		Procedure SetKarma(Value : word);
 		Procedure SetManner(Value : word);
@@ -124,7 +124,6 @@ type
 	public
 		CID : LongWord;
 		Account : TAccount;
-		Direction : byte;
 
 		BaseNextEXP  : LongWord;
 		JobNextEXP   : LongWord;
@@ -399,7 +398,7 @@ begin
 
 		HJOB_EXPANDED_TAEKWON              : fJobName := 'Taekwon';
 		HJOB_EXPANDED_STAR_GLADIATOR       : fJobName := 'Star_Gladiator';
-		HJOB_EXPANDED_STAR_GLADIATOR_2     : fJobName := 'Star_Gladiator)';
+		HJOB_EXPANDED_STAR_GLADIATOR_2     : fJobName := 'Star_Gladiator';
 		HJOB_EXPANDED_SOUL_LINKER          : fJobName := 'Soul_Linker';
 	end;
 
@@ -420,8 +419,8 @@ end;{SetClass}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetBaseLV(Value : byte);
 begin
+	Inherited;
 	DataChanged := TRUE;
-	fBaseLV := Value;
 end;{SetBaseLV}
 //------------------------------------------------------------------------------
 
@@ -440,8 +439,8 @@ end;{SetBaseLV}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetJobLV(Value : byte);
 begin
+	Inherited;
 	DataChanged := TRUE;
-	fJobLV      := Value;
 end;{SetJobLV}
 //------------------------------------------------------------------------------
 
@@ -459,8 +458,8 @@ end;{SetJobLV}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetBaseEXP(Value : LongWord);
 begin
+	Inherited;
 	DataChanged := TRUE;
-	fBaseEXP    := Value;
 end;{SetBaseEXP}
 //------------------------------------------------------------------------------
 
@@ -478,8 +477,8 @@ end;{SetBaseEXP}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetJobEXP(Value : LongWord);
 begin
+	Inherited;
 	DataChanged := TRUE;
-	fJobEXP     := Value;
 end;{SetJobEXP}
 //------------------------------------------------------------------------------
 
@@ -497,8 +496,8 @@ end;{SetJobEXP}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetZeny(Value : LongWord);
 begin
+	Inherited;
 	DataChanged := TRUE;
-	fZeny       := Value;
 end;{SetZeny}
 //------------------------------------------------------------------------------
 
@@ -515,7 +514,7 @@ end;{SetZeny}
 //------------------------------------------------------------------------------
 function TCharacter.GetBaseStats(Index : Byte) : Byte;
 begin
-	Result := fParamBase[Index];
+	Result := Inherited GetBaseStats(Index);
 end;{GetBaseStats}
 //------------------------------------------------------------------------------
 
@@ -532,8 +531,8 @@ end;{GetBaseStats}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetBaseStats(Index, Value: Byte);
 begin
+	Inherited;
 	DataChanged       := TRUE;
-	fParamBase[Index] := Value;
 end;{SetBaseStats}
 //------------------------------------------------------------------------------
 
@@ -550,8 +549,8 @@ end;{SetBaseStats}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetMaxHP(Value : word);
 begin
+	Inherited;
 	DataChanged := TRUE;
-	fMaxHP      := Value;
 end;{SetMaxHP}
 //------------------------------------------------------------------------------
 
@@ -568,8 +567,8 @@ end;{SetMaxHP}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetHP(Value : word);
 begin
+	Inherited;
 	DataChanged := TRUE;
-	fHP         := Value;
 end;{SetHP}
 //------------------------------------------------------------------------------
 
@@ -587,8 +586,8 @@ end;{SetHP}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetMaxSP(Value : word);
 begin
+	Inherited;
 	DataChanged := TRUE;
-	fMaxSP      := Value;
 end;{SetMaxSP}
 //------------------------------------------------------------------------------
 
@@ -606,8 +605,8 @@ end;{SetMaxSP}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetSP(Value : word);
 begin
+	Inherited;
 	DataChanged := TRUE;
-	fSP         := Value;
 end;{SetSP}
 //------------------------------------------------------------------------------
 
@@ -663,8 +662,8 @@ end;{SetSkillPts}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetOption(Value : word);
 begin
+	Inherited;
 	DataChanged := TRUE;
-	fOption     := Value;
 end;{SetOption}
 //------------------------------------------------------------------------------
 
@@ -1024,14 +1023,14 @@ end;{SetHeadBottom}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetMap(Value : string);
 begin
+	Inherited;
 	DataChanged := TRUE;
-	fMap := Value;
 end;{SetMap}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetMapPt                                                            PROCEDURE
+//SetPosition                                                        PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sets the MapPt to Value. Also, lets our object know that data has
@@ -1041,11 +1040,11 @@ end;{SetMap}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetMapPt(Value : TPoint);
+procedure TCharacter.SetPosition(Value : TPoint);
 begin
+	Inherited;
 	DataChanged := TRUE;
-	fMapPt      := Value;
-end;{SetMapPt}
+	end;{SetMapPt}
 //------------------------------------------------------------------------------
 
 
@@ -1062,8 +1061,8 @@ end;{SetMapPt}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetSMap(Value : string);
 begin
+	Inherited;
 	DataChanged := TRUE;
-	fSaveMap    := Value;
 end;{SetSMap}
 //------------------------------------------------------------------------------
 
@@ -1081,8 +1080,8 @@ end;{SetSMap}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetSMapPt(Value : TPoint);
 begin
+	inherited;
 	DataChanged := TRUE;
-	fSaveMapPt  := Value;
 end;{SetSMapPt}
 //------------------------------------------------------------------------------
 

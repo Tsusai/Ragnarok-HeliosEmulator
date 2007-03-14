@@ -37,7 +37,7 @@ type TBeing = class
 		fSP               : Word;
 		fOption           : Word;
 		fMap              : String;
-		fMapPt            : TPoint;
+		fPosition         : TPoint;
 
 		procedure SetName(Value : string); virtual;
 		procedure SetClass(Value : word); virtual;
@@ -54,36 +54,36 @@ type TBeing = class
 		procedure SetSP(Value : word); virtual;
 		Procedure SetOption(Value : word); virtual;
 		procedure SetMap(Value : string); virtual;
-		procedure SetMapPt(Value : TPoint); virtual;
+		procedure SetPosition(Value : TPoint); virtual;
 
 	public
-		ID        : LongWord;
-		MapPointer: Pointer;
-		Speed : word;
-		Direction : byte;
+		ID					: LongWord;
+		MapPointer	: Pointer;
+		Speed 			: word;
+		Direction 	: byte;
 
-		AttackRange : word;
+		AttackRange	: word;
 		//No idea what 0..5 is from.  Stats?
-		ATK : Word;
+		ATK					: Word;
 
 		//For Mobs and NPCs, Leave #2's alone (0), and use #1s
-		MATK1 : word;
-		MATK2 : word;
-		DEF1 : word;
-		DEF2 : word;
-		MDEF1 : word;
-		MDEF2 : word;
-		HIT : word;
-		FLEE1 : word;
-		Lucky : word;
-		Critical : word;
-		ASpeed : word;
+		MATK1				: word;
+		MATK2				: word;
+		DEF1				: word;
+		DEF2				: word;
+		MDEF1				: word;
+		MDEF2				: word;
+		HIT					: word;
+		FLEE1				: word;
+		Lucky				: word;
+		Critical		: word;
+		ASpeed			: word;
 
-		MapInfo : TMap;
-		EventList : TEventList;
-		Path      : TPointList;
-		PathIndex : Word;
-		MoveTick : LongWord;
+		MapInfo			: TMap;
+		EventList		: TEventList;
+		Path				: TPointList;
+		PathIndex		: Word;
+		MoveTick		: LongWord;
 
 		property Name      : string     read fName write SetName;
 		property JID       : Word       read fJID write SetClass;
@@ -96,7 +96,7 @@ type TBeing = class
 		property SP        : Word       read fSP write SetSP;
 		property Option    : Word       read fOption write SetOption;
 		property Map       : string     read fMap write SetMap;
-		property Point     : TPoint     read fMapPt write SetMapPt;
+		property Position  : TPoint     read fPosition write SetPosition;
 
 		procedure Walk;
 		procedure CalcMaxHP; virtual;
@@ -133,44 +133,40 @@ uses
 //------------------------------------------------------------------------------
 procedure TBeing.Walk;
 var
-	spd : word;
-	AMoveEvent : TMovementEvent;
-	OldPt : TPoint;
-	ABeing : TBeing;
-	dx : ShortInt;
-	dy : ShortInt;
-	idxY : SmallInt;
-	idxX : SmallInt;
-	BIdx : integer;
+	spd					: word;
+	AMoveEvent	: TMovementEvent;
+	OldPt				: TPoint;
+	ABeing			: TBeing;
+	idxY				: SmallInt;
+	idxX				: SmallInt;
+	BeingIdx		: integer;
+
 begin
 	if Self is TCharacter then
 	begin
 		TCharacter(Self).CharaState := charaWalking;
 	end;
 
-	MapInfo.Cell[Point.X,Point.Y].Beings.Delete(
-		MapInfo.Cell[Point.X,Point.Y].Beings.IndexOfObject(Self));
+	MapInfo.Cell[Position.X,Position.Y].Beings.Delete(
+		MapInfo.Cell[Position.X,Position.Y].Beings.IndexOfObject(Self));
 
-	OldPt := Point;
-	Point := Path[PathIndex];
+	OldPt			:= Position;
+	Position	:= Path[PathIndex];
 
-	MapInfo.Cell[Point.X,Point.Y].Beings.AddObject(Self.ID,Self);
-
-	dx := Point.X - OldPt.X;
-	dy := Point.Y - OldPt.Y;
+	MapInfo.Cell[Position.X,Position.Y].Beings.AddObject(Self.ID,Self);
 
 	//16 covers the old 15x15 grid, no matter which dir we go I think
 	for idxY := Max(OldPt.Y-MainProc.ZoneServer.Options.CharShowArea,0) to Min(OldPt.Y+MainProc.ZoneServer.Options.CharShowArea,MapInfo.Size.Y) do
 	begin
 		for idxX := Max(OldPt.X-MainProc.ZoneServer.Options.CharShowArea,0) to Min(OldPt.X+MainProc.ZoneServer.Options.CharShowArea,MapInfo.Size.X) do
 		begin
-			for BIdx := MapInfo.Cell[idxX,idxY].Beings.Count - 1 downto 0 do
+			for BeingIdx := MapInfo.Cell[idxX,idxY].Beings.Count - 1 downto 0 do
 			begin
-				ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[BIdx] as TBeing;
+				ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
 				if Self = ABeing then Continue;
 
-				if ((dx <> 0) and (abs(OldPt.Y - ABeing.Point.Y) < MainProc.ZoneServer.Options.CharShowArea) and (OldPt.X = ABeing.Point.X + dx * (MainProc.ZoneServer.Options.CharShowArea-1))) OR
-					((dy <> 0) and (abs(OldPt.X - ABeing.Point.X) < MainProc.ZoneServer.Options.CharShowArea) and (OldPt.Y = ABeing.Point.Y + dy * (MainProc.ZoneServer.Options.CharShowArea-1))) then
+				if ((Directions[Direction].X <> 0) and (abs(OldPt.Y - ABeing.Position.Y) < MainProc.ZoneServer.Options.CharShowArea) and (OldPt.X = ABeing.Position.X + Directions[Direction].X * (MainProc.ZoneServer.Options.CharShowArea-1))) OR
+					((Directions[Direction].Y <> 0) and (abs(OldPt.X - ABeing.Position.X) < MainProc.ZoneServer.Options.CharShowArea) and (OldPt.Y = ABeing.Position.Y + Directions[Direction].Y * (MainProc.ZoneServer.Options.CharShowArea-1))) then
 				begin
 					//Packets for base being if its a character
 					if Self is TCharacter then
@@ -186,8 +182,8 @@ begin
 					end;
 				end;
 
-				if ((dx <> 0) and (abs(Point.Y - ABeing.Point.Y) < MainProc.ZoneServer.Options.CharShowArea) and (Point.X = ABeing.Point.X - dx * (MainProc.ZoneServer.Options.CharShowArea-1))) or
-					((dy <> 0) and (abs(Point.X - ABeing.Point.X) < MainProc.ZoneServer.Options.CharShowArea) and (Point.Y = ABeing.Point.Y - dy * (MainProc.ZoneServer.Options.CharShowArea-1))) then
+				if ((Directions[Direction].X <> 0) and (abs(Position.Y - ABeing.Position.Y) < MainProc.ZoneServer.Options.CharShowArea) and (Position.X = ABeing.Position.X - Directions[Direction].X * (MainProc.ZoneServer.Options.CharShowArea-1))) or
+					((Directions[Direction].Y <> 0) and (abs(Position.X - ABeing.Position.X) < MainProc.ZoneServer.Options.CharShowArea) and (Position.Y = ABeing.Position.Y - Directions[Direction].Y * (MainProc.ZoneServer.Options.CharShowArea-1))) then
 				begin
 					if Self is TCharacter then
 					begin
@@ -223,7 +219,6 @@ begin
 		begin
 			TCharacter(Self).CharaState := charaStanding;
 		end;
-		PathIndex := 0;
 
 		{if GameState = charaStand then
 		begin
@@ -245,10 +240,9 @@ begin
 	end else
 	begin
 		//Setup first speed
-		PathIndex := Min(PathIndex+1,Path.Count-1);
-		dx := Path[PathIndex].X - Point.X;
-		dy := Path[PathIndex].Y - Point.Y;
-		if not (abs(dx) = abs(dy)) then
+		Inc(PathIndex);
+
+		if not (Self.Direction in Diagonals) then
 		begin
 			spd := Speed * 7 div 5;
 		end else begin
@@ -307,15 +301,15 @@ procedure TBeing.SetJobLV(Value : byte); begin fJobLV := Value; end;
 procedure TBeing.SetBaseEXP(Value : LongWord); begin fBaseEXP := Value; end;
 procedure TBeing.SetJobEXP(Value : LongWord); begin fJobEXP := Value; end;
 procedure TBeing.SetZeny(Value : LongWord); begin fZeny := Value; end;
-function  TBeing.GetBaseStats(Index : Byte) : byte; begin Result := fParamBase[Index]; end;
-procedure TBeing.SetBaseStats(Index: byte; Value: byte); begin fParamBase[Index] := Value; end;
+function  TBeing.GetBaseStats(Index : Byte) : Byte; begin Result := fParamBase[Index]; end;
+procedure TBeing.SetBaseStats(Index: Byte; Value: Byte); begin fParamBase[Index] := Value; end;
 procedure TBeing.SetMaxHP(Value : word); begin fMaxHP := Value; end;
 procedure TBeing.SetHP(Value : word); begin fHP := Value; end;
 procedure TBeing.SetMaxSP(Value : word); begin fMaxSP := Value; end;
 procedure TBeing.SetSP(Value : word); begin fSP := Value; end;
 Procedure TBeing.SetOption(Value : word); begin fOption := Value; end;
 procedure TBeing.SetMap(Value : string); begin fMap := Value; end;
-procedure TBeing.SetMapPt(Value : TPoint); begin fMapPt := Value; end;
+procedure TBeing.SetPosition(Value : TPoint); begin fPosition := Value;Console.Message(IntToStr(fPosition.X)+', '+IntToStr(fPosition.Y),'TBEING',MS_DEBUG); end;
 
 procedure TBeing.CalcMaxHP; begin end;
 procedure TBeing.CalcMaxSP; begin end;

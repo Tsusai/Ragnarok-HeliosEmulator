@@ -13,6 +13,20 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 174 -
+[2007/03/14] - RaX - Overview : General cleanup in TBeing + TCharacter.
+[2007/03/14] - RaX - Moved overridden properties in TCharacter to inherited ones.
+[2007/03/14] - RaX - Removed copied code from TBeing overridden get + set methods and
+ instead had them inherit the TBeing methods.
+[2007/03/14] - RaX - Removed dX + dY from TBeing.Walk, we are now using a direction system
+ that allows you to convert a direction constant number IE::0,1,2,3,4,5,6,7 into a point
+ and vice versa.
+[2007/03/14] - RaX - Moved Direction constant array from Map.pas into game constants.
+[2007/03/14] - RaX - Added direction constants to game constants (North, south, etc).
+[2007/03/14] - RaX - Renamed Bidx in TBeing.Walk to BeingIndex, was hard to understand.
+[2007/03/14] - RaX - Renamed TBeing.Point to Position, was hiding the Point method in Types.
+-
+
 - Rev 173 -
 [2007/03/14] - [Shin] - Re-added maps to databases along with map files. They were copies.
 -

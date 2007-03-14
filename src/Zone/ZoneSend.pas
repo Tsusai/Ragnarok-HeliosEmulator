@@ -53,7 +53,7 @@ uses
 	begin
 		WriteBufferWord(0, $0073, ReplyBuffer);
 		WriteBufferLongWord(2, GetTick, ReplyBuffer);
-		WriteBufferPointAndDirection(6, ACharacter.Point,ReplyBuffer,ACharacter.Direction);
+		WriteBufferPointAndDirection(6, ACharacter.Position,ReplyBuffer,ACharacter.Direction);
 		WriteBufferByte(9, 5, ReplyBuffer);
 		WriteBufferByte(10, 5, ReplyBuffer);
 		SendBuffer(ACharacter.ClientInfo,ReplyBuffer,GetPacketLength($0073,ACharacter.ClientVersion));
@@ -116,7 +116,7 @@ uses
 	begin
 		WriteBufferWord(0, $0087, ReplyBuffer);
 		WriteBufferLongWord(2, ACharacter.MoveTick, ReplyBuffer);
-		WriteBufferTwoPoints( 6, DestPoint, ACharacter.Point, ReplyBuffer);
+		WriteBufferTwoPoints( 6, DestPoint, ACharacter.Position, ReplyBuffer);
 		WriteBufferByte(11, 0, ReplyBuffer);
 		SendBuffer(ACharacter.ClientInfo, ReplyBuffer, GetPacketLength($0087, ACharacter.ClientVersion));
 	end;//ZoneSendWalkReply

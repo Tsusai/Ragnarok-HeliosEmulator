@@ -505,8 +505,8 @@ begin
 			HeadMid,
 			HeadBottom,
 			Map,
-			Point.X,
-			Point.Y,
+			Position.X,
+			Position.Y,
 			SaveMap,
 			SavePoint.X,
 			SavePoint.Y,
@@ -663,7 +663,7 @@ begin
 			Map             :=          	 QueryResult.Records[0].Fields[41].Value ;
 				APoint.X      := StrToIntDef(QueryResult.Records[0].Fields[42].Value, 0);
 				APoint.Y      := StrToIntDef(QueryResult.Records[0].Fields[43].Value, 0);
-			Point           := APoint;
+			Position        := APoint;
 			SaveMap         :=          	 QueryResult.Records[0].Fields[44].Value ;
 				APoint.X      := StrToIntDef(QueryResult.Records[0].Fields[45].Value, 0);
 				APoint.Y      := StrToIntDef(QueryResult.Records[0].Fields[46].Value, 0);

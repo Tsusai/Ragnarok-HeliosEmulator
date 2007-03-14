@@ -474,7 +474,7 @@ begin
 		if ADatabase.StaticData.GetMapCannotSave(ACharacter.Map) then
 		begin
 			ACharacter.Map := ACharacter.SaveMap;
-			ACharacter.Point := ACharacter.SavePoint;
+			ACharacter.Position := ACharacter.SavePoint;
 		end;
 
 		ADatabase.GameData.SaveChara(ACharacter);
@@ -639,7 +639,7 @@ begin
 				ACharacter.HeadMid        := Options.DefaultHeadMid;
 				ACharacter.HeadBottom     := Options.DefaultHeadLow;
 				ACharacter.Map            := Options.DefaultMap;
-				ACharacter.Point          := Point(Options.DefaultPoint.X,Options.DefaultPoint.Y);
+				ACharacter.Position       := Point(Options.DefaultPoint.X,Options.DefaultPoint.Y);
 				ACharacter.SaveMap        := Options.DefaultMap;
 				ACharacter.SavePoint      := Point(Options.DefaultPoint.X,Options.DefaultPoint.Y);
 				ACharacter.PartnerID      := 0;
