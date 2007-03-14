@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 173 -
+[2007/03/14] - [Shin] - Re-added maps to databases along with map files. They were copies.
+-
+
 - Rev 172 -
 [2007/03/14] - [Shin] - Removed map 06guild_r, 06guild_01 - 06guild_08.
 -
