@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 172 -
+[2007/03/14] - [Shin] - Removed map 06guild_r, 06guild_01 - 06guild_08.
+-
+
 - Rev 171 -
 [2007/03/13] - Aeomin - Updated headers, corrected typoes, etc.
 -
