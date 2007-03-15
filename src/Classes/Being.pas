@@ -116,6 +116,7 @@ uses
 	Character,
 	Globals,
 	Math,
+	Classes,
 	SysUtils,
 	WinLinux,
 	Main;
@@ -141,6 +142,24 @@ var
 	idxX				: SmallInt;
 	BeingIdx		: integer;
 
+	//Gets our new direction
+	function GetDirection(OldPoint : TPoint; NewPoint : TPoint) : Byte;
+	var
+		DirectionPoint	: TPoint;
+		Index						: Integer;
+	begin
+		Result := 0;
+		DirectionPoint := Point(NewPoint.X-OldPoint.X, NewPoint.Y-OldPoint.Y);
+		for Index := 0 to 7 do
+		begin
+			if PointsEqual(DirectionPoint, Directions[Index]) then
+			begin
+				Result := Byte(Index);
+				Break;
+			end;
+		end;
+	end;
+
 begin
 	if Self is TCharacter then
 	begin
@@ -152,7 +171,8 @@ begin
 
 	OldPt			:= Position;
 	Position	:= Path[PathIndex];
-
+	Direction := GetDirection(OldPt, Position);
+	
 	MapInfo.Cell[Position.X,Position.Y].Beings.AddObject(Self.ID,Self);
 
 	//16 covers the old 15x15 grid, no matter which dir we go I think
