@@ -100,7 +100,7 @@ Destructor TMap.Destroy();
 begin
   if State = LOADED then
   begin
-    Unload;
+		Unload;
   end;
   EventList.Free;
 	inherited;
@@ -135,6 +135,7 @@ var
 	AFloodItem				: TFloodItem;
 	NewFloodItem			: TFloodItem;
 	Index							: Integer;
+	WriteIndex        : Integer;
 	DirectionIndex		: Integer;
 	PossiblePosition	: TPoint;
 	CharClickArea			: Integer;
@@ -223,7 +224,23 @@ begin
 							if PointsEqual(NewFloodItem.Position, EndPointMod) then
 							begin
 								Result	:= TRUE;
-								APath.Assign(NewFloodItem.Path);
+								APath.Clear;
+								for WriteIndex := NewFloodItem.Path.Count -1 downto 0 do
+								begin
+									APath.Add(NewFloodItem.Path[WriteIndex]);
+								end;
+
+								(*Tsusai Mar 16 2007: The Assign does copy..but the problem is
+								that the NewFloodItem.Path starts from the destination and goes
+								to the source.  So the server never updates the character position
+								because we finish walking where we start.
+								{//APath.Assign(NewFloodItem.Path);
+								for WriteIndex := 0 to APath.Count -1 do
+								begin
+									//Output path that is made.
+									writeln(format('Path index %d - Pt (%d,%d)',[WriteIndex,APath[WriteIndex].X,APath[WriteIndex].y]));
+								end;}*)
+
 							end;
 						end;
 					end;

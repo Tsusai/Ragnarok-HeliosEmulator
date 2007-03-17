@@ -1044,7 +1044,7 @@ procedure TCharacter.SetPosition(Value : TPoint);
 begin
 	Inherited;
 	DataChanged := TRUE;
-	end;{SetMapPt}
+end;{SetMapPt}
 //------------------------------------------------------------------------------
 
 
@@ -1061,7 +1061,7 @@ begin
 //------------------------------------------------------------------------------
 procedure TCharacter.SetSMap(Value : string);
 begin
-	Inherited;
+	fSaveMap := Value;
 	DataChanged := TRUE;
 end;{SetSMap}
 //------------------------------------------------------------------------------
@@ -1080,7 +1080,7 @@ end;{SetSMap}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetSMapPt(Value : TPoint);
 begin
-	inherited;
+	fSaveMapPt := Value;
 	DataChanged := TRUE;
 end;{SetSMapPt}
 //------------------------------------------------------------------------------

@@ -13,6 +13,16 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 176 - 
+[2007/03/16] - Tsusai - Notes/Overview: Fixed the character point "not saving".
+[2007/03/16] - Tsusai - Map - GetPath: Commented out the use of APath.Assign.  The list that
+ was copied was ordered in reverse (destination at index 0, source at last index).  Since
+ the list was passed that way, it was thinking that we started at the end and went to where
+ we were.  Currently uses a for downto loop to copy the points just right.
+[2007/03/16] - Tsusai - Character - TCharacter: Removed 'inherited' calls on the Save Map
+ and Save point.  They were NOT inherited nor do they override.
+-
+ 
 - Rev 175 -
 [2007/03/14] - RaX - Fully implemented Direction variable in TBeing, forgot to before.
 -
