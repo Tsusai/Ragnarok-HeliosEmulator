@@ -179,8 +179,8 @@ Begin
 				end else if Command = 'npcclicked' then begin
 					ExecCommand := NPCClick;}
 				end else if Command = 'getcharnamerequest' then begin
-					ExecCommand := GetNameAndID;
-				end;{ else if Command = 'wis' then begin
+					ExecCommand := GetNameAndID;{
+				end else if Command = 'wis' then begin
 					ExecCommand := Whisper;
 				end else if Command = 'gmmessage' then begin
 					ExecCommand := GMBroadcast;
@@ -195,10 +195,10 @@ Begin
 				end else if Command = 'equipitem' then begin
 					ExecCommand := ItemEquip;
 				end else if Command = 'unequipitem' then begin
-					ExecCommand := ItemUnequip;
+					ExecCommand := ItemUnequip;}
 				end else if Command = 'restart' then begin
-					ExecCommand := CharaRestart;
-				end else if Command = 'npcselectmenu' then begin
+					ExecCommand := ReturnToCharacterSelect;
+				{end else if Command = 'npcselectmenu' then begin
 					ExecCommand := NPCMenu;
 				end else if Command = 'npcnextclicked' then begin
 					ExecCommand := NPCNext;
@@ -356,9 +356,9 @@ Begin
 				end else if Command = 'guildopposition' then begin
 					ExecCommand := OpposeGuild;
 				end else if Command = 'guilddelalliance' then begin
-					ExecCommand := CancelGuildRelation;
+					ExecCommand := CancelGuildRelation;}
 				end else if Command = 'quitgame' then begin
-					ExecCommand := QuitGame;
+					ExecCommand := QuitGame;{
 				end else if Command = 'producemix' then begin
 					ExecCommand := CreateItem;
 				end else if Command = 'useskilltoposinfo' then begin
@@ -409,7 +409,7 @@ Begin
 					ExecCommand := RemoveFriendFromList;
 				end else if Command = 'friendaddreply' then begin
 					ExecCommand := RequestToAddFriendResponse;
-				end;}
+				end;} end;
 			end;
 			Inc(PK);//jump to the next packet record
 		end;

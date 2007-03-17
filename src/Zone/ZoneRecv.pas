@@ -90,6 +90,20 @@ uses
 	);
 //------------------------------------------------------------------------------
 
+	procedure ReturnToCharacterSelect(
+			AChara  : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
+
+	procedure QuitGame(
+			AChara  : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
+
 implementation
 uses
 	Math,
@@ -474,5 +488,58 @@ uses
 
 	end;//GetNameAndID
 //------------------------------------------------------------------------------
+
+	procedure ReturnToCharacterSelect(
+			AChara  : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
+	var
+		ActionByte : Byte;
+		OutBuffer  : TBuffer;
+	begin
+		FillChar(OutBuffer,3,0);
+		ActionByte := BufferReadByte(ReadPts[0], InBuffer);
+		case ActionByte of
+		0:
+			begin
+				if AChara.CharaState <> charaDead then Exit;
+				//Send Leave with '0' as byte modifier
+				//Only runs when dead.
+				//Return to save point, and load map
+				AChara.Map := AChara.SaveMap;
+				AChara.Position := AChara.SavePoint;
+				//send map change packet stuff
+			end;
+		1:
+			begin
+				if not true {in combat} then
+				begin
+					//Send Leave 2
+
+					WriteBufferWord(0, $00b3,OutBuffer);
+					WriteBufferByte(2, 1,OutBuffer);
+					SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($00b3,AChara.ClientVersion));
+				end;
+			end;
+		end;
+	end;
+
+	procedure QuitGame(
+			AChara  : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
+	var
+		OutBuffer : TBuffer;
+	begin
+		//Save character
+		//send leave 2
+		WriteBufferWord(0, $018b, OutBuffer);
+		WriteBufferWord(2, 0, OutBuffer);
+		Sendbuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($018b,AChara.ClientVersion));
+	end;
 
 end.

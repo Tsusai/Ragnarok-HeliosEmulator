@@ -13,6 +13,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 177 - 
+[2007/03/16] - Tsusai - Notes/Overview: Added 2 packets.  Also anytime we recieve data from
+ Indy and place in our buffer, that information that would be overwritten in our buffer is 
+ cleared.
+[2007/03/16] - Tsusai - ZoneRecv: Added ReturnToCharacterSelect & QuitGame (not fully tested).
+[2007/03/16] - Tsusai - PacketDB: Enabled the above.
+-
+
 - Rev 176 - 
 [2007/03/16] - Tsusai - Notes/Overview: Fixed the character point "not saving".
 [2007/03/16] - Tsusai - Map - GetPath: Commented out the use of APath.Assign.  The list that

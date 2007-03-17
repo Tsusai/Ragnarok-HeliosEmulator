@@ -324,6 +324,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 	begin
 		if Size > 0 then
 		begin
+			FillChar(Buffer,Size,0);
 			AClient.Connection.IOHandler.ReadBytes(RecvBytes,Size);
 			BytesToRaw(RecvBytes,Buffer,Size);
 		end;
@@ -334,6 +335,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 	var
 		RecvBytes : TIdBytes;
 	begin
+		FillChar(Buffer,Size,0);
 		AClient.IOHandler.ReadBytes(RecvBytes,Size);
 		BytesToRaw(RecvBytes,Buffer,Size);
 	end;
