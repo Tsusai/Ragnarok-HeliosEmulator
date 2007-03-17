@@ -150,6 +150,7 @@ var
 	begin
 		Result := 0;
 		DirectionPoint := Point(NewPoint.X-OldPoint.X, NewPoint.Y-OldPoint.Y);
+
 		for Index := 0 to 7 do
 		begin
 			if PointsEqual(DirectionPoint, Directions[Index]) then
@@ -262,7 +263,7 @@ begin
 		//Setup first speed
 		Inc(PathIndex);
 
-		if not (Self.Direction in Diagonals) then
+		if (Self.Direction in Diagonals) then
 		begin
 			spd := Speed * 7 div 5;
 		end else begin
@@ -329,7 +330,7 @@ procedure TBeing.SetMaxSP(Value : word); begin fMaxSP := Value; end;
 procedure TBeing.SetSP(Value : word); begin fSP := Value; end;
 Procedure TBeing.SetOption(Value : word); begin fOption := Value; end;
 procedure TBeing.SetMap(Value : string); begin fMap := Value; end;
-procedure TBeing.SetPosition(Value : TPoint); begin fPosition := Value;Console.Message(IntToStr(fPosition.X)+', '+IntToStr(fPosition.Y),'TBEING',MS_DEBUG); end;
+procedure TBeing.SetPosition(Value : TPoint); begin fPosition := Value; end;
 
 procedure TBeing.CalcMaxHP; begin end;
 procedure TBeing.CalcMaxSP; begin end;

@@ -13,6 +13,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 178 - 
+[2007/03/17] - RaX - Fixed Return to character select, changed true to false in a condition
+ (Thanks Aeomin).
+[2007/03/17] - RaX - Moved packet sending code out of zone recv and into zone send.
+[2007/03/17] - RaX - Fixed walking points start and end being in the wrong places.
+[2007/03/17] - RaX - Walking should work pretty normally now.
+-
+
 - Rev 177 - 
 [2007/03/16] - Tsusai - Notes/Overview: Added 2 packets.  Also anytime we recieve data from
  Indy and place in our buffer, that information that would be overwritten in our buffer is 

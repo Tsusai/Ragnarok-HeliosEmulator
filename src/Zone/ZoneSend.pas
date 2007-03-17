@@ -28,7 +28,8 @@ uses
 		ID : LongWord;
 		Name : String
 	);
-
+	procedure SendCharacterSelectResponse(ACharacter : TCharacter);
+	procedure SendQuitGameResponse(ACharacter : TCharacter);
 
 implementation
 uses
@@ -145,5 +146,53 @@ uses
 		WriteBufferString (6, Name, 24, OutBuffer);
 		SendBuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($0095,ACharacter.ClientVersion));
 	end;//ZoneSendObjectNameAndIDBasic
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendCharacterSelectResponse                                        PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Tells the client to return to character select. Triggered by ZoneRecv ->
+//		ReturnToCharacterSelect.
+//
+//  Changes -
+//    March 17th, 2007 - RaX - Created;
+//------------------------------------------------------------------------------
+	procedure SendCharacterSelectResponse(
+		ACharacter : TCharacter
+	);
+	var
+		OutBuffer : TBuffer;
+	begin
+		//send leave 2
+		WriteBufferWord(0, $00b3,OutBuffer);
+		WriteBufferByte(2, 1,OutBuffer);
+		SendBuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($00b3,ACharacter.ClientVersion));
+	end;//SendCharacterSelectResponse
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendQuitGameResponse				                                        PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//    	Tells the client to "Exit to windows". Triggered by ZoneRecv ->
+//    QuitGame.
+//
+//  Changes -
+//    March 17th, 2007 - RaX - Created;
+//------------------------------------------------------------------------------
+	procedure SendQuitGameResponse(
+		ACharacter : TCharacter
+	);
+	var
+		OutBuffer : TBuffer;
+	begin
+		//send leave 2
+		WriteBufferWord(0, $018b, OutBuffer);
+		WriteBufferWord(2, 0, OutBuffer);
+		Sendbuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($018b,ACharacter.ClientVersion));
+	end;//SendQuitGameResponse
 //------------------------------------------------------------------------------
 end.

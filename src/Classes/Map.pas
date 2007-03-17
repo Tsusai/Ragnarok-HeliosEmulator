@@ -174,6 +174,7 @@ begin
 	//initialize our first flood item
 	AFloodItem.Position.X := EndPoint.X-abs(XMod);
 	AFloodItem.Position.Y := EndPoint.Y-abs(YMod);
+	AFloodItem.Path.Add(AnArea[AFloodItem.Position.X][AFloodItem.Position.Y].Position);
 	AFloodItem.Cost := 0;
 	AFloodList.Add(AFloodItem);
 
@@ -206,7 +207,6 @@ begin
 							NewFloodItem := TFloodItem.Create;
 
 							NewFloodItem.Path.Assign(AFloodItem.Path);
-							NewFloodItem.Path.Add(AnArea[PossiblePosition.X][PossiblePosition.Y].Position);
 
 							NewFloodItem.Position		:= PossiblePosition;
 
@@ -241,6 +241,9 @@ begin
 									writeln(format('Path index %d - Pt (%d,%d)',[WriteIndex,APath[WriteIndex].X,APath[WriteIndex].y]));
 								end;}*)
 
+							end else
+							begin
+								NewFloodItem.Path.Add(AnArea[PossiblePosition.X][PossiblePosition.Y].Position);
 							end;
 						end;
 					end;

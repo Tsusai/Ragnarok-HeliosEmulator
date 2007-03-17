@@ -425,7 +425,7 @@ uses
 					//Setup first speed
 					//Check to see if we're moving diagonally, if we are, we adjust the speed
 					//accordingly.
-					if NOT (Direction in Diagonals) then
+					if (Direction in Diagonals) then
 					begin
 						spd := Speed * 7 div 5;
 					end else begin
@@ -489,6 +489,16 @@ uses
 	end;//GetNameAndID
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ReturnToCharacterSelect                                             PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Fired when a player clicks the return to chara select button.
+//
+//  Changes -
+//    March 17th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
 	procedure ReturnToCharacterSelect(
 			AChara  : TCharacter;
 			InBuffer : TBuffer;
@@ -514,32 +524,35 @@ uses
 			end;
 		1:
 			begin
-				if not true {in combat} then
+				if not false {in combat} then
 				begin
 					//Send Leave 2
-
-					WriteBufferWord(0, $00b3,OutBuffer);
-					WriteBufferByte(2, 1,OutBuffer);
-					SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($00b3,AChara.ClientVersion));
+					SendCharacterSelectResponse(AChara);
 				end;
 			end;
 		end;
-	end;
+	end;{ReturnToCharacterSelect}
+//------------------------------------------------------------------------------
 
-	procedure QuitGame(
+
+//------------------------------------------------------------------------------
+//QuitGame							                                             PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Fired when a player clicks Exit to windows button ingame.
+//
+//  Changes -
+//    March 17th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
+procedure QuitGame(
 			AChara  : TCharacter;
 			InBuffer : TBuffer;
 		const
 			ReadPts : TReadPts
 	);
-	var
-		OutBuffer : TBuffer;
-	begin
-		//Save character
-		//send leave 2
-		WriteBufferWord(0, $018b, OutBuffer);
-		WriteBufferWord(2, 0, OutBuffer);
-		Sendbuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($018b,AChara.ClientVersion));
-	end;
-
+begin
+	//send client response.
+	SendQuitGameResponse(AChara);
+end;
+//------------------------------------------------------------------------------
 end.
