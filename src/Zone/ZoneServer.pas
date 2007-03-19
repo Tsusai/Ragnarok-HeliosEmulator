@@ -33,8 +33,6 @@ type
 		fPort            : Word;
 
 		TCPServer        : TIdTCPServer;
-		ToCharaTCPClient : TInterClient;
-		ToInterTCPClient : TInterClient;
 
 		Procedure OnExecute(AConnection: TIdContext);
 		Procedure OnConnect(AConnection: TIdContext);
@@ -62,6 +60,9 @@ type
 	public
 		WANIP : string;
 		LANIP : string;
+
+		ToCharaTCPClient : TInterClient;
+		ToInterTCPClient : TInterClient;
 
 		OnlineUsers   : Word;
 
@@ -94,6 +95,7 @@ uses
 	Main,
 	PacketDB,
 	Globals,
+	GMCommands,
   Map,
 	TCPServerRoutines,
 	ZoneCharaCommunication,
@@ -115,6 +117,9 @@ uses
 //------------------------------------------------------------------------------
 Constructor TZoneServer.Create;
 begin
+	//Initialize our GM commands array - unfinished
+	SetupCommands;
+
   MapList := TMapList.Create(TRUE);
 	CharacterList := TCharacterList.Create(TRUE);
 

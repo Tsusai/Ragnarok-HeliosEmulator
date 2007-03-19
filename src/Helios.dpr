@@ -85,6 +85,7 @@ compile for linux, at the same time*}
 	ZoneServerInfo in 'Zone\ZoneServerInfo.pas',
 	ZoneRecv in 'Zone\ZoneRecv.pas',
 	ZoneSend in 'Zone\ZoneSend.pas',
+	GMCommands in 'Zone\GMCommands.pas',
 
 	//Constants
 	GameConstants in 'Constants\GameConstants.pas',
@@ -194,6 +195,7 @@ compile for linux, at the same time*}
 	ZoneServerInfo in 'Zone/ZoneServerInfo.pas',
 	ZoneRecv in 'Zone/ZoneRecv.pas',
 	ZoneSend in 'Zone/ZoneSend.pas',
+	GMCommands in 'Zone/GMCommands.pas',
 
 	//Constants
 	GameConstants in 'Constants/GameConstants.pas',

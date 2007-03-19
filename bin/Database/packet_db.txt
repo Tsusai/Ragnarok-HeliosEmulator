@@ -24,6 +24,8 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x2202,-1
 0x2203,-1
 0x2204,4
+//GM Command from zone to inter
+0x2205,-1
 
 //RO PACKETS
 //packet_db.txt “¯‚¶”Ô†‚ÌƒpƒPƒbƒg‚ÍŒã‚Ì‚Åã‘‚«‚³‚ê‚é‚Ì‚Å•ÏX‚Ì‚ ‚Á‚½ƒpƒPƒbƒg‚Íˆê”Ô‰º‚É’Ç‰Á‚·‚ê‚Î‚æ‚¢‚Å‚·

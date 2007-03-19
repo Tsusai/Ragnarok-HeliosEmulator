@@ -42,9 +42,14 @@ type
     Procedure SetPort(Value : Word);
 		Function GetStarted() : Boolean;
 
-    Procedure LoadOptions;
+		Procedure LoadOptions;
 
 		procedure VerifyZoneServer(
+			AClient		: TIdContext;
+			InBuffer	: TBuffer
+		);
+
+		procedure RecvGMCommand(
 			AClient : TIdContext;
 			InBuffer : TBuffer
 		);
@@ -73,10 +78,13 @@ uses
 	BufferIO,
 	Main,
 	Globals,
+	Character,
+	GMCommands,
 	TCPServerRoutines,
 	ZoneServerInfo,
 	ZoneInterCommunication,
 	//3rd
+	Classes,
 	StrUtils;
 
 //------------------------------------------------------------------------------
@@ -245,7 +253,7 @@ begin
 	case PacketID of
 	$2200: // Zone Server Connection request
 		begin
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2100)-2);
+			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2200)-2);
 			VerifyZoneServer(AClient,ABuffer);
 		end;
 	$2202: // Zone Server sending new WAN location details
@@ -274,9 +282,19 @@ begin
 		begin
 			if AClient.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2104)-2);
+				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2204)-2);
 				//TZoneServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
 				Console.Message('Received updated Zone Server Online Users.', 'Inter Server', MS_NOTICE);
+			end;
+		end;
+	$2205: // Zone server sending GM command to be sent to other servers + self
+		begin
+			if AClient.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AClient,ABuffer[2],2);
+				Size := BufferReadWord(2,ABuffer);
+				RecvBuffer(AClient,ABuffer[4],Size-4);
+				RecvGMCommand(AClient, ABuffer);
 			end;
 		end;
 	else
@@ -362,6 +380,52 @@ begin
 	end;
 	SendValidateFlagToZone(AClient,Validated);
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvGMCommand   			                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      Gets a gm command from an authenticated zone server
+//
+//	Changes -
+//		March 19th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+procedure TInterServer.RecvGMCommand(AClient : TIdContext; InBuffer : TBuffer);
+//See Notes/GM Command Packets for explanation.
+{var
+	Command 				: Word;
+	GMID						: LongWord;
+	CharaID					: LongWord;
+	ARGNum					: LongWord;
+	Args						: Array of String;
+	ArgLength				: LongWord;
+	CommandLength		: LongWord;
+	CommandString		: String;
+	CommandSeparator: TStringList;
+
+	ACharacter			: TCharacter;
+	ZoneID					: Integer;}
+
+begin
+	//unfinished -
+	{GMID						:= BufferReadLongWord(4, InBuffer);
+	CharaID					:= BufferReadLongWord(8, InBuffer);
+	CommandLength		:= BufferReadWord(12,InBuffer);
+	CommandString		:= BufferReadString(14, CommandLength, InBuffer);
+
+	CommandSeparator := TStringList.Create;
+	CommandSeparator.Delimiter := ',';
+	CommandSeparator.DelimitedText := CommandString;
+
+	GetCommandID(CommandSeparator[0]);
+	ACharacter := ADatabase.GameData.GetChara(CharaID);
+	ZoneID := ADatabase.StaticData.GetMapZoneID(ACharacter.Map);
+
+	CommandSeparator.Free; }
+end; //RecvGMCommand
 //------------------------------------------------------------------------------
 
 

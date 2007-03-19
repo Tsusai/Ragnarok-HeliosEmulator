@@ -268,7 +268,7 @@ begin
 
 		if (Self.Direction in Diagonals) then
 		begin
-			spd := Speed * 7 div 5;
+			spd := Speed * 7 DIV 5;
 		end else begin
 			spd := Speed;
 		end;

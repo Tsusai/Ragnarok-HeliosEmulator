@@ -32,10 +32,10 @@ type
 		//[2006/03/12] Tsusai - MUST BE INTEGER TYPE! I messed it up using word.
 		PLength : integer;
 
-		Command : string;
-		ReadPoints : TReadPts;
-		ExecCommand : TPacketProc; //Regular procedure link
-		ExecAvoidSelfCommand : TAvoidSelfPacketProc; //avoidself special procedure link
+		Command								: string;
+		ReadPoints						: TReadPts;
+		ExecCommand						: TPacketProc; //Regular procedure link
+		ExecAvoidSelfCommand	: TAvoidSelfPacketProc; //avoidself special procedure link
 	end;
 
 	PacketArray = record

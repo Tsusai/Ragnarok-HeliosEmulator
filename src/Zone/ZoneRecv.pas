@@ -103,11 +103,11 @@ uses
 		const
 			ReadPts : TReadPts
 	);
-        procedure AreaChat(
-			AChara  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+	procedure AreaChat(
+		ACharacter  : TCharacter;
+		InBuffer		: TBuffer;
+	const
+		ReadPts : TReadPts
 	);
 
 implementation
@@ -120,6 +120,7 @@ uses
 	Main,
 	SysUtils,
 	GameConstants,
+	GMCommands,
 	Globals,
 	MapTypes,
 	Map,
@@ -433,7 +434,7 @@ uses
 					//accordingly.
 					if (Direction in Diagonals) then
 					begin
-						spd := Speed * 7 div 5;
+						spd := Speed * 7 DIV 5;
 					end else begin
 						spd := Speed;
 					end;
@@ -572,17 +573,27 @@ end;
 //    March 18th, 2007 - Aeomin - Created Header
 //------------------------------------------------------------------------------
 procedure AreaChat(
-			AChara  : TCharacter;
+			ACharacter  : TCharacter;
 			InBuffer : TBuffer;
 		const
 			ReadPts : TReadPts
 	);
 var
-Length:Word;
-Speech:String;
+	ChatLength	: Word;
+	Chat				: String;
+	TempChat		: String;
 begin
-    Length := BufferReadWord(ReadPts[0], InBuffer)-4;
-    Speech := BufferReadString(ReadPts[1], Length, InBuffer);
-    SendAreaSpeech(Speech, Length, AChara);
-end;
+		ChatLength	:= BufferReadWord(ReadPts[0], InBuffer)-4;
+		Chat				:= BufferReadString(ReadPts[1], ChatLength, InBuffer);
+
+		TempChat := Copy(Chat, Length(ACharacter.Name) + 3, Length(Chat));
+		if IsGMCommand(TempChat) then
+		begin
+			ZoneSendGMCommandtoInter(ACharacter, TempChat);
+		end else
+		begin
+			SendAreaChat(Chat, ChatLength, ACharacter);
+		end;
+end;{AreaChat}
+//------------------------------------------------------------------------------
 end.

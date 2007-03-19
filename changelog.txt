@@ -14,6 +14,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 182 -
+[2007/03/19] - RaX - Added simple gm command parsing to zone server in the new AreaChat routine.
+[2007/03/19] - RaX - Added to inter server, it now accepts gm command sends from zones.
+[2007/03/19] - RaX - Added zone server communicating with inter to send gm commands.
+[2007/03/19] - RaX - Added GMCommands.pas to Zone, will hold all our gm command related stuff.
+[2007/03/19] - RaX - Updated packet_db, contains the new inter communication packet.
+-
+
 - Rev 181 -
 [2007/03/19] - Tsusai - Notes/Overview: Modifed basic timed event.
 [2007/03/19] - Tsusai - Event - TRootEvent.Create : Now takes on the time as its parameter.
@@ -26,6 +34,7 @@ Developers & Contributers
 - Rev 180 -
 [2007/03/18] - Aeomin - Add very basic support of local chat (you have to walk blindly to
  meet other character).
+-
 
 - Rev 179 - 
 [2007/03/18] - RaX - Copied over Character Server code to have Zone authenticate with inter
