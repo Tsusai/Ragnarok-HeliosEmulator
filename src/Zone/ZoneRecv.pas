@@ -587,7 +587,7 @@ begin
 		Chat				:= BufferReadString(ReadPts[1], ChatLength, InBuffer);
 
 		TempChat := Copy(Chat, Length(ACharacter.Name) + 3, Length(Chat));
-		if IsGMCommand(TempChat) then
+		if MainProc.ZoneServer.Commands.IsCommand(TempChat) then
 		begin
 			ZoneSendGMCommandtoInter(ACharacter, TempChat);
 		end else

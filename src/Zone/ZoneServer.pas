@@ -19,6 +19,7 @@ uses
 	SysUtils,
 	PacketTypes,
 	Character,
+	GMCommands,
 	ZoneOptions,
 	MapList,
 	CharaList,
@@ -64,6 +65,8 @@ type
 		ToCharaTCPClient : TInterClient;
 		ToInterTCPClient : TInterClient;
 
+		Commands			: TGMCommands;
+
 		OnlineUsers   : Word;
 
 		Options       : TZoneOptions;
@@ -95,7 +98,6 @@ uses
 	Main,
 	PacketDB,
 	Globals,
-	GMCommands,
   Map,
 	TCPServerRoutines,
 	ZoneCharaCommunication,
@@ -117,8 +119,7 @@ uses
 //------------------------------------------------------------------------------
 Constructor TZoneServer.Create;
 begin
-	//Initialize our GM commands array - unfinished
-	SetupCommands;
+	Commands := TGMCommands.Create;
 
   MapList := TMapList.Create(TRUE);
 	CharacterList := TCharacterList.Create(TRUE);
@@ -163,6 +164,7 @@ begin
 	TCPServer.Free;
 	ToCharaTCPClient.Free;
 	ToInterTCPClient.Free;
+	Commands.Free;
 end;{Destroy}
 //------------------------------------------------------------------------------
 

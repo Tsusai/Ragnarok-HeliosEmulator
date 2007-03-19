@@ -11,13 +11,24 @@
 unit GMCommands;
 
 interface
+uses
+	Classes;
 
-var
-	Commands : array of function(Arguments : array of String; Error : String) : Boolean;
+type
+	TGMCommand = function(Arguments : array of String; var Error : String) : Boolean;
 
-	function IsGMCommand(const Chat : String)	: Boolean;
-	function GetCommandID(ACommand : String)	: Word;
-	procedure SetupCommands;
+	TGMCommands = class
+	Constructor Create;
+	Destructor Destroy;override;
+	private
+		fNames : TStringList;
+	public
+		Commands  : array of TGMCommand;
+		function AddCommand(Name : String; Command : TGMCommand) : Word;
+		function IsCommand(const Chat : String)	: Boolean;
+		function GetCommandID(Name : String)	: Integer;
+	end;
+
 
 implementation
 
@@ -25,27 +36,58 @@ uses
 	SysUtils,
 	Globals;
 
-function TestCommand(Arguments : array of String; Error : String) : Boolean;
-begin
-	Error := 'Command failed, but you succeed!';
-	Result := FALSE;
-end;
-
 //------------------------------------------------------------------------------
-//SetupCommands																											PROCEDURE
+//Create																														CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
-//      	Sets up our commands array.
+//      	Creates our gm command component.
 //
 //	Changes -
 //		March 19th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure SetupCommands;
+Constructor TGMCommands.Create;
 begin
-	SetLength(Commands, 10);
-	Commands[1] := TestCommand;
-end;//SetupCommands
+	inherited;
+	fNames := TStringList.Create;
+end;{Create}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Destroy																														DESTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does-
+//      	destroys our component.
+//
+//	Changes -
+//		March 19th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Destructor TGMCommands.Destroy;
+begin
+	fNames.Free;
+	inherited;
+end;{Create}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//AddCommand																												PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      	Adds a gm command to the list.
+//
+//	Changes -
+//		March 19th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+function TGMCommands.AddCommand(Name : String; Command : TGMCommand) : Word;
+begin
+	SetLength(Commands, Length(Commands)+1);
+	Commands[Length(Commands)-1] := Command;
+	Result := fNames.Add(Name);
+end;{AddCommand}
 //------------------------------------------------------------------------------
 
 
@@ -59,17 +101,23 @@ end;//SetupCommands
 //		March 19th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-function IsGMCommand(const Chat : String) : Boolean;
+function TGMCommands.IsCommand(const Chat : String) : Boolean;
+var
+	TempList : TStringList;
+	TempChat : String;
 begin
-	//This is just a place holder for now, will eventually check through our
-	//database of gm commands to see if the command exists. For now, it just
-	//checks to see if the supplied chat argument begins with a #
-	if Trim(Chat)[1] = '#' then
+	Result := FALSE;
+	TempChat := Trim(Chat);
+	if TempChat[1] = '#' then
 	begin
-		Result := TRUE;
-	end else
-	begin
-		Result := FALSE;
+		TempList := TStringList.Create;
+		TempList.DelimitedText := TempChat;
+		TempList[0] := copy(TempList[0], 2, Length(TempList[0]));
+		if (GetCommandID(TempList[0]) <> -1) then
+		begin
+			Result := TRUE;
+		end;
+		TempList.Free;
 	end;
 end;{IsGMCommand}
 //------------------------------------------------------------------------------
@@ -85,9 +133,9 @@ end;{IsGMCommand}
 //		March 19th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-function GetCommandID(ACommand : String) : Word;
+function TGMCommands.GetCommandID(Name : String) : Integer;
 begin
-	Result := 1;
+	Result := fNames.IndexOf(Name);
 end;{GetCommandID}
 //------------------------------------------------------------------------------
 end.
