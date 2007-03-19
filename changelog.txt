@@ -13,6 +13,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 180 -
+[2007/03/18] - Aeomin - Add very basic support of local chat (you have to walk blindly to
+ meet other character).
+
 - Rev 179 - 
 [2007/03/18] - RaX - Copied over Character Server code to have Zone authenticate with inter
  server.

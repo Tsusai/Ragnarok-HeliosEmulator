@@ -14,6 +14,7 @@ unit ZoneSend;
 interface
 uses
 	Types,
+         Math,
 	Character,
 	{Third Party}
 	IdContext
@@ -30,13 +31,16 @@ uses
 	);
 	procedure SendCharacterSelectResponse(ACharacter : TCharacter);
 	procedure SendQuitGameResponse(ACharacter : TCharacter);
+	procedure SendAreaSpeech(Speach:String;Length:Word;ACharacter : TCharacter);
 
 implementation
 uses
+        Main,
 	BufferIO,
 	PacketTypes,
 	TCPServerRoutines,
-	WinLinux;
+	WinLinux,
+        Being;
 
 //------------------------------------------------------------------------------
 //ZoneSendMapConnectReply                                             PROCEDURE
@@ -194,5 +198,54 @@ uses
 		WriteBufferWord(2, 0, OutBuffer);
 		Sendbuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($018b,ACharacter.ClientVersion));
 	end;//SendQuitGameResponse
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendAreaSpeech				                       PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//    	Send speech message to ranged area
+//
+//  Changes -
+//    March 18th, 2007 - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendAreaSpeech(
+                Speach:String;
+                Length:Word;
+		ACharacter : TCharacter
+	);
+        var
+	OutBuffer : TBuffer;
+        ABeing			: TBeing;
+        idxY			: SmallInt;
+	idxX			: SmallInt;
+        BeingIdx		: integer;
+begin
+	//16 covers the old 15x15 grid
+	for idxY := Max(ACharacter.Position.Y-MainProc.ZoneServer.Options.CharShowArea,0) to Min(ACharacter.Position.Y+MainProc.ZoneServer.Options.CharShowArea,ACharacter.MapInfo.Size.Y) do
+	begin
+		for idxX := Max(ACharacter.Position.X-MainProc.ZoneServer.Options.CharShowArea,0) to Min(ACharacter.Position.X+MainProc.ZoneServer.Options.CharShowArea,ACharacter.MapInfo.Size.X) do
+		begin
+			for BeingIdx := ACharacter.MapInfo.Cell[idxX,idxY].Beings.Count - 1 downto 0 do
+			begin
+				ABeing := ACharacter.MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
+				if ABeing = ACharacter then begin
+                                 WriteBufferWord(0, $008e, OutBuffer);
+		                 WriteBufferWord(2, Length+5, OutBuffer);
+                                 WriteBufferString(4, Speach+#0, Length+1, OutBuffer);
+		                 Sendbuffer(ACharacter.ClientInfo, OutBuffer, Length+5);
+                                end else
+                                begin
+                                 WriteBufferWord(0, $008d, OutBuffer);
+		                 WriteBufferWord(2, Length+9, OutBuffer);
+                                 WriteBufferLongWord(4, ACharacter.ID, OutBuffer);
+                                 WriteBufferString(8, Speach+#0, Length+1, OutBuffer);
+		                 Sendbuffer(TCharacter(ABeing).ClientInfo, OutBuffer, Length+9);
+                                end;
+                         end;
+                 end;
+         end;
+end;        
 //------------------------------------------------------------------------------
 end.

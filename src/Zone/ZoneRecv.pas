@@ -103,6 +103,12 @@ uses
 		const
 			ReadPts : TReadPts
 	);
+        procedure AreaChat(
+			AChara  : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
 
 implementation
 uses
@@ -555,4 +561,29 @@ begin
 	SendQuitGameResponse(AChara);
 end;
 //------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//AreaChat							       PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Receive and Send local speech
+//
+//  Changes -
+//    March 18th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure AreaChat(
+			AChara  : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
+var
+Length:Word;
+Speech:String;
+begin
+    Length := BufferReadWord(ReadPts[0], InBuffer)-4;
+    Speech := BufferReadString(ReadPts[1], Length, InBuffer);
+    SendAreaSpeech(Speech, Length, AChara);
+end;
 end.

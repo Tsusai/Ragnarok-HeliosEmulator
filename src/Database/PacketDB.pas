@@ -173,10 +173,10 @@ Begin
 				end else if Command = 'walktoxy' then begin
 					ExecCommand := CharacterWalkRequest;{
 				end else if Command = 'actionrequest' then begin
-					ExecCommand := ActionRequest;
+					ExecCommand := ActionRequest;}
 				end else if Command = 'globalmessage' then begin
 					ExecCommand := AreaChat;
-				end else if Command = 'npcclicked' then begin
+				{end else if Command = 'npcclicked' then begin
 					ExecCommand := NPCClick;}
 				end else if Command = 'getcharnamerequest' then begin
 					ExecCommand := GetNameAndID;{
