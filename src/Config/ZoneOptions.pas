@@ -67,9 +67,13 @@ interface
 
 			property CharaIP : String read fCharaIP write SetCharaIP;
 			property CharaPort : Word read fCharaPort write SetCharaPort;
+			property CharaKey : string read fCharaKey;
+
+			property InterIP : String read fInterIP;
+			property InterPort : Word read fInterPort;
+			property InterKey : string read fInterKey;
 
 			//Security
-			property CharaKey : string read fCharaKey;
 
       //Options
 

@@ -13,6 +13,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 179 - 
+[2007/03/18] - RaX - Copied over Character Server code to have Zone authenticate with inter
+ server.
+[2007/03/18] - RaX - Renamed *Packets units to *Communication units, makes mroe sense.
+[2007/03/18] - RaX - Implemented Inter client in zone server.
+[2007/03/18] - RaX - Added new inter comm packets to packet_db
+-
+
 - Rev 178 - 
 [2007/03/17] - RaX - Fixed Return to character select, changed true to false in a condition
  (Thanks Aeomin).

@@ -17,6 +17,13 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x2102,-1
 0x2103,-1
 0x2104,4
+//Inter <-> Zone
+//Chara <-> Zone
+0x2200,24
+0x2201,3
+0x2202,-1
+0x2203,-1
+0x2204,4
 
 //RO PACKETS
 //packet_db.txt “¯‚¶”Ô†‚ÌƒpƒPƒbƒg‚ÍŒã‚Ì‚Åã‘‚«‚³‚ê‚é‚Ì‚Å•ÏX‚Ì‚ ‚Á‚½ƒpƒPƒbƒg‚Íˆê”Ô‰º‚É’Ç‰Á‚·‚ê‚Î‚æ‚¢‚Å‚·

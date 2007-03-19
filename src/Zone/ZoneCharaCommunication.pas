@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//ZoneCharaPackets                                                        UNIT
+//ZoneCharaCommunication                                                   UNIT
 //------------------------------------------------------------------------------
 //  What it does -
 //      Houses our Zone<->Character server communication routines. These are
@@ -8,7 +8,7 @@
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header.
 //------------------------------------------------------------------------------
-unit ZoneCharaPackets;
+unit ZoneCharaCommunication;
 
 interface
 uses

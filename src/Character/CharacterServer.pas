@@ -61,6 +61,7 @@ type
 		Procedure SetPort(Value : Word);
 		Function GetStarted() : Boolean;
 		Procedure LoadOptions;
+
 	public
 		ServerName    : String;
 		OnlineUsers   : Word;
@@ -84,8 +85,8 @@ implementation
 uses
 	//Helios
 	CharaList,
-	CharaLoginPackets,
-	ZoneCharaPackets,
+	CharaLoginCommunication,
+	ZoneCharaCommunication,
 	BufferIO,
 	Character,
 	Account,

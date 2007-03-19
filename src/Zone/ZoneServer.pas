@@ -45,6 +45,9 @@ type
 		Procedure CharaClientOnConnect(Sender : TObject);
 		Procedure CharaClientRead(AClient : TInterClient);
 
+		Procedure InterClientOnConnect(Sender : TObject);
+		Procedure InterClientRead(AClient : TInterClient);
+
 		Procedure ProcessZonePacket(AClient : TIdContext);
 		Function  SearchPacketListing(var AChara : TCharacter; var AClient : TIdContext;
 																	var InBuffer :  TBuffer; const Version   : Word;
@@ -78,7 +81,8 @@ type
 		Procedure   Start(Reload : Boolean = FALSE);
 		Procedure   Stop();
 
-    Procedure   ConnectToCharacter;
+		Procedure   ConnectToCharacter;
+		Procedure   ConnectToInter;
 
 	end;
 implementation
@@ -92,7 +96,8 @@ uses
 	Globals,
   Map,
 	TCPServerRoutines,
-	ZoneCharaPackets,
+	ZoneCharaCommunication,
+	ZoneInterCommunication,
 	ZoneRecv,
 	//3rd
 	StrUtils;
@@ -119,6 +124,9 @@ begin
 
 	ToCharaTCPClient.OnConnected := CharaClientOnConnect;
 	ToCharaTCPClient.OnRecieve   := CharaClientRead;
+
+	ToInterTCPClient.OnConnected := InterClientOnConnect;
+	ToInterTCPClient.OnRecieve   := InterClientRead;
 
 	TCPServer.OnConnect   := OnConnect;
 	TCPServer.OnDisconnect:= OnDisconnect;
@@ -227,6 +235,7 @@ begin
 
 end;{OnDisconnect}
 //------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //OnException                                                             EVENT
@@ -633,7 +642,7 @@ end;{SetPort}
 procedure TZoneServer.CharaClientOnConnect(Sender : TObject);
 begin
 	ValidateWithCharaServer(ToCharaTCPClient,Self);
-end;//CharaClientOnConnect 
+end;//CharaClientOnConnect
 //------------------------------------------------------------------------------
 
 
@@ -697,11 +706,98 @@ end;{CharaClientRead}
 //------------------------------------------------------------------------------
 Procedure TZoneServer.ConnectToCharacter;
 begin
-  //initialize commclient ips and ports.
-  ToCharaTCPClient.Host := Options.CharaIP;
-  ToCharaTCPClient.Port := Options.CharaPort;
+	//initialize commclient ips and ports.
+	ToCharaTCPClient.Host := Options.CharaIP;
+	ToCharaTCPClient.Port := Options.CharaPort;
 
-  ActivateClient(ToCharaTCPClient);
+	ActivateClient(ToCharaTCPClient);
 end;//ConnectToCharacter
 //------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//InterClientOnConnect                                                PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Validates with the inter once it connects.
+//
+//	Changes -
+//		March 18th, 2007 - RaX - Created
+//
+//------------------------------------------------------------------------------
+procedure TZoneServer.InterClientOnConnect(Sender : TObject);
+begin
+	ValidateWithInterServer(ToInterTCPClient,Self);
+end;//InterClientOnConnect
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CharaClientRead                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Executes on receiving information back from an inter server.
+//
+//	Changes -
+//		March 18th, 2007 - RaX - Created
+//
+//------------------------------------------------------------------------------
+procedure TZoneServer.InterClientRead(AClient : TInterClient);
+var
+	ABuffer : TBuffer;
+	PacketID : Word;
+	Response : Byte;
+begin
+	RecvBuffer(AClient,ABuffer,2);
+	PacketID := BufferReadWord(0,ABuffer);
+	case PacketID of
+	$2201:
+		begin
+			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2101)-2);
+			Response := BufferReadByte(2,ABuffer);
+
+			//If validated.
+			if Response = 0 then
+			begin
+				Console.Message('Verified with Inter Server, '+
+					'sending details.', 'Zone Server', MS_NOTICE);
+				SendZoneWANIPToInter(ToInterTCPClient,Self);
+				SendZoneLANIPToInter(ToInterTCPClient,Self);
+				SendZoneOnlineUsersToInter(ToInterTCPClient,Self);
+			end else
+			begin
+				case Response of
+				1 : Console.Message('Failed to verify with Inter Server. ID already in use.', 'Zone Server', MS_WARNING);
+				2 : Console.Message('Failed to verify with Inter Server. Invalid security key.', 'Zone Server', MS_WARNING);
+				end;
+				Console.Message('Stopping...', 'Zone Server', MS_NOTICE);
+				Stop;
+			end;
+		end;
+	end;
+end;{InterClientRead}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ConnectToInter                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Connects to the inter server
+//
+//	Changes -
+//		March 18th, 2007 - RaX - Created
+//
+//------------------------------------------------------------------------------
+Procedure TZoneServer.ConnectToInter;
+begin
+	//initialize commclient ips and ports.
+	ToInterTCPClient.Host := Options.InterIP;
+	ToInterTCPClient.Port := Options.InterPort;
+
+	ActivateClient(ToInterTCPClient);
+end;//ConnectToInter
+//------------------------------------------------------------------------------
+
+
 end.

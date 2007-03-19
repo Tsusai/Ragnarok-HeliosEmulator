@@ -1,15 +1,16 @@
 //------------------------------------------------------------------------------
-//CharaLoginPackets			                                    UNIT
+//CharaLoginCommunication							                                    UNIT
 //------------------------------------------------------------------------------
 //	What it does-
-//      This unit is used to send packets out from Character Server to client
-//   or other server(s)
+//      This unit houses routines for Character Server to Login Server
+//		communication.
 //
 //	Changes -
 //		March 12th, 2007 - Aeomin - Created Header
+//		March 18th, 2007 - RaX - Updated Header.
 //
 //------------------------------------------------------------------------------
-unit CharaLoginPackets;
+unit CharaLoginCommunication;
 
 interface
 uses
@@ -135,7 +136,7 @@ uses
 
 
 //------------------------------------------------------------------------------
-//SendCharaLANIPToLogin                                                PROCEDURE
+//SendCharaOnlineUsersToLogin                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //		Send the number of online players to Login Server.

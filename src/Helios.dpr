@@ -73,13 +73,14 @@ compile for linux, at the same time*}
 	//Character Server
 	CharacterServer in 'Character\CharacterServer.pas',
 	CharacterServerInfo in 'Character\CharacterServerInfo.pas',
-	CharaLoginPackets in 'Character\CharaLoginPackets.pas',
+	CharaLoginCommunication in 'Character\CharaLoginCommunication.pas',
 
 	//InterServer
 	InterServer in 'Inter\InterServer.pas',
 
 	//Zone Server
-	ZoneCharaPackets in 'Zone\ZoneCharaPackets.pas',
+	ZoneCharaCommunication in 'Zone\ZoneCharaCommunication.pas',
+	ZoneInterCommunication in 'Zone\ZoneInterCommunication.pas',
 	ZoneServer in 'Zone\ZoneServer.pas',
 	ZoneServerInfo in 'Zone\ZoneServerInfo.pas',
 	ZoneRecv in 'Zone\ZoneRecv.pas',
@@ -181,13 +182,14 @@ compile for linux, at the same time*}
 	//Character Server
 	CharacterServer in 'Character/CharacterServer.pas',
 	CharacterServerInfo in 'Character/CharacterServerInfo.pas',
-	CharaLoginPackets in 'Character/CharaLoginPackets.pas',
+	CharaLoginCommunication in 'Character/CharaLoginCommunication.pas',
 
 	//InterServer
 	InterServer in 'Inter/InterServer.pas',
 
 	//Zone Server
-  ZoneCharaPackets in 'Zone/ZoneCharaPackets.pas',
+	ZoneCharaCommunication in 'Zone/ZoneCharaCommunication.pas',
+	ZoneInterCommunication in 'Zone/ZoneInterCommunication.pas',
 	ZoneServer in 'Zone/ZoneServer.pas',
 	ZoneServerInfo in 'Zone/ZoneServerInfo.pas',
 	ZoneRecv in 'Zone/ZoneRecv.pas',

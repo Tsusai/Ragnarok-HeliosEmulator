@@ -80,7 +80,7 @@ type
 implementation
 uses
 	//Helios
-	CharaLoginPackets,
+	CharaLoginCommunication,
 	Globals,
 	BufferIO,
 	CharacterServerInfo,

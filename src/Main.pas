@@ -179,6 +179,7 @@ begin
 		if Options.ZoneEnabled then
 		begin
 			ZoneServer.ConnectToCharacter;
+			ZoneServer.ConnectToInter;
 		end;
 		
 	end else
