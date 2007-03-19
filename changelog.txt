@@ -10,8 +10,18 @@ Ragnarok Emulator
 Developers & Contributers
 - Tsusai
 - RaX
+- Aeomin
 
 -------------------------------------------------------------------------------------------
+
+- Rev 181 -
+[2007/03/19] - Tsusai - Notes/Overview: Modifed basic timed event.
+[2007/03/19] - Tsusai - Event - TRootEvent.Create : Now takes on the time as its parameter.
+[2007/03/19] - Tsusai - Updated the following for the above : 
+ MovementEvent - TMovementEvent.Create
+ Being - TBeing.Walk
+ ZoneRecv - CharacterWalking
+-
 
 - Rev 180 -
 [2007/03/18] - Aeomin - Add very basic support of local chat (you have to walk blindly to

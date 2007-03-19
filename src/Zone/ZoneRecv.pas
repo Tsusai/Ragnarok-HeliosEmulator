@@ -440,8 +440,7 @@ uses
 
 					AChara.MoveTick := GetTick + spd;
 
-					MoveEvent := TMovementEvent.Create(AChara);
-					MoveEvent.ExpiryTime := AChara.MoveTick;
+					MoveEvent := TMovementEvent.Create(MoveTick,AChara);
 					AChara.EventList.Add(MoveEvent);
 
 					ZoneSendWalkReply(AChara,DestPoint);

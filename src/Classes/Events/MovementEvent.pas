@@ -25,7 +25,7 @@ type
 		ABeing : TBeing;
 	public
 		Procedure Execute; override;
-		constructor Create(Being : TBeing); reintroduce;
+		constructor Create(SetExpiryTime : LongWord; Being : TBeing);
 	end;
 //------------------------------------------------------------------------------
 
@@ -50,9 +50,9 @@ begin
 end;//Execute
 //------------------------------------------------------------------------------
 
-constructor TMovementEvent.Create(Being : TBeing);
+constructor TMovementEvent.Create(SetExpiryTime : LongWord; Being : TBeing);
 begin
-	inherited Create;
+	inherited Create(SetExpiryTime);
 	Self.ABeing := Being;
 end;
 

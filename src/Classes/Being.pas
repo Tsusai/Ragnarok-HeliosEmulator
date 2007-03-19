@@ -210,12 +210,14 @@ begin
 					begin
 						if ABeing is TCharacter then
 						begin
+							{ TODO : Send Walking Packet to other clients if inrange 15 cells }
 							//Send First Being apearing to ABeing
 							{if Point in range with ABeing, 15 then
 							begin
 								SendWalking packet
 							end;}
 						end;
+						{ TODO : Send NPC visual packets }
 						//if ABeing is NPC
 						//Special npc packets
 						//else
@@ -241,6 +243,7 @@ begin
 			TCharacter(Self).CharaState := charaStanding;
 		end;
 
+		{ TODO : Need to call this so we can interupt as if a trap sprung. }
 		{if GameState = charaStand then
 		begin
 			//UpdateLocation
@@ -271,7 +274,7 @@ begin
 		end;
 		MoveTick := MoveTick + spd;
 
-		AMoveEvent := TMovementEvent.Create(Self);
+		AMoveEvent := TMovementEvent.Create(MoveTick,Self);
 		AMoveEvent.ExpiryTime := MoveTick;
 		Self.EventList.Add(AMoveEvent);
 	end;

@@ -21,6 +21,7 @@ type
 	TRootEvent = class
 		ExpiryTime	: LongWord;//The time at which this event is set to go off
 		Procedure Execute; Virtual;
+		constructor Create(SetExpiryTime : LongWord);
 	end;
 //------------------------------------------------------------------------------
 
@@ -41,4 +42,11 @@ Procedure TRootEvent.Execute;
 begin
 end;//Execute
 //------------------------------------------------------------------------------
+
+constructor TRootEvent.Create(SetExpiryTime : LongWord);
+begin
+	inherited Create;
+	ExpiryTime := SetExpiryTime;
+end;
+
 end.
