@@ -582,14 +582,29 @@ var
 	ChatLength	: Word;
 	Chat				: String;
 	TempChat		: String;
+  CommandID   : Word;
 begin
 		ChatLength	:= BufferReadWord(ReadPts[0], InBuffer)-4;
 		Chat				:= BufferReadString(ReadPts[1], ChatLength, InBuffer);
 
+		//First, we remove the character's name and the colon after it from the
+		//chat string.
 		TempChat := Copy(Chat, Length(ACharacter.Name) + 3, Length(Chat));
+		//We then check if it is a command.
 		if MainProc.ZoneServer.Commands.IsCommand(TempChat) then
 		begin
-			ZoneSendGMCommandtoInter(ACharacter, TempChat);
+      CommandID := MainProc.ZoneServer.Commands.GetCommandID(
+                    MainProc.ZoneServer.Commands.GetCommandName(TempChat)
+									 );
+			//if it is a command, we check the account's access level to see if it is
+			//able to use the gm command.
+			if ACharacter.Account.Level >= MainProc.ZoneServer.Commands.GetCommandGMLevel(CommandID) then
+			begin
+				ZoneSendGMCommandtoInter(ACharacter, TempChat);
+			end else
+			begin
+				SendAreaChat(Chat, ChatLength, ACharacter);
+			end;
 		end else
 		begin
 			SendAreaChat(Chat, ChatLength, ACharacter);

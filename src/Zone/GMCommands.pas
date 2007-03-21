@@ -12,7 +12,8 @@ unit GMCommands;
 
 interface
 uses
-	Classes;
+	Classes,
+	List32;
 
 type
 	TGMCommand = function(Arguments : array of String; var Error : String) : Boolean;
@@ -22,11 +23,15 @@ type
 	Destructor Destroy;override;
 	private
 		fNames : TStringList;
+		fLevels: TIntList32;
 	public
 		Commands  : array of TGMCommand;
-		function AddCommand(Name : String; Command : TGMCommand) : Word;
+		function AddCommand(Name : String; Command : TGMCommand; Level : Byte) : Word;
 		function IsCommand(const Chat : String)	: Boolean;
 		function GetCommandID(Name : String)	: Integer;
+		function GetCommandGMLevel(CommandID : Integer): Byte;
+
+		function GetCommandName(const Chat : String) : String;
 	end;
 
 
@@ -35,7 +40,11 @@ implementation
 uses
 	SysUtils,
 	Globals;
-
+function test(Arguments : array of String; var Error : String) : Boolean;
+begin
+	Result := FALSE;
+	Error := 'HARBL?';
+end;
 //------------------------------------------------------------------------------
 //Create																														CONSTRUCTOR
 //------------------------------------------------------------------------------
@@ -50,6 +59,8 @@ Constructor TGMCommands.Create;
 begin
 	inherited;
 	fNames := TStringList.Create;
+	fLevels:= TIntList32.Create;
+	AddCommand('test',test, 0);
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -67,6 +78,7 @@ end;{Create}
 Destructor TGMCommands.Destroy;
 begin
 	fNames.Free;
+	fLevels.Free;
 	inherited;
 end;{Create}
 //------------------------------------------------------------------------------
@@ -82,12 +94,56 @@ end;{Create}
 //		March 19th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-function TGMCommands.AddCommand(Name : String; Command : TGMCommand) : Word;
+function TGMCommands.AddCommand(Name : String; Command : TGMCommand; Level : Byte) : Word;
 begin
 	SetLength(Commands, Length(Commands)+1);
 	Commands[Length(Commands)-1] := Command;
-	Result := fNames.Add(Name);
+	fLevels.Add(Level);
+	Result := fNames.Add(Lowercase(Name));
 end;{AddCommand}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetCommandName        																						PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      	Parses a gm command and returns the command name
+//
+//	Changes -
+//		March 21st, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+function TGMCommands.GetCommandName(const Chat : String) : String;
+var
+	TempList : TStringList;
+	TempChat : String;
+
+begin
+	TempChat := Trim(Chat);
+	TempList := TStringList.Create;
+	TempList.DelimitedText := TempChat;
+	TempList[0] := copy(TempList[0], 2, Length(TempList[0]));
+	Result := TempList[0];
+	TempList.Free;
+end;{AddCommand}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetCommandName        																						PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      	Parses a gm command and returns the command name
+//
+//	Changes -
+//		March 21st, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+function TGMCommands.GetCommandGMLevel(CommandID: Integer) : Byte;
+begin
+	Result := fLevels[CommandID];
+end;
 //------------------------------------------------------------------------------
 
 
@@ -135,7 +191,7 @@ end;{IsGMCommand}
 //------------------------------------------------------------------------------
 function TGMCommands.GetCommandID(Name : String) : Integer;
 begin
-	Result := fNames.IndexOf(Name);
+	Result := fNames.IndexOf(lowercase(Name));
 end;{GetCommandID}
 //------------------------------------------------------------------------------
 end.

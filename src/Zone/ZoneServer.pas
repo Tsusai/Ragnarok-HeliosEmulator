@@ -148,7 +148,7 @@ end;{Create}
 //Destroy()                                                        DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
-//			Destroys our character server
+//			Destroys our zone server
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
@@ -209,6 +209,7 @@ end;{OnConnect}
 //------------------------------------------------------------------------------
 //	What it does-
 //			An event which fires when a user disconnects from the zone server.
+//    Cleans up disconnected user's data.
 //
 //	Changes -
 //		January 25th, 2007 - RaX - Created.
@@ -754,6 +755,7 @@ var
 	ABuffer : TBuffer;
 	PacketID : Word;
 	Response : Byte;
+	Size		 : Word;
 begin
 	RecvBuffer(AClient,ABuffer,2);
 	PacketID := BufferReadWord(0,ABuffer);
@@ -780,6 +782,14 @@ begin
 				Console.Message('Stopping...', 'Zone Server', MS_NOTICE);
 				Stop;
 			end;
+		end;
+
+	$2206:
+		begin
+			RecvBuffer(AClient,ABuffer[2], 2);
+			Size := BufferReadWord(2,ABuffer);
+			RecvBuffer(AClient,ABuffer[4], Size-4);
+			Console.Message('Got GM Command from Inter!', 'Zone Server', MS_DEBUG);
 		end;
 	end;
 end;{InterClientRead}

@@ -12,7 +12,7 @@ The Inter server then processes said gm command and sends this to each zone...
 PID		:0 //Packet ID : Word
 COMMANDID	:2 //GMCommand ID : Word
 GMID		:4 //The Account ID of the gm making the command : LongWord
-CID		:12//the character ID that the gm command is being used on : LongWord
+CID		:12//the character ID that the gm command is being used from : LongWord
 ARGNUM		:16//how many arguments are being sent. :LongWord
 <ARGS>		:18+//The command arguments
 

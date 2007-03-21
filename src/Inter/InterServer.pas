@@ -17,25 +17,27 @@ uses
   IdContext,
 	SysUtils,
 	List32,
+	Classes,
 	InterOptions,
-	PacketTypes;
+	PacketTypes,
+	GMCommands;
 
 type
 	TInterServer = class
   protected
-  //
+	//
 	private
 		fIP              : String;
 		fPort            : Word;
 
 		fZoneServerList	 : TIntList32;
-
-    TCPServer        : TIdTCPServer;
+		Commands				 : TGMCommands;
+		TCPServer        : TIdTCPServer;
 
 		Procedure OnDisconnect(AConnection: TIdContext);
 		Procedure OnException(AConnection: TIdContext;
 			AException: Exception);
-
+		procedure OnConnect(AConnection: TIdContext);
 		//procedure ProcessInterPacket(AClient : TIdContext);
 
 		Procedure SetIPLongWord(Value : string);
@@ -53,7 +55,12 @@ type
 			AClient : TIdContext;
 			InBuffer : TBuffer
 		);
-
+		procedure InterSendGMCommandToZones(
+			AClient : TIdContext;
+			GMID : LongWord;
+			CharacterID : LongWord;
+			CommandSeparator : TStringList
+		);
 		procedure ParseInterServ(AClient : TIdContext);
 
 	public
@@ -79,12 +86,10 @@ uses
 	Main,
 	Globals,
 	Character,
-	GMCommands,
 	TCPServerRoutines,
 	ZoneServerInfo,
 	ZoneInterCommunication,
 	//3rd
-	Classes,
 	StrUtils;
 
 //------------------------------------------------------------------------------
@@ -99,9 +104,11 @@ uses
 //------------------------------------------------------------------------------
 Constructor TInterServer.Create;
 begin
+	Commands := TGMCommands.Create;
   TCPServer := TIdTCPServer.Create;
 
 	TCPServer.OnExecute   := ParseInterServ;
+	TCPServer.OnConnect		:= OnConnect;
 	TCPServer.OnException := OnException;
 	TCPServer.OnDisconnect:= OnDisconnect;
 
@@ -124,7 +131,24 @@ Destructor TInterServer.Destroy;
 begin
 	TCPServer.Free;
 	fZoneServerList.Free;
+	Commands.Free;
 end;{Destroy}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//OnConnect                                                              EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			An event which fires when a zone server connects to the inter.
+//
+//	Changes -
+//		March 18th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TInterServer.OnConnect(AConnection: TIdContext);
+begin
+end;{OnDisconnect}
 //------------------------------------------------------------------------------
 
 
@@ -335,6 +359,7 @@ end;{LoadOptions}
 //		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
 //			IdContext.Binding shortcut
 //		March 12th, 2007 - Aeomin - Fix the header.
+//		March 21st, 2007 - RaX - Copied here from Character server
 //
 //------------------------------------------------------------------------------
 procedure TInterServer.VerifyZoneServer(
@@ -395,23 +420,16 @@ end;
 //------------------------------------------------------------------------------
 procedure TInterServer.RecvGMCommand(AClient : TIdContext; InBuffer : TBuffer);
 //See Notes/GM Command Packets for explanation.
-{var
-	Command 				: Word;
+var
 	GMID						: LongWord;
 	CharaID					: LongWord;
-	ARGNum					: LongWord;
-	Args						: Array of String;
-	ArgLength				: LongWord;
 	CommandLength		: LongWord;
 	CommandString		: String;
 	CommandSeparator: TStringList;
 
-	ACharacter			: TCharacter;
-	ZoneID					: Integer;}
-
 begin
-	//unfinished -
-	{GMID						:= BufferReadLongWord(4, InBuffer);
+  //See Notes/GMCommand Packets.txt
+	GMID						:= BufferReadLongWord(4, InBuffer);
 	CharaID					:= BufferReadLongWord(8, InBuffer);
 	CommandLength		:= BufferReadWord(12,InBuffer);
 	CommandString		:= BufferReadString(14, CommandLength, InBuffer);
@@ -420,11 +438,70 @@ begin
 	CommandSeparator.Delimiter := ',';
 	CommandSeparator.DelimitedText := CommandString;
 
-	GetCommandID(CommandSeparator[0]);
-	ACharacter := ADatabase.GameData.GetChara(CharaID);
-	ZoneID := ADatabase.StaticData.GetMapZoneID(ACharacter.Map);
+  //after getting the command information, we get ready to send it to the other
+  //zones.
+	InterSendGMCommandToZones(AClient, GMID,CharaID,CommandSeparator);
 
-	CommandSeparator.Free; }
+	CommandSeparator.Free;
+end; //RecvGMCommand
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//InterSendGMCommandToZones                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      Sends the gm command to all connected zone servers.
+//
+//	Changes -
+//		March 19th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+procedure TInterServer.InterSendGMCommandToZones(AClient : TIdContext; GMID : LongWord; CharacterID : LongWord; CommandSeparator : TStringList);
+var
+	Index			: Integer;
+	CommandID	: Integer;
+	ABuffer		: TBuffer;
+	Size			: Cardinal;
+	BufferIndex: Integer;
+
+begin
+  //Get the name do the command, remove the first character which is #
+	CommandSeparator[0] := Commands.GetCommandName(CommandSeparator[0]);
+  //Get the command ID to which the Command name is associated.
+	CommandID := Commands.GetCommandID(CommandSeparator[0]);
+  //If the command is a real gm command.
+	if CommandID >= 0 then
+	begin
+    //start writing packet 2206 (see Notes/GM Command Packets.txt)
+		WriteBufferWord(0, $2206,ABuffer);
+		WriteBufferWord(4, CommandID, ABuffer);
+		WriteBufferLongWord(6, GMID, ABuffer);
+		WriteBufferLongWord(10, CharacterID, ABuffer);
+		WriteBufferWord(14, CommandSeparator.Count - 1, ABuffer);
+		BufferIndex := 16;//Where we are currently in the buffer.
+    //We then write the Command's arguments to the buffer.
+		for Index := 1 to CommandSeparator.Count - 1 do
+		begin
+			WriteBufferWord(BufferIndex, Length(CommandSeparator[Index]), ABuffer);
+			inc(BufferIndex, 2);
+			WriteBufferString(BufferIndex, CommandSeparator[Index], Length(CommandSeparator[Index]), ABuffer);
+			inc(BufferIndex, Length(CommandSeparator[Index]));
+		end;
+    //Then, after we're done building the buffer, we send it to all connected
+    //zones. - incomplete
+		Size := BufferIndex+1;
+		WriteBufferWord(2, Size, ABuffer);
+		{for Index := 0 to TCPServer.Bindings.Count - 1 do
+		begin
+			ListClient := TIdContext(TCPServer.IOHandler.);
+			SendBuffer(ListClient, ABuffer, Size);
+		end;}
+	end else
+	begin
+    //GM command debug message.
+		Console.Message('GM Command Failed. '+CommandSeparator[0]+' does not exist!', 'Inter Server', MS_DEBUG);
+  end;
 end; //RecvGMCommand
 //------------------------------------------------------------------------------
 

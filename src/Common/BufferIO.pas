@@ -51,8 +51,8 @@ uses
 
 	procedure SendPadding(AClient : TIdContext);
 
-	procedure SendBuffer(var AClient : TIdContext; var Buffer : TBuffer; Size : LongWord);overload;
-	procedure SendBuffer(var AClient : TInterClient; var Buffer : TBuffer; Size : LongWord);overload;
+	procedure SendBuffer(var AClient : TIdContext; const Buffer : TBuffer; Size : LongWord);overload;
+	procedure SendBuffer(var AClient : TInterClient; const Buffer : TBuffer; Size : LongWord);overload;
 	procedure RecvBuffer(var AClient : TIdContext; var Buffer; Size : LongWord); overload;
 	procedure RecvBuffer(var AClient : TInterClient; var Buffer; Size : LongWord);overload;
 
@@ -299,7 +299,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 	end;
 
 	//Socket Method SendBuffer - Writes the buffer to the socket.
-	procedure SendBuffer(var AClient : TInterClient; var Buffer : TBuffer; Size : LongWord);
+	procedure SendBuffer(var AClient : TInterClient; const Buffer : TBuffer; Size : LongWord);
 	var
 		SendBytes : TIdBytes;
 	begin
@@ -308,7 +308,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 	end;
 
 	//Socket Method SendBuffer - Writes the buffer to the socket.
-	procedure SendBuffer(var AClient : TIdContext; var Buffer : TBuffer; Size : LongWord);
+	procedure SendBuffer(var AClient : TIdContext; const Buffer : TBuffer; Size : LongWord);
 	var
 		SendBytes : TIdBytes;
 	begin

@@ -14,6 +14,15 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 184 -
+[2007/03/21] - RaX - Overview : Added to the inter server, it now prepares to send packet
+ 2206 to all zones.
+[2007/03/20] - RaX - Zone server now listens for 2206 from the inter.
+[2007/03/21] - RaX - Zone server now looks for an accounts level before allowing a gm
+ command to be executed.
+[2007/03/21] - RaX - GMCommands.pas - added a few new utility routines and implemented them.
+-
+
 - Rev 183 -
 [2007/03/19] - RaX - Overview : Created basic GM Command component and added it as a part 
  of the zone server, will also be apart of the inter server in the future.
