@@ -333,6 +333,7 @@ var
 	PacketSize  : Word;
 	Ver         : Byte;
 	ACharaList  : TCharacterList;
+	BaseIndex   : Integer;
 begin
 	Count     := 0;
 	Ver       := 24;
@@ -360,48 +361,50 @@ begin
 					begin
 						with ACharacter do
 						begin
-							FillChar(ReplyBuffer[Ver+(Count*106)], 106, 0);
+							BaseIndex := Ver+(Count*106);
+							FillChar(ReplyBuffer[BaseIndex], 106, 0);
 
-							WriteBufferLongWord(Ver+(Count*106)+  0, CID,ReplyBuffer);
-							WriteBufferLongWord(Ver+(Count*106)+  4, BaseEXP,ReplyBuffer);
-							WriteBufferLongWord(Ver+(Count*106)+  8, Zeny,ReplyBuffer);
-							WriteBufferLongWord(Ver+(Count*106)+ 12, JobEXP,ReplyBuffer);
-							WriteBufferLongWord(Ver+(Count*106)+ 16, JobLV,ReplyBuffer);
-							WriteBufferLongWord(Ver+(Count*106)+ 20, 0,ReplyBuffer);
-							WriteBufferLongWord(Ver+(Count*106)+ 24, 0,ReplyBuffer);
-							WriteBufferLongWord(Ver+(Count*106)+ 28, Option,ReplyBuffer);
-							WriteBufferLongWord(Ver+(Count*106)+ 32, Karma,ReplyBuffer);
-							WriteBufferLongWord(Ver+(Count*106)+ 36, Manner,ReplyBuffer);
+							WriteBufferLongWord(BaseIndex +  0, CID,ReplyBuffer);
+							WriteBufferLongWord(BaseIndex +  4, BaseEXP,ReplyBuffer);
+							WriteBufferLongWord(BaseIndex +  8, Zeny,ReplyBuffer);
+							WriteBufferLongWord(BaseIndex + 12, JobEXP,ReplyBuffer);
+							WriteBufferLongWord(BaseIndex + 16, JobLV,ReplyBuffer);
+							WriteBufferLongWord(BaseIndex + 20, 0,ReplyBuffer);
+							WriteBufferLongWord(BaseIndex + 24, 0,ReplyBuffer);
+							WriteBufferLongWord(BaseIndex + 28, Option,ReplyBuffer);
+							WriteBufferLongWord(BaseIndex + 32, Karma,ReplyBuffer);
+							WriteBufferLongWord(BaseIndex + 36, Manner,ReplyBuffer);
 
-							WriteBufferWord(Ver+(Count*106)+ 40, StatusPts,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 42, HP,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 44, MAXHP,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 46, SP,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 48, MAXSP,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 50, Speed,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 52, JID,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 54, Hair,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 56, RightHand,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 58, BaseLV,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 60, SkillPts,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 62, HeadBottom,ReplyBuffer); //Head3
-							WriteBufferWord(Ver+(Count*106)+ 64, LeftHand,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 66, HeadTop,ReplyBuffer); //head1
-							WriteBufferWord(Ver+(Count*106)+ 68, HeadMid,ReplyBuffer); //head2
-							WriteBufferWord(Ver+(Count*106)+ 70, HairColor,ReplyBuffer);
-							WriteBufferWord(Ver+(Count*106)+ 72, ClothesColor,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 40, StatusPts,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 42, HP,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 44, MAXHP,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 46, SP,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 48, MAXSP,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 50, Speed,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 52, JID,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 54, Hair,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 56, RightHand,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 58, BaseLV,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 60, SkillPts,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 62, HeadBottom,ReplyBuffer); //Head3
+							WriteBufferWord(BaseIndex + 64, LeftHand,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 66, HeadTop,ReplyBuffer); //head1
+							WriteBufferWord(BaseIndex + 68, HeadMid,ReplyBuffer); //head2
+							WriteBufferWord(BaseIndex + 70, HairColor,ReplyBuffer);
+							WriteBufferWord(BaseIndex + 72, ClothesColor,ReplyBuffer);
 
-							WriteBufferString(Ver+(Count*106)+ 74, Name, 24,ReplyBuffer);
+							WriteBufferString(BaseIndex + 74, Name, 24,ReplyBuffer);
 
-							WriteBufferByte(Ver+(Count*106)+98,  ParamBase[STR],ReplyBuffer);
-							WriteBufferByte(Ver+(Count*106)+99,  ParamBase[AGI],ReplyBuffer);
-							WriteBufferByte(Ver+(Count*106)+100, ParamBase[VIT],ReplyBuffer);
-							WriteBufferByte(Ver+(Count*106)+101, ParamBase[INT],ReplyBuffer);
-							WriteBufferByte(Ver+(Count*106)+102, ParamBase[DEX],ReplyBuffer);
-							WriteBufferByte(Ver+(Count*106)+103, ParamBase[LUK],ReplyBuffer);
+							WriteBufferByte(BaseIndex +98,  ParamBase[STR],ReplyBuffer);
+							WriteBufferByte(BaseIndex +99,  ParamBase[AGI],ReplyBuffer);
+							WriteBufferByte(BaseIndex +100, ParamBase[VIT],ReplyBuffer);
+							WriteBufferByte(BaseIndex +101, ParamBase[INT],ReplyBuffer);
+							WriteBufferByte(BaseIndex +102, ParamBase[DEX],ReplyBuffer);
+							WriteBufferByte(BaseIndex +103, ParamBase[LUK],ReplyBuffer);
 
-							WriteBufferByte(Ver+(Count*106)+104, CharaNum,ReplyBuffer);
-							WriteBufferByte(Ver+(Count*106)+105, 0,ReplyBuffer);
+							WriteBufferByte(BaseIndex +104, CharaNum,ReplyBuffer);
+//							WriteBufferWord(BaseIndex +106, 1,ReplyBuffer);
+							WriteBufferByte(BaseIndex +105, 0,ReplyBuffer);
 							Inc(Count);
 						end;
 					end;

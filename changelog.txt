@@ -14,6 +14,16 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 185 -
+[2007/03/22] - Aeomin - Now able to show other characters ingame.
+[2007/03/21] - Aeomin - Fixed direction being opposite (Should be counter-clockwise).
+[2007/03/21] - Aeomin - Put most of area loops into one procedure and typed procedures to
+ make code clean.
+[2007/03/21] - Aeomin - Preset index number in loop to reduce recount on each character
+ when making packet of character list (Character Server).
+[2007/03/20] - Aeomin - Able to change direction and show to other character.
+[2007/03/20] - Aeomin - Added Status and Ailments in TBeing for future needs.
+
 - Rev 184 -
 [2007/03/21] - RaX - Overview : Added to the inter server, it now prepares to send packet
  2206 to all zones.

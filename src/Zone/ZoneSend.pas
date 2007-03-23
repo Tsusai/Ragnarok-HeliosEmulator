@@ -33,8 +33,13 @@ uses
 	procedure SendQuitGameResponse(ACharacter : TCharacter);
 	procedure SendAreaChat(Chat : String;Length : Word;ACharacter : TCharacter);
 
+
 	procedure ZoneSendGMCommandtoInter(ACharacter : TCharacter; Command : String);
 
+        procedure ZoneSendChar(Who:TCharacter;AClient : TIdContext;Logon:Boolean=False);
+	procedure ZoneDisappearChar(Who:TCharacter;AClient : TIdContext;Effect:Byte=0);
+	procedure ZoneWalkingChar(Who:TCharacter;Point1,Point2:TPoint;AClient : TIdContext);
+	procedure ZoneUpdateDirection(Who:TCharacter;AClient : TIdContext);
 	implementation
 uses
         Main,
@@ -42,7 +47,7 @@ uses
 	PacketTypes,
 	TCPServerRoutines,
 	WinLinux,
-        Being;
+        Being,sysutils;
 
 //------------------------------------------------------------------------------
 //ZoneSendMapConnectReply                                             PROCEDURE
@@ -278,5 +283,158 @@ end;
 		SendBuffer(MainProc.ZoneServer.ToInterTCPClient, ReplyBuffer, TotalLength);
 	end;//ZoneSendGMCommandToInter
 //------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ZoneSendChar                                             PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      make character visible
+//
+//  Changes -
+//    March 18th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+ procedure ZoneSendChar(Who:TCharacter;AClient : TIdContext;Logon:Boolean=False);
+	var
+		ReplyBuffer : TBuffer;
+	begin
+		//Old Packet Version
+		FillChar(ReplyBuffer,54,0);
+		if Logon then
+		begin
+		WriteBufferWord(0, $0079, ReplyBuffer);
+		end else begin
+		WriteBufferWord(0, $0078, ReplyBuffer);
+		end;
+		WriteBufferLongWord(2, Who.ID, ReplyBuffer);
+		WriteBufferWord(6, Who.Speed, ReplyBuffer);
+		WriteBufferWord(8, Who.Status, ReplyBuffer);
+		WriteBufferWord(10, Who.Ailments, ReplyBuffer);
+		WriteBufferWord(12, Who.Option, ReplyBuffer); 
+		WriteBufferWord(14, Who.JID, ReplyBuffer);
+		WriteBufferWord(16, Who.Hair, ReplyBuffer);
+		WriteBufferWord(18, Who.RightHand, ReplyBuffer);  //Weapon
+		WriteBufferWord(20, Who.LeftHand, ReplyBuffer);  //Shield
+		WriteBufferWord(22, Who.HeadBottom, ReplyBuffer);  //Head bottom
+		WriteBufferWord(24, Who.HeadTop, ReplyBuffer);  //Head top
+		WriteBufferWord(26, Who.HeadMid, ReplyBuffer);  //head mid
+		WriteBufferWord(28, Who.HairColor, ReplyBuffer);
+		WriteBufferWord(30, Who.ClothesColor, ReplyBuffer);
+		WriteBufferWord(32, Who.Direction, ReplyBuffer);
+		WriteBufferLongWord(34, Who.GuildID, ReplyBuffer);
+		WriteBufferWord(38, 0, ReplyBuffer);  //Emblem ID
+		WriteBufferWord(42, Who.Karma, ReplyBuffer);
+		WriteBufferByte(44, 0, ReplyBuffer);  //Normal/Ready to fight
+		WriteBufferByte(45, Who.Account.GenderNum, ReplyBuffer);
+		WriteBufferPointAndDirection(46, Who.Position, ReplyBuffer,Who.Direction);
+		WriteBufferByte(49, 5, ReplyBuffer);
+		WriteBufferByte(50, 5, ReplyBuffer);
+		if Logon then
+		begin
+		WriteBufferWord(51, Who.BaseLV, ReplyBuffer);
+		SendBuffer(AClient,ReplyBuffer,GetPacketLength($0079));
+		end else begin
+		WriteBufferByte(51, 0, ReplyBuffer);   //Standing/Dead/Sit
+		WriteBufferWord(52, Who.BaseLV, ReplyBuffer);
+		SendBuffer(AClient,ReplyBuffer,GetPacketLength($0078));
+		end;
+               //Require packet version >=6
+//		WriteBufferWord(0, $022A, ReplyBuffer);
+//                WriteBufferLongWord(2, Who.ID, ReplyBuffer);
+//                WriteBufferWord(6, Who.Speed, ReplyBuffer);
+//                WriteBufferWord(8, 0, ReplyBuffer);     //Options
+//                WriteBufferWord(10, 0, ReplyBuffer);    //Options
+//                WriteBufferLongWord(12, 0, ReplyBuffer);//Options
+//                WriteBufferLongWord(44, 0, ReplyBuffer);//Options
+//                WriteBufferWord(16, Who.JID, ReplyBuffer);
+//                WriteBufferWord(18, Who.Hair, ReplyBuffer);
+//                WriteBufferWord(20, Who.RightHand, ReplyBuffer);  //Weapon
+//                WriteBufferWord(22, Who.LeftHand, ReplyBuffer);  //Shield
+//                WriteBufferWord(24, Who.HeadBottom, ReplyBuffer);  //Head bottom
+//                WriteBufferWord(26, Who.HeadTop, ReplyBuffer);  //Head top
+//                WriteBufferWord(28, Who.HeadMid, ReplyBuffer);  //head mid
+//                WriteBufferWord(30, Who.HairColor, ReplyBuffer);
+//                WriteBufferWord(32, Who.ClothesColor, ReplyBuffer);
+//                WriteBufferWord(34, Who.Direction, ReplyBuffer);
+//                WriteBufferLongWord(36, Who.GuildID, ReplyBuffer);
+//                WriteBufferWord(40, 0, ReplyBuffer);  //Emblem ID
+//                WriteBufferWord(42, Who.Manner, ReplyBuffer);
+//                WriteBufferByte(48, Who.Karma, ReplyBuffer);
+//                WriteBufferByte(49, Who.Account.GenderNum, ReplyBuffer);
+//                WriteBufferPointAndDirection(50, Who.Position, ReplyBuffer,Who.Direction);
+//                WriteBufferByte(53, 5, ReplyBuffer);
+//                WriteBufferByte(54, 5, ReplyBuffer);
+//                WriteBufferByte(55, 0, ReplyBuffer);   //Standing?
+//                WriteBufferWord(56, Who.BaseLV, ReplyBuffer);
+//                SendBuffer(AClient,ReplyBuffer,GetPacketLength($022A));
+	end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ZoneWalkingChar                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Make character disappear
+//
+//  Changes -
+//    March 18th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+         procedure ZoneDisappearChar(Who:TCharacter;AClient : TIdContext;Effect:Byte=0);
+	var
+		ReplyBuffer : TBuffer;
+	begin
+		FillChar(ReplyBuffer,GetPacketLength($0080),0);
+		WriteBufferWord(0, $0080, ReplyBuffer);
+		WriteBufferLongWord(2, Who.ID, ReplyBuffer);
+		WriteBufferByte(6, Effect, ReplyBuffer);
+		SendBuffer(AClient,ReplyBuffer,GetPacketLength($0080));
+	end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ZoneWalkingChar                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Send the destination of charater.
+//
+//  Changes -
+//    March 18th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure ZoneWalkingChar(Who:TCharacter;Point1,Point2:TPoint;AClient : TIdContext);
+	var
+		ReplyBuffer : TBuffer;
+	begin
+		FillChar(ReplyBuffer,GetPacketLength($0086),0);
+		WriteBufferWord(0, $0086, ReplyBuffer);
+		WriteBufferLongWord(2, Who.ID, ReplyBuffer);
+		WriteBufferTwoPoints(6, Point1, Point2, ReplyBuffer);
+		WriteBufferLongWord(12, GetTick, ReplyBuffer);
+		SendBuffer(AClient,ReplyBuffer,GetPacketLength($0086));
+	end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ZoneUpdateDirection                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Update Character Direction to other characters
+//
+//  Changes -
+//    March 20th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure ZoneUpdateDirection(Who:TCharacter;AClient : TIdContext);
+var
+	ReplyBuffer : TBuffer;
+begin
+	FillChar(ReplyBuffer,GetPacketLength($009c),0);
+	WriteBufferWord(0, $009c, ReplyBuffer);
+	WriteBufferLongWord(2, Who.ID, ReplyBuffer);
+	WriteBufferWord(6, Who.HeadDirection, ReplyBuffer);
+	WriteBufferByte(8, Who.Direction, ReplyBuffer);
+	SendBuffer(AClient,ReplyBuffer,GetPacketLength($009c));
+end;
 
 end.

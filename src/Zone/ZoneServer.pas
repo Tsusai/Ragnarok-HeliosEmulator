@@ -17,6 +17,7 @@ uses
 	CommClient,
 	IdContext,
 	SysUtils,
+        math,
 	PacketTypes,
 	Character,
 	GMCommands,
@@ -103,6 +104,8 @@ uses
 	ZoneCharaCommunication,
 	ZoneInterCommunication,
 	ZoneRecv,
+        Being,
+        ZoneSend,
 	//3rd
 	StrUtils;
 
@@ -220,6 +223,10 @@ var
 	CharacterIndex : Integer;
 	ACharacter : TCharacter;
 	AMap : TMap;
+        ABeing			: TBeing;
+        idxY			: SmallInt;
+	idxX			: SmallInt;
+        BeingIdx		: integer;
 begin
 	if AConnection.Data is TThreadLink then
 	begin
@@ -232,6 +239,7 @@ begin
 			if CharacterIndex > -1 then
 			begin
 				AMap.Cell[ACharacter.Position.X][ACharacter.Position.Y].Beings.Delete(CharacterIndex);
+				ACharacter.ShowTeleportOut;
 			end;
 		end;
 		CharacterIndex := CharacterList.IndexOf(ACharacter.CID);

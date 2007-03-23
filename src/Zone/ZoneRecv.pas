@@ -109,7 +109,12 @@ uses
 	const
 		ReadPts : TReadPts
 	);
-
+	procedure CharaRotation(
+			ACharacter  : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
 implementation
 uses
 	Math,
@@ -122,6 +127,7 @@ uses
 	GameConstants,
 	GMCommands,
 	Globals,
+        Being,
 	MapTypes,
 	Map,
 	TCPServerRoutines,
@@ -274,10 +280,6 @@ uses
 		OutBuffer : TBuffer;
 		AMap : TMap;
 		MapIndex : Integer;
-		idx1 : integer;
-		idx2 : integer;
-		idx3 : integer;
-		AnObject : TObject;
 	Begin
 		MapIndex := MainProc.ZoneServer.MapList.IndexOf(AChara.Map);
 		if MapIndex > -1 then
@@ -289,27 +291,6 @@ uses
 		end;
 		AMap := MainProc.ZoneServer.MapList[MapIndex];
 		AChara.MapInfo := AMap;
-
-		AMap.Cell[AChara.Position.X][AChara.Position.Y].Beings.AddObject(AChara.ID,AChara);
-
-		for idx1 := Max(0,AChara.Position.Y-15) to Min(AChara.Position.Y+15,AMap.Size.Y) do
-		begin
-			for idx2 := Max(0,AChara.Position.X-15) to Min(AChara.Position.X+15,AMap.Size.X) do
-			begin
-				for idx3 := AMap.Cell[idx1][idx2].Beings.Count -1 downto 0 do
-				begin
-					AnObject := AMap.Cell[idx1][idx2].Beings.Objects[idx3];
-					if AnObject is TCharacter then
-					begin
-						if AChara <> AnObject then
-						begin
-							//Send AChara to the other character
-							//Send Character to AChara
-						end;
-					end;
-				end;
-			end;
-		end;
 
 
 		AChara.OnTouchIDs.Clear;
@@ -354,10 +335,10 @@ uses
 		WriteBufferWord(0, $013c, OutBuffer);
 		WriteBufferWord(2, 0, OutBuffer);
 		SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($013c,AChara.ClientVersion));
-
 		//Weather updates
 		//Various other tweaks
-
+		AChara.ShowTeleportIn;
+		AMap.Cell[AChara.Position.X][AChara.Position.Y].Beings.AddObject(AChara.ID,AChara);
 	end;//ShowMap
 //------------------------------------------------------------------------------
 
@@ -405,10 +386,8 @@ uses
 		DestPoint : TPoint;
 		spd 			: LongWord;
 		Index			: Integer;
-
 	begin
 		DestPoint := BufferReadOnePoint(ReadPts[0], InBuffer);
-
 		if true {Various checks (not sitting)} then
 		begin
 
@@ -445,6 +424,7 @@ uses
 					AChara.EventList.Add(MoveEvent);
 
 					ZoneSendWalkReply(AChara,DestPoint);
+					ShowCharactersWalking;
 				end;
 			end;
 		end;
@@ -610,5 +590,38 @@ begin
 			SendAreaChat(Chat, ChatLength, ACharacter);
 		end;
 end;{AreaChat}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CharaRotation							       PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Rotate Character, check,  set and send to other characters.
+//
+//  Changes -
+//    March 20th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure CharaRotation(
+			ACharacter  : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
+var
+tmpWord:	Word;
+begin
+	tmpWord:=BufferReadWord(ReadPts[0], InBuffer);
+	if (tmpWord>=0)and(tmpWord<=2)then
+	begin
+	ACharacter.HeadDirection:=tmpWord;
+	end;
+	tmpWord:=BufferReadByte(ReadPts[1], InBuffer);
+	if (tmpWord>=0)and(tmpWord<=7)then
+	begin
+	ACharacter.Direction:=tmpWord;
+	end;
+	ACharacter.UpdateDirection;
+end;{CharaRotation}
 //------------------------------------------------------------------------------
 end.

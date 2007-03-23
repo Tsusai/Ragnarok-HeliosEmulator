@@ -17,11 +17,15 @@ uses
 	Map,
 	EventList,
 	PointList;
-
 //------------------------------------------------------------------------------
 //TBeing                                                                  CLASS
 //------------------------------------------------------------------------------
-type TBeing = class
+type
+TBeing = class;
+
+TLoopCall = procedure(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
+
+TBeing = class
 	protected
 		fName             : String;
 		fJID              : Word;
@@ -35,6 +39,8 @@ type TBeing = class
 		fHP               : Word;
 		fMaxSP            : Word;
 		fSP               : Word;
+		fStatus           : Word;
+		fAilments         : Word;
 		fOption           : Word;
 		fMap              : String;
 		fPosition         : TPoint;
@@ -52,14 +58,19 @@ type TBeing = class
 		procedure SetHP(Value : word); virtual;
 		procedure SetMaxSP(Value : word); virtual;
 		procedure SetSP(Value : word); virtual;
+		Procedure SetStatus(Value : word); virtual;
+		Procedure SetAilments(Value : word); virtual;
 		Procedure SetOption(Value : word); virtual;
 		procedure SetMap(Value : string); virtual;
 		procedure SetPosition(Value : TPoint); virtual;
+	private
+		procedure AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True);
 
 	public
 		ID					: LongWord;
 		MapPointer	: Pointer;
 		Speed 			: word;
+		HeadDirection	: word;
 		Direction 	: byte;
 
 		AttackRange	: word;
@@ -94,6 +105,8 @@ type TBeing = class
 		property HP        : Word       read fHP write SetHP;
 		property MaxSP     : Word       read fMaxSP write SetMaxSP;
 		property SP        : Word       read fSP write SetSP;
+		property Status    : Word       read fStatus write SetStatus;
+		property Ailments  : Word       read fAilments write SetAilments;
 		property Option    : Word       read fOption write SetOption;
 		property Map       : string     read fMap write SetMap;
 		property Position  : TPoint     read fPosition write SetPosition;
@@ -102,6 +115,11 @@ type TBeing = class
 		procedure CalcMaxHP; virtual;
 		procedure CalcMaxSP; virtual;
 		procedure CalcSpeed; virtual;
+
+		procedure ShowCharactersWalking;
+		procedure ShowTeleportIn;
+		procedure ShowTeleportOut;
+		procedure UpdateDirection;
 
 		Constructor Create();
 		Destructor Destroy();override;
@@ -119,7 +137,9 @@ uses
 	Classes,
 	SysUtils,
 	WinLinux,
-	Main;
+	Main,
+	ZoneSend,
+	AreaLoopEvents;
 
 
 //------------------------------------------------------------------------------
@@ -185,7 +205,6 @@ begin
 			begin
 				ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
 				if Self = ABeing then Continue;
-
 				if ((Directions[Direction].X <> 0) and (abs(OldPt.Y - ABeing.Position.Y) < MainProc.ZoneServer.Options.CharShowArea) and (OldPt.X = ABeing.Position.X + Directions[Direction].X * (MainProc.ZoneServer.Options.CharShowArea-1))) OR
 					((Directions[Direction].Y <> 0) and (abs(OldPt.X - ABeing.Position.X) < MainProc.ZoneServer.Options.CharShowArea) and (OldPt.Y = ABeing.Position.Y + Directions[Direction].Y * (MainProc.ZoneServer.Options.CharShowArea-1))) then
 				begin
@@ -194,6 +213,8 @@ begin
 					begin
 						if ABeing is TCharacter then
 						begin
+							 ZoneDisappearChar(TCharacter(Self),TCharacter(ABeing).ClientInfo);
+							 ZoneDisappearChar(TCharacter(ABeing),TCharacter(Self).ClientInfo);
 							//Send First Being disapearing to ABeing
 						end;
 						//if ABeing is NPC
@@ -210,12 +231,9 @@ begin
 					begin
 						if ABeing is TCharacter then
 						begin
-							{ TODO : Send Walking Packet to other clients if inrange 15 cells }
-							//Send First Being apearing to ABeing
-							{if Point in range with ABeing, 15 then
-							begin
-								SendWalking packet
-							end;}
+							ZoneSendChar(TCharacter(Self),TCharacter(ABeing).ClientInfo);
+							ZoneSendChar(TCharacter(ABeing),TCharacter(Self).ClientInfo);
+							ZoneWalkingChar(TCharacter(Self),Path[Path.count-1],Position,TCharacter(ABeing).ClientInfo);
 						end;
 						{ TODO : Send NPC visual packets }
 						//if ABeing is NPC
@@ -284,6 +302,102 @@ end;//Walk
 
 
 //------------------------------------------------------------------------------
+//ViewAreaLoop                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      master procedure for Area loop, and call Dynamic Sub Procedure.
+//
+//  Changes -
+//    March 20th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure TBeing.AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True);
+var
+		idxY : integer;
+		idxX : integer;
+		BeingIdx : integer;
+		ABeing : TBeing;
+begin
+	for idxY := Max(0,Position.Y-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.Y+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.Y) do
+	begin
+		for idxX := Max(0,Position.X-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.X+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.X) do
+		begin
+			for BeingIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
+			begin
+				ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
+				if (Self = ABeing) and (AIgnoreCurrentBeing) then Continue;
+				ALoopCall(Position.X, Position.Y, Self, ABeing);
+			end;
+		end;
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ShowCharactersWalking                                                PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//	Show other character that you are walking...
+//
+//  Changes -
+//	March 20th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure TBeing.ShowCharactersWalking;
+begin
+	AreaLoop(ShowCharWalk, True);
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ShowTeleportIn                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+// 	Show teleport in effect to other characters
+//
+//  Changes -
+//	March 20th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure TBeing.ShowTeleportIn;
+begin
+	AreaLoop(ShowTeleIn, True);
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ShowTeleportOut                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+// 	Show teleport out effect to other characters
+//
+//  Changes -
+//	March 20th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure TBeing.ShowTeleportOut;
+begin
+	AreaLoop(TeleOut, True);
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//UpdateDirection                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+// 	Update Direction to other characters
+//
+//  Changes -
+//	March 20th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure TBeing.UpdateDirection;
+begin
+	AreaLoop(UpdateDir, True);
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //Create							                                                PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
@@ -331,6 +445,8 @@ procedure TBeing.SetMaxHP(Value : word); begin fMaxHP := Value; end;
 procedure TBeing.SetHP(Value : word); begin fHP := Value; end;
 procedure TBeing.SetMaxSP(Value : word); begin fMaxSP := Value; end;
 procedure TBeing.SetSP(Value : word); begin fSP := Value; end;
+Procedure TBeing.SetStatus(Value : word); begin fStatus := Value; end;
+Procedure TBeing.SetAilments(Value : word); begin fAilments := Value; end;
 Procedure TBeing.SetOption(Value : word); begin fOption := Value; end;
 procedure TBeing.SetMap(Value : string); begin fMap := Value; end;
 procedure TBeing.SetPosition(Value : TPoint); begin fPosition := Value; end;

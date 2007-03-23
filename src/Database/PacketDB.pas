@@ -183,10 +183,10 @@ Begin
 				end else if Command = 'wis' then begin
 					ExecCommand := Whisper;
 				end else if Command = 'gmmessage' then begin
-					ExecCommand := GMBroadcast;
+					ExecCommand := GMBroadcast;}
 				end	else if Command = 'changedir' then begin
 					ExecCommand := CharaRotation;
-				end	else if Command = 'takeitem' then	begin
+				{end	else if Command = 'takeitem' then	begin
 					ExecCommand := TakeItem;
 				end else if Command = 'dropitem' then begin
 					ExecCommand := DropItem;
