@@ -109,12 +109,19 @@ uses
 	const
 		ReadPts : TReadPts
 	);
+	procedure RecvGMCommandFromInter(
+		InBuffer : TBuffer
+	);
+	procedure RecvGMCommandResultFromInter(
+			InBuffer : TBuffer
+	);
 	procedure CharaRotation(
 			ACharacter  : TCharacter;
 			InBuffer : TBuffer;
 		const
 			ReadPts : TReadPts
 	);
+	
 implementation
 uses
 	Math,
@@ -122,6 +129,7 @@ uses
 	Types,
 	Account,
 	BufferIO,
+	CommClient,
 	Main,
 	SysUtils,
 	GameConstants,
@@ -608,20 +616,88 @@ procedure CharaRotation(
 		const
 			ReadPts : TReadPts
 	);
-var
-tmpWord:	Word;
+
 begin
-	tmpWord:=BufferReadWord(ReadPts[0], InBuffer);
-	if (tmpWord>=0)and(tmpWord<=2)then
-	begin
-	ACharacter.HeadDirection:=tmpWord;
-	end;
-	tmpWord:=BufferReadByte(ReadPts[1], InBuffer);
-	if (tmpWord>=0)and(tmpWord<=7)then
-	begin
-	ACharacter.Direction:=tmpWord;
-	end;
+	ACharacter.HeadDirection := BufferReadWord(ReadPts[0], InBuffer);
+	ACharacter.Direction:=BufferReadByte(ReadPts[1], InBuffer);
 	ACharacter.UpdateDirection;
 end;{CharaRotation}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvGMCommandFromInter																							PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Gets the gm command information from the buffer.
+//
+//  Changes -
+//    March 21st, 2007 - RaX - Created.
+//------------------------------------------------------------------------------
+procedure RecvGMCommandFromInter(
+			InBuffer : TBuffer
+	);
+var
+	CommandID		: Word;
+	GMID				: LongWord;
+	CharacterID	: LongWord;
+	ArgCount		: Word;
+	Arguments		: array of String;
+	ArgumentLen	: Integer;
+	Index				: Integer;
+	BufferIndex	: Integer;
+	Error				: String;
+	Success			: Boolean;
+
+begin
+	CommandID 	:= BufferReadWord(4,InBuffer);
+	GMID				:= BufferReadLongWord(6, InBuffer);
+	CharacterID	:= BufferReadLongWord(10, InBuffer);
+	ArgCount		:= BufferReadWord(14, InBuffer);
+
+	BufferIndex := 16;
+
+	SetLength(Arguments, ArgCount);
+	for Index := 0 to ArgCount - 1 do
+	begin
+		ArgumentLen := BufferReadWord(BufferIndex, InBuffer);
+		inc(BufferIndex, 2);
+		Arguments[Index] := BufferReadString(BufferIndex,ArgumentLen,InBuffer);
+		inc(BufferIndex, ArgumentLen);
+	end;
+
+	Success := MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, Error);
+	ZoneSendGMCommandResultToInter(GMID,CharacterID, Success, Error);
+end;{RecvGMCommandFromInter}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvGMCommandResultFromInter 																			PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Gets the gm command result information from the buffer.
+//
+//  Changes -
+//    March 21st, 2007 - RaX - Created.
+//------------------------------------------------------------------------------
+procedure RecvGMCommandResultFromInter(
+			InBuffer : TBuffer
+	);
+var
+	CharacterID : LongWord;
+	ErrorLength	: LongWord;
+	Error				: String;
+	ACharacter	: TCharacter;
+
+begin
+	CharacterID := BufferReadLongWord(10, InBuffer);
+	ErrorLength := BufferReadLongWord(14, InBuffer);
+	Error				:= BufferReadString(18, ErrorLength, InBuffer);
+	ACharacter	:= MainProc.ZoneServer.CharacterList[
+										MainProc.ZoneServer.CharacterList.IndexOf(CharacterID)
+									];
+	ZoneSendCharacterMessage(ACharacter, Error);
+end;{RecvGMCommandFromInter}
 //------------------------------------------------------------------------------
 end.

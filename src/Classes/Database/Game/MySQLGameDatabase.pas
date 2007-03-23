@@ -188,7 +188,7 @@ begin
 	Result := Connection.query(QString,StoreResult,ExecutedOK);
 	if not ExecutedOK then
 	begin
-		Console.Message('MySQL Query error: ' + QString, 'Game Database', MS_ERROR);
+		Console.Message('MySQL Query error: ' + QString + '- '+Connection.LastError, 'Game Database' , MS_ERROR);
 	end;
 end;
 //------------------------------------------------------------------------------

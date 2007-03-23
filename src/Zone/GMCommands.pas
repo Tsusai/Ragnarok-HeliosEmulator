@@ -39,11 +39,13 @@ implementation
 
 uses
 	SysUtils,
-	Globals;
-function test(Arguments : array of String; var Error : String) : Boolean;
+	Globals,
+	Main;
+
+function ZoneStatus(Arguments : array of String; var Error : String) : Boolean;
 begin
-	Result := FALSE;
-	Error := 'HARBL?';
+	Result := TRUE;
+	Error := 'Zone '+ IntToStr(MainProc.ZoneServer.Options.ID) + ' : ' + IntToStr(MainProc.ZoneServer.CharacterList.Count) + ' Online!';
 end;
 //------------------------------------------------------------------------------
 //Create																														CONSTRUCTOR
@@ -60,7 +62,7 @@ begin
 	inherited;
 	fNames := TStringList.Create;
 	fLevels:= TIntList32.Create;
-	AddCommand('test',test, 0);
+	//AddCommand('ZoneStatus',ZoneStatus, 99);
 end;{Create}
 //------------------------------------------------------------------------------
 

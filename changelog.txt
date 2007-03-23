@@ -14,10 +14,22 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
-- Rev 186 -
-[2007/03/22] - A careless mistake : Forgot commit file AreaLoopEvents.pas
 
-- Rev 185 -
+- Rev 187 -
+[2007/03/22] - RaX - fixed the dpr - Aeomin had forgotten to commit it.
+[2007/03/22] - RaX - Finished GM Command system, Now there's an ugly bug that has surfaced
+ when gm commands are used because of the database clients not being thread safe, so
+ the system has been disabled for now.
+[2007/03/22] - RaX - Inter Server now accepts packet 2207 and forwards it to the zones.
+ this new packet is the command execution result, it tells the character whatever the
+ command sends back.
+-
+
+- Rev 186 - BROKEN BUILD
+[2007/03/22] - A careless mistake : Forgot commit file AreaLoopEvents.pas
+-
+
+- Rev 185 - BROKEN BUILD
 [2007/03/22] - Aeomin - Now able to show other characters ingame.
 [2007/03/21] - Aeomin - Fixed direction being opposite (Should be counter-clockwise).
 [2007/03/21] - Aeomin - Put most of area loops into one procedure and typed procedures to
@@ -26,6 +38,7 @@ Developers & Contributers
  when making packet of character list (Character Server).
 [2007/03/20] - Aeomin - Able to change direction and show to other character.
 [2007/03/20] - Aeomin - Added Status and Ailments in TBeing for future needs.
+-
 
 - Rev 184 -
 [2007/03/21] - RaX - Overview : Added to the inter server, it now prepares to send packet

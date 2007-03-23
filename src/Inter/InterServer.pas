@@ -31,6 +31,8 @@ type
 		fPort            : Word;
 
 		fZoneServerList	 : TIntList32;
+		fClientList			 : TList;
+
 		Commands				 : TGMCommands;
 		TCPServer        : TIdTCPServer;
 
@@ -61,6 +63,7 @@ type
 			CharacterID : LongWord;
 			CommandSeparator : TStringList
 		);
+		procedure RecvGMCommandReply(AClient : TIdContext; InBuffer : TBuffer);
 		procedure ParseInterServ(AClient : TIdContext);
 
 	public
@@ -86,6 +89,7 @@ uses
 	Main,
 	Globals,
 	Character,
+	SyncObjs,
 	TCPServerRoutines,
 	ZoneServerInfo,
 	ZoneInterCommunication,
@@ -104,15 +108,16 @@ uses
 //------------------------------------------------------------------------------
 Constructor TInterServer.Create;
 begin
+	Inherited;
 	Commands := TGMCommands.Create;
-  TCPServer := TIdTCPServer.Create;
-
+	TCPServer := TIdTCPServer.Create;
 	TCPServer.OnExecute   := ParseInterServ;
 	TCPServer.OnConnect		:= OnConnect;
 	TCPServer.OnException := OnException;
 	TCPServer.OnDisconnect:= OnDisconnect;
 
 	fZoneServerList := TIntList32.Create;
+	fClientList := TList.Create;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -131,7 +136,9 @@ Destructor TInterServer.Destroy;
 begin
 	TCPServer.Free;
 	fZoneServerList.Free;
+	fClientList.Free;
 	Commands.Free;
+	Inherited;
 end;{Destroy}
 //------------------------------------------------------------------------------
 
@@ -148,6 +155,7 @@ end;{Destroy}
 //------------------------------------------------------------------------------
 procedure TInterServer.OnConnect(AConnection: TIdContext);
 begin
+	fClientList.Add(AConnection);
 end;{OnDisconnect}
 //------------------------------------------------------------------------------
 
@@ -177,6 +185,7 @@ begin
 			AZoneServInfo.Free;
 		end;
 	end;
+	fClientList.Delete(fClientList.IndexOf(AConnection));
 end;{OnDisconnect}
 //------------------------------------------------------------------------------
 
@@ -321,6 +330,16 @@ begin
 				RecvGMCommand(AClient, ABuffer);
 			end;
 		end;
+	$2207: // Zone server sending GM command result
+		begin
+			if AClient.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AClient,ABuffer[2],2);
+				Size := BufferReadWord(2,ABuffer);
+				RecvBuffer(AClient,ABuffer[4],Size-4);
+				RecvGMCommandReply(AClient, ABuffer);
+			end;
+		end;
 	else
 		begin
 			Console.Message('Unknown Inter Server Packet : ' + IntToHex(PacketID,4), 'Inter Server', MS_WARNING);
@@ -428,7 +447,7 @@ var
 	CommandSeparator: TStringList;
 
 begin
-  //See Notes/GMCommand Packets.txt
+	//See Notes/GMCommand Packets.txt
 	GMID						:= BufferReadLongWord(4, InBuffer);
 	CharaID					:= BufferReadLongWord(8, InBuffer);
 	CommandLength		:= BufferReadWord(12,InBuffer);
@@ -438,11 +457,58 @@ begin
 	CommandSeparator.Delimiter := ',';
 	CommandSeparator.DelimitedText := CommandString;
 
-  //after getting the command information, we get ready to send it to the other
-  //zones.
-	InterSendGMCommandToZones(AClient, GMID,CharaID,CommandSeparator);
+	//after getting the command information, we get ready to send it to the other
+	//zones.
+	InterSendGMCommandToZones(AClient, GMID, CharaID, CommandSeparator);
 
 	CommandSeparator.Free;
+end; //RecvGMCommand
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvGMCommand   			                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      Gets a gm command from an authenticated zone server
+//
+//	Changes -
+//		March 19th, 2007 - RaX - Created Header.
+//
+//------------------------------------------------------------------------------
+procedure TInterServer.RecvGMCommandReply(AClient : TIdContext; InBuffer : TBuffer);
+//See Notes/GM Command Packets for explanation.
+var
+	ErrorLength		: LongWord;
+	CharacterID		: LongWord;
+	ACharacter		: TCharacter;
+	ZoneID				: LongWord;
+	Index					: Integer;
+	ListClient		: TIdContext;
+	Size					: LongWord;
+
+begin
+	//See Notes/GMCommand Packets.txt
+	ErrorLength		:= BufferReadLongWord(12,InBuffer);
+	if ErrorLength > 0 then
+	begin
+		Size := BufferReadLongWord(2, InBuffer);
+		CharacterID := BufferReadLongWord(10, InBuffer);
+		ACharacter := ADatabase.GameData.GetChara(CharacterID);
+		ZoneID := ADatabase.StaticData.GetMapZoneID(ACharacter.Map);
+		for Index := 0 to fClientList.Count - 1 do
+		begin
+			if assigned(TZoneServerLink(TIdContext(fClientList[Index]).Data)) then
+			begin
+				if TZoneServerLink(TIdContext(fClientList[Index]).Data).Info.ZoneID = ZoneID then
+				begin
+					ListClient := TIdContext(fClientList[Index]);
+					SendBuffer(ListClient, InBuffer, Size);
+					Break;
+				end;
+			end;
+		end;
+	end;
 end; //RecvGMCommand
 //------------------------------------------------------------------------------
 
@@ -464,7 +530,7 @@ var
 	ABuffer		: TBuffer;
 	Size			: Cardinal;
 	BufferIndex: Integer;
-
+	ListClient : TIdContext;
 begin
   //Get the name do the command, remove the first character which is #
 	CommandSeparator[0] := Commands.GetCommandName(CommandSeparator[0]);
@@ -492,11 +558,14 @@ begin
     //zones. - incomplete
 		Size := BufferIndex+1;
 		WriteBufferWord(2, Size, ABuffer);
-		{for Index := 0 to TCPServer.Bindings.Count - 1 do
+		for Index := 0 to fClientList.Count - 1 do
 		begin
-			ListClient := TIdContext(TCPServer.IOHandler.);
-			SendBuffer(ListClient, ABuffer, Size);
-		end;}
+			if assigned(TZoneServerLink(TIdContext(fClientList[Index]).Data)) then
+			begin
+				ListClient := fClientList[Index];
+				SendBuffer(ListClient, ABuffer, Size);
+			end;
+		end;
 	end else
 	begin
     //GM command debug message.

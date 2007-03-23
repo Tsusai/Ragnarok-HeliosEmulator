@@ -10,25 +10,26 @@ COMMAND		:14 //The command string itself.
 
 The Inter server then processes said gm command and sends this to each zone...
 PID		:0 //Packet ID : Word
-COMMANDID	:2 //GMCommand ID : Word
-GMID		:4 //The Account ID of the gm making the command : LongWord
-CID		:12//the character ID that the gm command is being used from : LongWord
-ARGNUM		:16//how many arguments are being sent. :LongWord
-<ARGS>		:18+//The command arguments
+Size		:2 //size of the entire packet.
+COMMANDID	:4 //GMCommand ID : Word
+GMID		:6 //The Account ID of the gm making the command : LongWord
+CID		:10//the character ID that the gm command is being used from : LongWord
+ARGNUM		:14//how many arguments are being sent. :LongWord
+<ARGS>		:16+//The command arguments
 
 Args are denoted by a LENGTH attribute, which is a long word
 
 EX::
-ARGLEN1		:18 -the first arglen starts at space 20 and is 5 characters long
-ARG1		:20- the argument is now known to be 5 characters long so we read 5 chars.
-ARGLEN2		:25- the next argument length starts at 25,(20+ARGLEN) where arglen is 5.
+ARGLEN1		:16 -the first arglen starts at space 20 and is 5 characters long
+ARG1		:18- the argument is now known to be 5 characters long so we read 5 chars.
+ARGLEN2		:23- the next argument length starts at 25,(20+ARGLEN) where arglen is 5.
 
 The zone servers then each send their reply...
 
 PID		:0
-GMID		:2 //The Account ID of the gm making the command : LongWord
-AID		:6 //The account ID that the gm command is being used on : LongWord
-CID		:10//the character ID that the gm command is being used on : LongWord
+Size		:2
+GMID		:6 //The Account ID of the gm making the command : LongWord
+CID		:10//the character ID : LongWord
 COMMANDREPLYLEN	:14
 COMMANDREPLY	:18
 
@@ -38,9 +39,9 @@ The Inter server then sends the originating zone server back the accepted comman
 the gm command obviously failed because the character does not exist.
 
 PID		:0
-GMID		:2 //The Account ID of the gm making the command : LongWord
-AID		:6 //The account ID that the gm command is being used on : LongWord
-CID		:10//the character ID that the gm command is being used on : LongWord
+Size		:2
+GMID		:6 //The Account ID of the gm making the command : LongWord
+CID		:10//the character ID : LongWord
 COMMANDREPLYLEN	:14
 COMMANDREPLY	:18
 

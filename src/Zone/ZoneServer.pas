@@ -223,10 +223,7 @@ var
 	CharacterIndex : Integer;
 	ACharacter : TCharacter;
 	AMap : TMap;
-        ABeing			: TBeing;
-        idxY			: SmallInt;
-	idxX			: SmallInt;
-        BeingIdx		: integer;
+
 begin
 	if AConnection.Data is TThreadLink then
 	begin
@@ -792,12 +789,20 @@ begin
 			end;
 		end;
 
-	$2206:
+	$2206://Get a gm command from the inter server
 		begin
-			RecvBuffer(AClient,ABuffer[2], 2);
+			RecvBuffer(AClient,ABuffer[2],2);
 			Size := BufferReadWord(2,ABuffer);
-			RecvBuffer(AClient,ABuffer[4], Size-4);
-			Console.Message('Got GM Command from Inter!', 'Zone Server', MS_DEBUG);
+			RecvBuffer(AClient,ABuffer[4],Size-4);
+			RecvGMCommandFromInter(ABuffer);
+		end;
+
+	$2207://Get a gm command reply from the inter server
+		begin
+			RecvBuffer(AClient,ABuffer[2],2);
+			Size := BufferReadWord(2,ABuffer);
+			RecvBuffer(AClient,ABuffer[4],Size-4);
+			RecvGMCommandResultFromInter(ABuffer);
 		end;
 	end;
 end;{InterClientRead}

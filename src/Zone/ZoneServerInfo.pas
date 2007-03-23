@@ -12,7 +12,8 @@ unit ZoneServerInfo;
 
 interface
 uses
-	ServerInfo;
+	ServerInfo,
+	IdContext;
 
 type
 //------------------------------------------------------------------------------

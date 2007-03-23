@@ -153,6 +153,7 @@ compile for linux, at the same time*}
   MapTypes in 'Common\MapTypes.pas',
 
 	//Other
+	AreaLoopEvents in 'Classes\AreaLoopEvents.pas',
 	BufferIO in 'Common\BufferIO.pas',
 	Commands in 'Classes\Commands.pas',
 	CommClient in 'Classes\CommClient.pas',
@@ -263,6 +264,7 @@ compile for linux, at the same time*}
   MapTypes in 'Common/MapTypes.pas',
 
 	//Other
+	AreaLoopEvents in 'Classes/AreaLoopEvents.pas',
 	BufferIO in 'Common/BufferIO.pas',
 	Commands in 'Classes/Commands.pas',
 	CommClient in 'Classes/CommClient.pas',

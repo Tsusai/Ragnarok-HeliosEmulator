@@ -14,8 +14,10 @@ unit ZoneSend;
 interface
 uses
 	Types,
-         Math,
+	Math,
 	Character,
+	CommClient,
+	SysUtils,
 	{Third Party}
 	IdContext
 	;
@@ -35,19 +37,26 @@ uses
 
 
 	procedure ZoneSendGMCommandtoInter(ACharacter : TCharacter; Command : String);
+	procedure ZoneSendGMCommandResultToInter(AccountID : LongWord; CharacterID : LongWord; Success : Boolean; Error : String);
 
-        procedure ZoneSendChar(Who:TCharacter;AClient : TIdContext;Logon:Boolean=False);
+	procedure ZoneSendCharacterMessage(
+		ACharacter	: TCharacter;
+		AMessage		: String
+	);
+
 	procedure ZoneDisappearChar(Who:TCharacter;AClient : TIdContext;Effect:Byte=0);
 	procedure ZoneWalkingChar(Who:TCharacter;Point1,Point2:TPoint;AClient : TIdContext);
 	procedure ZoneUpdateDirection(Who:TCharacter;AClient : TIdContext);
+	procedure ZoneSendChar(Who:TCharacter;AClient : TIdContext;Logon:Boolean=False);
+
 	implementation
 uses
-        Main,
+	Main,
 	BufferIO,
 	PacketTypes,
 	TCPServerRoutines,
 	WinLinux,
-        Being,sysutils;
+	Being;
 
 //------------------------------------------------------------------------------
 //ZoneSendMapConnectReply                                             PROCEDURE
@@ -239,10 +248,7 @@ begin
 				ABeing := ACharacter.MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
 				if ABeing = ACharacter then
 				begin
-					WriteBufferWord(0, $008e, OutBuffer);
-					WriteBufferWord(2, Length+5, OutBuffer);
-					WriteBufferString(4, Chat+#0, Length+1, OutBuffer);
-					Sendbuffer(ACharacter.ClientInfo, OutBuffer, Length+5);
+					ZoneSendCharacterMessage(ACharacter, Chat);
 				end else
 				begin
 					WriteBufferWord(0, $008d, OutBuffer);
@@ -284,6 +290,61 @@ end;
 	end;//ZoneSendGMCommandToInter
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ZoneSendGMCommandResultToInter                                           PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Sends the received gm command to the inter server.
+//
+//  Changes -
+//    March 19th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
+	procedure ZoneSendGMCommandResultToInter(
+		AccountID : LongWord;
+		CharacterID : LongWord;
+		Success : Boolean;
+		Error : String
+	);
+	var
+		ReplyBuffer : TBuffer;
+	begin
+		if Success then
+		begin
+			WriteBufferWord(0, $2207, ReplyBuffer);
+			WriteBufferLongWord(2, 18+Length(Error), ReplyBuffer);
+			WriteBufferLongWord(6, AccountID, ReplyBuffer);
+			WriteBufferLongWord(10, CharacterID, ReplyBuffer);
+			WriteBufferLongWord(14, Length(Error), ReplyBuffer);
+			WriteBufferString(18, Error, Length(Error), ReplyBuffer);
+			SendBuffer(MainProc.ZoneServer.ToInterTCPClient,ReplyBuffer,18+Length(Error));
+		end;
+	end;//ZoneSendGMCommandToInter
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ZoneSendGMCommandResultToInter                                           PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Sends the received gm command to the inter server.
+//
+//  Changes -
+//    March 19th, 2007 - RaX - Created Header;
+//------------------------------------------------------------------------------
+	procedure ZoneSendCharacterMessage(
+		ACharacter	: TCharacter;
+		AMessage		: String
+	);
+	var
+		OutBuffer	: TBuffer;
+	begin
+		WriteBufferWord(0, $008e, OutBuffer);
+		WriteBufferWord(2, Length(AMessage)+5, OutBuffer);
+		WriteBufferString(4, AMessage+#0, Length(AMessage)+1, OutBuffer);
+		Sendbuffer(ACharacter.ClientInfo, OutBuffer, Length(AMessage)+5);
+	end;//ZoneSendCharacterMessage
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //ZoneSendChar                                             PROCEDURE
