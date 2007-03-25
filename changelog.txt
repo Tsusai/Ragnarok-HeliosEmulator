@@ -15,6 +15,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 189 -
+[2007/03/24] - Aeomin - Added IgnoreMob & IgnoreNPC parameter to TBeing.AreaLoop to extend for
+ future NPCs (Mob also is NPC) [Being.pas]
+[2007/03/24] - Aeomin - Extended TBeing.Walk to handle NPC/Mob and etc... [Being.pas]
+[2007/03/24] - Aeomin - Renamed ZoneWalkingChar to ZoneWalkingBeing, ZoneSendChar to ZoneSendBeing,
+ ZoneDisappearChar to ZoneDisappearBeing, to support other than character (Npc,Mob etc) [ZoneSend.pas]
+[2007/03/23] - Aeomin - More typo fixes on direction
+
 - Rev 188 -
 [2007/03/24] CR - Overview: Hint Removal, Refactor, Credits.
  Removed a warning for an unused local variable in TCharacter.SendSubStat.

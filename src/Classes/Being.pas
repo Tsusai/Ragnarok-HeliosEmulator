@@ -64,7 +64,7 @@ TBeing = class
 		procedure SetMap(Value : string); virtual;
 		procedure SetPosition(Value : TPoint); virtual;
 	private
-		procedure AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True);
+		procedure AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True; IgnoreMob:Boolean=True; IgnoreNPC:Boolean=True);
 
 	public
 		ID					: LongWord;
@@ -116,7 +116,7 @@ TBeing = class
 		procedure CalcMaxSP; virtual;
 		procedure CalcSpeed; virtual;
 
-		procedure ShowCharactersWalking;
+		procedure ShowBeingWalking;
 		procedure ShowTeleportIn;
 		procedure ShowTeleportOut;
 		procedure UpdateDirection;
@@ -213,14 +213,14 @@ begin
 					begin
 						if ABeing is TCharacter then
 						begin
-							 ZoneDisappearChar(TCharacter(Self),TCharacter(ABeing).ClientInfo);
-							 ZoneDisappearChar(TCharacter(ABeing),TCharacter(Self).ClientInfo);
+							 ZoneDisappearBeing(Self,   TCharacter(ABeing).ClientInfo);
+							 ZoneDisappearBeing(ABeing, TCharacter(Self).ClientInfo);
 							//Send First Being disapearing to ABeing
+						end else  //Npc/Mob/Pet/Homunculus/Mercenary
+						begin
+							{Todo: events for NPC}
+							ZoneDisappearBeing(ABeing,TCharacter(Self).ClientInfo);
 						end;
-						//if ABeing is NPC
-						//Special npc packets
-						//else
-						//Send basic disapear packet of ABeing to First Being
 					end;
 				end;
 
@@ -231,15 +231,14 @@ begin
 					begin
 						if ABeing is TCharacter then
 						begin
-							ZoneSendChar(TCharacter(Self),TCharacter(ABeing).ClientInfo);
-							ZoneSendChar(TCharacter(ABeing),TCharacter(Self).ClientInfo);
-							ZoneWalkingChar(TCharacter(Self),Path[Path.count-1],Position,TCharacter(ABeing).ClientInfo);
+							ZoneSendBeing(Self, TCharacter(ABeing).ClientInfo);
+							ZoneSendBeing(ABeing, TCharacter(Self).ClientInfo);
+							ZoneWalkingBeing(Self,Path[Path.count-1],Position,TCharacter(ABeing).ClientInfo);
+						end else  //Npc/Mob/Pet/Homunculus/Mercenary
+						begin
+							{Todo: events for NPC}
+							ZoneSendBeing(ABeing,TCharacter(Self).ClientInfo);
 						end;
-						{ TODO : Send NPC visual packets }
-						//if ABeing is NPC
-						//Special npc packets
-						//else
-						//Send basic Appear packet of ABeing to First Being
 					end;
 				end;
 			end;
@@ -310,7 +309,7 @@ end;//Walk
 //  Changes -
 //    March 20th, 2007 - Aeomin - Created Header
 //------------------------------------------------------------------------------
-procedure TBeing.AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True);
+procedure TBeing.AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True; IgnoreMob:Boolean=True; IgnoreNPC:Boolean=True);
 var
 		idxY : integer;
 		idxX : integer;
@@ -324,7 +323,9 @@ begin
 			for BeingIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
 			begin
 				ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
-				if (Self = ABeing) and (AIgnoreCurrentBeing) then Continue;
+				if (Self = ABeing) and AIgnoreCurrentBeing then Continue;
+//				if (ABeing is TNpc) and IgnoreNPC then Continue;
+				{TODO : support other than TCharacter...}
 				ALoopCall(Position.X, Position.Y, Self, ABeing);
 			end;
 		end;
@@ -334,17 +335,18 @@ end;
 
 
 //------------------------------------------------------------------------------
-//ShowCharactersWalking                                                PROCEDURE
+//ShowBeingWalking                                                     PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
 //	Show other character that you are walking...
 //
 //  Changes -
 //	March 20th, 2007 - Aeomin - Created Header
+//	March 23th, 2007 - Aeomin - Rename from ShowCharWalking to ShowBeingWalking
 //------------------------------------------------------------------------------
-procedure TBeing.ShowCharactersWalking;
+procedure TBeing.ShowBeingWalking;
 begin
-	AreaLoop(ShowCharWalk, True);
+	AreaLoop(ShowBeingWalk, True);
 end;
 //------------------------------------------------------------------------------
 

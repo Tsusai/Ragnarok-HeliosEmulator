@@ -432,11 +432,11 @@ uses
 					AChara.EventList.Add(MoveEvent);
 
 					ZoneSendWalkReply(AChara,DestPoint);
-					ShowCharactersWalking;
+					ShowBeingWalking;
 				end;
 			end;
 		end;
-	end;//CharaWalkRequest
+	end;{CharaWalkRequest}
 //------------------------------------------------------------------------------
 
 
@@ -673,7 +673,7 @@ end;{RecvGMCommandFromInter}
 
 
 //------------------------------------------------------------------------------
-//RecvGMCommandResultFromInter 																			PROCEDURE
+//RecvGMCommandResultFromInter						PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
 //      Gets the gm command result information from the buffer.

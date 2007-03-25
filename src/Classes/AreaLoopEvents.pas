@@ -15,7 +15,7 @@ interface
 uses
 	Classes, Math, Main, Globals, Character, Being, ZoneSend;
 
-	procedure ShowCharWalk(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
+	procedure ShowBeingWalk(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
 	procedure ShowTeleIn(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
 	procedure TeleOut(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
 	procedure UpdateDir(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
@@ -30,11 +30,11 @@ implementation
 //  Changes -
 //	March 22th, 2007 - Aeomin - Created Header
 //------------------------------------------------------------------------------
-procedure ShowCharWalk(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
+procedure ShowBeingWalk(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
 begin
-with TCharacter(ACurrentBeing) do
+with ACurrentBeing do
 begin
-	ZoneWalkingChar(TCharacter(ACurrentBeing),Path[Path.count-1],Position,TCharacter(ABeing).ClientInfo);
+	ZoneWalkingBeing(ACurrentBeing,Path[Path.count-1],Position,TCharacter(ABeing).ClientInfo);
 end;
 end;
 //------------------------------------------------------------------------------
@@ -51,8 +51,8 @@ end;
 //------------------------------------------------------------------------------
 procedure ShowTeleIn(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
 begin
-	ZoneSendChar(TCharacter(ACurrentBeing), TCharacter(ABeing).ClientInfo, True);
-	ZoneSendChar(TCharacter(ABeing), TCharacter(ACurrentBeing).ClientInfo);
+	ZoneSendBeing(ACurrentBeing, TCharacter(ABeing).ClientInfo, True);
+	ZoneSendbeing(ABeing, TCharacter(ACurrentBeing).ClientInfo);
 end;
 //------------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ end;
 //------------------------------------------------------------------------------
 procedure TeleOut(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
 begin
-	ZoneDisappearChar(TCharacter(ACurrentBeing), TCharacter(Abeing).ClientInfo, 2);
+	ZoneDisappearBeing(ACurrentBeing, TCharacter(Abeing).ClientInfo, 2);
 end;
 //------------------------------------------------------------------------------
 

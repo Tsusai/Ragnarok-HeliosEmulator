@@ -12,7 +12,7 @@
 //    Contributors(A-Z) -
 //        Matthew Mazanec (Tsusai - tsusai at gmail dot com)
 //        Robert Ditthardt (RaX - onerax at gmail dot com)
-//        (Aeomin - fill in your contact info here!)
+//        Lin Ling (Aeomin - aeomin [AT] gmail [DOT] com)
 //        Christopher Wilding (ChrstphrR (CR) - chrstphrr at tubbybears dot net)
 //
 //
@@ -57,6 +57,9 @@ program Helios;
 
 {$APPTYPE CONSOLE}
 uses
+  madListHardware,
+  madListProcesses,
+  madListModules,
 {*These definitions make it possible to step through programs in windows and
 compile for linux, at the same time*}
 //------------------------------------------------------------------------------

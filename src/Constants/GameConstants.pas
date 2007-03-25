@@ -40,13 +40,13 @@ const
 	);
 
 	NORTH			= 0;
-	NORTHEAST	= 1;
-	EAST			= 2;
-	SOUTHEAST = 3;
+	NORTHWEST	= 1;
+	WEST			= 2;
+	SOUTHWEST = 3;
 	SOUTH			= 4;
-	SOUTHWEST	= 5;
-	WEST			= 6;
-	NORTHWEST	= 7;
+	SOUTHEAST	= 5;
+	EAST			= 6;
+	NORTHEAST	= 7;
 
 	Diagonals = [NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST];
 

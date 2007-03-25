@@ -18,6 +18,7 @@ uses
 	Character,
 	CommClient,
 	SysUtils,
+	Being,
 	{Third Party}
 	IdContext
 	;
@@ -44,10 +45,10 @@ uses
 		AMessage		: String
 	);
 
-	procedure ZoneDisappearChar(Who:TCharacter;AClient : TIdContext;Effect:Byte=0);
-	procedure ZoneWalkingChar(Who:TCharacter;Point1,Point2:TPoint;AClient : TIdContext);
+	procedure ZoneWalkingBeing(Who:TBeing;Point1,Point2:TPoint;AClient : TIdContext);
 	procedure ZoneUpdateDirection(Who:TCharacter;AClient : TIdContext);
-	procedure ZoneSendChar(Who:TCharacter;AClient : TIdContext;Logon:Boolean=False);
+	procedure ZoneSendBeing(Who:TBeing;AClient : TIdContext;Logon:Boolean=False);
+	procedure ZoneDisappearBeing(Who:TBeing;AClient : TIdContext;Effect:Byte=0);
 
 	implementation
 uses
@@ -55,8 +56,7 @@ uses
 	BufferIO,
 	PacketTypes,
 	TCPServerRoutines,
-	WinLinux,
-	Being;
+	WinLinux;
 
 //------------------------------------------------------------------------------
 //ZoneSendMapConnectReply                                             PROCEDURE
@@ -347,17 +347,20 @@ end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//ZoneSendChar                                             PROCEDURE
+//ZoneSendBeing                                                        PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
 //      make character visible
 //
 //  Changes -
 //    March 18th, 2007 - Aeomin - Created Header
+//    March 23th, 2007 - Aeomin - Renamed from ZoneSendChar to ZoneSendBeing
+//                                and support for Npc/Mob etc
 //------------------------------------------------------------------------------
- procedure ZoneSendChar(Who:TCharacter;AClient : TIdContext;Logon:Boolean=False);
+ procedure ZoneSendBeing(Who:TBeing;AClient : TIdContext;Logon:Boolean=False);
 	var
 		ReplyBuffer : TBuffer;
+		Chara	    : TCharacter;
 	begin
 		//Old Packet Version
 		FillChar(ReplyBuffer,54,0);
@@ -373,20 +376,25 @@ end;
 		WriteBufferWord(10, Who.Ailments, ReplyBuffer);
 		WriteBufferWord(12, Who.Option, ReplyBuffer); 
 		WriteBufferWord(14, Who.JID, ReplyBuffer);
-		WriteBufferWord(16, Who.Hair, ReplyBuffer);
-		WriteBufferWord(18, Who.RightHand, ReplyBuffer);  //Weapon
-		WriteBufferWord(20, Who.LeftHand, ReplyBuffer);  //Shield
-		WriteBufferWord(22, Who.HeadBottom, ReplyBuffer);  //Head bottom
-		WriteBufferWord(24, Who.HeadTop, ReplyBuffer);  //Head top
-		WriteBufferWord(26, Who.HeadMid, ReplyBuffer);  //head mid
-		WriteBufferWord(28, Who.HairColor, ReplyBuffer);
-		WriteBufferWord(30, Who.ClothesColor, ReplyBuffer);
 		WriteBufferWord(32, Who.Direction, ReplyBuffer);
-		WriteBufferLongWord(34, Who.GuildID, ReplyBuffer);
+		if Who is TCharacter then
+		begin
+		Chara:=TCharacter(Who);
+		{Todo: Hair stlye, head bottom needed for Pet...}
+		WriteBufferWord(16, Chara.Hair, ReplyBuffer);
+		WriteBufferWord(18, Chara.RightHand, ReplyBuffer);  //Weapon
+		WriteBufferWord(20, Chara.LeftHand, ReplyBuffer);  //Shield
+		WriteBufferWord(22, Chara.HeadBottom, ReplyBuffer);  //Head bottom
+		WriteBufferWord(24, Chara.HeadTop, ReplyBuffer);  //Head top
+		WriteBufferWord(26, Chara.HeadMid, ReplyBuffer);  //head mid
+		WriteBufferWord(28, Chara.HairColor, ReplyBuffer);
+		WriteBufferWord(30, Chara.ClothesColor, ReplyBuffer);
+		WriteBufferLongWord(34, Chara.GuildID, ReplyBuffer);
+		WriteBufferWord(42, Chara.Karma, ReplyBuffer);
+		WriteBufferByte(45, Chara.Account.GenderNum, ReplyBuffer);
+		end;
 		WriteBufferWord(38, 0, ReplyBuffer);  //Emblem ID
-		WriteBufferWord(42, Who.Karma, ReplyBuffer);
 		WriteBufferByte(44, 0, ReplyBuffer);  //Normal/Ready to fight
-		WriteBufferByte(45, Who.Account.GenderNum, ReplyBuffer);
 		WriteBufferPointAndDirection(46, Who.Position, ReplyBuffer,Who.Direction);
 		WriteBufferByte(49, 5, ReplyBuffer);
 		WriteBufferByte(50, 5, ReplyBuffer);
@@ -433,15 +441,16 @@ end;
 
 
 //------------------------------------------------------------------------------
-//ZoneWalkingChar                                                      PROCEDURE
+//ZoneWalkingBeing                                                     PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
 //      Make character disappear
 //
 //  Changes -
 //    March 18th, 2007 - Aeomin - Created Header
+//    March 23th, 2007 - Aeomin - Renamed from ZoneWalkingChar to ZoneWalkingBeing
 //------------------------------------------------------------------------------
-         procedure ZoneDisappearChar(Who:TCharacter;AClient : TIdContext;Effect:Byte=0);
+	 procedure ZoneDisappearBeing(Who:TBeing;AClient : TIdContext;Effect:Byte=0);
 	var
 		ReplyBuffer : TBuffer;
 	begin
@@ -455,15 +464,16 @@ end;
 
 
 //------------------------------------------------------------------------------
-//ZoneWalkingChar                                                      PROCEDURE
+//ZoneWalkingBeing                                                     PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
 //      Send the destination of charater.
 //
 //  Changes -
 //    March 18th, 2007 - Aeomin - Created Header
+//    march 23th, 2007 - Aeomin - Renamed from ZoneWalkingChar to ZoneWalkingBeing
 //------------------------------------------------------------------------------
-procedure ZoneWalkingChar(Who:TCharacter;Point1,Point2:TPoint;AClient : TIdContext);
+procedure ZoneWalkingBeing(Who:TBeing;Point1,Point2:TPoint;AClient : TIdContext);
 	var
 		ReplyBuffer : TBuffer;
 	begin
