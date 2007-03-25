@@ -15,6 +15,19 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 192 -
+[2007/03/15] Tsusai - Notes/Overview: Added 'Support_Dec06_AndNewerClients' to Character.ini
+ This allows usage of ONLY December 2006 and newer clients when enabled.  kRO added the
+ ability to rename a character, which at this time I do not know how to enable/support.
+[2007/03/15] Tsusai - CharaOptions : Added [OPTIONS] 'Support_Dec06_AndNewerClients', and
+ its parsing.
+[2007/03/15] Tsusai - CharacterServer : Added WriteCharacterDataToBuffer.  This routine
+ handles writing the character's stats to the outgoing buffer at the right offset.  Also
+ this routine makes use of the new ini entry, so that the changed packet length is supported.
+[2007/03/15] Tsusai - CharacterServer - CreateChara & SendCharas : Now call 
+ WriteCharacterDataToBuffer.
+-
+
 - Rev 191 -
 [2007/03/25] CR - Overview: Comments added to explain and state origins of
  WriteBufferTwoPoints

@@ -34,12 +34,13 @@ interface
       fLoginKey     : String;
 
 			fServerName		: String;
+			fUse108LengthForReply : boolean;
 
       fDefaultZeny  : Integer;
-      fDefaultMap   : String;
+			fDefaultMap   : String;
       fDefaultPoint : TPoint;
-      fDefaultHeadTop  : Integer;
-      fDefaultHeadMid : Integer;
+			fDefaultHeadTop  : Integer;
+			fDefaultHeadMid : Integer;
       fDefaultHeadLow : Integer;
       fDefaultArmor : Integer;
       fDefaultRightHand: Integer;
@@ -47,7 +48,7 @@ interface
       fDefaultShoes : Integer;
       fDefaultGarment : Integer;
       fDefaultAccessory1 : Integer;
-      fDefaultAccessory2 : Integer;
+			fDefaultAccessory2 : Integer;
 
 //Gets/Sets
 			procedure SetPort(Value : Word);
@@ -66,20 +67,21 @@ interface
 
 			property LoginIP : String read fLoginIP write SetLoginIP;
 			property LoginPort : Word read fLoginPort write SetLoginPort;
-      property LoginKey  : String read fLoginKey;
+			property LoginKey  : String read fLoginKey;
 
-      //Security
-      property Key : String read fKey;
+			//Security
+			property Key : String read fKey;
 
-      //Options
+			//Options
 			property ServerName : String read fServerName write SetServerName;
+			property Use108LengthForReply : boolean read fUse108LengthForReply write fUse108LengthForReply;
 
 
-      property DefaultZeny: Integer read fDefaultZeny write fDefaultZeny;
-      property DefaultMap : String read fDefaultMap write fDefaultMap;
-      property DefaultPoint : TPoint read fDefaultPoint write fDefaultPoint;
+			property DefaultZeny: Integer read fDefaultZeny write fDefaultZeny;
+			property DefaultMap : String read fDefaultMap write fDefaultMap;
+			property DefaultPoint : TPoint read fDefaultPoint write fDefaultPoint;
       property DefaultHeadTop: Integer read fDefaultHeadTop write fDefaultHeadTop;
-      property DefaultHeadMid: Integer read fDefaultHeadMid write fDefaultHeadMid;
+			property DefaultHeadMid: Integer read fDefaultHeadMid write fDefaultHeadMid;
       property DefaultHeadLow: Integer read fDefaultHeadLow write fDefaultHeadLow;
       property DefaultRightHand: Integer read fDefaultRightHand write fDefaultRightHand;
       property DefaultLeftHand: Integer read fDefaultLeftHand write fDefaultLeftHand;
@@ -134,7 +136,7 @@ implementation
 				Section.Values['LANIP']			:= '127.0.0.1';
 			end;
 			fLANIP			:= Section.Values['LANIP'];
-      fPort			:= StrToIntDef(Section.Values['Port'], 6121);
+			fPort			:= StrToIntDef(Section.Values['Port'], 6121);
 
 			if Section.Values['LoginIP'] = '' then
 			begin
@@ -142,14 +144,14 @@ implementation
 			end;
 			fLoginIP			:= Section.Values['LoginIP'];
 			fLoginPort		:= StrToIntDef(Section.Values['LoginPort'], 6900);
-      fLoginKey    := Section.Values['LoginKey'];
+			fLoginKey    := Section.Values['LoginKey'];
 		end;{Subroutine LoadCommunication}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadSecurity                                              SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadSecurity                                              SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadSecurity;
 		begin
 			ReadSectionValues('Security', Section);
@@ -167,7 +169,14 @@ implementation
 			if Section.Values['ServerName'] = '' then begin
 				Section.Values['ServerName'] := 'Helios';
 			end;
-      fServerName			:= Section.Values['ServerName'];
+			fServerName			:= Section.Values['ServerName'];
+
+			(*Tsusai Mar 24th 2007
+			This boolean helps decide to use either the original 106 byte length base
+			for character information, or add on an extra word for 108 character data
+			lengths.  A MIX MODE LIKE ZONE IS IMPOSSIBLE.  MUST BE ONE OR THE OTHER*)
+			fUse108LengthForReply := StrToBoolDef(Section.Values['Support_Dec06_AndNewerClients'] ,false);
+
 		end;{Subroutine LoadOptions}
     //--------------------------------------------------------------------------
 
@@ -182,9 +191,9 @@ implementation
       if Section.Values['Map'] = '' then begin
 				Section.Values['Map'] := 'new_1-1';
 			end;
-      DefaultMap        := Section.Values['Map'];
-      fDefaultPoint.X   := StrToIntDef(Section.Values['Point.X'], 53);
-      fDefaultPoint.Y   := StrToIntDef(Section.Values['Point.Y'], 111);
+			DefaultMap        := Section.Values['Map'];
+			fDefaultPoint.X   := StrToIntDef(Section.Values['Point.X'], 53);
+			fDefaultPoint.Y   := StrToIntDef(Section.Values['Point.Y'], 111);
       DefaultHeadTop    := StrToIntDef(Section.Values['HeadTop'], 0);
       DefaultHeadMid    := StrToIntDef(Section.Values['HeadMid'], 0);
       DefaultHeadLow    := StrToIntDef(Section.Values['HeadLow'], 0);
@@ -235,18 +244,19 @@ implementation
 		WriteString('Communication','LoginPort',IntToStr(LoginPort));
     WriteString('Communication','LoginKey',LoginKey);
 
-    //Security
+		//Security
     WriteString('Security','Key',Key);
 
-    //Options
+		//Options
 		WriteString('Options','ServerName',ServerName);
+		WriteString('Options','Support_Dec06_AndNewerClients',BoolToStr(fUse108LengthForReply));
 
-    //CharacterDefaults
-    WriteString('CharacterDefaults','Zeny',IntToStr(DefaultZeny));
-    WriteString('CharacterDefaults','Map',DefaultMap);
-    WriteString('CharacterDefaults','Point.X',IntToStr(fDefaultPoint.X));
-    WriteString('CharacterDefaults','Point.Y',IntToStr(DefaultPoint.Y));
-    WriteString('CharacterDefaults','HeadTop',IntToStr(DefaultHeadTop));
+		//CharacterDefaults
+		WriteString('CharacterDefaults','Zeny',IntToStr(DefaultZeny));
+		WriteString('CharacterDefaults','Map',DefaultMap);
+		WriteString('CharacterDefaults','Point.X',IntToStr(fDefaultPoint.X));
+		WriteString('CharacterDefaults','Point.Y',IntToStr(DefaultPoint.Y));
+		WriteString('CharacterDefaults','HeadTop',IntToStr(DefaultHeadTop));
     WriteString('CharacterDefaults','HeadMid',IntToStr(DefaultHeadMid));
     WriteString('CharacterDefaults','HeadLow',IntToStr(DefaultHeadLow));
     WriteString('CharacterDefaults','RightHand',IntToStr(DefaultRightHand));

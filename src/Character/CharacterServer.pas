@@ -16,6 +16,7 @@ unit CharacterServer;
 
 interface
 uses
+	Character,
 	IdTCPServer,
 	IdContext,
 	CommClient,
@@ -53,6 +54,12 @@ type
 			InBuffer : TBuffer
 		);
 
+		function WriteCharacterDataToBuffer(
+			ACharacter : TCharacter;
+			var ReplyBuffer : TBuffer;
+			const Offset : Integer
+		) : Byte;
+
 		procedure SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
 		procedure SendCharaToMap(AClient : TIdContext; var ABuffer : TBuffer);
 		procedure CreateChara(AClient : TIdContext; var ABuffer : TBuffer);
@@ -88,7 +95,6 @@ uses
 	CharaLoginCommunication,
 	ZoneCharaCommunication,
 	BufferIO,
-	Character,
 	Account,
 	GameConstants,
 	Globals,
@@ -190,7 +196,7 @@ end;{OnException}
 Procedure TCharacterServer.Start();
 begin
   if NOT Started then
-  begin
+	begin
     LoadOptions;
 
     ServerName := Options.ServerName;
@@ -226,9 +232,9 @@ begin
 	  DeActivateServer('Character',TCPServer);
 	  DeActivateClient(CharaToLoginClient);
 
-    //Free up our existing server info objects
+		//Free up our existing server info objects
     for Index := 0 to fZoneServerList.Count - 1 do
-    begin
+		begin
       TZoneServerInfo(fZoneServerList[Index]).Free;
       fZoneServerList.Delete(Index);
     end;
@@ -236,11 +242,73 @@ begin
     Options.Save;
     Options.Free;
   end else
-  begin
+	begin
 		Console.Message('Cannot Stop():: Character Server is not running', 'Character Server', MS_ALERT);
   end;
 end;{Start}
 //------------------------------------------------------------------------------
+
+
+//Tsusai
+//Write information about the character into the buffer
+//Takes into account the ini flag to use clients from Dec 2006 and newer
+function TCharacterServer.WriteCharacterDataToBuffer(
+	ACharacter : TCharacter;
+	var ReplyBuffer : TBuffer;
+	const Offset : Integer
+) : Byte;
+begin
+	if Options.Use108LengthForReply then
+	begin
+		Result := 108;
+		FillChar(ReplyBuffer[Offset],Offset + Result,0);
+		WriteBufferWord(Offset + 104, ACharacter.CharaNum,ReplyBuffer);
+		WriteBufferWord(Offset + 106, 0,ReplyBuffer); //eA : Rename bit (?)
+	end else
+	begin
+		Result := 106;
+		FillChar(ReplyBuffer[Offset],Offset + Result,0);
+		WriteBufferByte(Offset + 104, ACharacter.CharaNum,ReplyBuffer);
+		WriteBufferByte(Offset + 106, 0,ReplyBuffer);
+	end;
+	with ACharacter do begin
+		WriteBufferLongWord(Offset +  0, CID,ReplyBuffer);
+		WriteBufferLongWord(Offset +  4, BaseEXP,ReplyBuffer);
+		WriteBufferLongWord(Offset +  8, Zeny,ReplyBuffer);
+		WriteBufferLongWord(Offset + 12, JobEXP,ReplyBuffer);
+		WriteBufferLongWord(Offset + 16, JobLV,ReplyBuffer);
+		WriteBufferLongWord(Offset + 20, 0,ReplyBuffer);
+		WriteBufferLongWord(Offset + 24, 0,ReplyBuffer);
+		WriteBufferLongWord(Offset + 28, Option,ReplyBuffer);
+		WriteBufferLongWord(Offset + 32, Karma,ReplyBuffer);
+		WriteBufferLongWord(Offset + 36, Manner,ReplyBuffer);
+		WriteBufferWord(Offset + 40, StatusPts,ReplyBuffer);
+		WriteBufferWord(Offset + 42, HP,ReplyBuffer);
+		WriteBufferWord(Offset + 44, MAXHP,ReplyBuffer);
+		WriteBufferWord(Offset + 46, SP,ReplyBuffer);
+		WriteBufferWord(Offset + 48, MAXSP,ReplyBuffer);
+		WriteBufferWord(Offset + 50, Speed,ReplyBuffer);
+		WriteBufferWord(Offset + 52, JID,ReplyBuffer);
+		WriteBufferWord(Offset + 54, Hair,ReplyBuffer);
+		WriteBufferWord(Offset + 56, RightHand,ReplyBuffer);
+		WriteBufferWord(Offset + 58, BaseLV,ReplyBuffer);
+		WriteBufferWord(Offset + 60, SkillPts,ReplyBuffer);
+		WriteBufferWord(Offset + 62, HeadBottom,ReplyBuffer);
+		WriteBufferWord(Offset + 64, LeftHand,ReplyBuffer);
+		WriteBufferWord(Offset + 66, HeadTop,ReplyBuffer);
+		WriteBufferWord(Offset + 68, HeadMid,ReplyBuffer);
+		WriteBufferWord(Offset + 70, HairColor,ReplyBuffer);
+		WriteBufferWord(Offset + 72, ClothesColor,ReplyBuffer);
+		WriteBufferString(Offset + 74, Name, 24,ReplyBuffer);
+
+		WriteBufferByte(Offset + 98,  ParamBase[STR],ReplyBuffer);
+		WriteBufferByte(Offset + 99,  ParamBase[AGI],ReplyBuffer);
+		WriteBufferByte(Offset + 100, ParamBase[VIT],ReplyBuffer);
+		WriteBufferByte(Offset + 101, ParamBase[INT],ReplyBuffer);
+		WriteBufferByte(Offset + 102, ParamBase[DEX],ReplyBuffer);
+		WriteBufferByte(Offset + 103, ParamBase[LUK],ReplyBuffer);
+	end;
+end;
 
 
 //------------------------------------------------------------------------------
@@ -334,9 +402,19 @@ var
 	Ver         : Byte;
 	ACharaList  : TCharacterList;
 	BaseIndex   : Integer;
+	CharacterDataSize : integer;
 begin
 	Count     := 0;
 	Ver       := 24;
+
+	if Options.Use108LengthForReply then
+	begin
+		CharacterDataSize := 108;
+	end else
+	begin
+		CharacterDataSize := 106;
+	end;
+
 	AccountID := BufferReadLongWord(2, ABuffer);
 	AnAccount := ADatabase.CommonData.GetAccount(AccountID);
 
@@ -361,56 +439,14 @@ begin
 					begin
 						with ACharacter do
 						begin
-							BaseIndex := Ver+(Count*106);
-							FillChar(ReplyBuffer[BaseIndex], 106, 0);
-
-							WriteBufferLongWord(BaseIndex +  0, CID,ReplyBuffer);
-							WriteBufferLongWord(BaseIndex +  4, BaseEXP,ReplyBuffer);
-							WriteBufferLongWord(BaseIndex +  8, Zeny,ReplyBuffer);
-							WriteBufferLongWord(BaseIndex + 12, JobEXP,ReplyBuffer);
-							WriteBufferLongWord(BaseIndex + 16, JobLV,ReplyBuffer);
-							WriteBufferLongWord(BaseIndex + 20, 0,ReplyBuffer);
-							WriteBufferLongWord(BaseIndex + 24, 0,ReplyBuffer);
-							WriteBufferLongWord(BaseIndex + 28, Option,ReplyBuffer);
-							WriteBufferLongWord(BaseIndex + 32, Karma,ReplyBuffer);
-							WriteBufferLongWord(BaseIndex + 36, Manner,ReplyBuffer);
-
-							WriteBufferWord(BaseIndex + 40, StatusPts,ReplyBuffer);
-							WriteBufferWord(BaseIndex + 42, HP,ReplyBuffer);
-							WriteBufferWord(BaseIndex + 44, MAXHP,ReplyBuffer);
-							WriteBufferWord(BaseIndex + 46, SP,ReplyBuffer);
-							WriteBufferWord(BaseIndex + 48, MAXSP,ReplyBuffer);
-							WriteBufferWord(BaseIndex + 50, Speed,ReplyBuffer);
-							WriteBufferWord(BaseIndex + 52, JID,ReplyBuffer);
-							WriteBufferWord(BaseIndex + 54, Hair,ReplyBuffer);
-							WriteBufferWord(BaseIndex + 56, RightHand,ReplyBuffer);
-							WriteBufferWord(BaseIndex + 58, BaseLV,ReplyBuffer);
-							WriteBufferWord(BaseIndex + 60, SkillPts,ReplyBuffer);
-							WriteBufferWord(BaseIndex + 62, HeadBottom,ReplyBuffer); //Head3
-							WriteBufferWord(BaseIndex + 64, LeftHand,ReplyBuffer);
-							WriteBufferWord(BaseIndex + 66, HeadTop,ReplyBuffer); //head1
-							WriteBufferWord(BaseIndex + 68, HeadMid,ReplyBuffer); //head2
-							WriteBufferWord(BaseIndex + 70, HairColor,ReplyBuffer);
-							WriteBufferWord(BaseIndex + 72, ClothesColor,ReplyBuffer);
-
-							WriteBufferString(BaseIndex + 74, Name, 24,ReplyBuffer);
-
-							WriteBufferByte(BaseIndex +98,  ParamBase[STR],ReplyBuffer);
-							WriteBufferByte(BaseIndex +99,  ParamBase[AGI],ReplyBuffer);
-							WriteBufferByte(BaseIndex +100, ParamBase[VIT],ReplyBuffer);
-							WriteBufferByte(BaseIndex +101, ParamBase[INT],ReplyBuffer);
-							WriteBufferByte(BaseIndex +102, ParamBase[DEX],ReplyBuffer);
-							WriteBufferByte(BaseIndex +103, ParamBase[LUK],ReplyBuffer);
-
-							WriteBufferByte(BaseIndex +104, CharaNum,ReplyBuffer);
-//							WriteBufferWord(BaseIndex +106, 1,ReplyBuffer);
-							WriteBufferByte(BaseIndex +105, 0,ReplyBuffer);
+							BaseIndex := Ver+(Count*CharacterDataSize);
+							WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,BaseIndex);
 							Inc(Count);
 						end;
 					end;
 				end;
-				//size is (24 + (character count * 106))
-				PacketSize := (Ver + (Count * 106));
+				//size is (24 + (character count * Character data size))
+				PacketSize := (Ver + (Count * CharacterDataSize));
 				WriteBufferWord(0,$006b,ReplyBuffer); //header
 				WriteBufferWord(2,PacketSize,ReplyBuffer);
 				SendBuffer(AClient,ReplyBuffer,PacketSize);
@@ -544,6 +580,7 @@ var
 	idx        : byte;
 	TotalStatPt: byte;
 	Validated  : Boolean;
+	Size : integer;
 
 	procedure CreateCharaError(const Error : byte);
 	var
@@ -637,7 +674,7 @@ begin
 				ACharacter.Armor          := Options.DefaultArmor;
 				ACharacter.Garment        := Options.DefaultGarment;
         ACharacter.Shoes          := Options.DefaultShoes;
-        ACharacter.Accessory1     := Options.DefaultAccessory1;
+				ACharacter.Accessory1     := Options.DefaultAccessory1;
         ACharacter.Accessory2     := Options.DefaultAccessory2;
 				ACharacter.HeadTop        := Options.DefaultHeadTop;
 				ACharacter.HeadMid        := Options.DefaultHeadMid;
@@ -655,48 +692,9 @@ begin
 
 				//INSERT ANY OTHER CREATION CHANGES HERE!
 				ADatabase.GameData.SaveChara(ACharacter);
-				with ACharacter do begin
-					WriteBufferWord(0, $006d,ReplyBuffer);
-					WriteBufferLongWord(2+  0, CID,ReplyBuffer);
-					WriteBufferLongWord(2+  4, BaseEXP,ReplyBuffer);
-					WriteBufferLongWord(2+  8, Zeny,ReplyBuffer);
-					WriteBufferLongWord(2+ 12, JobEXP,ReplyBuffer);
-					WriteBufferLongWord(2+ 16, JobLV,ReplyBuffer);
-					WriteBufferLongWord(2+ 20, 0,ReplyBuffer);
-					WriteBufferLongWord(2+ 24, 0,ReplyBuffer);
-					WriteBufferLongWord(2+ 28, Option,ReplyBuffer);
-					WriteBufferLongWord(2+ 32, Karma,ReplyBuffer);
-					WriteBufferLongWord(2+ 36, Manner,ReplyBuffer);
-					WriteBufferWord(2+ 40, StatusPts,ReplyBuffer);
-					WriteBufferWord(2+ 42, HP,ReplyBuffer);
-					WriteBufferWord(2+ 44, MAXHP,ReplyBuffer);
-					WriteBufferWord(2+ 46, SP,ReplyBuffer);
-					WriteBufferWord(2+ 48, MAXSP,ReplyBuffer);
-					WriteBufferWord(2+ 50, Speed,ReplyBuffer);
-					WriteBufferWord(2+ 52, JID,ReplyBuffer);
-					WriteBufferWord(2+ 54, Hair,ReplyBuffer);
-					WriteBufferWord(2+ 56, RightHand,ReplyBuffer);
-					WriteBufferWord(2+ 58, BaseLV,ReplyBuffer);
-					WriteBufferWord(2+ 60, SkillPts,ReplyBuffer);
-					WriteBufferWord(2+ 62, HeadBottom,ReplyBuffer);
-					WriteBufferWord(2+ 64, LeftHand,ReplyBuffer);
-					WriteBufferWord(2+ 66, HeadTop,ReplyBuffer);
-					WriteBufferWord(2+ 68, HeadMid,ReplyBuffer);
-					WriteBufferWord(2+ 70, HairColor,ReplyBuffer);
-					WriteBufferWord(2+ 72, ClothesColor,ReplyBuffer);
-					WriteBufferString(2+ 74, Name, 24,ReplyBuffer);
-
-					WriteBufferByte(2+98,  ParamBase[STR],ReplyBuffer);
-					WriteBufferByte(2+99,  ParamBase[AGI],ReplyBuffer);
-					WriteBufferByte(2+100, ParamBase[VIT],ReplyBuffer);
-					WriteBufferByte(2+101, ParamBase[INT],ReplyBuffer);
-					WriteBufferByte(2+102, ParamBase[DEX],ReplyBuffer);
-					WriteBufferByte(2+103, ParamBase[LUK],ReplyBuffer);
-
-					WriteBufferByte(2+104, CharaNum,ReplyBuffer);
-					WriteBufferByte(2+105, 0,ReplyBuffer);
-				end;
-				SendBuffer(AClient,ReplyBuffer,GetPacketLength($006d));
+				WriteBufferWord(0, $006d,ReplyBuffer);
+				Size := WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,2);
+				SendBuffer(AClient,ReplyBuffer,Size+2);
 			end;
 		end;
 	end else
