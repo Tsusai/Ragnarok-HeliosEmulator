@@ -12,6 +12,9 @@
 //    Contributors(A-Z) -
 //        Matthew Mazanec (Tsusai - tsusai at gmail dot com)
 //        Robert Ditthardt (RaX - onerax at gmail dot com)
+//        (Aeomin - fill in your contact info here!)
+//        Christopher Wilding (ChrstphrR (CR) - chrstphrr at tubbybears dot net)
+//
 //
 //    All rights reserved.
 //
@@ -48,7 +51,7 @@
 //	Changes -
 //		September 20th, 2006 - RaX - Created Header.
 //		November  11th, 2006 - Tsusai - Updated License.
-//
+//		[2007/03/24] CR - Partially updated Contributors, minor indent changes.
 //------------------------------------------------------------------------------
 program Helios;
 
@@ -98,12 +101,12 @@ compile for linux, at the same time*}
 
 	//Lists
 	CharaList in 'Classes\CharaList.pas',
-  MapList in 'Classes\MapList.pas',
+	MapList in 'Classes\MapList.pas',
 	List32 in 'Common\3rdParty\List32.pas',
 	PointList in 'Classes\PointList.pas',
 	EventList in 'Classes\Events\EventList.pas',
 
-  	//Events
+		//Events
 	Event in 'Classes\Events\Event.pas',
 	MovementEvent in 'Classes\Events\MovementEvent.pas',
 	CharacterEventThread in 'Classes\Events\CharacterEventThread.pas',
@@ -149,8 +152,8 @@ compile for linux, at the same time*}
 	DatabaseOptions in 'Config\DatabaseOptions.pas',
 	ConsoleOptions in 'Config\ConsoleOptions.pas',
 
-  //Types
-  MapTypes in 'Common\MapTypes.pas',
+	//Types
+	MapTypes in 'Common\MapTypes.pas',
 
 	//Other
 	AreaLoopEvents in 'Classes\AreaLoopEvents.pas',
@@ -177,7 +180,7 @@ compile for linux, at the same time*}
 	CRT in 'Console/CRT.pas',
 	LinCRT in 'Console/LinCRT/LinCRT.pas',
 	NCurses in 'Console/LinCRT/NCurses.pas',
-	
+
 	//Login Server
 	LoginServer in 'Login/LoginServer.pas',
 
@@ -209,7 +212,7 @@ compile for linux, at the same time*}
 
 	//Lists
 	CharaList in 'Classes/CharaList.pas',
-  MapList in 'Classes/MapList.pas',
+	MapList in 'Classes/MapList.pas',
 	List32 in 'Common/3rdParty/List32.pas',
 	PointList in 'Classes/PointList.pas',
 	EventList in 'Classes/Events/EventList.pas',
@@ -260,8 +263,8 @@ compile for linux, at the same time*}
 	DatabaseOptions in 'Config/DatabaseOptions.pas',
 	ConsoleOptions in 'Config/ConsoleOptions.pas',
 
-  //Types
-  MapTypes in 'Common/MapTypes.pas',
+	//Types
+	MapTypes in 'Common/MapTypes.pas',
 
 	//Other
 	AreaLoopEvents in 'Classes/AreaLoopEvents.pas',
@@ -322,7 +325,7 @@ begin
 	//Setup console interface and command parser.
 	//This has to be set up here because It relies on the options in MainProc.
 	Console := TConsole.Create;
-	
+
 	//Show our header ONCE
 	MainProc.DisplayHeader;
 

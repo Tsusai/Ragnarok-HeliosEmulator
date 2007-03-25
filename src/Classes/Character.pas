@@ -202,11 +202,14 @@ type
 		procedure CalcSpeed; override;
 		procedure CalcMaxWeight;
 
-		procedure SendSubStat(
-			Mode : word;
-			DataType : word;
-			Value : LongWord
-		);
+		Procedure SendSubStat(
+			const
+				Mode     : Word;
+			const
+				DataType : Word;
+			const
+				Value    : LongWord
+			);
 		procedure SendCharacterStats(UpdateView : boolean = false);
 		constructor Create;
 		destructor Destroy; override;
@@ -1222,56 +1225,138 @@ end;{CalcMaxHP}
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//SendSubStat                                                          PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Send sub state defined by Mode(speed, Def,MDef etc...)
-//                And send party info, Recalculate Weight
-//
-//	Changes -
-//		March 12th, 2007 - Aeomin - Created Header
-//
-//------------------------------------------------------------------------------
-//Mode is either 0 or 1, since its $00b0 or $00b1 (Its $00b0 + Mode)
-procedure TCharacter.SendSubStat(
-	Mode : word;
-	DataType : word;
-	Value : LongWord
-);
+(*-----------------------------------------------------------------------------*
+Proc TCharacter.SendSubStat
+
+--
+Overview:
+--
+Send sub state defined by Mode(speed, Def,MDef etc...),
+send party info, and Recalculate Weight
+
+Parameters:
+Mode: either 0 or 1, since its $00b0 or $00b1 (Its $00b0 + Mode)
+[2007/03/19] CR - Should Mode be a WordBool instead, if it's only 0 or 1?
+
+
+--
+Pre:
+	TODO
+Post:
+	TODO
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment> )
+[2007/03/12] Aeomin - Added Comment Header
+[2007/03/24] CR - Parameters passed are not altered, thus all parameters are
+	now explicitly constant.
+[2007/03/24] CR - Moved first section of this routine into local procedure
+	Send_00b0.  Moved the non-implemented blocks into local routines as well.
+	Made all parameters constant, which self-documents these, and makes calling
+	the routine more efficient.
+*-----------------------------------------------------------------------------*)
+Procedure TCharacter.SendSubStat(
+	const
+		Mode     : Word;
+	const
+		DataType : Word;
+	const
+		Value    : LongWord
+	);
 Var
-	WeightPercent  : Integer;
 	OutBuffer : TBuffer;
+
+
+	(*- Local Procedure .................*
+	Send_00b0
+
+	--
+	[2007/03/24] CR - Extracted verbatim
+		from main body.
+	*...................................*)
+	procedure Send_00b0;
+	begin
+		WriteBufferWord(0, $00b0 + Mode, OutBuffer);
+		WriteBufferWord(2, DataType, OutBuffer);
+		WriteBufferLongWord(4, Value, OutBuffer);
+
+		if (Online <> 0) then
+		begin
+			SendBuffer(
+				ClientInfo,
+				OutBuffer,
+				GetPacketLength($00b0 + Mode, ClientVersion)
+			);
+		end;
+	end;(* Send_00b0
+	*...................................*)
+
+	(*- Local Procedure .................*
+	PartyInfo
+
+	Not yet Implemented.
+	--
+	[2007/03/24] CR - Extracted
+		from main body.
+	*...................................*)
+	procedure PartyInfo;
+	begin
+		{[2007/03/24] CR -  already disabled, no comment about this routine}
+		//Party Info from prometheus
+		{
+		if (tc.PartyName <> '') and (Mode = 0) and ((DType = 5) or (DType = 6)) then
+		begin
+			WriteBufferWord( 0, $0106);
+			WriteBufferLongWord( 2, tc.ID);
+			WriteBufferWord( 6, tc.HP);
+			WriteBufferWord( 8, tc.MAXHP);
+			SendPCmd(tc, OutBuffer, 10, True, True);
+		end;
+		}
+
+	end;(* PartyInfo
+	*...................................*)
+
+	(*- Local Procedure .................*
+	OverweightTest
+
+	Not yet Implemented.
+	--
+	[2007/03/24] CR - Extracted
+		from main body.
+	*...................................*)
+	procedure OverweightTest;
+	{
+	var
+		WeightPercent  : Integer;
+	}
+	begin
+		{[2007/03/24] CR -  already disabled, no comment about this routine}
+		//Party Info from prometheus
+		{
+		if (tc.PartyName <> '') and (Mode = 0) and ((DType = 5) or (DType = 6)) then
+		begin
+			WriteBufferWord( 0, $0106);
+			WriteBufferLongWord( 2, tc.ID);
+			WriteBufferWord( 6, tc.HP);
+			WriteBufferWord( 8, tc.MAXHP);
+			SendPCmd(tc, OutBuffer, 10, True, True);
+		end;
+		}
+
+	end;(* OverweightTest
+	*...................................*)
+
 Begin
-	WriteBufferWord(0, $00b0 + Mode, OutBuffer);
-	WriteBufferWord(2, DataType, OutBuffer);
-	WriteBufferLongWord(4, Value, OutBuffer);
+	Send_00b0;
 
-	if Online <> 0 then
-	begin
-		SendBuffer(ClientInfo, OutBuffer, GetPacketLength($00b0+Mode,ClientVersion));
-	end;
-
-	//Party Info from prometheus
-	{if (tc.PartyName <> '') and (Mode = 0) and ((DType = 5) or (DType = 6)) then
-	begin
-		WriteBufferWord( 0, $0106);
-		WriteBufferLongWord( 2, tc.ID);
-		WriteBufferWord( 6, tc.HP);
-		WriteBufferWord( 8, tc.MAXHP);
-		SendPCmd(tc, OutBuffer, 10, True, True);
-	end;}
-
-
-	if (Mode = 0) and ((DataType = $0018) or (DataType = $0019)) then
-	begin
-		WeightPercent := Weight * 100 div MaxWeight;
-
-		//UpdateIcon(35, InRange(WeightPercent, 50, 90)); //50% overweight icon
-		//UpdateIcon(36, (WeightPercent >= 90)); //90% overweight icon
-	end;
-end;
-//------------------------------------------------------------------------------
+	{[2007/03/24] CR - These are "empty" - not yet implemented. }
+	PartyInfo;
+	OverweightTest;
+End; (* Proc TCharacter.SendSubStats
+*-----------------------------------------------------------------------------*)
 
 
 //------------------------------------------------------------------------------

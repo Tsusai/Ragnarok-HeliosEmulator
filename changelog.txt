@@ -1,21 +1,34 @@
-  _    _          _   _               
+  _    _          _   _
  | |  | |        | | (_)              
- | |__| |   ___  | |  _    ___    ___ 
+ | |__| |   ___  | |  _    ___    ___
  |  __  |  / _ \ | | | |  / _ \  / __|
  | |  | | |  __/ | | | | | (_) | \__ \
  |_|  |_|  \___| |_| |_|  \___/  |___/
-                                      
+
 
 Ragnarok Emulator
 Developers & Contributers
 - Tsusai
 - RaX
 - Aeomin
+- ChrstphrR (CR)
 
 -------------------------------------------------------------------------------------------
 
+- Rev 188 -
+[2007/03/24] CR - Overview: Hint Removal, Refactor, Credits.
+ Removed a warning for an unused local variable in TCharacter.SendSubStat.
+[2007/03/24] CR - Character:TCharacter.SendSubStat - Moved first section of
+ this routine into local procedure Send_00b0.  Moved the non-implemented blocks
+ into local routines as well.  Made all parameters constant, which self-
+ documents these, and makes calling the routine more efficient.   Anyone
+ working on this routine, please feel free to use more descriptive or
+ appropriate local routine names! :)
+[2007/03/24] CR - Updated Contributors on this document and Helios.dpr
+[2007/03/24] CR - Updated Version String missed in Rev 187
+-
 
-- Rev 187 -
+- Rev 187 - BROKEN BUILD
 [2007/03/22] - RaX - fixed the dpr - Aeomin had forgotten to commit it.
 [2007/03/22] - RaX - Finished GM Command system, Now there's an ugly bug that has surfaced
  when gm commands are used because of the database clients not being thread safe, so
