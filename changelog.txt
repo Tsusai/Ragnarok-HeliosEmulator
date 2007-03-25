@@ -15,6 +15,15 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 191 -
+[2007/03/25] CR - Overview: Comments added to explain and state origins of
+ WriteBufferTwoPoints
+[2007/03/25] CR - BufferIO:WriteBufferTwoPoints - Added Comment Header, and 
+ described routine in detail, and in summary.  Made remaining three passed 
+ parameters constant.  Renamed local variables for more clarity:
+[2007/03/25] CR - Version - updated version string (and version info for exe)
+-
+
 - Rev 190 -
 [2007/03/25] CR - Overview: Bugfix - code meant to handle and notify user of
  malformed .pms mapfiles would not work as intended.  Result will NOT behave the
@@ -42,6 +51,7 @@ Developers & Contributers
 [2007/03/24] - Aeomin - Renamed ZoneWalkingChar to ZoneWalkingBeing, ZoneSendChar to ZoneSendBeing,
  ZoneDisappearChar to ZoneDisappearBeing, to support other than character (Npc,Mob etc) [ZoneSend.pas]
 [2007/03/23] - Aeomin - More typo fixes on direction
+-
 
 - Rev 188 -
 [2007/03/24] CR - Overview: Hint Removal, Refactor, Credits.

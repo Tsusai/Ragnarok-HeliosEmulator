@@ -2,10 +2,14 @@
 //BufferIO                                                                  UNIT
 //------------------------------------------------------------------------------
 //	What it does-
-//			Unit contains all incoming and outgoing packet procedures
-//            to place data in and out of a databuffer.  Everything here is self explanitory
-//            and should not be changed anytime soon.
+//		Unit contains all incoming and outgoing packet procedures
+//	to place data in and out of a databuffer.  Everything here is self
+//	explanitory and should not be changed anytime soon.
 //
+//	Changes:
+//		[2007/03/25] CR - Added a thorough commenting and header to
+//	WriteBufferTwoPoints.  This legacy routine is cryptic, and Rube
+//	Goldbergian in the way it does it's job, thus a good explanation is needed.
 //------------------------------------------------------------------------------
 unit BufferIO;
 
@@ -29,12 +33,18 @@ uses
 		var Buffer : TBuffer;
 		Dir:byte = 0
 	);
-	procedure WriteBufferTwoPoints(
-		index:word;
-		Point1:TPoint;
-		Point2:TPoint;
-		var Buffer : TBuffer
-	);
+
+	Procedure WriteBufferTwoPoints(
+		const
+			Index  : Word;
+		const
+			Point1 : TPoint;
+		const
+			Point2 : TPoint;
+		var
+			Buffer : TBuffer
+		);
+
 	procedure WriteBufferMD5String(
 		Index:word;
 		MD5String:string;
@@ -104,28 +114,95 @@ uses
 		end;
 	end;
 
-	//No..fucking clue...taken from Prometheus
-	procedure WriteBufferTwoPoints(
-		index:word;
-		Point1:TPoint;
-		Point2:TPoint;
-		var Buffer : TBuffer
+
+(*-----------------------------------------------------------------------------*
+Proc WriteBufferTwoPoints
+
+--
+Overview:
+--
+	Based on WFIFOM2 used in prior projects (eWeiss, Fusion, Prometheus), only
+with a spiffier and much more descriptive naName!
+	The code here is VERY cryptic, but what it boils down to:  We take two xy
+pairs, sending them in the smallest (40 bit) size possible given the
+"architectural" limit for map sizes, and then we perform a byte reversal:
+
+	01234 bytes becomes 43210
+
+	At best, we can only speculate why this reversal was done.  Best guesses are
+that this was done within the packets to foil botting clients from reading and
+emulating these "encrypted" packets.
+
+	In my own experience... I first saw this routine in Fusion, in early 2004, so
+this "encryption" was well know by that time.  Thus the original purpose as best
+we can figure has been long defeated, and it's merely an obscure speed bump.
+	ChrstphrR
+
+--
+Revisions:
+--
+[2007/03/25] CR - Added Comment Header, and described routine in detail, and in
+	summary.  Made remaining three passed parameters constant.
+	Renamed local variables for more clarity:
+[yyyy/mm/dd] <Author> - <Comment>
+*-----------------------------------------------------------------------------*)
+Procedure WriteBufferTwoPoints(
+	const
+		Index  : Word;
+	const
+		Point1 : TPoint;
+	const
+		Point2 : TPoint;
+	var
+		Buffer : TBuffer
 	);
-	Var
-		i :int64;
-		bb  :array[0..5] of byte;
-	Begin
-		i := (((int64(Point2.X) and $3ff) shl 30) or ((int64(Point2.Y) and $3ff) shl 20) or
-					((int64(Point1.X) and $3ff) shl 10) or  (int64(Point1.Y) and $3ff));
-		Move(i, bb[0], 5);
-		bb[5] := bb[0];
-		bb[0] := bb[4];
-		bb[4] := bb[5];
-		bb[5] := bb[1];
-		bb[1] := bb[3];
-		bb[3] := bb[5];
-		Move(bb[0], Buffer[index], 5);
-	end;
+Var
+	Pack40 : Int64;
+	SwapMe : array[0..5] of Byte; {[2007/03/25] CR - Yes we DO need all 6 bytes! }
+Begin
+	{[2007/03/25] CR - Packing the XY points into 5 bytes - 40 bits.  This is
+	possible because of a HARD CODED map dimension limit of 512 x 512 squares.
+	512 = 2^10, thus 10 bits is the maximum needed per X or Y position. }
+
+	Pack40 := (
+		((Int64(Point2.X) AND $3ff) shl 30) OR
+		((Int64(Point2.Y) AND $3ff) shl 20) OR
+		((Int64(Point1.X) AND $3ff) shl 10) OR
+		(Int64(Point1.Y) AND $3ff)
+	);
+
+
+	{[2007/03/17] CR - Tricky Code: Two parts to this trickiness, one is VERY
+	clever:
+	A) bb[5] is used as the bubbling byte to swap bytes both times.  Thus the 6th
+	bit is needed, BUT the value stored in it doesn't matter, because we overwrite
+	it.
+	B) Two sets of swaps are performed to reverse the byte level order, to
+	"confuse bots".  As mentioned above, this has LONG since been circumvented.
+	N.B. we are not reversing the whole thing bit by bit, but rather byte by byte.
+	}
+	Move(Pack40, SwapMe[0], 5);
+
+	{Swap 01234 ->  41230 }
+	SwapMe[5] := SwapMe[0];
+	SwapMe[0] := SwapMe[4];
+	SwapMe[4] := SwapMe[5];
+
+	{Swap 41230 ->  43210 -- A complete byte level reversal.}
+	SwapMe[5] := SwapMe[1];
+	SwapMe[1] := SwapMe[3];
+	SwapMe[3] := SwapMe[5];
+
+	{[2007/03/25] CR - N.B. If we want to optimize things further, we could make
+	these swaps inline ASM, and explicitly use registers instead of an array in
+	RAM for all of this.  If anyone is ambitious, I'd suggest checking in at the
+	FastCode project online, first. }
+
+	{[2007/03/25] CR - Finally, move the bit-mangled 5 bytes to the Buffer. }
+	Move(SwapMe[0], Buffer[Index], 5);
+End; (* Proc WriteBufferTwoPoints
+*-----------------------------------------------------------------------------*)
+
 
 	procedure WriteBufferPointAndDirection(
 		index:word;
@@ -135,7 +212,7 @@ uses
 	);
 	var
 		l   :LongWord;
-		ByteArray  :array[0..3] of byte;
+		ByteArray  :array[0..3] of Byte;
 	begin
 		l := (((xy.X and $3ff) shl 14) or ((xy.Y and $3ff) shl 4));
 		Move(l, ByteArray[0], 3);
@@ -307,6 +384,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 		AClient.IOHandler.Write(SendBytes);
 	end;
 
+
 	//Socket Method SendBuffer - Writes the buffer to the socket.
 	procedure SendBuffer(var AClient : TIdContext; const Buffer : TBuffer; Size : LongWord);
 	var
@@ -339,4 +417,6 @@ PREMADE SENDING OF BUFFER TO CLIENT
 		AClient.IOHandler.ReadBytes(RecvBytes,Size);
 		BytesToRaw(RecvBytes,Buffer,Size);
 	end;
+
+
 end.
