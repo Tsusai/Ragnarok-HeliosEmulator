@@ -11,9 +11,13 @@
 unit MapTypes;
 interface
 uses
-  Types,
+	Types,
 	List32,
 	PointList;
+
+const
+	{[2007/03/24] CR - Max length that a .pms map name in file can be. }
+	MAX_PMS_HEADER_LENGTH = 13; //Length of 'PrometheusMap'
 
 type
 

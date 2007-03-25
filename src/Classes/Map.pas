@@ -19,15 +19,16 @@ uses
 	SysUtils;
 
 type
+
 //------------------------------------------------------------------------------
 //TMap                                                                  CLASS
 //------------------------------------------------------------------------------
-  TMap = class(TObject)
+TMap = class(TObject)
 	private
 		Path : String;
 
 	public
-    Name : String;
+		Name : String;
 		Cell : TGraph;
 		Size : TPoint;
 		Flags: TFlags;
@@ -36,23 +37,31 @@ type
 
 		EventList : TEventList;
 
-		Constructor Create();
-		Destructor Destroy();override;
+		Constructor Create;
+		Destructor Destroy;override;
 
 		Function IsBlocked(
-			const APoint : TPoint;
-			AGraph : TGraph = NIL
-		) : boolean;
+			const
+				APoint : TPoint;
+				AGraph : TGraph = NIL
+			) : Boolean;
 
-		Function LoadFromFile(Path : String) : Boolean;
-    Procedure Load;
-    Procedure Unload;
+		Function LoadFromFile(
+			const
+				PmsFile : String
+			) : Boolean;
+
+		Procedure Load;
+		Procedure Unload;
 
 		Function GetPath(
-			const StartPoint  : TPoint;
-			const EndPoint    : TPoint;
-			var APath         : TPointList
-		) : boolean;
+			const
+				StartPoint : TPoint;
+			const
+				EndPoint   : TPoint;
+			var
+				APath      : TPointList
+		) : Boolean;
 
 end;
 //------------------------------------------------------------------------------
@@ -297,65 +306,85 @@ end;
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//LoadFromFile()                                                     FUNCTION
-//------------------------------------------------------------------------------
-//  What it does -
-//      Loads a map from a .pms file.
-//
-//  Changes -
-//    January 22nd, 2007 - RaX - Created.
-//		January 25th, 2007 - Tsusai - Removed complicated path name code, replaced
-//			with ExtractFileNameMod (WinLinux)
-//------------------------------------------------------------------------------
-Function TMap.LoadFromFile(Path : String) : Boolean;
+(*- Function ------------------------------------------------------------------*
+		TMap.LoadFromFile()
+--------------------------------------------------------------------------------
+Overview:
+----------------------------------------
+	Loads a map from a .pms file.
+
+	Modelled after Borland's TStrings.LoadFromFile.
+----------------------------------------
+Revisions:
+----------------------------------------
+January 22nd, 2007 - RaX - Created.
+January 25th, 2007 - Tsusai - Removed complicated path name code, replaced
+	with ExtractFileNameMod (WinLinux)
+[2007/03/24] CR - Parameter made constant (optimization).
+	Renamed Parameter "Path" to "PmsFile" to avoid ambiguity with TMap.Path
+	It's a more appropriate name than "Path" in the first place! :)
+	Surrounded TMemoryStream with a try-finally to protect the resource.
+	Fixed major logic flaws -- Result is NOT handled like C/C++'s "return"
+	keyword.  Thus, we NEED to use if-then-else branching, not just sequential
+	if-thens.  Malformed/hand-mangled maps could cause fatal errors with the old
+	code flow, because it couldn't avoid continuing on instead of bailing early.
+*-----------------------------------------------------------------------------*)
+Function TMap.LoadFromFile(
+	const
+		PmsFile : String
+	) : Boolean;
 Var
-	AByte   : byte;
+	AByte   : Byte;
 	MapFile : TMemoryStream;
-	MapTag  : array[1..13] of Char;
+	MapTag  : array[1..MAX_PMS_HEADER_LENGTH] of Char;
 	MapSize : TPoint;
 Begin
-  Result := TRUE;
+	Result := TRUE;
 
-  MapFile := TMemoryStream.Create;
-  MapFile.LoadFromFile(Path);
-	Self.Path := Path;
+	MapFile := TMemoryStream.Create;
+	try
+		MapFile.LoadFromFile(PmsFile);
+		Path := PmsFile;
 
-  MapFile.Read(MapTag[1], 13);
+		MapFile.Read(MapTag[1], MAX_PMS_HEADER_LENGTH);
+		if (MapTag <> 'PrometheusMap') then //Check type
+		begin
+			Console.WriteLn('The Map :' + Path + ' is not a Prometheus Map.');
+			Result := FALSE;
+		end
+		else
+		begin
+			MapFile.Read(AByte,1); //Check version.
 
-  if MapTag <> 'PrometheusMap' then //Check type
-  begin
-		Console.WriteLn('The Map :'+Path+' is not a Prometheus Map.');
-    Result := False;
-  end;
+			if (AByte <> 1) then
+			begin
+				Console.WriteLn('The Map :' + Path + ' failed the version check.');
+				Result := FALSE;
+			end
+			else
+			begin
+				MapFile.Read(MapSize.X, 4);
+				MapFile.Read(MapSize.Y, 4);
 
-  MapFile.Read(AByte,1); //Check version.
+				//check size.
+				if NOT (InRange(MapSize.X, 0, 511) AND InRange(MapSize.Y, 0, 511)) then
+				begin
+					Console.WriteLn('The Map :' + Path + '''s size is out of range.');
+					Result := FALSE;
+				end;
+			end;
+		end;
 
-  if AByte <> 1 then
-  begin
-		Console.WriteLn('The Map :'+Path+' failed the version check.');
-    Result := False;
-  end;
+		if Result then //If we've passed the checks then...
+		begin
+			//Load Map Information.
+			Name := ExtractFileNameMod(Path);
+			Size := MapSize;
+		end;
 
-
-  MapFile.Read(MapSize.X, 4);
-  MapFile.Read(MapSize.Y, 4);
-
-  //check size.
-  if NOT (InRange(MapSize.X, 0, 511) AND InRange(MapSize.Y, 0, 511)) then
-  begin
-    Console.WriteLn('The Map :'+Path+'''s size is out of range.');
-    Result := False;
-  end;
-
-  if Result then //If we've passed the checks then...
-	begin
-		//Load Map Information.
-		Name := ExtractFileNameMod(Path);
-		Size := MapSize;
-  end;
-
-  MapFile.Free;//finally, free the memory stream.
+	finally
+		MapFile.Free; //finally, free the memory stream.
+	end;
 End;//LoadFromFile
 //------------------------------------------------------------------------------
 

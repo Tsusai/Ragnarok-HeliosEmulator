@@ -15,6 +15,26 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 190 -
+[2007/03/25] CR - Overview: Bugfix - code meant to handle and notify user of
+ malformed .pms mapfiles would not work as intended.  Result will NOT behave the
+ same as C or C++'s return keyword!
+[2007/03/25] CR - MapTypes - Added MAX_PMS_HEADER_LENGTH constant.  Used in
+ TMapLoadFromFile
+[2007/03/24] CR - Map:TMap.LoadFromFile - Parameter made constant (optimization)
+ Renamed Parameter "Path" to "PmsFile" to avoid ambiguity with TMap.Path
+ It's a more appropriate name than "Path" in the first place! :)
+ Surrounded TMemoryStream with a try-finally to protect the resource.
+ Fixed major logic flaws -- Result is NOT handled like C/C++'s "return"
+ keyword.  Thus, we NEED to use if-then-else branching, not just sequential
+ if-thens.  Malformed/hand-mangled maps could cause fatal errors with the old
+ code flow, because it couldn't avoid continuing on instead of bailing early.
+[2007/03/25] CR - Helios.dpr - removed MadShi units that were added in on
+ Aeomin's previous build.
+[2007/03/25] CR - Version - Updated text displayable version (and the build 
+ number that's stored in the exe itself too).
+-
+
 - Rev 189 -
 [2007/03/24] - Aeomin - Added IgnoreMob & IgnoreNPC parameter to TBeing.AreaLoop to extend for
  future NPCs (Mob also is NPC) [Being.pas]

@@ -57,9 +57,6 @@ program Helios;
 
 {$APPTYPE CONSOLE}
 uses
-  madListHardware,
-  madListProcesses,
-  madListModules,
 {*These definitions make it possible to step through programs in windows and
 compile for linux, at the same time*}
 //------------------------------------------------------------------------------
@@ -109,7 +106,7 @@ compile for linux, at the same time*}
 	PointList in 'Classes\PointList.pas',
 	EventList in 'Classes\Events\EventList.pas',
 
-		//Events
+	//Events
 	Event in 'Classes\Events\Event.pas',
 	MovementEvent in 'Classes\Events\MovementEvent.pas',
 	CharacterEventThread in 'Classes\Events\CharacterEventThread.pas',
