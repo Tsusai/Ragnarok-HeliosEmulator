@@ -307,7 +307,7 @@ begin
 	begin
 			Result := StrToBool(QueryResult.FieldValue(0));
 	end else Result := FALSE;
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetMapCanSave
 //------------------------------------------------------------------------------
 

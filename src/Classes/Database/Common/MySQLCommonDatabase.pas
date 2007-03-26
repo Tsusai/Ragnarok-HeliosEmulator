@@ -179,7 +179,7 @@ begin
 	Result := Connection.query(QString,StoreResult,ExecutedOK);
 	if not ExecutedOK then
 	begin
-		Console.Message('MySQL Query error: ' + QString, 'Common Database', MS_ERROR);
+		Console.Message('MySQL Query error: ' + QString + ' : ' + Connection.LastError, 'Common Database', MS_ERROR);
 	end;
 end;//SendQuery
 //------------------------------------------------------------------------------
@@ -258,37 +258,17 @@ function TMySQLCommonDatabase.GetAccount(ID: LongWord) : TAccount;
 var
 	Success     : Boolean;
 	AnAccount   : TAccount;
-	Index       : Integer;
 	QueryResult : TMySQLResult;
 begin
-	Result := NIL;
-	//Check Memory
-	if not Assigned(AccountList) then Accountlist := TStringlist.Create;
-	for Index := 0 to AccountList.Count -1 do begin
-		if TAccount(AccountList.Objects[Index]).ID = ID then
-		begin
-			Result := TAccount(AccountList.Objects[Index]);
-			break;
-		end;
-	end;
-
-	if Assigned(Result) then
-	begin
-		RefreshAccountData(Result);
+	QueryResult := SendQuery('SELECT * FROM accounts WHERE account_id = '''+IntToStr(ID)+'''',true,Success);
+	if Success and (QueryResult.RowsCount = 1) then begin
+		SetAccount(AnAccount,QueryResult);
+		Result := AnAccount;
 	end else
 	begin
-		QueryResult := SendQuery('SELECT * FROM accounts WHERE account_id = '''+IntToStr(ID)+'''',true,Success);
-		if Success and (QueryResult.RowsCount = 1) then begin
-			if Not Assigned(Result) then
-			begin
-				SetAccount(AnAccount,QueryResult);
-				AccountList.AddObject(AnAccount.Username, AnAccount);
-				Result := AnAccount;
-			end;
-		end;
-		if Assigned(QueryResult) then QueryResult.Free;
+		Result := NIL;
 	end;
-
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetAccount
 //------------------------------------------------------------------------------
 
@@ -311,37 +291,17 @@ function TMySQLCommonDatabase.GetAccount(Name : string) : TAccount;
 var
 	Success     : Boolean;
 	AnAccount   : TAccount;
-	Index       : Integer;
 	QueryResult : TMySQLResult;
 begin
-	Result := NIL;
-	//Check Memory
-	if not Assigned(AccountList) then Accountlist := TStringlist.Create;
-	for Index := 0 to AccountList.Count -1 do begin
-		if TAccount(AccountList.Objects[Index]).Username = Name then
-		begin
-			Result := TAccount(AccountList.Objects[Index]);
-			break;
-		end;
-	end;
-
-	if Assigned(Result) then
-	begin
-		RefreshAccountData(Result);
+	QueryResult := SendQuery('SELECT * FROM accounts WHERE userid = '''+Name+'''',true,Success);
+	if Success and (QueryResult.RowsCount = 1) then begin
+		SetAccount(AnAccount,QueryResult);
+		Result := AnAccount;
 	end else
 	begin
-		QueryResult := SendQuery('SELECT * FROM accounts WHERE userid = '''+Name+'''',true,Success);
-		if Success and (QueryResult.RowsCount = 1) then begin
-			if Not Assigned(Result) then
-			begin
-				SetAccount(AnAccount,QueryResult);
-				AccountList.AddObject(AnAccount.Username, AnAccount);
-				Result := AnAccount;
-			end;
-		end;
-		if Assigned(QueryResult) then QueryResult.Free;
+		Result := NIL;
 	end;
-
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetAccount
 //------------------------------------------------------------------------------
 

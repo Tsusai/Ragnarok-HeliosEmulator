@@ -579,11 +579,6 @@ begin
 			CID              := StrToInt(QueryResult.FieldValue(0));
 			ID               := StrToInt(QueryResult.FieldValue(1));
 			CharaNum         := StrToInt(QueryResult.FieldValue(2));
-			Account					:= Parent.CommonData.GetAccount(ID);
-			if InRange(CharaNum, 0, 8) then
-			begin
-				Account.CharaID[CharaNum] := CID;
-			end;
 			Name            :=          QueryResult.FieldValue(3);
 			JID             := StrToInt(QueryResult.FieldValue(4));
 			BaseLV          := StrToInt(QueryResult.FieldValue(5));

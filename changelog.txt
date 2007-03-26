@@ -15,6 +15,20 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 193 -
+[2007/03/25] RaX - Notes/Overview : Removed accountlist from globals. Modified code to 
+ deal with it. Moved Account access into TThreadLink.AccountInfo for consistency.
+[2007/03/25] RaX - Updated Globals.pas, removed all traces of the accountlist.
+[2007/03/25] RaX - LoginServer.pas, killed accountlist, made account access local.
+[2007/03/25] RaX - CharacterServer.pas killed accountlist. Made changes to offset
+ the removal such as updating the account's charanum on create.
+[2007/03/25] RaX - Reorganized and fixed GetAccount and overloads in all database
+ types. They no longer use AccountList + are slightly easier to read =)
+[2007/03/25] RaX - Removed TCharacter.Account - we now use TThreadLink.AccountLink in all
+ cases.
+[2007/03/25] RaX - Updated zone server, it now uses account + character link variables.
+-
+
 - Rev 192 -
 [2007/03/15] Tsusai - Notes/Overview: Added 'Support_Dec06_AndNewerClients' to Character.ini
  This allows usage of ONLY December 2006 and newer clients when enabled.  kRO added the

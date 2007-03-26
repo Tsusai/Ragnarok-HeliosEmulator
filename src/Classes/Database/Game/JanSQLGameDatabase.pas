@@ -619,11 +619,6 @@ begin
 			CID              := StrToIntDef(QueryResult.Records[0].Fields[0].Value, 0);
 			ID               := StrToIntDef(QueryResult.Records[0].Fields[1].Value, 0);
 			CharaNum         := StrToIntDef(QueryResult.Records[0].Fields[2].Value, 0);
-			Account					:= Parent.CommonData.GetAccount(ID);
-			if InRange(CharaNum, 0, 8) then
-			begin
-				Account.CharaID[CharaNum] := CID;
-			end;
 			Name            :=             QueryResult.Records[0].Fields[3].Value;
 			JID             := StrToIntDef(QueryResult.Records[0].Fields[4].Value, 0);
 			BaseLV          := StrToIntDef(QueryResult.Records[0].Fields[5].Value, 0);

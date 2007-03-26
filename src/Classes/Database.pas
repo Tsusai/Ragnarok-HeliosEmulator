@@ -18,7 +18,8 @@ uses
 	CommonDatabaseTemplate,
   GameDatabaseTemplate,
   StaticDatabaseTemplate,
-	DatabaseOptions;
+	DatabaseOptions,
+	IdContext;
 
 type
 
@@ -35,6 +36,8 @@ type
     StaticData    : TStaticDatabaseTemplate;
 
     Options       : TDatabaseOptions;
+
+		ClientInfo		: TIdContext;
 
 		Constructor Create(
 									EnableCommonDatabase  : Boolean;

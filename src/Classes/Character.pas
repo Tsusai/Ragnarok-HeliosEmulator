@@ -123,7 +123,6 @@ type
 
 	public
 		CID : LongWord;
-		Account : TAccount;
 
 		BaseNextEXP  : LongWord;
 		JobNextEXP   : LongWord;

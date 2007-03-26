@@ -244,6 +244,7 @@ begin
 		begin
 			CharacterList.Delete(CharacterIndex);
 		end;
+		TThreadLink(AConnection.Data).AccountLink.Free;
 	end;
 
 end;{OnDisconnect}

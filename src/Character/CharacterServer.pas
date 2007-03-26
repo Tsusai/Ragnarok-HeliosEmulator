@@ -426,6 +426,11 @@ begin
 				(AnAccount.LoginKey[2] = BufferReadLongWord(10, ABuffer)) then
 			begin
 				//LINK the account to the client connection for the other procedures
+				if Assigned(TThreadLink(AClient.Data).AccountLink) then
+				begin
+					TThreadLink(AClient.Data).AccountLink.Free;
+				end;
+
 				TThreadLink(AClient.Data).AccountLink := AnAccount;
 				SendPadding(AClient); //Legacy padding
 
@@ -433,7 +438,6 @@ begin
 				for Index := 0 to ACharaList.Count-1 do
 				begin
 					ACharacter := ACharaList.Items[Index];
-					ACharacter.Account := AnAccount;
 					AnAccount.CharaID[ACharacter.CharaNum] := ACharacter.CID;
 					if not (ACharacter = NIL) then
 					begin
@@ -495,8 +499,8 @@ var
 	ZServerInfo : TZoneServerInfo;
 	ZoneID : byte;
 	idx : integer;
+
 begin
-	if AClient.Data = nil then Exit;
 	if not (AClient.Data is TThreadLink) then exit;
 	AnAccount := TThreadLink(AClient.Data).AccountLink;
 
@@ -504,7 +508,6 @@ begin
 	//they should be terminated when logging in.
 
 	CharaIdx := BufferReadByte(2, ABuffer);
-
 	if AnAccount.CharaID[CharaIdx] <> 0 then
 	begin
 		ACharacter := ADatabase.GameData.GetChara(AnAccount.CharaID[CharaIdx],true);
@@ -654,7 +657,7 @@ begin
 				ACharacter.CalcMaxHP;
 				ACharacter.CalcMaxSP;
 				ACharacter.CalcSpeed;
-        ACharacter.CalcMaxWeight;
+				ACharacter.CalcMaxWeight;
 				ACharacter.HP             := ACharacter.MaxHP;
 				ACharacter.SP             := ACharacter.MaxSP;
 				ACharacter.StatusPts      := 0;
@@ -673,9 +676,9 @@ begin
 				ACharacter.LeftHand       := Options.DefaultLeftHand;
 				ACharacter.Armor          := Options.DefaultArmor;
 				ACharacter.Garment        := Options.DefaultGarment;
-        ACharacter.Shoes          := Options.DefaultShoes;
+				ACharacter.Shoes          := Options.DefaultShoes;
 				ACharacter.Accessory1     := Options.DefaultAccessory1;
-        ACharacter.Accessory2     := Options.DefaultAccessory2;
+				ACharacter.Accessory2     := Options.DefaultAccessory2;
 				ACharacter.HeadTop        := Options.DefaultHeadTop;
 				ACharacter.HeadMid        := Options.DefaultHeadMid;
 				ACharacter.HeadBottom     := Options.DefaultHeadLow;
@@ -692,10 +695,12 @@ begin
 
 				//INSERT ANY OTHER CREATION CHANGES HERE!
 				ADatabase.GameData.SaveChara(ACharacter);
+				Account.CharaID[ACharacter.CharaNum] := ACharacter.CID;
 				WriteBufferWord(0, $006d,ReplyBuffer);
 				Size := WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,2);
 				SendBuffer(AClient,ReplyBuffer,Size+2);
 			end;
+      ACharacter.Free;
 		end;
 	end else
 	begin
@@ -738,20 +743,16 @@ begin
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TThreadLink(AClient.Data).AccountLink;
 	ACharacter := ADatabase.GameData.GetChara(CharacterID,true);
-
 	if Assigned(ACharacter) then
 	begin
-		if ACharacter.Account = AnAccount then
+		if AnAccount.EMail = EmailOrID then
 		begin
-			if AnAccount.EMail = EmailOrID then
+			if ADatabase.GameData.DeleteChara(ACharacter) then
 			begin
-				if ADatabase.GameData.DeleteChara(ACharacter) then
-				begin
-					WriteBufferWord(0, $006f, ReplyBuffer);
-					SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));
-				end else DeleteCharaError(DELETEBADCHAR);
-			end else DeleteCharaError(DELETEBADEMAIL);
-		end else DeleteCharaError(DELETEBADCHAR);
+				WriteBufferWord(0, $006f, ReplyBuffer);
+				SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));
+			end else DeleteCharaError(DELETEBADCHAR);
+		end else DeleteCharaError(DELETEBADEMAIL);
 	end else DeleteCharaError(DELETEBADCHAR);
 end;{DeleteChara}
 //------------------------------------------------------------------------------
@@ -1016,7 +1017,13 @@ begin
 			fZoneServerList.Delete(idx);
 			AZoneServInfo.Free;
 		end;
-	end;
+	end else
+	begin
+		if Assigned(TThreadLink(AConnection.Data).AccountLink) then
+		begin
+			TThreadLink(AConnection.Data).AccountLink.Free;
+    end;
+  end;
 end;{OnDisconnect}
 //------------------------------------------------------------------------------
 

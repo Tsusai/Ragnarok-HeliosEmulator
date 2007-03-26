@@ -205,7 +205,7 @@ begin
 	Result := Database.SQLDirect(QString);
 	if (Result = 0) AND (Database.Error <> 'SELECT FROM: no records') then
 	begin
-	Console.Message('Text Query error: ' + QString, 'Common Database', MS_ERROR);
+		Console.Message('Text Query error: ' + QString + ' : ' +  Database.Error, 'Common Database', MS_ERROR);
 		Console.WriteLn(Database.Error);
 	end;
 end;//SendQuery
@@ -229,7 +229,7 @@ procedure SetAccount(
 );
 begin
 	AnAccount := TAccount.Create;
-	AnAccount.ID          := StrToInt(QueryResult.records[0].fields[0].value);
+	AnAccount.ID           := StrToIntDef(QueryResult.records[0].fields[0].value, 0);
 	AnAccount.Username     := QueryResult.records[0].fields[1].value;
 	AnAccount.Password     := QueryResult.records[0].fields[2].value;
 	//Tsusai - For Gender, we need to return the first char, thats
@@ -269,36 +269,18 @@ var
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
 begin
-	Result := NIL;
-	//Check Memory
-	if not Assigned(AccountList) then Accountlist := TStringlist.Create;
-	for Index := 0 to AccountList.Count -1 do begin
-		if TAccount(AccountList.Objects[Index]).ID = ID then
-		begin
-			Result := TAccount(AccountList.Objects[Index]);
-			break;
-		end;
-	end;
-
-	if Assigned(Result) then
-	begin
-		RefreshAccountData(Result);
+	ResultIdentifier := SendQuery(
+	Format('SELECT * FROM accounts WHERE account_id = %d', [ID]));
+	QueryResult := Database.RecordSets[ResultIdentifier];
+	if (QueryResult.recordcount = 1) then begin
+		SetAccount(AnAccount,QueryResult);
+		Result := AnAccount;
 	end else
 	begin
-		ResultIdentifier := SendQuery(
-		Format('SELECT * FROM accounts WHERE account_id = %d', [ID]));
-		QueryResult := Database.RecordSets[ResultIdentifier];
-		if (QueryResult.recordcount = 1) then begin
-			if Not Assigned(Result) then
-			begin
-				SetAccount(AnAccount,QueryResult);
-				AccountList.AddObject(AnAccount.Username, AnAccount);
-				Result := AnAccount;
-			end;
-		end;
-		SendQuery('RELEASE TABLE accounts');
-		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+		Result := NIL;
 	end;
+	SendQuery('RELEASE TABLE accounts');
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetAccount
 //------------------------------------------------------------------------------
 
@@ -325,36 +307,17 @@ var
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
 begin
-	Result := NIL;
-	//Check Memory
-	if not Assigned(AccountList) then Accountlist := TStringlist.Create;
-	for Index := 0 to AccountList.Count -1 do begin
-		if TAccount(AccountList.Objects[Index]).Username = Name then
-		begin
-			Result := TAccount(AccountList.Objects[Index]);
-			break;
-		end;
-	end;
-
-	if Assigned(Result) then
-	begin
-		RefreshAccountData(Result);
+	ResultIdentifier := SendQuery('SELECT * FROM accounts WHERE userid = '+Name);
+	QueryResult := Database.RecordSets[ResultIdentifier];
+	if (QueryResult.recordcount = 1) then begin
+		SetAccount(AnAccount,QueryResult);
+		Result := AnAccount;
 	end else
 	begin
-		ResultIdentifier := SendQuery('SELECT * FROM accounts WHERE userid = '+Name);
-		QueryResult := Database.RecordSets[ResultIdentifier];
-		if (QueryResult.recordcount = 1) then begin
-			if Not Assigned(Result) then
-			begin
-				SetAccount(AnAccount,QueryResult);
-				AccountList.AddObject(AnAccount.Username, AnAccount);
-				Result := AnAccount;
-			end;
-		end;
-		SendQuery('RELEASE TABLE accounts');
-		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+		Result := NIL;
 	end;
-
+	SendQuery('RELEASE TABLE accounts');
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
 end;//GetAccount
 //------------------------------------------------------------------------------
 

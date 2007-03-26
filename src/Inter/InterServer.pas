@@ -566,11 +566,7 @@ begin
 				SendBuffer(ListClient, ABuffer, Size);
 			end;
 		end;
-	end else
-	begin
-    //GM command debug message.
-		Console.Message('GM Command Failed. '+CommandSeparator[0]+' does not exist!', 'Inter Server', MS_DEBUG);
-  end;
+	end;
 end; //RecvGMCommand
 //------------------------------------------------------------------------------
 
