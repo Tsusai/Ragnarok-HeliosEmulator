@@ -202,7 +202,7 @@ end;{TMainProc.ZoneServerExecute}
 //------------------------------------------------------------------------------
 procedure TZoneServer.OnConnect(AConnection: TIdContext);
 begin
-	AConnection.Data := TThreadLink.Create;
+	AConnection.Data := TClientLink.Create;
 end;{OnConnect}
 //------------------------------------------------------------------------------
 
@@ -227,7 +227,7 @@ var
 begin
 	if AConnection.Data is TThreadLink then
 	begin
-		ACharacter := TThreadLink(AConnection.Data).CharacterLink;
+		ACharacter := TClientLink(AConnection.Data).CharacterLink;
 		ADatabase.GameData.SaveChara(ACharacter);
 		if ACharacter.MapInfo <> nil then
 		begin
@@ -244,7 +244,7 @@ begin
 		begin
 			CharacterList.Delete(CharacterIndex);
 		end;
-		TThreadLink(AConnection.Data).AccountLink.Free;
+		TClientLink(AConnection.Data).AccountLink.Free;
 	end;
 
 end;{OnDisconnect}
@@ -473,7 +473,7 @@ Begin
 		Lth := AClient.Connection.IOHandler.InputBuffer.Size;
 		RecvBuffer(AClient,ABuffer[0], 2);
 		PacketID := BufferReadWord(0, ABuffer);
-		AChara := TThreadLink(AClient.Data).CharacterLink;
+		AChara := TClientLink(AClient.Data).CharacterLink;
 
 		Found := False;
 		if NOT Assigned(AChara) then

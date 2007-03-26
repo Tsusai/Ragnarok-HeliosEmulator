@@ -42,7 +42,6 @@ type
 
 		Constructor Create(
 			EnableGameDatabase : boolean;
-			var LoadedOK : boolean;
 			AParent : TDatabase
 		); reintroduce; overload;
 		Destructor Destroy();override;
@@ -102,7 +101,6 @@ implementation
 //------------------------------------------------------------------------------
 Constructor TMySQLGameDatabase.Create(
 	EnableGameDatabase : boolean;
-	var LoadedOK : boolean;
 	AParent : TDatabase
 );
 begin
@@ -111,7 +109,7 @@ begin
 	Connection := TMySQLClient.Create;
 	if EnableGameDatabase then
 	begin
-		LoadedOK := Connect();
+		Connect();
   end;
 end;
 //------------------------------------------------------------------------------

@@ -40,7 +40,6 @@ type
 
 		Constructor Create(
 			EnableCommonDatabase : boolean;
-			var LoadedOK : Boolean;
 			AParent : TDatabase
 		); reintroduce; overload;
 		Destructor Destroy();override;
@@ -90,7 +89,6 @@ implementation
 //------------------------------------------------------------------------------
 Constructor TMySQLCommonDatabase.Create(
 	EnableCommonDatabase : boolean;
-	var LoadedOK : Boolean;
 	AParent : TDatabase
 );
 begin
@@ -99,7 +97,7 @@ begin
 	Connection := TMySQLClient.Create;
 	if EnableCommonDatabase then
 	begin
-		LoadedOK := Connect();
+		Connect();
 	end;
 end;//Create
 //------------------------------------------------------------------------------

@@ -391,7 +391,7 @@ end;
 		WriteBufferWord(30, Chara.ClothesColor, ReplyBuffer);
 		WriteBufferLongWord(34, Chara.GuildID, ReplyBuffer);
 		WriteBufferWord(42, Chara.Karma, ReplyBuffer);
-		WriteBufferByte(45, TThreadLink(AClient.Data).AccountLink.GenderNum, ReplyBuffer);
+		WriteBufferByte(45, TClientLink(AClient.Data).AccountLink.GenderNum, ReplyBuffer);
 		end;
 		WriteBufferWord(38, 0, ReplyBuffer);  //Emblem ID
 		WriteBufferByte(44, 0, ReplyBuffer);  //Normal/Ready to fight

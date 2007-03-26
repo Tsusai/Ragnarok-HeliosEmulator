@@ -427,7 +427,7 @@ begin
 				(AnAccount.LoginKey[2] = BufferReadLongWord(10, ABuffer)) then
 			begin
 				//LINK the account to the client connection for the other procedures
-				TThreadLink(AClient.Data).AccountLink := AnAccount;
+				TClientLink(AClient.Data).AccountLink := AnAccount;
 				SendPadding(AClient); //Legacy padding
 
 				ACharaList := ADatabase.GameData.GetAccountCharas(AccountID);
@@ -466,7 +466,7 @@ begin
 	end;
 
 	//make sure that if something goes horribly wrong we free the account anyways.
-	if TThreadLink(AClient.Data).AccountLink <> AnAccount then
+	if TClientLink(AClient.Data).AccountLink <> AnAccount then
 	begin
 		AnAccount.Free;
   end;
@@ -502,7 +502,7 @@ var
 
 begin
 	if not (AClient.Data is TThreadLink) then exit;
-	AnAccount := TThreadLink(AClient.Data).AccountLink;
+	AnAccount := TClientLink(AClient.Data).AccountLink;
 
 	//Tsusai: Possible Check for online characters here...but
 	//they should be terminated when logging in.
@@ -598,7 +598,7 @@ var
 begin
 	Validated   := TRUE; //Assume passes all checks.
 
-	Account     := TThreadLink(AClient.Data).AccountLink;
+	Account     := TClientLink(AClient.Data).AccountLink;
 	CharaName   := BufferReadString(2,24,ABuffer);
 	SlotNum     := BufferReadByte(32,ABuffer);
 	HairColor   := BufferReadByte(33,ABuffer);
@@ -741,7 +741,7 @@ var
 begin
 	CharacterID := BufferReadLongWord(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
-	AnAccount := TThreadLink(AClient.Data).AccountLink;
+	AnAccount := TClientLink(AClient.Data).AccountLink;
 	ACharacter := ADatabase.GameData.GetChara(CharacterID,true);
 	if Assigned(ACharacter) then
 	begin
@@ -866,7 +866,7 @@ begin
 		$0065: // RO Client request to connect and get characters
 			begin
 				//Thread Data should have a TThreadLink object...if not, make one
-				AClient.Data := TThreadlink.Create;
+				AClient.Data := TClientlink.Create;
 				//Verify login and send characters
 				RecvBuffer(AClient,ABuffer[2],GetPacketLength($0065)-2);
 				SendCharas(AClient,ABuffer);
@@ -1017,15 +1017,8 @@ begin
 		if not (idx = -1) then
 		begin
 			fZoneServerList.Delete(idx);
-			AZoneServInfo.Free;
 		end;
-	end else
-	begin
-		if Assigned(TThreadLink(AConnection.Data).AccountLink) then
-		begin
-			TThreadLink(AConnection.Data).AccountLink.Free;
-    end;
-  end;
+	end;
 end;{OnDisconnect}
 //------------------------------------------------------------------------------
 

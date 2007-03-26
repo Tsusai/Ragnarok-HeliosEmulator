@@ -42,7 +42,6 @@ type
 
 		Constructor Create(
 			EnableStaticDatabase : boolean;
-			var LoadedOK : boolean;
 			AParent : TDatabase
 		); reintroduce; overload;
 		Destructor Destroy();override;
@@ -84,7 +83,6 @@ implementation
 //------------------------------------------------------------------------------
 Constructor TJanSQLStaticDatabase.Create(
 	EnableStaticDatabase : boolean;
-	var LoadedOK : boolean;
 	AParent : TDatabase
 );
 begin
@@ -93,7 +91,7 @@ begin
 	Database := TJanSQL.Create;
 	if EnableStaticDatabase then
 	begin
-		LoadedOK := Connect();
+		Connect();
 	end;
 
 end;

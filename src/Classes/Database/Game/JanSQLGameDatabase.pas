@@ -41,7 +41,6 @@ type
 
 		Constructor Create(
 			EnableGameDatabase : boolean;
-			var LoadedOK : boolean;
 			AParent : TDatabase
 		); reintroduce; overload;
 
@@ -104,7 +103,6 @@ implementation
 //------------------------------------------------------------------------------
 Constructor TJanSQLGameDatabase.Create(
 	EnableGameDatabase : boolean;
-	var LoadedOK : boolean;
 	AParent : TDatabase
 );
 begin
@@ -113,7 +111,7 @@ begin
 	Database := TJanSQL.Create;
 	if EnableGameDatabase then
 	begin
-		LoadedOK := Connect();
+		Connect();
 	end;
 end;
 //------------------------------------------------------------------------------

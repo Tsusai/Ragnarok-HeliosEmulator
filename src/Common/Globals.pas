@@ -103,13 +103,9 @@ end;{GetMD5}
 //
 //------------------------------------------------------------------------------
 function InitGlobals : boolean;
-var
-	DatabaseLoaded : boolean;
 begin
-	DatabaseLoaded := false; //assume the database connections failed!
-
-	ADatabase       := TDatabase.Create(TRUE,TRUE,TRUE,DatabaseLoaded);
-	Result := (Load_PacketDB and DatabaseLoaded);
+	ADatabase       := TDatabase.Create(TRUE,TRUE,TRUE);
+	Result := (Load_PacketDB);
 end; {InitGlobals}
 //------------------------------------------------------------------------------
 

@@ -243,7 +243,6 @@ begin
 		if not (idx = -1) then
 		begin
 			fCharaServerList.Delete(idx);
-			ACharaServInfo.Free;
 		end;
 	end;
 end;{OnDisconnect}

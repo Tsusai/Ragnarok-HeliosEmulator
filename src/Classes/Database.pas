@@ -43,7 +43,6 @@ type
 									EnableCommonDatabase  : Boolean;
 									EnableGameDatabase    : Boolean;
 									EnableStaticDatabase  : Boolean;
-									var LoadedOK					: Boolean;
 									CommonDatabaseType    : Integer = -1;
 									GameDatabaseType      : Integer = -1;
 									StaticDatabaseType    : Integer = -1
@@ -85,7 +84,6 @@ Constructor TDatabase.Create(
   EnableCommonDatabase  : Boolean;
   EnableGameDatabase    : Boolean;
 	EnableStaticDatabase  : Boolean;
-	var LoadedOK					: Boolean;
 	CommonDatabaseType    : Integer = -1;
 	GameDatabaseType      : Integer = -1;
 	StaticDatabaseType    : Integer = -1
@@ -120,12 +118,12 @@ begin
 	case CommonDatabaseType of
 		TEXT ://1    Helios Text Database
 			begin
-				CommonData  := TJanSQLCommonDatabase.Create(EnableCommonDatabase,CommonOK,self);
+				CommonData  := TJanSQLCommonDatabase.Create(EnableCommonDatabase,self);
 			end;
 
 		MYSQL://2
 			begin
-				CommonData  := TMySQLCommonDatabase.Create(EnableCommonDatabase,CommonOK,self);
+				CommonData  := TMySQLCommonDatabase.Create(EnableCommonDatabase,self);
 			end;
 
 		else begin //anything else
@@ -137,12 +135,12 @@ begin
 	case GameDatabaseType of
 		TEXT ://1    Helios Text Database
 			begin
-				GameData    := TJanSQLGameDatabase.Create(EnableGameDatabase,GameOK,self);
+				GameData    := TJanSQLGameDatabase.Create(EnableGameDatabase,self);
 			end;
 
 		MYSQL://2
 			begin
-				GameData    := TMySQLGameDatabase.Create(EnableGameDatabase,GameOK,self);
+				GameData    := TMySQLGameDatabase.Create(EnableGameDatabase,self);
 			end;
 
     else begin //anything else
@@ -154,12 +152,12 @@ begin
 	case StaticDatabaseType of
 		TEXT ://1    Helios Text Database
 			begin
-				StaticData    := TJanSQLStaticDatabase.Create(EnableStaticDatabase,StaticOK,self);
+				StaticData    := TJanSQLStaticDatabase.Create(EnableStaticDatabase,self);
 			end;
 
 		MYSQL://2
 			begin
-        StaticData    := TMySQLStaticDatabase.Create(EnableStaticDatabase,StaticOK,self);
+				StaticData    := TMySQLStaticDatabase.Create(EnableStaticDatabase,self);
 			end;
 
 		else begin //anything else
@@ -167,7 +165,6 @@ begin
 			Console.WriteLn('     See ServerOptions.ini for configuration options.');
 		end;
 	end;
-	LoadedOK := (CommonOK and GameOK and StaticOK);
 end;
 //------------------------------------------------------------------------------
 

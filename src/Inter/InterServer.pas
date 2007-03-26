@@ -182,7 +182,6 @@ begin
 		if not (idx = -1) then
 		begin
 			fZoneServerList.Delete(idx);
-			AZoneServInfo.Free;
 		end;
 	end;
 	fClientList.Delete(fClientList.IndexOf(AConnection));

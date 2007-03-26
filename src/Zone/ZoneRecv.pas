@@ -233,9 +233,9 @@ uses
 			if (AnAccount.LoginKey[1] = ValidateID1) and
 				(AnAccount.GenderNum = Gender) then
 			begin
-				TThreadLink(AClient.Data).AccountLink := AnAccount;
+				TClientLink(AClient.Data).AccountLink := AnAccount;
 				AnAccount.ClientInfo := AClient;
-				TThreadLink(AClient.Data).CharacterLink := ACharacter;
+				TClientLink(AClient.Data).CharacterLink := ACharacter;
 				ACharacter.ClientVersion := Version;
 				ACharacter.Online  := 1;
 				ACharacter.ClientInfo := AClient;
@@ -588,7 +588,7 @@ begin
 									 );
 			//if it is a command, we check the account's access level to see if it is
 			//able to use the gm command.
-			if TThreadLink(ACharacter.ClientInfo.Data).AccountLink.Level >= MainProc.ZoneServer.Commands.GetCommandGMLevel(CommandID) then
+			if TClientLink(ACharacter.ClientInfo.Data).AccountLink.Level >= MainProc.ZoneServer.Commands.GetCommandGMLevel(CommandID) then
 			begin
 				ZoneSendGMCommandtoInter(ACharacter, TempChat);
 			end else

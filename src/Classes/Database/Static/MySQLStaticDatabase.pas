@@ -42,7 +42,6 @@ type
 
 		Constructor Create(
 			EnableStaticDatabase : boolean;
-			var LoadedOK : boolean;
 			AParent : TDatabase
 		); reintroduce; overload;
 		Destructor Destroy();override;
@@ -85,7 +84,6 @@ implementation
 //------------------------------------------------------------------------------
 Constructor TMySQLStaticDatabase.Create(
 	EnableStaticDatabase : boolean;
-	var LoadedOK : boolean;
 	AParent : TDatabase
 );
 begin
@@ -94,7 +92,7 @@ begin
 	Connection := TMySQLClient.Create;
 	if EnableStaticDatabase then
 	begin
-	  LoadedOK := Connect();
+		Connect();
   end;
 end;
 //------------------------------------------------------------------------------
