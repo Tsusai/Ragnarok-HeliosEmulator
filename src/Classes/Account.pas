@@ -11,7 +11,8 @@
 unit Account;
 
 interface
-
+uses
+	IdContext;
 //------------------------------------------------------------------------------
 //TACCOUNT                                                                CLASS
 //------------------------------------------------------------------------------
@@ -37,6 +38,8 @@ interface
 		LastLoginTime   : TDateTime;
 		Level           : Byte;
 		ConnectUntil    : TDateTime;
+
+		ClientInfo			: TIdContext;
 
 		property Gender : Char  read  fGender write SetGender;
 		property IsBanned : boolean read GetBanned;

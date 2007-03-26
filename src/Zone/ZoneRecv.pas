@@ -216,6 +216,7 @@ uses
 		ACharacter  : TCharacter;
 		OutBuffer   : Tbuffer; //temp
 		MapIndex    : Integer;
+		
 	begin
 		AccountID      := BufferReadLongWord(ReadPts[0], Buffer);
 		CharacterID    := BufferReadLongWord(ReadPts[1], Buffer);
@@ -233,6 +234,7 @@ uses
 				(AnAccount.GenderNum = Gender) then
 			begin
 				TThreadLink(AClient.Data).AccountLink := AnAccount;
+				AnAccount.ClientInfo := AClient;
 				TThreadLink(AClient.Data).CharacterLink := ACharacter;
 				ACharacter.ClientVersion := Version;
 				ACharacter.Online  := 1;

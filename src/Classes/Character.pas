@@ -129,6 +129,8 @@ type
 		Weight       : LongWord;
 		MaxWeight    : LongWord;
 
+    ClientInfo	 : TIdContext;
+
 		ParamUP : array [STR..LUK] of byte;
 		ParamBonus : array [STR..LUK] of byte;
 
@@ -153,7 +155,6 @@ type
 		ASpeed : word;
 
 		ClientVersion : Integer;
-		ClientInfo : TIdContext;
 
 		OnTouchIDs : TIntList32;
 

@@ -15,6 +15,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 195 -
+[2007/03/26] RaX - Notes/Overview : Made accounts + characters linked to the client from
+ themselves through ClientInfo rather than just through the tthreadlink.
+[2007/03/26] RaX - Account.pas - added ClientInfo property.
+[2007/03/26] RaX - Character.pas changed order of properties.
+[2007/03/26] RaX - ZoneRecv - implemented setting the account's clientinfo.
+-
+
 - Rev 194 -
 [2007/03/26] RaX - Notes/Overview : Fixed memory leaks in Account +  Character servers.
  Zone should be fine, we've kept strict control there by dealing with everything through

@@ -427,11 +427,6 @@ begin
 				(AnAccount.LoginKey[2] = BufferReadLongWord(10, ABuffer)) then
 			begin
 				//LINK the account to the client connection for the other procedures
-				if Assigned(TThreadLink(AClient.Data).AccountLink) then
-				begin
-					TThreadLink(AClient.Data).AccountLink.Free;
-				end;
-
 				TThreadLink(AClient.Data).AccountLink := AnAccount;
 				SendPadding(AClient); //Legacy padding
 
