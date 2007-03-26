@@ -265,7 +265,6 @@ end;//SetAccount
 function TJanSQLCommonDatabase.GetAccount(ID: LongWord) : TAccount;
 var
 	AnAccount   : TAccount;
-	Index       : Integer;
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
 begin
@@ -303,7 +302,6 @@ end;//GetAccount
 function TJanSQLCommonDatabase.GetAccount(Name : string) : TAccount;
 var
 	AnAccount   : TAccount;
-	Index       : Integer;
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
 begin

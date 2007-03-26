@@ -403,6 +403,7 @@ var
 	ACharaList  : TCharacterList;
 	BaseIndex   : Integer;
 	CharacterDataSize : integer;
+
 begin
 	Count     := 0;
 	Ver       := 24;
@@ -435,27 +436,25 @@ begin
 				SendPadding(AClient); //Legacy padding
 
 				ACharaList := ADatabase.GameData.GetAccountCharas(AccountID);
-				for Index := 0 to ACharaList.Count-1 do
+				for Index := ACharaList.Count-1 downto 0 do
 				begin
 					ACharacter := ACharaList.Items[Index];
 					AnAccount.CharaID[ACharacter.CharaNum] := ACharacter.CID;
-					if not (ACharacter = NIL) then
+					with ACharacter do
 					begin
-						with ACharacter do
-						begin
-							BaseIndex := Ver+(Count*CharacterDataSize);
-							WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,BaseIndex);
-							Inc(Count);
-						end;
+						BaseIndex := Ver+(Count*CharacterDataSize);
+						WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,BaseIndex);
+						Inc(Count);
 					end;
+					ACharacter.Free;
+					ACharaList.Delete(Index);
 				end;
+				ACharaList.Free;
 				//size is (24 + (character count * Character data size))
 				PacketSize := (Ver + (Count * CharacterDataSize));
 				WriteBufferWord(0,$006b,ReplyBuffer); //header
 				WriteBufferWord(2,PacketSize,ReplyBuffer);
 				SendBuffer(AClient,ReplyBuffer,PacketSize);
-
-				ACharaList.Free;
 			end else
 			begin
 				WriteBufferWord(0, $0081, ReplyBuffer);
@@ -470,6 +469,12 @@ begin
 			end;
 		end;
 	end;
+
+	//make sure that if something goes horribly wrong we free the account anyways.
+	if TThreadLink(AClient.Data).AccountLink <> AnAccount then
+	begin
+		AnAccount.Free;
+  end;
 end; {SendCharas}
 //------------------------------------------------------------------------------
 
@@ -547,6 +552,7 @@ begin
 			WriteBufferByte(2, 03, OutBuffer);
 			SendBuffer(AClient, OutBuffer, GetPacketLength($0081));
 		end;
+		ACharacter.Free;
 	end;
 
 end;{SendCharaToMap}
@@ -638,7 +644,6 @@ begin
 		if Validated then
 		begin
 			//Validated...Procede with creation
-			ACharacter := TCharacter.Create;
 			//Set a record in Database for our new character
 			if ADatabase.GameData.CreateChara(
 				ACharacter,Account.ID,CharaName,SlotNum) then
@@ -699,8 +704,8 @@ begin
 				WriteBufferWord(0, $006d,ReplyBuffer);
 				Size := WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,2);
 				SendBuffer(AClient,ReplyBuffer,Size+2);
+				ACharacter.Free;
 			end;
-      ACharacter.Free;
 		end;
 	end else
 	begin
@@ -754,6 +759,7 @@ begin
 			end else DeleteCharaError(DELETEBADCHAR);
 		end else DeleteCharaError(DELETEBADEMAIL);
 	end else DeleteCharaError(DELETEBADCHAR);
+	ACharacter.Free;
 end;{DeleteChara}
 //------------------------------------------------------------------------------
 
@@ -989,6 +995,7 @@ begin
 	Result := TCPServer.Active;
 end;{SetPort}
 //------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //OnDisconnect()                                                         EVENT

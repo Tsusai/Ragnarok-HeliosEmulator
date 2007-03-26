@@ -292,6 +292,7 @@ var
 	Success     : Boolean;
 	AnAccount   : TAccount;
 	QueryResult : TMySQLResult;
+
 begin
 	QueryResult := SendQuery('SELECT * FROM accounts WHERE userid = '''+Name+'''',true,Success);
 	if Success and (QueryResult.RowsCount = 1) then begin

@@ -15,6 +15,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 194 -
+[2007/03/26] RaX - Notes/Overview : Fixed memory leaks in Account +  Character servers.
+ Zone should be fine, we've kept strict control there by dealing with everything through
+ an "owning" list.
+ Just a note...We leaked in EVERY character server function...let's NOT let that happen
+ ever again.
+-
+
 - Rev 193 -
 [2007/03/25] RaX - Notes/Overview : Removed accountlist from globals. Modified code to 
  deal with it. Moved Account access into TThreadLink.AccountInfo for consistency.

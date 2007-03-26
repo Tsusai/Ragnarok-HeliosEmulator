@@ -463,6 +463,7 @@ end;{OnException}
 		end else begin
 			SendLoginError(AClient,LOGIN_UNREGISTERED);
 		end;
+		AnAccount.Free;
 	end;//ValidateLogin
 //------------------------------------------------------------------------------
 
