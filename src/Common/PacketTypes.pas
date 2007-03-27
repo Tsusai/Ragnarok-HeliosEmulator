@@ -109,7 +109,7 @@ Destructor TClientLink.Destroy;
 begin
 	if Assigned(AccountLink) then
 	begin
-		FreeAndNil(AccountLink);
+		AccountLink.Free;
 	end;
 	//We do NOT own the characters, only the zone's character list does. We don't
 	//free them here.
@@ -120,7 +120,7 @@ Destructor TCharaServerLink.Destroy;
 begin
 	if Assigned(Info) then
 	begin
-		FreeAndNil(Info);
+		Info.Free;
 	end;
 	inherited;
 end;
@@ -129,7 +129,7 @@ Destructor TZoneServerLink.Destroy;
 begin
 	if Assigned(Info) then
 	begin
-		FreeAndNil(Info);
+		Info.Free;
 	end;
 	inherited;
 end;

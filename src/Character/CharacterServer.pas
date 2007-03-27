@@ -464,12 +464,6 @@ begin
 			end;
 		end;
 	end;
-
-	//make sure that if something goes horribly wrong we free the account anyways.
-	if TClientLink(AClient.Data).AccountLink <> AnAccount then
-	begin
-		AnAccount.Free;
-  end;
 end; {SendCharas}
 //------------------------------------------------------------------------------
 

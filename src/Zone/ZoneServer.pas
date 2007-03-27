@@ -244,7 +244,6 @@ begin
 		begin
 			CharacterList.Delete(CharacterIndex);
 		end;
-		TClientLink(AConnection.Data).AccountLink.Free;
 	end;
 
 end;{OnDisconnect}

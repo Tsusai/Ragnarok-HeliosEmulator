@@ -15,6 +15,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 200 -
+[2007/03/26] RaX - Notes/Overview : Fixed access violation with help from Aeomin - Thanks
+[2007/03/26] RaX - I forgot 2 frees of the accountlink =( Now that they're owned by the
+ connection. Fixed.
+-
+
 - Rev 199 -
 [2007/03/26] RaX - Notes/Overview : Inter Server now uses local database connections.
 [2007/03/26] RaX - Changed all ADatabase uses in CharacterServer.pas to TThreadLink calls.
