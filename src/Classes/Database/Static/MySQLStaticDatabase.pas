@@ -69,7 +69,9 @@ type
 implementation
 	uses
 		Globals,
-		SysUtils;
+		SysUtils,
+		Main;
+
 //------------------------------------------------------------------------------
 //TMySQLStaticDatabase.Create()                                          CONSTRUCTOR
 //------------------------------------------------------------------------------
@@ -131,11 +133,11 @@ begin
 	Result := true;
 	if NOT Connection.Connected then
 	begin
-		Connection.Host            := Parent.Options.StaticHost;
-		Connection.Port            := Parent.Options.StaticPort;
-		Connection.Db              := Parent.Options.StaticDB;
-		Connection.User            := Parent.Options.StaticUser;
-		Connection.Password        := Parent.Options.StaticPass;
+		Connection.Host            := MainProc.DatabaseOptions.StaticHost;
+		Connection.Port            := MainProc.DatabaseOptions.StaticPort;
+		Connection.Db              := MainProc.DatabaseOptions.StaticDB;
+		Connection.User            := MainProc.DatabaseOptions.StaticUser;
+		Connection.Password        := MainProc.DatabaseOptions.StaticPass;
 	end;
 
 	Connection.ConnectTimeout  := 10;

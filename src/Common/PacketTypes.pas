@@ -15,7 +15,8 @@ uses
 	Character,
 	CharacterServerInfo,
 	Database,
-	ZoneServerInfo;
+	ZoneServerInfo,
+	IdContext;
 
 type
 	TBufSize = 0..(High(Word) div 2);
@@ -24,8 +25,9 @@ type
 	TReadPts = array of TBufSize;
 
 	TThreadLink = class
+		Parent				: TIdContext;
 		DatabaseLink	: TDatabase;
-		Constructor Create();
+		Constructor Create(AClient : TIdContext);
 		Destructor Destroy();override;
   end;
 
@@ -93,10 +95,11 @@ End; (* Func ReadPoints
 *-----------------------------------------------------------------------------*)
 
 
-Constructor TThreadLink.Create;
+Constructor TThreadLink.Create(AClient : TIdContext);
 begin
-	inherited;
-	DatabaseLink := TDatabase.Create(TRUE, TRUE, TRUE);
+	inherited Create;
+	Parent := AClient;
+	DatabaseLink := TDatabase.Create(Parent, TRUE, TRUE, TRUE);
 end;
 
 Destructor TThreadLink.Destroy;

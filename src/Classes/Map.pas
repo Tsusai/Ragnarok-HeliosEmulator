@@ -409,7 +409,7 @@ Begin
   MapFile := TMemoryStream.Create;
   MapFile.LoadFromFile(Path);
 
-  Flags:= ADatabase.StaticData.GetMapFlags(Name);
+	Flags:= MainProc.ZoneServer.ZoneLocalDatabase.StaticData.GetMapFlags(Name);
   MapFile.Seek(22,0);//skip other non-cell information
 
   //Load Cell Information

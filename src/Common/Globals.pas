@@ -39,8 +39,6 @@ var
 	ExeName					: String;
 
 	LastAccountID   : Integer;
-
-	ADatabase       : TDatabase;
 //------------------------------------------------------------------------------
 
 const
@@ -104,7 +102,6 @@ end;{GetMD5}
 //------------------------------------------------------------------------------
 function InitGlobals : boolean;
 begin
-	ADatabase       := TDatabase.Create(TRUE,TRUE,TRUE);
 	Result := (Load_PacketDB);
 end; {InitGlobals}
 //------------------------------------------------------------------------------
@@ -122,7 +119,7 @@ end; {InitGlobals}
 //------------------------------------------------------------------------------
 procedure DestroyGlobals;
 begin
-	ADatabase.Free;
+	//placeholder for future globals
 end;{DestroyGlobals}
 //------------------------------------------------------------------------------
 

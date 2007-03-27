@@ -211,7 +211,7 @@ type
 				Value    : LongWord
 			);
 		procedure SendCharacterStats(UpdateView : boolean = false);
-		constructor Create;
+		constructor Create(AClient : TIdContext);
 		destructor Destroy; override;
 
 	end;{TCharacter}
@@ -1215,11 +1215,11 @@ end;{SetHomunID}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxHP;
 begin
-  MAXHP := EnsureRange(
+	MAXHP := EnsureRange(
     (MAXHP + (35 + BaseLV * 5 + ((1 + BaseLV) * BaseLV div 2) *
-      ADatabase.StaticData.GetBaseMaxHP(self) div 100) * (100 + ParamBase[VIT]) div 100)
+			TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxHP(self) div 100) * (100 + ParamBase[VIT]) div 100)
       ,1
-      ,High(MAXHP)
+			,High(MAXHP)
  		);
 end;{CalcMaxHP}
 //------------------------------------------------------------------------------
@@ -1465,7 +1465,7 @@ End;
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxSP;
 begin
-  MAXSP := MAXSP + BaseLV * ADatabase.StaticData.GetBaseMaxSP(self) * (100 + ParamBase[INT]) div 100;
+	MAXSP := MAXSP + BaseLV * TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxSP(self) * (100 + ParamBase[INT]) div 100;
 end;{CalcMaxSP}
 //------------------------------------------------------------------------------
 
@@ -1500,7 +1500,7 @@ end;{CalcSpeed}
 procedure TCharacter.CalcMaxWeight;
 begin
 	MaxWeight  := LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
-                ADatabase.StaticData.GetBaseMaxWeight(self);
+                TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxWeight(self);
 end;{CalcMaxWeight}
 //------------------------------------------------------------------------------
 
@@ -1515,9 +1515,10 @@ end;{CalcMaxWeight}
 //		January 24th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Constructor TCharacter.Create;
+Constructor TCharacter.Create(AClient : TIdContext);
 begin
-	inherited;
+	inherited Create;
+	ClientInfo := AClient;
 	OnTouchIDs := TIntList32.Create;
 end;
 //------------------------------------------------------------------------------

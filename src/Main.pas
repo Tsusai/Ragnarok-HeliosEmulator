@@ -19,7 +19,8 @@ uses
 	CharacterServer,
 	InterServer,
   ZoneServer,
-	HeliosOptions;
+	HeliosOptions,
+	DatabaseOptions;
 
 type
 
@@ -41,8 +42,10 @@ type
 
 		Options         : THeliosOptions;
 
+		DatabaseOptions : TDatabaseOptions;
+		
     procedure LoadOptions;
-
+		procedure LoadDatabaseOptions;
 		procedure Startup;
 		procedure Shutdown;
 
@@ -110,13 +113,14 @@ end;{TMainProc.Create}
 //------------------------------------------------------------------------------
 destructor  TMainProc.Destroy;
 begin
-  Options.Save;
-	Options.Free;
-
 	ZoneServer.Free;
 	InterServer.Free;
 	CharacterServer.Free;
 	LoginServer.Free;
+
+  Options.Save;
+	Options.Free;
+	
 	inherited Destroy;
 end;{TMainProc.Destroy}
 //------------------------------------------------------------------------------
@@ -143,6 +147,8 @@ begin
 
 	PreloadOK := InitGlobals;
 
+	LoadDatabaseOptions;
+	
 	if PreloadOK then
 	begin
 
@@ -221,6 +227,10 @@ begin
   CharacterServer.Stop;
 	LoginServer.Stop;
 
+  
+	DatabaseOptions.Save;
+	DatabaseOptions.Free;
+
 	//Make sure globals are Free'd on Application exit.
 	DestroyGlobals;
 end;{TMainProc.Shutdown}
@@ -268,6 +278,25 @@ begin
 
 	Options.Load;
 end;{LoadOptions}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//LoadDatabaseOptions                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates and Loads the inifile.
+//
+//	Changes -
+//		March 27th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Procedure TMainProc.LoadDatabaseOptions;
+begin
+	DatabaseOptions    := TDatabaseOptions.Create(Options.ConfigDirectory+'/Database.ini');
+
+	DatabaseOptions.Load;
+end;{LoadDatabaseOptions}
 //------------------------------------------------------------------------------
 
 

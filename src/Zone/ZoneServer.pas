@@ -17,12 +17,13 @@ uses
 	CommClient,
 	IdContext,
 	SysUtils,
-        math,
+	math,
 	PacketTypes,
 	Character,
 	GMCommands,
 	ZoneOptions,
 	MapList,
+	Database,
 	CharaList,
 	CharacterEventThread;
 
@@ -76,6 +77,8 @@ type
 		CharacterList : TCharacterList;
 
 		CharacterEventThread : TCharacterEventThread;
+
+		ZoneLocalDatabase : TDatabase;
 
 		property Started : Boolean read GetStarted;
 		property Port : Word read fPort write SetPort;
@@ -202,7 +205,7 @@ end;{TMainProc.ZoneServerExecute}
 //------------------------------------------------------------------------------
 procedure TZoneServer.OnConnect(AConnection: TIdContext);
 begin
-	AConnection.Data := TClientLink.Create;
+	AConnection.Data := TClientLink.Create(AConnection);
 end;{OnConnect}
 //------------------------------------------------------------------------------
 
@@ -228,7 +231,7 @@ begin
 	if AConnection.Data is TThreadLink then
 	begin
 		ACharacter := TClientLink(AConnection.Data).CharacterLink;
-		ADatabase.GameData.SaveChara(ACharacter);
+		TThreadLink(AConnection.Data).DatabaseLink.GameData.SaveChara(ACharacter);
 		if ACharacter.MapInfo <> nil then
 		begin
 			AMap := ACharacter.MapInfo;
@@ -294,11 +297,13 @@ begin
     //Initialize ips and port.
 	  WANIP := Options.WANIP;
 	  LANIP := Options.LANIP;
-	  Port := Options.Port;
+		Port := Options.Port;
+
+		ZoneLocalDatabase := TDatabase.Create(NIL, TRUE, TRUE, TRUE);
 
     //Activate server and clients.
 	  ActivateServer('Zone',TCPServer);
-    
+
     //Load Maps
 		LoadMaps;
 
@@ -340,6 +345,8 @@ begin
 		//Clear Lists
 		MapList.Clear;
 		CharacterList.Clear;
+
+    ZoneLocalDatabase.Free;
 
     //Save and free options, options must be free'd here to force a reload after
     //start.
@@ -583,7 +590,7 @@ var
   MapNames  : TStringList;
 begin
 	Console.WriteLn('      - Loading Maps...');
-  MapNames := ADatabase.StaticData.GetMapsForZone(Options.ID);
+	MapNames := ZoneLocalDatabase.StaticData.GetMapsForZone(Options.ID);
   for Index := 0 to MapNames.Count - 1 do
 	begin
 		if FileExists(MainProc.Options.MapDirectory+'/'+MapNames[Index]+'.pms') then

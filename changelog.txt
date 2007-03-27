@@ -15,6 +15,17 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 203 -
+[2007/03/27] RaX - Notes/Overview : Moved Zone server to local connections. Removed global
+ database connection.
+[2007/03/27] RaX - ZoneServer.pas, ZoneRecv.pas, ZoneSend.pas - changed ADatabase calls to
+ threadlink databases.
+[2007/03/27] RaX - PacketTypes.pas - now TThreadLink.create takes a TIdContext as a param.
+[2007/03/27] RaX - Database.pas - implemented ClientInfo, set in tthreadlink.create.
+[2007/03/27] RaX - Account.pas/character.pas - moved database calls to TThreadlink.
+[2007/03/27] RaX - Moved DatabaseOptions from the database connection to mainproc.
+-
+
 - Rev 202 -
 [2007/03/26] - Aeomin - Fixed wrong gender showing of other players, apparently is caused
  new codes which makes every players same gender as your own [ZoneSend.pas:ZoneSendBeing]

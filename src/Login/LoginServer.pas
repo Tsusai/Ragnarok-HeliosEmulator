@@ -214,7 +214,7 @@ end;{Start}
 //------------------------------------------------------------------------------
 procedure TLoginServer.OnConnect(AConnection: TIdContext);
 begin
-	AConnection.Data := TThreadLink.Create;
+	AConnection.Data := TThreadLink.Create(AConnection);
 	//Console.Message('Connection from ' + AConnection.Connection.Socket.Binding.PeerIP. 'Login Server', MS_INFO);
 end;{LoginServerConnect}
 //------------------------------------------------------------------------------
@@ -516,7 +516,7 @@ end;{OnException}
 			CServerInfo := TCharaServerInfo.Create;
 			CServerInfo.ServerName := ServerName;
 			CServerInfo.Port := Port;
-			AClient.Data := TCharaServerLink.Create;
+			AClient.Data := TCharaServerLink.Create(AClient);
 			TCharaServerLink(AClient.Data).Info := CServerInfo;
 			fCharaServerList.AddObject(ServerName,CServerInfo);
 		end;

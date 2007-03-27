@@ -47,7 +47,7 @@ uses
 
 		procedure SetBannedTime(TimeString : string);
 		procedure SetConnectUntilTime(TimeString : string);
-
+		Constructor Create(AClient : TIdContext);
 	end;{TAccount}
 //------------------------------------------------------------------------------
 
@@ -55,7 +55,8 @@ uses
 implementation
 uses
 	SysUtils,
-	Globals;
+	Globals,
+	PacketTypes;
 
 //------------------------------------------------------------------------------
 //SetGender                                                           PROCEDURE
@@ -115,7 +116,7 @@ end;{GetBanned}
 procedure TAccount.SetBannedTime(TimeString : string);
 begin
 	Self.Bantime := ConvertMySQLTime(TimeString);
-	ADatabase.CommonData.SaveAccount(self);
+	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
 end;{SetBannedTime}
 //------------------------------------------------------------------------------
 
@@ -151,7 +152,25 @@ end;
 procedure TAccount.SetConnectUntilTime(TimeString : string);
 begin
 	Self.ConnectUntil := ConvertMySQLTime(TimeString);
-	ADatabase.CommonData.SaveAccount(self);
+	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
+end;{SetConnectUntilTime}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Create			                                                 		CONSTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates our account and sets up the clientinfo
+//
+//	Changes -
+//		March 27th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Constructor TAccount.Create(AClient : TIdContext);
+begin
+	inherited Create;
+	ClientInfo := AClient;
 end;{SetConnectUntilTime}
 //------------------------------------------------------------------------------
 

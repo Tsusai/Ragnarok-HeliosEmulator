@@ -85,7 +85,8 @@ implementation
 		Math,
 		GameConstants,
 		Globals,
-		SysUtils;
+		SysUtils,
+		Main;
 		
 //------------------------------------------------------------------------------
 //TMySQLGameDatabase.Create()                                        CONSTRUCTOR
@@ -148,11 +149,11 @@ begin
 	Result := true;
 	if NOT Connection.Connected then
 	begin
-		Connection.Host            := Parent.Options.GameHost;
-		Connection.Port            := Parent.Options.GamePort;
-		Connection.Db              := Parent.Options.GameDB;
-		Connection.User            := Parent.Options.GameUser;
-		Connection.Password        := Parent.Options.GamePass;
+		Connection.Host            := MainProc.DatabaseOptions.GameHost;
+		Connection.Port            := MainProc.DatabaseOptions.GamePort;
+		Connection.Db              := MainProc.DatabaseOptions.GameDB;
+		Connection.User            := MainProc.DatabaseOptions.GameUser;
+		Connection.Password        := MainProc.DatabaseOptions.GamePass;
 	end;
 
 	Connection.ConnectTimeout  := 10;
@@ -208,41 +209,6 @@ begin
 	begin
 		Connection.close;
 	end;
-end;
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TMySQLGameDatabase.SetAccount()                                      PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Builds a TAccount object from a query result.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//		December 27th, 2006 - Tsusai - Fixed login key and gender char reading
-//
-//------------------------------------------------------------------------------
-procedure SetAccount(
-	var AnAccount : TAccount;
-	var QueryResult : TMySQLResult
-);
-begin
-	AnAccount := TAccount.Create;
-	AnAccount.ID          := StrToInt(QueryResult.FieldValue(0));
-	AnAccount.Username    := QueryResult.FieldValue(1);
-	AnAccount.Password    := QueryResult.FieldValue(2);
-	//Tsusai - For Gender, we need to return the first char, thats
-	//why there is a [1]
-	AnAccount.Gender       := QueryResult.FieldValue(4)[1];
-	AnAccount.LoginCount   := StrToIntDef(QueryResult.FieldValue(5),0);
-	AnAccount.EMail        := QueryResult.FieldValue(6);
-	AnAccount.LoginKey[1]  := StrToIntDef(QueryResult.FieldValue(7),0);
-	AnAccount.LoginKey[2]  := StrToIntDef(QueryResult.FieldValue(8),0);
-	AnAccount.Level        := StrToIntDef(QueryResult.FieldValue(9),0);
-	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.FieldValue(11));
-	AnAccount.LastIP       := QueryResult.FieldValue(12);
-	AnAccount.Bantime      := ConvertMySQLTime(QueryResult.FieldValue(14));
 end;
 //------------------------------------------------------------------------------
 
@@ -573,7 +539,7 @@ begin
 	begin
 		with Result do
 		begin
-			Result           := TCharacter.Create;
+			Result           := TCharacter.Create(Parent.ClientInfo);
 			CID              := StrToInt(QueryResult.FieldValue(0));
 			ID               := StrToInt(QueryResult.FieldValue(1));
 			CharaNum         := StrToInt(QueryResult.FieldValue(2));

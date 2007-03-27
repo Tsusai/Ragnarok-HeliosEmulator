@@ -34,7 +34,11 @@ type
 	TMySQLCommonDatabase = class(TCommonDatabaseTemplate)
 	private
 		Connection   : TMySQLClient;
-    Parent : TDatabase;
+		Parent : TDatabase;
+		procedure SetAccount(
+			var AnAccount : TAccount;
+			var QueryResult : TMySQLResult
+		);
 	public
 
 
@@ -74,7 +78,8 @@ implementation
 	uses
 		Globals,
 		SysUtils,
-		Classes;
+		Classes,
+		Main;
 //------------------------------------------------------------------------------
 //Create()							     CONSTRUCTOR
 //------------------------------------------------------------------------------
@@ -137,11 +142,11 @@ begin
 	Result := false;
 	if NOT Connection.Connected then
 	begin
-			Connection.Host            := Parent.Options.CommonHost;
-			Connection.Port            := Parent.Options.CommonPort;
-			Connection.Db              := Parent.Options.CommonDB;
-			Connection.User            := Parent.Options.CommonUser;
-			Connection.Password        := Parent.Options.CommonPass;
+			Connection.Host            := MainProc.DatabaseOptions.CommonHost;
+			Connection.Port            := MainProc.DatabaseOptions.CommonPort;
+			Connection.Db              := MainProc.DatabaseOptions.CommonDB;
+			Connection.User            := MainProc.DatabaseOptions.CommonUser;
+			Connection.Password        := MainProc.DatabaseOptions.CommonPass;
 	end;
 
 	Connection.ConnectTimeout  := 10;
@@ -214,12 +219,12 @@ end;//Disconnect
 //		December 27th, 2006 - Tsusai - Fixed login key and gender char reading
 //
 //------------------------------------------------------------------------------
-procedure SetAccount(
+procedure TMySQLCommonDatabase.SetAccount(
 	var AnAccount : TAccount;
 	var QueryResult : TMySQLResult
 );
 begin
-	AnAccount := TAccount.Create;
+	AnAccount := TAccount.Create(Parent.ClientInfo);
 	AnAccount.ID          := StrToInt(QueryResult.FieldValue(0));
 	AnAccount.Username    := QueryResult.FieldValue(1);
 	AnAccount.Password    := QueryResult.FieldValue(2);

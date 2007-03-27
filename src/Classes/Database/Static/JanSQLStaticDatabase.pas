@@ -66,7 +66,8 @@ type
 implementation
 	uses
 		Globals,
-		SysUtils;
+		SysUtils,
+		Main;
 
 
 //------------------------------------------------------------------------------
@@ -155,13 +156,13 @@ begin
 	Result := true;
 	ResultIdentifier := 0;
 
-	if DirectoryExists(Parent.Options.StaticHost) then
+	if DirectoryExists(MainProc.DatabaseOptions.StaticHost) then
 	begin
-		ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.StaticHost]));
+		ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[MainProc.DatabaseOptions.StaticHost]));
 	end else
 	begin
 		Console.WriteLn('');
-		Console.WriteLn('The database at '+Parent.Options.StaticHost+' does not exist!');
+		Console.WriteLn('The database at '+MainProc.DatabaseOptions.StaticHost+' does not exist!');
 		Console.WriteLn('Please ensure that you have correctly configured your ini file');
 		Result := false;
 	end;
@@ -169,7 +170,7 @@ begin
 	if ResultIdentifier = 0 then
 	begin
 		Console.WriteLn('*****Could not open text database. Error : ' + Database.Error);
-		Console.WriteLn(Parent.Options.StaticHost);
+		Console.WriteLn(MainProc.DatabaseOptions.StaticHost);
 		Result := false;
 	end else
 	begin

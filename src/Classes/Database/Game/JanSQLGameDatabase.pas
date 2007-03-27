@@ -86,7 +86,8 @@ implementation
 		GameConstants,
 		Globals,
 		SysUtils,
-		Math;
+		Math,
+		Main;
 
 
 //------------------------------------------------------------------------------
@@ -174,13 +175,13 @@ begin
 	Result := true;
 	ResultIdentifier := 0;
 
-	if DirectoryExists(Parent.Options.GameHost) then
+	if DirectoryExists(MainProc.DatabaseOptions.GameHost) then
 	begin
-		ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.GameHost]));
+		ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[MainProc.DatabaseOptions.GameHost]));
 	end else
 	begin
 		Console.WriteLn('');
-		Console.WriteLn('The database at '+Parent.Options.GameHost+' does not exist!');
+		Console.WriteLn('The database at '+MainProc.DatabaseOptions.GameHost+' does not exist!');
 		Console.WriteLn('Please ensure that you have correctly configured your ini file');
 		Result := false;
 	end;
@@ -188,7 +189,7 @@ begin
 	if ResultIdentifier = 0 then
 	begin
 		Console.WriteLn('*****Could not open text database. Error : ' + Database.Error);
-		Console.WriteLn(Parent.Options.GameHost);
+		Console.WriteLn(MainProc.DatabaseOptions.GameHost);
 		Result := false;
 	end else
 	begin
@@ -221,41 +222,6 @@ begin
 		Console.WriteLn(Database.Error);
 	end;
 end;//SendQuery
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//TJanSQLGameDatabase.SetAccount()                                     Procedure
-//------------------------------------------------------------------------------
-//	What it does-
-//			Builds a taccount object from a query result.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//		December 27th, 2006 - Tsusai - Fixed login key and gender char reading
-//
-//------------------------------------------------------------------------------
-procedure SetAccount(
-	var AnAccount : TAccount;
-	var QueryResult : TJanRecordSet
-);
-begin
-	AnAccount := TAccount.Create;
-	AnAccount.ID          := StrToInt(QueryResult.records[0].fields[0].value);
-	AnAccount.Username     := QueryResult.records[0].fields[1].value;
-	AnAccount.Password     := QueryResult.records[0].fields[2].value;
-	//Tsusai - For Gender, we need to return the first char, thats
-	//why there is a [1]
-	AnAccount.Gender       := String(QueryResult.records[0].fields[4].value)[1];
-	AnAccount.LoginCount   := StrToIntDef(QueryResult.records[0].fields[5].value,0);
-	AnAccount.EMail        := QueryResult.records[0].fields[6].value;
-	AnAccount.LoginKey[1]  := StrToIntDef(QueryResult.records[0].fields[7].value,0);
-	AnAccount.LoginKey[2]  := StrToIntDef(QueryResult.records[0].fields[8].value,0);
-	AnAccount.Level        := StrToIntDef(QueryResult.records[0].fields[9].value,0);
-	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.records[0].fields[11].value);
-	AnAccount.LastIP       := QueryResult.records[0].fields[12].value;
-	AnAccount.Bantime      := ConvertMySQLTime(QueryResult.records[0].fields[14].value);
-end;//SetAccount
 //------------------------------------------------------------------------------
 
 
@@ -613,7 +579,7 @@ begin
 	begin
 		with Result do
 		begin
-			Result           := TCharacter.Create;
+			Result           := TCharacter.Create(Parent.ClientInfo);
 			CID              := StrToIntDef(QueryResult.Records[0].Fields[0].Value, 0);
 			ID               := StrToIntDef(QueryResult.Records[0].Fields[1].Value, 0);
 			CharaNum         := StrToIntDef(QueryResult.Records[0].Fields[2].Value, 0);

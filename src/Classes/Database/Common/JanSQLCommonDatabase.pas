@@ -35,7 +35,11 @@ type
 	TJanSQLCommonDatabase = class(TCommonDatabaseTemplate)
 	private
 		Database : TjanSQL;
-    Parent  : TDatabase;
+		Parent  : TDatabase;
+		procedure SetAccount(
+			var AnAccount : TAccount;
+			var QueryResult : TJanRecordSet
+		);
 	public
 
 		Constructor Create(
@@ -72,7 +76,8 @@ implementation
 	uses
 		Classes,
 		Globals,
-		SysUtils;
+		SysUtils,
+		Main;
 
 
 //------------------------------------------------------------------------------
@@ -160,13 +165,13 @@ begin
 	Result := true;
 	ResultIdentifier := 0;
 
-	if DirectoryExists(Parent.Options.CommonHost) then
+	if DirectoryExists(MainProc.DatabaseOptions.CommonHost) then
 	begin
-		ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[Parent.Options.CommonHost]));
+		ResultIdentifier := Database.SQLDirect(Format(ConnectQuery,[MainProc.DatabaseOptions.CommonHost]));
 	end else
 	begin
 		Console.WriteLn('');
-		Console.WriteLn('The database at '+Parent.Options.CommonHost+' does not exist!');
+		Console.WriteLn('The database at '+MainProc.DatabaseOptions.CommonHost+' does not exist!');
 		Console.WriteLn('Please ensure that you have correctly configured your ini file');
 		Result := false;
 	end;
@@ -174,7 +179,7 @@ begin
 	if ResultIdentifier = 0 then
 	begin
 		Console.WriteLn('*****Could not open text database. Error : ' + Database.Error);
-		Console.WriteLn(Parent.Options.CommonHost);
+		Console.WriteLn(MainProc.DatabaseOptions.CommonHost);
 		Result := false;
 	end else
 	begin
@@ -221,12 +226,12 @@ end;//SendQuery
 //		December 27th, 2006 - Tsusai - Fixed login key and gender char reading
 //
 //------------------------------------------------------------------------------
-procedure SetAccount(
+procedure TJanSQLCommonDatabase.SetAccount(
 	var AnAccount : TAccount;
 	var QueryResult : TJanRecordSet
 );
 begin
-	AnAccount := TAccount.Create;
+	AnAccount := TAccount.Create(Parent.ClientInfo);
 	AnAccount.ID           := StrToIntDef(QueryResult.records[0].fields[0].value, 0);
 	AnAccount.Username     := QueryResult.records[0].fields[1].value;
 	AnAccount.Password     := QueryResult.records[0].fields[2].value;

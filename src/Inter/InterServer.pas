@@ -417,7 +417,7 @@ begin
 		ZServerInfo :=  TZoneServerInfo.Create;
 		ZServerInfo.ZoneID := ID;
 		ZServerInfo.Port := BufferReadWord(6,InBuffer);
-		AClient.Data := TZoneServerLink.Create;
+		AClient.Data := TZoneServerLink.Create(AClient);
 		TZoneServerLink(AClient.Data).Info := ZServerInfo;
 		fZoneServerList.AddObject(ZServerInfo.ZoneID,ZServerInfo);
 	end;

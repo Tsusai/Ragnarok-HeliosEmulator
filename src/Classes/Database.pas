@@ -27,19 +27,15 @@ type
 //TDatabase			                                                          CLASS
 //------------------------------------------------------------------------------
 	TDatabase = class(TObject)
-  private
-    Procedure LoadOptions;
-
 	public
     CommonData    : TCommonDatabaseTemplate;
 		GameData      : TGameDatabaseTemplate;
-    StaticData    : TStaticDatabaseTemplate;
-
-    Options       : TDatabaseOptions;
+		StaticData    : TStaticDatabaseTemplate;
 
 		ClientInfo		: TIdContext;
 
 		Constructor Create(
+									AClient								: TIdContext;
 									EnableCommonDatabase  : Boolean;
 									EnableGameDatabase    : Boolean;
 									EnableStaticDatabase  : Boolean;
@@ -81,7 +77,8 @@ uses
 //
 //------------------------------------------------------------------------------
 Constructor TDatabase.Create(
-  EnableCommonDatabase  : Boolean;
+	AClient								: TIdContext;
+	EnableCommonDatabase  : Boolean;
   EnableGameDatabase    : Boolean;
 	EnableStaticDatabase  : Boolean;
 	CommonDatabaseType    : Integer = -1;
@@ -95,22 +92,22 @@ Var
 
 begin
 	Inherited Create();
-	LoadOptions;
+	ClientInfo := AClient;
 	//Checks to see if the DatabaseType variable has been specified, if not we...
 	//Common
 	if CommonDatabaseType = -1 then
 	begin
-		CommonDatabaseType := Options.CommonType;//set it to the value of our config.
+		CommonDatabaseType := MainProc.DatabaseOptions.CommonType;//set it to the value of our config.
 	end;
-  //Game
+	//Game
   if GameDatabaseType = -1 then
 	begin
-		GameDatabaseType := Options.GameType;//set it to the value of our config.
+		GameDatabaseType := MainProc.DatabaseOptions.GameType;//set it to the value of our config.
 	end;
 	//Static
   if StaticDatabaseType = -1 then
 	begin
-		StaticDatabaseType := Options.StaticType;//set it to the value of our config.
+		StaticDatabaseType := MainProc.DatabaseOptions.StaticType;//set it to the value of our config.
 	end;
 
 	//Here's where we figure out which database interfaces we want to use.
@@ -183,34 +180,9 @@ Destructor TDatabase.Destroy();
 begin
 	CommonData.Free;
   GameData.Free;
-  StaticData.Free;
-  Options.Save;
-  Options.Free;
+	StaticData.Free;
 	Inherited;
 end;
 //------------------------------------------------------------------------------
 
-
-//------------------------------------------------------------------------------
-//LoadOptions                                                         PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Creates and Loads the inifile.
-//
-//	Changes -
-//		January 4th, 2007 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-Procedure TDatabase.LoadOptions;
-begin
-  if Assigned(Options) then
-  begin
-    FreeAndNIL(Options);
-  end;
-
-  Options    := TDatabaseOptions.Create(MainProc.Options.ConfigDirectory+'/Database.ini');
-
-	Options.Load;
-end;{LoadOptions}
-//------------------------------------------------------------------------------
 end.

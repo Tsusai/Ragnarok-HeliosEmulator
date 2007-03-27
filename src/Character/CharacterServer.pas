@@ -803,7 +803,7 @@ begin
 		ZServerInfo :=  TZoneServerInfo.Create;
 		ZServerInfo.ZoneID := ID;
 		ZServerInfo.Port := BufferReadWord(6,InBuffer);
-		AClient.Data := TZoneServerLink.Create;
+		AClient.Data := TZoneServerLink.Create(AClient);
 		TZoneServerLink(AClient.Data).Info := ZServerInfo;
 		fZoneServerList.AddObject(ZServerInfo.ZoneID,ZServerInfo);
 	end;
@@ -860,7 +860,7 @@ begin
 		$0065: // RO Client request to connect and get characters
 			begin
 				//Thread Data should have a TThreadLink object...if not, make one
-				AClient.Data := TClientlink.Create;
+				AClient.Data := TClientlink.Create(AClient);
 				//Verify login and send characters
 				RecvBuffer(AClient,ABuffer[2],GetPacketLength($0065)-2);
 				SendCharas(AClient,ABuffer);

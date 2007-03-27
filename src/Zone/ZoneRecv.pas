@@ -224,9 +224,9 @@ uses
 		{ClientTick     := }BufferReadLongWord(ReadPts[3], Buffer);
 		Gender         := BufferReadByte    (ReadPts[4], Buffer);
 
-		AnAccount  := ADatabase.CommonData.GetAccount(AccountID);
+		AnAccount  := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
 		//use global game database
-		ACharacter := ADatabase.GameData.GetChara(CharacterID,true);
+		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID,true);
 
 		if Assigned(AnAccount) and Assigned(ACharacter) then
 		begin
@@ -234,11 +234,9 @@ uses
 				(AnAccount.GenderNum = Gender) then
 			begin
 				TClientLink(AClient.Data).AccountLink := AnAccount;
-				AnAccount.ClientInfo := AClient;
 				TClientLink(AClient.Data).CharacterLink := ACharacter;
 				ACharacter.ClientVersion := Version;
 				ACharacter.Online  := 1;
-				ACharacter.ClientInfo := AClient;
 				MainProc.ZoneServer.CharacterList.Add(ACharacter);
 
 				//Load map cells if they are not already loaded
