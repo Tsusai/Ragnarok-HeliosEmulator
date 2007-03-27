@@ -15,6 +15,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 202 -
+[2007/03/26] - Aeomin - Fixed wrong gender showing of other players, apparently is caused
+ new codes which makes every players same gender as your own [ZoneSend.pas:ZoneSendBeing]
+
 - Rev 201 -
 [2007/03/26] RaX - Notes/Overview : Fixed annoying slight timing difference between server
  and client in walking.
