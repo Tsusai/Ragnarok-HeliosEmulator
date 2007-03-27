@@ -15,6 +15,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 201 -
+[2007/03/26] RaX - Notes/Overview : Fixed annoying slight timing difference between server
+ and client in walking.
+[2007/03/26] RaX - Added "DIV 2" to the end of the speed calcs in CharaWalkRequest - zonerecv
+-
+
 - Rev 200 -
 [2007/03/26] RaX - Notes/Overview : Fixed access violation with help from Aeomin - Thanks
 [2007/03/26] RaX - I forgot 2 frees of the accountlink =( Now that they're owned by the

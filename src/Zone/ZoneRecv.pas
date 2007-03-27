@@ -428,7 +428,8 @@ uses
 						spd := Speed;
 					end;
 
-					AChara.MoveTick := GetTick + spd;
+					AChara.MoveTick := GetTick + spd DIV 2;//changed to div2 to offset
+					//annoying difference between server and client.
 
 					MoveEvent := TMovementEvent.Create(MoveTick,AChara);
 					AChara.EventList.Add(MoveEvent);
