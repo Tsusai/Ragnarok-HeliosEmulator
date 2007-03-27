@@ -46,7 +46,7 @@ type
 		Procedure ParseLogin(AClient: TIdContext);
 		Procedure SendLoginError(var AClient: TIdContext; const Error : byte);
 		Procedure SendCharacterServers(AnAccount : TAccount; AClient: TIdContext);
-		Procedure ParseMF(var Username : string; Password : string);
+		Procedure ParseMF(AClient : TIdContext; var Username : string; Password : string);
 		Procedure ValidateLogin(
 			AClient: TIdContext;
 			InBuffer : TBuffer;
@@ -185,10 +185,9 @@ begin
   begin
 	  DeActivateServer('Login', TCPServer);
 
-    //Free up our existing server info objects
-    for Index := 0 to fCharaServerList.Count - 1 do
-    begin
-      TCharaServerInfo(fCharaServerList[Index]).Free;
+		//Free up our existing server info objects
+		for Index := 0 to fCharaServerList.Count - 1 do
+		begin
       fCharaServerList.Delete(Index);
     end;
 
@@ -215,6 +214,7 @@ end;{Start}
 //------------------------------------------------------------------------------
 procedure TLoginServer.OnConnect(AConnection: TIdContext);
 begin
+	AConnection.Data := TThreadLink.Create;
 	//Console.Message('Connection from ' + AConnection.Connection.Socket.Binding.PeerIP. 'Login Server', MS_INFO);
 end;{LoginServerConnect}
 //------------------------------------------------------------------------------
@@ -364,7 +364,7 @@ end;{OnException}
 //		January 4th, 2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-	procedure TLoginServer.ParseMF(var Username : string; Password : string);
+	procedure TLoginServer.ParseMF(AClient : TIdContext; var Username : string; Password : string);
 	var
 		GenderStr  : string;
 	begin
@@ -375,10 +375,11 @@ end;{OnException}
 			//Trim the MF off because people forget to take it off.
 			Username := AnsiLeftStr(Username,Length(Username)-2);
 			//Check to see if the account already exists.
-			if NOT ADatabase.CommonData.AccountExists(Username) then
+			
+			if NOT TThreadLink(AClient.Data).DatabaseLink.CommonData.AccountExists(Username) then
 			begin
 				//Create the account.
-				ADatabase.CommonData.CreateAccount(
+				TThreadLink(AClient.Data).DatabaseLink.CommonData.CreateAccount(
 					Username,Password,GenderStr[2]
 				);
 			end;
@@ -427,10 +428,10 @@ end;{OnException}
 		if Options.EnableMF and
 		(MD5Key = '') then
 		begin
-			ParseMF(Username,Password);
+			ParseMF(AClient, Username, Password);
 		end;
 
-		AnAccount := ADatabase.CommonData.GetAccount(UserName);
+		AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(UserName);
 		if Assigned(AnAccount) then begin
 			AccountPassword := AnAccount.Password;
 			if not(MD5Key = '') then
@@ -448,7 +449,7 @@ end;{OnException}
 						AnAccount.LastIP := AClient.Binding.PeerIP;
 						AnAccount.LastLoginTime := Now;
 						Inc(AnAccount.LoginCount);
-						ADatabase.CommonData.SaveAccount(AnAccount);
+						TThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
 						SendCharacterServers(AnAccount,AClient);
 					end else begin
 						SendLoginError(AClient,LOGIN_TIMEUP);

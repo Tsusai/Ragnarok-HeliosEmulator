@@ -15,6 +15,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 197 -
+[2007/03/26] RaX - Notes/Overview : Login server is now using local connections.
+[2007/03/26] RaX - Changed all ADatabase uses in LoginServer.pas to TThreadLink calls.
+[2007/03/26] RaX - Added TThreadLink.Create to OnConnect in login server.
+-
+
 - Rev 196 -
 [2007/03/26] RaX - Notes/Overview : another sub commit of the massive database changes about
  to occur...
