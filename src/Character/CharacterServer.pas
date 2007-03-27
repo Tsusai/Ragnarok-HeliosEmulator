@@ -417,7 +417,7 @@ begin
 	end;
 
 	AccountID := BufferReadLongWord(2, ABuffer);
-	AnAccount := ADatabase.CommonData.GetAccount(AccountID);
+	AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
 
 	if Assigned(AnAccount) then
 	begin
@@ -430,7 +430,7 @@ begin
 				TClientLink(AClient.Data).AccountLink := AnAccount;
 				SendPadding(AClient); //Legacy padding
 
-				ACharaList := ADatabase.GameData.GetAccountCharas(AccountID);
+				ACharaList := TThreadLink(AClient.Data).DatabaseLink.GameData.GetAccountCharas(AccountID);
 				for Index := ACharaList.Count-1 downto 0 do
 				begin
 					ACharacter := ACharaList.Items[Index];
@@ -510,19 +510,19 @@ begin
 	CharaIdx := BufferReadByte(2, ABuffer);
 	if AnAccount.CharaID[CharaIdx] <> 0 then
 	begin
-		ACharacter := ADatabase.GameData.GetChara(AnAccount.CharaID[CharaIdx],true);
+		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(AnAccount.CharaID[CharaIdx],true);
 		//ACharacter.ClientVersion := -1; //Need to either save, or make sure its cleared
 																			//later on
 
-		if ADatabase.StaticData.GetMapCannotSave(ACharacter.Map) then
+		if TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapCannotSave(ACharacter.Map) then
 		begin
 			ACharacter.Map := ACharacter.SaveMap;
 			ACharacter.Position := ACharacter.SavePoint;
 		end;
 
-		ADatabase.GameData.SaveChara(ACharacter);
+		TThreadLink(AClient.Data).DatabaseLink.GameData.SaveChara(ACharacter);
 		//get zone ID for the map.
-		ZoneID := ADatabase.StaticData.GetMapZoneID(ACharacter.Map);
+		ZoneID := TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapZoneID(ACharacter.Map);
 		//get the zone info from that
 
 		idx := fZoneServerList.IndexOf(ZoneID);
@@ -607,7 +607,7 @@ begin
 	TotalStatPt := 0;
 
 	//Name Check.
-	if NOT ADatabase.GameData.CharaExists(CharaName) then
+	if NOT TThreadLink(AClient.Data).DatabaseLink.GameData.CharaExists(CharaName) then
 	begin
 		//Stat Point check.
 		for idx := 0 to 5 do begin
@@ -629,7 +629,7 @@ begin
 		end;
 
 		//Slot Check.
-		if ADatabase.GameData.CharaExists(Account.ID, SlotNum) then
+		if TThreadLink(AClient.Data).DatabaseLink.GameData.CharaExists(Account.ID, SlotNum) then
 		begin
 			CreateCharaError(INVALIDMISC);
 			Validated := FALSE;
@@ -640,7 +640,7 @@ begin
 		begin
 			//Validated...Procede with creation
 			//Set a record in Database for our new character
-			if ADatabase.GameData.CreateChara(
+			if TThreadLink(AClient.Data).DatabaseLink.GameData.CreateChara(
 				ACharacter,Account.ID,CharaName,SlotNum) then
 			begin
 				//All other info is already saved
@@ -694,7 +694,7 @@ begin
 				ACharacter.HomunID        := 0;
 
 				//INSERT ANY OTHER CREATION CHANGES HERE!
-				ADatabase.GameData.SaveChara(ACharacter);
+				TThreadLink(AClient.Data).DatabaseLink.GameData.SaveChara(ACharacter);
 				Account.CharaID[ACharacter.CharaNum] := ACharacter.CID;
 				WriteBufferWord(0, $006d,ReplyBuffer);
 				Size := WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,2);
@@ -742,12 +742,12 @@ begin
 	CharacterID := BufferReadLongWord(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TClientLink(AClient.Data).AccountLink;
-	ACharacter := ADatabase.GameData.GetChara(CharacterID,true);
+	ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID,true);
 	if Assigned(ACharacter) then
 	begin
 		if AnAccount.EMail = EmailOrID then
 		begin
-			if ADatabase.GameData.DeleteChara(ACharacter) then
+			if TThreadLink(AClient.Data).DatabaseLink.GameData.DeleteChara(ACharacter) then
 			begin
 				WriteBufferWord(0, $006f, ReplyBuffer);
 				SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));
