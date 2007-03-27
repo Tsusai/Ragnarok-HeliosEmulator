@@ -15,6 +15,13 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 199 -
+[2007/03/26] RaX - Notes/Overview : Inter Server now uses local database connections.
+[2007/03/26] RaX - Changed all ADatabase uses in CharacterServer.pas to TThreadLink calls.
+[2007/03/26] RaX - GM Commands are now enabled - try out #Zonestatus with an access level
+ of 100 or higher =) Test multiple zones too.
+-
+
 - Rev 198 -
 [2007/03/26] RaX - Notes/Overview : Character Server now uses local database connections.
 [2007/03/26] RaX - Changed all ADatabase uses in CharacterServer.pas to TThreadLink calls.

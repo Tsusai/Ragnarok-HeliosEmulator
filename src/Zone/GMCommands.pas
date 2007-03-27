@@ -62,7 +62,7 @@ begin
 	inherited;
 	fNames := TStringList.Create;
 	fLevels:= TIntList32.Create;
-	//AddCommand('ZoneStatus',ZoneStatus, 99);
+	AddCommand('ZoneStatus',ZoneStatus, 99);
 end;{Create}
 //------------------------------------------------------------------------------
 
