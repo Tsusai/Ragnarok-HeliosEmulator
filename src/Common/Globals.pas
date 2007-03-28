@@ -5,18 +5,22 @@
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 //
 //------------------------------------------------------------------------------
 unit Globals;
 
 interface
+
+
 uses
-	//IDE
-	Classes,
-	//Helios
-	Database,
+	{RTL/VCL}
+	//none
+	{Project}
 	Terminal
-  ;
+	{3rd Party}
+	//none
+	;
 
 
 	function InitGlobals : boolean;
@@ -50,18 +54,22 @@ const
 	MS_DEBUG		= 4;
 	MS_ALERT		= 5;
 
+
 implementation
-	uses
-		//IDE
-		DateUtils,
-		SysUtils,
-		//Helios
-		CRT,
-		WinLinux,
-		Main,
-		PacketDB,
-		//3rd Party
-		IdHashMessageDigest;
+
+
+uses
+	{RTL/VCL}
+	DateUtils,
+	SysUtils,
+	WinLinux,
+	{Project}
+	CRT,
+	Main,
+	PacketDB,
+	{3rd Party}
+	IdHashMessageDigest
+	;
 
 Const
 	HoursPerDay   = 24;

@@ -6,17 +6,29 @@
 //
 //	Changes -
 //		March 19th, 2007 - RaX - Created.
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 //
 //------------------------------------------------------------------------------
 unit GMCommands;
 
+
 interface
+
+
 uses
+	{RTL/VCL}
 	Classes,
-	List32;
+	{Project}
+	//none
+	{3rd Party}
+	List32
+	;
+
 
 type
-	TGMCommand = function(Arguments : array of String; var Error : String) : Boolean;
+	TGMCommand = function(
+			Arguments : array of String; var Error : String
+		) : Boolean;
 
 	TGMCommands = class
 	Constructor Create;
@@ -38,9 +50,14 @@ type
 implementation
 
 uses
+	{RTL/VCL}
 	SysUtils,
-	Globals,
-	Main;
+	{Project}
+	Main
+	{3rd Party}
+	//none
+	;
+
 
 function ZoneStatus(Arguments : array of String; var Error : String) : Boolean;
 begin

@@ -15,11 +15,15 @@
 //	Changes -
 //		March 1st, 2007 - Tsusai - Loads DLL dynamically, Loads FreeTDS equiv for linux
 //		March 2nd, 2007 - RaX - Created.
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 //
 //------------------------------------------------------------------------------
 unit MSSQLClient;
 
+
 interface
+
+
 type
 //------------------------------------------------------------------------------
 //TMSSQLClient                                                         CLASS
@@ -43,13 +47,21 @@ type
 	end;
 //------------------------------------------------------------------------------
 
+
 implementation
-	uses
+
+
+uses
+	{RTL/VCL}
 	{$IFDEF MSWINDOWS}
-		Windows,
+	Windows,
 	{$ENDIF}
-		Globals,
-		SysUtils;
+	{Project}
+	Globals
+	{3rd Party}
+	//none
+	;
+
 
 	type
 		//mssql client dll types.

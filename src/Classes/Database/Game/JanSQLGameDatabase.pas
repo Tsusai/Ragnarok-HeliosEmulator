@@ -7,17 +7,27 @@
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 //
 //------------------------------------------------------------------------------
 unit JanSQLGameDatabase;
 
+
 interface
+
+
 uses
-	GameDatabaseTemplate,
+	{RTL/VCL}
+	//none
+	{Project}
 	Character,
 	CharaList,
-	janSQL,
-	Database;
+	Database,
+	GameDatabaseTemplate,
+	{3rd Party}
+	janSQL
+	;
+
 
 //------------------------------------------------------------------------------
 //TJanSQLGameDatabase			                                   CLASS
@@ -79,15 +89,22 @@ type
 	end;
 //------------------------------------------------------------------------------
 
+
 implementation
-	uses
-		Account,
-		Types,
-		GameConstants,
-		Globals,
-		SysUtils,
-		Math,
-		Main;
+
+
+uses
+	{RTL/VCL}
+	Math,
+	SysUtils,
+	Types,
+	{Project}
+	GameConstants,
+	Globals,
+	Main
+	{3rd Party}
+	//none
+	;
 
 
 //------------------------------------------------------------------------------

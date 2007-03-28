@@ -7,24 +7,33 @@
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 //
 //------------------------------------------------------------------------------
 unit InterServer;
+
+
 interface
 
+
 uses
-	IdTCPServer,
-  IdContext,
-	SysUtils,
-	List32,
+	{RTL/VCL}
 	Classes,
+	SysUtils,
+	{Project}
+	GMCommands,
 	InterOptions,
 	PacketTypes,
-	GMCommands;
+	{3rd Party}
+	IdContext,
+	IdTCPServer,
+	List32
+	;
+
 
 type
 	TInterServer = class
-  protected
+	protected
 	//
 	private
 		fIP              : String;
@@ -73,28 +82,35 @@ type
 		Options : TInterOptions;
 
 		property IP   : string read fIP write SetIPLongWord;
-    property Port : Word read fPort write SetPort;
-    property Started : Boolean read GetStarted;
+		property Port : Word read fPort write SetPort;
+		property Started : Boolean read GetStarted;
 
-    Constructor Create();
-    Destructor  Destroy();Override;
-    Procedure   Start();
+		Constructor Create();
+		Destructor  Destroy();Override;
+		Procedure   Start();
 		Procedure   Stop();
 	end;
+
+
 implementation
 
+
 uses
-	//Helios
+	{RTL/VCL}
+	StrUtils,
+	{Project}
+	//none
 	BufferIO,
-	Main,
-	Globals,
 	Character,
-	SyncObjs,
+	Globals,
+	Main,
 	TCPServerRoutines,
-	ZoneServerInfo,
 	ZoneInterCommunication,
-	//3rd
-	StrUtils;
+	ZoneServerInfo
+	{3rd Party}
+	//none
+	;
+
 
 //------------------------------------------------------------------------------
 //Create  ()                                                        CONSTRUCTOR

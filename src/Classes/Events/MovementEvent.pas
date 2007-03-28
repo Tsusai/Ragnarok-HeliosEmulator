@@ -6,15 +6,25 @@
 //
 //	Changes -
 //		January 31st, 2007 - RaX - Created Header.
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 //
 //------------------------------------------------------------------------------
 unit MovementEvent;
 
+
 interface
 
+
 uses
+	{RTL/VCL}
+	//none
+	{Project}
 	Being,
-	Event;
+	Event
+	{3rd Party}
+	//none
+	;
+
 
 type
 //------------------------------------------------------------------------------
@@ -30,8 +40,7 @@ type
 //------------------------------------------------------------------------------
 
 implementation
-uses
-	Globals;
+
 
 //------------------------------------------------------------------------------
 //Execute																																	UNIT

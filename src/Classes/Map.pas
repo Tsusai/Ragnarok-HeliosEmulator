@@ -6,17 +6,26 @@
 //
 //  Changes -
 //    October 30th, 2006 - RaX - Created.
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
+//
 //------------------------------------------------------------------------------
 unit Map;
 
+
 interface
 
+
 uses
+	{RTL/VCL}
 	Types,
-	PointList,
-	MapTypes,
+	{Project}
 	EventList,
-	SysUtils;
+	MapTypes,
+	PointList
+	{3rd Party}
+	//none
+	;
+
 
 type
 
@@ -66,15 +75,22 @@ TMap = class(TObject)
 end;
 //------------------------------------------------------------------------------
 
+
 implementation
+
+
 uses
+	{RTL/VCL}
 	Classes,
 	Math,
-	List32,
-	Main,
-	Globals,
+	WinLinux,
+	{Project}
 	GameConstants,
-	WinLinux;
+	Globals,
+	Main,
+	{3rd Party}
+	List32
+	;
 
 //------------------------------------------------------------------------------
 //TMap.Create()

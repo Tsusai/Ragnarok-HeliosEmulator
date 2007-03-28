@@ -7,10 +7,11 @@
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //[2007/03/28] CR - Cleaned up uses clauses - unneeded units removed.
-//[2007/03/28] CR - Made changes to parameter lists for the TLoopCall 
-//		declaration.  All parameteters are constant, and eliminated the entirely 
-//		uncalled X,Ys so that we only have 2 parameters left (faster calls this 
+//[2007/03/28] CR - Made changes to parameter lists for the TLoopCall
+//		declaration.  All parameteters are constant, and eliminated the entirely
+//		uncalled X,Ys so that we only have 2 parameters left (faster calls this
 //		way, especially when called repeatedly in triple nested loops!).
+//[2007/03/28] CR - Cleaned up uses clauses using Icarus as a guide.
 //
 //------------------------------------------------------------------------------
 unit Being;
@@ -152,7 +153,6 @@ uses
 	{RTL/VCL}
 	Math,
 	Classes,
-	SysUtils,
 	{Project}
 	AreaLoopEvents,
 	Character,

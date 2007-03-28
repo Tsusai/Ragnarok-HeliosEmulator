@@ -15,11 +15,33 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 207 -
+[2007/03/28] CR - Overview: Code cleanup in Being, Database, Globals,
+ GMCommands, InterServer, JanSQLCommonDatabase, JanSQLGameDatabase, Map, 
+ MovementEvents, and MSSQLClient units.
+[2007/03/28] CR - Being: Cleaned up uses clauses using Icarus as a guide.
+ (Oops, missed one from 204!)
+[2007/03/28] CR - Database: Cleaned up uses clauses using Icarus as a guide.
+ (Oops, missed one from 205!)
+[2007/03/28] CR - Globals: Cleaned up uses clauses using Icarus as a guide.
+[2007/03/28] CR - GMCommands: Cleaned up uses clauses using Icarus as a guide.
+[2007/03/28] CR - InterServer: Cleaned up uses clauses using Icarus as a guide.
+[2007/03/28] CR - JanSQLCommonDatabase: Cleaned up uses clauses using Icarus as
+ a guide.
+[2007/03/28] CR - JanSQLGameDatabase: Cleaned up uses clauses using Icarus as a
+ guide.
+[2007/03/28] CR - Map: Cleaned up uses clauses using Icarus as a guide.
+[2007/03/28] CR - MovementEvents: Cleaned up uses clauses using Icarus as a
+ guide.
+[2007/03/28] CR - MSSQLClient: Cleaned up uses clauses using Icarus as a guide.
+[2007/03/28] CR - Version: Updated version string.
+-
+
 - Rev 206 -
 [2007/03/28] CR - Overview: Code cleanup in Character, CharacterEventThread,
  and Database units.
 [2007/03/28] CR - Character: Cleaned up uses clauses using Icarus as a guide.
-[2007/03/28] CR - CharacterEventThread: Cleaned up uses clauses using Icarus as 
+[2007/03/28] CR - CharacterEventThread: Cleaned up uses clauses using Icarus as
  a guide.
 [2007/03/28] CR - Database: Cleaned up uses clauses using Icarus as a guide.
 [2007/03/28] CR - Database:TDatabase.Create - Removed hints about unused local

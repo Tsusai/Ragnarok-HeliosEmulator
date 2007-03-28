@@ -9,6 +9,7 @@
 //
 //	Changes -
 //		September 30th, 2006 - RaX - Created.
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 //
 //------------------------------------------------------------------------------
 unit Database;
@@ -63,7 +64,7 @@ implementation
 
 uses
 	{RTL/VCL}
-	SysUtils,
+	//none
 	{Project}
 	DatabaseOptions,
 	DatabaseConstants,

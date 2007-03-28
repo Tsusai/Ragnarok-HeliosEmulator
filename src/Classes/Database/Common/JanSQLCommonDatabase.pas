@@ -7,16 +7,25 @@
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 //
 //------------------------------------------------------------------------------
 unit JanSQLCommonDatabase;
 
 interface
+
+
 uses
-	CommonDatabaseTemplate,
+	{RTL/VCL}
+	//none
+	{Project}
 	Account,
-	janSQL,
-  Database;
+	CommonDatabaseTemplate,
+	Database,
+	{3rd Party}
+	janSQL
+	;
+
 
 //------------------------------------------------------------------------------
 //TJanSQLCommonDatabase			                                   CLASS
@@ -72,12 +81,19 @@ type
 	end;
 //------------------------------------------------------------------------------
 
+
 implementation
-	uses
-		Classes,
-		Globals,
-		SysUtils,
-		Main;
+
+
+uses
+	{RTL/VCL}
+	SysUtils,
+	{Project}
+	Globals,
+	Main
+	{3rd Party}
+	//none
+	;
 
 
 //------------------------------------------------------------------------------
