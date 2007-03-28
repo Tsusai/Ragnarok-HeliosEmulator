@@ -5,18 +5,32 @@ Tsusai 2006
 Types used with communications are listed here.
 TBuffer : Basic Buffer
 TCBuffer : Used for string buffer procedures
-TThreadLink : Used for linking accounts or characters to the client socket 
+TThreadLink : Used for linking accounts or characters to the client socket
+
+--
+Revisions:
+--------------------------------------------------------------------------------
+[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 ------------------------------------------------------------------------------*)
 unit PacketTypes;
 
+
 interface
+
+
 uses
+	{RTL/VCL}
+	//none
+	{Project}
 	Account,
 	Character,
 	CharacterServerInfo,
 	Database,
 	ZoneServerInfo,
-	IdContext;
+	{3rd Party}
+	IdContext
+	;
+
 
 type
 	TBufSize = 0..(High(Word) div 2);
@@ -55,10 +69,19 @@ type
 			Args : array of Word
 		) : TReadPts;
 
+
 implementation
+
+
 uses
-	Math,
-	SysUtils;
+	{RTL/VCL}
+	Math
+	{Project}
+	//none
+	{3rd Party}
+	//none
+	;
+
 
 (*-----------------------------------------------------------------------------*
 Func ReadPoints

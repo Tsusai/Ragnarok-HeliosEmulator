@@ -6,14 +6,24 @@
 //
 //	Changes -
 //		March 13th, 2007 - Aeomin - Created Header
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 //
 //------------------------------------------------------------------------------
 unit ZoneServerInfo;
 
+
 interface
+
+
 uses
-	ServerInfo,
-	IdContext;
+	{RTL/VCL}
+	//none
+	{Project}
+	ServerInfo
+	{3rd Party}
+	//none
+	;
+
 
 type
 //------------------------------------------------------------------------------

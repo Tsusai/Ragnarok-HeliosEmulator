@@ -8,20 +8,25 @@
 //
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header;
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
+//
 //------------------------------------------------------------------------------
 unit ZoneSend;
 
+
 interface
+
+
 uses
+	{RTL/VCL}
 	Types,
-	Math,
-	Character,
-	CommClient,
-	SysUtils,
+	{Project}
 	Being,
+	Character,
 	{Third Party}
 	IdContext
 	;
+
 
 	procedure ZoneSendMapConnectReply(ACharacter : TCharacter);
 	procedure ZoneSendMapConnectDeny(AClient : TIdContext);
@@ -50,13 +55,23 @@ uses
 	procedure ZoneSendBeing(Who:TBeing;AClient : TIdContext;Logon:Boolean=False);
 	procedure ZoneDisappearBeing(Who:TBeing;AClient : TIdContext;Effect:Byte=0);
 
-	implementation
+
+implementation
+
+
 uses
-	Main,
+	{RTL/VCL}
+	Math,
+	WinLinux,
+	{Project}
 	BufferIO,
+	Main,
 	PacketTypes,
-	TCPServerRoutines,
-	WinLinux;
+	TCPServerRoutines
+	{3rd Party}
+	//none
+	;
+
 
 //------------------------------------------------------------------------------
 //ZoneSendMapConnectReply                                             PROCEDURE

@@ -7,25 +7,33 @@
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 //
 //------------------------------------------------------------------------------
 unit ZoneServer;
+
+
 interface
 
+
 uses
-	IdTCPServer,
+	{RTL/VCL}
 	CommClient,
-	IdContext,
 	SysUtils,
-	math,
-	PacketTypes,
+	{Project}
 	Character,
-	GMCommands,
-	ZoneOptions,
-	MapList,
-	Database,
+	CharacterEventThread,
 	CharaList,
-	CharacterEventThread;
+	Database,
+	GMCommands,
+	MapList,
+	PacketTypes,
+	ZoneOptions,
+	{3rd Party}
+	IdTCPServer,
+	IdContext
+	;
+
 
 type
 	TZoneServer = class
@@ -93,24 +101,30 @@ type
 		Procedure   ConnectToInter;
 
 	end;
+
+
 implementation
 
+
 uses
-  Classes,
-	//Helios
+	{RTL/VCL}
+	Classes,
+	StrUtils,
+	{Project}
+	Being,
 	BufferIO,
-	Main,
-	PacketDB,
 	Globals,
-  Map,
+	Main,
+	Map,
+	PacketDB,
 	TCPServerRoutines,
 	ZoneCharaCommunication,
 	ZoneInterCommunication,
-	ZoneRecv,
-        Being,
-        ZoneSend,
-	//3rd
-	StrUtils;
+	ZoneRecv
+	{3rd Party}
+	//none
+	;
+
 
 //------------------------------------------------------------------------------
 //Create  ()                                                        CONSTRUCTOR

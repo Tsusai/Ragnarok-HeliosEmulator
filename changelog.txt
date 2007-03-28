@@ -15,9 +15,21 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 208 -
+[2007/03/28] CR - Overview: Code cleanup in PacketTypes, ZoneRecv, ZoneSend,
+ ZoneServer, and ZoneServerInfo units.
+[2007/03/28] CR - PacketTypes: Cleaned up uses clauses using Icarus as a guide.
+[2007/03/28] CR - ZoneRecv: Cleaned up uses clauses using Icarus as a guide.
+[2007/03/28] CR - ZoneSend: Cleaned up uses clauses using Icarus as a guide.
+[2007/03/28] CR - ZoneServer: Cleaned up uses clauses using Icarus as a guide.
+[2007/03/28] CR - ZoneServerInfo: Cleaned up uses clauses using Icarus as a
+ guide.
+[2007/03/28] CR - Version: Updated version string.
+-
+
 - Rev 207 -
 [2007/03/28] CR - Overview: Code cleanup in Being, Database, Globals,
- GMCommands, InterServer, JanSQLCommonDatabase, JanSQLGameDatabase, Map, 
+ GMCommands, InterServer, JanSQLCommonDatabase, JanSQLGameDatabase, Map,
  MovementEvents, and MSSQLClient units.
 [2007/03/28] CR - Being: Cleaned up uses clauses using Icarus as a guide.
  (Oops, missed one from 204!)

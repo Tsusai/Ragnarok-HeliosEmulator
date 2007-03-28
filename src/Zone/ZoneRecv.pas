@@ -7,16 +7,25 @@
 //
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header;
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
+//
 //------------------------------------------------------------------------------
 unit ZoneRecv;
 
+
 interface
+
+
 uses
+	{RTL/VCL}
+	//none
+	{Project}
 	Character,
 	PacketTypes,
 	{Third Party}
 	IdContext
 	;
+
 
 //------------------------------------------------------------------------------
 //NoCommand                                                           PROCEDURE
@@ -121,27 +130,32 @@ uses
 		const
 			ReadPts : TReadPts
 	);
-	
+
+
 implementation
+
+
 uses
-	Math,
-	MovementEvent,
+	{RTL/VCL}
 	Types,
+	WinLinux,
+	{Project}
 	Account,
+	Being,
 	BufferIO,
-	CommClient,
-	Main,
-	SysUtils,
 	GameConstants,
 	GMCommands,
-	Globals,
-        Being,
-	MapTypes,
+	Main,
 	Map,
+	MapTypes,
+	MovementEvent,
 	TCPServerRoutines,
-	WinLinux,
 	ZoneSend,
-	ZoneServer;
+	ZoneServer
+	{3rd Party}
+	//none
+	;
+
 
 //------------------------------------------------------------------------------
 //NoCommand                                                           PROCEDURE
