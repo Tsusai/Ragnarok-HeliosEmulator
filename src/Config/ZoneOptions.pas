@@ -46,7 +46,7 @@ interface
 			fCharShowArea	: Integer;//The distance in cells away from a character that
                             	//other entities appear in.
 
-
+			fKickOnShutdown : Boolean;
 
 //Gets/Sets
 			procedure SetPort(Value : Word);
@@ -82,6 +82,9 @@ interface
 			property EventTick		: Integer read fEventTick;
 			property CharClickArea: Integer read fCharClickArea;
 			property CharShowArea	: Integer read fCharShowArea;
+
+			//Game
+			property KickOnShutdown : Boolean read fKickOnShutdown;
 
 			//Public methods
 			procedure Load;
@@ -174,9 +177,9 @@ implementation
 		end;{Subroutine LoadSecurity}
     //--------------------------------------------------------------------------
 
-		//--------------------------------------------------------------------------
-		//LoadPerformance                                             SUB PROCEDURE
-    //--------------------------------------------------------------------------
+	//--------------------------------------------------------------------------
+	//LoadPerformance                                              SUB PROCEDURE
+	//--------------------------------------------------------------------------
 		procedure LoadPerformance;
 		begin
 			ReadSectionValues('Performance', Section);
@@ -185,7 +188,18 @@ implementation
 			fCharClickArea:= StrToIntDef(Section.Values['Click Area'], 16);
 			fCharShowArea	:= StrToIntDef(Section.Values['Show Area'], 16);
 		end;{Subroutine LoadPerformance}
-		//--------------------------------------------------------------------------
+	//--------------------------------------------------------------------------
+
+
+	//--------------------------------------------------------------------------
+	//LoadGame                                              SUB PROCEDURE
+	//--------------------------------------------------------------------------
+		procedure LoadGame;
+		begin
+			ReadSectionValues('Game', Section);
+			fKickOnShutdown := StrToBoolDef(Section.Values['Kick On Shutdown'] ,False);
+		end;{Subroutine LoadPerformance}
+	//--------------------------------------------------------------------------
 
     //--------------------------------------------------------------------------
     //LoadOptions                                               SUB PROCEDURE
@@ -207,6 +221,7 @@ implementation
     LoadCommunication;
 		LoadSecurity;
 		LoadPerformance;
+		LoadGame;
     LoadOptions;
 
 		Section.Free;
@@ -251,6 +266,10 @@ implementation
 		WriteString('Performance','Event Tick',IntToStr(fEventTick));
 		WriteString('Performance','Click Area',IntToStr(fCharClickArea));
 		WriteString('Performance','ShowArea',IntToStr(fCharShowArea));
+
+		//Game
+		WriteString('Game','Kick On Shutdown',BoolToStr(fKickOnShutdown));
+
 
 		//Options
 

@@ -120,7 +120,8 @@ uses
 	TCPServerRoutines,
 	ZoneCharaCommunication,
 	ZoneInterCommunication,
-	ZoneRecv
+	ZoneRecv,
+	ZoneSend
 	{3rd Party}
 	//none
 	;
@@ -141,7 +142,7 @@ Constructor TZoneServer.Create;
 begin
 	Commands := TGMCommands.Create;
 
-  MapList := TMapList.Create(TRUE);
+	MapList := TMapList.Create(TRUE);
 	CharacterList := TCharacterList.Create(TRUE);
 
 	TCPServer := TIdTCPServer.Create;
@@ -233,6 +234,7 @@ end;{OnConnect}
 //
 //	Changes -
 //		January 25th, 2007 - RaX - Created.
+//		March 28th, 2007 - Aeomin - Add a check see if server socket to void AV. 
 //
 //------------------------------------------------------------------------------
 procedure TZoneServer.OnDisconnect(AConnection: TIdContext);
@@ -246,7 +248,7 @@ begin
 	begin
 		ACharacter := TClientLink(AConnection.Data).CharacterLink;
 		TThreadLink(AConnection.Data).DatabaseLink.GameData.SaveChara(ACharacter);
-		if ACharacter.MapInfo <> nil then
+		if Started and (ACharacter.MapInfo <> nil) then
 		begin
 			AMap := ACharacter.MapInfo;
 			CharacterIndex := AMap.Cell[ACharacter.Position.X][ACharacter.Position.Y].Beings.IndexOfObject(ACharacter);
@@ -344,6 +346,10 @@ Procedure TZoneServer.Stop();
 begin
   if Started then
 	begin
+		if Options.KickOnShutdown then
+		begin
+			KickAll;
+		end;
 		CharacterEventThread.Terminate;
 		while NOT CharacterEventThread.Terminated do
 		begin

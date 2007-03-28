@@ -55,6 +55,8 @@ uses
 	procedure ZoneSendBeing(Who:TBeing;AClient : TIdContext;Logon:Boolean=False);
 	procedure ZoneDisappearBeing(Who:TBeing;AClient : TIdContext;Effect:Byte=0);
 
+	procedure Kick(const Who:TCharacter);
+	procedure KickAll;
 
 implementation
 
@@ -522,5 +524,49 @@ begin
 	WriteBufferByte(8, Who.Direction, ReplyBuffer);
 	SendBuffer(AClient,ReplyBuffer,GetPacketLength($009c));
 end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//Kick                                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Kick one player
+//
+//  Changes -
+//    March 27th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure Kick(const Who:TCharacter);
+var
+	OutBuffer : TBuffer;
+begin
+	FillChar(OutBuffer,GetPacketLength($018B),0);
+	WriteBufferWord(0, $018B, OutBuffer);
+	WriteBufferWord(2, 0, OutBuffer);
+	SendBuffer(Who.ClientInfo,OutBuffer,GetPacketLength($018B));
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//KickAll                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Kick all players in current zone server
+//
+//  Changes -
+//    March 27th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure KickAll;
+var
+	Idx : Integer;
+	Chara : TCharacter;
+begin
+	for Idx:=0 to MainProc.ZoneServer.CharacterList.Count-1 do
+	begin
+		Chara := MainProc.ZoneServer.CharacterList[Idx] as TCharacter;
+		Kick(Chara);
+	end;
+end;
+//------------------------------------------------------------------------------
 end.

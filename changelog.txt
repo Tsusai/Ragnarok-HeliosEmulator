@@ -15,6 +15,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 209 -
+[2007/03/28] Aeomin - Fixed Access Violation during shutdown, which just an extra check [ZoneServer.pas:OnDisconnect]
+[2007/03/28] Aeomin - Added a Zone Option which allows kick all players before shutdown, instead just Disconnect.
+                      [Only works with proper shutdown (CTRL+C), close button will force close program]
+[2007/03/28] Aeomin - Added Kick, KickAll procedure [ZoneSend.pad]
+
 - Rev 208 -
 [2007/03/28] CR - Overview: Code cleanup in PacketTypes, ZoneRecv, ZoneSend,
  ZoneServer, and ZoneServerInfo units.
