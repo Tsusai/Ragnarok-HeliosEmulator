@@ -8,84 +8,178 @@
 //
 //	Changes -
 //		March 20th, 2007 - Aeomin - Created Header
+//[2007/03/28] CR - Cleaned up uses clauses - unneeded units removed, and some
+//		moved to local to the routines, not the declaration.
+//[2007/03/28] CR - Made changes to parameter lists for the routines here,
+//		following the new TLoopCall procedure declaration in Being.  All 
+//		parameteters are constant, and eliminated the entirely uncalled X,Ys so
+//		that we only have 2 parameters left (faster calls this way).
 //
 //------------------------------------------------------------------------------
 unit AreaLoopEvents;
-interface
-uses
-	Classes, Math, Main, Globals, Character, Being, ZoneSend;
 
-	procedure ShowBeingWalk(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
-	procedure ShowTeleIn(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
-	procedure TeleOut(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
-	procedure UpdateDir(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
+interface
+
+uses
+	{RTL/VCL}
+	//none
+	{Project}
+	Being
+	{Third Party}
+	//none
+	;
+
+	procedure ShowBeingWalk(
+		const
+			ACurrentBeing : TBeing;
+		const
+			ABeing        : TBeing
+		);
+	procedure ShowTeleIn(
+		const
+			ACurrentBeing : TBeing;
+		const
+			ABeing        : TBeing
+		);
+	procedure TeleOut(
+		const
+			ACurrentBeing : TBeing;
+		const
+			ABeing        : TBeing
+		);
+	procedure UpdateDir(
+		const
+			ACurrentBeing : TBeing;
+		const
+			ABeing        : TBeing
+		);
+
 implementation
 
-//------------------------------------------------------------------------------
-//ShowCharWalk                                                         PROCEDURE
-//------------------------------------------------------------------------------
-//  What it does -
-// 	Show walking to other characters
-//
-//  Changes -
-//	March 22th, 2007 - Aeomin - Created Header
-//------------------------------------------------------------------------------
-procedure ShowBeingWalk(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
-begin
-with ACurrentBeing do
-begin
-	ZoneWalkingBeing(ACurrentBeing,Path[Path.count-1],Position,TCharacter(ABeing).ClientInfo);
-end;
-end;
-//------------------------------------------------------------------------------
+uses
+	{RTL/VCL}
+	//none
+	{Project}
+	Character,
+	ZoneSend
+	{Third Party}
+	//none
+	;
 
 
-//------------------------------------------------------------------------------
-//ShowTeleIn                                                           PROCEDURE
-//------------------------------------------------------------------------------
-//  What it does -
-// 	Show teleport in effect to other characters
-//
-//  Changes -
-//	March 22th, 2007 - Aeomin - Created Header
-//------------------------------------------------------------------------------
-procedure ShowTeleIn(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
-begin
+(*- Procedure -----------------------------------------------------------------*
+ShowBeingWalk
+--------------------------------------------------------------------------------
+Overview:
+--
+	Show ACurrentBeing walking to other characters in visible range.
+
+--
+Revisions:
+--
+[2007/03/22] Aeomin - Created Header
+[2007/03/28] CR - Modified Comment Header, eliminated with clause.  Reduced
+	parameter list, and made all constant, to follow new TLoopCall declaration.
+[yyyy/mm/dd] <Author> - <Comment>
+*-----------------------------------------------------------------------------*)
+Procedure ShowBeingWalk(
+	const
+		ACurrentBeing : TBeing;
+	const
+		ABeing        : TBeing
+	);
+Begin
+	ZoneWalkingBeing(
+		ACurrentBeing,
+		ACurrentBeing.Path[ACurrentBeing.Path.Count -1],
+		ACurrentBeing.Position,
+		TCharacter(ABeing).ClientInfo
+	);
+End; (* Proc ShowBeingWalk
+*-----------------------------------------------------------------------------*)
+
+
+(*- Procedure -----------------------------------------------------------------*
+ShowTeleIn
+--------------------------------------------------------------------------------
+Overview:
+--
+Show teleport in effect for ACurrentBeing to other characters in view
+
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/03/22] Aeomin - Created Header
+[2007/03/28] CR - Modified Comment Header.  Reduced parameter list, and made
+	all constant, to follow new TLoopCall declaration.
+*-----------------------------------------------------------------------------*)
+Procedure ShowTeleIn(
+	const
+		ACurrentBeing : TBeing;
+	const
+		ABeing        : TBeing
+	);
+Begin
 	ZoneSendBeing(ACurrentBeing, TCharacter(ABeing).ClientInfo, True);
 	ZoneSendbeing(ABeing, TCharacter(ACurrentBeing).ClientInfo);
-end;
-//------------------------------------------------------------------------------
+End; (* Proc ShowTeleIn
+*-----------------------------------------------------------------------------*)
 
 
-//------------------------------------------------------------------------------
-//TeleOut                                                              PROCEDURE
-//------------------------------------------------------------------------------
-//  What it does -
-// 	Show teleport out effect to other characters
-//
-//  Changes -
-//	March 22th, 2007 - Aeomin - Created Header
-//------------------------------------------------------------------------------
-procedure TeleOut(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
-begin
+(*- Procedure -----------------------------------------------------------------*
+TeleOut
+--------------------------------------------------------------------------------
+Overview:
+--
+	Shows teleport out effect for ACurrentBeing to other characters in view.
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/03/22] Aeomin - Created Header
+[2007/03/28] CR - Modified Comment Header.  Reduced parameter list, and made
+	all constant, to follow new TLoopCall declaration.
+*-----------------------------------------------------------------------------*)
+Procedure TeleOut(
+	const
+		ACurrentBeing : TBeing;
+	const
+		ABeing        : TBeing
+	);
+Begin
 	ZoneDisappearBeing(ACurrentBeing, TCharacter(Abeing).ClientInfo, 2);
-end;
-//------------------------------------------------------------------------------
+End; (* Proc TeleOut
+*-----------------------------------------------------------------------------*)
 
 
-//------------------------------------------------------------------------------
-//UpdateDir                                                            PROCEDURE
-//------------------------------------------------------------------------------
-//  What it does -
-// 	Show new direction to other characters
-//
-//  Changes -
-//	March 22th, 2007 - Aeomin - Created Header
-//------------------------------------------------------------------------------
-procedure UpdateDir(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
-begin
+(*- Procedure -----------------------------------------------------------------*
+UpdateDir
+--------------------------------------------------------------------------------
+Overview:
+--
+Show ACurrentBeing's new direction to other characters in view
+
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/03/22] Aeomin - Created Header
+[2007/03/28] CR - Modified Comment Header.  Reduced parameter list, and made
+	all constant, to follow new TLoopCall declaration.
+*-----------------------------------------------------------------------------*)
+Procedure UpdateDir(
+	const
+		ACurrentBeing : TBeing;
+	const
+		ABeing        : TBeing
+	);
+Begin
 	ZoneUpdateDirection(TCharacter(ACurrentBeing), TCharacter(Abeing).ClientInfo);
-end;
-//------------------------------------------------------------------------------
+End; (* Proc UpdateDir
+*-----------------------------------------------------------------------------*)
 
 end.

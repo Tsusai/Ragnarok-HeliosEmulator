@@ -15,6 +15,21 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 204 -
+[2007/03/28] CR - Overview: Code cleanup in AreaLoopEvents, Being units.
+[2007/03/28] CR - Version: updated version number, modified header comment.
+[2007/03/28] CR - Being: Cleaned up uses clauses - unneeded units removed.
+ Made changes to parameter lists for the TLoopCall declaration.  All 
+ parameteters are constant, and eliminated the entirely uncalled X,Ys so that 
+ we only have 2 parameters left (faster calls this way, especially when called 
+ repeatedly in triple nested loops!).
+[2007/03/28] CR - AreaLoopEvents: Cleaned up uses clauses - unneeded units
+ removed, and some moved to local to the routines, not the declaration.  Made 
+ changes to parameter lists for the routines here, following the new
+ TLoopCall procedure declaration in Being.  All parameteters are constant, and 
+ eliminated the entirely uncalled X,Ys so that we only have 2 parameters left.
+-
+
 - Rev 203 -
 [2007/03/27] RaX - Notes/Overview : Moved Zone server to local connections. Removed global
  database connection.

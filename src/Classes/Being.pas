@@ -2,28 +2,46 @@
 //Being                                                                   UNIT
 //------------------------------------------------------------------------------
 //	What it does-
-//			Contains RO environment type TBeing.
+//		Contains RO environment type TBeing.
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//[2007/03/28] CR - Cleaned up uses clauses - unneeded units removed.
+//[2007/03/28] CR - Made changes to parameter lists for the TLoopCall 
+//		declaration.  All parameteters are constant, and eliminated the entirely 
+//		uncalled X,Ys so that we only have 2 parameters left (faster calls this 
+//		way, especially when called repeatedly in triple nested loops!).
 //
 //------------------------------------------------------------------------------
 unit Being;
 
 interface
+
 uses
+	{RTL/VCL}
 	Types,
+	{Project}
 	GameConstants,
-	Map,
 	EventList,
-	PointList;
+	Map,
+	PointList
+	{Third Party}
+	//none
+	;
+
 //------------------------------------------------------------------------------
 //TBeing                                                                  CLASS
 //------------------------------------------------------------------------------
 type
 TBeing = class;
 
-TLoopCall = procedure(X, Y: Integer; ACurrentBeing, ABeing: TBeing);
+{[2007/03/28] CR - No X,Y parameters needed -- reduced and eliminated. }
+TLoopCall = procedure(
+		const
+			ACurrentBeing : TBeing;
+		const
+			ABeing        : TBeing
+		);
 
 TBeing = class
 	protected
@@ -128,18 +146,23 @@ end;{TBeing}
 
 
 implementation
+
+
 uses
-	Event,
-	MovementEvent,
-	Character,
-	Globals,
+	{RTL/VCL}
 	Math,
 	Classes,
 	SysUtils,
-	WinLinux,
+	{Project}
+	AreaLoopEvents,
+	Character,
+	Event,
 	Main,
-	ZoneSend,
-	AreaLoopEvents;
+	MovementEvent,
+	ZoneSend
+	{Third Party}
+	//none
+	;
 
 
 //------------------------------------------------------------------------------
@@ -326,7 +349,7 @@ begin
 				if (Self = ABeing) and AIgnoreCurrentBeing then Continue;
 //				if (ABeing is TNpc) and IgnoreNPC then Continue;
 				{TODO : support other than TCharacter...}
-				ALoopCall(Position.X, Position.Y, Self, ABeing);
+				ALoopCall(Self, ABeing);
 			end;
 		end;
 	end;
