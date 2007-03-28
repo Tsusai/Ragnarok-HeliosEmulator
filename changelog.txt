@@ -15,6 +15,15 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 205 -
+[2007/03/28] CR - Overview: SVN Cleanup
+[2007/03/28] CR - Version: Updated version string.
+[2007/03/28] CR - SVN ignores set, to make wading through files when committing
+ less of a chore.
+ trunk/ and subfolders: svn:ignore tag set for "*.~*"
+ trunk/obj/: svn:ignore tag set for "*.dcu"
+-
+
 - Rev 204 -
 [2007/03/28] CR - Overview: Code cleanup in AreaLoopEvents, Being units.
 [2007/03/28] CR - Version: updated version number, modified header comment.
