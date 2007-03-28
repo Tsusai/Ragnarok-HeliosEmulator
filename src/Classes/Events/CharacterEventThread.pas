@@ -7,15 +7,23 @@
 //
 //	Changes -
 //		January 31st,  2007 - RaX - Created Header.
+//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 //
 //------------------------------------------------------------------------------
 unit CharacterEventThread;
 
 interface
+
 uses
+	{RTL/VCL}
 	SyncObjs,
-	IdThread,
-	CharaList;
+	{Project}
+	CharaList,
+	{Third Party}
+	IdThread
+	;
+
+
 type
 //------------------------------------------------------------------------------
 //TCharacterEventThread
@@ -33,11 +41,18 @@ type
 //------------------------------------------------------------------------------
 
 implementation
+
+
 uses
-	Event,
+	{RTL/VCL}
 	SysUtils,
 	WinLinux,
-	Main;
+	{Project}
+	Main
+	{3rd Party}
+	//none
+	;
+
 
 //------------------------------------------------------------------------------
 //Create                                                          	CONSTRUCTOR

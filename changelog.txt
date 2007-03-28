@@ -15,6 +15,18 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 206 -
+[2007/03/28] CR - Overview: Code cleanup in Character, CharacterEventThread,
+ and Database units.
+[2007/03/28] CR - Character: Cleaned up uses clauses using Icarus as a guide.
+[2007/03/28] CR - CharacterEventThread: Cleaned up uses clauses using Icarus as 
+ a guide.
+[2007/03/28] CR - Database: Cleaned up uses clauses using Icarus as a guide.
+[2007/03/28] CR - Database:TDatabase.Create - Removed hints about unused local
+ variables.  Reindented code, wrapping comments and long lines.
+[2007/03/28] CR - Version: Updated version string.
+-
+
 - Rev 205 -
 [2007/03/28] CR - Overview: SVN Cleanup
 [2007/03/28] CR - Version: Updated version string.

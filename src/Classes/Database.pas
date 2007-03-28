@@ -13,13 +13,21 @@
 //------------------------------------------------------------------------------
 unit Database;
 
+
 interface
+
+
 uses
+	{RTL/VCL}
+	//none
+	{Project}
 	CommonDatabaseTemplate,
-  GameDatabaseTemplate,
-  StaticDatabaseTemplate,
-	DatabaseOptions,
-	IdContext;
+	GameDatabaseTemplate,
+	StaticDatabaseTemplate,
+	{3rd Party}
+	IdContext
+	;
+
 
 type
 
@@ -46,125 +54,164 @@ type
 		Destructor  Destroy();override;
 
 
-  end;
+	end;
 //------------------------------------------------------------------------------
 
 
 implementation
 
+
 uses
-	Main,
-	Globals,
+	{RTL/VCL}
+	SysUtils,
+	{Project}
+	DatabaseOptions,
 	DatabaseConstants,
-	MySQLCommonDatabase,
+	Globals,
 	JanSQLCommonDatabase,
-	MySQLGameDatabase,
 	JanSQLGameDatabase,
-	MySQLStaticDatabase,
 	JanSQLStaticDatabase,
-  SysUtils;
+	Main,
+	MySQLCommonDatabase,
+	MySQLGameDatabase,
+	MySQLStaticDatabase
+	{3rd Party}
+	//none
+	;
 
-//------------------------------------------------------------------------------
-//TDatabase.Create()			                                          CONSTRUCTOR
-//------------------------------------------------------------------------------
-//	What it does-
-//			Figures out which database interface we're using.
-//
-//	Changes -
-//		September 30th, 2006 - RaX - Created.
-//		January 20th, 2007 - Tsusai - Added feedback boolean variable, in order
-//			to know if any of the databases failed to connect.
-//
-//------------------------------------------------------------------------------
+
+(*- Constructor ---------------------------------------------------------------*
+TDatabase.Create
+--------------------------------------------------------------------------------
+Overview:
+--
+	Figures out which database interface we're using.
+
+[2007/03/28] CR - TODO: Better description needed here!
+
+--
+Pre:
+	TODO
+Post:
+	TODO
+
+--
+Revisions:
+--------------------------------------------------------------------------------
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2006/09/30] RaX - Created.
+[2007/01/20] Tsusai - Added feedback boolean variable, in order to know if any 
+	of the databases failed to connect.
+[2007/03/28] CR - Removed hints about unused local variables.  Reindented code,
+	wrapping comments and long lines.
+*-----------------------------------------------------------------------------*)
 Constructor TDatabase.Create(
-	AClient								: TIdContext;
-	EnableCommonDatabase  : Boolean;
-  EnableGameDatabase    : Boolean;
-	EnableStaticDatabase  : Boolean;
-	CommonDatabaseType    : Integer = -1;
-	GameDatabaseType      : Integer = -1;
-	StaticDatabaseType    : Integer = -1
-);
+		AClient               : TIdContext;
+		EnableCommonDatabase  : Boolean;
+		EnableGameDatabase    : Boolean;
+		EnableStaticDatabase  : Boolean;
+		CommonDatabaseType    : Integer = -1;
+		GameDatabaseType      : Integer = -1;
+		StaticDatabaseType    : Integer = -1
+	);
+{[2007/03/28] CR - Unused variable declarations - commented out rev 206
 Var
-	CommonOK : boolean;
-	GameOK   : boolean;
-	StaticOK : boolean;
+	CommonOK : Boolean;
+	GameOK   : Boolean;
+	StaticOK : Boolean;
+}
+Begin
+	Inherited Create;
 
-begin
-	Inherited Create();
 	ClientInfo := AClient;
+
 	//Checks to see if the DatabaseType variable has been specified, if not we...
 	//Common
-	if CommonDatabaseType = -1 then
-	begin
-		CommonDatabaseType := MainProc.DatabaseOptions.CommonType;//set it to the value of our config.
+	if (CommonDatabaseType = -1) then
+	begin//set it to the value of our config.
+		CommonDatabaseType := MainProc.DatabaseOptions.CommonType;
 	end;
 	//Game
-  if GameDatabaseType = -1 then
-	begin
-		GameDatabaseType := MainProc.DatabaseOptions.GameType;//set it to the value of our config.
+	if (GameDatabaseType = -1) then
+	begin//set it to the value of our config.
+		GameDatabaseType := MainProc.DatabaseOptions.GameType;
 	end;
 	//Static
-  if StaticDatabaseType = -1 then
-	begin
-		StaticDatabaseType := MainProc.DatabaseOptions.StaticType;//set it to the value of our config.
+	if (StaticDatabaseType = -1) then
+	begin//set it to the value of our config.
+		StaticDatabaseType := MainProc.DatabaseOptions.StaticType;
 	end;
 
 	//Here's where we figure out which database interfaces we want to use.
-  //Common
+
+	//Common
 	case CommonDatabaseType of
-		TEXT ://1    Helios Text Database
-			begin
-				CommonData  := TJanSQLCommonDatabase.Create(EnableCommonDatabase,self);
-			end;
 
-		MYSQL://2
-			begin
-				CommonData  := TMySQLCommonDatabase.Create(EnableCommonDatabase,self);
-			end;
+	TEXT ://1    Helios Text Database
+		begin
+			CommonData  := TJanSQLCommonDatabase.Create(EnableCommonDatabase, Self);
+		end;
 
-		else begin //anything else
-			Console.WriteLn('COMMON DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
+	MYSQL://2
+		begin
+			CommonData  := TMySQLCommonDatabase.Create(EnableCommonDatabase, Self);
+		end;
+
+	else
+		begin //anything else
+			Console.WriteLn(
+				'COMMON DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!'
+			);
 			Console.WriteLn('     See ServerOptions.ini for configuration options.');
 		end;
-  end;
+	end;
+
 	//Game
 	case GameDatabaseType of
-		TEXT ://1    Helios Text Database
-			begin
-				GameData    := TJanSQLGameDatabase.Create(EnableGameDatabase,self);
-			end;
 
-		MYSQL://2
-			begin
-				GameData    := TMySQLGameDatabase.Create(EnableGameDatabase,self);
-			end;
+	TEXT ://1    Helios Text Database
+		begin
+			GameData := TJanSQLGameDatabase.Create(EnableGameDatabase, Self);
+		end;
 
-    else begin //anything else
-			Console.WriteLn('GAME DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
+	MYSQL://2
+		begin
+			GameData := TMySQLGameDatabase.Create(EnableGameDatabase, Self);
+		end;
+
+	else
+		begin //anything else
+			Console.WriteLn(
+				'GAME DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!'
+			);
 			Console.WriteLn('     See ServerOptions.ini for configuration options.');
 		end;
 	end;
-  //Static
+
+	//Static
 	case StaticDatabaseType of
-		TEXT ://1    Helios Text Database
-			begin
-				StaticData    := TJanSQLStaticDatabase.Create(EnableStaticDatabase,self);
-			end;
 
-		MYSQL://2
-			begin
-				StaticData    := TMySQLStaticDatabase.Create(EnableStaticDatabase,self);
-			end;
+	TEXT ://1    Helios Text Database
+		begin
+			StaticData := TJanSQLStaticDatabase.Create(EnableStaticDatabase, Self);
+		end;
 
-		else begin //anything else
-			Console.WriteLn('STATIC DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!');
+	MYSQL://2
+		begin
+			StaticData := TMySQLStaticDatabase.Create(EnableStaticDatabase, Self);
+		end;
+
+	else
+		begin //anything else
+			Console.WriteLn(
+				'STATIC DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!'
+			);
 			Console.WriteLn('     See ServerOptions.ini for configuration options.');
 		end;
-	end;
-end;
-//------------------------------------------------------------------------------
+	end;//case StaticDatabaseType
 
+End; (* Cons TDatabase.Create
+*-----------------------------------------------------------------------------*)
 
 //------------------------------------------------------------------------------
 //TDatabase.Destroy()			                                               DESTRUCTOR

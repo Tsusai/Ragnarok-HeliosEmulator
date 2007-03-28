@@ -6,21 +6,25 @@
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		[2007/03/28] CR - Cleaned up uses clauses with help of Icarus.
 //
 //------------------------------------------------------------------------------
 unit Character;
 
+
 interface
+
+
 uses
-	//IDE
+	{RTL/VCL}
 	Types,
-	//Helios
-	Account,
+	{Project}
 	Being,
 	GameConstants,
-	//Third Party
-	List32,
-	IdContext;
+	{Third Party}
+	IdContext,
+	List32
+	;
 
 type
 	TCharaState = (charaDead, charaPlayDead,
@@ -129,7 +133,7 @@ type
 		Weight       : LongWord;
 		MaxWeight    : LongWord;
 
-    ClientInfo	 : TIdContext;
+		ClientInfo	 : TIdContext;
 
 		ParamUP : array [STR..LUK] of byte;
 		ParamBonus : array [STR..LUK] of byte;
@@ -218,15 +222,19 @@ type
 //------------------------------------------------------------------------------
 
 implementation
+
+
 uses
-	//IDE
-	SysUtils,
+	{RTL/VCL}
 	Math,
-	//Helios
+	SysUtils,
+	{Project}
 	BufferIO,
 	Globals,
-	TCPServerRoutines,
-	PacketTypes
+	PacketTypes,
+	TCPServerRoutines
+	{Third Party}
+	//none
 	;
 
 //------------------------------------------------------------------------------
