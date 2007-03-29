@@ -556,13 +556,14 @@ end;
 //
 //  Changes -
 //    March 27th, 2007 - Aeomin - Created Header
+//		March 29th, 2007 - Tsusai - Reversed loop to prevent Index out of Bounds.
 //------------------------------------------------------------------------------
 procedure KickAll;
 var
 	Idx : Integer;
 	Chara : TCharacter;
 begin
-	for Idx:=0 to MainProc.ZoneServer.CharacterList.Count-1 do
+	for Idx := MainProc.ZoneServer.CharacterList.Count-1 downto 0 do
 	begin
 		Chara := MainProc.ZoneServer.CharacterList[Idx] as TCharacter;
 		Kick(Chara);

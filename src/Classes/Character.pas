@@ -133,7 +133,7 @@ type
 		Weight       : LongWord;
 		MaxWeight    : LongWord;
 
-		ClientInfo	 : TIdContext;
+    ClientInfo	 : TIdContext;
 
 		ParamUP : array [STR..LUK] of byte;
 		ParamBonus : array [STR..LUK] of byte;
@@ -1223,12 +1223,13 @@ end;{SetHomunID}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxHP;
 begin
-	MAXHP := EnsureRange(
-    (MAXHP + (35 + BaseLV * 5 + ((1 + BaseLV) * BaseLV div 2) *
+	fMaxHP := EnsureRange(
+		((35 + BaseLV * 5 + ((1 + BaseLV) * BaseLV div 2) *
 			TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxHP(self) div 100) * (100 + ParamBase[VIT]) div 100)
-      ,1
-			,High(MAXHP)
- 		);
+			,1
+			,High(fMaxHP)
+		);
+	if fHP > fMaxHP then fHP := fMaxHP;
 end;{CalcMaxHP}
 //------------------------------------------------------------------------------
 

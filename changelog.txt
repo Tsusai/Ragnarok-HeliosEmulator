@@ -15,6 +15,19 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 210 - 
+[2007/03/28] Tsusai - Notes/Overview: Fixed HP issues.  Packet_DB update. Added Lua related
+ files (no dlls yet).
+[2007/03/28] Tsusai - Character - TCharacter.CalcMaxHP: MaxHP + Calc'd MaxHP wasn't the 
+ right formula.  Also made it change the HP to MATCH the MAXHP if its over at the time of 
+ calculation.
+[2007/03/28] Tsusai - Packet_db: Added new packets for '07 clients from eA's.
+[2007/03/28] Tsusai - ZoneSend - KickAllUsers: Reversed the loop of kicking of characters to
+ prevent any index out of bounds errors.
+[2007/03/28] Tsusai - Added Lua.pas, folders, and some dummy files for reminders of what I
+ need to do.
+-
+
 - Rev 209 -
 [2007/03/28] Aeomin - Fixed Access Violation during shutdown, which just an extra check [ZoneServer.pas:OnDisconnect]
 [2007/03/28] Aeomin - Added a Zone Option which allows kick all players before shutdown, instead just Disconnect.
