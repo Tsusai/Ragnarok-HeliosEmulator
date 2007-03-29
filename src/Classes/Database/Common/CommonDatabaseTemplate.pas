@@ -30,7 +30,7 @@ type
 //------------------------------------------------------------------------------
 	TCommonDatabaseTemplate = class(TObject)
 	public
-		Constructor Create(EnableCommonDatabase : Boolean); virtual;
+		Constructor Create(); virtual;
 		Destructor Destroy();override;
 		function GetAccount(ID    : LongWord) : TAccount;overload;virtual;
 		function GetAccount(Name  : string) : TAccount;overload;virtual;
@@ -45,8 +45,6 @@ type
 		function AccountExists(UserName : String) : Boolean;virtual;
 
 		procedure SaveAccount(AnAccount : TAccount);virtual;
-
-	protected
 		function Connect() : boolean; virtual;
 		procedure Disconnect();virtual;
 	end;
@@ -65,7 +63,7 @@ implementation
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Constructor TCommonDatabaseTemplate.Create(EnableCommonDatabase : Boolean);
+Constructor TCommonDatabaseTemplate.Create();
 begin
 	inherited Create();
 end;

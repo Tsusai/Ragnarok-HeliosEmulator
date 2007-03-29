@@ -247,7 +247,9 @@ begin
 	if AConnection.Data is TThreadLink then
 	begin
 		ACharacter := TClientLink(AConnection.Data).CharacterLink;
+		TThreadLink(AConnection.Data).DatabaseLink.GameData.Connect;
 		TThreadLink(AConnection.Data).DatabaseLink.GameData.SaveChara(ACharacter);
+		TThreadLink(AConnection.Data).DatabaseLink.GameData.Disconnect;
 		if Started and (ACharacter.MapInfo <> nil) then
 		begin
 			AMap := ACharacter.MapInfo;
@@ -315,7 +317,7 @@ begin
 	  LANIP := Options.LANIP;
 		Port := Options.Port;
 
-		ZoneLocalDatabase := TDatabase.Create(NIL, TRUE, TRUE, TRUE);
+		ZoneLocalDatabase := TDatabase.Create(NIL);
 
     //Activate server and clients.
 	  ActivateServer('Zone',TCPServer);
@@ -610,7 +612,12 @@ var
   MapNames  : TStringList;
 begin
 	Console.WriteLn('      - Loading Maps...');
+	
+	ZoneLocalDatabase.StaticData.Connect;
 	MapNames := ZoneLocalDatabase.StaticData.GetMapsForZone(Options.ID);
+	Console.WriteLn('        : '+ IntToStr(MapNames.Count)+ ' Found!');
+	ZoneLocalDatabase.StaticData.Disconnect;
+
   for Index := 0 to MapNames.Count - 1 do
 	begin
 		if FileExists(MainProc.Options.MapDirectory+'/'+MapNames[Index]+'.pms') then

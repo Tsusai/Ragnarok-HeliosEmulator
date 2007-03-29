@@ -375,7 +375,7 @@ end;{OnException}
 			//Trim the MF off because people forget to take it off.
 			Username := AnsiLeftStr(Username,Length(Username)-2);
 			//Check to see if the account already exists.
-			
+			TThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
 			if NOT TThreadLink(AClient.Data).DatabaseLink.CommonData.AccountExists(Username) then
 			begin
 				//Create the account.
@@ -383,6 +383,7 @@ end;{OnException}
 					Username,Password,GenderStr[2]
 				);
 			end;
+			TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
 		end;
 	end;{ParseMF}
 //----------------------------------------------------------------------------
@@ -431,6 +432,7 @@ end;{OnException}
 			ParseMF(AClient, Username, Password);
 		end;
 
+		TThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
 		AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(UserName);
 		if Assigned(AnAccount) then begin
 			AccountPassword := AnAccount.Password;
@@ -464,6 +466,7 @@ end;{OnException}
 			SendLoginError(AClient,LOGIN_UNREGISTERED);
 		end;
 		AnAccount.Free;
+		TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
 	end;//ValidateLogin
 //------------------------------------------------------------------------------
 

@@ -122,7 +122,7 @@ Constructor TThreadLink.Create(AClient : TIdContext);
 begin
 	inherited Create;
 	Parent := AClient;
-	DatabaseLink := TDatabase.Create(Parent, TRUE, TRUE, TRUE);
+	DatabaseLink := TDatabase.Create(Parent);
 end;
 
 Destructor TThreadLink.Destroy;

@@ -509,8 +509,15 @@ begin
 	begin
 		Size := BufferReadLongWord(2, InBuffer);
 		CharacterID := BufferReadLongWord(10, InBuffer);
+
+		TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
 		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID);
+		TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
+
+		TThreadLink(AClient.Data).DatabaseLink.StaticData.Connect;
 		ZoneID := TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapZoneID(ACharacter.Map);
+		TThreadLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
+
 		for Index := 0 to fClientList.Count - 1 do
 		begin
 			if assigned(TZoneServerLink(TIdContext(fClientList[Index]).Data)) then

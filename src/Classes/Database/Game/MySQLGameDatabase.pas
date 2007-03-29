@@ -41,7 +41,6 @@ type
 
 
 		Constructor Create(
-			EnableGameDatabase : boolean;
 			AParent : TDatabase
 		); reintroduce; overload;
 		Destructor Destroy();override;
@@ -67,14 +66,15 @@ type
 
 		procedure SaveChara(AChara : TCharacter);override;
 
-	protected
 		function Connect() : boolean; override;
+		procedure Disconnect();override;
+		
+	protected
 		function SendQuery(
 			const QString : string;
 			StoreResult : boolean;
 			var ExecutedOK : boolean
 		) : TMySQLResult;
-		procedure Disconnect();override;
 	end;
 //------------------------------------------------------------------------------
 
@@ -101,17 +101,12 @@ implementation
 //
 //------------------------------------------------------------------------------
 Constructor TMySQLGameDatabase.Create(
-	EnableGameDatabase : boolean;
 	AParent : TDatabase
 );
 begin
 	inherited Create;
 	Parent := AParent;
 	Connection := TMySQLClient.Create;
-	if EnableGameDatabase then
-	begin
-		Connect();
-  end;
 end;
 //------------------------------------------------------------------------------
 

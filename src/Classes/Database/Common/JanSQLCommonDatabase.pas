@@ -52,9 +52,8 @@ type
 	public
 
 		Constructor Create(
-			EnableCommonDatabase : boolean;
 			AParent : TDatabase
-		); reintroduce; overload;
+		); reintroduce;overload;
 		Destructor Destroy();override;
 
 		function GetAccount(ID    : LongWord) : TAccount;overload;override;
@@ -72,9 +71,10 @@ type
 
 		procedure SaveAccount(AnAccount : TAccount);override;
 
-	protected
 		function Connect() : boolean; override;
 		procedure Disconnect; override;
+
+		protected
 		function SendQuery(
 			const QString : string
 		) : Integer;
@@ -109,17 +109,12 @@ uses
 //
 //------------------------------------------------------------------------------
 Constructor TJanSQLCommonDatabase.Create(
-	EnableCommonDatabase : boolean;
 	AParent : TDatabase
 );
 begin
-	inherited Create(EnableCommonDatabase);
+	inherited Create();
 	Parent := AParent;
 	Database := TJanSQL.Create;
-	if EnableCommonDatabase then
-	begin
-		Connect();
-	end;
 end;//Create
 //------------------------------------------------------------------------------
 

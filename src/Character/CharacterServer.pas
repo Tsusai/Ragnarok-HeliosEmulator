@@ -417,8 +417,9 @@ begin
 	end;
 
 	AccountID := BufferReadLongWord(2, ABuffer);
+	TThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
 	AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
-
+	TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
 	if Assigned(AnAccount) then
 	begin
 		if AnAccount.ID = AccountID then
@@ -430,7 +431,9 @@ begin
 				TClientLink(AClient.Data).AccountLink := AnAccount;
 				SendPadding(AClient); //Legacy padding
 
+				TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
 				ACharaList := TThreadLink(AClient.Data).DatabaseLink.GameData.GetAccountCharas(AccountID);
+				TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
 				for Index := ACharaList.Count-1 downto 0 do
 				begin
 					ACharacter := ACharaList.Items[Index];
@@ -504,21 +507,22 @@ begin
 	CharaIdx := BufferReadByte(2, ABuffer);
 	if AnAccount.CharaID[CharaIdx] <> 0 then
 	begin
+		TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
 		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(AnAccount.CharaID[CharaIdx],true);
 		//ACharacter.ClientVersion := -1; //Need to either save, or make sure its cleared
 																			//later on
-
+		TThreadLink(AClient.Data).DatabaseLink.StaticData.Connect;
 		if TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapCannotSave(ACharacter.Map) then
 		begin
 			ACharacter.Map := ACharacter.SaveMap;
 			ACharacter.Position := ACharacter.SavePoint;
 		end;
-
 		TThreadLink(AClient.Data).DatabaseLink.GameData.SaveChara(ACharacter);
 		//get zone ID for the map.
 		ZoneID := TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapZoneID(ACharacter.Map);
 		//get the zone info from that
-
+		TThreadLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
+		TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
 		idx := fZoneServerList.IndexOf(ZoneID);
 		if idx > -1 then
 		begin
@@ -600,6 +604,7 @@ begin
 
 	TotalStatPt := 0;
 
+	TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
 	//Name Check.
 	if NOT TThreadLink(AClient.Data).DatabaseLink.GameData.CharaExists(CharaName) then
 	begin
@@ -700,6 +705,7 @@ begin
 	begin
 		CreateCharaError(INVALIDNAME);
 	end;
+	TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
 end;{CreateChara}
 //------------------------------------------------------------------------------
 
@@ -736,6 +742,7 @@ begin
 	CharacterID := BufferReadLongWord(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TClientLink(AClient.Data).AccountLink;
+	TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
 	ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID,true);
 	if Assigned(ACharacter) then
 	begin
@@ -749,6 +756,7 @@ begin
 		end else DeleteCharaError(DELETEBADEMAIL);
 	end else DeleteCharaError(DELETEBADCHAR);
 	ACharacter.Free;
+  TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
 end;{DeleteChara}
 //------------------------------------------------------------------------------
 

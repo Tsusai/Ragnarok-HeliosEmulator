@@ -50,7 +50,6 @@ type
 	public
 
 		Constructor Create(
-			EnableGameDatabase : boolean;
 			AParent : TDatabase
 		); reintroduce; overload;
 
@@ -80,9 +79,10 @@ type
 
 		procedure SaveChara(AChara : TCharacter);override;
 
-	protected
 		function Connect() : boolean; override;
 		procedure Disconnect; override;
+
+	protected
 		function SendQuery(
 			const QString : string
 		) : Integer;
@@ -120,17 +120,12 @@ uses
 //
 //------------------------------------------------------------------------------
 Constructor TJanSQLGameDatabase.Create(
-	EnableGameDatabase : boolean;
 	AParent : TDatabase
 );
 begin
 	inherited Create;
 	Parent := AParent;
 	Database := TJanSQL.Create;
-	if EnableGameDatabase then
-	begin
-		Connect();
-	end;
 end;
 //------------------------------------------------------------------------------
 

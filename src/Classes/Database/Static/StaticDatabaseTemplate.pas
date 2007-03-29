@@ -33,7 +33,7 @@ type
 //------------------------------------------------------------------------------
 	TStaticDatabaseTemplate = class(TObject)
 	public
-		Constructor Create(EnableStaticDatabase : Boolean); virtual;
+		Constructor Create(); virtual;
 		Destructor Destroy();override;
 
 		Function GetBaseMaxHP(ACharacter : TCharacter) : Word;virtual;
@@ -44,7 +44,7 @@ type
 		Function GetMapZoneID(MapName : String) : Integer;virtual;
     Function GetMapFlags(MapName : String) : TFlags;virtual;
 		Function GetMapsForZone(ZoneID : LongWord)  : TStringList;virtual;
-	protected
+
 		function Connect() : boolean; virtual;
 		procedure Disconnect();virtual;
 	end;
@@ -63,7 +63,7 @@ implementation
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Constructor TStaticDatabaseTemplate.Create(EnableStaticDatabase : Boolean);
+Constructor TStaticDatabaseTemplate.Create();
 begin
 	inherited Create;
 end;

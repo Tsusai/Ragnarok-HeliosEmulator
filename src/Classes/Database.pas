@@ -45,9 +45,6 @@ type
 
 		Constructor Create(
 									AClient								: TIdContext;
-									EnableCommonDatabase  : Boolean;
-									EnableGameDatabase    : Boolean;
-									EnableStaticDatabase  : Boolean;
 									CommonDatabaseType    : Integer = -1;
 									GameDatabaseType      : Integer = -1;
 									StaticDatabaseType    : Integer = -1
@@ -108,9 +105,6 @@ Revisions:
 *-----------------------------------------------------------------------------*)
 Constructor TDatabase.Create(
 		AClient               : TIdContext;
-		EnableCommonDatabase  : Boolean;
-		EnableGameDatabase    : Boolean;
-		EnableStaticDatabase  : Boolean;
 		CommonDatabaseType    : Integer = -1;
 		GameDatabaseType      : Integer = -1;
 		StaticDatabaseType    : Integer = -1
@@ -150,12 +144,12 @@ Begin
 
 	TEXT ://1    Helios Text Database
 		begin
-			CommonData  := TJanSQLCommonDatabase.Create(EnableCommonDatabase, Self);
+			CommonData  := TJanSQLCommonDatabase.Create(Self);
 		end;
 
 	MYSQL://2
 		begin
-			CommonData  := TMySQLCommonDatabase.Create(EnableCommonDatabase, Self);
+			CommonData  := TMySQLCommonDatabase.Create(self);
 		end;
 
 	else
@@ -172,12 +166,12 @@ Begin
 
 	TEXT ://1    Helios Text Database
 		begin
-			GameData := TJanSQLGameDatabase.Create(EnableGameDatabase, Self);
+			GameData := TJanSQLGameDatabase.Create(self);
 		end;
 
 	MYSQL://2
 		begin
-			GameData := TMySQLGameDatabase.Create(EnableGameDatabase, Self);
+			GameData := TMySQLGameDatabase.Create(Self);
 		end;
 
 	else
@@ -194,12 +188,12 @@ Begin
 
 	TEXT ://1    Helios Text Database
 		begin
-			StaticData := TJanSQLStaticDatabase.Create(EnableStaticDatabase, Self);
+			StaticData := TJanSQLStaticDatabase.Create(Self);
 		end;
 
 	MYSQL://2
 		begin
-			StaticData := TMySQLStaticDatabase.Create(EnableStaticDatabase, Self);
+			StaticData := TMySQLStaticDatabase.Create(Self);
 		end;
 
 	else

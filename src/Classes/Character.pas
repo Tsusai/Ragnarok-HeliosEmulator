@@ -1223,12 +1223,14 @@ end;{SetHomunID}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxHP;
 begin
+	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	fMaxHP := EnsureRange(
 		((35 + BaseLV * 5 + ((1 + BaseLV) * BaseLV div 2) *
 			TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxHP(self) div 100) * (100 + ParamBase[VIT]) div 100)
 			,1
 			,High(fMaxHP)
 		);
+	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 	if fHP > fMaxHP then fHP := fMaxHP;
 end;{CalcMaxHP}
 //------------------------------------------------------------------------------
@@ -1474,7 +1476,9 @@ End;
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxSP;
 begin
+	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	MAXSP := MAXSP + BaseLV * TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxSP(self) * (100 + ParamBase[INT]) div 100;
+	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 end;{CalcMaxSP}
 //------------------------------------------------------------------------------
 
@@ -1508,8 +1512,10 @@ end;{CalcSpeed}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxWeight;
 begin
+	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	MaxWeight  := LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
                 TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxWeight(self);
+	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 end;{CalcMaxWeight}
 //------------------------------------------------------------------------------
 

@@ -41,7 +41,6 @@ type
 	public
 
 		Constructor Create(
-			EnableStaticDatabase : boolean;
 			AParent : TDatabase
 		); reintroduce; overload;
 		Destructor Destroy();override;
@@ -54,9 +53,11 @@ type
 		Function GetMapZoneID(MapName : String): Integer; override;
     Function GetMapFlags(MapName : String) : TFlags; override;
     Function GetMapsForZone(ID : LongWord) : TStringList; override;
-	protected
+
 		function Connect() : boolean; override;
 		procedure Disconnect; override;
+		
+	protected
 		function SendQuery(
 			const QString : string
 		) : Integer;
@@ -83,18 +84,12 @@ implementation
 //
 //------------------------------------------------------------------------------
 Constructor TJanSQLStaticDatabase.Create(
-	EnableStaticDatabase : boolean;
 	AParent : TDatabase
 );
 begin
-	inherited Create(EnableStaticDatabase);
+	inherited Create;
 	Parent := AParent;
 	Database := TJanSQL.Create;
-	if EnableStaticDatabase then
-	begin
-		Connect();
-	end;
-
 end;
 //------------------------------------------------------------------------------
 

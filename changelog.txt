@@ -15,6 +15,28 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 211 - 
+[2007/03/29] RaX - Notes/Overview: Completed Database changes, made database connections
+ connect and disconnect locally.
+[2007/03/29] RaX - CommonDatabase(jan, my, and template) made connect + disconnect public.
+[2007/03/29] RaX - GameDatabase(jan, my, and template) made connect + disconnect public.
+[2007/03/29] RaX - StaticDatabase(jan, my, and template) made connect + disconnect public.
+[2007/03/29] RaX - LoginServer.pas - added connect and disconnect around groups of queries
+ in all applicable routines.
+[2007/03/29] RaX - CharacterServer.pas - added connect and disconnect around groups of queries
+ in all applicable routines.
+[2007/03/29] RaX - ZoneServer.pas - added connect and disconnect around groups of queries
+ in all applicable routines.
+[2007/03/29] RaX - ZoneRecv.pas - added connect and disconnect around groups of queries
+ in all applicable routines.
+[2007/03/29] RaX - ZoneSend.pas - added connect and disconnect around groups of queries
+ in all applicable routines.
+[2007/03/29] RaX - InterServer.pas - added connect and disconnect around groups of queries
+ in all applicable routines.
+[2007/03/29] RaX - Remember to Connect before and disconnect after issuing groups of
+ Queries, routine local.
+-
+
 - Rev 210 - 
 [2007/03/28] Tsusai - Notes/Overview: Fixed HP issues.  Packet_DB update. Added Lua related
  files (no dlls yet).

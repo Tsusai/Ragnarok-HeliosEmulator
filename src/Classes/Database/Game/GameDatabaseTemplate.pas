@@ -54,7 +54,6 @@ type
 
 		procedure SaveChara(AChara : TCharacter);virtual;
 
-	protected
 		function Connect() : boolean; virtual;
 		procedure Disconnect();virtual;
 	end;

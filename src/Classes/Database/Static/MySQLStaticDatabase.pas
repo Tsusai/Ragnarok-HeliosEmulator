@@ -41,7 +41,6 @@ type
 
 
 		Constructor Create(
-			EnableStaticDatabase : boolean;
 			AParent : TDatabase
 		); reintroduce; overload;
 		Destructor Destroy();override;
@@ -55,14 +54,16 @@ type
     Function GetMapFlags(MapName : String) : TFlags; override;
     Function GetMapsForZone(ID : LongWord) : TStringList; override;
 
-	protected
 		function Connect() : boolean; override;
+		procedure Disconnect();override;
+
+	protected
 		function SendQuery(
 			const QString : string;
 			StoreResult : boolean;
 			var ExecutedOK : boolean
 		) : TMySQLResult;
-		procedure Disconnect();override;
+
 	end;
 //------------------------------------------------------------------------------
 
@@ -85,17 +86,12 @@ implementation
 //
 //------------------------------------------------------------------------------
 Constructor TMySQLStaticDatabase.Create(
-	EnableStaticDatabase : boolean;
 	AParent : TDatabase
 );
 begin
-	inherited Create(EnableStaticDatabase);
+	inherited Create();
 	Parent := AParent;
 	Connection := TMySQLClient.Create;
-	if EnableStaticDatabase then
-	begin
-		Connect();
-  end;
 end;
 //------------------------------------------------------------------------------
 

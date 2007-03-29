@@ -43,7 +43,6 @@ type
 
 
 		Constructor Create(
-			EnableCommonDatabase : boolean;
 			AParent : TDatabase
 		); reintroduce; overload;
 		Destructor Destroy();override;
@@ -63,14 +62,16 @@ type
 
 		procedure SaveAccount(AnAccount : TAccount);override;
 
-	protected
+
 		function Connect(): boolean; override;
+		procedure Disconnect();override;
+
+		protected
 		function SendQuery(
 			const QString : string;
 			StoreResult : boolean;
 			var ExecutedOK : boolean
 		) : TMySQLResult;
-		procedure Disconnect();override;
 	end;
 //------------------------------------------------------------------------------
 
@@ -93,17 +94,12 @@ implementation
 //
 //------------------------------------------------------------------------------
 Constructor TMySQLCommonDatabase.Create(
-	EnableCommonDatabase : boolean;
 	AParent : TDatabase
 );
 begin
-	inherited Create(EnableCommonDatabase);
+	inherited Create();
 	Parent := AParent;
 	Connection := TMySQLClient.Create;
-	if EnableCommonDatabase then
-	begin
-		Connect();
-	end;
 end;//Create
 //------------------------------------------------------------------------------
 
