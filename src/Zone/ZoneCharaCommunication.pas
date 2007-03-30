@@ -24,6 +24,14 @@ uses
 	procedure SendZoneWANIPToChara(AClient : TInterClient; ZoneServer : TZoneServer);
 	procedure SendZoneLANIPToChara(AClient : TInterClient; ZoneServer : TZoneServer);
 	procedure SendZoneOnlineUsersToChara(AClient : TInterClient; ZoneServer : TZoneServer);
+	procedure SendZoneCharaIncrease(
+		AClient : TInterClient;
+		ZoneServer : TZoneServer
+	);
+	procedure SendZoneCharaDecrease(
+		AClient : TInterClient;
+		ZoneServer : TZoneServer
+	);
 
 implementation
 uses
@@ -153,5 +161,27 @@ uses
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2104));
 	end;//SendZoneOnlineUsersToChara
 //------------------------------------------------------------------------------
+
+	procedure SendZoneCharaIncrease(
+		AClient : TInterClient;
+		ZoneServer : TZoneServer
+	);
+	var
+		OutBuffer : TBuffer;
+	begin
+		WriteBufferWord(0,$2105,OutBuffer);
+		SendBuffer(AClient,OutBuffer,GetPacketLength($2105));
+	end;
+
+	procedure SendZoneCharaDecrease(
+		AClient : TInterClient;
+		ZoneServer : TZoneServer
+	);
+	var
+		OutBuffer : TBuffer;
+	begin
+		WriteBufferWord(0,$2106,OutBuffer);
+		SendBuffer(AClient,OutBuffer,GetPacketLength($2106));
+	end;
+
 end.
- 

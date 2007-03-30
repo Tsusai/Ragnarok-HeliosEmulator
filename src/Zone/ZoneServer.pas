@@ -221,6 +221,7 @@ end;{TMainProc.ZoneServerExecute}
 procedure TZoneServer.OnConnect(AConnection: TIdContext);
 begin
 	AConnection.Data := TClientLink.Create(AConnection);
+	SendZoneCharaIncrease(ToCharaTCPClient,Self);
 end;{OnConnect}
 //------------------------------------------------------------------------------
 
@@ -265,6 +266,7 @@ begin
 		begin
 			CharacterList.Delete(CharacterIndex);
 		end;
+		SendZoneCharaDecrease(ToCharaTCPClient,Self);
 	end;
 
 end;{OnDisconnect}

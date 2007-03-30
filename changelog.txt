@@ -15,6 +15,24 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 212 - 
+[2007/03/30] Tsusai - Notes/Overview: Basic Online count in place.  Updated server<->server
+ documentation
+[2007/03/30] Tsusai - ServerToServerPackets: Updated for alot of things.
+[2007/03/30] Tsusai - Packet_Db: Added new online user packets.
+[2007/03/30] Tsusai - CharacterServer - GetOnlineUserCount: Replaced OnlineUsers with this.
+ Gets total count of all players on the zone.
+[2007/03/30] Tsusai - CharacterServer - ParseCharaServ: Added packets 0x2105 & 0x2106 for
+ easy online count updating.
+[2007/03/30] Tsusai - CharaLoginCommunication - SendCharaOnlineUsersToLogin: Changed 
+ OnlineUsers to GetOnlineUserCount.
+[2007/03/30] Tsusai - ZoneCharaCommunication: Added SendZoneCharaIncrease & 
+ SendZoneCharaDecrease.
+[2007/03/30] Tsusai - ZoneServer - TZoneServer OnConnect & OnDisconnect: Added calls to
+ SendZoneCharaIncrease & SendZoneCharaDecrease.
+[2007/03/30] Tsusai - ZoneServerInfo - TZoneServerInfo: Added OnlineUsers word type.
+-
+
 - Rev 211 - 
 [2007/03/29] RaX - Notes/Overview: Completed Database changes, made database connections
  connect and disconnect locally.

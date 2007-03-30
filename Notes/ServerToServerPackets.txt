@@ -1,21 +1,74 @@
+VAR = variable length
+Size = Total length of entire packet. (Variable data length + static data like header)
+	
+	ex. <0x2002> <11> <'127.0.0.1'>
+
+
+
+T ID    	DATA							LENGTH
+		DESC
+
 Login <-> Character
 R login recieves
 S login sends to chara
+R 0x2000	<md5password x16><servername x24><port x2>		{44}
+		Authentication request packet from character server
+		to login server.  MD5Password is the connection 
+		password, parsed through MD5 hashing, and dumped as
+		raw data onto the buffer, unlike a string.
+	
+S 0x2001 	<accept/deny x1> 					{03}
+		0 = Invalid Key
+		1 = OK
+		Response to 0x0200 from Login server.
 
-R $2000 <md5password x16><servername x24><port x2>
-S $2001 <accept/deny x1> 
-	0 = Invalid Key
-	1 = OK
-R $2002 <wanip size x2><wanip x?>
-R $2003 <lanip size x2><lanip x?>
-R $2004 <online users x2>
+R 0x2002	<size x2><wanip x?>					{VAR}
+		Character Server sends its WAN Hostname / IP to 
+		the login server.
+
+R 0x2003	<size x2><lanip x?>					{VAR}
+		Character Server sends its LAN Hostname / IP to 
+		the login server.
+
+R 0x2004 	<online users x2>					{04}
+		Character Server updating its Online User count
+		for display to recently logged in clients before
+		they access. (ex. Chaos & Loki counts)
 
 Character <-> Zone
-R $2100 <Zone Server ID x2><Port x2><md5password x16>
-S $2101 <accept/deny x1> 
-	0 = OK
-	1 = ID in use
-	2 = Invalid Key
-R $2102 <wanip size x2><wanip x?>
-R $2103 <lanip size x2><lanip x?>
-R $2104 <online users x2>
+R Character recieves
+S Character sends to Zone.
+R 0x2100	<Zone Server ID x2><Port x2><md5password x16>		{24}
+		Authentication request packet from character server
+		to login server.  MD5Password is the connection 
+		password, parsed through MD5 hashing, and dumped as
+		raw data onto the buffer, unlike a string.
+		Zone IDs must be setup uniquely!!
+		Else connection / authentication will fail.
+		
+S 0x2101	<accept/deny x1> 					{03}
+		0 = OK
+		1 = ID in use
+		2 = Invalid Key
+		Response to 0x2100
+
+R 0x2102	<size x2><wanip x?>					{VAR}
+		Zone Server sends its WAN Hostname / IP to 
+		the Character server.
+
+R 0x2103	<size x2><lanip x?>					{VAR}
+		Zone Server sends its LAN Hostname / IP to 
+		the Character server.
+
+R 0x2104	<online users x2>					{04}
+		Zone Server updating its Online User count
+		for Character Server to add up and pass to
+		the login server.
+
+R 0x2105 	(nodata)						{02}
+		Online user increase by 1, just the header is sent
+		Used for client zone logon. 
+
+R 0x2106 	(nodata)						{02}
+		Online user increase by 1, just the header is sent
+		Used for client zone logon. 

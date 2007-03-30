@@ -71,7 +71,7 @@ type
 
 	public
 		ServerName    : String;
-		OnlineUsers   : Word;
+
 		WANIP : string;
 		LANIP : string;
 
@@ -83,13 +83,15 @@ type
 		Destructor  Destroy();Override;
 		Procedure   Start();
 		Procedure   Stop();
-    Procedure ConnectToLogin();
+		Procedure ConnectToLogin();
+		function GetOnlineUserCount : word;
 	end;
 //------------------------------------------------------------------------------
 
 
 implementation
 uses
+	Math,
 	//Helios
 	CharaList,
 	CharaLoginCommunication,
@@ -225,7 +227,7 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.Stop();
 var
-  Index : Integer;
+	Index : Integer;
 begin
   if Started then
   begin
@@ -233,11 +235,11 @@ begin
 	  DeActivateClient(CharaToLoginClient);
 
 		//Free up our existing server info objects
-    for Index := 0 to fZoneServerList.Count - 1 do
+		for Index := fZoneServerList.Count - 1 downto 0 do
 		begin
-      TZoneServerInfo(fZoneServerList[Index]).Free;
-      fZoneServerList.Delete(Index);
-    end;
+			TZoneServerInfo(fZoneServerList[Index]).Free;
+			fZoneServerList.Delete(Index);
+		end;
 
     Options.Save;
     Options.Free;
@@ -832,6 +834,7 @@ end;
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //		January 14th, 2007 - Tsusai - Added Zone server packet parsing.
+//		March 30th, 2007 - Tsusai - Added packets 0x2105 & 0x2106
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.ParseCharaServ(AClient : TIdContext);
@@ -900,12 +903,33 @@ begin
 					Console.Message('Received updated Zone Server LANIP.', 'Character Server', MS_NOTICE);
 				end;
 			end;
-		$2104: // Zone Server sending new Online User count
+		$2104: // Zone Server sending new Online User count (relink while running)
 			begin
 				if AClient.Data is TZoneServerLink then
 				begin
 					RecvBuffer(AClient,ABuffer[2],GetPacketLength($2104)-2);
 					//TZoneServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
+					//SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
+					Console.Message('Received updated Zone Server Online Users.', 'Character Server', MS_NOTICE);
+				end;
+			end;
+		$2105: // Zone Server sending decrease of online users by 1
+			begin
+				if AClient.Data is TZoneServerLink then
+				begin
+					TZoneServerLink(AClient.Data).Info.OnlineUsers :=
+						Min(TZoneServerLink(AClient.Data).Info.OnlineUsers +1, High(Word));
+					SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
+					Console.Message('Received updated Zone Server Online Users.', 'Character Server', MS_NOTICE);
+				end;
+			end;
+		$2106: // Zone Server sending decrease of online users by 1
+			begin
+				if AClient.Data is TZoneServerLink then
+				begin
+					TZoneServerLink(AClient.Data).Info.OnlineUsers :=
+						Max(TZoneServerLink(AClient.Data).Info.OnlineUsers -1, 0);
+					SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
 					Console.Message('Received updated Zone Server Online Users.', 'Character Server', MS_NOTICE);
 				end;
 			end;
@@ -1023,5 +1047,16 @@ begin
 	end;
 end;{OnDisconnect}
 //------------------------------------------------------------------------------
+
+function TCharacterServer.GetOnlineUserCount : word;
+var
+	Index : integer;
+begin
+	Result := 0;
+	for Index := fZoneServerList.Count - 1 downto 0 do
+	begin
+		Inc(Result,TZoneServerInfo(fZoneServerList[Index]).OnlineUsers);
+	end;
+end;
 
 end.

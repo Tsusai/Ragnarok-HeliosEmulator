@@ -143,6 +143,7 @@ uses
 //
 //	Changes -
 //		March 12th, 2007 - Aeomin - Created Header
+//		March 30th, 2007 - Tsusai - Changed OnlineUsers to GetOnlineUserCount
 //
 //------------------------------------------------------------------------------
 	procedure SendCharaOnlineUsersToLogin(
@@ -153,9 +154,9 @@ uses
 		OutBuffer : TBuffer;
 	begin
 		WriteBufferWord(0,$2004,OutBuffer);
-		WriteBufferWord(2,CharacterServer.OnlineUsers,OutBuffer);
+		WriteBufferWord(2,CharacterServer.GetOnlineUserCount,OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2004));
 	end;
 //------------------------------------------------------------------------------
 end.
- 
+

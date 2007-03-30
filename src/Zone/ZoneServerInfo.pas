@@ -34,11 +34,13 @@ type
 //
 //	Changes -
 //		March 13th, 2007 - Aeomin - Created Header
+//		March 30th, 2007 - Tsusai - Added OnlineUsers
 //
 //------------------------------------------------------------------------------
 	TZoneServerInfo = class(TServerInfo)
 	public
 		ZoneID : LongWord;
+		OnlineUsers : word;
 	end;
 
 implementation
