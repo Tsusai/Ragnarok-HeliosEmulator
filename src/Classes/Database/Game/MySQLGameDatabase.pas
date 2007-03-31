@@ -7,17 +7,27 @@
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//	[2007/03/30] CR - Used Icarus to clean up uses clauses.
 //
 //------------------------------------------------------------------------------
 unit MySQLGameDatabase;
 
+
 interface
+
+
 uses
+	{RTL/VCL}
+	//none
+	{Project}
 	GameDatabaseTemplate,
 	Character,
 	CharaList,
-	uMysqlClient,
-	Database;
+	Database,
+	{Third Party}
+	uMysqlClient
+	;
+
 
 type
 //------------------------------------------------------------------------------
@@ -78,16 +88,22 @@ type
 	end;
 //------------------------------------------------------------------------------
 
+
 implementation
-	uses
-		Account,
-		Types,
-		Math,
-		GameConstants,
-		Globals,
-		SysUtils,
-		Main;
-		
+
+
+uses
+	SysUtils,
+	Types,
+	{Project}
+	GameConstants,
+	Globals,
+	Main
+	{Third Party}
+	//none
+	;
+
+
 //------------------------------------------------------------------------------
 //TMySQLGameDatabase.Create()                                        CONSTRUCTOR
 //------------------------------------------------------------------------------

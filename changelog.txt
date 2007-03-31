@@ -15,6 +15,16 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 214 -
+[2007/03/30] CR - Overview: Code cleanup in MySQLCommonDatabase,
+ MySQLGameDatabase units.
+[2007/03/30] CR - MySQLCommonDatabase: Cleaned up uses clauses using Icarus as
+ a guide.
+[2007/03/28] CR - MySQLGameDatabase: Cleaned up uses clauses using Icarus as a 
+ guide.
+[2007/03/28] CR - Version: Updated version string.
+-
+
 - Rev 213 -
 [2007/03/30] Aeomin - Removed SendZoneCharaIncrease in OnConnect [ZoneServer.pas:TZoneServer.OnConnect]
                       and moved to ShowMap [ZoneRecv.pas:ShowMap]
@@ -71,7 +81,7 @@ Developers & Contributers
 - Rev 210 - 
 [2007/03/28] Tsusai - Notes/Overview: Fixed HP issues.  Packet_DB update. Added Lua related
  files (no dlls yet).
-[2007/03/28] Tsusai - Character - TCharacter.CalcMaxHP: MaxHP + Calc'd MaxHP wasn't the 
+[2007/03/28] Tsusai - Character - TCharacter.CalcMaxHP: MaxHP + Calc'd MaxHP wasn't the
  right formula.  Also made it change the HP to MATCH the MAXHP if its over at the time of 
  calculation.
 [2007/03/28] Tsusai - Packet_db: Added new packets for '07 clients from eA's.

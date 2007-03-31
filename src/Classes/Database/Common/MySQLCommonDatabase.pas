@@ -7,16 +7,26 @@
 //
 //	Changes -
 //		September 29th, 2006 - RaX - Created.
+//	[2007/03/30] CR - Used Icarus to clean up uses clauses.
 //
 //------------------------------------------------------------------------------
 unit MySQLCommonDatabase;
 
 interface
+
+
 uses
-	CommonDatabaseTemplate,
+	{RTL/VCL}
+	//none
+	{Project}
 	Account,
-	uMysqlClient,
-	Database;
+	CommonDatabaseTemplate,
+	Database,
+	{Third Party}
+	uMysqlClient
+	;
+
+
 type
 //------------------------------------------------------------------------------
 //TMySQLCommonDatabase			                                   CLASS
@@ -75,12 +85,21 @@ type
 	end;
 //------------------------------------------------------------------------------
 
+
 implementation
-	uses
-		Globals,
-		SysUtils,
-		Classes,
-		Main;
+
+
+uses
+	{RTL/VCL}
+	SysUtils,
+	{Project}
+	Globals,
+	Main
+	{Third Party}
+	//none
+	;
+
+
 //------------------------------------------------------------------------------
 //Create()							     CONSTRUCTOR
 //------------------------------------------------------------------------------
