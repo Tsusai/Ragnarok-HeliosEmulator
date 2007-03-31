@@ -15,6 +15,9 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 215 -
+[2007/03/31] Aeomin - Fixed account always turns to female when using MYSQL.
+
 - Rev 214 -
 [2007/03/30] CR - Overview: Code cleanup in MySQLCommonDatabase,
  MySQLGameDatabase units.

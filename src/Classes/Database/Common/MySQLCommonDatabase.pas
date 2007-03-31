@@ -232,6 +232,7 @@ end;//Disconnect
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //		December 27th, 2006 - Tsusai - Fixed login key and gender char reading
+//		March 31th, 2007 - Aeomin - Fixed gender always female
 //
 //------------------------------------------------------------------------------
 procedure TMySQLCommonDatabase.SetAccount(
@@ -244,8 +245,8 @@ begin
 	AnAccount.Username    := QueryResult.FieldValue(1);
 	AnAccount.Password    := QueryResult.FieldValue(2);
 	//Tsusai - For Gender, we need to return the first char, thats
-	//why there is a [1]
-	AnAccount.Gender       := QueryResult.FieldValue(4)[1];
+	//why there is a [0]
+	AnAccount.Gender       := QueryResult.FieldValue(4)[0];
 	AnAccount.LoginCount   := StrToIntDef(QueryResult.FieldValue(5),0);
 	AnAccount.EMail        := QueryResult.FieldValue(6);
 	AnAccount.LoginKey[1]  := StrToIntDef(QueryResult.FieldValue(7),0);
