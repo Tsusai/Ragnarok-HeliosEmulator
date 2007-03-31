@@ -221,7 +221,6 @@ end;{TMainProc.ZoneServerExecute}
 procedure TZoneServer.OnConnect(AConnection: TIdContext);
 begin
 	AConnection.Data := TClientLink.Create(AConnection);
-	SendZoneCharaIncrease(ToCharaTCPClient,Self);
 end;{OnConnect}
 //------------------------------------------------------------------------------
 
@@ -235,7 +234,8 @@ end;{OnConnect}
 //
 //	Changes -
 //		January 25th, 2007 - RaX - Created.
-//		March 28th, 2007 - Aeomin - Add a check see if server socket to void AV. 
+//		March 28th, 2007 - Aeomin - Add a check see if server socket to void AV.
+//		March 30th, 2007 - Aeomin - Change from TThreadLink to TClientLink
 //
 //------------------------------------------------------------------------------
 procedure TZoneServer.OnDisconnect(AConnection: TIdContext);
@@ -245,7 +245,7 @@ var
 	AMap : TMap;
 
 begin
-	if AConnection.Data is TThreadLink then
+	if AConnection.Data is TClientLink then
 	begin
 		ACharacter := TClientLink(AConnection.Data).CharacterLink;
 		TThreadLink(AConnection.Data).DatabaseLink.GameData.Connect;

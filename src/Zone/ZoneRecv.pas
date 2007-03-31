@@ -151,7 +151,8 @@ uses
 	MovementEvent,
 	TCPServerRoutines,
 	ZoneSend,
-	ZoneServer
+	ZoneServer,
+	ZoneCharaCommunication
 	{3rd Party}
 	//none
 	;
@@ -295,6 +296,7 @@ uses
 //
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header;
+//    March 30th, 2007 - Aeomin - Move SendZoneCharaIncrease to here.
 //------------------------------------------------------------------------------
 	Procedure ShowMap(
 			AChara  : TCharacter;
@@ -307,6 +309,7 @@ uses
 		AMap : TMap;
 		MapIndex : Integer;
 	Begin
+		SendZoneCharaIncrease(MainProc.ZoneServer.ToCharaTCPClient,MainProc.ZoneServer);
 		MapIndex := MainProc.ZoneServer.MapList.IndexOf(AChara.Map);
 		if MapIndex > -1 then
 		begin

@@ -15,6 +15,19 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 213 -
+[2007/03/30] Aeomin - Removed SendZoneCharaIncrease in OnConnect [ZoneServer.pas:TZoneServer.OnConnect]
+                      and moved to ShowMap [ZoneRecv.pas:ShowMap]
+[2007/03/30] Aeomin - Commented out debug message that will show every time player login/logout
+                      [CharacterServer.pas:ParseCharaServ]
+[2007/03/30] Aeomin - Fixed typo in zone server that may cause unknown problem (Pointed out by RaX)
+                      [ZoneServer.pas:TZoneServer.OnDisconnect]
+[2007/03/30] Aeomin - Fixed typo that made char server to confuse packet (Pointed out by RaX)
+                      [CharacterServer.pas:ParseCharaServ]
+[2007/03/30] Aeomin - Fixed typo causes AV in CharServer when try to calculate online players
+                      [CharacterServer.pas:GetOnlineUserCount]
+[2007/03/30] Aeomin - Changed Server down error code from 3 to 1 [CharacterServer.pas:SendCharaToMap]
+
 - Rev 212 - 
 [2007/03/30] Tsusai - Notes/Overview: Basic Online count in place.  Updated server<->server
  documentation
