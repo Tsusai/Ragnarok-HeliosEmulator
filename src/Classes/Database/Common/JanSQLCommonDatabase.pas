@@ -1,16 +1,42 @@
-//------------------------------------------------------------------------------
-//JanSQLCommonDatabase		                                            UNIT
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is one of our database objects which enabled Helios to use a TEXT
-//    Database.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
-//
-//------------------------------------------------------------------------------
+(*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+Unit
+JanSQLCommonDatabase
+
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+[2006/09/29] Helios - RaX
+
+================================================================================
+License:  (FreeBSD, plus commercial with written permission clause.)
+================================================================================
+
+Project Helios - Copyright (c) 2005-2007
+
+All rights reserved.
+
+Please refer to Helios.dpr for full license terms.
+
+================================================================================
+Overview:
+================================================================================
+
+	This unit enables Helios to use TEXT files for the Common (Account) Database.
+
+================================================================================
+Revisions:
+================================================================================
+(Format: [yyyy/mm/dd] <Author> - <Desc of Changes>)
+[2006/09/29] RaX - Created.
+[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
+[2007/04/06] CR - Altered Header, Changes to TJanSQLCommonDatabase to match
+	template changes for parameters, and cleaning up the Create/Destroy routines.
+	Changed the description for clarity.
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*)
+
+
 unit JanSQLCommonDatabase;
+
 
 interface
 
@@ -27,59 +53,104 @@ uses
 	;
 
 
-//------------------------------------------------------------------------------
-//TJanSQLCommonDatabase			                                   CLASS
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is a child class for our database object system. It allows Helios
-//    to communicate with a TEXT database and houses all routines for doing so.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		January 20th, 2007 - Tsusai - Connect is now a bool function
-//			Create holds connection result
-//
-//------------------------------------------------------------------------------
-type
-	TJanSQLCommonDatabase = class(TCommonDatabaseTemplate)
-	private
-		Database : TjanSQL;
-		Parent  : TDatabase;
-		procedure SetAccount(
-			var AnAccount : TAccount;
-			var QueryResult : TJanRecordSet
+(*= CLASS =====================================================================*
+TJanSQLCommonDatabase
+
+[2006/09/29] RaXChrstphrR
+
+*------------------------------------------------------------------------------*
+Overview:
+*------------------------------------------------------------------------------*
+
+	This is a child class for our Common database system. It allows Helios'
+Servers to communicate with a TEXT database and implements all the necessary
+routines defined by the Common Database Template.
+
+*------------------------------------------------------------------------------*
+Revisions:
+*------------------------------------------------------------------------------*
+(Format: [yyyy/mm/dd] <Author> - <Description of Change>)
+[2006/09/29] RaX - Created.
+[2007/01/20] Tsusai - Connect is now a bool function
+	Create holds connection result
+[2007/04/06] CR - Made all parameters var/const/in/out.  Create doesn't
+	override the constructor in the template (due to changes to the template
+	model).  Parent and Database made into read-only properties, with f* internal
+	fields to store them.  Converted all private fields and methods to protected.
+*=============================================================================*)
+Type
+TJanSQLCommonDatabase = class(TCommonDatabaseTemplate)
+protected
+
+	fDatabase : TjanSQL;
+	fParent   : TDatabase;
+
+	procedure SetAccount(
+		out
+			AnAccount   : TAccount;
+		const
+			QueryResult : TJanRecordSet
 		);
-	public
 
-		Constructor Create(
+	function  SendQuery(
+		const
+			QString : String
+		) : Integer;
+
+public
+
+	Constructor Create(
+		const
 			AParent : TDatabase
-		); reintroduce;overload;
-		Destructor Destroy();override;
+		);
 
-		function GetAccount(ID    : LongWord) : TAccount;overload;override;
-		function GetAccount(Name  : string) : TAccount;overload;override;
+	Destructor Destroy; override;
 
-		procedure RefreshAccountData(var AnAccount : TAccount); override;
+	function GetAccount(
+		const
+			ID    : LongWord
+		) : TAccount; overload; override;
 
-		procedure CreateAccount(
-			const Username : string;
-			const Password : string;
-			const GenderChar : char
+	function GetAccount(
+		const
+			Name  : String
+		) : TAccount; overload; override;
+
+	procedure RefreshAccountData(
+		var
+			AnAccount : TAccount
 		); override;
 
-		function AccountExists(UserName : String) : Boolean;override;
+	procedure CreateAccount(
+		const
+			Username : String;
+		const
+			Password : String;
+		const
+			GenderChar : Char
+	); override;
 
-		procedure SaveAccount(AnAccount : TAccount);override;
+	function AccountExists(
+		const
+			UserName : String
+		) : Boolean; override;
 
-		function Connect() : boolean; override;
-		procedure Disconnect; override;
+	procedure SaveAccount(
+		const
+			AnAccount : TAccount
+		); override;
 
-		protected
-		function SendQuery(
-			const QString : string
-		) : Integer;
-	end;
-//------------------------------------------------------------------------------
+	function  Connect : Boolean; override;
+
+	procedure Disconnect; override;
+
+	property Database : TjanSQL
+		read  fDatabase;
+	property Parent : TDatabase
+		read  fParent;
+
+End;(* TJanSQLCommonDatabase
+*== CLASS ====================================================================*)
 
 
 implementation
@@ -97,7 +168,7 @@ uses
 
 
 //------------------------------------------------------------------------------
-//Create()                 					     CONSTRUCTOR
+//Create                   					     CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes our connection object.
@@ -109,18 +180,20 @@ uses
 //
 //------------------------------------------------------------------------------
 Constructor TJanSQLCommonDatabase.Create(
-	AParent : TDatabase
-);
+	const
+		AParent : TDatabase
+	);
 begin
-	inherited Create();
-	Parent := AParent;
-	Database := TJanSQL.Create;
+	inherited Create;
+
+	fParent   := AParent;
+	fDatabase := TJanSQL.Create;
 end;//Create
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//Destroy()							      DESTRUCTOR
+//Destroy  							      DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys our connection object.
@@ -129,17 +202,18 @@ end;//Create
 //		October 5th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Destructor TJanSQLCommonDatabase.Destroy();
+Destructor TJanSQLCommonDatabase.Destroy;
 begin
 	Database.Free;
 	Disconnect;
+
 	inherited;
 end;//Destroy
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//Disconnect()							       Procedure
+//Disconnect							       Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys the TEXT Connection.
@@ -156,7 +230,7 @@ end;//Disconnect
 
 
 //------------------------------------------------------------------------------
-//Connect() 							       Procedure
+//Connect 							       Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes the TEXT Connection.
@@ -168,7 +242,7 @@ end;//Disconnect
 //		January 20th, 2007 - Tsusai - Connect is now a bool function
 //
 //------------------------------------------------------------------------------
-function TJanSQLCommonDatabase.Connect() : boolean;
+function TJanSQLCommonDatabase.Connect : Boolean;
 var
 	ResultIdentifier : Integer;
 const ConnectQuery = 'Connect to ''%s''';
@@ -213,8 +287,9 @@ end;//Connect
 //
 //------------------------------------------------------------------------------
 function TJanSQLCommonDatabase.SendQuery(
-	const QString : string
-) : Integer;
+	const
+		QString : String
+	) : Integer;
 begin
 	Result := Database.SQLDirect(QString);
 	if (Result = 0) AND (Database.Error <> 'SELECT FROM: no records') then
@@ -238,9 +313,11 @@ end;//SendQuery
 //
 //------------------------------------------------------------------------------
 procedure TJanSQLCommonDatabase.SetAccount(
-	var AnAccount : TAccount;
-	var QueryResult : TJanRecordSet
-);
+	out
+		AnAccount : TAccount;
+	const
+		QueryResult : TJanRecordSet
+	);
 begin
 	AnAccount := TAccount.Create(Parent.ClientInfo);
 	AnAccount.ID           := StrToIntDef(QueryResult.records[0].fields[0].value, 0);
@@ -276,7 +353,10 @@ end;//SetAccount
 //		December 27th, 2006 - Tsusai - Reorganized
 //
 //------------------------------------------------------------------------------
-function TJanSQLCommonDatabase.GetAccount(ID: LongWord) : TAccount;
+function TJanSQLCommonDatabase.GetAccount(
+	const
+		ID: LongWord
+	) : TAccount;
 var
 	AnAccount   : TAccount;
 	QueryResult : TJanRecordSet;
@@ -313,7 +393,10 @@ end;//GetAccount
 //		December 27th, 2006 - Tsusai - Reorganized
 //
 //------------------------------------------------------------------------------
-function TJanSQLCommonDatabase.GetAccount(Name : string) : TAccount;
+function TJanSQLCommonDatabase.GetAccount(
+	const
+		Name : String
+	) : TAccount;
 var
 	AnAccount   : TAccount;
 	QueryResult : TJanRecordSet;
@@ -344,7 +427,10 @@ end;//GetAccount
 //		January 11th, 2007 - RaX - Created header.
 //
 //------------------------------------------------------------------------------
-function TJanSQLCommonDatabase.AccountExists(UserName : String) : Boolean;
+function TJanSQLCommonDatabase.AccountExists(
+	const
+		UserName : String
+	) : Boolean;
 var
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
@@ -372,7 +458,10 @@ end;//AccountExists
 //		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
-procedure TJanSQLCommonDatabase.SaveAccount(AnAccount: TAccount);
+procedure TJanSQLCommonDatabase.SaveAccount(
+	const
+		AnAccount : TAccount
+	);
 const
 	BaseString =
 		'UPDATE accounts SET '+
@@ -456,7 +545,10 @@ end;//CreateAccount
 //			regardless
 //
 //------------------------------------------------------------------------------
-procedure TJanSQLCommonDatabase.RefreshAccountData(var AnAccount : TAccount);
+procedure TJanSQLCommonDatabase.RefreshAccountData(
+	var
+		AnAccount : TAccount
+	);
 var
 	ResultIdentifier : Integer;
 	QueryResult : TJanRecordSet;
@@ -469,8 +561,11 @@ begin
 	AnAccount.LoginKey[2]  := StrToIntDef(QueryResult.records[0].fields[1].Value,0);
 	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.records[0].fields[2].Value);
 	AnAccount.Bantime := ConvertMySQLTime(QueryResult.records[0].fields[3].Value);
-  SendQuery('RELEASE TABLE accounts');
-	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+	SendQuery('RELEASE TABLE accounts');
+	if (ResultIdentifier > 0) then
+	begin
+		Database.ReleaseRecordset(ResultIdentifier);
+	end;
 end;//GetAccountBanAndConnectTime
 //------------------------------------------------------------------------------
 

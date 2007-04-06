@@ -1,16 +1,41 @@
-//------------------------------------------------------------------------------
-//MySQLCommonDatabase		                                            UNIT
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is one of our database objects which enabled Helios to use a MySQL
-//    Database.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//	[2007/03/30] CR - Used Icarus to clean up uses clauses.
-//
-//------------------------------------------------------------------------------
+(*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+Unit
+MySQLCommonDatabase
+
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+[2006/09/29] Helios - RaX
+
+================================================================================
+License:  (FreeBSD, plus commercial with written permission clause.)
+================================================================================
+
+Project Helios - Copyright (c) 2005-2007
+
+All rights reserved.
+
+Please refer to Helios.dpr for full license terms.
+
+================================================================================
+Overview:
+================================================================================
+
+	This unit enables Helios to use MySQL for the Common (Account) Database.
+
+================================================================================
+Revisions:
+================================================================================
+(Format: [yyyy/mm/dd] <Author> - <Desc of Changes>)
+[2006/09/29] RaX - Created Unit
+[2007/03/30] CR - Used Icarus to clean up uses clauses.
+[2007/04/06] CR - Altered Header, made changes to the class to model parameters
+	after TCommonDatabaseTemplate changes.
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*)
+
+
 unit MySQLCommonDatabase;
+
 
 interface
 
@@ -27,63 +52,105 @@ uses
 	;
 
 
-type
-//------------------------------------------------------------------------------
-//TMySQLCommonDatabase			                                   CLASS
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is a child class for our database object system. It allows Helios
-//    to communicate with a MySQL database and houses all routines for doing so.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		January 20th, 2007 - Tsusai - Connect is now a bool function
-//			Create holds connection result
-//
-//------------------------------------------------------------------------------
-	TMySQLCommonDatabase = class(TCommonDatabaseTemplate)
-	private
-		Connection   : TMySQLClient;
-		Parent : TDatabase;
-		procedure SetAccount(
-			var AnAccount : TAccount;
-			var QueryResult : TMySQLResult
+Type
+(*= CLASS =====================================================================*
+TMySQLCommonDatabase
+
+[2007/04/06] ChrstphrR
+
+*------------------------------------------------------------------------------*
+Overview:
+*------------------------------------------------------------------------------*
+
+	This is a child class for our Common database system. It allows Helios'
+Servers to communicate with a MySQL database and implements all the necessary
+routines defined by the Common Database Template.
+
+*------------------------------------------------------------------------------*
+Revisions:
+*------------------------------------------------------------------------------*
+(Format: [yyyy/mm/dd] <Author> - <Description of Change>)
+[2006/09/29] RaX - Created.
+[2006/01/20] Tsusai - Connect is now a bool function
+	Create holds connection result
+[2007/04/06] CR - Altered header for class.  Moved private fields and methods
+	into protected.  Made fields f* style, and created read only properties for
+	the original field names.  Changed method parameters to model after changes
+	made in TCommonDatabaseTemplate.
+*=============================================================================*)
+TMySQLCommonDatabase = class(TCommonDatabaseTemplate)
+protected
+
+	fConnection : TMySQLClient;
+	fParent     : TDatabase;
+
+	procedure SetAccount(
+		out
+			AnAccount   : TAccount;
+		const
+			QueryResult : TMySQLResult
 		);
-	public
 
+	function  SendQuery(
+		const
+			QString     : string;
+		const
+			StoreResult : Boolean;
+		var
+			ExecutedOK  : Boolean
+		) : TMySQLResult;
 
-		Constructor Create(
+public
+
+	Constructor Create(
+		const
 			AParent : TDatabase
-		); reintroduce; overload;
-		Destructor Destroy();override;
+		);
+	Destructor Destroy; override;
 
-		function GetAccount(ID    : LongWord) : TAccount;overload;override;
-		function GetAccount(Name  : string) : TAccount;overload;override;
+	function  GetAccount(
+		const
+			ID : LongWord
+		) : TAccount; overload; override;
 
-		procedure RefreshAccountData(var AnAccount : TAccount); override;
+	function  GetAccount(
+		const
+			Name : string
+		) : TAccount; overload; override;
 
-		procedure CreateAccount(
-			const Username : string;
-			const Password : string;
-			const GenderChar : char
+	procedure RefreshAccountData(var AnAccount : TAccount); override;
+
+	procedure CreateAccount(
+		const
+			Username : String;
+		const
+			Password : String;
+		const
+			GenderChar : Char
 		); override;
 
-		function AccountExists(UserName : String) : Boolean;override;
+	function  AccountExists(
+		const
+			UserName : String
+		) : Boolean; override;
 
-		procedure SaveAccount(AnAccount : TAccount);override;
+	procedure SaveAccount(
+		const
+			AnAccount : TAccount
+		); override;
 
 
-		function Connect(): boolean; override;
-		procedure Disconnect();override;
+	function  Connect : Boolean; override;
 
-		protected
-		function SendQuery(
-			const QString : string;
-			StoreResult : boolean;
-			var ExecutedOK : boolean
-		) : TMySQLResult;
-	end;
-//------------------------------------------------------------------------------
+	procedure Disconnect; override;
+
+	property Connection : TMySQLClient
+		read  fConnection;
+	property Parent : TDatabase
+		read  fParent;
+
+End;(* TMySQLCommonDatabase
+*== CLASS ====================================================================*)
 
 
 implementation
@@ -113,17 +180,20 @@ uses
 //
 //------------------------------------------------------------------------------
 Constructor TMySQLCommonDatabase.Create(
-	AParent : TDatabase
-);
+	const
+		AParent : TDatabase
+	);
 begin
-	inherited Create();
-	Parent := AParent;
-	Connection := TMySQLClient.Create;
+	inherited Create;
+
+	fParent     := AParent;
+	fConnection := TMySQLClient.Create;
 end;//Create
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
-//Destroy()							      DESTRUCTOR
+//Destroy                                                             DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys our connection object.
@@ -132,11 +202,11 @@ end;//Create
 //		October 5th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Destructor TMySQLCommonDatabase.Destroy();
+Destructor TMySQLCommonDatabase.Destroy;
 begin
-
 	Disconnect;
 	Connection.Free;
+
 	inherited;
 end;//Destroy
 //------------------------------------------------------------------------------
@@ -152,16 +222,16 @@ end;//Destroy
 //		January 20th, 2007 - Tsusai - Connect is now a bool function
 //
 //------------------------------------------------------------------------------
-function TMySQLCommonDatabase.Connect() : Boolean;
+function TMySQLCommonDatabase.Connect : Boolean;
 begin
-	Result := false;
+	Result := False;
 	if NOT Connection.Connected then
 	begin
-			Connection.Host            := MainProc.DatabaseOptions.CommonHost;
-			Connection.Port            := MainProc.DatabaseOptions.CommonPort;
-			Connection.Db              := MainProc.DatabaseOptions.CommonDB;
-			Connection.User            := MainProc.DatabaseOptions.CommonUser;
-			Connection.Password        := MainProc.DatabaseOptions.CommonPass;
+		Connection.Host            := MainProc.DatabaseOptions.CommonHost;
+		Connection.Port            := MainProc.DatabaseOptions.CommonPort;
+		Connection.Db              := MainProc.DatabaseOptions.CommonDB;
+		Connection.User            := MainProc.DatabaseOptions.CommonUser;
+		Connection.Password        := MainProc.DatabaseOptions.CommonPass;
 	end;
 
 	Connection.ConnectTimeout  := 10;
@@ -171,9 +241,9 @@ begin
 		Console.WriteLn('*****Could not connect to mySQL database server.');
 	end else
 	begin
-		Result := true;
+		Result := True;
 	end;
-	
+
 end;//Connect
 //------------------------------------------------------------------------------
 
@@ -189,22 +259,29 @@ end;//Connect
 //
 //------------------------------------------------------------------------------
 function TMySQLCommonDatabase.SendQuery(
-	const QString : string;
-	StoreResult : boolean;
-	var ExecutedOK : boolean
-) : TMySQLResult;
+	const
+		QString     : String;
+	const
+		StoreResult : Boolean;
+	var
+		ExecutedOK  : Boolean
+	) : TMySQLResult;
 begin
-	Result := Connection.query(QString,StoreResult,ExecutedOK);
+	Result := Connection.query(QString, StoreResult, ExecutedOK);
 	if not ExecutedOK then
 	begin
-		Console.Message('MySQL Query error: ' + QString + ' : ' + Connection.LastError, 'Common Database', MS_ERROR);
+		Console.Message(
+			'MySQL Query error: ' + QString + ' : ' + Connection.LastError,
+			'Common Database',
+			MS_ERROR
+		);
 	end;
 end;//SendQuery
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//Disconnect()							       PROCEDURE
+//Disconnect                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys the MySQL Connection.
@@ -213,11 +290,11 @@ end;//SendQuery
 //		October 5th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Procedure TMySQLCommonDatabase.Disconnect();
+Procedure TMySQLCommonDatabase.Disconnect;
 begin
 	if Connection.Connected then
 	begin
-		Connection.close;
+		Connection.Close;
 	end;
 end;//Disconnect
 //------------------------------------------------------------------------------
@@ -236,9 +313,11 @@ end;//Disconnect
 //
 //------------------------------------------------------------------------------
 procedure TMySQLCommonDatabase.SetAccount(
-	var AnAccount : TAccount;
-	var QueryResult : TMySQLResult
-);
+	out
+		AnAccount : TAccount;
+	const
+		QueryResult : TMySQLResult
+	);
 begin
 	AnAccount := TAccount.Create(Parent.ClientInfo);
 	AnAccount.ID          := StrToInt(QueryResult.FieldValue(0));
@@ -273,7 +352,10 @@ end;//SetAccount
 //		December 27th, 2006 - Tsusai - Reorganized
 //
 //------------------------------------------------------------------------------
-function TMySQLCommonDatabase.GetAccount(ID: LongWord) : TAccount;
+function TMySQLCommonDatabase.GetAccount(
+	const
+		ID: LongWord
+	) : TAccount;
 var
 	Success     : Boolean;
 	AnAccount   : TAccount;
@@ -306,7 +388,10 @@ end;//GetAccount
 //		December 27th, 2006 - Tsusai - Reorganized
 //
 //------------------------------------------------------------------------------
-function TMySQLCommonDatabase.GetAccount(Name : string) : TAccount;
+function TMySQLCommonDatabase.GetAccount(
+	const
+		Name : String
+	) : TAccount;
 var
 	Success     : Boolean;
 	AnAccount   : TAccount;
@@ -336,7 +421,10 @@ end;//GetAccount
 //		January 11th, 2007 - RaX - Created header.
 //
 //------------------------------------------------------------------------------
-function TMySQLCommonDatabase.AccountExists(UserName : String) : Boolean;
+function TMySQLCommonDatabase.AccountExists(
+	const
+		UserName : String
+	) : Boolean;
 var
 	QueryResult : TMySQLResult;
 	Success : boolean;
@@ -367,7 +455,10 @@ end;//AccountExists
 //		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
-procedure TMySQLCommonDatabase.SaveAccount(AnAccount: TAccount);
+procedure TMySQLCommonDatabase.SaveAccount(
+	const
+		AnAccount: TAccount
+	);
 const
 	BaseString =
 		'UPDATE accounts SET '+

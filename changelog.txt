@@ -15,6 +15,26 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 216 -
+[2007/04/06] CR - Overview: Cleanup - made TCommonDatabaseTemplate abstract,
+ and rigorously defined each parameter to self-document.
+[2007/04/06] CR - CommonDatabaseTemplate: Changed Header Style.  Made the class
+ entirely Abstract. All methods state explicit in/out/var/const for each 
+ parameter.  Eliminated Constructor and Destructor definitions because they are 
+ identical to TObject's -- and all derived classes have more complex 
+ constructors.
+[2007/04/06] CR - JanSQLCommonDatabase: Made all parameters var/const/in/out.
+ Create doesn't override the constructor in the template (due to changes to the
+ template model).  Parent and Database made into read-only properties, with f*
+ internal fields to store them.  Converted all private fields and methods to
+ protected.
+[2007/04/06] CR - MySQLCommonDatabase: Altered header for class.  Moved private 
+ fields and methods into protected.  Made fields f* style, and created read 
+ only properties for the original field names.  Changed method parameters to 
+ model after changes made in TCommonDatabaseTemplate.
+[2007/04/06] CR - Altered Version string/Version info.
+-
+
 - Rev 215 -
 [2007/03/31] Aeomin - Fixed account always turns to female when using MYSQL.
 
