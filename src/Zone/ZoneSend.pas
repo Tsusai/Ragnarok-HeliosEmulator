@@ -50,10 +50,11 @@ uses
 		AMessage		: String
 	);
 
-	procedure ZoneWalkingBeing(Who:TBeing;Point1,Point2:TPoint;AClient : TIdContext);
-	procedure ZoneUpdateDirection(Who:TCharacter;AClient : TIdContext);
 	procedure ZoneSendBeing(Who:TBeing;AClient : TIdContext;Logon:Boolean=False);
 	procedure ZoneDisappearBeing(Who:TBeing;AClient : TIdContext;Effect:Byte=0);
+	procedure ZoneWalkingBeing(Who:TBeing;Point1,Point2:TPoint;AClient : TIdContext);
+	procedure ZoneUpdateDirection(Who:TCharacter;AClient : TIdContext);
+	procedure ZoneSendConnectionsCount(AClient : TIdContext);
 
 	procedure Kick(const Who:TCharacter);
 	procedure KickAll;
@@ -528,6 +529,27 @@ end;
 
 
 //------------------------------------------------------------------------------
+//ZoneSendConnectionsCount                                             PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Send total online count to client
+//
+//  Changes -
+//    April 6th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure ZoneSendConnectionsCount(AClient : TIdContext);
+var
+	ReplyBuffer : TBuffer;
+begin
+	FillChar(ReplyBuffer,GetPacketLength($00C2),0);
+	WriteBufferWord(0, $00C2, ReplyBuffer);
+	WriteBufferLongWord(2, MainProc.ZoneServer.TotalOnlinePlayers, ReplyBuffer);
+	SendBuffer(AClient,ReplyBuffer,GetPacketLength($00C2));
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //Kick                                                                 PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
@@ -535,6 +557,7 @@ end;
 //
 //  Changes -
 //    March 27th, 2007 - Aeomin - Created Header
+//    April 5th, 2007 - Aeomin - Added DelayDisconnect to kill connect if still there.
 //------------------------------------------------------------------------------
 procedure Kick(const Who:TCharacter);
 var
@@ -544,6 +567,7 @@ begin
 	WriteBufferWord(0, $018B, OutBuffer);
 	WriteBufferWord(2, 0, OutBuffer);
 	SendBuffer(Who.ClientInfo,OutBuffer,GetPacketLength($018B));
+	Who.DelayDisconnect(10000);
 end;
 //------------------------------------------------------------------------------
 

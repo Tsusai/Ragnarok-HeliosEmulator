@@ -15,6 +15,23 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 217 -
+[2007/04/06] Aeomin - Changed console message related to update online count from MS_NOTICE
+  to MS_DEBUG [LoginServer.pas , CharacterServer.pas]
+[2007/04/06] Aeomin - Added Who.DelayDisconnect(10000); in Kick [ZoneSend.pas (Kick)]
+[2007/04/06] Aeomin - Added DelayDisconnectEvent.pas and DelayDisconnect in being to disconnect
+  client after time expire (Used in kick) [DelayDisconnectEvent.pas , Being.pas]
+[2007/04/06] Aeomin - Added support /w | /who in game to receive total online count
+  [ZoneRecv.pas (SlashWho) , ZoneSend.pas (ZoneSendConnectionsCount)]
+[2007/04/06] Aeomin - Added support of packet 0x2107 to set total online count [ZoneServer.pas]
+[2007/04/06] Aeomin - Added UpdateOnlineCountToZone and SendOnlineCountToZone to send
+  Total Online Count to all zones [CharacterServer.pas , ZoneCharaCommunication.pas]
+[2007/04/06] Aeomin - Added Connection: TIdContext to let character able to send packet to all
+  zone servers [ServerInfo.pas]
+[2007/04/06] Aeomin - Added packet 0x2107 in packet DB use to send total online count from
+  Char server to Zone. [packet_db.txt]
+-
+
 - Rev 216 -
 [2007/04/06] CR - Overview: Cleanup - made TCommonDatabaseTemplate abstract,
  and rigorously defined each parameter to self-document.

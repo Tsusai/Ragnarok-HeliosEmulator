@@ -84,7 +84,8 @@ type
 		Procedure   Start();
 		Procedure   Stop();
 		Procedure ConnectToLogin();
-		function GetOnlineUserCount : word;
+		function GetOnlineUserCount : Word;
+		procedure UpdateOnlineCountToZone;
 	end;
 //------------------------------------------------------------------------------
 
@@ -813,6 +814,7 @@ begin
 		ZServerInfo :=  TZoneServerInfo.Create;
 		ZServerInfo.ZoneID := ID;
 		ZServerInfo.Port := BufferReadWord(6,InBuffer);
+		ZServerInfo.Connection := AClient;
 		AClient.Data := TZoneServerLink.Create(AClient);
 		TZoneServerLink(AClient.Data).Info := ZServerInfo;
 		fZoneServerList.AddObject(ZServerInfo.ZoneID,ZServerInfo);
@@ -909,9 +911,10 @@ begin
 				if AClient.Data is TZoneServerLink then
 				begin
 					RecvBuffer(AClient,ABuffer[2],GetPacketLength($2104)-2);
-					//TZoneServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
-					//SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
-//					Console.Message('Received updated Zone Server Online Users.', 'Character Server', MS_NOTICE);
+					TZoneServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
+					SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
+					UpdateOnlineCountToZone;
+					Console.Message('Received updated Zone Server Online Users.', 'Character Server', MS_DEBUG);
 				end;
 			end;
 		$2105: // Zone Server sending decrease of online users by 1
@@ -921,7 +924,8 @@ begin
 					TZoneServerLink(AClient.Data).Info.OnlineUsers :=
 					Min(TZoneServerLink(AClient.Data).Info.OnlineUsers +1, High(Word));
 					SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
-//					Console.Message('Received updated Zone Server Online Users.', 'Character Server', MS_NOTICE);
+					UpdateOnlineCountToZone;
+					Console.Message('Received updated Zone Server Online Users (+1).', 'Character Server', MS_DEBUG);
 				end;
 			end;
 		$2106: // Zone Server sending decrease of online users by 1
@@ -931,7 +935,8 @@ begin
 					TZoneServerLink(AClient.Data).Info.OnlineUsers :=
 					Max(TZoneServerLink(AClient.Data).Info.OnlineUsers -1, 0);
 					SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
-//					Console.Message('Received updated Zone Server Online Users.', 'Character Server', MS_NOTICE);
+					UpdateOnlineCountToZone;
+					Console.Message('Received updated Zone Server Online Users (-1).', 'Character Server', MS_DEBUG);
 				end;
 			end;
 		else
@@ -1049,7 +1054,18 @@ begin
 end;{OnDisconnect}
 //------------------------------------------------------------------------------
 
-function TCharacterServer.GetOnlineUserCount : word;
+
+//------------------------------------------------------------------------------
+//GetOnlineUserCount()                                                 Procedure
+//------------------------------------------------------------------------------
+//	What it does-
+//		  Count total online players
+//
+//	Changes -
+//		March 31th, 2007 - Aeomin - Added header.
+//
+//------------------------------------------------------------------------------
+function TCharacterServer.GetOnlineUserCount : Word;
 var
 	Index : integer;
 begin
@@ -1059,5 +1075,30 @@ begin
 		Inc(Result,TZoneServerInfo(fZoneServerList.Objects[Index]).OnlineUsers);
 	end;
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//UpdateOnlineCountToZone()                                            Procedure
+//------------------------------------------------------------------------------
+//	What it does-
+//		  Send new online count to every zone server
+//
+//	Changes -
+//		April 5th, 2007 - Aeomin - Added header.
+//
+//------------------------------------------------------------------------------
+procedure TCharacterServer.UpdateOnlineCountToZone;
+var
+	Count : Word;
+	Index : Integer;
+begin
+	Count := GetOnlineUserCount;
+	for Index := fZoneServerList.Count - 1 downto 0 do
+	begin
+	SendOnlineCountToZone(TZoneServerInfo(fZoneServerList.Objects[Index]).Connection, Count);
+	end;
+end;
+//------------------------------------------------------------------------------
 
 end.

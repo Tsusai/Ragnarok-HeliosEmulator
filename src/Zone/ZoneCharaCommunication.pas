@@ -32,13 +32,17 @@ uses
 		AClient : TInterClient;
 		ZoneServer : TZoneServer
 	);
+	procedure SendOnlineCountToZone(
+		AClient : TIdContext;
+		Count : Word
+	);
 
 implementation
 uses
 	BufferIO,
 	Globals,
 	PacketTypes,
-	TCPServerRoutines;
+	TCPServerRoutines,sysutils;
 
 //------------------------------------------------------------------------------
 //ValidateWithCharaServer                                             PROCEDURE
@@ -183,5 +187,16 @@ uses
 		WriteBufferWord(0,$2106,OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2106));
 	end;
-
+	
+	procedure SendOnlineCountToZone(
+		AClient : TIdContext;
+		Count : Word
+	);
+	var
+		OutBuffer : TBuffer;
+	begin
+		WriteBufferWord(0,$2107,OutBuffer);
+		WriteBufferWord(2,Count,OutBuffer);
+		SendBuffer(AClient,OutBuffer,GetPacketLength($2107));
+	end;
 end.

@@ -135,6 +135,8 @@ TBeing = class
 		procedure CalcMaxSP; virtual;
 		procedure CalcSpeed; virtual;
 
+		procedure DelayDisconnect(ExpireTime:Integer);
+
 		procedure ShowBeingWalking;
 		procedure ShowTeleportIn;
 		procedure ShowTeleportOut;
@@ -159,6 +161,7 @@ uses
 	Event,
 	Main,
 	MovementEvent,
+	DelayDisconnectEvent,
 	ZoneSend
 	{Third Party}
 	//none
@@ -320,6 +323,26 @@ begin
 	end;
 
 end;//Walk
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//DelayDisconnect                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Disconnect after time expire
+//
+//  Changes -
+//    April 6h, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure TBeing.DelayDisconnect(ExpireTime:Integer);
+var
+	ADelayEvent:	TDelayDisconnectEvent;
+begin
+		ADelayEvent := TDelayDisconnectEvent.Create(ExpireTime,Self);
+		ADelayEvent.ExpiryTime := ExpireTime;
+		Self.EventList.Add(ADelayEvent);
+end;
 //------------------------------------------------------------------------------
 
 

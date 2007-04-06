@@ -130,6 +130,12 @@ uses
 		const
 			ReadPts : TReadPts
 	);
+	procedure SlashWho(
+			ACharacter  : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
 
 
 implementation
@@ -644,6 +650,26 @@ begin
 	ACharacter.Direction:=BufferReadByte(ReadPts[1], InBuffer);
 	ACharacter.UpdateDirection;
 end;{CharaRotation}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//SlashWho							       PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Check how many player(s) were online.
+//
+//  Changes -
+//    April 5th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure SlashWho(
+			ACharacter  : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
+begin
+	ZoneSendConnectionsCount(ACharacter.ClientInfo);
+end;
 //------------------------------------------------------------------------------
 
 

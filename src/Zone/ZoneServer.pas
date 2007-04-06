@@ -78,6 +78,7 @@ type
 		Commands			: TGMCommands;
 
 		OnlineUsers   : Word;
+		TotalOnlinePlayers: Word;
 
 		Options       : TZoneOptions;
 
@@ -364,7 +365,7 @@ begin
     //deactivate server and clients.
 	  DeActivateServer('Zone', TCPServer);
 	  DeActivateClient(ToCharaTCPClient);
-	  //DeActivateClient(ToInterTCPClient);
+	  DeActivateClient(ToInterTCPClient);
 
 		//Clear Lists
 		MapList.Clear;
@@ -704,6 +705,7 @@ end;//CharaClientOnConnect
 //	Changes -
 //		January 17th, 2007 - RaX - Created Header.
 //		January 14th, 2007 - Tsusai - Added
+//		April 5th, 2007 - Aeomin - Add support of $2107 to set total online count
 //
 //------------------------------------------------------------------------------
 procedure TZoneServer.CharaClientRead(AClient : TInterClient);
@@ -737,6 +739,11 @@ begin
 				Console.Message('Stopping...', 'Zone Server', MS_NOTICE);
 				Stop;
 			end;
+		end;
+	$2107:
+		begin
+			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2107)-2);
+			TotalOnlinePlayers := BufferReadWord(2,ABuffer);
 		end;
 	end;
 end;{CharaClientRead}

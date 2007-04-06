@@ -614,7 +614,7 @@ end;{OnException}
 				begin
 					RecvBuffer(AClient,Buffer[2],GetPacketLength($2004)-2);
 					TCharaServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,Buffer);
-					Console.Message('Received updated Character Server Online Users.', 'Login Server', MS_NOTICE);
+					Console.Message('Received updated Character Server Online Users.', 'Login Server', MS_DEBUG);
 				end;
 			end;
 		else

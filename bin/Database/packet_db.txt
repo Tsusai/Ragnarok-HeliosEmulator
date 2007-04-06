@@ -20,6 +20,7 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x2104,4
 0x2105,2
 0x2106,2
+0x2107,4
 
 //Inter <-> Zone
 0x2200,24
@@ -33,7 +34,7 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x2206,-1
 
 //RO PACKETS
-//packet_db.txt “¯‚¶”Ô†‚ÌƒpƒPƒbƒg‚ÍŒã‚Ì‚Åã‘‚«‚³‚ê‚é‚Ì‚Å•ÏX‚Ì‚ ‚Á‚½ƒpƒPƒbƒg‚Íˆê”Ô‰º‚É’Ç‰Á‚·‚ê‚Î‚æ‚¢‚Å‚·
+//packet_db.txt “¯‚¶”Ô†‚ÌƒpƒPƒbƒg‚ÍŒã‚Ì‚Åã‘‚«‚³‚ê‚é‚Ì‚Å•ÏX‚Ì?‚Á‚½ƒpƒPƒbƒg‚Íˆê”Ô‰º‚É’Ç‰Á‚·‚ê‚Î‚æ‚¢‚Å‚·
 //ŒÃ‚¢ƒpƒPƒbƒg‚Åg‚¢‚½‚¢ê‡‚ÍV‚µ‚¢’è‹`‚ğíœ‚·‚é‚©ƒRƒƒ“ƒgƒAƒEƒg‚·‚ê‚Î‚æ‚¢‚Å‚·
 0x0064,55
 0x0065,17
@@ -606,6 +607,7 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x0085,12,changedir,7:11
 0x007e,120,useskilltopos,5:15:29:38:40
 0x0094,23,movetokafra,5:19
+0x00f3,-1,globalmessage,2:4
 0x00f7,26,movefromkafra,11:22
 0x0190,18,actionrequest,7:17
 

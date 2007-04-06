@@ -1,7 +1,8 @@
 unit ServerInfo;
 
 interface
-
+uses
+	IdContext;
 type
 	TServerInfo = class
 	protected
@@ -18,6 +19,7 @@ type
 
 	public
 		Port    : Word;
+		Connection: TIdContext;
 
 	published
 		property WAN       : String   read fWAN write SetWANLongWord;
