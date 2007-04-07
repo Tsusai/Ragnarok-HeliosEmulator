@@ -1,123 +1,128 @@
-//------------------------------------------------------------------------------
-//Database			                                                           UNIT
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is the parent class of our other database objects, it also includes
-//    a function for choosing which database we're using based on a
-//    configuration variable. It contains all database interface routines.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
+(*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+Unit
+StaticDatabaseTemplate
+
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+[2006/09/29] Helios - RaX
+
+================================================================================
+License:  (FreeBSD, plus commercial with written permission clause.)
+================================================================================
+
+Project Helios - Copyright (c) 2005-2007
+
+All rights reserved.
+
+Please refer to Helios.dpr for full license terms.
+
+================================================================================
+Overview:
+================================================================================
+
+Houses an abstract class, TStaticDatabaseTemplate, that defines all the calls
+that are made to each specifically implemented database (JanSQL, MySQL, MSSQL,
+etc., etc.)
+
+================================================================================
+Revisions:
+================================================================================
+(Format: [yyyy/mm/dd] <Author> - <Desc of Changes>)
+[2006/09/29] RaX - Created
+[2007/04/07] CR - Altered header.  Made unit description accurate and focussed.
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*)
 unit StaticDatabaseTemplate;
 
+
 interface
+
+
 uses
+	{RTL/VCL}
+	Classes,
+	{Project}
 	Character,
-  MapTypes,
-  Classes;
-type
-//------------------------------------------------------------------------------
-//TStaticDatabaseTemplate			                                                           CLASS
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is our parent class for database interfacing. Contains all database
-//    routines.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		January 20th, 2007 - Tsusai - Connect is now a bool function
-//			Create holds connection result
-//
-//------------------------------------------------------------------------------
-	TStaticDatabaseTemplate = class(TObject)
-	public
-		Constructor Create(); virtual;
-		Destructor Destroy();override;
+	MapTypes
+	{Third Party}
+	//none
+	;
 
-		Function GetBaseMaxHP(ACharacter : TCharacter) : Word;virtual;
-		Function GetBaseMaxSP(ACharacter : TCharacter) : Word;virtual;
-		Function GetBaseMaxWeight(ACharacter : TCharacter) : LongWord;virtual;
 
-		Function GetMapCannotSave(MapName : String) : Boolean;virtual;
-		Function GetMapZoneID(MapName : String) : Integer;virtual;
-    Function GetMapFlags(MapName : String) : TFlags;virtual;
-		Function GetMapsForZone(ZoneID : LongWord)  : TStringList;virtual;
+Type
+(*= CLASS =====================================================================*
+TStaticDatabaseTemplate
 
-		function Connect() : boolean; virtual;
-		procedure Disconnect();virtual;
-	end;
-//------------------------------------------------------------------------------
+[2007/04/07] ChrstphrR
+
+*------------------------------------------------------------------------------*
+Overview:
+*------------------------------------------------------------------------------*
+
+	Abstract parent class for Static databases.  Defines the interface for all
+	methods that the children will implement.
+
+*------------------------------------------------------------------------------*
+Revisions:
+*------------------------------------------------------------------------------*
+(Format: [yyyy/mm/dd] <Author> - <Description of Change>)
+[2006/09/29] RaX - Created.
+[2007/01/20] Tsusai - Connect is now a bool function
+	Create holds connection result
+[2007/04/07] CR - Altered header.  Made all methods abstract.  All parameters
+	are strictly defined as in/out/var/const to self document and make string
+	parameters more efficient when the methods are called.
+*=============================================================================*)
+TStaticDatabaseTemplate = class(TObject)
+protected
+	//none
+
+public
+
+	Function  GetBaseMaxHP(
+		const
+			ACharacter : TCharacter
+		) : Word; virtual; abstract;
+
+	Function  GetBaseMaxSP(
+		const
+			ACharacter : TCharacter
+		) : Word; virtual; abstract;
+
+	Function  GetBaseMaxWeight(
+		const
+			ACharacter : TCharacter
+		) : LongWord; virtual; abstract;
+
+	Function  GetMapCannotSave(
+		const
+			MapName : String
+		) : Boolean; virtual; abstract;
+
+	Function  GetMapZoneID(
+		const
+			MapName : String
+		) : Integer; virtual; abstract;
+
+	Function  GetMapFlags(
+		const
+			MapName : String
+		) : TFlags; virtual; abstract;
+
+	Function  GetMapsForZone(
+		const
+			ZoneID : LongWord
+		) : TStringList; virtual; abstract;
+
+	function  Connect : Boolean; virtual; abstract;
+
+	procedure Disconnect; virtual; abstract;
+
+End;(* TStaticDatabaseTemplate
+*== CLASS ====================================================================*)
 
 
 implementation
 
-//------------------------------------------------------------------------------
-//TDatabase	routines                                             Routine stubs
-//------------------------------------------------------------------------------
-//	What it does-
-//			These are simple placeholders for routines which will override these.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-Constructor TStaticDatabaseTemplate.Create();
-begin
-	inherited Create;
-end;
 
-Destructor TStaticDatabaseTemplate.Destroy();
-begin
-	inherited;
-end;
-
-function TStaticDatabaseTemplate.Connect() : boolean;
-begin
-	Result := false;
-end;
-
-procedure TStaticDatabaseTemplate.Disconnect();
-begin
-end;
-
-Function TStaticDatabaseTemplate.GetBaseMaxHP(ACharacter : TCharacter) : Word;
-begin
-	Result := 0;
-end;
-
-Function TStaticDatabaseTemplate.GetBaseMaxSP(ACharacter : TCharacter) : Word;
-begin
-	Result := 0;
-end;
-
-Function TStaticDatabaseTemplate.GetBaseMaxWeight(ACharacter : TCharacter) : LongWord;
-begin
-	Result := 0;
-end;
-
-Function TStaticDatabaseTemplate.GetMapCannotSave(MapName : String) : Boolean;
-begin
-	Result := FALSE;
-end;
-
-Function TStaticDatabaseTemplate.GetMapZoneID(MapName : String) : Integer;
-begin
-	Result := 0;
-end;
-
-Function TStaticDatabaseTemplate.GetMapFlags(MapName : String) : TFlags;
-var
-  Flags : TFlags;
-begin
-  Result := Flags;
-end;
-
-Function TStaticDatabaseTemplate.GetMapsForZone(ZoneID : LongWord)  : TStringList;
-begin
-  Result := TStringList.Create;
-end;
-//------------------------------------------------------------------------------
-{END TStaticDatabaseTemplate}
 end.

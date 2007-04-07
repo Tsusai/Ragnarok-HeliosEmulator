@@ -15,6 +15,21 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 220 -
+[2007/04/07] CR - Overview: Cleanup - Static Database - Template and implemented
+ units for Jan and MySQL synched up.
+[2007/04/07] CR - StaticDatabaseTemplate: Altered header.  Made all methods 
+ abstract.  All parameters are strictly defined as in/out/var/const to self 
+ document and make string parameters more efficient when the methods are called.
+[2007/04/07] CR - JanSQLStaticDatabase: Altered header, improved description.
+ Private fields made protected, and into public read-only properties.
+ Parameter changes made to follow the changes made in the ancestor class.
+[2007/04/07] CR - MySQLStaticDatabase: Altered header, improved description.
+ Private fields made protected, and into public read-only properties.
+ Parameter changes made to follow the changes made in the ancestor class.
+[2007/04/07] CR - Version: Updated Version string/version info.
+-
+
 - Rev 219 -
 [2007/04/06] CR - Overview: Cleanup - Game Database - Template and implemented
   units for Jan and MySQL synched up.

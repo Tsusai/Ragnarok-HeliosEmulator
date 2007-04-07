@@ -11,58 +11,114 @@
 //------------------------------------------------------------------------------
 unit JanSQLStaticDatabase;
 
+
 interface
+
+
 uses
-	StaticDatabaseTemplate,
+	{RTL/VCL}
+	Classes,
+	{Project}
 	Character,
-	janSQL,
-  Database,
-  MapTypes,
-  Classes;
+	Database,
+	MapTypes,
+	StaticDatabaseTemplate,
+	{Third Party}
+	janSQL
+	;
 
-//------------------------------------------------------------------------------
-//TJanSQLStaticDatabase			                                                           CLASS
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is a child class for our database object system. It allows Helios
-//    to communicate with a TEXT database and houses all routines for doing so.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		January 20th, 2007 - Tsusai - Connect is now a bool function
-//			Create holds connection result
-//
-//------------------------------------------------------------------------------
-type
-	TJanSQLStaticDatabase = class(TStaticDatabaseTemplate)
-	private
-		Database : TjanSQL;
-    Parent  : TDatabase;
-	public
 
-		Constructor Create(
-			AParent : TDatabase
-		); reintroduce; overload;
-		Destructor Destroy();override;
+Type
+(*= CLASS =====================================================================*
+TJanSQLStaticDatabase
 
-		Function GetBaseMaxHP(ACharacter : TCharacter) : Word;override;
-		Function GetBaseMaxSP(ACharacter : TCharacter) : Word;override;
-    Function GetBaseMaxWeight(ACharacter : TCharacter) : LongWord;override;
+[2006/09/29] RaX
 
-		Function GetMapCannotSave(MapName : String) : Boolean;override;
-		Function GetMapZoneID(MapName : String): Integer; override;
-    Function GetMapFlags(MapName : String) : TFlags; override;
-    Function GetMapsForZone(ID : LongWord) : TStringList; override;
+*------------------------------------------------------------------------------*
+Overview:
+*------------------------------------------------------------------------------*
 
-		function Connect() : boolean; override;
-		procedure Disconnect; override;
-		
-	protected
-		function SendQuery(
-			const QString : string
+	This child class descends from an abstract class defining all the public
+methods.  TJanSQLStaticDatabase manipulates a TEXT database which will house
+Static (Base and Mob stats) databases.
+
+*------------------------------------------------------------------------------*
+Revisions:
+*------------------------------------------------------------------------------*
+(Format: [yyyy/mm/dd] <Author> - <Description of Change>)
+[2006/09/29] RaX - Created.
+[2007/01/20] Tsusai - Connect is now a bool function
+	Create holds connection result
+[2007/04/07] CR - Altered header, improved description.  Private fields made
+	protected, and into public read-only properties.  Parameter changes made to
+	follow the changes made in the ancestor class.
+*=============================================================================*)
+TJanSQLStaticDatabase = class(TStaticDatabaseTemplate)
+protected
+	fDatabase : TjanSQL;
+	fParent   : TDatabase;
+
+	function  SendQuery(
+		const
+			QString : String
 		) : Integer;
-	end;
-//------------------------------------------------------------------------------
+
+public
+
+	Constructor Create(
+		const
+			AParent : TDatabase
+		);
+
+	Destructor Destroy; override;
+
+	Function  GetBaseMaxHP(
+		const
+			ACharacter : TCharacter
+		) : Word; override;
+
+	Function  GetBaseMaxSP(
+		const
+			ACharacter : TCharacter
+		) : Word; override;
+
+	Function  GetBaseMaxWeight(
+		const
+			ACharacter : TCharacter
+		) : LongWord; override;
+
+	Function  GetMapCannotSave(
+		const
+			MapName : String
+		) : Boolean; override;
+
+	Function  GetMapZoneID(
+		const
+			MapName : String
+		): Integer; override;
+
+	Function  GetMapFlags(
+		const
+			MapName : String
+		) : TFlags; override;
+
+	Function  GetMapsForZone(
+		const
+			ID : LongWord
+		) : TStringList; override;
+
+	function  Connect : Boolean; override;
+
+	procedure Disconnect; override;
+
+	property Database : TjanSQL
+		read  fDatabase;
+	property Parent : TDatabase
+		read  fParent;
+
+End;(* TJanSQLStaticDatabase
+*== CLASS ====================================================================*)
+
 
 implementation
 	uses
@@ -84,12 +140,13 @@ implementation
 //
 //------------------------------------------------------------------------------
 Constructor TJanSQLStaticDatabase.Create(
-	AParent : TDatabase
-);
+	const
+		AParent : TDatabase
+	);
 begin
 	inherited Create;
-	Parent := AParent;
-	Database := TJanSQL.Create;
+	fParent := AParent;
+	fDatabase := TJanSQL.Create;
 end;
 //------------------------------------------------------------------------------
 
@@ -211,10 +268,13 @@ end;//SendQuery
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TJanSQLStaticDatabase.GetBaseMaxHP(ACharacter : TCharacter) : Word;
+Function TJanSQLStaticDatabase.GetBaseMaxHP(
+	const
+		ACharacter : TCharacter
+	) : Word;
 var
 	QueryResult : TJanRecordSet;
-  ResultIdentifier : Integer;
+	ResultIdentifier : Integer;
 begin
 	ResultIdentifier :=
 		SendQuery(
@@ -241,7 +301,10 @@ end;//GetBaseHP
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TJanSQLStaticDatabase.GetBaseMaxSP(ACharacter : TCharacter) : Word;
+Function TJanSQLStaticDatabase.GetBaseMaxSP(
+	const
+		ACharacter : TCharacter
+	) : Word;
 var
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
@@ -271,7 +334,10 @@ end;//GetBaseSP
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TJanSQLStaticDatabase.GetBaseMaxWeight(ACharacter : TCharacter) : LongWord;
+Function TJanSQLStaticDatabase.GetBaseMaxWeight(
+	const
+		ACharacter : TCharacter
+	) : LongWord;
 var
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
@@ -298,7 +364,10 @@ end;//GetBaseSP
 //		January 10th, 2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TJanSQLStaticDatabase.GetMapCannotSave(MapName : String) : Boolean;
+Function TJanSQLStaticDatabase.GetMapCannotSave(
+	const
+		MapName : String
+	) : Boolean;
 var
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
@@ -333,7 +402,10 @@ end;//GetMapCanSave
 //		January 10th, 2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TJanSQLStaticDatabase.GetMapZoneID(MapName : String) : Integer;
+Function TJanSQLStaticDatabase.GetMapZoneID(
+	const
+		MapName : String
+	) : Integer;
 var
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
@@ -366,7 +438,10 @@ end;//GetMapZoneID
 //		January 22nd, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Function TJanSQLStaticDatabase.GetMapFlags(MapName : String) : TFlags;
+Function TJanSQLStaticDatabase.GetMapFlags(
+	const
+		MapName : String
+	) : TFlags;
 var
 	QueryResult : TJanRecordSet;
 	ResultIdentifier : Integer;
@@ -434,29 +509,35 @@ end;//GetMapFlags
 //		January 22nd, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Function TJanSQLStaticDatabase.GetMapsForZone(ID : LongWord) : TStringList;
+Function TJanSQLStaticDatabase.GetMapsForZone(
+	const
+		ID : LongWord
+	) : TStringList;
 var
 	QueryResult      : TJanRecordSet;
 	ResultIdentifier : Integer;
-  Index            : Integer;
+	Index            : Integer;
 begin
-  Result := TStringList.Create;
+	Result := TStringList.Create;
 	ResultIdentifier :=
 		SendQuery(
 		Format('SELECT mapname FROM maps WHERE zoneid = %d',
 			[ID]));
-	if ResultIdentifier > 0 then
+	if (ResultIdentifier > 0) then
 	begin
 		QueryResult := Database.RecordSets[ResultIdentifier];
 		if (QueryResult.RecordCount > 0) then
 		begin
-      for Index := 0 to QueryResult.RecordCount-1 do
-      begin
-        Result.Add(QueryResult.Records[Index].fields[0].Value);
-      end;
+			for Index := 0 to (QueryResult.recordcount - 1) do
+			begin
+				Result.Add(QueryResult.Records[Index].fields[0].Value);
+			end;
 		end;
 		SendQuery('RELEASE TABLE maps');
-		if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+		if (ResultIdentifier > 0) then
+		begin
+			Database.ReleaseRecordset(ResultIdentifier);
+		end;
 	end;
 end;//GetMapsForZone
 //------------------------------------------------------------------------------

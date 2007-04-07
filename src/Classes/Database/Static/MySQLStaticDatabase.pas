@@ -1,80 +1,170 @@
-//------------------------------------------------------------------------------
-//MySQLStaticDatabase		                                                        UNIT
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is one of our database objects which enabled Helios to use a MySQL
-//    Database.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
+(*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+Unit
+MySQLStaticDatabase
+
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+[2006/09/29] Helios - RaX
+
+================================================================================
+License:  (FreeBSD, plus commercial with written permission clause.)
+================================================================================
+
+Project Helios - Copyright (c) 2005-2007
+
+All rights reserved.
+
+Please refer to Helios.dpr for full license terms.
+
+================================================================================
+Overview:
+================================================================================
+
+	Helios uses this unit to manipulate MySQL for access to the static (Base and
+	Mob stats) Database.
+
+================================================================================
+Revisions:
+================================================================================
+(Format: [yyyy/mm/dd] <Author> - <Desc of Changes>)
+[2006/09/29] RaX - Created Unit
+[2007/04/07] CR - Altered header, improved description.  Changes to
+	TMySQLStaticDatabase to follow its template's changes.
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*)
+
+
 unit MySQLStaticDatabase;
 
+
 interface
+
+
 uses
-	StaticDatabaseTemplate,
+	{RTL/VCL}
+	Classes,
+	{Project}
 	Character,
-	uMysqlClient,
-  Database,
-  MapTypes,
-  Classes;
+	Database,
+	MapTypes,
+	StaticDatabaseTemplate,
+	{Third Party}
+	uMysqlClient
+	;
+
+
 type
-//------------------------------------------------------------------------------
-//TMySQLStaticDatabase			                                                           CLASS
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is a child class for our database object system. It allows Helios
-//    to communicate with a MySQL database and houses all routines for doing so.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		January 20th, 2007 - Tsusai - Connect is now a bool function
-//			Create holds connection result
-//
-//------------------------------------------------------------------------------
-	TMySQLStaticDatabase = class(TStaticDatabaseTemplate)
-	private
-		Connection   : TMySQLClient;
-    Parent : TDatabase;
-	public
+(*= CLASS =====================================================================*
+TMySQLStaticDatabase
 
+[2006/09/29] ChrstphrR
 
-		Constructor Create(
+*------------------------------------------------------------------------------*
+Overview:
+*------------------------------------------------------------------------------*
+
+	This child class descends from an abstract class defining all the public
+methods.  TMySQLStaticDatabase manipulates a MySQL database which will house
+Static (Base and Mob stats) databases.
+
+*------------------------------------------------------------------------------*
+Revisions:
+*------------------------------------------------------------------------------*
+(Format: [yyyy/mm/dd] <Author> - <Description of Change>)
+[2006/09/29] RaX - Created.
+[2007/01/20] Tsusai - Connect is now a bool function
+	Create holds connection result
+[2007/04/07] CR - Altered header, improved description.  Private fields made
+	protected, and into public read-only properties.  Parameter changes made to
+	follow the changes made in the ancestor class.
+*=============================================================================*)
+TMySQLStaticDatabase = class(TStaticDatabaseTemplate)
+protected
+	fConnection : TMySQLClient;
+	fParent     : TDatabase;
+
+	function SendQuery(
+		const
+			QString     : String;
+		const
+			StoreResult : Boolean;
+		var
+			ExecutedOK  : Boolean
+	) : TMySQLResult;
+
+public
+
+	Constructor Create(
+		const
 			AParent : TDatabase
-		); reintroduce; overload;
-		Destructor Destroy();override;
+		);
 
-		Function GetBaseMaxHP(ACharacter : TCharacter) : Word;override;
-		Function GetBaseMaxSP(ACharacter : TCharacter) : Word;override;
-    Function GetBaseMaxWeight(ACharacter : TCharacter) : LongWord;override;
+	Destructor Destroy; override;
 
-		Function GetMapCannotSave(MapName : String) : Boolean;override;
-		Function GetMapZoneID(MapName : String) : Integer;override;
-    Function GetMapFlags(MapName : String) : TFlags; override;
-    Function GetMapsForZone(ID : LongWord) : TStringList; override;
+	Function  GetBaseMaxHP(
+		const
+			ACharacter : TCharacter
+		) : Word; override;
 
-		function Connect() : boolean; override;
-		procedure Disconnect();override;
+	Function  GetBaseMaxSP(
+		const
+			ACharacter : TCharacter
+		) : Word;override;
 
-	protected
-		function SendQuery(
-			const QString : string;
-			StoreResult : boolean;
-			var ExecutedOK : boolean
-		) : TMySQLResult;
+	Function  GetBaseMaxWeight(
+		const
+			ACharacter : TCharacter
+		) : LongWord; override;
 
-	end;
-//------------------------------------------------------------------------------
+	Function  GetMapCannotSave(
+		const
+			MapName : String
+		) : Boolean; override;
+
+	Function  GetMapZoneID(
+		const
+			MapName : String
+		) : Integer; override;
+
+	Function  GetMapFlags(
+		const
+			MapName : String
+		) : TFlags; override;
+
+	Function  GetMapsForZone(
+		const
+			ID : LongWord
+		) : TStringList; override;
+
+	function  Connect : Boolean; override;
+
+	procedure Disconnect;override;
+
+	property Connection : TMySQLClient
+		read  fConnection;
+	property Parent : TDatabase
+		read  fParent;
+
+End;(* TMySQLStaticDatabase
+*== CLASS ====================================================================*)
+
 
 implementation
-	uses
-		Globals,
-		SysUtils,
-		Main;
+
+
+uses
+	{RTL/VCL}
+	SysUtils,
+	{Project}
+	Globals,
+	Main
+	{ThirdParty}
+	//none
+	;
+
 
 //------------------------------------------------------------------------------
-//TMySQLStaticDatabase.Create()                                          CONSTRUCTOR
+//TMySQLStaticDatabase.Create()                                      CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes our connection object.
@@ -86,17 +176,18 @@ implementation
 //
 //------------------------------------------------------------------------------
 Constructor TMySQLStaticDatabase.Create(
-	AParent : TDatabase
-);
+	const
+		AParent : TDatabase
+	);
 begin
 	inherited Create();
-	Parent := AParent;
-	Connection := TMySQLClient.Create;
+	fParent := AParent;
+	fConnection := TMySQLClient.Create;
 end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TMySQLStaticDatabase.Destroy()                                          DESTRUCTOR
+//TMySQLStaticDatabase.Destroy()                                      DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys our connection object.
@@ -108,13 +199,13 @@ end;
 Destructor TMySQLStaticDatabase.Destroy();
 begin
 	Disconnect;
-  Connection.Free;
+	Connection.Free;
 	inherited;
 end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TMySQLStaticDatabase.Connect()                                            Procedure
+//TMySQLStaticDatabase.Connect()                                       Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Initializes the MySQL Connection.
@@ -159,9 +250,12 @@ end;
 //
 //------------------------------------------------------------------------------
 function TMySQLStaticDatabase.SendQuery(
-	const QString : string;
-	StoreResult : boolean;
-	var ExecutedOK : boolean
+	const
+		QString     : String;
+	const
+		StoreResult : Boolean;
+	var
+		ExecutedOK  : Boolean
 ) : TMySQLResult;
 begin
 	Result := Connection.query(QString,StoreResult,ExecutedOK);
@@ -172,7 +266,7 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-//TMySQLStaticDatabase.Disconnect()                                         Procedure
+//TMySQLStaticDatabase.Disconnect                                      Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Destroys the MySQL Connection.
@@ -181,7 +275,7 @@ end;
 //		October 5th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Procedure TMySQLStaticDatabase.Disconnect();
+Procedure TMySQLStaticDatabase.Disconnect;
 begin
 	if Connection.Connected then
 	begin
@@ -192,7 +286,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLStaticDatabase.GetBaseMaxHP()                                          FUNCTION
+//TMySQLStaticDatabase.GetBaseMaxHP()                                   FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Gets a characters Maximum hp before modifiers.
@@ -201,7 +295,10 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TMySQLStaticDatabase.GetBaseMaxHP(ACharacter : TCharacter) : Word;
+Function TMySQLStaticDatabase.GetBaseMaxHP(
+	const
+		ACharacter : TCharacter
+	) : Word;
 var
 	Success     : Boolean;
 	QueryResult : TMySQLResult;
@@ -221,7 +318,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//TMySQLStaticDatabase.GetBaseMaxSP()                                          FUNCTION
+//TMySQLStaticDatabase.GetBaseMaxSP()                                   FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Gets a characters maximum sp before modifiers.
@@ -230,7 +327,10 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TMySQLStaticDatabase.GetBaseMaxSP(ACharacter : TCharacter) : Word;
+Function TMySQLStaticDatabase.GetBaseMaxSP(
+	const
+		ACharacter : TCharacter
+	) : Word;
 var
 	Success     : Boolean;
 	QueryResult : TMySQLResult;
@@ -259,7 +359,10 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TMySQLStaticDatabase.GetBaseMaxWeight(ACharacter : TCharacter) : LongWord;
+Function TMySQLStaticDatabase.GetBaseMaxWeight(
+	const
+		ACharacter : TCharacter
+	) : LongWord;
 var
 	Success     : Boolean;
 	QueryResult : TMySQLResult;
@@ -289,7 +392,10 @@ end;
 //		January 10th, 2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Function TMySQLStaticDatabase.GetMapCannotSave(MapName : String) : Boolean;
+Function TMySQLStaticDatabase.GetMapCannotSave(
+	const
+		MapName : String
+	) : Boolean;
 var
 	QueryResult : TMySQLResult;
 	Success			: Boolean;
@@ -318,7 +424,10 @@ end;//GetMapCanSave
 //		January 16th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-function TMySQLStaticDatabase.GetMapZoneID(MapName : String) : Integer;
+function TMySQLStaticDatabase.GetMapZoneID(
+	const
+		MapName : String
+	) : Integer;
 var
 	QueryResult : TMySQLResult;
 	Success			: Boolean;
@@ -348,7 +457,10 @@ end;//GetMapZoneID
 //		January 22nd, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Function TMySQLStaticDatabase.GetMapFlags(MapName : String) : TFlags;
+Function TMySQLStaticDatabase.GetMapFlags(
+	const
+		MapName : String
+	) : TFlags;
 var
 	QueryResult : TMySQLResult;
   Weather : Integer;
@@ -410,7 +522,10 @@ end;//GetMapZoneID
 //		January 22nd, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Function TMySQLStaticDatabase.GetMapsForZone(ID : LongWord) : TStringList;
+Function TMySQLStaticDatabase.GetMapsForZone(
+	const
+		ID : LongWord
+	) : TStringList;
 var
 	QueryResult : TMySQLResult;
   Index       : Integer;
