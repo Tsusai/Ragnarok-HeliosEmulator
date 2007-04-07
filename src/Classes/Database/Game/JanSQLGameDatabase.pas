@@ -1,15 +1,39 @@
-//------------------------------------------------------------------------------
-//JanSQLGameDatabase	                                                    UNIT
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is one of our database objects which enabled Helios to use a TEXT
-//    Database.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
-//
-//------------------------------------------------------------------------------
+(*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+Unit
+JanSQLGameDatabase
+
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+[2006/09/29] Helios - RaX
+
+================================================================================
+License:  (FreeBSD, plus commercial with written permission clause.)
+================================================================================
+
+Project Helios - Copyright (c) 2005-2007
+
+All rights reserved.
+
+Please refer to Helios.dpr for full license terms.
+
+================================================================================
+Overview:
+================================================================================
+
+	This unit enables Helios to use TEXT files for the Game (Character) Database.
+
+================================================================================
+Revisions:
+================================================================================
+(Format: [yyyy/mm/dd] <Author> - <Desc of Changes>)
+[2006/09/29] RaX - Created Unit.
+[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
+[2007/04/06] CR - Altered header.  Improved description/purpose of unit.
+	Changes to TJanSQLGameDatabase.
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*)
+
+
 unit JanSQLGameDatabase;
 
 
@@ -29,65 +53,107 @@ uses
 	;
 
 
-//------------------------------------------------------------------------------
-//TJanSQLGameDatabase			                                   CLASS
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is a child class for our database object system. It allows Helios
-//    to communicate with a TEXT database and houses all routines for doing so.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		January 20th, 2007 - Tsusai - Connect is now a bool function
-//			Create holds connection result
-//
-//------------------------------------------------------------------------------
-type
-	TJanSQLGameDatabase = class(TGameDatabaseTemplate)
-	private
-		Database : TjanSQL;
-		Parent  : TDatabase;
-	public
+(*= CLASS =====================================================================*
+TJanSQLGameDatabase
 
-		Constructor Create(
-			AParent : TDatabase
-		); reintroduce; overload;
+[2007/04/06] ChrstphrR
 
-		Destructor Destroy();override;
+*------------------------------------------------------------------------------*
+Overview:
+*------------------------------------------------------------------------------*
 
-		function CreateChara(
-			var ACharacter : TCharacter;
-			AID : LongWord;
-			NName : string;
-			CharaNum : Integer
-		) : boolean;override;
 
-		function GetAccountCharas(AccountID : LongWord) : TCharacterList;override;
+*------------------------------------------------------------------------------*
+Revisions:
+*------------------------------------------------------------------------------*
+(Format: [yyyy/mm/dd] <Author> - <Description of Change>)
+[2006/09/29] RaX - Created.
+[2007/01/20] Tsusai - Connect is now a bool function.
+	Create holds connection result
+[2007/04/06] CR - Altered Header, improved description.  Made private fields
+	into protected, with public properties.  Altered parameters to follow changes
+	made with TGameDatabaseTemplate.
+*=============================================================================*)
+Type
+TJanSQLGameDatabase = class(TGameDatabaseTemplate)
+protected
+	fDatabase : TjanSQL;
+	fParent  : TDatabase;
 
-		function LoadChara(
-			CharaID : LongWord
-		) : TCharacter;override;
-
-		function GetChara(
-			CharaID : LongWord;
-			JanSQLClearTable : boolean = false
-		) : TCharacter;override;
-
-		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
-		function CharaExists(AccountID : LongWord; Slot : Word) : Boolean;overload;override;
-		function CharaExists(Name : String) : Boolean;overload;override;
-
-		procedure SaveChara(AChara : TCharacter);override;
-
-		function Connect() : boolean; override;
-		procedure Disconnect; override;
-
-	protected
-		function SendQuery(
-			const QString : string
+	function SendQuery(
+		const
+			QString : String
 		) : Integer;
-	end;
-//------------------------------------------------------------------------------
+
+public
+
+	Constructor Create(
+		const
+			AParent : TDatabase
+		);
+
+	Destructor Destroy; override;
+
+	function  CreateChara(
+		var
+			ACharacter : TCharacter;
+		const
+			AID        : LongWord;
+		const
+			NName      : String;
+		const
+			CharaNum   : Integer
+		) : Boolean; override;
+
+	function  GetAccountCharas(
+		const
+			AccountID : LongWord
+		) : TCharacterList; override;
+
+	function  LoadChara(
+		const
+			CharaID : LongWord
+		) : TCharacter; override;
+
+	function  GetChara(
+		const
+				CharaID          : LongWord;
+		const
+			JanSQLClearTable : Boolean = False
+		) : TCharacter; override;
+
+	function  DeleteChara(
+		var
+			ACharacter : TCharacter
+		) : Boolean; override;
+
+	function  CharaExists(
+		const
+			AccountID : LongWord;
+		const
+			Slot      : Word
+		) : Boolean; overload; override;
+
+	function  CharaExists(
+		const
+			Name : String
+		) : Boolean; overload; override;
+
+	procedure SaveChara(
+		const
+			AChara : TCharacter
+		); override;
+
+	function  Connect : Boolean; override;
+	procedure Disconnect; override;
+
+	property Database : TjanSQL
+		read  fDatabase;
+	property Parent : TDatabase
+		read  fParent;
+
+End;(* TJanSQLGameDatabase
+*== CLASS ====================================================================*)
 
 
 implementation
@@ -117,15 +183,17 @@ uses
 //		October 5th, 2006 - RaX - Created.
 //		November 13th, 2006 - Tsusai - create inherit comes first.
 //		January 20th, 2007 - Tsusai - Create holds connection result
-//
+//		[2007/04/06] CR - Field name change - properties of same name are read
+//			only.
 //------------------------------------------------------------------------------
 Constructor TJanSQLGameDatabase.Create(
-	AParent : TDatabase
-);
+	const
+		AParent : TDatabase
+	);
 begin
 	inherited Create;
-	Parent := AParent;
-	Database := TJanSQL.Create;
+	fParent := AParent;
+	fDatabase := TJanSQL.Create;
 end;
 //------------------------------------------------------------------------------
 
@@ -251,9 +319,11 @@ end;//SendQuery
 //
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.GetChara(
-	CharaID : LongWord;
-	JanSQLClearTable : boolean = false
-) : TCharacter;
+	const
+		CharaID          : LongWord;
+	const
+		JanSQLClearTable : Boolean = False
+	) : TCharacter;
 begin
 	Result := LoadChara(CharaID);
 	if JanSQLClearTable then
@@ -275,7 +345,10 @@ end;
 //		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
-function TJanSQLGameDatabase.GetAccountCharas(AccountID : LongWord) : TCharacterList;
+function TJanSQLGameDatabase.GetAccountCharas(
+	const
+		AccountID : LongWord
+	) : TCharacterList;
 var
 	QueryResult     : TJanRecordSet;
 	Index           : Integer;
@@ -316,7 +389,12 @@ end;
 //		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
-function TJanSQLGameDatabase.CharaExists(AccountID : LongWord; Slot : Word) : Boolean;
+function TJanSQLGameDatabase.CharaExists(
+	const
+		AccountID : LongWord;
+	const
+		Slot      : Word
+	) : Boolean;
 var
 	ResultIdentifier : Integer;
 begin
@@ -349,7 +427,10 @@ end;
 //		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
-function TJanSQLGameDatabase.CharaExists(Name : String) : Boolean;
+function TJanSQLGameDatabase.CharaExists(
+	const
+		Name : String
+	) : Boolean;
 var
 	ResultIdentifier : Integer;
 begin
@@ -380,7 +461,10 @@ end;
 //		September 29th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TJanSQLGameDatabase.SaveChara(AChara : TCharacter);
+procedure TJanSQLGameDatabase.SaveChara(
+	const
+		AChara : TCharacter
+	);
 var
 	QueryString : string;
 	ResultIdentifier : Integer;
@@ -515,51 +599,71 @@ end;//SaveChara
 //
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.CreateChara(
-	var ACharacter : TCharacter;
-	AID : LongWord;
-	NName : string;
-	CharaNum : Integer
-) : boolean;
+	var
+		ACharacter : TCharacter;
+	const
+		AID : LongWord;
+	const
+		NName : string;
+	const
+		CharaNum : Integer
+	) : Boolean;
 var
-	QueryResult : TJanRecordSet;
+	QueryResult      : TJanRecordSet;
 	ResultIdentifier : Integer;
-	CharacterID : Integer;
-	Index : Integer;
+	CharacterID      : Integer;
+	Index            : Integer;
 begin
-	Result := FALSE;
+	Result := False;
 	ResultIdentifier := SendQuery('SELECT char_id FROM characters');
 	CharacterID := 1;
-	if ResultIdentifier > 0 then
+	if (ResultIdentifier > 0) then
 	begin
 		QueryResult := Database.RecordSets[ResultIdentifier];
-		for Index := 0 to QueryResult.recordcount - 1 do
+		for Index := 0 to (QueryResult.RecordCount - 1) do
 		begin
-			CharacterID := Max(CharacterID, QueryResult.records[Index].fields[0].value);
+			CharacterID := Max(
+				CharacterID,
+				QueryResult.records[Index].fields[0].Value
+				);
 		end;
 		inc(CharacterID);
 	end;
 
 	ResultIdentifier := SendQuery(
-		Format('INSERT INTO characters (char_id, account_id, char_num, name) VALUES(%d, %d, %d, ''%s'')',
-		[CharacterID, AID, CharaNum, NName]));
-	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+		Format(
+			'INSERT INTO characters (char_id, account_id, char_num, name) VALUES(%d, %d, %d, ''%s'')',
+			[CharacterID, AID, CharaNum, NName]
+			)
+		);
+	if (ResultIdentifier > 0) then
+	begin
+		Database.ReleaseRecordset(ResultIdentifier);
+	end;
 
 	//Save Now, GetChara procedure will release the table.
 	SendQuery('SAVE TABLE characters');
 
-	ResultIdentifier :=
-		SendQuery(
-		Format('SELECT char_id FROM characters WHERE account_id = %d AND name = ''%s''',
-		[AID,NName]));
+	ResultIdentifier := SendQuery(
+		Format(
+			'SELECT char_id FROM characters WHERE account_id = %d AND name = ''%s''',
+			[AID,NName]
+			)
+		);
 	QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
 	begin
 		//Call GetChara, which will release the table.
-		ACharacter := GetChara(StrToInt(QueryResult.Records[0].Fields[0].value),true);
+		ACharacter := GetChara(
+			StrToInt(QueryResult.Records[0].Fields[0].Value),
+			True
+			);
 		Result := Assigned(ACharacter);
 	end;
-	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
-
+	if (ResultIdentifier > 0) then
+	begin
+		Database.ReleaseRecordset(ResultIdentifier);
+	end;
 end;//CreateChara
 //------------------------------------------------------------------------------
 
@@ -575,8 +679,9 @@ end;//CreateChara
 //
 //------------------------------------------------------------------------------
 function TJanSQLGameDatabase.LoadChara(
-	CharaID : LongWord
-) : TCharacter;
+	const
+		CharaID : LongWord
+	) : TCharacter;
 var
 	APoint      : TPoint;
 	QueryResult : TJanRecordSet;

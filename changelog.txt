@@ -15,8 +15,22 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 219 -
+[2007/04/06] CR - Overview: Cleanup - Game Database - Template and implemented
+  units for Jan and MySQL synched up.
+[2007/04/06] CR - GameDatabaseTemplate: Altered header, improved description.  
+ Template class made entirely abstract, and all parameters are specified as
+ in/out/var/const explicitly.
+[2007/04/06] CR - JanSQLGameDatabase: Altered header.  Improved description/
+ purpose of unit.  Changes to TJanSQLGameDatabase.
+[2007/04/06] CR - MySQLGameDatabase: Altered header, added to description.
+ Changes made to TMySQLGameDatabase class to match changes made in the Game DB
+ Template.
+-
+
 - Rev 218 -
- Forgot commit dpr file.
+[2007/04/06] Aeomin - Forgot commit dpr file.
+-
 
 - Rev 217 - BROKEN BUILD
 [2007/04/06] Aeomin - Changed console message related to update online count from MS_NOTICE

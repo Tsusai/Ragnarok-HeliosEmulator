@@ -1,15 +1,39 @@
-//------------------------------------------------------------------------------
-//MySQLGameDatabase		                                            UNIT
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is one of our database objects which enabled Helios to use a MySQL
-//    Database.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//	[2007/03/30] CR - Used Icarus to clean up uses clauses.
-//
-//------------------------------------------------------------------------------
+(*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+Unit
+MySQLGameDatabase
+
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+[2006/09/29] Helios - RaX
+
+================================================================================
+License:  (FreeBSD, plus commercial with written permission clause.)
+================================================================================
+
+Project Helios - Copyright (c) 2005-2007
+
+All rights reserved.
+
+Please refer to Helios.dpr for full license terms.
+
+================================================================================
+Overview:
+================================================================================
+
+	Allows Helios to use MySQL for the Game (Character/Zone) Database.
+
+================================================================================
+Revisions:
+================================================================================
+(Format: [yyyy/mm/dd] <Author> - <Desc of Changes>)
+[2006/09/29] RaX - Created.
+[2007/03/30] CR - Used Icarus to clean up uses clauses.
+[2007/04/06] CR - Altered header, added to description.  Changes made to
+	TMySQLGameDatabase class to match changes made in the Game DB Template.
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*)
+
+
 unit MySQLGameDatabase;
 
 
@@ -29,64 +53,113 @@ uses
 	;
 
 
-type
-//------------------------------------------------------------------------------
-//TMySQLGameDatabase			                                   CLASS
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is a child class for our database object system. It allows Helios
-//    to communicate with a MySQL database and houses all routines for doing so.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		January 20th, 2007 - Tsusai - Connect is now a bool function
-//			Create holds connection result
-//
-//------------------------------------------------------------------------------
-	TMySQLGameDatabase = class(TGameDatabaseTemplate)
-	private
-		Connection   : TMySQLClient;
-    Parent : TDatabase;
-	public
+Type
+(*= CLASS =====================================================================*
+TMySQLGameDatabase
 
+[2006/09/29] RaX
 
-		Constructor Create(
+*------------------------------------------------------------------------------*
+Overview:
+*------------------------------------------------------------------------------*
+
+	This child class derives from the Game Database Template, and enables Helios
+to communicate with MySQL to connect to, and manipulate a Game Database.
+
+*------------------------------------------------------------------------------*
+Revisions:
+*------------------------------------------------------------------------------*
+(Format: [yyyy/mm/dd] <Author> - <Description of Change>)
+[2006/09/29] RaX - Created.
+[2007/01/20] Tsusai - Connect is now a bool function
+	Create holds connection result
+[2007/04/06] CR - Altered header, private fields are now protected, and read
+	only properties set for original field names.  Parameters altered to match
+	TGameDatabaseTemplate for all routines.
+*=============================================================================*)
+TMySQLGameDatabase = class(TGameDatabaseTemplate)
+protected
+	fConnection : TMySQLClient;
+	fParent     : TDatabase;
+
+	function SendQuery(
+		const
+			QString     : String;
+		const
+			StoreResult : Boolean;
+		var
+			ExecutedOK  : Boolean
+	) : TMySQLResult;
+
+public
+
+	Constructor Create(
+		const
 			AParent : TDatabase
-		); reintroduce; overload;
-		Destructor Destroy();override;
+		);
 
-		function CreateChara(
-			var ACharacter : TCharacter;
-			AID : LongWord;
-			NName : string;
-			CharaNum : Integer
-		) : boolean;override;
+	Destructor Destroy; override;
 
-		function GetAccountCharas(AccountID : LongWord) : TCharacterList;override;
-		function LoadChara(CharaID : LongWord) : TCharacter;override;
+	function CreateChara(
+		var
+			ACharacter : TCharacter;
+		const
+			AID        : LongWord;
+		const
+			NName      : String;
+		const
+			CharaNum   : Integer
+		) : Boolean; override;
 
-		function GetChara(
+	function GetAccountCharas(
+		const
+			AccountID : LongWord
+		) : TCharacterList; override;
+
+	function LoadChara(
+		const
+			CharaID : LongWord
+		) : TCharacter; override;
+
+	function GetChara(
+		const
 			CharaID : LongWord;
-			JanSQLClearTable : boolean = false
-		) : TCharacter;override;
+		const
+			JanSQLClearTable : Boolean = False
+		) : TCharacter; override;
 
-		function DeleteChara(var ACharacter : TCharacter) : boolean;override;
-		function CharaExists(AccountID : LongWord; Slot : Word) : Boolean;overload;override;
-		function CharaExists(Name : String) : Boolean;overload;override;
+	function DeleteChara(
+		var
+			ACharacter : TCharacter
+		) : Boolean; override;
 
-		procedure SaveChara(AChara : TCharacter);override;
+	function CharaExists(
+		const
+			AccountID : LongWord;
+		const
+			Slot : Word
+		) : Boolean; overload; override;
 
-		function Connect() : boolean; override;
-		procedure Disconnect();override;
-		
-	protected
-		function SendQuery(
-			const QString : string;
-			StoreResult : boolean;
-			var ExecutedOK : boolean
-		) : TMySQLResult;
-	end;
-//------------------------------------------------------------------------------
+	function CharaExists(
+		const
+			Name : String
+		) : Boolean; overload; override;
+
+	procedure SaveChara(
+		const
+			AChara : TCharacter
+		); override;
+
+	function Connect : Boolean; override;
+	procedure Disconnect; override;
+
+	property Connection : TMySQLClient
+		read  fConnection;
+	property Parent     : TDatabase
+		read  fParent;
+
+End;(* TMySQLGameDatabase
+*== CLASS ====================================================================*)
 
 
 implementation
@@ -117,12 +190,13 @@ uses
 //
 //------------------------------------------------------------------------------
 Constructor TMySQLGameDatabase.Create(
-	AParent : TDatabase
-);
+	const
+		AParent : TDatabase
+	);
 begin
 	inherited Create;
-	Parent := AParent;
-	Connection := TMySQLClient.Create;
+	fParent := AParent;
+	fConnection := TMySQLClient.Create;
 end;
 //------------------------------------------------------------------------------
 
@@ -136,10 +210,10 @@ end;
 //		October 5th, 2006 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Destructor TMySQLGameDatabase.Destroy();
+Destructor TMySQLGameDatabase.Destroy;
 begin
 	Disconnect;
-  Connection.Free;
+	Connection.Free;
 	inherited;
 end;
 //------------------------------------------------------------------------------
@@ -190,10 +264,13 @@ end;
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.SendQuery(
-	const QString : string;
-	StoreResult : boolean;
-	var ExecutedOK : boolean
-) : TMySQLResult;
+	const
+		QString     : String;
+	const
+		StoreResult : Boolean;
+	var
+		ExecutedOK  : Boolean
+	) : TMySQLResult;
 begin
 	Result := Connection.query(QString,StoreResult,ExecutedOK);
 	if not ExecutedOK then
@@ -236,10 +313,12 @@ end;
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.GetChara(
-	CharaID : LongWord;
+	const
+		CharaID : LongWord;
 	//JanSQLClearTable is never used.
-	JanSQLClearTable : boolean = false
-) : TCharacter;
+	const
+		JanSQLClearTable : Boolean = False
+	) : TCharacter;
 begin
 	Result := LoadChara(CharaID);
 end;
@@ -259,7 +338,10 @@ end;
 //		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
-function TMySQLGameDatabase.GetAccountCharas(AccountID : LongWord) : TCharacterList;
+function TMySQLGameDatabase.GetAccountCharas(
+	const
+		AccountID : LongWord
+	) : TCharacterList;
 var
 	QueryResult     : TMySQLResult;
 	Success         : Boolean;
@@ -267,8 +349,13 @@ var
 begin
 	Result := TCharacterList.Create(FALSE);
 	QueryResult := SendQuery(
-		Format('SELECT char_id FROM characters WHERE account_id = %d and char_num < 9',
-		[AccountID]),TRUE,Success);
+		Format(
+			'SELECT char_id FROM characters WHERE account_id = %d and char_num < 9',
+			[AccountID]
+			),
+		True,
+		Success
+		);
 	if Success then
 	begin
 		if QueryResult.RowsCount > 0 then
@@ -301,7 +388,12 @@ end;
 //		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
-function TMySQLGameDatabase.CharaExists(AccountID : LongWord; Slot : Word) : Boolean;
+function TMySQLGameDatabase.CharaExists(
+	const
+		AccountID : LongWord;
+	const
+		Slot      : Word
+	) : Boolean;
 var
 	QueryResult : TMySQLResult;
 	Success     : Boolean;
@@ -332,7 +424,10 @@ end;
 //		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
-function TMySQLGameDatabase.CharaExists(Name : String) : Boolean;
+function TMySQLGameDatabase.CharaExists(
+	const
+		Name : String
+	) : Boolean;
 var
 	QueryResult : TMySQLResult;
 	Success     : Boolean;
@@ -362,7 +457,10 @@ end;
 //		March 12th, 2007 - Aeomin - Modify Header
 //
 //------------------------------------------------------------------------------
-procedure TMySQLGameDatabase.SaveChara(AChara : TCharacter);
+procedure TMySQLGameDatabase.SaveChara(
+	const
+		AChara : TCharacter
+	);
 var
 	QueryString : string;
 	Success : boolean;
@@ -493,13 +591,17 @@ end;
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.CreateChara(
-	var ACharacter : TCharacter;
-	AID : LongWord;
-	NName : string;
-	CharaNum : Integer
-) : boolean;
+	var
+		ACharacter : TCharacter;
+	const
+		AID        : LongWord;
+	const
+		NName      : String;
+	const
+		CharaNum   : Integer
+	) : Boolean;
 var
-	Success     : boolean;
+	Success     : Boolean;
 	QueryResult : TMySQLResult;
 begin
 	Result := FALSE;
@@ -535,17 +637,23 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function TMySQLGameDatabase.LoadChara(CharaID : LongWord) : TCharacter;
+function TMySQLGameDatabase.LoadChara(
+	const
+		CharaID : LongWord
+	) : TCharacter;
 var
 	Success     : Boolean;
 	APoint      : TPoint;
 	QueryResult : TMySQLResult;
 begin
-	QueryResult :=
-		SendQuery(
-		Format('SELECT * FROM characters WHERE char_id = %d;',
-			[CharaID])
-		,TRUE,Success);
+	QueryResult := SendQuery(
+		Format(
+			'SELECT * FROM characters WHERE char_id = %d;',
+			[CharaID]
+			),
+		TRUE,
+		Success
+		);
 	if (QueryResult.RowsCount = 1) then
 	begin
 		with Result do
@@ -613,8 +721,16 @@ begin
 			//Do not start the save timer caused by modifying everything else.
 			DataChanged := false;
 		end;
-	end else Result := nil;
-	if Assigned(QueryResult) then QueryResult.Free;
+	end
+	else
+	begin
+		Result := nil;
+	end;
+
+	if Assigned(QueryResult) then
+	begin
+		QueryResult.Free;
+	end;
 end;
 //------------------------------------------------------------------------------
 
@@ -629,7 +745,10 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function TMySQLGameDatabase.DeleteChara(var ACharacter : TCharacter) : boolean;
+function TMySQLGameDatabase.DeleteChara(
+	var
+		ACharacter : TCharacter
+	) : Boolean;
 begin
 	SendQuery(
 		Format('DELETE FROM characters WHERE char_id=%d',[ACharacter.CID]),

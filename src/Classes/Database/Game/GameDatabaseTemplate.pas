@@ -1,142 +1,149 @@
-//------------------------------------------------------------------------------
-//Database			                                                           UNIT
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is the parent class of our other database objects, it also includes
-//    a function for choosing which database we're using based on a
-//    configuration variable. It contains all database interface routines.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
+(*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+Unit
+GameDatabaseTemplate
+
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+[2006/09/29] Helios - RaX
+
+================================================================================
+License:  (FreeBSD, plus commercial with written permission clause.)
+================================================================================
+
+Project Helios - Copyright (c) 2005-2007
+
+All rights reserved.
+
+Please refer to Helios.dpr for full license terms.
+
+================================================================================
+Overview:
+================================================================================
+
+	This is the parent class of our other database objects, it also includes a
+function for choosing which database we're using based on a configuration
+variable. It contains all database interface routines.
+
+================================================================================
+Revisions:
+================================================================================
+(Format: [yyyy/mm/dd] <Author> - <Desc of Changes>)
+[2006/09/29] RaX - Created.
+[2007/04/06] CR - Altered header, improved description.  Template class made
+	entirely abstract, and all parameters are specified as in/out/var/const 
+	explicitly.
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*)
+
+
 unit GameDatabaseTemplate;
 
+
 interface
+
+
 uses
+	{RTL/VCL}
+	//none
+	{Project}
 	Character,
-	CharaList;
+	CharaList
+	{Third Party}
+	//none
+	;
+
+
 type
-//------------------------------------------------------------------------------
-//TGameDatabaseTemplate			                                                           CLASS
-//------------------------------------------------------------------------------
-//	What it does-
-//			This is our parent class for database interfacing. Contains all database
-//    routines.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//		January 20th, 2007 - Tsusai - Connect is now a bool function
-//			Create holds connection result
-//
-//------------------------------------------------------------------------------
-	TGameDatabaseTemplate = class(TObject)
-	public
-		Constructor Create(); virtual;
-		Destructor Destroy();override;
 
-		function CreateChara(
-			var ACharacter : TCharacter;
-			AID : LongWord;
-			NName : string;
-			CharaNum : Integer
-		) : boolean;virtual;
 
-		function GetAccountCharas(AccountID : LongWord) : TCharacterList;virtual;
-		function LoadChara(CharaID : LongWord) : TCharacter;virtual;
-		function GetChara(
+(*= CLASS =====================================================================*
+TGameDatabaseTemplate
+
+[2006/09/29] RaX
+
+*------------------------------------------------------------------------------*
+Overview:
+*------------------------------------------------------------------------------*
+
+	This is the abstract parent class for the Game database.
+Defines all database routines common to the child classes that implement
+specific databases (i.e. JanSQL, MySQL, etc.).
+
+*------------------------------------------------------------------------------*
+Revisions:
+*------------------------------------------------------------------------------*
+(Format: [yyyy/mm/dd] <Author> - <Description of Change>)
+[2006/09/29] RaX - Created unit
+[2007/01/20] Tsusai - Connect is now a bool function
+	Create holds connection result
+[2007/04/06] CR - Altered header.  All methods made abstract, and all parameters
+	now specified by in/out/var/const to self-document.
+*=============================================================================*)
+TGameDatabaseTemplate = class(TObject)
+protected
+	//none
+
+public
+
+	function  CharaExists(
+		const
+			AccountID : LongWord;
+		const
+			Slot : Word
+		) : Boolean; overload; virtual; abstract;
+
+	function  CharaExists(
+		const
+			Name : String
+		) : Boolean; overload; virtual; abstract;
+
+	function  CreateChara(
+		var
+			ACharacter : TCharacter;
+		const
+			AID        : LongWord;
+		const
+			NName      : String;
+		const
+			CharaNum   : Integer
+		) : Boolean; virtual; abstract;
+
+	function  DeleteChara(
+		var
+			ACharacter : TCharacter
+		) : Boolean; virtual; abstract;
+
+	function  GetAccountCharas(
+		const
+			AccountID : LongWord
+		) : TCharacterList; virtual; abstract;
+
+	function  GetChara(
+		const
 			CharaID : LongWord;
-			JanSQLClearTable : boolean = false
-		) : TCharacter;virtual;
-		function DeleteChara(var ACharacter : TCharacter) : boolean;virtual;
-		function CharaExists(AccountID : LongWord; Slot : Word) : Boolean;overload;virtual;
-		function CharaExists(Name : String) : Boolean;overload;virtual;
+		const
+			JanSQLClearTable : Boolean = False
+		) : TCharacter; virtual; abstract;
 
-		procedure SaveChara(AChara : TCharacter);virtual;
+	function  LoadChara(
+		const
+			CharaID : LongWord
+		) : TCharacter; virtual; abstract;
 
-		function Connect() : boolean; virtual;
-		procedure Disconnect();virtual;
-	end;
-//------------------------------------------------------------------------------
-	//function CreateDatabase() : TDatabase;
+	procedure SaveChara(
+		const
+			AChara : TCharacter
+		); virtual; abstract;
+
+	function  Connect : Boolean; virtual; abstract;
+
+	procedure Disconnect; virtual; abstract;
+
+End;(* TGameDatabaseTemplate
+*== CLASS ====================================================================*)
+
 
 implementation
 
-//------------------------------------------------------------------------------
-//TDatabase	routines                                             Routine stubs
-//------------------------------------------------------------------------------
-//	What it does-
-//			These are simple placeholders for routines which will override these.
-//
-//	Changes -
-//		September 29th, 2006 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-Constructor TGameDatabaseTemplate.Create();
-begin
-	inherited;
-end;
 
-Destructor TGameDatabaseTemplate.Destroy();
-begin
-	inherited;
-end;
-
-function TGameDatabaseTemplate.Connect() : boolean; 
-begin
-  Result := FALSE;
-end;
-
-procedure TGameDatabaseTemplate.Disconnect();
-begin
-end;
-
-function TGameDatabaseTemplate.GetAccountCharas(AccountID : LongWord) : TCharacterList;
-begin
-	Result := NIL;
-end;
-
-function TGameDatabaseTemplate.GetChara(
-	CharaID : LongWord;
-	JanSQLClearTable : boolean = false
-) : TCharacter;
-begin
-	Result := NIL;
-end;
-
-function TGameDatabaseTemplate.CharaExists(AccountID : LongWord; Slot : Word) : Boolean;
-begin
-	Result := FALSE;
-end;
-
-function TGameDatabaseTemplate.CharaExists(Name : String) : Boolean;
-begin
-	Result := FALSE;
-end;
-
-procedure TGameDatabaseTemplate.SaveChara(AChara : TCharacter);
-begin
-end;
-
-function TGameDatabaseTemplate.CreateChara(
-	var ACharacter : TCharacter;
-	AID : LongWord;
-	NName : string;
-	CharaNum : Integer
-) : boolean;
-begin
-	Result := false;
-end;
-
-function TGameDatabaseTemplate.LoadChara(CharaID : LongWord) : TCharacter;
-begin
-	Result := nil;
-end;
-
-function TGameDatabaseTemplate.DeleteChara(var ACharacter : TCharacter) : boolean;
-begin
-	Result := false;
-end;
-//------------------------------------------------------------------------------
-{END TGameDatabaseTemplate}
 end.
