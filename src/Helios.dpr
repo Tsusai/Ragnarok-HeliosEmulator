@@ -57,6 +57,8 @@ program Helios;
 
 {$APPTYPE CONSOLE}
 uses
+  madExcept,
+  madLinkDisAsm,      
 {*These definitions make it possible to step through programs in windows and
 compile for linux, at the same time*}
 //------------------------------------------------------------------------------
@@ -108,6 +110,7 @@ compile for linux, at the same time*}
 
 	//Events
 	Event in 'Classes\Events\Event.pas',
+	DelayDisconnectEvent in 'Classes\Events\DelayDisconnectEvent.pas',
 	MovementEvent in 'Classes\Events\MovementEvent.pas',
 	CharacterEventThread in 'Classes\Events\CharacterEventThread.pas',
 
@@ -161,8 +164,6 @@ compile for linux, at the same time*}
 	Commands in 'Classes\Commands.pas',
 	CommClient in 'Classes\CommClient.pas',
 	Globals in 'Common\Globals.pas',
-	madExcept,
-	madLinkDisAsm,
 	PacketTypes in 'Common\PacketTypes.pas',
 	ServerInfo in 'Classes\ServerInfo.pas',
 	TCPServerRoutines in 'Common\TCPServerRoutines.pas',
@@ -219,6 +220,7 @@ compile for linux, at the same time*}
 
 	//Events
 	Event in 'Classes/Events/Event.pas',
+	DelayDisconnectEvent in 'Classes/Events/DelayDisconnectEvent.pas',
 	MovementEvent in 'Classes/Events/MovementEvent.pas',
 	CharacterEventThread in 'Classes/Events/CharacterEventThread.pas',
 

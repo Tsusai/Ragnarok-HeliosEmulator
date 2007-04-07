@@ -15,7 +15,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
-- Rev 217 -
+- Rev 218 -
+ Forgot commit dpr file.
+
+- Rev 217 - BROKEN BUILD
 [2007/04/06] Aeomin - Changed console message related to update online count from MS_NOTICE
   to MS_DEBUG [LoginServer.pas , CharacterServer.pas]
 [2007/04/06] Aeomin - Added Who.DelayDisconnect(10000); in Kick [ZoneSend.pas (Kick)]
