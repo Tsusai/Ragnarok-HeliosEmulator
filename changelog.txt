@@ -15,6 +15,15 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 221 -
+[2007/04/10] RaX - Overview: made ini input use ensurerange on values that could crash the
+ server.
+[2007/04/10] RaX - Added NetworkConstants.pas. Contains MAX_PORT.
+[2007/04/10] RaX - Added MAX_DBTYPE to DatabaseConstants.pas
+[2007/04/10] RaX - Added ensurerange around any integer/word/longword type variables in
+ the ini files to prevent range errors from users.
+-
+
 - Rev 220 -
 [2007/04/07] CR - Overview: Cleanup - Static Database - Template and implemented
  units for Jan and MySQL synched up.

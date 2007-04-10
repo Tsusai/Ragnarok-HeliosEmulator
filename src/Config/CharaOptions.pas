@@ -36,19 +36,19 @@ interface
 			fServerName		: String;
 			fUse108LengthForReply : boolean;
 
-      fDefaultZeny  : Integer;
-			fDefaultMap   : String;
-      fDefaultPoint : TPoint;
-			fDefaultHeadTop  : Integer;
-			fDefaultHeadMid : Integer;
-      fDefaultHeadLow : Integer;
-      fDefaultArmor : Integer;
-      fDefaultRightHand: Integer;
-      fDefaultLeftHand  : Integer;
-      fDefaultShoes : Integer;
-      fDefaultGarment : Integer;
-      fDefaultAccessory1 : Integer;
-			fDefaultAccessory2 : Integer;
+			fDefaultZeny  		: LongWord;
+			fDefaultMap   		: String;
+			fDefaultPoint 		: TPoint;
+			fDefaultHeadTop 	: Word;
+			fDefaultHeadMid 	: Word;
+			fDefaultHeadLow 	: Word;
+			fDefaultArmor			: Word;
+			fDefaultRightHand	: Word;
+			fDefaultLeftHand  : Word;
+			fDefaultShoes 		: Word;
+			fDefaultGarment 	: Word;
+			fDefaultAccessory1: Word;
+			fDefaultAccessory2: Word;
 
 //Gets/Sets
 			procedure SetPort(Value : Word);
@@ -77,19 +77,19 @@ interface
 			property Use108LengthForReply : boolean read fUse108LengthForReply write fUse108LengthForReply;
 
 
-			property DefaultZeny: Integer read fDefaultZeny write fDefaultZeny;
+			property DefaultZeny: LongWord read fDefaultZeny write fDefaultZeny;
 			property DefaultMap : String read fDefaultMap write fDefaultMap;
 			property DefaultPoint : TPoint read fDefaultPoint write fDefaultPoint;
-      property DefaultHeadTop: Integer read fDefaultHeadTop write fDefaultHeadTop;
-			property DefaultHeadMid: Integer read fDefaultHeadMid write fDefaultHeadMid;
-      property DefaultHeadLow: Integer read fDefaultHeadLow write fDefaultHeadLow;
-      property DefaultRightHand: Integer read fDefaultRightHand write fDefaultRightHand;
-      property DefaultLeftHand: Integer read fDefaultLeftHand write fDefaultLeftHand;
-      property DefaultArmor: Integer read fDefaultArmor write fDefaultArmor;
-      property DefaultGarment: Integer read fDefaultGarment write fDefaultGarment;
-      property DefaultShoes: Integer read fDefaultShoes write fDefaultShoes;
-      property DefaultAccessory1: Integer read fDefaultAccessory1 write fDefaultAccessory1;
-      property DefaultAccessory2: Integer read fDefaultAccessory2 write fDefaultAccessory2;
+			property DefaultHeadTop: Word read fDefaultHeadTop write fDefaultHeadTop;
+			property DefaultHeadMid: Word read fDefaultHeadMid write fDefaultHeadMid;
+			property DefaultHeadLow: Word read fDefaultHeadLow write fDefaultHeadLow;
+			property DefaultRightHand: Word read fDefaultRightHand write fDefaultRightHand;
+			property DefaultLeftHand: Word read fDefaultLeftHand write fDefaultLeftHand;
+			property DefaultArmor: Word read fDefaultArmor write fDefaultArmor;
+			property DefaultGarment: Word read fDefaultGarment write fDefaultGarment;
+			property DefaultShoes: Word read fDefaultShoes write fDefaultShoes;
+			property DefaultAccessory1: Word read fDefaultAccessory1 write fDefaultAccessory1;
+      property DefaultAccessory2: Word read fDefaultAccessory2 write fDefaultAccessory2;
 
 			//Public methods
 			procedure Load;
@@ -100,7 +100,9 @@ interface
 implementation
 	uses
 		Classes,
-		SysUtils;
+		SysUtils,
+		Math,
+		NetworkConstants;
 
 //------------------------------------------------------------------------------
 //Load()                                               PROCEDURE
@@ -136,14 +138,14 @@ implementation
 				Section.Values['LANIP']			:= '127.0.0.1';
 			end;
 			fLANIP			:= Section.Values['LANIP'];
-			fPort			:= StrToIntDef(Section.Values['Port'], 6121);
+			fPort			:= EnsureRange(StrToIntDef(Section.Values['Port'], 6121), 1, MAX_PORT);
 
 			if Section.Values['LoginIP'] = '' then
 			begin
 				Section.Values['LoginIP']			:= '127.0.0.1';
 			end;
 			fLoginIP			:= Section.Values['LoginIP'];
-			fLoginPort		:= StrToIntDef(Section.Values['LoginPort'], 6900);
+			fLoginPort		:= EnsureRange(StrToIntDef(Section.Values['LoginPort'], 6900), 1, MAX_PORT);
 			fLoginKey    := Section.Values['LoginKey'];
 		end;{Subroutine LoadCommunication}
 		//--------------------------------------------------------------------------
@@ -187,23 +189,23 @@ implementation
     procedure LoadCharacterDefaults;
     begin
       ReadSectionValues('CharacterDefaults', Section);
-      DefaultZeny       := StrToIntDef(Section.Values['Zeny'], 0);
-      if Section.Values['Map'] = '' then begin
+			DefaultZeny       := EnsureRange(StrToIntDef(Section.Values['Zeny'], 0), Low(LongWord), High(LongWord));
+			if Section.Values['Map'] = '' then begin
 				Section.Values['Map'] := 'new_1-1';
 			end;
 			DefaultMap        := Section.Values['Map'];
-			fDefaultPoint.X   := StrToIntDef(Section.Values['Point.X'], 53);
-			fDefaultPoint.Y   := StrToIntDef(Section.Values['Point.Y'], 111);
-      DefaultHeadTop    := StrToIntDef(Section.Values['HeadTop'], 0);
-      DefaultHeadMid    := StrToIntDef(Section.Values['HeadMid'], 0);
-      DefaultHeadLow    := StrToIntDef(Section.Values['HeadLow'], 0);
-      DefaultRightHand  := StrToIntDef(Section.Values['RightHand'], 1201);
-      DefaultLeftHand   := StrToIntDef(Section.Values['LeftHand'], 0);
-      DefaultArmor      := StrToIntDef(Section.Values['Armor'], 2301);
-      DefaultShoes      := StrToIntDef(Section.Values['Shoes'], 0);
-      DefaultGarment    := StrToIntDef(Section.Values['Garment'], 0);
-      DefaultAccessory1 := StrToIntDef(Section.Values['Accessory1'], 0);
-      DefaultAccessory2 := StrToIntDef(Section.Values['Accessory2'], 0);
+			fDefaultPoint.X   := EnsureRange(StrToIntDef(Section.Values['Point.X'], 53), Low(Word), High(Word));
+			fDefaultPoint.Y   := EnsureRange(StrToIntDef(Section.Values['Point.Y'], 111), Low(Word), High(Word));
+			DefaultHeadTop    := EnsureRange(StrToIntDef(Section.Values['HeadTop'], 0), Low(Word), High(Word));
+			DefaultHeadMid    := EnsureRange(StrToIntDef(Section.Values['HeadMid'], 0), Low(Word), High(Word));
+			DefaultHeadLow    := EnsureRange(StrToIntDef(Section.Values['HeadLow'], 0), Low(Word), High(Word));
+			DefaultRightHand  := EnsureRange(StrToIntDef(Section.Values['RightHand'], 1201), Low(Word), High(Word));
+			DefaultLeftHand   := EnsureRange(StrToIntDef(Section.Values['LeftHand'], 0), Low(Word), High(Word));
+			DefaultArmor      := EnsureRange(StrToIntDef(Section.Values['Armor'], 2301), Low(Word), High(Word));
+			DefaultShoes      := EnsureRange(StrToIntDef(Section.Values['Shoes'], 0), Low(Word), High(Word));
+			DefaultGarment    := EnsureRange(StrToIntDef(Section.Values['Garment'], 0), Low(Word), High(Word));
+			DefaultAccessory1 := EnsureRange(StrToIntDef(Section.Values['Accessory1'], 0), Low(Word), High(Word));
+			DefaultAccessory2 := EnsureRange(StrToIntDef(Section.Values['Accessory2'], 0), Low(Word), High(Word));
     end;{LoadCharacterDefaults}
     //--------------------------------------------------------------------------
 

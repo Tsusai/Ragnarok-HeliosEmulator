@@ -77,7 +77,10 @@ interface
 implementation
 	uses
 		Classes,
-		SysUtils;
+		SysUtils,
+		DatabaseConstants,
+		NetworkConstants,
+		Math;
 
 //------------------------------------------------------------------------------
 //Load()                                               PROCEDURE
@@ -102,17 +105,20 @@ implementation
 		procedure LoadCommon;
 		begin
 			ReadSectionValues('Common', Section);
-      fCommonType := StrToIntDef(Section.Values['Type'], 1);
-			if Section.Values['Host'] = '' then begin
+			fCommonType := EnsureRange(StrToIntDef(Section.Values['Type'], 1), 1, MAX_DBTYPE);
+			if Section.Values['Host'] = '' then
+			begin
 				Section.Values['Host'] := './save';
 			end;
 			fCommonHost := Section.Values['Host'];
-			fCommonPort := StrToIntDef(Section.Values['Port'], 3306);
-			if Section.Values['DBName'] = '' then begin
+			fCommonPort := EnsureRange(StrToIntDef(Section.Values['Port'], 3306), 1, MAX_PORT);
+			if Section.Values['DBName'] = '' then
+			begin
 				Section.Values['DBName'] := 'helioscommon';
 			end;
 			fCommonDB := Section.Values['DBName'];
-			if Section.Values['Username'] = '' then begin
+			if Section.Values['Username'] = '' then
+			begin
 				Section.Values['Username'] := 'root';
 			end;
 			fCommonUser := Section.Values['Username'];
@@ -127,18 +133,23 @@ implementation
 		procedure LoadGame;
 		begin
       ReadSectionValues('Game', Section);
-      fGameType := StrToIntDef(Section.Values['Type'], 1);
+			fGameType := EnsureRange(StrToIntDef(Section.Values['Type'], 1), 1, MAX_DBTYPE);
 
-			if Section.Values['Host'] = '' then begin
+			if Section.Values['Host'] = '' then
+			begin
 				Section.Values['Host'] := './save';
 			end;
 			fGameHost := Section.Values['Host'];
-			fGamePort := StrToIntDef(Section.Values['Port'], 3306);
-			if Section.Values['DBName'] = '' then begin
+			fGamePort := EnsureRange(StrToIntDef(Section.Values['Port'], 3306), 1, MAX_PORT);
+
+			if Section.Values['DBName'] = '' then
+			begin
 				Section.Values['DBName'] := 'heliosGame';
 			end;
 			fGameDB := Section.Values['DBName'];
-			if Section.Values['Username'] = '' then begin
+
+			if Section.Values['Username'] = '' then
+			begin
 				Section.Values['Username'] := 'root';
 			end;
 			fGameUser := Section.Values['Username'];
@@ -152,13 +163,13 @@ implementation
 		procedure LoadStatic;
 		begin
       ReadSectionValues('Static', Section);
-      fStaticType := StrToIntDef(Section.Values['Type'], 1);
+			fStaticType := EnsureRange(StrToIntDef(Section.Values['Type'], 1), 1, MAX_DBTYPE);
 
 			if Section.Values['Host'] = '' then begin
 				Section.Values['Host'] := './save';
 			end;
 			fStaticHost := Section.Values['Host'];
-			fStaticPort := StrToIntDef(Section.Values['Port'], 3306);
+			fStaticPort := EnsureRange(StrToIntDef(Section.Values['Port'], 3306), 1, MAX_PORT);
 			if Section.Values['DBName'] = '' then begin
 				Section.Values['DBName'] := 'HeliosStatic';
 			end;

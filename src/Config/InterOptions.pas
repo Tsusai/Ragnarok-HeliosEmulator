@@ -58,7 +58,9 @@ interface
 implementation
 	uses
 		Classes,
-		SysUtils;
+		SysUtils,
+		Math,
+		NetworkConstants;
 
 //------------------------------------------------------------------------------
 //Load()                                               PROCEDURE
@@ -94,7 +96,7 @@ implementation
 		procedure LoadCommunication;
 		begin
 			ReadSectionValues('Communication', Section);
-			fPort     := StrToIntDef(Section.Values['Port'], 4000);
+			fPort     := EnsureRange(StrToIntDef(Section.Values['Port'], 4000), 1, MAX_PORT);
 
 			if Section.Values['WANIP'] = '' then
 			begin

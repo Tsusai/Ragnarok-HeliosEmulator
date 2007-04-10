@@ -37,13 +37,13 @@ interface
       fInterPort    : Word;
       fInterKey     : String;
 
-			fZoneTick			: Integer;//The amount of time in milliseconds to sleep
+			fZoneTick			: Word;//The amount of time in milliseconds to sleep
 															// between packet processes.
-			fEventTick		: Integer;//The amount of time in milliseconds to sleep
+			fEventTick		: Word;//The amount of time in milliseconds to sleep
 															// between event processes.
-			fCharClickArea: Integer;//The number of cells away from a character that
+			fCharClickArea: Word;//The number of cells away from a character that
 															//They can click to move to.
-			fCharShowArea	: Integer;//The distance in cells away from a character that
+			fCharShowArea	: Word;//The distance in cells away from a character that
                             	//other entities appear in.
 
 			fKickOnShutdown : Boolean;
@@ -78,10 +78,10 @@ interface
       //Options
 
 			//Performance
-			property ZoneTick			: Integer read fZoneTick;
-			property EventTick		: Integer read fEventTick;
-			property CharClickArea: Integer read fCharClickArea;
-			property CharShowArea	: Integer read fCharShowArea;
+			property ZoneTick			: Word read fZoneTick;
+			property EventTick		: Word read fEventTick;
+			property CharClickArea: Word read fCharClickArea;
+			property CharShowArea	: Word read fCharShowArea;
 
 			//Game
 			property KickOnShutdown : Boolean read fKickOnShutdown;
@@ -95,7 +95,9 @@ interface
 implementation
 	uses
 		Classes,
-		SysUtils;
+		SysUtils,
+		Math,
+		NetworkConstants;
 
 //------------------------------------------------------------------------------
 //Load()                                               PROCEDURE
@@ -121,18 +123,18 @@ implementation
 		begin
 			ReadSectionValues('Server', Section);
 			fEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
-      fID := StrToIntDef(Section.Values['ID'] ,1);
+			fID := EnsureRange(StrToIntDef(Section.Values['ID'] ,1), Low(LongWord), High(LongWord));
 		end;{Subroutine LoadServer}
     //--------------------------------------------------------------------------
 
 
     //--------------------------------------------------------------------------
     //LoadCommunication                                          SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 		procedure LoadCommunication;
 		begin
 			ReadSectionValues('Communication', Section);
-			fPort     := StrToIntDef(Section.Values['Port'], 5121);
+			fPort     := EnsureRange(StrToIntDef(Section.Values['Port'], 5121), 1, MAX_PORT);
 
 			if Section.Values['WANIP'] = '' then
 			begin
@@ -152,7 +154,7 @@ implementation
 			end;
 			fCharaIP			:= Section.Values['CharaIP'];
 
-			fCharaPort		:= StrToIntDef(Section.Values['CharaPort'], 6121);
+			fCharaPort		:= EnsureRange(StrToIntDef(Section.Values['CharaPort'], 6121), 1, MAX_PORT);
       fCharaKey    := Section.Values['CharaKey'];
 
       if Section.Values['InterIP'] = '' then
@@ -161,7 +163,7 @@ implementation
 			end;
 			fInterIP			:= Section.Values['InterIP'];
 
-			fInterPort		:= StrToIntDef(Section.Values['InterPort'], 4000);
+			fInterPort		:= EnsureRange(StrToIntDef(Section.Values['InterPort'], 4000), 1, MAX_PORT);
       fInterKey    := Section.Values['InterKey'];
 		end;{Subroutine LoadCommunication}
     //--------------------------------------------------------------------------
@@ -183,10 +185,10 @@ implementation
 		procedure LoadPerformance;
 		begin
 			ReadSectionValues('Performance', Section);
-			fZoneTick			:= StrToIntDef(Section.Values['Zone Tick'], 10);
-			fEventTick		:= StrToIntDef(Section.Values['Event Tick'], 10);
-			fCharClickArea:= StrToIntDef(Section.Values['Click Area'], 16);
-			fCharShowArea	:= StrToIntDef(Section.Values['Show Area'], 16);
+			fZoneTick			:= EnsureRange(StrToIntDef(Section.Values['Zone Tick'], 10), Low(Word), High(Word));
+			fEventTick		:= EnsureRange(StrToIntDef(Section.Values['Event Tick'], 10), Low(Word), High(Word));
+			fCharClickArea:= EnsureRange(StrToIntDef(Section.Values['Click Area'], 16), Low(Word), High(Word));
+			fCharShowArea	:= EnsureRange(StrToIntDef(Section.Values['Show Area'], 16), Low(Word), High(Word));
 		end;{Subroutine LoadPerformance}
 	//--------------------------------------------------------------------------
 
