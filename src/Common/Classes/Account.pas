@@ -50,7 +50,7 @@ uses
 
 		procedure SetBannedTime(TimeString : string);
 		procedure SetConnectUntilTime(TimeString : string);
-		procedure TemperaryBan(Seconds:LongWord);
+		procedure TemperaryBan(Seconds:Integer);
 		function GetBanUntilTimeString:String;
 		//2 functions bellow is made by Thomas Greiner
 		//http://www.swissdelphicenter.ch/torry/showcode.php?id=844
@@ -146,7 +146,7 @@ end;{SetBannedTime}
 //		April 10th, 2007 - Aeomin - Created Header
 //
 //------------------------------------------------------------------------------
-procedure TAccount.TemperaryBan(Seconds:LongWord);
+procedure TAccount.TemperaryBan(Seconds:Integer);
 begin
 	Self.Bantime := UnixToDateTime(DateTimeToUnix(Now) + Seconds);
 	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Connect;

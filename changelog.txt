@@ -15,6 +15,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 228 - 
+[2007/04/11] RaX - Fixed a warning in Aeomin's new code...Changed Seconds from longword to
+ integer in Account.pas - TemporaryBan.
+-
+
 - Rev 227 -
 [2007/04/12] Notes/Overview: Implement Duplicate Login Session Check.
 [2007/04/12] Aeomin - Added Show_FriendlyMessage_On_DuplicateLogin option for Char server, if set to TRUE, char server will show
