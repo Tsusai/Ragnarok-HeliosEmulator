@@ -15,6 +15,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 225 - 
+[2007/04/11] RaX - Added Trunk/NOTES/Source Directory Structure.txt,
+ this file explains the folder structure in the source code.
+-
+
 - Rev 224 - 
 [2007/04/11] RaX - Overview: Updated the dpr to show the new locations of the files.
 -

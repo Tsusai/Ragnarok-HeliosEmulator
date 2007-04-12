@@ -1,0 +1,35 @@
+[04/11/2007] - RaX
+
+As of this date, the source directory structure has changed.
+
+The new Structure is as follows...
+
+SRC
+ \__COMMON
+        \__CLASSES
+		\__BEINGS
+		\__DATABASE
+			\__COMMON
+			\__GAME
+			\__STATIC
+		\__EVENTS
+		\__LISTS
+	\__CONFIG
+	\__CONSOLE
+		\__LINCRT
+		\__WINCRT
+	\__LUA
+		\__CORE
+		\__NPC
+	\__THIRDPARTY
+		\__JANSQL
+		\__MSSQL
+		\__MYSQL
+			\__ZLIB
+	
+ \__CONSTANTS
+ \__SERVERS
+	\__CHARACTER
+	\__LOGIN
+	\__INTER
+	\__ZONE
