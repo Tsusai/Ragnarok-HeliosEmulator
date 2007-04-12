@@ -498,9 +498,6 @@ end;{OnException}
 								if AccountInfo.OnCharSrvList then
 								begin
 									fAccountList.Delete(Idx);
-									//Ban for 15 seonds
-//									AnAccount.TemperaryBan(15);
-//									SendLoginError(AClient, LOGIN_TEMPERARYBAN, AnAccount.GetBanUntilTimeString);
 									SendDcError(AClient, 8); //Server still recognizes your last login
 								end else
 								begin
@@ -514,9 +511,6 @@ end;{OnException}
 										begin
 											AccountInfo.UnderKickQuery := True;
 											SendKickAccountChara(TCharaServerInfo(fCharaServerList.Objects[CharSrvIdx]).Connection, AnAccount.ID);
-											//Ban for 15 seonds
-//											AnAccount.TemperaryBan(15);
-//											SendLoginError(AClient, LOGIN_TEMPERARYBAN, AnAccount.GetBanUntilTimeString);
 											SendDcError(AClient, 8);  //Server still recognizes your last login
 										end else
 										begin
@@ -670,6 +664,7 @@ end;
 //
 //	Changes -
 //		April 12th, 2007 - Aeomin - header created
+//		April 12th, 2007 - Aeomin - Reset login keys to 0 after DC
 //
 //------------------------------------------------------------------------------
 procedure TLoginServer.RemoveFromAccountList(
@@ -677,12 +672,23 @@ procedure TLoginServer.RemoveFromAccountList(
 	InBuffer : TBuffer
 );
 var
+	AccountID : LongWord;
 	Idx	: Integer;
+	AnAccount : TAccount;
 begin
-	Idx := fAccountList.IndexOf(BufferReadLongWord(2, InBuffer));
+	AccountID := BufferReadLongWord(2, InBuffer);
+	Idx := fAccountList.IndexOf(AccountID);
 	if Idx > -1 then
 	begin
+		TCharaServerLink(AClient.Data).DatabaseLink.CommonData.Connect;
+		AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
+		if Assigned(AnAccount) then begin
+		AnAccount.LoginKey[1] := 0;
+		AnAccount.LoginKey[2] := 0;
 		fAccountList.Delete(Idx);
+		TThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
+		end;
+		TCharaServerLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
 	end;
 end;
 //------------------------------------------------------------------------------

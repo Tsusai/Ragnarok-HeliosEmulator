@@ -220,6 +220,7 @@ uses
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header;
 //    April 10th, 2007 - Aeomin - Added SendZoneCharaLogon.
+//    April 12th, 2007 - Aeomin - Append check to disallow 0 of LoginKey
 //------------------------------------------------------------------------------
 	procedure MapConnect(
 			Version : Integer;
@@ -257,6 +258,7 @@ uses
 		if Assigned(AnAccount) and Assigned(ACharacter) then
 		begin
 			if (AnAccount.LoginKey[1] = ValidateID1) and
+			   (AnAccount.LoginKey[1] > 0) and
 				(AnAccount.GenderNum = Gender) then
 			begin
 				// Duplicate session safe check!

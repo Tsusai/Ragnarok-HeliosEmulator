@@ -459,6 +459,7 @@ end;{LoginClientRead}
 //		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
 //			IdContext.Binding shortcut
 //		March 12th, 2007 - Aeomin - Modified Header.
+//		April 12th, 2007 - Aeomin - Append check to disallow 0 of LoginKey
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
@@ -496,8 +497,8 @@ begin
 	begin
 		if AnAccount.ID = AccountID then
 		begin
-			if  (AnAccount.LoginKey[1] = BufferReadLongWord(6,  ABuffer)) and
-				(AnAccount.LoginKey[2] = BufferReadLongWord(10, ABuffer)) then
+			if  (AnAccount.LoginKey[1] = BufferReadLongWord(6,  ABuffer)) and (AnAccount.LoginKey[1] > 0) and
+				(AnAccount.LoginKey[2] = BufferReadLongWord(10, ABuffer)) and (AnAccount.LoginKey[2] > 0) then
 			begin
 				//LINK the account to the client connection for the other procedures
 				TClientLink(AClient.Data).AccountLink := AnAccount;

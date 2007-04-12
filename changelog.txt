@@ -15,8 +15,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 229 -
+[2007/04/12] Aeomin - Append check for char and zone server to disallow LoginKey of 0
+                      [CharacterServer.pas (SendCharas) ; ZoneRecv.pas (MapConnect)]
+[2007/04/12] Aeomin - Added reset LoginKey to 0 after client DC [LoginServer.pas (RemoveFromAccountList)]
+-
+
 - Rev 228 - 
-[2007/04/11] RaX - Fixed a warning in Aeomin's new code...Changed Seconds from longword to
+[2007/04/12] RaX - Fixed a warning in Aeomin's new code...Changed Seconds from longword to
  integer in Account.pas - TemporaryBan.
 -
 
