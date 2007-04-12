@@ -15,6 +15,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 226 -
+[2007/04/12] Tsusai - Notes/Overview: Fixed Linux compile errors and a file move.
+[2007/04/12] Tsusai - MSSQLClient: Somehow forgot that SysUtils was needed for linux.
+[2007/04/12] Tsusai - Helios.dpr: Changed Crt unit files from WinConsole to LinCRT & NCurses.
+[2007/04/12] Tsusai - Moved Lua.pas into ThirdParty folder.  Moved Dummy files for my
+ reference.
+-
+
 - Rev 225 - 
 [2007/04/11] RaX - Added Trunk/NOTES/Source Directory Structure.txt,
  this file explains the folder structure in the source code.

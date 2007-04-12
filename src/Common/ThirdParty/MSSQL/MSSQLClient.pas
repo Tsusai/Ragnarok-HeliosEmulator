@@ -56,6 +56,9 @@ uses
 	{$IFDEF MSWINDOWS}
 	Windows,
 	{$ENDIF}
+	{$IFDEF LINUX}
+	SysUtils,
+	{$ENDIF}
 	{Project}
 	Globals
 	{3rd Party}

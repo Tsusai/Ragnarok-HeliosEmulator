@@ -180,7 +180,8 @@ compile for linux, at the same time*}
 	//Console Related Units
 	Terminal in 'Common/Console/Terminal.pas',
 	CRT in 'Common/Console/CRT.pas',
-	WinConsole in 'Common/Console/WinCRT/WinConsole.pas',
+	LinCRT in 'Common/Console/LinCRT/LinCRT.pas',
+	NCurses in 'Common/Console/LinCRT/NCurses.pas',
 
 	//Login Server
 	LoginServer in 'Servers/Login/LoginServer.pas',
