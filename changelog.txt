@@ -15,6 +15,15 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 223 - BROKEN BUILD(On Purpose.)
+[2007/04/11] RaX - Overview: Yet another purposely broken build, this one completes moving
+ all the source files into their appropriated positions.
+[2007/04/11] RaX - Renamed 3rdParty to ThirdParty.
+[2007/04/11] RaX - Moved Database.pas into the Database folder.
+[2007/04/11] RaX - Created Common/Classes/Beings folder, moved Being and descendants into it.
+[2007/04/11] RaX - Created  Common/Classes/Lists folder, moved custom lists into it.
+-
+
 - Rev 222 - BROKEN BUILD(On Purpose.)
 [2007/04/11] RaX - Overview: Moved files around to be more sane in the repository.
 [2007/04/11] RaX - Moved Classes Folder into Common Folder.
