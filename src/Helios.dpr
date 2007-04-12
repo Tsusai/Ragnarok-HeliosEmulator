@@ -72,11 +72,13 @@ compile for linux, at the same time*}
 
 	//Login Server
 	LoginServer in 'Servers\Login\LoginServer.pas',
+	LoginAccountInfo in 'Servers\Login\LoginAccountInfo.pas',
 
 	//Character Server
 	CharacterServer in 'Servers\Character\CharacterServer.pas',
 	CharacterServerInfo in 'Servers\Character\CharacterServerInfo.pas',
 	CharaLoginCommunication in 'Servers\Character\CharaLoginCommunication.pas',
+	CharAccountInfo in 'Servers\Character\CharAccountInfo.pas',
 
 	//InterServer
 	InterServer in 'Servers\Inter\InterServer.pas',
@@ -185,11 +187,13 @@ compile for linux, at the same time*}
 
 	//Login Server
 	LoginServer in 'Servers/Login/LoginServer.pas',
+	LoginAccountInfo in 'Login/Login/LoginAccountInfo.pas',
 
 	//Character Server
 	CharacterServer in 'Servers/Character/CharacterServer.pas',
 	CharacterServerInfo in 'Servers/Character/CharacterServerInfo.pas',
 	CharaLoginCommunication in 'Servers/Character/CharaLoginCommunication.pas',
+	CharAccountInfo in 'Servers/Character/CharAccountInfo.pas',
 
 	//InterServer
 	InterServer in 'Servers/Inter/InterServer.pas',

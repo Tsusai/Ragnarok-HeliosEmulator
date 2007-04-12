@@ -23,6 +23,7 @@ uses
 	{Project}
 	Being,
 	Character,
+	PacketTypes,
 	{Third Party}
 	IdContext
 	;
@@ -58,6 +59,7 @@ uses
 
 	procedure Kick(const Who:TCharacter);
 	procedure KickAll;
+	procedure DuplicateSessionKick(InBuffer : TBuffer);
 
 implementation
 
@@ -69,7 +71,6 @@ uses
 	{Project}
 	BufferIO,
 	Main,
-	PacketTypes,
 	TCPServerRoutines
 	{3rd Party}
 	//none
@@ -196,6 +197,7 @@ uses
 //
 //  Changes -
 //    March 17th, 2007 - RaX - Created;
+//    April 10th, 2007 - Aeomin - Add DelayDisconnect
 //------------------------------------------------------------------------------
 	procedure SendCharacterSelectResponse(
 		ACharacter : TCharacter
@@ -203,10 +205,12 @@ uses
 	var
 		OutBuffer : TBuffer;
 	begin
+		ACharacter.DcAndKeepData := True;
 		//send leave 2
 		WriteBufferWord(0, $00b3,OutBuffer);
 		WriteBufferByte(2, 1,OutBuffer);
 		SendBuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($00b3,ACharacter.ClientVersion));
+		ACharacter.DelayDisconnect(10000);
 	end;//SendCharacterSelectResponse
 //------------------------------------------------------------------------------
 
@@ -220,6 +224,7 @@ uses
 //
 //  Changes -
 //    March 17th, 2007 - RaX - Created;
+//    April 10th, 2007 - Aeomin - Add DelayDisconnect
 //------------------------------------------------------------------------------
 	procedure SendQuitGameResponse(
 		ACharacter : TCharacter
@@ -227,10 +232,12 @@ uses
 	var
 		OutBuffer : TBuffer;
 	begin
+//		ACharacter.DcAndKeepData := False;
 		//send leave 2
 		WriteBufferWord(0, $018b, OutBuffer);
 		WriteBufferWord(2, 0, OutBuffer);
-		Sendbuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($018b,ACharacter.ClientVersion));
+		Sendbuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($018b, ACharacter.ClientVersion));
+		ACharacter.DelayDisconnect(10000);
 	end;//SendQuitGameResponse
 //------------------------------------------------------------------------------
 
@@ -594,4 +601,36 @@ begin
 	end;
 end;
 //------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//DuplicateSessionKick                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Show "Someone has already logged in with this ID" and DC.
+//
+//  Changes -
+//    April 12th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure DuplicateSessionKick(InBuffer : TBuffer);
+var
+	OutBuffer : TBuffer;
+	CharID    : LongWord;
+	Idx       : Integer;
+	Chara : TCharacter;
+begin
+	CharID := BufferReadLongWord(2,InBuffer);
+	Idx := MainProc.ZoneServer.CharacterList.IndexOf(CharID);
+	if Idx > -1 then
+	begin
+		Chara := MainProc.ZoneServer.CharacterList[Idx] as TCharacter;
+		FillChar(OutBuffer, GetPacketLength($0081), 0);
+		WriteBufferWord(0, $0081, OutBuffer);
+		WriteBufferByte(2, 2, OutBuffer);
+		SendBuffer(Chara.ClientInfo,OutBuffer,GetPacketLength($0081));
+		Chara.DelayDisconnect(10000);
+	end;
+end;
+//------------------------------------------------------------------------------
+
 end.

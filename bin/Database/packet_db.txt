@@ -6,11 +6,14 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 
 //HELIOS SPECIFIC SERVER COMMUNICATION PACKETS HERE
 //Login <-> Chara
-0x2000,44
+0x2000,48
 0x2001,3
 0x2002,-1
 0x2003,-1
 0x2004,4
+0x2005,10
+0x2006,6
+0x2007,6
 
 //Chara <-> Zone
 0x2100,24
@@ -21,6 +24,9 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x2105,2
 0x2106,2
 0x2107,4
+0x2108,8
+0x2109,7
+0x2110,6
 
 //Inter <-> Zone
 0x2200,24

@@ -252,6 +252,7 @@ begin
 		TThreadLink(AConnection.Data).DatabaseLink.GameData.Connect;
 		TThreadLink(AConnection.Data).DatabaseLink.GameData.SaveChara(ACharacter);
 		TThreadLink(AConnection.Data).DatabaseLink.GameData.Disconnect;
+		SendZoneCharaLogOut(ToCharaTCPClient, ACharacter, Byte(ACharacter.DcAndKeepData));
 		if Started and (ACharacter.MapInfo <> nil) then
 		begin
 			AMap := ACharacter.MapInfo;
@@ -262,6 +263,7 @@ begin
 				ACharacter.ShowTeleportOut;
 			end;
 		end;
+
 		CharacterIndex := CharacterList.IndexOf(ACharacter.CID);
 		if CharacterIndex > -1 then
 		begin
@@ -744,6 +746,11 @@ begin
 		begin
 			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2107)-2);
 			TotalOnlinePlayers := BufferReadWord(2,ABuffer);
+		end;
+	$2110:
+		begin
+			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2110)-2);
+			DuplicateSessionKick(ABuffer);
 		end;
 	end;
 end;{CharaClientRead}

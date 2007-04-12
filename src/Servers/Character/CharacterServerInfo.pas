@@ -21,6 +21,7 @@ type
 //------------------------------------------------------------------------------
 	TCharaServerInfo = class(TServerInfo)
 	public
+		ServerID   : LongWord;
 		ServerName : String;
 		OnlineUsers : Word;
 	end;

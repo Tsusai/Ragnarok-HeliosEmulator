@@ -310,6 +310,7 @@ end;//SendQuery
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //		December 27th, 2006 - Tsusai - Fixed login key and gender char reading
+//		April 10th, 2007 - Aeomin - Added AnAccount.State
 //
 //------------------------------------------------------------------------------
 procedure TJanSQLCommonDatabase.SetAccount(
@@ -334,6 +335,7 @@ begin
 	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.records[0].fields[11].value);
 	AnAccount.LastIP       := QueryResult.records[0].fields[12].value;
 	AnAccount.Bantime      := ConvertMySQLTime(QueryResult.records[0].fields[14].value);
+	AnAccount.State      := QueryResult.records[0].fields[15].value;
 end;//SetAccount
 //------------------------------------------------------------------------------
 
@@ -475,7 +477,8 @@ const
 		'loginkey2=%d, ' +
 		'connect_until=''%s'', ' +
 		'ban_until=''%s'', ' +
-		'last_ip=''%s'' ' +
+		'last_ip=''%s'', ' +
+		'state=%d' +
 		'WHERE account_id=%d';
 var
 	QueryString : string;
@@ -494,6 +497,7 @@ begin
 			 FormatDateTime('yyyy-mm-dd hh:mm:ss',AnAccount.ConnectUntil),
 			 FormatDateTime('yyyy-mm-dd hh:mm:ss',AnAccount.Bantime),
 			 AnAccount.LastIP,
+			 AnAccount.State,
 			 AnAccount.ID]
 		);
 	ResultIdentifier := SendQuery(QueryString);

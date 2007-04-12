@@ -36,6 +36,7 @@ type
 		fWANPort           : Word;
 
 		fZoneServerList : TIntList32;
+		fAccountList    : TIntList32;
 
 		TCPServer       : TIdTCPServer;
 		CharaToLoginClient : TInterClient;
@@ -45,11 +46,25 @@ type
 			AException: Exception);
 
 		procedure LoginClientOnConnect(Sender : TObject);
+		procedure LoginClientKickAccount(
+		AClient : TInterClient;
+		var InBuffer : TBuffer
+		);
 		procedure LoginClientRead(AClient : TInterClient);
 
 		procedure ParseCharaServ(AClient : TIdContext);
 
 		procedure VerifyZoneServer(
+			AClient : TIdContext;
+			InBuffer : TBuffer
+		);
+
+		procedure UpdateToAccountList(
+			AClient : TIdContext;
+			InBuffer : TBuffer
+		);
+
+		procedure RemoveFromAccountList(
 			AClient : TIdContext;
 			InBuffer : TBuffer
 		);
@@ -95,6 +110,7 @@ uses
 	Math,
 	//Helios
 	CharaList,
+	CharAccountInfo,
 	CharaLoginCommunication,
 	ZoneCharaCommunication,
 	BufferIO,
@@ -139,6 +155,7 @@ begin
 	CharaToLoginClient.OnRecieve := LoginClientRead;
 
 	fZoneServerList := TIntList32.Create;
+	fAccountList := TIntList32.Create;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -160,6 +177,7 @@ begin
 	CharaToLoginClient.Free;
 
 	fZoneServerList.Free;
+	fAccountList.Free;
 end;{Destroy}
 //------------------------------------------------------------------------------
 
@@ -202,8 +220,8 @@ begin
 	begin
     LoadOptions;
 
-    ServerName := Options.ServerName;
-	  WANPort := Options.Port;
+	ServerName := Options.ServerName;
+	WANPort := Options.Port;
 
 	  ActivateServer('Character',TCPServer);
 	  WANIP := Options.WANIP;
@@ -331,6 +349,47 @@ end;{LoginClientOnConnect}
 //------------------------------------------------------------------------------
 
 
+procedure TCharacterServer.LoginClientKickAccount(
+	AClient : TInterClient;
+	var InBuffer : TBuffer
+	);
+var
+	AccountID : LongWord;
+	Idx       : Integer;
+	ZoneIdx   : Integer;
+	AccountInfo : TCharAccountInfo;
+	OutBuffer : TBuffer;
+begin
+	AccountID := BufferReadLongWord(2, InBuffer);
+	Idx := fAccountList.IndexOf(AccountID);
+	if Idx > -1 then
+	begin
+		AccountInfo := fAccountList.Objects[Idx] as TCharAccountInfo;
+
+		if AccountInfo.InGame then
+		begin
+			//If we can't find the zone, just forget about it
+			//Most cause will be connection between zone and char server is dropped.
+			ZoneIdx := fZoneServerList.IndexOf(AccountInfo.ZoneServerID);
+			if ZoneIdx > -1 then
+			begin
+				SendKickAccountToZone(TZoneServerInfo(fZoneServerList.Objects[idx]).Connection, AccountInfo.CharacterID);
+			end;
+		end else begin
+			//Show "Someone has already logged in with this ID" ?
+			if Options.ShowFriendlyMessageOnDupLogin then
+			begin
+			FillChar(OutBuffer, GetPacketLength($0081), 0);
+			WriteBufferWord(0, $0081, OutBuffer);
+			WriteBufferByte(2, 2, OutBuffer);
+			SendBuffer(AccountInfo.ClientInfo, OutBuffer, GetPacketLength($0081));
+			end;
+			AccountInfo.ClientInfo.Connection.Disconnect;
+		end;
+	end;
+end;
+//------------------------------------------------------------------------------
+
 //------------------------------------------------------------------------------
 //LoginClientRead()                                                   PROCEDURE
 //------------------------------------------------------------------------------
@@ -341,6 +400,7 @@ end;{LoginClientOnConnect}
 //		January 3rd, 2007 - Tsusai - Added console messages.
 //		January 4th, 2007 - RaX - Created Header.
 //		January 14th, 2007 - Tsusai - Updated procedure calls.
+//		April 10th, 2007 - Aeomin - Updated to support Server ID.
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.LoginClientRead(AClient : TInterClient);
@@ -356,7 +416,7 @@ begin
 		begin
 			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2001)-2);
 			Response := BufferReadByte(2,ABuffer);
-			if Boolean(Response) then
+			if Response = 0 then
 			begin
 				Console.Message('Verified with Login Server, '+
 					'sending details.', 'Character Server', MS_NOTICE);
@@ -365,10 +425,18 @@ begin
 				SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
 			end else
 			begin
-				Console.Message('Failed to verify with Login Server. Invalid Security Key', 'Character Server', MS_ERROR);
-				Console.Message('Stopping...', 'Character Server', MS_NOTICE);
+				case Response of
+				1 : Console.Message('Failed to verify with Login Server. ID already in use.', 'Character Server', MS_WARNING);
+				2 : Console.Message('Failed to verify with Login Server. Invalid security key.', 'Character Server', MS_WARNING);
+				end;
+				Console.Message('Stopping...', 'Zone Server', MS_NOTICE);
 				Stop;
 			end;
+		end;
+	$2007:
+		begin
+			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2007)-2);
+			LoginClientKickAccount(AClient, ABuffer);
 		end;
 	end;
 end;{LoginClientRead}
@@ -390,7 +458,7 @@ end;{LoginClientRead}
 //		January 3rd, 2007 - Tsusai - Added console messages.
 //		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
 //			IdContext.Binding shortcut
-//		March 12th, 2007 - Aeomin - Modificaion Header.
+//		March 12th, 2007 - Aeomin - Modified Header.
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
@@ -406,7 +474,8 @@ var
 	ACharaList  : TCharacterList;
 	BaseIndex   : Integer;
 	CharacterDataSize : integer;
-
+	Idx         : Integer;
+	AccountInfo : TCharAccountInfo;
 begin
 	Count     := 0;
 	Ver       := 24;
@@ -437,25 +506,56 @@ begin
 				TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
 				ACharaList := TThreadLink(AClient.Data).DatabaseLink.GameData.GetAccountCharas(AccountID);
 				TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
-				for Index := ACharaList.Count-1 downto 0 do
+
+				Idx := fAccountList.IndexOf(AnAccount.ID);
+				if Idx > -1 then
 				begin
-					ACharacter := ACharaList.Items[Index];
-					AnAccount.CharaID[ACharacter.CharaNum] := ACharacter.CID;
-					with ACharacter do
+					AccountInfo := fAccountList.Objects[idx] as TCharAccountInfo;
+					//Make sure no dup login via skip server.
+					if (not AccountInfo.Transfering)or(AccountInfo.InGame) then
+					begin   //Reject!
+						WriteBufferWord(0, $006a, ReplyBuffer);
+						WriteBufferByte(2, 03, ReplyBuffer);
+						SendBuffer(AClient,ReplyBuffer,GetPacketLength($006a));
+					end else
 					begin
-						BaseIndex := Ver+(Count*CharacterDataSize);
-						WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,BaseIndex);
-						Inc(Count);
+						AccountInfo.ClientInfo := AClient;
+						TClientLink(AClient.Data).AccountInfo := AccountInfo;
 					end;
-					ACharacter.Free;
-					ACharaList.Delete(Index);
+				end else
+				begin
+					AccountInfo := TCharAccountInfo.Create(AnAccount.ID);
+					AccountInfo.ClientInfo := AClient;
+					TClientLink(AClient.Data).AccountInfo := AccountInfo;
+					AccountInfo.Transfering := True;
+					fAccountList.AddObject(AnAccount.ID, AccountInfo);
+					SendAccountLogon(CharaToLoginClient, AccountInfo, Self);
 				end;
-				ACharaList.Free;
-				//size is (24 + (character count * Character data size))
-				PacketSize := (Ver + (Count * CharacterDataSize));
-				WriteBufferWord(0,$006b,ReplyBuffer); //header
-				WriteBufferWord(2,PacketSize,ReplyBuffer);
-				SendBuffer(AClient,ReplyBuffer,PacketSize);
+
+				//Ah..lets make sure again
+				if (AccountInfo.Transfering)or(not AccountInfo.InGame) then
+				begin
+					for Index := ACharaList.Count-1 downto 0 do
+					begin
+						ACharacter := ACharaList.Items[Index];
+						AnAccount.CharaID[ACharacter.CharaNum] := ACharacter.CID;
+						with ACharacter do
+						begin
+							BaseIndex := Ver+(Count*CharacterDataSize);
+							WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,BaseIndex);
+							Inc(Count);
+						end;
+						ACharacter.Free;
+						ACharaList.Delete(Index);
+					end;
+					ACharaList.Free;
+					//size is (24 + (character count * Character data size))
+					PacketSize := (Ver + (Count * CharacterDataSize));
+					WriteBufferWord(0,$006b,ReplyBuffer); //header
+					WriteBufferWord(2,PacketSize,ReplyBuffer);
+					SendBuffer(AClient,ReplyBuffer,PacketSize);
+				end;
+				AccountInfo.Transfering := False;
 			end else
 			begin
 				WriteBufferWord(0, $0081, ReplyBuffer);
@@ -529,6 +629,8 @@ begin
 		idx := fZoneServerList.IndexOf(ZoneID);
 		if idx > -1 then
 		begin
+			TClientLink(AClient.Data).AccountInfo.CharacterID := ACharacter.CID;
+			TClientLink(AClient.Data).Transfering := True;
 			ZServerInfo := TZoneServerInfo(fZoneServerList.Objects[idx]);
 
 			WriteBufferWord(0, $0071, OutBuffer);
@@ -825,6 +927,87 @@ end;
 
 
 //------------------------------------------------------------------------------
+//UpdateToAccountList                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Update the account data in list (ex, switching zone)
+//
+//	Changes -
+//		April 12th, 2007 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
+procedure TCharacterServer.UpdateToAccountList(
+	AClient : TIdContext;
+	InBuffer : TBuffer
+);
+var
+	AccountID: LongWord;
+	Idx	: Integer;
+	AccountInfo : TCharAccountInfo;
+begin
+	AccountID := BufferReadLongWord(2, InBuffer);
+	Idx := fAccountList.IndexOf(AccountID);
+	//If already exist, just update it.
+	//Should be exist, since data is create upon connect to Char Server
+	if Idx > -1 then
+	begin
+		AccountInfo := fAccountList.Objects[Idx] as TCharAccountInfo;
+
+		AccountInfo.ZoneServerID := BufferReadWord(6, InBuffer);
+		AccountInfo.InGame := True;
+		AccountInfo.Transfering := False;
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RemoveFromAccountList                                                PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Remove/Reset the account data in list (ex, Exit game/Return to character select)
+//
+//	Changes -
+//		April 12th, 2007 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
+procedure TCharacterServer.RemoveFromAccountList(
+	AClient : TIdContext;
+	InBuffer : TBuffer
+);
+var
+	AccountID: LongWord;
+	Idx	: Integer;
+	AccountInfo : TCharAccountInfo;
+	Action  : Byte;
+begin
+	AccountID := BufferReadLongWord(2, InBuffer);
+	Idx := fAccountList.IndexOf(AccountID);
+	//Should be exist, since data is create upon connect to Char Server
+	if Idx > -1 then
+	begin
+		AccountInfo := fAccountList.Objects[Idx] as TCharAccountInfo;
+
+		Action := BufferReadByte(6, InBuffer);
+		// 0 = Delete it and forward to Account Server..
+		// 1 = Keep data (Returning to Character Server..)
+		if Action = 0 then
+		begin
+			if AccountInfo.InGame then
+			begin
+				fAccountList.Delete(Idx);
+				SendAccountLogOut(CharaToLoginClient, AccountInfo, Self);
+			end;
+		end else
+		begin
+			AccountInfo.Transfering := True;
+			AccountInfo.InGame := False;
+		end;
+	end;
+end;
+
+
+//------------------------------------------------------------------------------
 //ParseCharaServ                                                      PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
@@ -939,6 +1122,22 @@ begin
 					Console.Message('Received updated Zone Server Online Users (-1).', 'Character Server', MS_DEBUG);
 				end;
 			end;
+		$2108: //Zone send update an account in fAccountList
+			begin
+				if AClient.Data is TZoneServerLink then
+				begin
+					RecvBuffer(AClient,ABuffer[2],GetPacketLength($2108)-2);
+					UpdateToAccountList(AClient,ABuffer);
+				end;
+		end;
+		$2109: //Zone send remove an account in fAccountList
+			begin
+				if AClient.Data is TZoneServerLink then
+				begin
+					RecvBuffer(AClient,ABuffer[2],GetPacketLength($2109)-2);
+					RemoveFromAccountList(AClient,ABuffer);
+				end;
+		end;
 		else
 			begin
 				Console.Message('Unknown Character Server Packet : ' + IntToHex(PacketID,4), 'Character Server', MS_WARNING);
@@ -1035,12 +1234,14 @@ end;{SetPort}
 //		January 10th, 2007 - Tsusai - Created Header.
 //		March 12th, 2007 - Aeomin - Fix header (should be character
 //						server not login server)
+//		April 10th, 2007 - Aeomin - Added
 //
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.OnDisconnect(AConnection: TIdContext);
 var
 	idx : integer;
 	AZoneServInfo : TZoneServerInfo;
+	AccountInfo : TCharAccountInfo;
 begin
 	if AConnection.Data is TZoneServerLink then
 	begin
@@ -1049,6 +1250,16 @@ begin
 		if not (idx = -1) then
 		begin
 			fZoneServerList.Delete(idx);
+		end;
+	end else
+	if AConnection.Data is TClientLink then
+	begin
+		Idx := fAccountList.IndexOf(TClientLink(AConnection.Data).AccountLink.ID);
+		if (Idx > -1) and (not TClientLink(AConnection.Data).Transfering) then
+		begin
+			AccountInfo := fAccountList.Objects[Idx] as TCharAccountInfo;
+			SendAccountLogOut(CharaToLoginClient, AccountInfo, Self);
+			fAccountList.Delete(Idx);
 		end;
 	end;
 end;{OnDisconnect}

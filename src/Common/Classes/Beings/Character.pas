@@ -128,6 +128,8 @@ type
 	public
 		CID : LongWord;
 
+		DcAndKeepData : Boolean;
+
 		BaseNextEXP  : LongWord;
 		JobNextEXP   : LongWord;
 		Weight       : LongWord;

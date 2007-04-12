@@ -20,8 +20,10 @@ uses
 	IdContext,
 	PacketTypes,
 	Classes,
+	List32,
 	SysUtils,
 	Account,
+	LoginAccountInfo,
 	LoginOptions;
 
 type
@@ -34,7 +36,8 @@ type
 	private
 		fPort         : Word;
 		TCPServer     : TIdTCPServer;
-		fCharaServerList : TStringList;
+		fCharaServerList : TIntList32;
+		fAccountList  : TIntList32;
 
 		Procedure OnConnect(AConnection: TIdContext);
 		Procedure OnDisconnect(AConnection: TIdContext);
@@ -44,7 +47,8 @@ type
 		Procedure LoadOptions;
 
 		Procedure ParseLogin(AClient: TIdContext);
-		Procedure SendLoginError(var AClient: TIdContext; const Error : byte);
+		Procedure SendLoginError(var AClient: TIdContext; const Error : byte; const Error_Message : String='');
+		procedure SendDCError(var AClient: TIdContext; const Error : byte);
 		Procedure SendCharacterServers(AnAccount : TAccount; AClient: TIdContext);
 		Procedure ParseMF(AClient : TIdContext; var Username : string; Password : string);
 		Procedure ValidateLogin(
@@ -60,6 +64,15 @@ type
 			Password : String
 		);
 
+		procedure UpdateToAccountList(
+			AClient : TIdContext;
+			InBuffer : TBuffer
+		);
+
+		procedure RemoveFromAccountList(
+			AClient : TIdContext;
+			InBuffer : TBuffer
+		);
 		Procedure SetPort(Value : Word);
 		Function GetStarted() : Boolean;
 
@@ -86,14 +99,17 @@ uses
 	CharacterServerInfo,
 	StrUtils,
 	Main,
-	TCPServerRoutines;
+	TCPServerRoutines,
+	DateUtils;
 
 const
 //ERROR REPLY CONSTANTS
 	LOGIN_UNREGISTERED    = 0;
 	LOGIN_INVALIDPASSWORD = 1;
-	LOGIN_BANNED          = 4;
 	LOGIN_TIMEUP          = 2;
+	LOGIN_REJECTED        = 3;
+	LOGIN_BANNED          = 4;
+	LOGIN_TEMPERARYBAN    = 6;
 	//LOGIN_SERVERFULL =  ;
 
 //------------------------------------------------------------------------------
@@ -117,7 +133,8 @@ begin
 	TCPServer.OnDisconnect:= OnDisconnect;
 	TCPServer.OnException := OnException;
 
-	fCharaServerList      := TStringList.Create;
+	fCharaServerList      := TIntList32.Create;
+	fAccountList          := TIntList32.Create;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -136,6 +153,7 @@ Destructor TLoginServer.Destroy();
 begin
 	TCPServer.Free;
 	fCharaServerList.Free;
+        fAccountList.Free;
 	Inherited;
 end;{Destroy}
 //------------------------------------------------------------------------------
@@ -283,14 +301,36 @@ end;{OnException}
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-	procedure TLoginServer.SendLoginError(var AClient: TIdContext; const Error : byte);
+	procedure TLoginServer.SendLoginError(var AClient: TIdContext; const Error : byte; const Error_Message : String='');
 	var
 		Buffer : TBuffer;
 	begin
 		WriteBufferWord( 0, $006a, Buffer);
-		WriteBufferWord( 2, Error, Buffer);
+		WriteBufferByte( 2, Error, Buffer);
+		WriteBufferString(3, Error_Message, 20, Buffer);
 		SendBuffer(AClient, Buffer ,GetPacketLength($006a));
 	end; // proc SendLoginError
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendDCError		                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Send connection error code to client
+//
+//	Changes -
+//		April 11th, 2007 - Aeomin - Created header
+//
+//------------------------------------------------------------------------------
+	procedure TLoginServer.SendDCError(var AClient: TIdContext; const Error : byte);
+	var
+		Buffer : TBuffer;
+	begin
+		WriteBufferWord( 0, $0081, Buffer);
+		WriteBufferByte( 2, Error, Buffer);
+		SendBuffer(AClient, Buffer ,GetPacketLength($0081));
+	end; // proc SendDCError
 //------------------------------------------------------------------------------
 
 
@@ -305,6 +345,7 @@ end;{OnException}
 //		December 17th, 2006 - RaX - Created Header.
 //		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
 //			IdContext.Binding shortcut.
+//		April 11th, 2007 - Aeomin - Changed packet 0x0081 to SendDcError
 //
 //------------------------------------------------------------------------------
 	procedure TLoginServer.SendCharacterServers(AnAccount : TAccount; AClient: TIdContext);
@@ -345,9 +386,7 @@ end;{OnException}
 			SendBuffer(AClient, Buffer, Size);
 		end else
 		begin
-			WriteBufferWord(0,$0081,Buffer);
-			WriteBufferByte(2,1,Buffer); //01 Server Closed
-			SendBuffer(AClient, Buffer, GetPacketLength($0081));
+			SendDcError(AClient, 1); //01 Server Closed
 		end;
 
 	end; // Proc SendCharacterServers
@@ -413,6 +452,9 @@ end;{OnException}
 		AnAccount : TAccount;
 		AccountPassword : string;
 		MD5Key    : string;
+		Idx : Integer;
+		CharSrvIdx: Integer;
+		AccountInfo : TLoginAccountInfo;
 	begin
 		Console.Message(
 			'RO Client connection from ' +
@@ -442,22 +484,69 @@ end;{OnException}
 			end;
 			if AccountPassword = Password then
 			begin
-				if not AnAccount.IsBanned then
+//				if not AnAccount.IsBanned then
+				if AnAccount.State = 0 then
 				begin
-					if not AnAccount.GameTimeUp then
+					if AnAccount.Bantime <= Now then
 					begin
-						AnAccount.LoginKey[1] := Random($7FFFFFFF) + 1;
-						AnAccount.LoginKey[2] := Random($7FFFFFFF) + 1;
-						AnAccount.LastIP := AClient.Binding.PeerIP;
-						AnAccount.LastLoginTime := Now;
-						Inc(AnAccount.LoginCount);
-						TThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
-						SendCharacterServers(AnAccount,AClient);
+						if not AnAccount.GameTimeUp then
+						begin
+							Idx := fAccountList.IndexOf(AnAccount.ID);
+							if Idx > -1 then
+							begin
+								AccountInfo := fAccountList.Objects[idx] as TLoginAccountInfo;
+								if AccountInfo.OnCharSrvList then
+								begin
+									fAccountList.Delete(Idx);
+									//Ban for 15 seonds
+//									AnAccount.TemperaryBan(15);
+//									SendLoginError(AClient, LOGIN_TEMPERARYBAN, AnAccount.GetBanUntilTimeString);
+									SendDcError(AClient, 8); //Server still recognizes your last login
+								end else
+								begin
+									if AccountInfo.UnderKickQuery then
+									begin
+										SendDcError(AClient, 8); //Server still recognizes your last login
+									end else
+									begin
+										CharSrvIdx := fCharaServerList.IndexOf(AccountInfo.CharServerID);
+										if CharSrvIdx > -1 then
+										begin
+											AccountInfo.UnderKickQuery := True;
+											SendKickAccountChara(TCharaServerInfo(fCharaServerList.Objects[CharSrvIdx]).Connection, AnAccount.ID);
+											//Ban for 15 seonds
+//											AnAccount.TemperaryBan(15);
+//											SendLoginError(AClient, LOGIN_TEMPERARYBAN, AnAccount.GetBanUntilTimeString);
+											SendDcError(AClient, 8);  //Server still recognizes your last login
+										end else
+										begin
+											SendLoginError(AClient, LOGIN_REJECTED);
+										end;
+									end;
+								end;
+							end else
+							begin
+							AnAccount.LoginKey[1] := Random($7FFFFFFF) + 1;
+							AnAccount.LoginKey[2] := Random($7FFFFFFF) + 1;
+							AnAccount.LastIP := AClient.Binding.PeerIP;
+							AnAccount.LastLoginTime := Now;
+							Inc(AnAccount.LoginCount);
+							TThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
+						
+							AccountInfo := TLoginAccountInfo.Create(AnAccount.ID);
+							AccountInfo.OnCharSrvList := True;
+							fAccountList.AddObject(AnAccount.ID,AccountInfo);
+
+							SendCharacterServers(AnAccount,AClient);
+							end;
+						end else begin
+							SendLoginError(AClient,LOGIN_TIMEUP);
+						end;
 					end else begin
-						SendLoginError(AClient,LOGIN_TIMEUP);
+						SendLoginError(AClient, LOGIN_TEMPERARYBAN, AnAccount.GetBanUntilTimeString);
 					end;
 				end else begin
-				SendLoginError(AClient,LOGIN_BANNED);
+				SendLoginError(AClient, AnAccount.State-1);
 				end;
 			end else begin
 				SendLoginError(AClient,LOGIN_INVALIDPASSWORD);
@@ -492,39 +581,110 @@ end;{OnException}
 		Password : String
 	);
 	var
-		Validated : boolean;
 		Servername : String;
 		Port : word;
 		CServerInfo : TCharaServerInfo;
+		ID   : LongWord;
+		Validated : byte;
 	begin
 		Console.Message(
 			'Reading Character Server connection from ' +
 			AClient.Binding.PeerIP, 'Login Server', MS_NOTICE
 		);
-		Validated := true;
+		Validated := 0; //Assume true
+
+		ID := BufferReadLongWord(2,InBuffer);
+
+		if (fCharaServerList.IndexOf(ID) > -1) then
+		begin
+		Console.Message('Character Server failed verification. ID already in use.', 'Login Server', MS_WARNING);
+		Validated := 1;
+		end;
 
 		if Password <> GetMD5(Options.Key) then
 		begin
 			Console.Message('Character Server failed verification: Invalid Security Key.',
 				'Login Server',
 				MS_INFO);
-			Validated := false;
+			Validated := 2;
 		end;
 
-		if Validated then
+		if Validated = 0 then
 		begin
 			Console.Message('Character Server connection validated.', 'Login Server', MS_INFO);
-			Servername := BufferReadString(18,24,InBuffer);
-			Port := BufferReadWord(42,InBuffer);
+			Servername := BufferReadString(22, 24, InBuffer);
+			Port := BufferReadWord(46, InBuffer);
 			CServerInfo := TCharaServerInfo.Create;
+			CServerInfo.ServerID := ID;
 			CServerInfo.ServerName := ServerName;
 			CServerInfo.Port := Port;
+			CServerInfo.Connection := AClient;
 			AClient.Data := TCharaServerLink.Create(AClient);
 			TCharaServerLink(AClient.Data).Info := CServerInfo;
-			fCharaServerList.AddObject(ServerName,CServerInfo);
+			fCharaServerList.AddObject(ID, CServerInfo);
 		end;
 		SendValidateFlagToChara(AClient,Validated);
 	end;{VerifyCharaServer}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//UpdateToAccountList                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Parse the data send by Char server.
+//			Update account's data in account list
+//
+//	Changes -
+//		April 12th, 2007 - Aeomin - header created
+//
+//------------------------------------------------------------------------------
+procedure TLoginServer.UpdateToAccountList(
+	AClient : TIdContext;
+	InBuffer : TBuffer
+);
+var
+	AccountID: LongWord;
+	Idx	: Integer;
+	AccountInfo : TLoginAccountInfo;
+begin
+	AccountID := BufferReadLongWord(2, InBuffer);
+	Idx := fAccountList.IndexOf(AccountID);
+	if Idx > -1 then
+	begin
+		AccountInfo := fAccountList.Objects[Idx] as TLoginAccountInfo;
+
+		AccountInfo.CharServerID := BufferReadLongWord(6, InBuffer);
+		AccountInfo.OnCharSrvList := False;
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RemoveFromAccountList                                                PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Parse the data send by Char server.
+//			Remove account from account list (Logged off)
+//
+//	Changes -
+//		April 12th, 2007 - Aeomin - header created
+//
+//------------------------------------------------------------------------------
+procedure TLoginServer.RemoveFromAccountList(
+	AClient : TIdContext;
+	InBuffer : TBuffer
+);
+var
+	Idx	: Integer;
+begin
+	Idx := fAccountList.IndexOf(BufferReadLongWord(2, InBuffer));
+	if Idx > -1 then
+	begin
+		fAccountList.Delete(Idx);
+	end;
+end;
 //------------------------------------------------------------------------------
 
 
@@ -538,6 +698,7 @@ end;{OnException}
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //		January 3rd, 2007 - Tsusai - Added console messages.
+//		April 10th, 2007 - Aeomin - Changed index from 2 to 6 to support Char server ID.
 //
 //------------------------------------------------------------------------------
 	procedure TLoginServer.ParseLogin(AClient: TIdContext);
@@ -583,7 +744,7 @@ end;{OnException}
 		$2000:
 			begin
 				RecvBuffer(AClient,Buffer[2],GetPacketLength($2000)-2);
-				Password := BufferReadMD5(2,Buffer);
+				Password := BufferReadMD5(6,Buffer);
 				VerifyCharaServer(AClient,Buffer,Password);
 			end;
 		$2002:
@@ -615,6 +776,22 @@ end;{OnException}
 					RecvBuffer(AClient,Buffer[2],GetPacketLength($2004)-2);
 					TCharaServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,Buffer);
 					Console.Message('Received updated Character Server Online Users.', 'Login Server', MS_DEBUG);
+				end;
+			end;
+		$2005:
+			begin
+				if AClient.Data is TCharaServerLink then
+				begin
+					RecvBuffer(AClient,Buffer[2],GetPacketLength($2005)-2);
+					UpdateToAccountList(AClient,Buffer);
+				end;
+			end;
+		$2006:
+			begin
+				if AClient.Data is TCharaServerLink then
+				begin
+					RecvBuffer(AClient,Buffer[2],GetPacketLength($2006)-2);
+					RemoveFromAccountList(AClient,Buffer);
 				end;
 			end;
 		else

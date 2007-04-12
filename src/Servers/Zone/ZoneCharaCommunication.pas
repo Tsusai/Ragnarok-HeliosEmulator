@@ -12,8 +12,10 @@ unit ZoneCharaCommunication;
 
 interface
 uses
+	Main,
 	ZoneServer,
 	CommClient,
+	Character,
 	IdContext;
 
 	procedure ValidateWithCharaServer(
@@ -35,6 +37,19 @@ uses
 	procedure SendOnlineCountToZone(
 		AClient : TIdContext;
 		Count : Word
+	);
+	procedure SendZoneCharaLogon(
+		AClient : TInterClient;
+		AChara  : TCharacter
+	);
+	procedure SendZoneCharaLogOut(
+		AClient : TInterClient;
+		AChara  : TCharacter;
+		Action  : Byte
+	);
+	procedure SendKickAccountToZone(
+		AClient : TIdContext;
+		CharId  : LongWord
 	);
 
 implementation
@@ -198,5 +213,58 @@ uses
 		WriteBufferWord(0,$2107,OutBuffer);
 		WriteBufferWord(2,Count,OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2107));
+	end;
+
+
+//------------------------------------------------------------------------------
+//SendZoneCharaLogon                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Update account in Char server's Account List.
+//      Zone --> Char Server
+//  Changes -
+//    April 10th, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+	procedure SendZoneCharaLogon(
+		AClient : TInterClient;
+		AChara  : TCharacter
+	);
+	var
+		OutBuffer : TBuffer;
+	begin
+		FillChar(OutBuffer, GetPacketLength($2108), 0);
+		WriteBufferWord(0,$2108,OutBuffer);
+		WriteBufferLongWord(2, AChara.ID, OutBuffer);
+		WriteBufferWord(6, MainProc.ZoneServer.Options.ID, OutBuffer);
+		SendBuffer(AClient,OutBuffer,GetPacketLength($2108));
+	end;
+//------------------------------------------------------------------------------
+
+	procedure SendZoneCharaLogOut(
+		AClient : TInterClient;
+		AChara  : TCharacter;
+		Action  : Byte
+	);
+	var
+		OutBuffer : TBuffer;
+	begin
+		FillChar(OutBuffer, GetPacketLength($2109), 0);
+		WriteBufferWord(0,$2109,OutBuffer);
+		WriteBufferLongWord(2, AChara.ID, OutBuffer);
+		WriteBufferByte(6, Action, OutBuffer);
+		SendBuffer(AClient,OutBuffer,GetPacketLength($2109));
+	end;
+
+	procedure SendKickAccountToZone(
+		AClient : TIdContext;
+		CharId  : LongWord
+	);
+	var
+		OutBuffer : TBuffer;
+	begin
+		FillChar(OutBuffer, GetPacketLength($2110), 0);
+		WriteBufferWord(0,$2110,OutBuffer);
+		WriteBufferLongWord(2, CharId, OutBuffer);
+		SendBuffer(AClient,OutBuffer,GetPacketLength($2110));
 	end;
 end.

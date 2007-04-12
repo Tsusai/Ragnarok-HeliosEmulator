@@ -15,6 +15,34 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 227 -
+[2007/04/12] Notes/Overview: Implement Duplicate Login Session Check.
+[2007/04/12] Aeomin - Added Show_FriendlyMessage_On_DuplicateLogin option for Char server, if set to TRUE, char server will show
+	"Someone has already logged in with this ID" instead just DC when duplicate login [CharaOptions.pas, CharacterServer.pas(LoginClientKickAccount)]
+[2007/04/11] Aeomin - Added DuplicateSessionKick procedure to search & kick the character [ZoneSend.pas]
+[2007/04/11] Aeomin - Added SendKickAccountToZone procedure to send kick packet to Zone server [ZoneCharaCommunication.pas]
+[2007/04/11] Aeomin - Added LoginClientKickAccount procedure to check if account is online and kick [CharacterServer.pas]
+[2007/04/11] Aeomin - Added SendDCError procedure to send connect error packet 0x0081 [LoginServer.pas]
+[2007/04/11] Aeomin - Added Packet 0x2007 and 0x2110 for request force kick [packet_db.txt]
+[2007/04/10] Aeomin - Added TemperaryBan in TAccount to ban account temperary (in seconds) [Account.pas]
+[2007/04/10] Aeomin - Added GetBanUntilTimeString to TAccount for get remaining time when temperary ban [Account.pas]
+[2007/04/10] Aeomin - Changed "if not AnAccount.IsBanned then" to "if not AnAccount.State > 0 then" for extension [LoginServer.pad(ValidateLogin)]
+[2007/04/10] Aeomin - Added support 0x2005 and 0x2006 in Login Server which doing similar function as Char Server [LoginServer.pas]
+[2007/04/10] Aeomin - Added Transfering (Boolean) to TClientLink for keep the data when client selected a Character [PacketTypes]
+[2007/04/10] Aeomin - Added DcAndKeepData (Boolean) In TCharacter for keeping data while client is disconnected [Character.pas]
+[2007/04/10] Aeomin - Added SendAccountLogon/SendAccountLogOut procedure to update account in Account server's accountlist from Char server [CharaLoginCommunication.pas]
+[2007/04/10] Aeomin - Updated LoginClientRead to support Character Server ID [CharacterServer.pas]
+[2007/04/10] Aeomin - Changed Validated from Boolean to Byte [CharaLoginCommunication.pas (SendValidateFlagToChara)]
+[2007/04/10] Aeomin - Added ServerID in TCharaServerInfo [CharacterServerInfo.pas]
+[2007/04/10] Aeomin - Changed fCharaServerList From TStringList to TIntList32 [LoginServer.pas]
+[2007/04/10] Aeomin - Changed size of 0x2000 from 44 to 48 to support ID [packet_db.txt]
+[2007/04/10] Aeomin - Added config option ID for char server.[CharaOptions.pas]
+[2007/04/10] Aeomin - Added delaydc in SendCharacterSelectResponse and SendQuitGameResponse [ZoneSend.pas]
+[2007/04/10] Aeomin - Added UpdateToAccountList and RemoveFromAccountList [CharacterServer.pas]
+[2007/04/10] Aeomin - Added SendZoneCharaLogon and SendZoneCharaLogOut [ZoneCharaCommunication.pas]
+[2007/04/10] Aeomin - Added Packet 0x2108 and 0x2109. [packet_db.txt]
+-
+
 - Rev 226 -
 [2007/04/12] Tsusai - Notes/Overview: Fixed Linux compile errors and a file move.
 [2007/04/12] Tsusai - MSSQLClient: Somehow forgot that SysUtils was needed for linux.

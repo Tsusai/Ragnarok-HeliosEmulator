@@ -219,6 +219,7 @@ uses
 //
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header;
+//    April 10th, 2007 - Aeomin - Added SendZoneCharaLogon.
 //------------------------------------------------------------------------------
 	procedure MapConnect(
 			Version : Integer;
@@ -258,30 +259,39 @@ uses
 			if (AnAccount.LoginKey[1] = ValidateID1) and
 				(AnAccount.GenderNum = Gender) then
 			begin
-				TClientLink(AClient.Data).AccountLink := AnAccount;
-				TClientLink(AClient.Data).CharacterLink := ACharacter;
-				ACharacter.ClientVersion := Version;
-				ACharacter.Online  := 1;
-				MainProc.ZoneServer.CharacterList.Add(ACharacter);
-
-				//Load map cells if they are not already loaded
-				MapIndex := MainProc.ZoneServer.MapList.IndexOf(ACharacter.Map);
-				if MapIndex > -1 then
+				// Duplicate session safe check!
+				if MainProc.ZoneServer.CharacterList.IndexOf(ACharacter.CID) > -1 then
 				begin
-					if MainProc.ZoneServer.MapList[MapIndex].State = UNLOADED then
+					ACharacter.ClientInfo.Connection.Disconnect;
+				end else
+				begin
+					TClientLink(AClient.Data).AccountLink := AnAccount;
+					TClientLink(AClient.Data).CharacterLink := ACharacter;
+					ACharacter.ClientVersion := Version;
+					ACharacter.Online  := 1;
+					MainProc.ZoneServer.CharacterList.Add(ACharacter);
+
+					//Load map cells if they are not already loaded
+					MapIndex := MainProc.ZoneServer.MapList.IndexOf(ACharacter.Map);
+					if MapIndex > -1 then
 					begin
-						MainProc.ZoneServer.MapList[MapIndex].Load;
+						if MainProc.ZoneServer.MapList[MapIndex].State = UNLOADED then
+						begin
+							MainProc.ZoneServer.MapList[MapIndex].Load;
+						end;
 					end;
+
+					SendZoneCharaLogon(MainProc.ZoneServer.ToCharaTCPClient, ACharacter);
+
+					SendPadding(ACharacter.ClientInfo);
+
+					ZoneSendMapConnectReply(ACharacter);
+
+					//Friendslist placeholder
+					WriteBufferWord(0, $0201, OutBuffer);
+					WriteBufferWord(2, 4, OutBuffer);
+					SendBuffer(ACharacter.ClientInfo, OutBuffer, 4);
 				end;
-
-				SendPadding(ACharacter.ClientInfo);
-
-				ZoneSendMapConnectReply(ACharacter);
-
-				//Friendslist placeholder
-				WriteBufferWord(0, $0201, OutBuffer);
-				WriteBufferWord(2, 4, OutBuffer);
-				SendBuffer(ACharacter.ClientInfo, OutBuffer, 4);
 
 			end else
 			begin

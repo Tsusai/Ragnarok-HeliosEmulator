@@ -24,6 +24,7 @@ interface
 		TCharaOptions = class(TMemIniFile)
 		private
 //private variables
+			fID		: LongWord;
 			fPort		      : Word;
 			fWANIP		    : String;
 			fLANIP		    : String;
@@ -35,6 +36,7 @@ interface
 
 			fServerName		: String;
 			fUse108LengthForReply : boolean;
+			fShowFriendlyMessageOnDupLogin : Boolean;
 
 			fDefaultZeny  		: LongWord;
 			fDefaultMap   		: String;
@@ -61,6 +63,7 @@ interface
 		public
 
       //Communication
+			property ID      : LongWord read fID;
 			property Port : Word read fPort write SetPort;
 			property WANIP : String read fWANIP write SetWANIP;
 			property LANIP : String read fLANIP write SetLANIP;
@@ -75,6 +78,7 @@ interface
 			//Options
 			property ServerName : String read fServerName write SetServerName;
 			property Use108LengthForReply : boolean read fUse108LengthForReply write fUse108LengthForReply;
+			property ShowFriendlyMessageOnDupLogin : Boolean read fShowFriendlyMessageOnDupLogin write fShowFriendlyMessageOnDupLogin;
 
 
 			property DefaultZeny: LongWord read fDefaultZeny write fDefaultZeny;
@@ -120,6 +124,16 @@ implementation
 	procedure TCharaOptions.Load;
 	var
 		Section    : TStringList;
+	//--------------------------------------------------------------------------
+	//LoadServer                                               SUB PROCEDURE
+	//--------------------------------------------------------------------------
+		procedure LoadServer;
+		begin
+			ReadSectionValues('Server', Section);
+			fID := EnsureRange(StrToIntDef(Section.Values['ID'] ,1), Low(LongWord), High(LongWord));
+		end;{Subroutine LoadServer}
+	//--------------------------------------------------------------------------
+
     //--------------------------------------------------------------------------
     //LoadCommunication                                          SUB PROCEDURE
     //--------------------------------------------------------------------------
@@ -178,7 +192,10 @@ implementation
 			for character information, or add on an extra word for 108 character data
 			lengths.  A MIX MODE LIKE ZONE IS IMPOSSIBLE.  MUST BE ONE OR THE OTHER*)
 			fUse108LengthForReply := StrToBoolDef(Section.Values['Support_Dec06_AndNewerClients'] ,false);
-
+			{* Aeomin April 12th, 2007
+			 If this Boolean set as false, char server will directly DC the client when
+			 attempt duplicate login, else wil send "Someone has already logged in with this ID"*}
+			ShowFriendlyMessageOnDupLogin := StrToBoolDef(Section.Values['Show_FriendlyMessage_On_DuplicateLogin'] ,false);
 		end;{Subroutine LoadOptions}
     //--------------------------------------------------------------------------
 
@@ -214,11 +231,12 @@ implementation
 
 		Section.QuoteChar := '"';
 		Section.Delimiter := ',';
-    
-    LoadCommunication;
-    LoadSecurity;
-    LoadOptions;
-    LoadCharacterDefaults;
+
+	LoadServer;    
+	LoadCommunication;
+	LoadSecurity;
+	LoadOptions;
+	LoadCharacterDefaults;
 
 		Section.Free;
 
@@ -238,6 +256,8 @@ implementation
 //------------------------------------------------------------------------------
 	procedure TCharaOptions.Save;
 	begin
+		//Server
+		WriteString('Server','ID',IntToStr(ID));
     //Communication
 		WriteString('Communication','WANIP',WANIP);
 		WriteString('Communication','LANIP',LANIP);
@@ -252,6 +272,7 @@ implementation
 		//Options
 		WriteString('Options','ServerName',ServerName);
 		WriteString('Options','Support_Dec06_AndNewerClients',BoolToStr(fUse108LengthForReply));
+		WriteString('Options','Show_FriendlyMessage_On_DuplicateLogin',BoolToStr(fShowFriendlyMessageOnDupLogin));
 
 		//CharacterDefaults
 		WriteString('CharacterDefaults','Zeny',IntToStr(DefaultZeny));

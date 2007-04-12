@@ -334,6 +334,7 @@ begin
 	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.FieldValue(11));
 	AnAccount.LastIP       := QueryResult.FieldValue(12);
 	AnAccount.Bantime      := ConvertMySQLTime(QueryResult.FieldValue(14));
+	AnAccount.State        := StrToIntDef(QueryResult.FieldValue(15),0);
 end;//SetAccount
 //------------------------------------------------------------------------------
 
@@ -472,7 +473,8 @@ const
 		'loginkey2=%d, ' +
 		'connect_until=%s, ' +
 		'ban_until=%s, ' +
-		'last_ip=''%s'' ' +
+		'last_ip=''%s'', ' +
+		'state=%d' +
 		'WHERE account_id=%d;';
 var
 	Success : boolean;
@@ -491,6 +493,7 @@ begin
 			 FormatDateTime('yyyymmddhhmmss',AnAccount.ConnectUntil),
 			 FormatDateTime('yyyymmddhhmmss',AnAccount.Bantime),
 			 AnAccount.LastIP,
+			 AnAccount.State,
 			 AnAccount.ID]
 		);
 	SendQuery(QueryString, FALSE, Success);

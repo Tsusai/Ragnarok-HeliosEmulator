@@ -27,6 +27,7 @@ uses
 	CharacterServerInfo,
 	Database,
 	ZoneServerInfo,
+	CharAccountInfo,
 	{3rd Party}
 	IdContext
 	;
@@ -48,6 +49,8 @@ type
 	TClientLink = class(TThreadLink)
 		AccountLink		: TAccount;
 		CharacterLink : TCharacter;
+		AccountInfo	: TCharAccountInfo;
+		Transfering   : Boolean;
 		Destructor Destroy();override;
 	end;
 
