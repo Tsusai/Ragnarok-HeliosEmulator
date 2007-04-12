@@ -15,6 +15,20 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 222 - BROKEN BUILD(On Purpose.)
+[2007/04/11] RaX - Overview: Moved files around to be more sane in the repository.
+[2007/04/11] RaX - Moved Classes Folder into Common Folder.
+[2007/04/11] RaX - Moved Packet_DB.pas into Zone Folder.
+[2007/04/11] RaX - Moved Zone, Character, Inter, and Login Folders into a new Servers Folder.
+[2007/04/11] RaX - Moved Console Folder into Common Folder.
+[2007/04/11] RaX - Moved Lua folder into Common folder.
+[2007/04/11] RaX - Moved Config Folder into Common Folder.
+[2007/04/11] RaX - Removed "Database" Folder from /src.
+[2007/04/11] RaX - This commit breaks the build on purpose! Moving the files around requires
+ multiple commits to complete.
+-
+
+
 - Rev 221 -
 [2007/04/10] RaX - Overview: made ini input use ensurerange on values that could crash the
  server.
