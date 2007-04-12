@@ -57,8 +57,6 @@ program Helios;
 
 {$APPTYPE CONSOLE}
 uses
-  madExcept,
-  madLinkDisAsm,      
 {*These definitions make it possible to step through programs in windows and
 compile for linux, at the same time*}
 //------------------------------------------------------------------------------
@@ -68,29 +66,30 @@ compile for linux, at the same time*}
 	{$R *.res}
 
 	//Console Related Units
-	Terminal in 'Console\Terminal.pas',
-	CRT in 'Console\CRT.pas',
-	WinConsole in 'Console\WinCRT\WinConsole.pas',
+	Terminal in 'Common\Console\Terminal.pas',
+	CRT in 'Common\Console\CRT.pas',
+	WinConsole in 'Common\Console\WinCRT\WinConsole.pas',
 
 	//Login Server
-	LoginServer in 'Login\LoginServer.pas',
+	LoginServer in 'Servers\Login\LoginServer.pas',
 
 	//Character Server
-	CharacterServer in 'Character\CharacterServer.pas',
-	CharacterServerInfo in 'Character\CharacterServerInfo.pas',
-	CharaLoginCommunication in 'Character\CharaLoginCommunication.pas',
+	CharacterServer in 'Servers\Character\CharacterServer.pas',
+	CharacterServerInfo in 'Servers\Character\CharacterServerInfo.pas',
+	CharaLoginCommunication in 'Servers\Character\CharaLoginCommunication.pas',
 
 	//InterServer
-	InterServer in 'Inter\InterServer.pas',
+	InterServer in 'Servers\Inter\InterServer.pas',
 
 	//Zone Server
-	ZoneCharaCommunication in 'Zone\ZoneCharaCommunication.pas',
-	ZoneInterCommunication in 'Zone\ZoneInterCommunication.pas',
-	ZoneServer in 'Zone\ZoneServer.pas',
-	ZoneServerInfo in 'Zone\ZoneServerInfo.pas',
-	ZoneRecv in 'Zone\ZoneRecv.pas',
-	ZoneSend in 'Zone\ZoneSend.pas',
-	GMCommands in 'Zone\GMCommands.pas',
+	ZoneCharaCommunication in 'Servers\Zone\ZoneCharaCommunication.pas',
+	ZoneInterCommunication in 'Servers\Zone\ZoneInterCommunication.pas',
+	ZoneServer in 'Servers\Zone\ZoneServer.pas',
+	ZoneServerInfo in 'Servers\Zone\ZoneServerInfo.pas',
+	ZoneRecv in 'Servers\Zone\ZoneRecv.pas',
+	ZoneSend in 'Servers\Zone\ZoneSend.pas',
+	GMCommands in 'Servers\Zone\GMCommands.pas',
+	PacketDB in 'Servers\Zone\PacketDB.pas',
 
 	//Constants
 	GameConstants in 'Constants\GameConstants.pas',
@@ -98,75 +97,76 @@ compile for linux, at the same time*}
 	NetworkConstants in 'Constants\NetworkConstants.pas',
 	
 	//Game Objects
-	Account in 'Classes\Account.pas',
-	Character in 'Classes\Character.pas',
-	Being in 'Classes\Being.pas',
-	Map in 'Classes\Map.pas',
+	Account in 'Common\Classes\Account.pas',
+	Character in 'Common\Classes\Beings\Character.pas',
+	Being in 'Common\Classes\Beings\Being.pas',
+	Map in 'Common\Classes\Map.pas',
 
 	//Lists
-	CharaList in 'Classes\CharaList.pas',
-	MapList in 'Classes\MapList.pas',
-	List32 in 'Common\3rdParty\List32.pas',
-	PointList in 'Classes\PointList.pas',
-	EventList in 'Classes\Events\EventList.pas',
+	CharaList in 'Common\Classes\Lists\CharaList.pas',
+	MapList in 'Common\Classes\Lists\MapList.pas',
+	List32 in 'Common\ThirdParty\List32.pas',
+	PointList in 'Common\Classes\Lists\PointList.pas',
+	EventList in 'Common\Classes\Events\EventList.pas',
 
 	//Events
-	Event in 'Classes\Events\Event.pas',
-	DelayDisconnectEvent in 'Classes\Events\DelayDisconnectEvent.pas',
-	MovementEvent in 'Classes\Events\MovementEvent.pas',
-	CharacterEventThread in 'Classes\Events\CharacterEventThread.pas',
+	Event in 'Common\Classes\Events\Event.pas',
+	DelayDisconnectEvent in 'Common\Classes\Events\DelayDisconnectEvent.pas',
+	MovementEvent in 'Common\Classes\Events\MovementEvent.pas',
+	CharacterEventThread in 'Common\Classes\Events\CharacterEventThread.pas',
 
 	//Database
-	Database in 'Classes\Database.pas',
-	CommonDatabaseTemplate in 'Classes\Database\Common\CommonDatabaseTemplate.pas',
-	GameDatabaseTemplate in 'Classes\Database\Game\GameDatabaseTemplate.pas',
-	StaticDatabaseTemplate in 'Classes\Database\Static\StaticDatabaseTemplate.pas',
-	PacketDB in 'Database\PacketDB.pas',
-	JanSQLCommonDatabase in 'Classes\Database\Common\JanSQLCommonDatabase.pas',
-	MySQLCommonDatabase in 'Classes\Database\Common\MySQLCommonDatabase.pas',
-	JanSQLGameDatabase in 'Classes\Database\Game\JanSQLGameDatabase.pas',
-	MySQLGameDatabase in 'Classes\Database\Game\MySQLGameDatabase.pas',
-	JanSQLStaticDatabase in 'Classes\Database\Static\JanSQLStaticDatabase.pas',
-	MySQLStaticDatabase in 'Classes\Database\Static\MySQLStaticDatabase.pas',
+	Database in 'Common\Classes\Database\Database.pas',
+	CommonDatabaseTemplate in 'Common\Classes\Database\Common\CommonDatabaseTemplate.pas',
+	GameDatabaseTemplate in 'Common\Classes\Database\Game\GameDatabaseTemplate.pas',
+	StaticDatabaseTemplate in 'Common\Classes\Database\Static\StaticDatabaseTemplate.pas',
+	JanSQLCommonDatabase in 'Common\Classes\Database\Common\JanSQLCommonDatabase.pas',
+	MySQLCommonDatabase in 'Common\Classes\Database\Common\MySQLCommonDatabase.pas',
+	JanSQLGameDatabase in 'Common\Classes\Database\Game\JanSQLGameDatabase.pas',
+	MySQLGameDatabase in 'Common\Classes\Database\Game\MySQLGameDatabase.pas',
+	JanSQLStaticDatabase in 'Common\Classes\Database\Static\JanSQLStaticDatabase.pas',
+	MySQLStaticDatabase in 'Common\Classes\Database\Static\MySQLStaticDatabase.pas',
 
 	//Database Clients
 	//jansql
-	janSQL in 'Common\3rdParty\JanSQL\janSQL.pas',
-	janSQLExpression2 in 'Common\3rdParty\JanSQL\janSQLExpression2.pas',
-	janSQLStrings in 'Common\3rdParty\JanSQL\janSQLStrings.pas',
-	janSQLTokenizer in 'Common\3rdParty\JanSQL\janSQLTokenizer.pas',
-	mwStringHashList in 'Common\3rdParty\JanSQL\mwStringHashList.pas',
+	janSQL in 'Common\ThirdParty\JanSQL\janSQL.pas',
+	janSQLExpression2 in 'Common\ThirdParty\JanSQL\janSQLExpression2.pas',
+	janSQLStrings in 'Common\ThirdParty\JanSQL\janSQLStrings.pas',
+	janSQLTokenizer in 'Common\ThirdParty\JanSQL\janSQLTokenizer.pas',
+	mwStringHashList in 'Common\ThirdParty\JanSQL\mwStringHashList.pas',
 	//mysql
-	uMysqlClient in 'Common\3rdParty\MySQL\uMysqlClient.pas',
-	uMysqlCT in 'Common\3rdParty\MySQL\uMysqlCT.pas',
-	uMysqlErrors in 'Common\3rdParty\MySQL\uMysqlErrors.pas',
-	uMysqlNet in 'Common\3rdParty\MySQL\uMysqlNet.pas',
-	uMysqlNewPassword in 'Common\3rdParty\MySQL\uMysqlNewPassword.pas',
-	umysqlsha1 in 'Common\3rdParty\MySQL\umysqlsha1.pas',
-	uMysqlVio in 'Common\3rdParty\MySQL\uMysqlVio.pas',
+	uMysqlClient in 'Common\ThirdParty\MySQL\uMysqlClient.pas',
+	uMysqlCT in 'Common\ThirdParty\MySQL\uMysqlCT.pas',
+	uMysqlErrors in 'Common\ThirdParty\MySQL\uMysqlErrors.pas',
+	uMysqlNet in 'Common\ThirdParty\MySQL\uMysqlNet.pas',
+	uMysqlNewPassword in 'Common\ThirdParty\MySQL\uMysqlNewPassword.pas',
+	umysqlsha1 in 'Common\ThirdParty\MySQL\umysqlsha1.pas',
+	uMysqlVio in 'Common\ThirdParty\MySQL\uMysqlVio.pas',
 	//mssql
-	MSSQLClient in 'Common\3rdParty\MSSQL\MSSQLClient.pas',
+	MSSQLClient in 'Common\ThirdParty\MSSQL\MSSQLClient.pas',
 
 	//Configuration
-	HeliosOptions in 'Config\HeliosOptions.pas',
-	LoginOptions in 'Config\LoginOptions.pas',
-	CharaOptions in 'Config\CharaOptions.pas',
-	InterOptions in 'Config\InterOptions.pas',
-	ZoneOptions in 'Config\ZoneOptions.pas',
-	DatabaseOptions in 'Config\DatabaseOptions.pas',
-	ConsoleOptions in 'Config\ConsoleOptions.pas',
+	HeliosOptions in 'Common\Config\HeliosOptions.pas',
+	LoginOptions in 'Common\Config\LoginOptions.pas',
+	CharaOptions in 'Common\Config\CharaOptions.pas',
+	InterOptions in 'Common\Config\InterOptions.pas',
+	ZoneOptions in 'Common\Config\ZoneOptions.pas',
+	DatabaseOptions in 'Common\Config\DatabaseOptions.pas',
+	ConsoleOptions in 'Common\Config\ConsoleOptions.pas',
 
 	//Types
 	MapTypes in 'Common\MapTypes.pas',
 
 	//Other
-	AreaLoopEvents in 'Classes\AreaLoopEvents.pas',
+	AreaLoopEvents in 'Common\AreaLoopEvents.pas',
 	BufferIO in 'Common\BufferIO.pas',
-	Commands in 'Classes\Commands.pas',
-	CommClient in 'Classes\CommClient.pas',
+	Commands in 'Common\Classes\Commands.pas',
+	CommClient in 'Common\Classes\CommClient.pas',
 	Globals in 'Common\Globals.pas',
+	madExcept,
+	madLinkDisAsm,
 	PacketTypes in 'Common\PacketTypes.pas',
-	ServerInfo in 'Classes\ServerInfo.pas',
+	ServerInfo in 'Common\Classes\ServerInfo.pas',
 	TCPServerRoutines in 'Common\TCPServerRoutines.pas',
 	Version in 'Common\Version.pas',
 	WinLinux in 'Common\WinLinux.pas',
@@ -178,106 +178,105 @@ compile for linux, at the same time*}
 	{$IFDEF LINUX}
 
 	//Console Related Units
-	Terminal in 'Console/Terminal.pas',
-	CRT in 'Console/CRT.pas',
-	LinCRT in 'Console/LinCRT/LinCRT.pas',
-	NCurses in 'Console/LinCRT/NCurses.pas',
+	Terminal in 'Common/Console/Terminal.pas',
+	CRT in 'Common/Console/CRT.pas',
+	WinConsole in 'Common/Console/WinCRT/WinConsole.pas',
 
 	//Login Server
-	LoginServer in 'Login/LoginServer.pas',
+	LoginServer in 'Servers/Login/LoginServer.pas',
 
 	//Character Server
-	CharacterServer in 'Character/CharacterServer.pas',
-	CharacterServerInfo in 'Character/CharacterServerInfo.pas',
-	CharaLoginCommunication in 'Character/CharaLoginCommunication.pas',
+	CharacterServer in 'Servers/Character/CharacterServer.pas',
+	CharacterServerInfo in 'Servers/Character/CharacterServerInfo.pas',
+	CharaLoginCommunication in 'Servers/Character/CharaLoginCommunication.pas',
 
 	//InterServer
-	InterServer in 'Inter/InterServer.pas',
+	InterServer in 'Servers/Inter/InterServer.pas',
 
 	//Zone Server
-	ZoneCharaCommunication in 'Zone/ZoneCharaCommunication.pas',
-	ZoneInterCommunication in 'Zone/ZoneInterCommunication.pas',
-	ZoneServer in 'Zone/ZoneServer.pas',
-	ZoneServerInfo in 'Zone/ZoneServerInfo.pas',
-	ZoneRecv in 'Zone/ZoneRecv.pas',
-	ZoneSend in 'Zone/ZoneSend.pas',
-	GMCommands in 'Zone/GMCommands.pas',
+	ZoneCharaCommunication in 'Servers/Zone/ZoneCharaCommunication.pas',
+	ZoneInterCommunication in 'Servers/Zone/ZoneInterCommunication.pas',
+	ZoneServer in 'Servers/Zone/ZoneServer.pas',
+	ZoneServerInfo in 'Servers/Zone/ZoneServerInfo.pas',
+	ZoneRecv in 'Servers/Zone/ZoneRecv.pas',
+	ZoneSend in 'Servers/Zone/ZoneSend.pas',
+	GMCommands in 'Servers/Zone/GMCommands.pas',
+	PacketDB in 'Servers/Zone/PacketDB.pas',
 
 	//Constants
 	GameConstants in 'Constants/GameConstants.pas',
 	DatabaseConstants in 'Constants/DatabaseConstants.pas',
 	NetworkConstants in 'Constants/NetworkConstants.pas',
-
+	
 	//Game Objects
-	Account in 'Classes/Account.pas',
-	Character in 'Classes/Character.pas',
-	Being in 'Classes/Being.pas',
-	Map in 'Classes/Map.pas',
+	Account in 'Common/Classes/Account.pas',
+	Character in 'Common/Classes/Beings/Character.pas',
+	Being in 'Common/Classes/Beings/Being.pas',
+	Map in 'Common/Classes/Map.pas',
 
 	//Lists
-	CharaList in 'Classes/CharaList.pas',
-	MapList in 'Classes/MapList.pas',
-	List32 in 'Common/3rdParty/List32.pas',
-	PointList in 'Classes/PointList.pas',
-	EventList in 'Classes/Events/EventList.pas',
+	CharaList in 'Common/Classes/Lists/CharaList.pas',
+	MapList in 'Common/Classes/Lists/MapList.pas',
+	List32 in 'Common/ThirdParty/List32.pas',
+	PointList in 'Common/Classes/Lists/PointList.pas',
+	EventList in 'Common/Classes/Events/EventList.pas',
 
 	//Events
-	Event in 'Classes/Events/Event.pas',
-	DelayDisconnectEvent in 'Classes/Events/DelayDisconnectEvent.pas',
-	MovementEvent in 'Classes/Events/MovementEvent.pas',
-	CharacterEventThread in 'Classes/Events/CharacterEventThread.pas',
+	Event in 'Common/Classes/Events/Event.pas',
+	DelayDisconnectEvent in 'Common/Classes/Events/DelayDisconnectEvent.pas',
+	MovementEvent in 'Common/Classes/Events/MovementEvent.pas',
+	CharacterEventThread in 'Common/Classes/Events/CharacterEventThread.pas',
 
 	//Database
-	Database in 'Classes/Database.pas',
-	CommonDatabaseTemplate in 'Classes/Database/Common/CommonDatabaseTemplate.pas',
-	GameDatabaseTemplate in 'Classes/Database/Game/GameDatabaseTemplate.pas',
-	StaticDatabaseTemplate in 'Classes/Database/Static/StaticDatabaseTemplate.pas',
-	PacketDB in 'Database/PacketDB.pas',
-	JanSQLCommonDatabase in 'Classes/Database/Common/JanSQLCommonDatabase.pas',
-	MySQLCommonDatabase in 'Classes/Database/Common/MySQLCommonDatabase.pas',
-	JanSQLGameDatabase in 'Classes/Database/Game/JanSQLGameDatabase.pas',
-	MySQLGameDatabase in 'Classes/Database/Game/MySQLGameDatabase.pas',
-	JanSQLStaticDatabase in 'Classes/Database/Static/JanSQLStaticDatabase.pas',
-	MySQLStaticDatabase in 'Classes/Database/Static/MySQLStaticDatabase.pas',
+	Database in 'Common/Classes/Database/Database.pas',
+	CommonDatabaseTemplate in 'Common/Classes/Database/Common/CommonDatabaseTemplate.pas',
+	GameDatabaseTemplate in 'Common/Classes/Database/Game/GameDatabaseTemplate.pas',
+	StaticDatabaseTemplate in 'Common/Classes/Database/Static/StaticDatabaseTemplate.pas',
+	JanSQLCommonDatabase in 'Common/Classes/Database/Common/JanSQLCommonDatabase.pas',
+	MySQLCommonDatabase in 'Common/Classes/Database/Common/MySQLCommonDatabase.pas',
+	JanSQLGameDatabase in 'Common/Classes/Database/Game/JanSQLGameDatabase.pas',
+	MySQLGameDatabase in 'Common/Classes/Database/Game/MySQLGameDatabase.pas',
+	JanSQLStaticDatabase in 'Common/Classes/Database/Static/JanSQLStaticDatabase.pas',
+	MySQLStaticDatabase in 'Common/Classes/Database/Static/MySQLStaticDatabase.pas',
 
 	//Database Clients
-		//jansql
-	janSQL in 'Common/3rdParty/JanSQL/janSQL.pas',
-	janSQLExpression2 in 'Common/3rdParty/JanSQL/janSQLExpression2.pas',
-	janSQLStrings in 'Common/3rdParty/JanSQL/janSQLStrings.pas',
-	janSQLTokenizer in 'Common/3rdParty/JanSQL/janSQLTokenizer.pas',
-	mwStringHashList in 'Common/3rdParty/JanSQL/mwStringHashList.pas',
-		//mysql
-	uMysqlClient in 'Common/3rdParty/MySQL/uMysqlClient.pas',
-	uMysqlCT in 'Common/3rdParty/MySQL/uMysqlCT.pas',
-	uMysqlErrors in 'Common/3rdParty/MySQL/uMysqlErrors.pas',
-	uMysqlNet in 'Common/3rdParty/MySQL/uMysqlNet.pas',
-	uMysqlNewPassword in 'Common/3rdParty/MySQL/uMysqlNewPassword.pas',
-	umysqlsha1 in 'Common/3rdParty/MySQL/umysqlsha1.pas',
-	uMysqlVio in 'Common/3rdParty/MySQL/uMysqlVio.pas',
+	//jansql
+	janSQL in 'Common/ThirdParty/JanSQL/janSQL.pas',
+	janSQLExpression2 in 'Common/ThirdParty/JanSQL/janSQLExpression2.pas',
+	janSQLStrings in 'Common/ThirdParty/JanSQL/janSQLStrings.pas',
+	janSQLTokenizer in 'Common/ThirdParty/JanSQL/janSQLTokenizer.pas',
+	mwStringHashList in 'Common/ThirdParty/JanSQL/mwStringHashList.pas',
+	//mysql
+	uMysqlClient in 'Common/ThirdParty/MySQL/uMysqlClient.pas',
+	uMysqlCT in 'Common/ThirdParty/MySQL/uMysqlCT.pas',
+	uMysqlErrors in 'Common/ThirdParty/MySQL/uMysqlErrors.pas',
+	uMysqlNet in 'Common/ThirdParty/MySQL/uMysqlNet.pas',
+	uMysqlNewPassword in 'Common/ThirdParty/MySQL/uMysqlNewPassword.pas',
+	umysqlsha1 in 'Common/ThirdParty/MySQL/umysqlsha1.pas',
+	uMysqlVio in 'Common/ThirdParty/MySQL/uMysqlVio.pas',
 	//mssql
-	MSSQLClient in 'Common/3rdParty/MSSQL/MSSQLClient.pas',
+	MSSQLClient in 'Common/ThirdParty/MSSQL/MSSQLClient.pas',
 
 	//Configuration
-	HeliosOptions in 'Config/HeliosOptions.pas',
-	LoginOptions in 'Config/LoginOptions.pas',
-	CharaOptions in 'Config/CharaOptions.pas',
-	InterOptions in 'Config/InterOptions.pas',
-	ZoneOptions in 'Config/ZoneOptions.pas',
-	DatabaseOptions in 'Config/DatabaseOptions.pas',
-	ConsoleOptions in 'Config/ConsoleOptions.pas',
+	HeliosOptions in 'Common/Config/HeliosOptions.pas',
+	LoginOptions in 'Common/Config/LoginOptions.pas',
+	CharaOptions in 'Common/Config/CharaOptions.pas',
+	InterOptions in 'Common/Config/InterOptions.pas',
+	ZoneOptions in 'Common/Config/ZoneOptions.pas',
+	DatabaseOptions in 'Common/Config/DatabaseOptions.pas',
+	ConsoleOptions in 'Common/Config/ConsoleOptions.pas',
 
 	//Types
 	MapTypes in 'Common/MapTypes.pas',
 
 	//Other
-	AreaLoopEvents in 'Classes/AreaLoopEvents.pas',
+	AreaLoopEvents in 'Common/AreaLoopEvents.pas',
 	BufferIO in 'Common/BufferIO.pas',
-	Commands in 'Classes/Commands.pas',
-	CommClient in 'Classes/CommClient.pas',
+	Commands in 'Common/Classes/Commands.pas',
+	CommClient in 'Common/Classes/CommClient.pas',
 	Globals in 'Common/Globals.pas',
 	PacketTypes in 'Common/PacketTypes.pas',
-	ServerInfo in 'Classes/ServerInfo.pas',
+	ServerInfo in 'Common/Classes/ServerInfo.pas',
 	TCPServerRoutines in 'Common/TCPServerRoutines.pas',
 	Version in 'Common/Version.pas',
 	WinLinux in 'Common/WinLinux.pas',
