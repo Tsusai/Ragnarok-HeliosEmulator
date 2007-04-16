@@ -23,7 +23,8 @@ uses
 	GameConstants,
 	{Third Party}
 	IdContext,
-	List32
+	List32,
+	Lua
 	;
 
 type
@@ -129,6 +130,8 @@ type
 		CID : LongWord;
 
 		DcAndKeepData : Boolean;
+
+		Lua : Plua_state; //personal lua "thread"
 
 		BaseNextEXP  : LongWord;
 		JobNextEXP   : LongWord;

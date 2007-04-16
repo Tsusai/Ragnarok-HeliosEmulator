@@ -31,7 +31,8 @@ uses
 	ZoneOptions,
 	{3rd Party}
 	IdTCPServer,
-	IdContext
+	IdContext,
+	Lua
 	;
 
 
@@ -89,6 +90,8 @@ type
 
 		ZoneLocalDatabase : TDatabase;
 
+		NPCLua : Plua_State;
+
 		property Started : Boolean read GetStarted;
 		property Port : Word read fPort write SetPort;
 
@@ -117,6 +120,7 @@ uses
 	Globals,
 	Main,
 	Map,
+	NPCCore,
 	PacketDB,
 	TCPServerRoutines,
 	ZoneCharaCommunication,
@@ -313,7 +317,7 @@ end;{OnException}
 Procedure TZoneServer.Start(Reload : Boolean = FALSE);
 begin
   if NOT Started then
-  begin
+	begin
     //Load our Zone.ini
 	  LoadOptions;
 
@@ -324,11 +328,18 @@ begin
 
 		ZoneLocalDatabase := TDatabase.Create(NIL);
 
-    //Activate server and clients.
-	  ActivateServer('Zone',TCPServer);
+		//Activate server and clients.
+		ActivateServer('Zone',TCPServer);
 
-    //Load Maps
+		//Load Maps
 		LoadMaps;
+
+		//Initiate NPC Lua
+		LuaSetup(NPCLua,'test.lua');
+
+		//lua test call
+		lua_getglobal(NPCLua,'printtest');
+		lua_pcall(NPCLua,0,0,0);
 
 		CharacterEventThread.Start;
   end else
@@ -368,6 +379,9 @@ begin
 	  DeActivateServer('Zone', TCPServer);
 	  DeActivateClient(ToCharaTCPClient);
 	  DeActivateClient(ToInterTCPClient);
+
+		//Kill NPC lua
+		LuaCleanup(NPCLua);
 
 		//Clear Lists
 		MapList.Clear;

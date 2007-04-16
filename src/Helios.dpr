@@ -104,6 +104,13 @@ compile for linux, at the same time*}
 	Being in 'Common\Classes\Beings\Being.pas',
 	Map in 'Common\Classes\Map.pas',
 
+	//Lua
+	lua in 'Common\ThirdParty\Lua\lua.pas',
+	lauxlib in 'Common\ThirdParty\Lua\lauxlib.pas',
+	lualib in 'Common\ThirdParty\Lua\lualib.pas',
+	NPCCore in 'Servers\Zone\Lua\NPC\NPCCore.pas',
+	NPCCommands in 'Servers\Zone\Lua\NPC\NPCCommands.pas',
+
 	//Lists
 	CharaList in 'Common\Classes\Lists\CharaList.pas',
 	MapList in 'Common\Classes\Lists\MapList.pas',
@@ -218,6 +225,13 @@ compile for linux, at the same time*}
 	Character in 'Common/Classes/Beings/Character.pas',
 	Being in 'Common/Classes/Beings/Being.pas',
 	Map in 'Common/Classes/Map.pas',
+
+	//Lua
+	lua in 'Common/ThirdParty/Lua/lua.pas',
+	lauxlib in 'Common/ThirdParty/Lua/lauxlib.pas',
+	lualib in 'Common/ThirdParty/Lua/lualib.pas',
+	NPCCore in 'Servers/Zone/Lua/NPC/NPCCore.pas',
+	NPCCommands in 'Servers/Zone/Lua/NPC/NPCCommands.pas',
 
 	//Lists
 	CharaList in 'Common/Classes/Lists/CharaList.pas',

@@ -15,6 +15,17 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 231 -
+[2007/04/16] Tsusai - Notes/Overview: Lua now integrated w/ Helios in a simple way.
+ Units may need some cleanup, but when you run the zone, you will see results of loading
+ test.lua (empty NPC Created reply & stored function execution).
+[2007/04/16] Tsusai - Removed dynamic lua file that was added.  For some odd reason it
+ wouldn't work proper.  Replaced with THLua units.
+[2007/04/16] Tsusai - Added test.lua and lua dll's to bin directory.
+[2007/04/16] Tsusai - Character - TCharacter: Added personal lua pointer.
+[2007/04/16] Tsusai - ZoneServer - Loads and runs test.lua.  Also cleans up npc lua
+-
+
 - Rev 230 -
 [2007/04/15] Tsusai - Notes/Overview: Reorganized Lua and added work in progress units
  (not active).

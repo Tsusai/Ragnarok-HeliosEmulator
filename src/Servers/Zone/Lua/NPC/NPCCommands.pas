@@ -3,36 +3,40 @@ unit NPCCommands;
 interface
 
 uses
-	Lua;
+	lua,
+	lauxlib;
 
 
-function LoadNPCCommands(ALua : Plua_state) : boolean;
+function LoadNPCCommands(var ALua : Plua_state) : boolean;
 function addnpc(ALua : Plua_state) : integer; cdecl;
 function addwarp(ALua : Plua_state) : integer; cdecl;
-
+function lua_print(ALua : Plua_state) : integer; cdecl;
 
 const
-	NPCCommandCount = 2;
+	NPCCommandCount = 3;
 
 const
 	//"Function name in lua" , Delphi function name
-	NPCCommandList = array [1..NPCCommandCount] of lual_reg = (
-		(name:'addnpc',func:addnpc),
-		(name:'addwarp',func:addwarp)
+	NPCCommandList : array [1..NPCCommandCount] of lual_reg = (
+		(name:'addnpc';func:addnpc),
+		(name:'addwarp';func:addwarp),
+		(name:'print';func:lua_print)
 	);
 
 implementation
+uses
+	SysUtils;
 
-function LoadNPCCommands(ALua : Plua_state) : boolean;
+function LoadNPCCommands(var ALua : Plua_state) : boolean;
 var
 	idx : integer;
 begin
-	for idx := 1 to NPCCommandList do
+	for idx := 1 to NPCCommandCount do
 	begin
 		lua_register(
-			ALua, 
-			NPCCommandList.name,
-			NPCCommandList.func
+			ALua,
+			NPCCommandList[idx].name,
+			NPCCommandList[idx].func
 		);
 	end;
 end;
@@ -52,3 +56,23 @@ begin
 	//Assign Data from stack to TNPC
 	Writeln('Warp Loaded');
 end;
+
+function lua_print(ALua : Plua_state) : integer; cdecl;
+var
+	i, n: Integer;
+begin
+	n := lua_gettop(ALua);
+	for i := 1 to n do
+	begin
+		if i > 1 then
+			Write(#9);
+		if lua_isstring(ALua, i) then
+			Write(lua_tostring(ALua, i))
+		else
+			Write(Format('%s:%p', [lua_type(ALua, i), lua_topointer(ALua, i)]));
+	end;
+	WriteLn;
+	Result := 0;
+end;
+
+end.
