@@ -15,6 +15,16 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 230 -
+[2007/04/15] Tsusai - Notes/Overview: Reorganized Lua and added work in progress units
+ (not active).
+[2007/04/15] Tsusai - ThirdParty/Lua.pas - Replaced with a different version by another 
+ author.  This unit supports dynamic loading, so a compile used as a login server will not
+ require the dll now.
+[2007/04/15] Tsusai - Common/Lua/ - Moved to Servers/Zone/Lua/ 
+[2007/04/15] Tsusai - NPCCommands.pas & NPCCore.pas - Added to Servers/Zone/Lua/
+-
+
 - Rev 229 -
 [2007/04/12] Aeomin - Append check for char and zone server to disallow LoginKey of 0
                       [CharacterServer.pas (SendCharas) ; ZoneRecv.pas (MapConnect)]
