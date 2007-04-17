@@ -12,7 +12,6 @@ unit ZoneCharaCommunication;
 
 interface
 uses
-	Main,
 	ZoneServer,
 	CommClient,
 	Character,
@@ -56,8 +55,10 @@ implementation
 uses
 	BufferIO,
 	Globals,
+	Main,
 	PacketTypes,
-	TCPServerRoutines,sysutils;
+	TCPServerRoutines
+	;
 
 //------------------------------------------------------------------------------
 //ValidateWithCharaServer                                             PROCEDURE

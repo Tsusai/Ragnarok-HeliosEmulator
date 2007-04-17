@@ -27,6 +27,9 @@ uses
 	Lua
 	;
 
+type TCharaScriptStatus =
+		(SCRIPT_PAUSED, SCRIPT_RUNNING, SCRIPT_NOTRUNNING);
+
 type
 	TCharaState = (charaDead, charaPlayDead,
 								charaSitting, charaStanding,
@@ -132,6 +135,8 @@ type
 		DcAndKeepData : Boolean;
 
 		Lua : Plua_state; //personal lua "thread"
+		ScriptStatus : TCharaScriptStatus; //lets us know what is going on with lua,
+		// if its paused or running
 
 		BaseNextEXP  : LongWord;
 		JobNextEXP   : LongWord;
@@ -1540,6 +1545,7 @@ begin
 	inherited Create;
 	ClientInfo := AClient;
 	OnTouchIDs := TIntList32.Create;
+	ScriptStatus := SCRIPT_NOTRUNNING;
 end;
 //------------------------------------------------------------------------------
 

@@ -15,6 +15,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 232 - 
+[2007/04/17] Tsusai - Notes/Overview: I started having some weird File.dcu not found, when
+ doing random things.  So I decided to clean up the uses again.  This solved my issues.
+[2007/04/17] Tsusai - Added a Script State for TCharacter.
+[2007/04/17] Tsusai - Using Icarus as a guide, I cleaned up the uses of the following:
+ DelayDisconnectEvent, CharaLoginCommunication, LoginServer, NPCCore, ZoneCharaCommunication.
+-
+
 - Rev 231 -
 [2007/04/16] Tsusai - Notes/Overview: Lua now integrated w/ Helios in a simple way.
  Units may need some cleanup, but when you run the zone, you will see results of loading

@@ -15,8 +15,7 @@ unit CharaLoginCommunication;
 interface
 uses
 	CharacterServer,
-        CharAccountInfo,
-	Account,
+	CharAccountInfo,
 	CommClient,
 	IdContext;
 

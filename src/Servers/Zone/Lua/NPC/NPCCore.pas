@@ -4,9 +4,6 @@ interface
 
 uses
 	lua,
-	lualib,
-	lauxlib,
-
 	Character,
 	NPCCommands;
 
@@ -19,6 +16,9 @@ procedure LuaSetup(var ALua : Plua_state; const LuaFile : string);
 procedure LuaCleanup(var ALua : Plua_state);
 
 implementation
+uses
+	lualib,
+	lauxlib;
 
 procedure MakeCharacterLuaThread(
 	ACharacter : TCharacter;

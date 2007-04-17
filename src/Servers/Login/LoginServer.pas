@@ -19,11 +19,9 @@ uses
 	IdTCPServer,
 	IdContext,
 	PacketTypes,
-	Classes,
 	List32,
 	SysUtils,
 	Account,
-	LoginAccountInfo,
 	LoginOptions;
 
 type
@@ -92,15 +90,17 @@ type
 
 implementation
 uses
-	//Helios
-	CharaLoginCommunication,
-	Globals,
-	BufferIO,
-	CharacterServerInfo,
+	//Delphi
 	StrUtils,
+	//Helios
+	BufferIO,
+	CharaLoginCommunication,
+	CharacterServerInfo,
+	Globals,
+	LoginAccountInfo,
 	Main,
-	TCPServerRoutines,
-	DateUtils;
+	TCPServerRoutines
+	;
 
 const
 //ERROR REPLY CONSTANTS
