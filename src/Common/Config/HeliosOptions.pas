@@ -26,6 +26,7 @@ interface
 			fMapDirectory				: String;
 			fDatabaseDirectory	: String;
 			fConfigDirectory		: String;
+			fScriptDirectory		: String;
 
 			fLoginEnabled				: Boolean;
 			fCharaEnabled				: Boolean;
@@ -36,6 +37,7 @@ interface
 			property MapDirectory				: String read fMapDirectory;
 			property DatabaseDirectory	: String read fDatabaseDirectory;
 			property ConfigDirectory		: String read fConfigDirectory;
+			property ScriptDirectory		: String read fScriptDirectory;
 
 			property LoginEnabled	: Boolean read fLoginEnabled;
 			property CharaEnabled	: Boolean read fCharaEnabled;
@@ -90,10 +92,15 @@ implementation
 			begin
 				Section.Values['Configuration']	 := './Configuration';
 			end;
+			if NOT IsValidFolderName(Section.Values['Script']) then
+			begin
+				Section.Values['Script']	 := './Scripts';
+			end;
 			
 			fMapDirectory				:= Section.Values['Maps'];
 			fDatabaseDirectory	:= Section.Values['Database'];
 			fConfigDirectory		:= Section.Values['Configuration'];
+      fScriptDirectory		:= Section.Values['Script'];
 		end;{Subroutine LoadZone}
     //--------------------------------------------------------------------------
 
@@ -176,7 +183,8 @@ implementation
 		WriteString('Folder Structure','Maps',MapDirectory);
 		WriteString('Folder Structure','Database',DatabaseDirectory);
 		WriteString('Folder Structure','Configuration',ConfigDirectory);
-		
+		WriteString('Folder Structure','Script',ScriptDirectory);
+
 		//Login
 		WriteString('Login','Enabled',BoolToStr(LoginEnabled));
 

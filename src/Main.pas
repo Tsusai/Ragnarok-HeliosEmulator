@@ -327,6 +327,11 @@ begin
 	begin
 		CreateDir(Options.MapDirectory);
 	end;
+
+	if NOT DirectoryExists(Options.ScriptDirectory) then
+	begin
+		CreateDir(Options.ScriptDirectory);
+	end;
 end;{LoadOptions}
 //------------------------------------------------------------------------------
 
