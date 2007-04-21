@@ -123,12 +123,24 @@ public
 			CharaID : LongWord;
 		const
 			JanSQLClearTable : Boolean = False
-		) : TCharacter; virtual; abstract;
+		) : TCharacter; overload; virtual; abstract;
+
+	function  GetChara(
+		const
+			CharaName : String;
+		const
+			JanSQLClearTable : Boolean = False
+		) : TCharacter; overload; virtual; abstract;
 
 	function  LoadChara(
 		const
 			CharaID : LongWord
-		) : TCharacter; virtual; abstract;
+		) : TCharacter; overload; virtual; abstract;
+
+	function  LoadChara(
+		const
+			CharaName : String
+		) : TCharacter; overload; virtual; abstract;
 
 	procedure SaveChara(
 		const

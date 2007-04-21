@@ -119,14 +119,26 @@ public
 	function LoadChara(
 		const
 			CharaID : LongWord
-		) : TCharacter; override;
+		) : TCharacter; overload; override;
+
+	function LoadChara(
+		const
+			CharaName : String
+		) : TCharacter; overload; override;
 
 	function GetChara(
 		const
 			CharaID : LongWord;
 		const
 			JanSQLClearTable : Boolean = False
-		) : TCharacter; override;
+		) : TCharacter; overload; override;
+
+	function GetChara(
+		const
+			CharaName : String;
+		const
+			JanSQLClearTable : Boolean = False
+		) : TCharacter; overload; override;
 
 	function DeleteChara(
 		var
@@ -321,6 +333,29 @@ function TMySQLGameDatabase.GetChara(
 	) : TCharacter;
 begin
 	Result := LoadChara(CharaID);
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//TMySQLGameDatabase.GetChara()                                         FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Fetch Character based on Character ID and return with TCharacter
+//
+//	Changes -
+//		April 20th, 2007 - RaX - Created
+//
+//------------------------------------------------------------------------------
+function TMySQLGameDatabase.GetChara(
+	const
+		CharaName : String;
+	//JanSQLClearTable is never used.
+	const
+		JanSQLClearTable : Boolean = False
+	) : TCharacter;
+begin
+	Result := LoadChara(CharaName);
 end;
 //------------------------------------------------------------------------------
 
@@ -650,6 +685,114 @@ begin
 		Format(
 			'SELECT * FROM characters WHERE char_id = %d;',
 			[CharaID]
+			),
+		TRUE,
+		Success
+		);
+	if (QueryResult.RowsCount = 1) then
+	begin
+		with Result do
+		begin
+			Result           := TCharacter.Create(Parent.ClientInfo);
+			CID              := StrToInt(QueryResult.FieldValue(0));
+			ID               := StrToInt(QueryResult.FieldValue(1));
+			CharaNum         := StrToInt(QueryResult.FieldValue(2));
+			Name            :=          QueryResult.FieldValue(3);
+			JID             := StrToInt(QueryResult.FieldValue(4));
+			BaseLV          := StrToInt(QueryResult.FieldValue(5));
+			JobLV           := StrToInt(QueryResult.FieldValue(6));
+			BaseEXP         := StrToInt(QueryResult.FieldValue(7));
+			JobEXP          := StrToInt(QueryResult.FieldValue(8));
+			Zeny            := StrToInt(QueryResult.FieldValue(9));
+			ParamBase[STR]  := StrToInt(QueryResult.FieldValue(10));
+			ParamBase[AGI]  := StrToInt(QueryResult.FieldValue(11));
+			ParamBase[VIT]  := StrToInt(QueryResult.FieldValue(12));
+			ParamBase[INT]  := StrToInt(QueryResult.FieldValue(13));
+			ParamBase[DEX]  := StrToInt(QueryResult.FieldValue(14));
+			ParamBase[LUK]  := StrToInt(QueryResult.FieldValue(15));
+			HP              := StrToInt(QueryResult.FieldValue(17));
+			SP              := StrToInt(QueryResult.FieldValue(19));
+			StatusPts       := StrToInt(QueryResult.FieldValue(20));
+			SkillPts        := StrToInt(QueryResult.FieldValue(21));
+			Option          := StrToInt(QueryResult.FieldValue(22));
+			Karma           := StrToInt(QueryResult.FieldValue(23));
+			Manner          := StrToInt(QueryResult.FieldValue(24));
+			PartyID         := StrToInt(QueryResult.FieldValue(25));
+			GuildID         := StrToInt(QueryResult.FieldValue(26));
+			PetID           := StrToInt(QueryResult.FieldValue(27));
+			Hair            := StrToInt(QueryResult.FieldValue(28));
+			HairColor       := StrToInt(QueryResult.FieldValue(29));
+			ClothesColor    := StrToInt(QueryResult.FieldValue(30));
+			RightHand       := StrToInt(QueryResult.FieldValue(31));
+			LeftHand        := StrToInt(QueryResult.FieldValue(32));
+			Armor        		:= StrToInt(QueryResult.FieldValue(33));
+			Garment        	:= StrToInt(QueryResult.FieldValue(34));
+			Shoes        		:= StrToInt(QueryResult.FieldValue(35));
+			Accessory1      := StrToInt(QueryResult.FieldValue(36));
+			Accessory2      := StrToInt(QueryResult.FieldValue(37));
+			HeadTop         := StrToInt(QueryResult.FieldValue(38));
+			HeadMid         := StrToInt(QueryResult.FieldValue(39));
+			HeadBottom      := StrToInt(QueryResult.FieldValue(40));
+			Map             :=          QueryResult.FieldValue(41) ;
+				APoint.X      := StrToInt(QueryResult.FieldValue(42));
+				APoint.Y      := StrToInt(QueryResult.FieldValue(43));
+			Position        := APoint;
+			SaveMap         :=          QueryResult.FieldValue(44) ;
+				APoint.X      := StrToInt(QueryResult.FieldValue(45));
+				APoint.Y      := StrToInt(QueryResult.FieldValue(46));
+			SavePoint       := APoint;
+			PartnerID       := StrToInt(QueryResult.FieldValue(47));
+			ParentID1       := StrToInt(QueryResult.FieldValue(48));
+			ParentID2       := StrToInt(QueryResult.FieldValue(49));
+			BabyID          := StrToInt(QueryResult.FieldValue(50));
+			Online          := StrToInt(QueryResult.FieldValue(51));
+			HomunID         := StrToInt(QueryResult.FieldValue(52));
+
+			CalcMaxHP;
+			CalcMaxSP;
+			CalcMaxWeight;
+			CalcSpeed;
+
+			//Do not start the save timer caused by modifying everything else.
+			DataChanged := false;
+		end;
+	end
+	else
+	begin
+		Result := nil;
+	end;
+
+	if Assigned(QueryResult) then
+	begin
+		QueryResult.Free;
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//TMySQLGameDatabase.LoadChara()                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets a Character from the database.
+//
+//	Changes -
+//		April 20th, 2007 - RaX - Created
+//
+//------------------------------------------------------------------------------
+function TMySQLGameDatabase.LoadChara(
+	const
+		CharaName : String
+	) : TCharacter;
+var
+	Success     : Boolean;
+	APoint      : TPoint;
+	QueryResult : TMySQLResult;
+begin
+	QueryResult := SendQuery(
+		Format(
+			'SELECT * FROM characters WHERE name = %s;',
+			[CharaName]
 			),
 		TRUE,
 		Success

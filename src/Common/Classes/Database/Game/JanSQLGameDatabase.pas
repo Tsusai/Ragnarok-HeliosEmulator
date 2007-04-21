@@ -113,14 +113,26 @@ public
 	function  LoadChara(
 		const
 			CharaID : LongWord
-		) : TCharacter; override;
+		) : TCharacter; overload; override;
+
+	function  LoadChara(
+		const
+			CharaName : String
+		) : TCharacter; overload; override;
 
 	function  GetChara(
 		const
 				CharaID          : LongWord;
 		const
 			JanSQLClearTable : Boolean = False
-		) : TCharacter; override;
+		) : TCharacter; overload; override;
+
+	function  GetChara(
+		const
+				CharaName          : String;
+		const
+			JanSQLClearTable : Boolean = False
+		) : TCharacter; overload; override;
 
 	function  DeleteChara(
 		var
@@ -332,6 +344,33 @@ begin
 	end;
 end;
 //------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//TJanSQLGameDatabase.GetChara()                                        FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Fetch Character based on Character Name, return as TCharacter
+//
+//	Changes -
+//		April 20th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+function TJanSQLGameDatabase.GetChara(
+	const
+		CharaName          : String;
+	const
+		JanSQLClearTable : Boolean = False
+	) : TCharacter;
+begin
+	Result := LoadChara(CharaName);
+	if JanSQLClearTable then
+	begin
+		SendQuery('RELEASE TABLE characters');
+	end;
+end;
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //TJanSQLGameDatabase.GetAccountCharas()                                FUNCTION
@@ -691,6 +730,101 @@ begin
 		SendQuery(
 		Format('SELECT * FROM characters WHERE char_id = %d',
 			[CharaID]));
+	QueryResult := Database.RecordSets[ResultIdentifier];
+	if (QueryResult.RecordCount = 1) then
+	begin
+		with Result do
+		begin
+			Result           := TCharacter.Create(Parent.ClientInfo);
+			CID              := StrToIntDef(QueryResult.Records[0].Fields[0].Value, 0);
+			ID               := StrToIntDef(QueryResult.Records[0].Fields[1].Value, 0);
+			CharaNum         := StrToIntDef(QueryResult.Records[0].Fields[2].Value, 0);
+			Name            :=             QueryResult.Records[0].Fields[3].Value;
+			JID             := StrToIntDef(QueryResult.Records[0].Fields[4].Value, 0);
+			BaseLV          := StrToIntDef(QueryResult.Records[0].Fields[5].Value, 0);
+			JobLV           := StrToIntDef(QueryResult.Records[0].Fields[6].Value, 0);
+			BaseEXP         := StrToIntDef(QueryResult.Records[0].Fields[7].Value, 0);
+			JobEXP          := StrToIntDef(QueryResult.Records[0].Fields[8].Value, 0);
+			Zeny            := StrToIntDef(QueryResult.Records[0].Fields[9].Value, 0);
+			ParamBase[STR]  := StrToIntDef(QueryResult.Records[0].Fields[10].Value, 0);
+			ParamBase[AGI]  := StrToIntDef(QueryResult.Records[0].Fields[11].Value, 0);
+			ParamBase[VIT]  := StrToIntDef(QueryResult.Records[0].Fields[12].Value, 0);
+			ParamBase[INT]  := StrToIntDef(QueryResult.Records[0].Fields[13].Value, 0);
+			ParamBase[DEX]  := StrToIntDef(QueryResult.Records[0].Fields[14].Value, 0);
+			ParamBase[LUK]  := StrToIntDef(QueryResult.Records[0].Fields[15].Value, 0);
+			HP              := StrToIntDef(QueryResult.Records[0].Fields[17].Value, 0);
+			SP              := StrToIntDef(QueryResult.Records[0].Fields[19].Value, 0);
+			StatusPts       := StrToIntDef(QueryResult.Records[0].Fields[20].Value, 0);
+			SkillPts        := StrToIntDef(QueryResult.Records[0].Fields[21].Value, 0);
+			Option          := StrToIntDef(QueryResult.Records[0].Fields[22].Value, 0);
+			Karma           := StrToIntDef(QueryResult.Records[0].Fields[23].Value, 0);
+			Manner          := StrToIntDef(QueryResult.Records[0].Fields[24].Value, 0);
+			PartyID         := StrToIntDef(QueryResult.Records[0].Fields[25].Value, 0);
+			GuildID         := StrToIntDef(QueryResult.Records[0].Fields[26].Value, 0);
+			PetID           := StrToIntDef(QueryResult.Records[0].Fields[27].Value, 0);
+			Hair            := StrToIntDef(QueryResult.Records[0].Fields[28].Value, 0);
+			HairColor       := StrToIntDef(QueryResult.Records[0].Fields[29].Value, 0);
+			ClothesColor    := StrToIntDef(QueryResult.Records[0].Fields[30].Value, 0);
+			RightHand       := StrToIntDef(QueryResult.Records[0].Fields[31].Value, 0);
+			LeftHand        := StrToIntDef(QueryResult.Records[0].Fields[32].Value, 0);
+			Armor        		:= StrToIntDef(QueryResult.Records[0].Fields[33].Value, 0);
+			Garment        	:= StrToIntDef(QueryResult.Records[0].Fields[34].Value, 0);
+			Shoes        		:= StrToIntDef(QueryResult.Records[0].Fields[35].Value, 0);
+			Accessory1      := StrToIntDef(QueryResult.Records[0].Fields[36].Value, 0);
+			Accessory2      := StrToIntDef(QueryResult.Records[0].Fields[37].Value, 0);
+			HeadTop         := StrToIntDef(QueryResult.Records[0].Fields[38].Value, 0);
+			HeadMid         := StrToIntDef(QueryResult.Records[0].Fields[39].Value, 0);
+			HeadBottom      := StrToIntDef(QueryResult.Records[0].Fields[40].Value, 0);
+			Map             :=          	 QueryResult.Records[0].Fields[41].Value ;
+				APoint.X      := StrToIntDef(QueryResult.Records[0].Fields[42].Value, 0);
+				APoint.Y      := StrToIntDef(QueryResult.Records[0].Fields[43].Value, 0);
+			Position        := APoint;
+			SaveMap         :=          	 QueryResult.Records[0].Fields[44].Value ;
+				APoint.X      := StrToIntDef(QueryResult.Records[0].Fields[45].Value, 0);
+				APoint.Y      := StrToIntDef(QueryResult.Records[0].Fields[46].Value, 0);
+			SavePoint       := APoint;
+			PartnerID       := StrToIntDef(QueryResult.Records[0].Fields[47].Value, 0);
+			ParentID1       := StrToIntDef(QueryResult.Records[0].Fields[48].Value, 0);
+			ParentID2       := StrToIntDef(QueryResult.Records[0].Fields[49].Value, 0);
+			BabyID          := StrToIntDef(QueryResult.Records[0].Fields[50].Value, 0);
+			Online          := StrToIntDef(QueryResult.Records[0].Fields[51].Value, 0);
+			HomunID         := StrToIntDef(QueryResult.Records[0].Fields[52].Value, 0);
+			//Do not start the save timer caused by modifying everything else.
+			DataChanged := false;
+			CalcMaxWeight;
+			CalcMaxHP;
+			CalcMaxSP;
+			CalcSpeed;
+		end;
+	end else Result := nil;
+	if ResultIdentifier > 0 then Database.ReleaseRecordset(ResultIdentifier);
+end;//LoadChara
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//TJanSQLGameDatabase.LoadChara()                                        FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Loads a character from the database.
+//
+//	Changes -
+//		April 20th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+function TJanSQLGameDatabase.LoadChara(
+	const
+		CharaName : String
+	) : TCharacter;
+var
+	APoint      : TPoint;
+	QueryResult : TJanRecordSet;
+	ResultIdentifier : Integer;
+begin
+	ResultIdentifier :=
+		SendQuery(
+		Format('SELECT * FROM characters WHERE name = %s',
+			[CharaName]));
 	QueryResult := Database.RecordSets[ResultIdentifier];
 	if (QueryResult.RecordCount = 1) then
 	begin

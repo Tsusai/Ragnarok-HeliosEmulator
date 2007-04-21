@@ -15,6 +15,10 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 234 - 
+[2007/04/20] RaX - Added GetChara(CharacterName) rather than just by ID in Database/GameDatabase
+-
+
 - Rev 233 - 
 [2007/04/17] RaX - Added ScriptDirectory to ZoneConfig in Zone.ini.
 [2007/04/17] RaX - Updated EnsureFolderStructure to include the new script directory.
