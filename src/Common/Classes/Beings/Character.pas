@@ -40,9 +40,6 @@ type
 	type TCharacter = class(TBeing)
 	private
 		fCharacterNumber  : Byte;
-		fBaseEXP          : LongWord;
-		fJobEXP           : LongWord;
-		fZeny             : LongWord;
 		fStatusPts        : Word;
 		fSkillPts         : Word;
 		fKarma            : Word;

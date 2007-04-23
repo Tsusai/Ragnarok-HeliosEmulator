@@ -15,6 +15,12 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 235 - 
+[2007/04/22] RaX - Fixed DefaultZeny not working. I had forgotten to remove the private fZeny
+ variable from TCharacter back in the day which was now overriding the one in TBeing. Removed.
+ I also went ahead and cleared up the other redundant problem causing variables.
+-
+
 - Rev 234 - 
 [2007/04/20] RaX - Added GetChara(CharacterName) rather than just by ID in Database/GameDatabase
 -
