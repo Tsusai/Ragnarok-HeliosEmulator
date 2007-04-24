@@ -1,0 +1,23 @@
+Lua notes
+
+Subject: require
+*In a lua script, the require command uses . and / and \ as one in the same.
+ Also when using require for a script, do not include the .lua extension.
+
+Subject: lua_newthread
+*lua_State *lua_newthread (lua_State *L);
+ "Creates a new thread, pushes it on the stack, and returns a pointer to 
+  a lua_State that represents this new thread. The new state returned by this 
+  function shares with the original state all global objects (such as tables), but 
+  has an independent execution stack.
+ There is no explicit function to close or to destroy a thread. Threads are 
+  subject to garbage collection, like any Lua object."
+ Personal note: Yes things are shared, but like classes.  If a subthread of the original
+  lua thread runs a file and gets a new function, it is not accessable by the original lua. 
+
+
+Subject: lua_close
+*Since all threads share the same information, only one cleanup is required. Use only
+ on the root lua object
+
+Subject: functions

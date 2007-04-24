@@ -15,6 +15,33 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 236 -
+[2007/04/23] Tsusai - Notes/Overview: Further refined lua in Helios.  Changed out once again
+ the Delphi unit that controls the dll.  With that change, we can now use the latest Lua dll
+ build 5.1.2.  Also corrected a tiny error with the linux compile line dealing with 
+ LoginAccountInfo.  This was giving me phantom errors in the delphi environment.
+[2007/04/23] Tsusai - Helios.dpr: Added the note that our license does not override third 
+ party licensing.
+[2007/04/23] Tsusai - 3rdParty.txt: Updated
+[2007/04/23] Tsusai - Lua.dll: Added Lua 5.1.2 dll and removed the lualib.dll (not used
+ anymore).
+[2007/04/23] Tsusai - LuaPas: Added. Modified to for Windows/Linux dll/so names.
+[2007/04/23] Tsusai - Lua, luaxlib, lualib: Removed the THlua package.
+[2007/04/23] Tsusai - Helios.dpr: Changed the lua paths and fixed LoginAccountInfo linux path
+[2007/04/23] Tsusai - test.lua: Removed.
+[2007/04/23] Tsusai - Lua Notes.txt: Added some lua notes.
+[2007/04/23] Tsusai - Character.pas: Updated Uses for LuaPas
+[2007/04/23] Tsusai - Map.pas - TMap: Added NPCLua to TMap.  Added loading of 
+ Scripts/MapLoaders/mapname.lua for dynamic npc loading.
+[2007/04/23] Tsusai - NPCCommands: Updated uses, added results to existing functions to kill
+ compiler hints.
+[2007/04/23] Tsusai - NPCCore: Updated uses.
+ MakeCharacterLuaThread changed to MakeLuaThread.  Takes 2 lua pointers now.
+ LuaCleanup: Removed
+ RunLuaScript: Added, split from LuaSetup.
+[2007/04/23] Tsusai - ZoneServer: Updated uses.  Now calls Core.lua instead of test.lua.
+-
+
 - Rev 235 - 
 [2007/04/22] RaX - Fixed DefaultZeny not working. I had forgotten to remove the private fZeny
  variable from TCharacter back in the day which was now overriding the one in TBeing. Removed.

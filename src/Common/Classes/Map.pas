@@ -7,6 +7,7 @@
 //  Changes -
 //    October 30th, 2006 - RaX - Created.
 //		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
+//		[2007/04/23] Tsusai - Added lua
 //
 //------------------------------------------------------------------------------
 unit Map;
@@ -21,8 +22,9 @@ uses
 	{Project}
 	EventList,
 	MapTypes,
-	PointList
+	PointList,
 	{3rd Party}
+	LuaPas
 	//none
 	;
 
@@ -30,7 +32,9 @@ uses
 type
 
 //------------------------------------------------------------------------------
-//TMap                                                                  CLASS
+//TMap
+
+//		[2007/04/23] Tsusai - Added NPC Lua instance                                                                  CLASS
 //------------------------------------------------------------------------------
 TMap = class(TObject)
 	private
@@ -43,6 +47,7 @@ TMap = class(TObject)
 		Flags: TFlags;
 		State: TMapMode;
 		
+		NPCLua : Plua_state;
 
 		EventList : TEventList;
 
@@ -87,6 +92,7 @@ uses
 	{Project}
 	GameConstants,
 	Globals,
+	NPCCore,
 	Main,
 	{3rd Party}
 	List32
@@ -105,7 +111,7 @@ Constructor TMap.Create();
 begin
 	inherited;
 	State := UNLOADED;
-  //Set Size to 0
+	//Set Size to 0
 	Size.X := 0;
 	Size.Y := 0;
 	EventList := TEventList.Create(TRUE);
@@ -412,35 +418,46 @@ End;//LoadFromFile
 //      Loads a map's cells from a .pms file.
 //
 //  Changes -
-//    January 25th, 2007 - RaX - Created.
+//		January 25th, 2007 - RaX - Created.
+//		[2007/04/23] Tsusai - Added lua setup and execution
 //------------------------------------------------------------------------------
 Procedure TMap.Load;
 Var
 	MapFile : TMemoryStream;
-  XIndex  : Integer;
+	XIndex  : Integer;
 	YIndex  : Integer;
 Begin
-  State  := LOADING;
+	State  := LOADING;
 
-  MapFile := TMemoryStream.Create;
-  MapFile.LoadFromFile(Path);
+	MapFile := TMemoryStream.Create;
+	MapFile.LoadFromFile(Path);
 
 	Flags:= MainProc.ZoneServer.ZoneLocalDatabase.StaticData.GetMapFlags(Name);
-  MapFile.Seek(22,0);//skip other non-cell information
+	MapFile.Seek(22,0);//skip other non-cell information
 
-  //Load Cell Information
-  SetLength(Cell, Size.X, Size.Y);
-  for YIndex := 0 to Size.Y - 1 do begin
-    for XIndex := 0 to Size.X - 1 do begin
+	//Load Cell Information
+	SetLength(Cell, Size.X, Size.Y);
+	for YIndex := 0 to Size.Y - 1 do begin
+		for XIndex := 0 to Size.X - 1 do begin
 			MapFile.Read(Cell[XIndex][YIndex].Attribute,1);
 			Cell[XIndex][YIndex].Position := Point(XIndex, YIndex);
 			Cell[XIndex][YIndex].ObstructionCount := 0;
-      Cell[XIndex][YIndex].Beings := TIntList32.Create;
-    end;
-  end;
-  State := LOADED;
+			Cell[XIndex][YIndex].Beings := TIntList32.Create;
+		end;
+	end;
 
-  MapFile.Free;//finally, free the memory stream.
+	//Load Lua information from Zone NPC Lua Core
+	MakeLuaThread(MainProc.ZoneServer.NPCLua, NPCLua);
+	//Run the mapname.lua file that holds links to npc lua files
+	RunLuaScript(
+		NPCLua,
+		MainProc.Options.ScriptDirectory +
+		'/MapLoaders/' + Self.Name + '.lua'
+		);
+
+	State := LOADED;
+
+	MapFile.Free;//finally, free the memory stream.
 End;//Load
 //------------------------------------------------------------------------------
 
@@ -456,22 +473,22 @@ End;//Load
 //------------------------------------------------------------------------------
 Procedure TMap.Unload;
 var
-  XIndex  : Integer;
+	XIndex  : Integer;
 	YIndex  : Integer;
 Begin
-  if State = LOADED then
-  begin
-    //Free up each Cell.
-    for XIndex := 0 to Size.X - 1 do
-    begin
-      for YIndex := 0 to Size.Y - 1 do
-      begin
-        Cell[XIndex][YIndex].Beings.Free;
-      end;
-    end;
-    SetLength(Cell, 0, 0);
-    State := UNLOADED;
-  end;
+	if State = LOADED then
+	begin
+		//Free up each Cell.
+		for XIndex := 0 to Size.X - 1 do
+		begin
+			for YIndex := 0 to Size.Y - 1 do
+			begin
+				Cell[XIndex][YIndex].Beings.Free;
+			end;
+		end;
+		SetLength(Cell, 0, 0);
+		State := UNLOADED;
+	end;
 End;//Unload
 //------------------------------------------------------------------------------
 end.

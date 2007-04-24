@@ -31,5 +31,9 @@ MSSQL Client Library routine loading, By Ed Lyk.
 
 List32, Copyright 2001, Gary Darby, Intellitech
  Systems Inc., www.DelphiForFun.org
+
+LuaPas.pas, Created by Geo Massar, 2006.  From
+ LuaTut library, http://luaforge.net/projects/luatut/
+
  
 -------------------------------------------------

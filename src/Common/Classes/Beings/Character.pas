@@ -7,6 +7,7 @@
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //		[2007/03/28] CR - Cleaned up uses clauses with help of Icarus.
+//		[2007/04/23] Tsusai - Changed lua filename
 //
 //------------------------------------------------------------------------------
 unit Character;
@@ -24,7 +25,7 @@ uses
 	{Third Party}
 	IdContext,
 	List32,
-	Lua
+	LuaPas
 	;
 
 type TCharaScriptStatus =

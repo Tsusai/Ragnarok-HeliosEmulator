@@ -1,10 +1,10 @@
 unit NPCCommands;
 
+//[2007/04/23] Tsusai - Changed lua filename
 interface
 
 uses
-	lua,
-	lauxlib;
+	LuaPas;
 
 
 function LoadNPCCommands(var ALua : Plua_state) : boolean;
@@ -27,6 +27,7 @@ implementation
 uses
 	SysUtils;
 
+//[2007/04/23] Tsusai - Added result
 function LoadNPCCommands(var ALua : Plua_state) : boolean;
 var
 	idx : integer;
@@ -39,22 +40,27 @@ begin
 			NPCCommandList[idx].func
 		);
 	end;
+	Result := true;
 end;
 
+//[2007/04/23] Tsusai - Added result
 function addnpc(ALua : Plua_state) : integer; cdecl;
 begin
 	//Get Data
 	//Create TNPC
 	//Assign Data from stack to TNPC
 	Writeln('NPC Loaded');
+	Result := 0;
 end;
 
+//[2007/04/23] Tsusai - Added result
 function addwarp(ALua : Plua_state) : integer; cdecl;
 begin
 	//Get Data
 	//Create TNPC
 	//Assign Data from stack to TNPC
 	Writeln('Warp Loaded');
+	Result := 0;
 end;
 
 function lua_print(ALua : Plua_state) : integer; cdecl;

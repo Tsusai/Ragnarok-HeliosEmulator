@@ -34,6 +34,8 @@
 //    			in other programming or human languages, derivatives, and anything
 //    			your head can think of on how to make money off our code, is
 //    			PROHIBITED WITHOUT EXPLICIT PERMISSION FROM THE AUTHORS.
+//    		* All Third Party licensing and rules still apply and are not and
+//    			cannot be superceded by this license.
 //
 //    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 //    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
@@ -105,9 +107,7 @@ compile for linux, at the same time*}
 	Map in 'Common\Classes\Map.pas',
 
 	//Lua
-	lua in 'Common\ThirdParty\Lua\lua.pas',
-	lauxlib in 'Common\ThirdParty\Lua\lauxlib.pas',
-	lualib in 'Common\ThirdParty\Lua\lualib.pas',
+	LuaPas in 'Common\ThirdParty\LuaPas.pas',
 	NPCCore in 'Servers\Zone\Lua\NPC\NPCCore.pas',
 	NPCCommands in 'Servers\Zone\Lua\NPC\NPCCommands.pas',
 
@@ -194,7 +194,7 @@ compile for linux, at the same time*}
 
 	//Login Server
 	LoginServer in 'Servers/Login/LoginServer.pas',
-	LoginAccountInfo in 'Login/Login/LoginAccountInfo.pas',
+	LoginAccountInfo in 'Servers/Login/LoginAccountInfo.pas',
 
 	//Character Server
 	CharacterServer in 'Servers/Character/CharacterServer.pas',
@@ -227,9 +227,7 @@ compile for linux, at the same time*}
 	Map in 'Common/Classes/Map.pas',
 
 	//Lua
-	lua in 'Common/ThirdParty/Lua/lua.pas',
-	lauxlib in 'Common/ThirdParty/Lua/lauxlib.pas',
-	lualib in 'Common/ThirdParty/Lua/lualib.pas',
+	LuaPas in 'Common/ThirdParty/LuaPas.pas',
 	NPCCore in 'Servers/Zone/Lua/NPC/NPCCore.pas',
 	NPCCommands in 'Servers/Zone/Lua/NPC/NPCCommands.pas',
 

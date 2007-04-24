@@ -8,6 +8,7 @@
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
+//		[2007/04/23] Tsusai - Changed lua filename
 //
 //------------------------------------------------------------------------------
 unit ZoneServer;
@@ -32,7 +33,7 @@ uses
 	{3rd Party}
 	IdTCPServer,
 	IdContext,
-	Lua
+	LuaPas
 	;
 
 
@@ -318,7 +319,7 @@ Procedure TZoneServer.Start(Reload : Boolean = FALSE);
 begin
   if NOT Started then
 	begin
-    //Load our Zone.ini
+		//Load our Zone.ini
 	  LoadOptions;
 
     //Initialize ips and port.
@@ -335,14 +336,13 @@ begin
 		LoadMaps;
 
 		//Initiate NPC Lua
-		LuaSetup(NPCLua,'test.lua');
-
-		//lua test call
-		lua_getglobal(NPCLua,'printtest');
-		lua_pcall(NPCLua,0,0,0);
+		LuaSetup(
+			NPCLua,
+			MainProc.Options.ScriptDirectory + '/Core/Core.lua'
+		);
 
 		CharacterEventThread.Start;
-  end else
+	end else
   begin
 		Console.Message('Cannot Start():: Zone Server already running!', 'Zone Server', MS_ALERT);
   end;
@@ -380,12 +380,12 @@ begin
 	  DeActivateClient(ToCharaTCPClient);
 	  DeActivateClient(ToInterTCPClient);
 
-		//Kill NPC lua
-		LuaCleanup(NPCLua);
-
 		//Clear Lists
-		MapList.Clear;
 		CharacterList.Clear;
+		MapList.Clear;
+
+		//Kill ALL LUAS by killing the root lua.
+		lua_close(NPCLua);
 
     ZoneLocalDatabase.Free;
 
