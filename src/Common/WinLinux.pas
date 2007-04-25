@@ -27,7 +27,7 @@ uses
 	procedure SetupTerminationCapturing;
 	procedure KillTerminationCapturing;
 	procedure KillProcess;
-	function GetTick : LongWord;
+	function GetTick : Cardinal;
 	procedure LowerPriority(AThread : TThread);
 	function ExtractFileNameMod(Path : String) : string;
 	function IsValidFolderName(FolderName : String) :Boolean;
@@ -43,8 +43,13 @@ uses
 	Libc,
 	{$ENDIF}
 	SysUtils,
+	DateUtils,
 	Version,
 	Globals;
+
+	{$IFDEF LINUX}
+	var StartTime : timeb;
+	{$ENDIF}
 
 //------------------------------------------------------------------------------
 //GetLongWordFromIPString                                              FUNCTION
@@ -131,6 +136,8 @@ uses
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		April 24th, 2007 - Tsusai - Linux goes ahead and sets the current
+//			time.
 //
 //------------------------------------------------------------------------------
 	procedure SetupTerminationCapturing;
@@ -140,7 +147,8 @@ uses
 		SetConsoleTitle(PChar(HeliosVersion));
 		{$ENDIF}
 		{$IFDEF LINUX}
-    Signal(SIGINT,@TerminateApplication);
+		ftime(StartTime);
+		Signal(SIGINT,@TerminateApplication);
 		Signal(SIGTERM,@TerminateApplication);
 		Signal(SIGKILL,@TerminateApplication);
 		{$ENDIF}
@@ -200,22 +208,26 @@ uses
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		April 24th, 2007 - Tsusai - Changed linux portion to compare
+//			current time with the time that was stored on startup.
 //
 //------------------------------------------------------------------------------
-	function GetTick : LongWord;
+	function GetTick : Cardinal;
 	{$IFDEF LINUX}
 	var
-		LinuxInfo : TSysInfo;
-	{$ENDIF}
+		NowTime : timeb;
 	begin
-		{$IFDEF MSWINDOWS}
+		ftime(NowTime);
+		Result := (NowTime.time - StartTime.time) * 1000;
+		Result := Result + (NowTime.millitm - StartTime.millitm);
+	end;
+	{$ENDIF}
+
+	{$IFDEF MSWINDOWS}
+	begin
 		Result := timegettime();
-		{$ENDIF}
-    {$IFDEF LINUX}
-		sysinfo(LinuxInfo);
-		Result := LinuxInfo.uptime;
-		{$ENDIF}
-	end;{GetTick}
+	end;
+	{$ENDIF}{GetTick}
 //----------------------------------------------------------------------------
 
 

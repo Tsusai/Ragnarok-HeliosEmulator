@@ -15,6 +15,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 237 -
+[2007/04/24] Tsusai - Notes/Overview: Linux fix related to the GetTick function.
+[2007/04/24] Tsusai - WinLinux - GetTick: The existing code only returned uptime in seconds.
+ Unfortunatly in linux there is no current uptime in ms like Windows.  This fix stores a
+ linux time at startup (seconds since 1900 and its ms), then will take the difference for
+ the tick.
+-
+
 - Rev 236 -
 [2007/04/23] Tsusai - Notes/Overview: Further refined lua in Helios.  Changed out once again
  the Delphi unit that controls the dll.  With that change, we can now use the latest Lua dll
