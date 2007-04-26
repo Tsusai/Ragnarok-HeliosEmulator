@@ -15,6 +15,14 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 239 -
+[2007/04/25] Tsusai - Notes/Overview: Small Lua cleanup & added routine descriptions.
+[2007/04/25] Tsusai - LuaCoreRoutines, LuaNPCCommands, & LuaNPCCore: Routine descriptions
+ added.
+[2007/04/25] Tsusai - LuaNPCCommands: Rearanged information.  Remembered I could use the
+ forward declaration, thus I am able to remove my dummy npc commands from interface.
+-
+
 - Rev 238 -
 [2007/04/25] Tsusai - Notes/Overview: Lua Lua Lua Lua Lua Lua.
  Seriously, alot of restructuring of existing npc routines vs common lua routines.

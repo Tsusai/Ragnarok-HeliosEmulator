@@ -1,20 +1,24 @@
 unit LuaNPCCommands;
 
-
 interface
 
 uses
-	LuaPas;
+	LuaCoreRoutines;
 
+function LoadNPCCommands(var ALua : TLua) : boolean;
 
-function LoadNPCCommands(var ALua : Plua_state) : boolean;
-function addnpc(ALua : Plua_state) : integer; cdecl;
-function addwarp(ALua : Plua_state) : integer; cdecl;
-function lua_print(ALua : Plua_state) : integer; cdecl;
+implementation
+uses
+	LuaPas,
+	SysUtils;
+
+function addnpc(ALua : TLua) : integer; cdecl; forward;
+function addwarp(ALua : TLua) : integer; cdecl; forward;
+function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
 	NPCCommandCount = 3;
-
+	
 const
 	//"Function name in lua" , Delphi function name
 	NPCCommandList : array [1..NPCCommandCount] of lual_reg = (
@@ -23,12 +27,9 @@ const
 		(name:'print';func:lua_print)
 	);
 
-implementation
-uses
-	SysUtils;
-
 //[2007/04/23] Tsusai - Added result
-function LoadNPCCommands(var ALua : Plua_state) : boolean;
+//Registers all the NPC Commands into the Lua instance
+function LoadNPCCommands(var ALua : TLua) : boolean;
 var
 	idx : integer;
 begin
@@ -44,7 +45,8 @@ begin
 end;
 
 //[2007/04/23] Tsusai - Added result
-function addnpc(ALua : Plua_state) : integer; cdecl;
+//Dummy
+function addnpc(ALua : TLua) : integer; cdecl;
 begin
 	//Get Data
 	//Create TNPC
@@ -54,7 +56,8 @@ begin
 end;
 
 //[2007/04/23] Tsusai - Added result
-function addwarp(ALua : Plua_state) : integer; cdecl;
+//Dummy
+function addwarp(ALua : TLua) : integer; cdecl;
 begin
 	//Get Data
 	//Create TNPC
@@ -63,7 +66,9 @@ begin
 	Result := 0;
 end;
 
-function lua_print(ALua : Plua_state) : integer; cdecl;
+//Random usage for testing.  Will take its string and output it on
+//the console.
+function lua_print(ALua : TLua) : integer; cdecl;
 var
 	i, n: Integer;
 begin

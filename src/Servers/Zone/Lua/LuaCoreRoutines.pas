@@ -4,12 +4,15 @@ interface
 uses
 	LuaPas;
 
+	//Wrapper for the lua state.
 	Type TLua = Plua_state;
 
+	//Used mainly for descending lua threads off a root one
+	//so that it may be dereferenced later on and freed.
 	Type TLuaInfo = record
-		Lua   : TLua;
-		LuaID : Integer;
-		ParentLua     : TLua;
+		Lua       : TLua;
+		LuaID     : Integer;
+		ParentLua : TLua;
 	end;
 
 	procedure MakeLuaThread(
@@ -37,6 +40,9 @@ uses
 
 implementation
 
+//Takes an existing lua, and makes a new execution thread for a
+//descendant.  Also stores the parent's info so that it can
+//be deferenced and freed.
 procedure MakeLuaThread(
 	var SourceLua : TLua;
 	var DestLua   : TLuaInfo
@@ -47,12 +53,14 @@ begin
 	DestLua.ParentLua := SourceLua;
 end;
 
+//Initializes a brand new lua, not for descendant threads.
 procedure InitLuaState(var ALua : TLua);
 begin
 	ALua := lua_open;
 	luaL_openlibs(ALua);
 end;
 
+//Tells a lua instance to load and execute a script file
 procedure RunLuaScript(var ALua : TLua; Const LuaFile : String);
 begin
 	//Load the script
@@ -70,6 +78,8 @@ begin
 	end;
 end;
 
+//Using the stored parent info, we are able to dereference and free
+//up a lua descendant thread.
 procedure TerminateLuaThread(
 	const LuaInfo : TLuaInfo
 );
@@ -81,6 +91,8 @@ begin
 	);
 end;
 
+//Closes out the head only lua.  Make sure descendant threads are
+//taken care of first.
 procedure TerminateLua(
 	var RootLuaOnly : TLua
 );
