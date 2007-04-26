@@ -27,13 +27,13 @@ uses
 	CharaList,
 	Database,
 	GMCommands,
+	LuaCoreRoutines,
 	MapList,
 	PacketTypes,
 	ZoneOptions,
 	{3rd Party}
 	IdTCPServer,
-	IdContext,
-	LuaPas
+	IdContext
 	;
 
 
@@ -91,7 +91,7 @@ type
 
 		ZoneLocalDatabase : TDatabase;
 
-		NPCLua : Plua_State;
+		NPCLua : TLua;
 
 		property Started : Boolean read GetStarted;
 		property Port : Word read fPort write SetPort;
@@ -119,9 +119,9 @@ uses
 	Being,
 	BufferIO,
 	Globals,
+	LuaNPCCore,
 	Main,
 	Map,
-	NPCCore,
 	PacketDB,
 	TCPServerRoutines,
 	ZoneCharaCommunication,
@@ -336,10 +336,11 @@ begin
 		LoadMaps;
 
 		//Initiate NPC Lua
-		LuaSetup(
-			NPCLua,
-			MainProc.Options.ScriptDirectory + '/Core/Core.lua'
-		);
+		InitLuaState(NPCLua);
+		PrepLuaForNPCScripts(NPCLua);
+		//Run the Core script
+		RunLuaScript(NPCLua, MainProc.Options.ScriptDirectory + '/Core/Core.lua');
+
 
 		CharacterEventThread.Start;
 	end else
@@ -385,7 +386,7 @@ begin
 		MapList.Clear;
 
 		//Kill ALL LUAS by killing the root lua.
-		lua_close(NPCLua);
+		TerminateLua(NPCLua);
 
     ZoneLocalDatabase.Free;
 

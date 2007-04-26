@@ -22,10 +22,10 @@ uses
 	{Project}
 	Being,
 	GameConstants,
+	LuaCoreRoutines,
 	{Third Party}
 	IdContext,
-	List32,
-	LuaPas
+	List32
 	;
 
 type TCharaScriptStatus =
@@ -132,7 +132,7 @@ type
 
 		DcAndKeepData : Boolean;
 
-		Lua : Plua_state; //personal lua "thread"
+		LuaInfo : TLuaInfo; //personal lua "thread"
 		ScriptStatus : TCharaScriptStatus; //lets us know what is going on with lua,
 		// if its paused or running
 

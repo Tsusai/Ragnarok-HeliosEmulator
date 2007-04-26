@@ -108,8 +108,9 @@ compile for linux, at the same time*}
 
 	//Lua
 	LuaPas in 'Common\ThirdParty\LuaPas.pas',
-	NPCCore in 'Servers\Zone\Lua\NPC\NPCCore.pas',
-	NPCCommands in 'Servers\Zone\Lua\NPC\NPCCommands.pas',
+	LuaCoreRoutines in 'Servers\Zone\Lua\LuaCoreRoutines.pas',
+	LuaNPCCore in 'Servers\Zone\Lua\NPC\LuaNPCCore.pas',
+	LuaNPCCommands in 'Servers\Zone\Lua\NPC\LuaNPCCommands.pas',
 
 	//Lists
 	CharaList in 'Common\Classes\Lists\CharaList.pas',
@@ -228,8 +229,9 @@ compile for linux, at the same time*}
 
 	//Lua
 	LuaPas in 'Common/ThirdParty/LuaPas.pas',
-	NPCCore in 'Servers/Zone/Lua/NPC/NPCCore.pas',
-	NPCCommands in 'Servers/Zone/Lua/NPC/NPCCommands.pas',
+	LuaCoreRoutines in 'Servers/Zone/Lua/LuaCoreRoutines.pas',
+	LuaNPCCore in 'Servers/Zone/Lua/NPC/LuaNPCCore.pas',
+	LuaNPCCommands in 'Servers/Zone/Lua/NPC/LuaNPCCommands.pas',
 
 	//Lists
 	CharaList in 'Common/Classes/Lists/CharaList.pas',

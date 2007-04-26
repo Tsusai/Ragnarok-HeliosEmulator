@@ -24,7 +24,7 @@ uses
 	MapTypes,
 	PointList,
 	{3rd Party}
-	LuaPas
+	LuaCoreRoutines
 	//none
 	;
 
@@ -47,7 +47,7 @@ TMap = class(TObject)
 		Flags: TFlags;
 		State: TMapMode;
 		
-		NPCLua : Plua_state;
+		NPCLuaInfo : TLuaInfo;
 
 		EventList : TEventList;
 
@@ -92,7 +92,7 @@ uses
 	{Project}
 	GameConstants,
 	Globals,
-	NPCCore,
+	LuaNPCCore,
 	Main,
 	{3rd Party}
 	List32
@@ -447,10 +447,10 @@ Begin
 	end;
 
 	//Load Lua information from Zone NPC Lua Core
-	MakeLuaThread(MainProc.ZoneServer.NPCLua, NPCLua);
+	MakeLuaThread(MainProc.ZoneServer.NPCLua, NPCLuaInfo);
 	//Run the mapname.lua file that holds links to npc lua files
 	RunLuaScript(
-		NPCLua,
+		NPCLuaInfo.Lua,
 		MainProc.Options.ScriptDirectory +
 		'/MapLoaders/' + Self.Name + '.lua'
 		);
@@ -488,6 +488,7 @@ Begin
 		end;
 		SetLength(Cell, 0, 0);
 		State := UNLOADED;
+		TerminateLuaThread(NPCLuaInfo);
 	end;
 End;//Unload
 //------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
-unit NPCCommands;
+unit LuaNPCCommands;
 
-//[2007/04/23] Tsusai - Changed lua filename
+
 interface
 
 uses

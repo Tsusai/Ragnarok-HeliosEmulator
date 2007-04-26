@@ -15,6 +15,23 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 238 -
+[2007/04/25] Tsusai - Notes/Overview: Lua Lua Lua Lua Lua Lua.
+ Seriously, alot of restructuring of existing npc routines vs common lua routines.
+[2007/04/25] Tsusai - LuaCoreRoutines: Added. I've split alot of crap out of the other units
+ and made commands so that no other non Lua* unit calls the dll wrapper LuaPas itself. Added
+ TLua, which is just the Plua_state, TLuaInfo, (for use w/ descendant threads like map and 
+ character lua's) which stores a lua for itself, its own reference ID to the parent, and a
+ link to the parent.  This is so that descendant execution threads can be unreferenced later
+ and cleaned up on the fly :)
+[2007/04/25] Tsusai - LuaNPC*: Renamed from NPCCore/Commands.  Redid and or rearranged the
+ routines in these files with another or LuaCoreRoutines.
+[2007/04/25] Tsusai - ZoneServer: Updated all lua calls because of the restructure.
+[2007/04/25] Tsusai - Character: Lua (TLua) changed to LuaInfo (TLuaInfo).
+[2007/04/25] Tsusai - Map: Updated NPCLua (TLua) to NPCLuaInfo (TLuaInfo).  Updated all lua
+ related calls for the above restructure.
+-
+
 - Rev 237 -
 [2007/04/24] Tsusai - Notes/Overview: Linux fix related to the GetTick function.
 [2007/04/24] Tsusai - WinLinux - GetTick: The existing code only returned uptime in seconds.
