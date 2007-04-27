@@ -15,6 +15,11 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 240 -
+[2007/04/26] RaX - Fixed small bug in MySQLCommonDatabase -> SaveAccount. A space was
+ accidentally removed in ChrstphrR's changes in rev 220.
+-
+
 - Rev 239 -
 [2007/04/25] Tsusai - Notes/Overview: Small Lua cleanup & added routine descriptions.
 [2007/04/25] Tsusai - LuaCoreRoutines, LuaNPCCommands, & LuaNPCCore: Routine descriptions

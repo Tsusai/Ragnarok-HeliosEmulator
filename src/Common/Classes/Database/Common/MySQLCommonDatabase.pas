@@ -474,7 +474,7 @@ const
 		'connect_until=%s, ' +
 		'ban_until=%s, ' +
 		'last_ip=''%s'', ' +
-		'state=%d' +
+		'state=%d ' +
 		'WHERE account_id=%d;';
 var
 	Success : boolean;
