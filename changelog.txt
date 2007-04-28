@@ -15,6 +15,39 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 242 -
+[2007/04/28] CR - Overview: Commenting and headers added.  Minor changes made
+ for improve efficiencies, and comments left where there might be room for
+ further gains, once proper explanations are fleshed out.
+[2007/04/28] CR - Being: Altered unit header.  Improved unit description.  Added
+ class header for TBeing, described minor changes to the interface there.
+[2007/04/28] CR - Being: TBeing: Altered header, included description.  Made
+ empty routines CalcMaxHP and CalcMaxSP abstract.  Eliminated private section,
+ moved AreaLoop into protected.
+[2007/04/28] CR - Being: TBeing.Walk: Altered comment header.  Added scathing
+ comments for the lack of explanation for what REALLY goes in within this
+ routine when two of the devs working on this project had to deal with poorly
+ documented code beforehand and SHOULD KNOW BETTER than to leave code of this
+ complexity unadorned with ANY sensible comments.  On a positive note, the
+ explanation for the routine was fine.
+[2007/04/28] CR - Being: TBeing.Walk:GetDirection: Changed Index from Integer to
+ Byte type to eliminate a cast.
+[2007/04/28] CR - Being: TBeing.Create: Altered Comment Header.  Added comment
+ regarding inherited behavior.
+[2007/04/28] CR - Being: TBeing.Destroy: Altered header, added a better
+ description.  Defined Pre and Post Conditons.  Added a comment stating that the
+ inherited call must come last.  Bugfix: moved inherited call last so ancestor's
+ cleanup happens after the EventList/Path are freed.
+[2007/04/28] CR - Being: TBeing.SetName: Made Value parameter constant.
+[2007/04/28] CR - Being: TBeing.GetBaseStat: Added Comment Header. Added
+ precondition for Index range.
+[2007/04/28] CR - Being: TBeing.SetBaseStat: Added Comment Header. Added
+ precondition for Index range.
+[2007/04/28] CR - Being: TBeing.CalcSpeed: Added comment header & description.
+[2007/04/28] CR - Character: TCharacter.SetName: Made Value parameter constant
+ to correspond with change made in TBeing.
+-
+
 - Rev 241 -
 [2007/04/28] CR - Overview: Commenting, reuse of constants to self-explain an
  array's bounds.

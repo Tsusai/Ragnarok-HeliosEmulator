@@ -81,7 +81,10 @@ type
 		procedure SetCharaState(Value : TCharaState);
 		procedure SetCharaNum(Value : byte);
 
-		procedure SetName(Value : string); override;
+		Procedure SetName(
+			const
+				Value : String
+			); override;
 		procedure SetClass(Value : word); override;
 		procedure SetBaseLV(Value : byte); override;
 		procedure SetJobLV(Value : byte); override;
@@ -303,23 +306,37 @@ end;{SetCharaNum}
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//SetName                                                           PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Sets the Name to Value. Also, lets our object know that data has
-//    changed.
-//
-//	Changes -
-//		December 22nd, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TCharacter.SetName(Value : string);
-begin
+(*- Procedure -----------------------------------------------------------------*
+TCharacter.SetName
+--------------------------------------------------------------------------------
+Overview:
+--
+	Sets the Name to Value.
+	Also, lets our object know that data has changed.
+
+--
+Pre:
+	TODO
+Post:
+	TODO
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2006/22/06] RaX - Created Header.
+[2007/04/28] CR - Changed Header, made parameter constant (efficient use of
+	strings).
+*-----------------------------------------------------------------------------*)
+Procedure TCharacter.SetName(
+	const
+		Value : String
+	);
+Begin
 	DataChanged := TRUE;
 	fName := Value;
-end;{SetName}
-//------------------------------------------------------------------------------
+End; (* Proc TCharacter.SetName
+*-----------------------------------------------------------------------------*)
 
 
 //------------------------------------------------------------------------------
