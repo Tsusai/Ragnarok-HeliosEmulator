@@ -15,6 +15,13 @@ Developers & Contributers
 
 -------------------------------------------------------------------------------------------
 
+- Rev 241 -
+[2007/04/28] CR - Overview: Commenting, reuse of constants to self-explain an
+ array's bounds.
+[2007/04/28] CR - GameConstants: Altered header.  Rearranged Direction constants
+ to reuse NORTH and NORTHEAST as the bounds for the constant Directions array.
+-
+
 - Rev 240 -
 [2007/04/26] RaX - Fixed small bug in MySQLCommonDatabase -> SaveAccount. A space was
  accidentally removed in ChrstphrR's changes in rev 220.
