@@ -13,9 +13,30 @@ Developers & Contributers
 - Aeomin
 - ChrstphrR (CR)
 
--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
-- Rev 242 -
+- Rev 243 -
+[2007/04/28] CR - Overview: Made new data type in Being for stat arrays, used in
+ both TBeing and TCharacter.  Cleanup in TCharacter.
+[2007/04/28] CR - Being: New type ByteStatArray replaces the repeated use of
+ array [STR..LUK] of Byte; definitions in Being and Character.
+[2007/04/28] CR - Character: Reindented the data types above TCharacter.
+[2007/04/28] CR - Character: TCharacter: Modified Class header.  Eliminated
+ private section - all internal fields used for properties are now protected,
+ instead.  Removed GetBaseStats property method (unneeded).  Altered
+ SetBaseStats to model the changes I made in TBeing last commit.  Eliminated
+ public variables that were IDENTICAL to those in TBeing (to avoid a repeat of
+ problems like we had with fZeny in an earlier commit).  Changed ParamUP and
+ ParamBonus so they use the ByteStatArray type like TBeing uses for ParamBase.
+[2007/04/28] CR - Character: TCharacter:GetBaseStats: Removed.  This class will
+ call the ancestor GetBaseStats instead, which is all that was done within this
+ routine (I would've kept it if it had to alter DataChanged).
+[2007/04/28] CR - Character: TCharacter:SetBaseStats: Altered Comment Header,
+ improved description, noted Pre and Post conditions.  Altered parameters to
+ match TBeing.
+-
+
+- Rev 242 - TYPOS IN REVISION ENTRY
 [2007/04/28] CR - Overview: Commenting and headers added.  Minor changes made
  for improve efficiencies, and comments left where there might be room for
  further gains, once proper explanations are fleshed out.
@@ -39,9 +60,9 @@ Developers & Contributers
  inherited call must come last.  Bugfix: moved inherited call last so ancestor's
  cleanup happens after the EventList/Path are freed.
 [2007/04/28] CR - Being: TBeing.SetName: Made Value parameter constant.
-[2007/04/28] CR - Being: TBeing.GetBaseStat: Added Comment Header. Added
+[2007/04/28] CR - Being: TBeing.GetBaseStats: Added Comment Header. Added
  precondition for Index range.
-[2007/04/28] CR - Being: TBeing.SetBaseStat: Added Comment Header. Added
+[2007/04/28] CR - Being: TBeing.SetBaseStats: Added Comment Header. Added
  precondition for Index range.
 [2007/04/28] CR - Being: TBeing.CalcSpeed: Added comment header & description.
 [2007/04/28] CR - Character: TCharacter.SetName: Made Value parameter constant

@@ -28,209 +28,248 @@ uses
 	List32
 	;
 
-type TCharaScriptStatus =
-		(SCRIPT_PAUSED, SCRIPT_RUNNING, SCRIPT_NOTRUNNING);
 
 type
-	TCharaState = (charaDead, charaPlayDead,
-								charaSitting, charaStanding,
-								charaWalking);
-//------------------------------------------------------------------------------
-//TCharacter                                                          PROCEDURE
-//------------------------------------------------------------------------------
-	type TCharacter = class(TBeing)
-	private
-		fCharacterNumber  : Byte;
-		fStatusPts        : Word;
-		fSkillPts         : Word;
-		fKarma            : Word;
-		fManner           : Word;
-		fPartyID          : LongWord;
-		fGuildID          : LongWord;
-		fPetID            : LongWord;
-		fHair             : Word;
-		fHairColor        : Word;
-		fClothesColor     : Word;
-		fRightHand        : Word;
-		fLeftHand         : Word;
-		fArmor            : Word;
-		fGarment          : Word;
-		fShoes            : Word;
-		fAccessory1       : Word;
-		fAccessory2       : Word;
-		fHeadTop          : Word;
-		fHeadMid          : Word;
-		fHeadBottom       : Word;
-		fSaveMap          : String;
-		fSaveMapPt        : TPoint;
-		fPartnerID        : LongWord;
-		fParentID1        : LongWord;
-		fParentID2        : LongWord;
-		fBabyID           : LongWord;
-		fOnline           : Byte;
-		fHomunID          : LongWord;
-
-		fDataChanged      : Boolean; //For timed save procedure to activate.
-		fTimeToSave       : TDateTime;
-
-		fJobName          : string;
-		fCharaState       : TCharaState;
-
-	protected
-		procedure SetSaveTime(Value : boolean);
-		procedure SetCharaState(Value : TCharaState);
-		procedure SetCharaNum(Value : byte);
-
-		Procedure SetName(
-			const
-				Value : String
-			); override;
-		procedure SetClass(Value : word); override;
-		procedure SetBaseLV(Value : byte); override;
-		procedure SetJobLV(Value : byte); override;
-		procedure SetBaseEXP(Value : LongWord); override;
-		procedure SetJobEXP(Value : LongWord); override;
-		procedure SetZeny(Value : LongWord); override;
-		function  GetBaseStats(Index : Byte) : byte; override;
-		procedure SetBaseStats(Index: byte; Value: byte); override;
-		procedure SetMaxHP(Value : word); override;
-		procedure SetHP(Value : word); override;
-		procedure SetMaxSP(Value : word); override;
-		procedure SetSP(Value : word); override;
-		Procedure SetOption(Value : word); override;
-		procedure SetMap(Value : string); override;
-		procedure SetPosition(Value : TPoint); override;
-
-		Procedure SetKarma(Value : word);
-		Procedure SetManner(Value : word);
-		Procedure SetPartyID(Value : LongWord);
-		Procedure SetGuildID(Value : LongWord);
-		Procedure SetPetID(Value : LongWord);
-		Procedure SetHair(Value : word);
-		Procedure SetHairColor(Value : word);
-		Procedure SetClothesColor(Value : word);
-		Procedure SetRightHand(Value : word);
-		Procedure SetLeftHand(Value : word);
-		Procedure SetArmor(Value : Word);
-		Procedure SetGarment(Value : Word);
-		Procedure SetShoes(Value : Word);
-		Procedure SetAccessory1(Value : Word);
-		Procedure SetAccessory2(Value : Word);
-		Procedure SetHeadTop(Value : word);
-		Procedure SetHeadMid(Value : word);
-		Procedure SetHeadBottom(Value : word);
-		procedure SetStatusPts(Value : word);
-		procedure SetSkillPts(Value : word);
-		procedure SetSMap(Value : string);
-		procedure SetSMapPt(Value : TPoint);
-		procedure SetPartnerID(Value : LongWord);
-		procedure SetParentID1(Value : LongWord);
-		procedure SetParentID2(Value : LongWord);
-		procedure SetBabyID(Value : LongWord);
-		procedure SetOnline(Value : Byte);
-		procedure SetHomunID(Value : LongWord);
-
-	public
-		CID : LongWord;
-
-		DcAndKeepData : Boolean;
-
-		LuaInfo : TLuaInfo; //personal lua "thread"
-		ScriptStatus : TCharaScriptStatus; //lets us know what is going on with lua,
-		// if its paused or running
-
-		BaseNextEXP  : LongWord;
-		JobNextEXP   : LongWord;
-		Weight       : LongWord;
-		MaxWeight    : LongWord;
-
-    ClientInfo	 : TIdContext;
-
-		ParamUP : array [STR..LUK] of byte;
-		ParamBonus : array [STR..LUK] of byte;
-
-		//Stat Calculations should fill these in
-		//Maybe a record type for this crap for shared info between mobs and chars
-		//Hell...maybe..properties? o_O
-
-		AttackRange : word;
-		//No idea what 0..5 is from.  Stats?
-		ATK : array[R_HAND..L_HAND] of array[0..5] of Word; // Displayed ATK power
-
-		MATK2 : word;
-		MATK1 : word;
-		DEF1 : word;
-		DEF2 : word;
-		MDEF1 : word;
-		MDEF2 : word;
-		HIT : word;
-		FLEE1 : word;
-		Lucky : word;
-		Critical : word;
-		ASpeed : word;
-
-		ClientVersion : Integer;
-
-		OnTouchIDs : TIntList32;
 
 
-		property DataChanged : boolean  read fDataChanged write SetSaveTime;
-		property CharaState  : TCharaState read fCharaState write SetCharaState;
-		//For timed save procedure to activate.
-		property BaseEXP   : LongWord    read fBaseEXP write SetBaseEXP;
-		property JobEXP    : LongWord    read fJobEXP write SetJobEXP;
-		property Zeny      : LongWord    read fZeny write SetZeny;
-		property CharaNum  : Byte       read fCharacterNumber write SetCharaNum;
-		property StatusPts : Word       read fStatusPts write SetStatusPts;
-		property SkillPts  : Word       read fSkillPts write SetSkillPts;
-		property Karma     : Word       read fKarma write SetKarma;
-		property Manner    : Word       read fManner write SetManner;
-		property PartyID   : LongWord    read fPartyID write SetPartyID;
-		property GuildID   : LongWord    read fGuildID write SetGuildID;
-		property PetID     : LongWord    read fPetID write SetPetID;
-		property Hair      : Word       read fHair write SetHair;
-		property HairColor : Word       read fHairColor write SetHairColor;
-		property ClothesColor: Word     read fClothesColor write SetClothesColor;
-		property RightHand : Word       read fRightHand write SetRightHand;
-		property LeftHand  : Word       read fLeftHand write SetLeftHand;
-		property Armor     : Word       read fArmor write SetArmor;
-		property Garment   : Word       read fGarment write SetGarment;
-		property Shoes     : Word       read fShoes write SetShoes;
-		property Accessory1: Word       read fAccessory1 write SetAccessory1;
-		property Accessory2: Word       read fAccessory1 write SetAccessory2;
-		property HeadTop   : Word       read fHeadTop write SetHeadTop;
-		property HeadMid   : Word       read fHeadMid write SetHeadMid;
-		property HeadBottom: Word       read fHeadBottom write SetHeadBottom;
-		property SaveMap   : string     read fSaveMap write SetSMap;
-		property SavePoint : TPoint     read fSaveMapPt write SetSMapPt;
-		property PartnerID : LongWord    read fPartnerID write SetPartnerID;
-		property ParentID1 : LongWord    read fParentID1 write SetParentID1;
-		property ParentID2 : LongWord    read fParentID2 write SetParentID2;
-		property BabyID    : LongWord    read fBabyID write SetBabyID;
-		property Online    : Byte       read fOnline write SetOnline;
-		property HomunID   : LongWord    read fHomunID write SetHomunID;
+TCharaScriptStatus = (
+		SCRIPT_PAUSED,
+		SCRIPT_RUNNING,
+		SCRIPT_NOTRUNNING
+	);
 
-		property JobName   : string     read fJobName;
+TCharaState = (
+		charaDead,
+		charaPlayDead,
+		charaSitting,
+		charaStanding,
+		charaWalking
+	);
 
-		procedure CalcMaxHP; override;
-		procedure CalcMaxSP; override;
-		procedure CalcSpeed; override;
-		procedure CalcMaxWeight;
 
-		Procedure SendSubStat(
-			const
-				Mode     : Word;
-			const
-				DataType : Word;
-			const
-				Value    : LongWord
-			);
-		procedure SendCharacterStats(UpdateView : boolean = false);
-		constructor Create(AClient : TIdContext);
-		destructor Destroy; override;
+(*= CLASS =====================================================================*
+TCharacter
 
-	end;{TCharacter}
-//------------------------------------------------------------------------------
+*------------------------------------------------------------------------------*
+Overview:
+*------------------------------------------------------------------------------*
+
+	This class represents a Character.  It descends from TBeing, and handles all
+Character specific properties not already defined and handled in TBeing.
+
+	Parts of TCharacter that may look like reduplication are actually not:
+since we must flag when data is altered, some of the TBeing Set* methods for
+properties have to be overriden to properly flag when the object's state has
+changed, and thus, must be saved.
+
+*------------------------------------------------------------------------------*
+Revisions:
+*------------------------------------------------------------------------------*
+(Format: [yyyy/mm/dd] <Author> - <Description of Change>)
+[2007/04/28] CR - Modified Class header.  Eliminated private section - all
+	internal fields used for properties are now protected, instead.  Removed
+	GetBaseStat property method (unneeded).  Altered SetBaseStat to model the
+	changes I made in TBeing last commit.  Eliminated public variables that were
+	IDENTICAL to those in TBeing (to avoid a repeat of problems like we had with
+	fZeny in an earlier commit).  Changed ParamUP and ParamBonus so they use the
+	ByteStatArray type like TBeing uses for ParamBase.
+*=============================================================================*)
+TCharacter = class(TBeing)
+protected
+	fCharacterNumber  : Byte;
+	fStatusPts        : Word;
+	fSkillPts         : Word;
+	fKarma            : Word;
+	fManner           : Word;
+	fPartyID          : LongWord;
+	fGuildID          : LongWord;
+	fPetID            : LongWord;
+	fHair             : Word;
+	fHairColor        : Word;
+	fClothesColor     : Word;
+	fRightHand        : Word;
+	fLeftHand         : Word;
+	fArmor            : Word;
+	fGarment          : Word;
+	fShoes            : Word;
+	fAccessory1       : Word;
+	fAccessory2       : Word;
+	fHeadTop          : Word;
+	fHeadMid          : Word;
+	fHeadBottom       : Word;
+	fSaveMap          : String;
+	fSaveMapPt        : TPoint;
+	fPartnerID        : LongWord;
+	fParentID1        : LongWord;
+	fParentID2        : LongWord;
+	fBabyID           : LongWord;
+	fOnline           : Byte;
+	fHomunID          : LongWord;
+
+	fDataChanged      : Boolean; //For timed save procedure to activate.
+	fTimeToSave       : TDateTime;
+
+	fJobName          : String;
+	fCharaState       : TCharaState;
+
+	procedure SetSaveTime(Value : Boolean);
+	procedure SetCharaState(Value : TCharaState);
+	procedure SetCharaNum(Value : Byte);
+
+	Procedure SetName(
+		const
+			Value : String
+		); override;
+
+	procedure SetClass(Value : Word); override;
+	procedure SetBaseLV(Value : Byte); override;
+	procedure SetJobLV(Value : Byte); override;
+	procedure SetBaseEXP(Value : LongWord); override;
+	procedure SetJobEXP(Value : LongWord); override;
+	procedure SetZeny(Value : LongWord); override;
+
+	Procedure SetBaseStats(
+		const
+			Index: Byte;
+		const
+			Value: Byte
+		); override;
+
+	procedure SetMaxHP(Value : Word); override;
+	procedure SetHP(Value : Word); override;
+	procedure SetMaxSP(Value : Word); override;
+	procedure SetSP(Value : Word); override;
+	Procedure SetOption(Value : Word); override;
+	procedure SetMap(Value : String); override;
+	procedure SetPosition(Value : TPoint); override;
+
+	Procedure SetKarma(Value : Word);
+	Procedure SetManner(Value : Word);
+	Procedure SetPartyID(Value : LongWord);
+	Procedure SetGuildID(Value : LongWord);
+	Procedure SetPetID(Value : LongWord);
+	Procedure SetHair(Value : Word);
+	Procedure SetHairColor(Value : Word);
+	Procedure SetClothesColor(Value : Word);
+	Procedure SetRightHand(Value : Word);
+	Procedure SetLeftHand(Value : Word);
+	Procedure SetArmor(Value : Word);
+	Procedure SetGarment(Value : Word);
+	Procedure SetShoes(Value : Word);
+	Procedure SetAccessory1(Value : Word);
+	Procedure SetAccessory2(Value : Word);
+	Procedure SetHeadTop(Value : Word);
+	Procedure SetHeadMid(Value : Word);
+	Procedure SetHeadBottom(Value : Word);
+	procedure SetStatusPts(Value : Word);
+	procedure SetSkillPts(Value : Word);
+	procedure SetSMap(Value : String);
+	procedure SetSMapPt(Value : TPoint);
+	procedure SetPartnerID(Value : LongWord);
+	procedure SetParentID1(Value : LongWord);
+	procedure SetParentID2(Value : LongWord);
+	procedure SetBabyID(Value : LongWord);
+	procedure SetOnline(Value : Byte);
+	procedure SetHomunID(Value : LongWord);
+
+public
+	CID : LongWord;
+
+	DcAndKeepData : Boolean;
+
+	LuaInfo : TLuaInfo; //personal lua "thread"
+	ScriptStatus : TCharaScriptStatus; //lets us know what is going on with lua,
+	// if its paused or running
+
+	BaseNextEXP  : LongWord;
+	JobNextEXP   : LongWord;
+	Weight       : LongWord;
+	MaxWeight    : LongWord;
+
+	ClientInfo   : TIdContext;
+
+	ParamUP      : ByteStatArray;
+	ParamBonus   : ByteStatArray;
+
+	//Stat Calculations should fill these in
+	//Maybe a record type for this crap for shared info between mobs and chars
+	//Hell...maybe..properties? o_O
+
+	AttackRange : Word;
+	//No idea what 0..5 is from.  Stats?
+	ATK : array[R_HAND..L_HAND] of array[0..5] of Word; // Displayed ATK power
+
+	ClientVersion : Integer;
+
+	OnTouchIDs : TIntList32;
+
+
+	procedure CalcMaxHP; override;
+	procedure CalcMaxSP; override;
+	procedure CalcSpeed; override;
+	procedure CalcMaxWeight;
+
+	Procedure SendSubStat(
+		const
+			Mode     : Word;
+		const
+			DataType : Word;
+		const
+			Value    : LongWord
+		);
+
+	procedure SendCharacterStats(UpdateView : boolean = false);
+
+	Constructor Create(AClient : TIdContext);
+	Destructor  Destroy; override;
+
+
+	property DataChanged : Boolean
+		read  fDataChanged
+		write SetSaveTime;
+
+	property CharaState  : TCharaState read fCharaState write SetCharaState;
+	//For timed save procedure to activate.
+	property BaseEXP   : LongWord    read fBaseEXP write SetBaseEXP;
+	property JobEXP    : LongWord    read fJobEXP write SetJobEXP;
+	property Zeny      : LongWord    read fZeny write SetZeny;
+	property CharaNum  : Byte       read fCharacterNumber write SetCharaNum;
+	property StatusPts : Word       read fStatusPts write SetStatusPts;
+	property SkillPts  : Word       read fSkillPts write SetSkillPts;
+	property Karma     : Word       read fKarma write SetKarma;
+	property Manner    : Word       read fManner write SetManner;
+	property PartyID   : LongWord    read fPartyID write SetPartyID;
+	property GuildID   : LongWord    read fGuildID write SetGuildID;
+	property PetID     : LongWord    read fPetID write SetPetID;
+	property Hair      : Word       read fHair write SetHair;
+	property HairColor : Word       read fHairColor write SetHairColor;
+	property ClothesColor: Word     read fClothesColor write SetClothesColor;
+	property RightHand : Word       read fRightHand write SetRightHand;
+	property LeftHand  : Word       read fLeftHand write SetLeftHand;
+	property Armor     : Word       read fArmor write SetArmor;
+	property Garment   : Word       read fGarment write SetGarment;
+	property Shoes     : Word       read fShoes write SetShoes;
+	property Accessory1: Word       read fAccessory1 write SetAccessory1;
+	property Accessory2: Word       read fAccessory1 write SetAccessory2;
+	property HeadTop   : Word       read fHeadTop write SetHeadTop;
+	property HeadMid   : Word       read fHeadMid write SetHeadMid;
+	property HeadBottom: Word       read fHeadBottom write SetHeadBottom;
+	property SaveMap   : String
+		read  fSaveMap
+		write SetSMap;
+	property SavePoint : TPoint     read fSaveMapPt write SetSMapPt;
+	property PartnerID : LongWord    read fPartnerID write SetPartnerID;
+	property ParentID1 : LongWord    read fParentID1 write SetParentID1;
+	property ParentID2 : LongWord    read fParentID2 write SetParentID2;
+	property BabyID    : LongWord    read fBabyID write SetBabyID;
+	property Online    : Byte       read fOnline write SetOnline;
+	property HomunID   : LongWord    read fHomunID write SetHomunID;
+
+	Property JobName   : String
+		read  fJobName;
+End;(* TCharacter
+*== CLASS ====================================================================*)
+
 
 implementation
 
@@ -248,6 +287,7 @@ uses
 	//none
 	;
 
+
 //------------------------------------------------------------------------------
 //SetSaveTime                                                         PROCEDURE
 //------------------------------------------------------------------------------
@@ -258,9 +298,10 @@ uses
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetSaveTime(Value : boolean);
+procedure TCharacter.SetSaveTime(Value : Boolean);
 begin
-	if Value and not fDataChanged then begin
+	if Value and not fDataChanged then
+	begin
 		fDataChanged  := TRUE;
 		fTimeToSave   := IncMinute(Now,5);
 	end;
@@ -282,7 +323,7 @@ procedure TCharacter.SetCharaState(Value : TCharaState);
 begin
 	//Need to add easy to get to codes (STANCE_MOVE from prometheus)
 	//usually used for packets
-	fCharaState := value;
+	fCharaState := Value;
 end;
 //------------------------------------------------------------------------------
 
@@ -538,40 +579,43 @@ end;{SetZeny}
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//GetBaseStats                                                        PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Gets the base stat at Index.
-//
-//	Changes -
-//		December 22nd, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-function TCharacter.GetBaseStats(Index : Byte) : Byte;
-begin
-	Result := Inherited GetBaseStats(Index);
-end;{GetBaseStats}
-//------------------------------------------------------------------------------
+(*- Procedure -----------------------------------------------------------------*
+TCharacter.SetBaseStats
+--------------------------------------------------------------------------------
+Overview:
+--
 
+	Sets Base Stat at Index to Value.
 
-//------------------------------------------------------------------------------
-//SetBaseStats                                                        PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Sets Base Stat at Index to Value.
-//
-//	Changes -
-//		December 22nd, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TCharacter.SetBaseStats(Index, Value: Byte);
-begin
+	Passes off to the ancestor routine which does range checking via Asserts,
+	and then flags DataChanged for saving the Character Data when that event is
+	next triggered.
+
+--
+Pre:
+	Index must be between STR..LUK (Checked by the inherited method)
+Post:
+	DataChanged is True
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2006/12/22] RaX - Created Header.
+[2007/04/28] CR - Altered Comment Header, improved description, noted Pre and
+	Post conditions.  Altered parameters to match TBeing.
+*-----------------------------------------------------------------------------*)
+Procedure TCharacter.SetBaseStats(
+	const
+		Index : Byte;
+	const
+		Value : Byte
+	);
+Begin
 	Inherited;
-	DataChanged       := TRUE;
-end;{SetBaseStats}
-//------------------------------------------------------------------------------
-
+	DataChanged := TRUE;
+End; (* Proc TCharacter.SetBaseStats
+*-----------------------------------------------------------------------------*)
 
 //------------------------------------------------------------------------------
 //SetMaxHP                                                            PROCEDURE

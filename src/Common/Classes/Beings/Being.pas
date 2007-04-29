@@ -60,6 +60,9 @@ uses
 //TBeing                                                                  CLASS
 //------------------------------------------------------------------------------
 type
+
+ByteStatArray = array [STR..LUK] of Byte;
+
 TBeing = class; //Forward Declaration.
 
 {[2007/03/28] CR - No X,Y parameters needed -- reduced and eliminated. }
@@ -88,6 +91,8 @@ Revisions:
 [2007/04/28] CR - Altered header, included description.  Made empty routines
 	CalcMaxHP and CalcMaxSP abstract.  Eliminated private section, moved
 	AreaLoop into protected.
+[2007/04/28] CR - Changed fParamBase from an array to an equivalent type of
+	ByteStatArray.
 *=============================================================================*)
 TBeing = class(TObject)
 protected
@@ -98,7 +103,7 @@ protected
 	fBaseEXP          : LongWord;
 	fJobEXP           : LongWord;
 	fZeny             : LongWord;
-	fParamBase        : Array[STR..LUK] of Byte;
+	fParamBase        : ByteStatArray;
 	fMaxHP            : Word;
 	fHP               : Word;
 	fMaxSP            : Word;
