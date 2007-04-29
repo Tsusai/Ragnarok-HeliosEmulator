@@ -1280,29 +1280,71 @@ end;{SetHomunID}
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//CalcMaxHP                                                           PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Calculates the character's Maximum HP.
-//
-//	Changes -
-//		December 22nd, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TCharacter.CalcMaxHP;
-begin
+(*- Procedure -----------------------------------------------------------------*
+TCharacter.CalcMaxHP
+--------------------------------------------------------------------------------
+Overview:
+--
+
+	Calculates the character's Maximum HP.
+
+	[2007/04/28] CR - This routine appears to be used as an initialization.
+	Repeatedly calling this routine looks like it will be wasteful.  AND...
+	This routine IS repeatedly called.
+
+	Nota Bene:  MaxHP values do not depend on the HP the character currently
+	has AT ALL!
+	However...  MaxHP DOES depend on the following properties:
+	JobName/JID, (via the GetBaseMaxHP call)
+	BaseLV,
+	VIT
+
+--
+Pre:
+	TODO
+Post:
+	TODO
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2006/12/22] RaX - Created Header.
+[2007/04/28] CR - Altered Comment Header, added further description of the
+	routine.  Used an internal variable to simplify/shorten the span where the
+	Database connection is open to retrieve the BaseMaxHP value.  Reindented the
+	formula for initializing MaxHP.  Boy is it clearer to read without that long
+	abomination of a method name to retrieve "GetBaseMaxHP"! :P~~
+*-----------------------------------------------------------------------------*)
+Procedure TCharacter.CalcMaxHP;
+Var
+	BaseMaxHP : Word;
+Begin
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
+	try
+		BaseMaxHP :=
+			TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxHP(Self);
+	finally
+		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+	end;
+
 	fMaxHP := EnsureRange(
-		((35 + BaseLV * 5 + ((1 + BaseLV) * BaseLV div 2) *
-			TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxHP(self) div 100) * (100 + ParamBase[VIT]) div 100)
-			,1
-			,High(fMaxHP)
-		);
-	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-	if fHP > fMaxHP then fHP := fMaxHP;
-end;{CalcMaxHP}
-//------------------------------------------------------------------------------
+		(
+			(35 + BaseLV * 5 + (
+				(1 + BaseLV) * BaseLV div 2) *
+				BaseMaxHP div 100
+			) * (100 + ParamBase[VIT]) div 100
+		),
+		1,
+		High(fMaxHP)
+	);
+
+	if (fHP > fMaxHP) then
+	begin
+		fHP := fMaxHP;
+	end;
+End; (* Proc TCharacter.CalcMaxHP
+*-----------------------------------------------------------------------------*)
 
 
 (*-----------------------------------------------------------------------------*

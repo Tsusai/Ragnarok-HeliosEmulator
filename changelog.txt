@@ -15,6 +15,16 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 244 -
+[2007/04/29] CR - Overview: Cleanup of TCharacter.CalcMaxHP for clarity.
+[2007/04/28] CR - Character: TCharacter.CalcMaxHP: Altered Comment Header, added
+ further description of the routine.  Used an internal variable to simplify &
+ shorten the span where the Database connection is open to retrieve the
+ BaseMaxHP value.  Reindented the formula for initializing MaxHP.  Boy is it
+ clearer to read without that long abomination of a method name to retrieve
+ "GetBaseMaxHP"! :P~~
+-
+
 - Rev 243 -
 [2007/04/28] CR - Overview: Made new data type in Being for stat arrays, used in
  both TBeing and TCharacter.  Cleanup in TCharacter.
