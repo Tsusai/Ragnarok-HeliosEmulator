@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 245 -
+[2007/04/29] RaX - Commented TMap.GetPath.
+-
+
 - Rev 244 -
 [2007/04/29] CR - Overview: Cleanup of TCharacter.CalcMaxHP for clarity.
 [2007/04/28] CR - Character: TCharacter.CalcMaxHP: Altered Comment Header, added

@@ -154,6 +154,9 @@ end;
 //    November 1st, 2006 - Tsusai - moved the check for passability into
 //     IsBlocked. Changed to a boolean function and our path is assigned via a
 //     TPointList parameter passed by address, APath.
+//		April 29th, 2007 - RaX - Commented this routine thoroughly, to allow others
+//		 to understand it and perhaps learn something =)
+//
 //------------------------------------------------------------------------------
 function TMap.GetPath(
 	const StartPoint  : TPoint;
@@ -162,9 +165,10 @@ function TMap.GetPath(
 ) : boolean;
 
 var
-	AFloodList				: TList;
+	AFloodList				: TList;//Our main flood list, contains FloodItems
 	AFloodItem				: TFloodItem;
-	NewFloodItem			: TFloodItem;
+	NewFloodItem			: TFloodItem;//Created with supplied data to test if an item
+																	//is valid. If it is, it is added to the floodlist
 	Index							: Integer;
 	WriteIndex        : Integer;
 	DirectionIndex		: Integer;
@@ -173,16 +177,19 @@ var
 
 	CostTick					: Cardinal;
 
-	XMod							: Integer;
-	YMod							: Integer;
+	XMod							: Integer;//The modifier between AnArea(a piece of the map)
+															//and the real X Index for that cell.
+	YMod							: Integer;//y version of XMod
 
-	AnArea						: TGraph;
+	AnArea						: TGraph;//A section of the map used for keeping track of
+															//where a flood item is.
 	AnAreaSize				: TPoint;
 
 	Done							: Boolean;
 	EndPointMod				: TPoint;
 
 begin
+	//Initialize data
 	Result				:= FALSE;
 	Done 					:= FALSE;
 	CostTick			:=  0;
@@ -190,38 +197,62 @@ begin
 	AFloodItem		:= TFloodItem.Create;
 	AFloodList		:= TList.Create;
 
-	//grab our area
-	XMod := EndPoint.X-CharClickArea;
+	//grab our area from the map
+	XMod := EndPoint.X-CharClickArea;//get our modifiers
 	YMod := EndPoint.Y-CharClickArea;
+	//copy the X axis' cells from the map from the modifier to CharClickAres*2+1
+	//(33 by default. 16 away from the character in any direction + 1 for the
+	//space the character is on)
 	AnArea := Copy(Cell, Max(XMod, 0), Min((CharClickArea*2)+1, Abs(XMod - Size.X)));
 	for Index := 0 to Length(AnArea)-1 do
 	begin
+		//copy each of the Y axis' cells in the area constraints
 		AnArea[Index] := Copy(Cell[XMod+Index], Max(YMod, 0), Min((CharClickArea*2)+1, Abs(YMod - Size.Y)));
 	end;
+	//Grab the length of the area's X+Y axis' as a TPoint
 	AnAreaSize := Point(Length(AnArea),Length(AnArea[0]));
 
+	//Get the endpoint's position in AnArea, we are searching from the end to the
+	//start to emulate the client.
 	EndPointMod := Point(StartPoint.X-Abs(XMod),StartPoint.Y-Abs(YMod));
 
-	//initialize our first flood item
+	//initialize our first flood item, the start point is the endpoint that we're
+	//searching. This is to emulate the client.
 	AFloodItem.Position.X := EndPoint.X-abs(XMod);
 	AFloodItem.Position.Y := EndPoint.Y-abs(YMod);
 	AFloodItem.Path.Add(AnArea[AFloodItem.Position.X][AFloodItem.Position.Y].Position);
 	AFloodItem.Cost := 0;
 	AFloodList.Add(AFloodItem);
 
+	//While we havn't found the endpoint and we havn't run out of cells to check do
 	While (NOT Result) AND (NOT Done) do
 	begin
+		//start from the end of the list, and go to the beginning(so removing items
+		//is FAST)
 		Index := AFloodList.Count;
+		//While we've still got items on our floodlist to search and we havn't found
+		//the endpoint, do.
 		While (Index > 0) AND (NOT Result) do
 		begin
+			//decrease the index and grab a flood item for spawning new items in each
+			//direction
 			Dec(Index);
 			AFloodItem := AFloodList[Index];
+			//To see if this flood item is ready to propagate, we check it's weight.
+			//If this "Cost" weight is less than the cost we are currently at then we
+			//propagate the flood item. Increasing costs are a problem many large
+			//corporations face today! It's a good thing here.
 			if AFloodItem.Cost <= CostTick then
 			begin
+				//Loop backwards through the directions, emulating gravity's client.
 				DirectionIndex := 8;
+				//While there are still directions to search and we havn't found the endpoint,
+				//do
 				While (DirectionIndex > 0) AND (NOT Result) do
 				begin
+					//decrease our direction index(remember, we started at 8 for a reason!)
 					Dec(DirectionIndex);
+					//grab our possible position
 					PossiblePosition.X := AFloodItem.Position.X + Directions[DirectionIndex].X;
 					PossiblePosition.Y := AFloodItem.Position.Y + Directions[DirectionIndex].Y;
 
@@ -240,20 +271,21 @@ begin
 							NewFloodItem.Path.Assign(AFloodItem.Path);
 
 							NewFloodItem.Position		:= PossiblePosition;
-
+							//calculate the cost of this new flood item.
 							if not (abs(Directions[DirectionIndex].X) = abs(Directions[DirectionIndex].Y)) then
 							begin
 								NewFloodItem.Cost	:= AFloodItem.Cost + 5;
 							end else begin
 								NewFloodItem.Cost	:= AFloodItem.Cost + 7;
 							end;
-
+							//add the item to the flood list.
 							AFloodList.Add(NewFloodItem);
 
 							AnArea[NewFloodItem.Position.X][NewFloodItem.Position.Y].Attribute := 1;
-
+							//check to see if we've found the end point.
 							if PointsEqual(NewFloodItem.Position, EndPointMod) then
 							begin
+								//We've found it!
 								Result	:= TRUE;
 								APath.Clear;
 								for WriteIndex := NewFloodItem.Path.Count -1 downto 0 do
@@ -274,21 +306,24 @@ begin
 
 							end else
 							begin
+								//If we've not found it, add the new point to the list(we're searching backwards!)
 								NewFloodItem.Path.Add(AnArea[PossiblePosition.X][PossiblePosition.Y].Position);
 							end;
 						end;
 					end;
 				end;
+				//free the flood item.
 				TFloodItem(AFloodList[Index]).Free;
+				//remove it from the list.
 				AFloodList.Delete(Index);
 			end;
 		end;
-
+		//if we've run out of cells to check, die.
 		if (AFloodList.Count = 0) then
 		begin
 			Done := TRUE;
 		end;
-
+		//increment our cost tick
 		Inc(CostTick);
 	end;
 
