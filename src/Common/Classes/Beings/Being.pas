@@ -275,16 +275,21 @@ Var
 	spd        : Word;
 	AMoveEvent : TMovementEvent;
 	OldPt      : TPoint;
-	ABeing     : TBeing;
 	idxY       : SmallInt;
 	idxX       : SmallInt;
-	BeingIdx   : Integer;
+	Radius     : Word;
 
 	(*. local function ...................*
 	Gets our new direction
+	Using basic mathematics and an existing array, we are able to get a direction in the form of the following
+	where X is the current cell, 0 = North, 4 = South, 2 = West, 6 = East
+		107
+		2X6
+		345
 
 	[2007/04/28] CR - Header, made parameters constant, changed for loop Index
 		from Integer to Byte, to eliminate a cast to Byte.
+
 	*....................................*)
 	function GetDirection(
 		const
@@ -309,7 +314,97 @@ Var
 		end;
 	end;(*. local function .............*)
 
+	procedure HideBeings;
+	var
+		ABeing : TBeing;
+		BeingIdx : Integer;
+	begin
+		//Ok this took me some time to setup just right
+		//First, what we're trying to determine is if we moved in a particular
+		//location, a row or column of cells should be leaving the being's field
+		//of view
+
+		//Example (using change of X), We are changing X.  Then we see if they are
+		//within our Y visual range. Last check is that they left our visual range
+		//on the X factor
+		if {X axis}((Directions[Direction].X <> 0) and
+				(abs(OldPt.Y - idxY) < Radius) and
+				(OldPt.X = idxX + Directions[Direction].X * (Radius - 1 )))
+		OR {Y axis}((Directions[Direction].Y <> 0) and
+				(abs(OldPt.X - idxX) < Radius) and
+				(OldPt.Y = idxY + Directions[Direction].Y * (Radius - 1))) then
+		begin
+			for BeingIdx := MapInfo.Cell[idxX,idxY].Beings.Count -1  downto 0 do
+			begin
+				if MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] is TBeing then
+				begin
+					ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
+					if ABeing = Self then Continue;
+
+					//Packets for base being if its a character
+					if Self is TCharacter then
+					begin
+						//if the target is also a TCharacter, they need OUR info
+						if ABeing is TCharacter then
+						begin
+							ZoneDisappearBeing(Self,   TCharacter(ABeing).ClientInfo);
+							ZoneDisappearBeing(ABeing, TCharacter(Self).ClientInfo);
+							//Send First Being disapearing to ABeing
+						end else  //Npc/Mob/Pet/Homunculus/Mercenary
+						begin
+							{Todo: events for NPC}
+							ZoneDisappearBeing(ABeing,TCharacter(Self).ClientInfo);
+						end;
+					end;
+				end;
+			end;
+		end;
+	end;
+
+	procedure ShowBeings;
+	var
+		ABeing : TBeing;
+		BeingIdx : Integer;
+	begin
+		//This is the oposite of the above.  We check to see if we are making the apropriate change, and seeing if a tbeing will be in the visual range if we made the step forward
+		if {X axis}((Directions[Direction].X <> 0) and
+			(abs(Position.Y - idxY) < Radius) and
+			(Position.X = idxX - Directions[Direction].X * (Radius - 1)))
+		OR {Y axis}((Directions[Direction].Y <> 0) and
+			(abs(Position.X - idxX) < Radius) and
+			(Position.Y = idxY - Directions[Direction].Y * (Radius - 1))) then
+		begin
+			for BeingIdx := MapInfo.Cell[idxX,idxY].Beings.Count -1  downto 0 do
+			begin
+				if MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] is TBeing then
+				begin
+					ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
+					if ABeing = Self then Continue;
+
+					//If we are a tcharacter, we need packets!
+					if Self is TCharacter then
+					begin
+						//If the target TBeing is also a character, they need info on us.
+						if ABeing is TCharacter then
+						begin
+							ZoneSendBeing(Self, TCharacter(ABeing).ClientInfo);
+							ZoneSendBeing(ABeing, TCharacter(Self).ClientInfo);
+							ZoneWalkingBeing(Self,Path[Path.count-1],Position,TCharacter(ABeing).ClientInfo);
+						end else  //Npc/Mob/Pet/Homunculus/Mercenary packets to the client
+						begin
+							{Todo: events for NPC}
+							ZoneSendBeing(ABeing,TCharacter(Self).ClientInfo);
+						end;
+					end;
+				end;
+			end;
+		end;
+	end;
+
 Begin
+  //Setup visual radius
+	Radius := MainProc.ZoneServer.Options.CharShowArea + 1;
+
 	if Self is TCharacter then
 	begin
 		TCharacter(Self).CharaState := charaWalking;
@@ -325,102 +420,63 @@ Begin
 
 	MapInfo.Cell[Position.X, Position.Y].Beings.AddObject(Self.ID, Self);
 
-	//16 covers the old 15x15 grid, no matter which dir we go I think
-	for idxY := Max(OldPt.Y-MainProc.ZoneServer.Options.CharShowArea,0) to Min(OldPt.Y+MainProc.ZoneServer.Options.CharShowArea,MapInfo.Size.Y) do
+	//-Tsusai
+	//17 (Radius) covers the old 16x16 grid, no matter which dir we go I think
+	//This is some complicated mathematics here, so I hope I do explain this right.
+	
+	//Bounds are set on the for loop from -> to to prevent searching from outside
+	//the known map if the being is close to the edge or corner.
+	//In a pure situation, first two rows and last 2 rows, and first 2 columns and
+	//the last two columns are checked. 
+	// This is how things should look on a 9x9 grid.
+	(*
+	XXXXXXXXXX
+	XXXXXXXXXX
+	XXOOOOOOXX
+	XXOOOOOOXX
+	XXOOOOOOXX
+	XXOOOOOOXX
+	XXOOOOOOXX
+	XXXXXXXXXX
+	XXXXXXXXXX
+	*)
+
+	//Go up the entire vertical axis
+	for idxY := Max(OldPt.Y - Radius,0) to
+		Min(OldPt.Y + Radius,MapInfo.Size.Y) do
 	begin
-		for idxX := Max(OldPt.X-MainProc.ZoneServer.Options.CharShowArea,0) to Min(OldPt.X+MainProc.ZoneServer.Options.CharShowArea,MapInfo.Size.X) do
+		//if we are on the top 2 or bottom 2 rows, go across
+		if (idxY = OldPt.Y - Radius) or
+			(idxY = (OldPt.Y - Radius) + 1) or
+			(idxY = OldPt.Y + Radius) or
+			(idxY = (OldPt.Y + Radius) - 1) then
 		begin
-			for BeingIdx := (MapInfo.Cell[idxX,idxY].Beings.Count - 1) downto 0 do
+			//Go across the entire row
+			for idxX := Max(OldPt.X - Radius,0) to
+				Min(OldPt.X + Radius,MapInfo.Size.X) do
 			begin
-				ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
-				if Self = ABeing then Continue;
-
-				{[2007/04/28] CR - An explanation of just WTF goes on here would be
-				nicer than blind lifting code verbatim from Fusion or Prometheus.
-				It's complicated, it BARELY FITS WHEN I STRETCH THE EDITOR ACROSS TWO
-				MONITOR WIDTHS ...  It needs a bloody comment.
-				Reformatted if so the structure is visible. }
-				if (
-						(Directions[Direction].X <> 0) AND
-						(Abs(OldPt.Y - ABeing.Position.Y) < MainProc.ZoneServer.Options.CharShowArea) AND
-						(OldPt.X = ABeing.Position.X + Directions[Direction].X * (MainProc.ZoneServer.Options.CharShowArea-1))
-					) OR
-					(
-						(Directions[Direction].Y <> 0) AND
-						(Abs(OldPt.X - ABeing.Position.X) < MainProc.ZoneServer.Options.CharShowArea) AND
-						(OldPt.Y = ABeing.Position.Y + Directions[Direction].Y * (MainProc.ZoneServer.Options.CharShowArea-1))
-					) then
-				begin
-					//Packets for base being if its a character
-					if Self is TCharacter then
-					begin
-						if ABeing is TCharacter then
-						begin
-							 ZoneDisappearBeing(Self,   TCharacter(ABeing).ClientInfo);
-							 ZoneDisappearBeing(ABeing, TCharacter(Self).ClientInfo);
-							//Send First Being disapearing to ABeing
-						end else  //Npc/Mob/Pet/Homunculus/Mercenary
-						begin
-							{Todo: events for NPC}
-							ZoneDisappearBeing(ABeing,TCharacter(Self).ClientInfo);
-						end;
-					end;
-				end;
-
-				{[2007/04/28] CR - Ditto, as above. Explain what this does.
-				Reformated slightly, to let folks with only one monitor see the bloody
-				effing if statement in it's entirety without scrolling TOO MUCH and
-				losing context.  What happenned to at least TRYING to adhere to the 80
-				column breaks???
-
-				Should this be an ELSE if to balance the if above?
-				C'mon -- someone should've noticed this further, and wondered if
-				these REALLY complex if statements had any commonality... and/or that
-				really complex calculations might be a chokepoint.
-
-				After all, they're only extremely complex series of if statements that
-				BOTH need to be executed, inside of a triple-for loop. }
-
-				if (
-						(Directions[Direction].X <> 0) AND
-						(Abs(Position.Y - ABeing.Position.Y) < MainProc.ZoneServer.Options.CharShowArea) AND
-						(Position.X = ABeing.Position.X - Directions[Direction].X * (MainProc.ZoneServer.Options.CharShowArea-1))
-					) OR
-					(
-						(Directions[Direction].Y <> 0) AND
-						(Abs(Position.X - ABeing.Position.X) < MainProc.ZoneServer.Options.CharShowArea) AND
-						(Position.Y = ABeing.Position.Y - Directions[Direction].Y * (MainProc.ZoneServer.Options.CharShowArea-1))
-					) then
-				begin
-					if Self IS TCharacter then
-					begin
-						if ABeing IS TCharacter then
-						begin
-							ZoneSendBeing(
-								Self,
-								TCharacter(ABeing).ClientInfo
-							);
-							ZoneSendBeing(
-								ABeing,
-								TCharacter(Self).ClientInfo
-							);
-							ZoneWalkingBeing(
-								Self,
-								Path[Path.Count -1],
-								Position,
-								TCharacter(ABeing).ClientInfo
-							);
-						end else  //Npc/Mob/Pet/Homunculus/Mercenary
-						begin
-							{Todo: events for NPC}
-							ZoneSendBeing(
-								ABeing,
-								TCharacter(Self).ClientInfo
-							);
-						end;
-					end;
-				end;
+				HideBeings;
+				ShowBeings;
 			end;
+		end else
+		begin
+			//Left most side
+			idxX := Max(OldPt.X - Radius,0);
+			HideBeings;
+			ShowBeings;
+			//Left 2nd column
+			idxX := Max((OldPt.X - Radius) + 1,0);
+			HideBeings;
+			ShowBeings;
+			//Right most side
+			idxX := Min(OldPt.X + Radius,MapInfo.Size.X);
+			HideBeings;
+			ShowBeings;
+			//2nd from right
+			idxX := Min((OldPt.X + Radius) -1 ,MapInfo.Size.X);
+			HideBeings;
+			ShowBeings;
+
 		end;
 	end;
 

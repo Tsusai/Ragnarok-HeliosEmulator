@@ -15,6 +15,19 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 246 -
+[2007/04/29] Tsusai - Notes/Overview: Walking mechanism revisited. Initial
+ design modeled after prometheus highly inefficent.  It would cycle through all
+ beings in a 33x33 area (16 radius, 1089 cells), as it cycled, it would go through
+ all the beings for that cell to see if they were in the edge cells for showing
+ and disappearing.  A new flow control was designed, reducing the number of cells
+ checked down to approx 244 (down to 22% of original).
+[2007/04/29] Tsusai - Being - TBeing.Walk: Broke up sections to HideBeings and
+ ShowBeings.  Also redid the cell looping system to loop through a set of border
+ cells (~244 for first/last two rows/columns) instead of 1089 cells.
+[2007/04/29] Tsusai - Map - TMap: Removed any/all lua references
+-
+
 - Rev 245 -
 [2007/04/29] RaX - Commented TMap.GetPath.
 -

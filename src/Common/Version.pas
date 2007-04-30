@@ -14,7 +14,7 @@ unit Version;
 interface
 
 var
-	HeliosVersion : String = 'Helios Ragnarok Server Version 0.0.0.245';
+	HeliosVersion : String = 'Helios Ragnarok Server Version 0.0.0.246';
 
 implementation
 end.
