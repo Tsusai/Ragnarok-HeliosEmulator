@@ -15,6 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 248 -
+[2007/05/01] - Tsusai - Notes/Overview: Fixed a warp error for same map or same
+ zone.
+[2007/05/01] - Tsusai - ZoneSend - ZoneSendWarp: Didn't save position for same map
+ and same zone warping
+-
+
 - Rev 247 -
 [2007/05/01] - Tsusai - Notes/Overview: Added RaX's warp code w/ some fixes.  Allows 
  for warping on the same map, same zone, and multi zone warping :)

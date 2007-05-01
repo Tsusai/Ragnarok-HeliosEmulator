@@ -730,6 +730,8 @@ begin
 	if Word(TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(MapName)) =
 		 MainProc.ZoneServer.Options.ID then
 	begin
+		ACharacter.Map := MapName;
+		ACharacter.Position := Point(X,Y);
 		WriteBufferWord(0, $0091, OutBuffer);
 		WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
 		WriteBufferWord(18, X, OutBuffer);
