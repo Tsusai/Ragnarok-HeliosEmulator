@@ -14,8 +14,8 @@ type
 
 		fLANPartial : String;
 
-		procedure SetWANLongWord(Value : String);
-		procedure SetLANLongWord(Value : String);
+		procedure SetWANLongWord(const Value : String);
+		procedure SetLANLongWord(const Value : String);
 
 	public
 		Port    : Word;
@@ -25,7 +25,7 @@ type
 		property WAN       : String   read fWAN write SetWANLongWord;
 		property LAN       : String   read fLAN write SetLANLongWord;
 
-		function Address(ClientIP : string) : LongWord;
+		function Address(const ClientIP : string) : LongWord;
 	end;
 
 implementation
@@ -33,13 +33,13 @@ uses
 	StrUtils,
 	WinLinux;
 
-procedure TServerInfo.SetWANLongWord(Value : string);
+procedure TServerInfo.SetWANLongWord(const Value : string);
 begin
 	fWAN       := Value;
 	fWANIPCard := GetLongWordFromIPString(GetIPStringFromHostname(Value).Full);
 end;
 
-procedure TServerInfo.SetLANLongWord(Value : string);
+procedure TServerInfo.SetLANLongWord(const Value : string);
 var
 	ReturnedIPs : TIPSet;
 begin
@@ -49,8 +49,12 @@ begin
 	fLANIPCard  := GetLongWordFromIPString(ReturnedIPs.Full);
 end;
 
-function TServerInfo.Address(ClientIP : string) : LongWord;
+function TServerInfo.Address(const ClientIP : string) : LongWord;
 begin
+	if AnsiStartsText('127.0.0.', ClientIP) then
+  begin
+		Result := GetLongWordFromIPString('127.0.0.1');
+	end else
 	if AnsiStartsText(fLANPartial, ClientIP) then
 	begin
 		Result := fLANIPCard;

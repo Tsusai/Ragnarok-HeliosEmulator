@@ -136,7 +136,9 @@ uses
 		const
 			ReadPts : TReadPts
 	);
-
+procedure RecvWarpRequestReplyFromInter(
+			InBuffer : TBuffer
+	);
 
 implementation
 
@@ -239,7 +241,7 @@ uses
 		ACharacter  : TCharacter;
 		OutBuffer   : Tbuffer; //temp
 		MapIndex    : Integer;
-		
+
 	begin
 		AccountID      := BufferReadLongWord(ReadPts[0], Buffer);
 		CharacterID    := BufferReadLongWord(ReadPts[1], Buffer);
@@ -254,14 +256,15 @@ uses
 		TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
 		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID,true);
 		TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
-		
+		writeln('GotClient');
 		if Assigned(AnAccount) and Assigned(ACharacter) then
 		begin
 			if (AnAccount.LoginKey[1] = ValidateID1) and
-			   (AnAccount.LoginKey[1] > 0) and
+				 (AnAccount.LoginKey[1] > 0) and
 				(AnAccount.GenderNum = Gender) then
 			begin
 				// Duplicate session safe check!
+				writeln('Client key verified');
 				if MainProc.ZoneServer.CharacterList.IndexOf(ACharacter.CID) > -1 then
 				begin
 					ACharacter.ClientInfo.Connection.Disconnect;
@@ -269,6 +272,7 @@ uses
 				begin
 					TClientLink(AClient.Data).AccountLink := AnAccount;
 					TClientLink(AClient.Data).CharacterLink := ACharacter;
+
 					ACharacter.ClientVersion := Version;
 					ACharacter.Online  := 1;
 					MainProc.ZoneServer.CharacterList.Add(ACharacter);
@@ -759,5 +763,52 @@ begin
 									];
 	ZoneSendCharacterMessage(ACharacter, Error);
 end;{RecvGMCommandFromInter}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvWarpRequestReplyFromInter																				PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Gets the warp request reply from the inter server and tells the client
+//		to warp.
+//
+//  Changes -
+//    April 29th, 2007 - RaX - Created.
+//------------------------------------------------------------------------------
+procedure RecvWarpRequestReplyFromInter(
+			InBuffer : TBuffer
+	);
+var
+	CharacterID : LongWord;
+	MapName			: String;
+	MapNameLength: Word;
+	IP					: LongWord;
+	Port				: Word;
+	X, Y				: Word;
+	ACharacter	: TCharacter;
+	OutBuffer		: TBuffer;
+
+begin
+	CharacterID 	:= BufferReadLongWord(4, InBuffer);
+	IP						:= BufferReadLongWord(8, InBuffer);
+	Port					:= BufferReadWord(12, InBuffer);
+	X							:= BufferReadWord(14, InBuffer);
+	Y							:= BufferReadWord(16, InBuffer);
+	MapNameLength := BufferReadWord(18, InBuffer);
+	MapName				:= BufferReadString(20, MapNameLength, InBuffer);
+	ACharacter		:= MainProc.ZoneServer.CharacterList.Items[MainProc.ZoneServer.CharacterList.IndexOf(CharacterID)];
+
+	ACharacter.Map := MapName;
+	ACharacter.Position := Point(X,Y);
+
+	WriteBufferWord(0, $0092, OutBuffer);
+	WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
+	WriteBufferWord(18, X, OutBuffer);
+	WriteBufferWord(20, Y, OutBuffer);
+	WriteBufferLongWord(22, IP, OutBuffer);
+	WriteBufferWord(26, Port, Outbuffer);
+	SendBuffer(ACharacter.ClientInfo, OutBuffer, 28);
+end;{RecvWarpRequestReplyFromInter}
 //------------------------------------------------------------------------------
 end.

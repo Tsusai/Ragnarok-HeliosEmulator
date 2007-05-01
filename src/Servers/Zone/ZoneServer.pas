@@ -346,7 +346,7 @@ begin
 	end else
   begin
 		Console.Message('Cannot Start():: Zone Server already running!', 'Zone Server', MS_ALERT);
-  end;
+	end;
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -868,6 +868,13 @@ begin
 			Size := BufferReadWord(2,ABuffer);
 			RecvBuffer(AClient,ABuffer[4],Size-4);
 			RecvGMCommandResultFromInter(ABuffer);
+		end;
+	$2209://Get warp request reply from inter
+		begin
+			RecvBuffer(AClient,ABuffer[2],2);
+			Size := BufferReadWord(2,ABuffer);
+			RecvBuffer(AClient,ABuffer[4],Size-4);
+			RecvWarpRequestReplyFromInter(ABuffer);
 		end;
 	end;
 end;{InterClientRead}

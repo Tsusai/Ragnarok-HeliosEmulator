@@ -9,6 +9,8 @@
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header;
 //		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
+//		May 1st, 2007 - Tsusai - Added const to the parameters of almost all
+//			routines
 //
 //------------------------------------------------------------------------------
 unit ZoneSend;
@@ -29,33 +31,61 @@ uses
 	;
 
 
-	procedure ZoneSendMapConnectReply(ACharacter : TCharacter);
+	procedure ZoneSendMapConnectReply(const ACharacter : TCharacter);
 	procedure ZoneSendMapConnectDeny(AClient : TIdContext);
-	procedure ZoneSendTickToClient(ACharacter : TCharacter);
-	procedure ZoneSendWalkReply(ACharacter : TCharacter; DestPoint : TPoint);
+	procedure ZoneSendTickToClient(const ACharacter : TCharacter);
+	procedure ZoneSendWalkReply(const ACharacter : TCharacter; const DestPoint : TPoint);
 	procedure ZoneSendObjectNameAndIDBasic(
-		ACharacter : TCharacter;
-		ID : LongWord;
-		Name : String
+		Const ACharacter : TCharacter;
+		const ID : LongWord;
+		const Name : String
 	);
-	procedure SendCharacterSelectResponse(ACharacter : TCharacter);
-	procedure SendQuitGameResponse(ACharacter : TCharacter);
-	procedure SendAreaChat(Chat : String;Length : Word;ACharacter : TCharacter);
+	procedure SendCharacterSelectResponse(const ACharacter : TCharacter);
+	procedure SendQuitGameResponse(const ACharacter : TCharacter);
+	procedure SendAreaChat(const Chat : String; const Length : Word; const ACharacter : TCharacter);
 
 
-	procedure ZoneSendGMCommandtoInter(ACharacter : TCharacter; Command : String);
-	procedure ZoneSendGMCommandResultToInter(AccountID : LongWord; CharacterID : LongWord; Success : Boolean; Error : String);
+	procedure ZoneSendGMCommandtoInter(const ACharacter : TCharacter; const Command : String);
+	procedure ZoneSendGMCommandResultToInter(
+		const AccountID : LongWord;
+		const CharacterID : LongWord;
+		const Success : Boolean;
+		const Error : String
+	);
 
 	procedure ZoneSendCharacterMessage(
-		ACharacter	: TCharacter;
-		AMessage		: String
+		const ACharacter	: TCharacter;
+		const AMessage		: String
 	);
 
-	procedure ZoneSendBeing(Who:TBeing;AClient : TIdContext;Logon:Boolean=False);
-	procedure ZoneDisappearBeing(Who:TBeing;AClient : TIdContext;Effect:Byte=0);
-	procedure ZoneWalkingBeing(Who:TBeing;Point1,Point2:TPoint;AClient : TIdContext);
-	procedure ZoneUpdateDirection(Who:TCharacter;AClient : TIdContext);
+	procedure ZoneSendBeing(
+		const Who:TBeing;
+		AClient : TIdContext;
+		const Logon:Boolean=False
+	);
+	procedure ZoneDisappearBeing(
+		const Who:TBeing;
+		AClient : TIdContext;
+		const Effect:Byte=0
+	);
+	procedure ZoneWalkingBeing(
+		const Who:TBeing;
+		const Point1,Point2:TPoint;
+		AClient : TIdContext
+	);
+	procedure ZoneUpdateDirection(
+		const Who:TCharacter;
+		AClient : TIdContext
+
+	);
 	procedure ZoneSendConnectionsCount(AClient : TIdContext);
+
+	Procedure ZoneSendWarp(
+		const ACharacter : TCharacter;
+		const MapName : String;
+		const X : Word;
+		const Y : Word
+	);
 
 	procedure Kick(const Who:TCharacter);
 	procedure KickAll;
@@ -86,8 +116,9 @@ uses
 //
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header;
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
-	procedure ZoneSendMapConnectReply(ACharacter : TCharacter);
+	procedure ZoneSendMapConnectReply(const ACharacter : TCharacter);
 	var
 		ReplyBuffer : TBuffer;
 	begin
@@ -109,6 +140,7 @@ uses
 //
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header;
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
 	procedure ZoneSendMapConnectDeny(AClient : TIdContext);
 	var
@@ -129,8 +161,9 @@ uses
 //
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header;
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
-	procedure ZoneSendTickToClient(ACharacter : TCharacter);
+	procedure ZoneSendTickToClient(const ACharacter : TCharacter);
 	var
 		ReplyBuffer : TBuffer;
 	begin
@@ -149,8 +182,12 @@ uses
 //
 //  Changes -
 //    February 27th, 2007 - RaX - Created Header;
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
-	procedure ZoneSendWalkReply(ACharacter : TCharacter; DestPoint : TPoint);
+	procedure ZoneSendWalkReply(
+		const ACharacter : TCharacter;
+		const DestPoint : TPoint
+	);
 	var
 		ReplyBuffer : TBuffer;
 	begin
@@ -171,11 +208,12 @@ uses
 //
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header;
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
 	procedure ZoneSendObjectNameAndIDBasic(
-		ACharacter : TCharacter;
-		ID : LongWord;
-		Name : String
+		const ACharacter : TCharacter;
+		const ID : LongWord;
+		const Name : String
 	);
 	var
 		OutBuffer : TBuffer;
@@ -198,9 +236,10 @@ uses
 //  Changes -
 //    March 17th, 2007 - RaX - Created;
 //    April 10th, 2007 - Aeomin - Add DelayDisconnect
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
 	procedure SendCharacterSelectResponse(
-		ACharacter : TCharacter
+		const ACharacter : TCharacter
 	);
 	var
 		OutBuffer : TBuffer;
@@ -225,9 +264,10 @@ uses
 //  Changes -
 //    March 17th, 2007 - RaX - Created;
 //    April 10th, 2007 - Aeomin - Add DelayDisconnect
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
 	procedure SendQuitGameResponse(
-		ACharacter : TCharacter
+		const ACharacter : TCharacter
 	);
 	var
 		OutBuffer : TBuffer;
@@ -250,11 +290,12 @@ uses
 //
 //  Changes -
 //    March 18th, 2007 - Aeomin - Created
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
 procedure SendAreaChat(
-	Chat				: String;
-	Length			: Word;
-	ACharacter	: TCharacter
+	const Chat				: String;
+	const Length			: Word;
+	const ACharacter	: TCharacter
 );
 var
 	OutBuffer : TBuffer;
@@ -285,7 +326,7 @@ begin
 			end;
 		end;
 	end;
-end;        
+end;
 //------------------------------------------------------------------------------
 
 
@@ -297,8 +338,12 @@ end;
 //
 //  Changes -
 //    March 19th, 2007 - RaX - Created Header;
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
-	procedure ZoneSendGMCommandtoInter(ACharacter : TCharacter; Command : String);
+	procedure ZoneSendGMCommandtoInter(
+		const ACharacter : TCharacter;
+		const Command : String
+	);
 	var
 		ReplyBuffer : TBuffer;
 		TotalLength	: Integer;
@@ -324,12 +369,13 @@ end;
 //
 //  Changes -
 //    March 19th, 2007 - RaX - Created Header;
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
 	procedure ZoneSendGMCommandResultToInter(
-		AccountID : LongWord;
-		CharacterID : LongWord;
-		Success : Boolean;
-		Error : String
+		const AccountID : LongWord;
+		const CharacterID : LongWord;
+		const Success : Boolean;
+		const Error : String
 	);
 	var
 		ReplyBuffer : TBuffer;
@@ -356,10 +402,11 @@ end;
 //
 //  Changes -
 //    March 19th, 2007 - RaX - Created Header;
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
 	procedure ZoneSendCharacterMessage(
-		ACharacter	: TCharacter;
-		AMessage		: String
+		const ACharacter	: TCharacter;
+		const AMessage		: String
 	);
 	var
 		OutBuffer	: TBuffer;
@@ -381,8 +428,13 @@ end;
 //    March 18th, 2007 - Aeomin - Created Header
 //    March 23th, 2007 - Aeomin - Renamed from ZoneSendChar to ZoneSendBeing
 //                                and support for Npc/Mob etc
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
- procedure ZoneSendBeing(Who:TBeing;AClient : TIdContext;Logon:Boolean=False);
+	procedure ZoneSendBeing(
+		const Who:TBeing;
+		AClient : TIdContext;
+		const Logon:Boolean=False
+	);
 	var
 		ReplyBuffer : TBuffer;
 		Chara	    : TCharacter;
@@ -391,32 +443,32 @@ end;
 		FillChar(ReplyBuffer,54,0);
 		if Logon then
 		begin
-		WriteBufferWord(0, $0079, ReplyBuffer);
+			WriteBufferWord(0, $0079, ReplyBuffer);
 		end else begin
-		WriteBufferWord(0, $0078, ReplyBuffer);
+			WriteBufferWord(0, $0078, ReplyBuffer);
 		end;
 		WriteBufferLongWord(2, Who.ID, ReplyBuffer);
 		WriteBufferWord(6, Who.Speed, ReplyBuffer);
 		WriteBufferWord(8, Who.Status, ReplyBuffer);
 		WriteBufferWord(10, Who.Ailments, ReplyBuffer);
-		WriteBufferWord(12, Who.Option, ReplyBuffer); 
+		WriteBufferWord(12, Who.Option, ReplyBuffer);
 		WriteBufferWord(14, Who.JID, ReplyBuffer);
 		WriteBufferWord(32, Who.Direction, ReplyBuffer);
 		if Who is TCharacter then
 		begin
-		Chara:=TCharacter(Who);
-		{Todo: Hair stlye, head bottom needed for Pet...}
-		WriteBufferWord(16, Chara.Hair, ReplyBuffer);
-		WriteBufferWord(18, Chara.RightHand, ReplyBuffer);  //Weapon
-		WriteBufferWord(20, Chara.LeftHand, ReplyBuffer);  //Shield
-		WriteBufferWord(22, Chara.HeadBottom, ReplyBuffer);  //Head bottom
-		WriteBufferWord(24, Chara.HeadTop, ReplyBuffer);  //Head top
-		WriteBufferWord(26, Chara.HeadMid, ReplyBuffer);  //head mid
-		WriteBufferWord(28, Chara.HairColor, ReplyBuffer);
-		WriteBufferWord(30, Chara.ClothesColor, ReplyBuffer);
-		WriteBufferLongWord(34, Chara.GuildID, ReplyBuffer);
-		WriteBufferWord(42, Chara.Karma, ReplyBuffer);
-		WriteBufferByte(45, TClientLink(Chara.ClientInfo.Data).AccountLink.GenderNum, ReplyBuffer);
+			Chara:=TCharacter(Who);
+			{Todo: Hair stlye, head bottom needed for Pet...}
+			WriteBufferWord(16, Chara.Hair, ReplyBuffer);
+			WriteBufferWord(18, Chara.RightHand, ReplyBuffer);  //Weapon
+			WriteBufferWord(20, Chara.LeftHand, ReplyBuffer);  //Shield
+			WriteBufferWord(22, Chara.HeadBottom, ReplyBuffer);  //Head bottom
+			WriteBufferWord(24, Chara.HeadTop, ReplyBuffer);  //Head top
+			WriteBufferWord(26, Chara.HeadMid, ReplyBuffer);  //head mid
+			WriteBufferWord(28, Chara.HairColor, ReplyBuffer);
+			WriteBufferWord(30, Chara.ClothesColor, ReplyBuffer);
+			WriteBufferLongWord(34, Chara.GuildID, ReplyBuffer);
+			WriteBufferWord(42, Chara.Karma, ReplyBuffer);
+			WriteBufferByte(45, TClientLink(Chara.ClientInfo.Data).AccountLink.GenderNum, ReplyBuffer);
 		end;
 		WriteBufferWord(38, 0, ReplyBuffer);  //Emblem ID
 		WriteBufferByte(44, 0, ReplyBuffer);  //Normal/Ready to fight
@@ -425,14 +477,14 @@ end;
 		WriteBufferByte(50, 5, ReplyBuffer);
 		if Logon then
 		begin
-		WriteBufferWord(51, Who.BaseLV, ReplyBuffer);
-		SendBuffer(AClient,ReplyBuffer,GetPacketLength($0079));
+			WriteBufferWord(51, Who.BaseLV, ReplyBuffer);
+			SendBuffer(AClient,ReplyBuffer,GetPacketLength($0079));
 		end else begin
-		WriteBufferByte(51, 0, ReplyBuffer);   //Standing/Dead/Sit
-		WriteBufferWord(52, Who.BaseLV, ReplyBuffer);
-		SendBuffer(AClient,ReplyBuffer,GetPacketLength($0078));
+			WriteBufferByte(51, 0, ReplyBuffer);   //Standing/Dead/Sit
+			WriteBufferWord(52, Who.BaseLV, ReplyBuffer);
+			SendBuffer(AClient,ReplyBuffer,GetPacketLength($0078));
 		end;
-               //Require packet version >=6
+							 //Require packet version >=6
 //		WriteBufferWord(0, $022A, ReplyBuffer);
 //                WriteBufferLongWord(2, Who.ID, ReplyBuffer);
 //                WriteBufferWord(6, Who.Speed, ReplyBuffer);
@@ -474,8 +526,13 @@ end;
 //  Changes -
 //    March 18th, 2007 - Aeomin - Created Header
 //    March 23th, 2007 - Aeomin - Renamed from ZoneWalkingChar to ZoneWalkingBeing
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
-	 procedure ZoneDisappearBeing(Who:TBeing;AClient : TIdContext;Effect:Byte=0);
+	procedure ZoneDisappearBeing(
+		const Who:TBeing;
+		AClient : TIdContext;
+		const Effect:Byte=0
+	);
 	var
 		ReplyBuffer : TBuffer;
 	begin
@@ -496,9 +553,14 @@ end;
 //
 //  Changes -
 //    March 18th, 2007 - Aeomin - Created Header
-//    march 23th, 2007 - Aeomin - Renamed from ZoneWalkingChar to ZoneWalkingBeing
+//    March 23th, 2007 - Aeomin - Renamed from ZoneWalkingChar to ZoneWalkingBeing
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
-procedure ZoneWalkingBeing(Who:TBeing;Point1,Point2:TPoint;AClient : TIdContext);
+	procedure ZoneWalkingBeing(
+		const Who:TBeing;
+		const Point1,Point2:TPoint;
+		AClient : TIdContext
+	);
 	var
 		ReplyBuffer : TBuffer;
 	begin
@@ -520,8 +582,12 @@ procedure ZoneWalkingBeing(Who:TBeing;Point1,Point2:TPoint;AClient : TIdContext)
 //
 //  Changes -
 //    March 20th, 2007 - Aeomin - Created Header
+//		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
-procedure ZoneUpdateDirection(Who:TCharacter;AClient : TIdContext);
+procedure ZoneUpdateDirection(
+	Const Who:TCharacter;
+	AClient : TIdContext
+);
 var
 	ReplyBuffer : TBuffer;
 begin
@@ -633,4 +699,66 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+
+
+
+//------------------------------------------------------------------------------
+//ZoneSendWarpRequest                                                PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Sends a request to the inter server that asks if it's ok for a character
+//		to warp to the specified zone.
+//
+//  Changes -
+//    April 26th, 2007 - RaX - Created.
+//		May 1st, 2007 - Tsusai - Renamed, and modified parameters recieved.
+//------------------------------------------------------------------------------
+Procedure ZoneSendWarp(
+	const ACharacter : TCharacter;
+	const MapName : String;
+	const X : Word;
+	const Y : Word
+);
+var
+	OutBuffer : TBuffer;
+	Size : Word;
+	MapNameSize : Word;
+	ClientIPSize : Word;
+
+begin
+	TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.Connect;
+	if Word(TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(MapName)) =
+		 MainProc.ZoneServer.Options.ID then
+	begin
+		WriteBufferWord(0, $0091, OutBuffer);
+		WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
+		WriteBufferWord(18, X, OutBuffer);
+		WriteBufferWord(20, Y, OutBuffer);
+		SendBuffer(ACharacter.ClientInfo, OutBuffer, 22);
+
+	end else
+	begin
+		MapNameSize := Length(MapName);
+		ClientIPSize := Length(ACharacter.ClientInfo.Binding.PeerIP);
+		Size := ClientIPSize + MapNameSize + 16;
+		//<id>,<size>,<cid>,<mapnamesize>,<mapname>,<clientipsize>,<clientip>
+		WriteBufferWord(0, $2208, OutBuffer);
+		WriteBufferWord(2, Size, OutBuffer);
+		WriteBufferLongWord(4, ACharacter.CID, OutBuffer);
+		WriteBufferWord(8, X, OutBuffer);
+		WriteBufferWord(10, Y, OutBuffer);
+		WriteBufferWord(12, MapNameSize, OutBuffer);
+		WriteBufferString(14, MapName, Length(MapName), OutBuffer);
+		WriteBufferWord(14+MapNameSize, ClientIPSize, OutBuffer);
+		WriteBufferString(
+			16+MapNameSize,
+			ACharacter.ClientInfo.Binding.PeerIP,
+			Length(ACharacter.ClientInfo.Binding.PeerIP),
+			OutBuffer
+		);
+		SendBuffer(MainProc.ZoneServer.ToInterTCPClient,OutBuffer,Size);
+	end;
+	TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+end;
+//------------------------------------------------------------------------------
 end.

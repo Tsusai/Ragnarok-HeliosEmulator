@@ -193,23 +193,24 @@ end;{Start}
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
+//		May 1st, 2007 - Tsusai - Reversed the free'ing for loop to go backwards.
 //
 //------------------------------------------------------------------------------
 Procedure TLoginServer.Stop();
 var
-  Index : Integer;
+	Index : Integer;
 begin
-  if Started then
-  begin
-	  DeActivateServer('Login', TCPServer);
+	if Started then
+	begin
+		DeActivateServer('Login', TCPServer);
 
 		//Free up our existing server info objects
-		for Index := 0 to fCharaServerList.Count - 1 do
+		for Index := fCharaServerList.Count - 1 downto 0 do
 		begin
-      fCharaServerList.Delete(Index);
-    end;
+			fCharaServerList.Delete(Index);
+		end;
 
-    Options.Save;
+		Options.Save;
     Options.Free;
   end else
   begin
@@ -665,6 +666,8 @@ end;
 //	Changes -
 //		April 12th, 2007 - Aeomin - header created
 //		April 12th, 2007 - Aeomin - Reset login keys to 0 after DC
+//		May 1st, 2007 - Tsusai - Commented out the key reset.  Causes issues with
+//			multiexe zone usage.
 //
 //------------------------------------------------------------------------------
 procedure TLoginServer.RemoveFromAccountList(
@@ -683,10 +686,10 @@ begin
 		TCharaServerLink(AClient.Data).DatabaseLink.CommonData.Connect;
 		AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
 		if Assigned(AnAccount) then begin
-		AnAccount.LoginKey[1] := 0;
-		AnAccount.LoginKey[2] := 0;
-		fAccountList.Delete(Idx);
-		TThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
+			{AnAccount.LoginKey[1] := 0;
+			AnAccount.LoginKey[2] := 0;}
+			fAccountList.Delete(Idx);
+			TThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
 		end;
 		TCharaServerLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
 	end;

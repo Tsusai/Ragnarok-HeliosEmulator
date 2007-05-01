@@ -66,6 +66,22 @@ type
 			AClient : TIdContext;
 			InBuffer : TBuffer
 		);
+
+		Procedure RecvZoneWarpRequest(
+			AClient : TIdContext;
+			ABuffer : TBuffer
+		);
+
+		Procedure InterSendWarpReplyToZone(
+			AClient				: TIdContext;
+			CharacterID		: LongWord;
+			ReturnIPCard	: LongWord;
+			ReturnPort		: Word;
+			MapName				: String;
+			X							: Word;
+			Y							: Word
+		);
+
 		procedure InterSendGMCommandToZones(
 			AClient : TIdContext;
 			GMID : LongWord;
@@ -106,7 +122,8 @@ uses
 	Main,
 	TCPServerRoutines,
 	ZoneInterCommunication,
-	ZoneServerInfo
+	ZoneServerInfo,
+	WinLinux
 	{3rd Party}
 	//none
 	;
@@ -353,6 +370,16 @@ begin
 				Size := BufferReadWord(2,ABuffer);
 				RecvBuffer(AClient,ABuffer[4],Size-4);
 				RecvGMCommandReply(AClient, ABuffer);
+			end;
+		end;
+	$2208: // Zone server sending Warp Request
+		begin
+			if AClient.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AClient,ABuffer[2],2);
+				Size := BufferReadWord(2,ABuffer);
+				RecvBuffer(AClient,ABuffer[4],Size-4);
+				RecvZoneWarpRequest(AClient, ABuffer);
 			end;
 		end;
 	else
@@ -648,5 +675,95 @@ Function TInterServer.GetStarted() : Boolean;
 begin
   Result := TCPServer.Active;
 end;{SetPort}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvZoneWarpRequest                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Receives a zone's warp request, figures out what zone the map is on,
+//		and replies.
+//
+//	Changes -
+//		April 26th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Procedure TInterServer.RecvZoneWarpRequest(
+	AClient : TIdContext;
+	ABuffer : TBuffer
+);
+var
+	CharacterID		: LongWord;
+	X, Y					: Word;
+	MapNameSize		: Word;
+	MapName				: String;
+	ClientIPSize	: Word;
+	ClientIP			: String;
+	ZoneID				: LongWord;
+	ZServerInfo		: TZoneServerInfo;
+	ReturnIPCard	: LongWord;
+begin
+	CharacterID		:= BufferReadLongWord(4, ABuffer);
+	X							:= BufferReadWord(8, ABuffer);
+	Y							:= BufferReadWord(10, ABuffer);
+	MapNameSize		:= BufferReadWord(12, ABuffer);
+	MapName				:= BufferReadString(14, MapNameSize, ABuffer);
+
+	ClientIPSize	:= BufferReadWord(14+MapNameSize, ABuffer);
+	ClientIP			:= BufferReadString(16+MapNameSize, ClientIPSize, ABuffer);
+	TThreadLink(AClient.Data).DatabaseLink.StaticData.Connect;
+	ZoneID				:= TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapZoneID(MapName);
+	TThreadLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
+	//Why warp to a unknown zone..or reply to it.  Kill it here. They can walk fine
+	if ZoneID <> -1  then
+	begin
+		ZServerInfo		:= TZoneServerInfo(fZoneServerList.Objects[fZoneServerList.IndexOf(ZoneID)]);
+		ReturnIPCard	:= ZServerInfo.Address(ClientIP);
+		InterSendWarpReplyToZone(AClient, CharacterID, ReturnIPCard, ZServerInfo.Port, MapName, X, Y);
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//InterSendWarpReplyToZone                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Tells the zone server to approve the character's warp.
+//
+//	Changes -
+//		April 26th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Procedure TInterServer.InterSendWarpReplyToZone(
+	AClient				: TIdContext;
+	CharacterID		: LongWord;
+	ReturnIPCard	: LongWord;
+	ReturnPort		: Word;
+	MapName				: String;
+	X							: Word;
+	Y							: Word
+);
+var
+	Size					: Word;
+	MapNameSize		: Word;
+	ABuffer				: TBuffer;
+
+begin
+	MapNameSize := Length(MapName);
+	Size := MapNameSize + 20;
+	//<id>,<size>,<charaid>,<ip>,<port>,<x>,<y>,<mapnamesize><mapname>
+	WriteBufferWord(0, $2209, ABuffer);
+	WriteBufferWord(2, Size, ABuffer);
+	WriteBufferLongWord(4, CharacterID, ABuffer);
+	WriteBufferLongWord(8, ReturnIPCard, ABuffer);
+	WriteBufferWord(12, ReturnPort, ABuffer);
+	WriteBufferWord(14, X, ABuffer);
+	WriteBufferWord(16, Y, ABuffer);
+	WriteBufferword(18, MapNameSize, ABuffer);
+	WriteBufferString(20, MapName, MapNameSize, ABuffer);
+	SendBuffer(AClient, ABuffer, Size);
+end;
 //------------------------------------------------------------------------------
 end.

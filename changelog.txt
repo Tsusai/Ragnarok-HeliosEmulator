@@ -15,6 +15,31 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 247 -
+[2007/05/01] - Tsusai - Notes/Overview: Added RaX's warp code w/ some fixes.  Allows 
+ for warping on the same map, same zone, and multi zone warping :)
+[2007/05/01] - RaX - ServerInfo: const'd all strings that were not changing.
+[2007/05/01] - RaX - InterServer: Added RecvZoneWarpRequest and 
+ InterSendWarpReplyToZone.
+[2007/05/01] - RaX - InterServer - TInterServer.ParseInterServ: Added reading of
+ zone warping details (RecvZoneWarpRequest)
+[2007/05/01] - Tsusai - InterServer - RecvZoneWarpRequest: Edited not to return
+ any info if the zone w/ the request warp-to map doesn't exist.  They can walk
+ to the magical unknown map for all I care.
+[2007/05/01] - Tsusai - LoginServer - TLoginServer.Stop: Reversed the for loop of
+ Charaserver deletions.
+[2007/05/01] - Tsusai - LoginServer - RemoveFromAccountList: Commented out the
+ Account Key nilling.  Fudges things up multi exe setups.
+[2007/05/01] - RaX - ZoneRecv: Added RecvWarpRequestReplyFromInter.
+[2007/05/01] - Tsusai - ZoneRecv - RecvWarpRequestReplyFromInter: Added updates
+ to characters map and points, so after the d/c, it saves, and loads proper.
+[2007/05/01] - RaX - ZoneSend: Added ZoneSendWarpRequest.
+[2007/05/01] - Tsusai - ZoneSend: Added const to all procedures.
+[2007/05/01] - RaX - ZoneServer - TZoneServer.InterReadClient: Added parsing
+ for the warp request reply from interserver to pass to 
+ RecvWarpRequestReplyFromInter.
+-
+
 - Rev 246 -
 [2007/04/29] Tsusai - Notes/Overview: Walking mechanism revisited. Initial
  design modeled after prometheus highly inefficent.  It would cycle through all
