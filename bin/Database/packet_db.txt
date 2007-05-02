@@ -40,7 +40,7 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x2206,-1
 
 //RO PACKETS
-//packet_db.txt “¯‚¶”Ô†‚ÌƒpƒPƒbƒg‚ÍŒã‚Ì‚Åã‘‚«‚³‚ê‚é‚Ì‚Å•ÏX‚Ì?‚Á‚½ƒpƒPƒbƒg‚Íˆê”Ô‰º‚É’Ç‰Á‚·‚ê‚Î‚æ‚¢‚Å‚·
+//packet_db.txt “¯‚¶”Ô†‚ÌƒpƒPƒbƒg‚ÍŒã‚Ì‚Åã‘‚«‚³‚ê‚é‚Ì‚Å•ÏX‚Ì‚ ‚Á‚½ƒpƒPƒbƒg‚Íˆê”Ô‰º‚É’Ç‰Á‚·‚ê‚Î‚æ‚¢‚Å‚·
 //ŒÃ‚¢ƒpƒPƒbƒg‚Åg‚¢‚½‚¢ê‡‚ÍV‚µ‚¢’è‹`‚ğíœ‚·‚é‚©ƒRƒƒ“ƒgƒAƒEƒg‚·‚ê‚Î‚æ‚¢‚Å‚·
 0x0064,55
 0x0065,17
@@ -601,22 +601,25 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x0248,-1,sendmail,2:4:28:69
  
 //2006-04-03aSakexe by blackhole89
-0x009b,37,wanttoconnection,9:21:28:32:36
-0x00a2,11,solvecharname,7
-0x008c,12,getcharnamerequest,8
-0x00a7,15,walktoxy,12
-0x0116,17,dropitem,8:15
-0x00f5,13,takeitem,9
-0x009f,24,useitem,9:20
+//fix&add: lkm and thanks free report some error
 0x0072,26,useskilltoid,11:18:22
-0x0113,40,useskilltopos,5:15:29:38
-0x0085,12,changedir,7:11
 0x007e,120,useskilltopos,5:15:29:38:40
+0x0085,12,changedir,7:11
+0x0089,13,ticksend,7
+0x008c,12,getcharnamerequest,8
 0x0094,23,movetokafra,5:19
+0x009b,37,wanttoconnection,9:21:28:32:36
+0x009f,24,useitem,9:20
+0x00a2,11,solvecharname,7
+0x00a7,15,walktoxy,12
 0x00f3,-1,globalmessage,2:4
+0x00f5,13,takeitem,9
 0x00f7,26,movefromkafra,11:22
+0x0116,17,dropitem,8:15
+0x0113,40,useskilltopos,5:15:29:38
 0x0190,18,actionrequest,7:17
-
+0x0193,2,closekafra,0
+ 
 //2006-06-07aSakexe
 0x025F,6
 0x0260,6
@@ -643,20 +646,18 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x0278,2
 0x0279,2
 0x027A,-1
-
+ 
 //2006-07-03aSakexe
 0x027D,62
 0x027B,14
 0x027C,60
-
+ 
 //2006-07-24aSakexe
-//0x025B,-1
 0x027E,-1
-
+ 
 //2006-08-07aSakexe
 0x025B,6
-//0x027F,4
-
+ 
 //2006-09-18aSakexe
 0x0284,14
 0x0281,4
@@ -666,11 +667,9 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x0286,4
 0x027F,8
 0x0283,6
-
-
+ 
 //2006-10-17aSakexe
 0x028A,18
-
 
 //2006-10-23aSakexe
 0x006d,110

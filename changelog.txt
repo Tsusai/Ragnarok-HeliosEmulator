@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 249 -
+[2007/05/02] - RaX - Fixed packet_db, this corrects the freezing problem experienced
+ in newer clients. (9/18+)
+-
+
 - Rev 248 -
 [2007/05/01] - Tsusai - Notes/Overview: Fixed a warp error for same map or same
  zone.
