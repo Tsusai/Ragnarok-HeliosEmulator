@@ -700,7 +700,7 @@ var
 	MapName				: String;
 	ClientIPSize	: Word;
 	ClientIP			: String;
-	ZoneID				: LongWord;
+	ZoneID				: Integer;
 	ZServerInfo		: TZoneServerInfo;
 	ReturnIPCard	: LongWord;
 begin
@@ -716,7 +716,7 @@ begin
 	ZoneID				:= TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapZoneID(MapName);
 	TThreadLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
 	//Why warp to a unknown zone..or reply to it.  Kill it here. They can walk fine
-	if ZoneID <> -1  then
+	if ZoneID > 0  then
 	begin
 		ZServerInfo		:= TZoneServerInfo(fZoneServerList.Objects[fZoneServerList.IndexOf(ZoneID)]);
 		ReturnIPCard	:= ZServerInfo.Address(ClientIP);

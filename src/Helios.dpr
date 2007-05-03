@@ -105,6 +105,7 @@ compile for linux, at the same time*}
 	Character in 'Common\Classes\Beings\Character.pas',
 	Being in 'Common\Classes\Beings\Being.pas',
 	Map in 'Common\Classes\Map.pas',
+	NPC in 'Common\Classes\Beings\NPC.pas',
 
 	//Lua
 	LuaPas in 'Common\ThirdParty\LuaPas.pas',
@@ -226,6 +227,7 @@ compile for linux, at the same time*}
 	Character in 'Common/Classes/Beings/Character.pas',
 	Being in 'Common/Classes/Beings/Being.pas',
 	Map in 'Common/Classes/Map.pas',
+	NPC in 'Common/Classes/Beings/NPC.pas',
 
 	//Lua
 	LuaPas in 'Common/ThirdParty/LuaPas.pas',

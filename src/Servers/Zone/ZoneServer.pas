@@ -33,7 +33,8 @@ uses
 	ZoneOptions,
 	{3rd Party}
 	IdTCPServer,
-	IdContext
+	IdContext,
+	List32
 	;
 
 
@@ -86,6 +87,7 @@ type
 
 		MapList       : TMapList;
 		CharacterList : TCharacterList;
+		NPCList       : TIntList32;
 
 		CharacterEventThread : TCharacterEventThread;
 
@@ -150,6 +152,7 @@ begin
 
 	MapList := TMapList.Create(TRUE);
 	CharacterList := TCharacterList.Create(TRUE);
+	NPCList := TIntList32.Create;
 
 	TCPServer := TIdTCPServer.Create;
 	ToCharaTCPClient := TInterClient.Create('Zone','Character');
@@ -185,6 +188,7 @@ Destructor TZoneServer.Destroy;
 begin
 	MapList.Free;
 	CharacterList.Free;
+	NPCList.Free;
   
 	CharacterEventThread.Free;
 

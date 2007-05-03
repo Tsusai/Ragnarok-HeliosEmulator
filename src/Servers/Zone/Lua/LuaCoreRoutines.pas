@@ -15,6 +15,11 @@ uses
 		ParentLua : TLua;
 	end;
 
+	function Lua_isNonNumberString(
+		ALua : TLua;
+		Index : word
+	) : boolean;
+
 	procedure MakeLuaThread(
 		var SourceLua : TLua;
 		var DestLua   : TLuaInfo
@@ -39,6 +44,15 @@ uses
 
 
 implementation
+
+function Lua_isNonNumberString(
+	ALua : TLua;
+	Index : word
+) : boolean;
+begin
+	Result := (Boolean(lua_isstring(ALua,Index)) and
+	not Boolean(lua_isnumber(ALua,Index)));
+end;
 
 //Takes an existing lua, and makes a new execution thread for a
 //descendant.  Also stores the parent's info so that it can

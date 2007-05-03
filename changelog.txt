@@ -15,6 +15,31 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 250 -
+[2007/05/02] - Tsusai - Notes/Overview: Added basic TNPC structures and added the
+ first REAL lua script function, warp(), which will load the parameters it has,
+ and create a TWarpNPC.
+ warp("new_1-1","Start-Castle",148,112,2,3,"new_1-2",100,9) is the syntax
+ warp(map,name,x,y,xradius,yradius,destmap,destx,desty);
+[2007/05/02] - Tsusai - NPC: Added, includes some basic TNPC structures, and
+ descending classes such as TScriptNPC & TWarpNPC
+[2007/05/02] - Tsusai - InterServer - TInterServer.RecvZoneWarpRequest: Changed
+ the ZoneID check to check for > 0.
+[2007/05/02] - Tsusai - LuaCoreRoutines: Added bool function Lua_isNonNumberString.
+ A number like 345 passes the provided lua_isstring function, because it can be
+ converted to a string.  This function checks if it is a string, then if that is
+ not a number.  Good for alphanumeric strings only, no exceptions to pure numbers.
+[2007/05/02] - Tsusai - LuaNPCCommands: Changed addwarp & addnpc lua commands to 
+ npc and warp (still have add* prefix for the delphi procedure side).
+[2007/05/02] - Tsusai - LuaNPCCommands - AddWarp: No longer a dummy procedure.
+ This sucker error checks like MAD, makes a TWarpNPC if its ok, and adds it to
+ the zone global list.
+[2007/05/02] - Tsusai - LuaNPCCore: Splitted code from PrepLuaForNPCScripts to
+ SetCharaIDToLua. Added GetCharaIDFromLua.
+[2007/05/02] - Tsusai - ZoneServer: Added a NPCList (TIntList32) for storing NPCs.
+ Added create & free methods as well.
+-
+
 - Rev 249 -
 [2007/05/02] - RaX - Fixed packet_db, this corrects the freezing problem experienced
  in newer clients. (9/18+)
