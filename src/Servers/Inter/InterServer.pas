@@ -88,6 +88,14 @@ type
 			CharacterID : LongWord;
 			CommandSeparator : TStringList
 		);
+		procedure RecvWhisper(
+			AClient : TIdContext;
+			InBuffer : TBuffer
+		);
+		procedure RecvWhisperReply(
+			AClient : TIdContext;
+			InBuffer : TBuffer
+		);
 		procedure RecvGMCommandReply(AClient : TIdContext; InBuffer : TBuffer);
 		procedure ParseInterServ(AClient : TIdContext);
 
@@ -304,6 +312,7 @@ end;{Start}
 //
 //	Changes -
 //			March 18th, 2007 - RaX - Created.
+//			April 26th, 2007 - Aeomin - added packet 0x2208 support
 //
 //------------------------------------------------------------------------------
 procedure TInterServer.ParseInterServ(AClient : TIdContext);
@@ -380,6 +389,24 @@ begin
 				Size := BufferReadWord(2,ABuffer);
 				RecvBuffer(AClient,ABuffer[4],Size-4);
 				RecvZoneWarpRequest(AClient, ABuffer);
+			end;
+		end;
+	$2210: //Zone Server send Private Message
+		begin
+			if AClient.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AClient,ABuffer[2],2);
+				Size := BufferReadWord(2,ABuffer);
+				RecvBuffer(AClient,ABuffer[4],Size-4);
+				RecvWhisper(AClient, ABuffer);
+			end;
+		end;
+	$2211:
+		begin
+			if AClient.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2211)-2);
+				RecvWhisperReply(AClient, ABuffer);
 			end;
 		end;
 	else
@@ -621,6 +648,101 @@ end; //RecvGMCommand
 
 
 //------------------------------------------------------------------------------
+//RecvWhisper                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      Receive whisper message from zone server and find proper zone to direct
+//	to, if can not find, error flag is send back.
+//
+//	Changes -
+//		May 3rd, 2007 - Aeomin - Created Header.
+//
+//------------------------------------------------------------------------------
+procedure TInterServer.RecvWhisper(AClient : TIdContext; InBuffer : TBuffer);
+var
+	Size : Word;
+	FromID : LongWord;
+	FromName : String;
+	TargetName : String;
+	Whisper : String;
+	Chara : TCharacter;
+	ZoneID : Integer;
+	Index  : Integer;
+begin
+	Size := BufferReadWord(2, InBuffer);
+	FromID := BufferReadLongWord(4, InBuffer);
+	FromName := BufferReadString(8, 24, InBuffer);
+	TargetName := BufferReadString(32, 24, InBuffer);
+	Whisper := BufferReadString(56, Size - 56, InBuffer);
+	TZoneServerLink(AClient.Data).DatabaseLink.GameData.Connect;
+	Chara := TZoneServerLink(AClient.Data).DatabaseLink.GameData.GetChara(TargetName);
+	TZoneServerLink(AClient.Data).DatabaseLink.GameData.Disconnect;
+	if (Chara<>nil)and(Chara.Map<>'')then
+	begin
+		TZoneServerLink(AClient.Data).DatabaseLink.StaticData.Connect;
+		ZoneID := TZoneServerLink(AClient.Data).DatabaseLink.StaticData.GetMapZoneID(Chara.Map);
+		TZoneServerLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
+		for Index := fClientList.Count - 1 downto 0 do
+		begin
+			if assigned(TZoneServerLink(TIdContext(fClientList[Index]).Data)) then
+			begin
+				if TZoneServerLink(TIdContext(fClientList[Index]).Data).Info.ZoneID = ZoneID then
+				begin
+					RedirectWhisperToZone(TIdContext(fClientList[Index]), TZoneServerLink(AClient.Data).Info.ZoneID, FromID, Chara.CID, FromName, Whisper);
+					Break;
+				end;
+			end;
+		end;
+		//This will fire if can't find any..WHY THE LIST DONT HAVE INDEXOF?
+		if Index = -1 then
+		begin
+			//Well..if zone is disconnected..then just say not online
+			SendWhisperReplyToZone(AClient, FromID, 1);
+		end;
+	end else
+	begin
+		SendWhisperReplyToZone(AClient, FromID, 1);  //Target is not online
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvWhisperReply                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      Receive whisper result from zone, usually is 1 which character is not online.
+//
+//	Changes -
+//		May 3rd, 2007 - Aeomin - Created Header.
+//
+//------------------------------------------------------------------------------
+procedure TInterServer.RecvWhisperReply(AClient : TIdContext; InBuffer : TBuffer);
+var
+	ZoneID : Integer;
+	CharID : Integer;
+	Flag : Byte;
+	Index  : Integer;
+begin
+	ZoneID := BufferReadLongWord(2, InBuffer);
+	CharID := BufferReadLongWord(6, InBuffer);
+	Flag   := BufferReadByte(10, InBuffer);
+	for Index := fClientList.Count - 1 downto 0 do
+	begin
+		if assigned(TZoneServerLink(TIdContext(fClientList[Index]).Data)) then
+		begin
+			if TZoneServerLink(TIdContext(fClientList[Index]).Data).Info.ZoneID = ZoneID then
+			begin
+				SendWhisperReplyToZone(TIdContext(fClientList[Index]), CharID, Flag);
+				Break;
+			end;
+		end;
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //SetIPLongWord   			                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
@@ -700,7 +822,7 @@ var
 	MapName				: String;
 	ClientIPSize	: Word;
 	ClientIP			: String;
-	ZoneID				: Integer;
+	ZoneID				: LongWord;
 	ZServerInfo		: TZoneServerInfo;
 	ReturnIPCard	: LongWord;
 begin
@@ -716,7 +838,7 @@ begin
 	ZoneID				:= TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapZoneID(MapName);
 	TThreadLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
 	//Why warp to a unknown zone..or reply to it.  Kill it here. They can walk fine
-	if ZoneID > 0  then
+	if ZoneID <> -1  then
 	begin
 		ZServerInfo		:= TZoneServerInfo(fZoneServerList.Objects[fZoneServerList.IndexOf(ZoneID)]);
 		ReturnIPCard	:= ZServerInfo.Address(ClientIP);

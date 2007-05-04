@@ -139,7 +139,18 @@ uses
 procedure RecvWarpRequestReplyFromInter(
 			InBuffer : TBuffer
 	);
-
+	procedure Whisper(
+			ACharacter  : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
+	procedure RecvWhisperReply(
+			InBuffer : TBuffer
+	);
+	procedure RecvRedirectWhisper(
+			InBuffer : TBuffer
+	);
 implementation
 
 
@@ -160,7 +171,8 @@ uses
 	TCPServerRoutines,
 	ZoneSend,
 	ZoneServer,
-	ZoneCharaCommunication
+	ZoneCharaCommunication,
+	ZoneInterCommunication
 	{3rd Party}
 	//none
 	;
@@ -733,6 +745,107 @@ begin
 	Success := MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, Error);
 	ZoneSendGMCommandResultToInter(GMID,CharacterID, Success, Error);
 end;{RecvGMCommandFromInter}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Whisper							       PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Receive Whisper request from client.
+//
+//  Changes -
+//    May 3rd, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure Whisper(
+			ACharacter  : TCharacter;
+			InBuffer : TBuffer;
+		const
+			ReadPts : TReadPts
+	);
+var
+	Len : Word;
+	TargetName : String;
+	Msg : String;
+begin
+	Len := BufferReadWord(ReadPts[0], InBuffer);
+	TargetName := BufferReadString(ReadPts[1], 24, InBuffer);
+	Msg := BufferReadString(ReadPts[2], Len - 28, InBuffer);
+	SendWhisperToInter(MainProc.ZoneServer.ToInterTCPClient, ACharacter, TargetName, Msg);
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvWhisperReply						       PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Redirect whisper result from Inter to client
+//
+//  Changes -
+//    May 3rd, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure RecvWhisperReply(
+			InBuffer : TBuffer
+	);
+var
+	CharacterID : LongWord;
+	Code : Byte;
+	idx : Integer;
+	Chara : TCharacter;
+begin
+	CharacterID := BufferReadLongWord(2, InBuffer);
+	Code := BufferReadByte(6, InBuffer);
+	Idx := MainProc.ZoneServer.CharacterList.IndexOf(CharacterID);
+	if Idx > -1 then
+	begin
+		Chara := MainProc.ZoneServer.CharacterList.Items[idx];
+		SendWhisperReply(Chara, Code);
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvRedirectWhisper						       PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Redirect whisper message from Inter to client
+//
+//  Changes -
+//    May 3rd, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+procedure RecvRedirectWhisper(
+			InBuffer : TBuffer
+	);
+var
+	Size : Word;
+	ZoneID : LongWord;
+	FromID : LongWord;
+	ToID   : LongWord;
+	FromName : String;
+	Whisper : String;
+	Idx : Integer;
+	Chara : TCharacter;
+begin
+	Size := BufferReadWord(2, InBuffer);
+	ZoneID := BufferReadLongWord(4, InBuffer);
+	FromID := BufferReadLongWord(8, InBuffer);
+	ToID := BufferReadLongWord(12, InBuffer);
+	FromName := BufferReadString(16, 24, InBuffer);
+	Whisper := BufferReadString(40, Size - 40, InBuffer);
+	Idx := MainProc.ZoneServer.CharacterList.IndexOf(ToID);
+	if Idx > -1 then
+	begin
+		Chara := MainProc.ZoneServer.CharacterList.Items[idx];
+		SendWhisper(FromName, Whisper, Chara.ClientInfo);
+		SendWhisperReplyToInter(MainProc.ZoneServer.ToInterTCPClient, ZoneID, FromID, 0);
+                {TODO: Check if ignored}
+	end else
+	begin
+		SendWhisperReplyToInter(MainProc.ZoneServer.ToInterTCPClient, ZoneID, FromID, 1);
+	end;
+end;
 //------------------------------------------------------------------------------
 
 

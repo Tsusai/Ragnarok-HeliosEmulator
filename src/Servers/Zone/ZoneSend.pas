@@ -21,6 +21,7 @@ interface
 
 uses
 	{RTL/VCL}
+	SysUtils,
 	Types,
 	{Project}
 	Being,
@@ -90,6 +91,8 @@ uses
 	procedure Kick(const Who:TCharacter);
 	procedure KickAll;
 	procedure DuplicateSessionKick(InBuffer : TBuffer);
+	procedure SendWhisper(const FromName,Whisper: String;AClient : TIdContext);
+	procedure SendWhisperReply(const AChara:TCharacter; const Code : Byte);
 
 implementation
 
@@ -763,4 +766,26 @@ begin
 	TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 end;
 //------------------------------------------------------------------------------
+
+procedure SendWhisper(const FromName,Whisper: String;AClient : TIdContext);
+var
+	OutBuffer : TBuffer;
+	Len : Integer;
+begin
+	Len := StrLen(PChar(Whisper));
+	WriteBufferWord(0, $0097, OutBuffer);
+	WriteBufferWord(2, Len + 29, OutBuffer);
+	WriteBufferString(4, FromName, 24, OutBuffer);
+	WriteBufferString(28, Whisper, Len + 1, OutBuffer);
+	SendBuffer(AClient,OutBuffer, Len + 29);
+end;
+
+procedure SendWhisperReply(const AChara:TCharacter; const Code : Byte);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $0098, OutBuffer);
+	WriteBufferByte(2, Code, OutBuffer);
+	SendBuffer(AChara.ClientInfo,OutBuffer,GetPacketLength($0098));
+end;
 end.

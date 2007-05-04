@@ -778,6 +778,7 @@ end;
 //
 //	Changes -
 //		April 20th, 2007 - RaX - Created
+//		May 3rd, 2007 - Aeomin - Fixed type, STRING need have ''!
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.LoadChara(
@@ -791,7 +792,7 @@ var
 begin
 	QueryResult := SendQuery(
 		Format(
-			'SELECT * FROM characters WHERE name = %s;',
+			'SELECT * FROM characters WHERE name = ''%s'';',
 			[CharaName]
 			),
 		TRUE,

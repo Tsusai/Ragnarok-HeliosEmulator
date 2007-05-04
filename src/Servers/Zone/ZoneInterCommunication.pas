@@ -14,7 +14,8 @@ interface
 uses
 	ZoneServer,
 	CommClient,
-	IdContext;
+	IdContext,
+	Character;
 
 	procedure ValidateWithInterServer(
 		AClient : TInterClient;
@@ -24,13 +25,17 @@ uses
 	procedure SendZoneWANIPToInter(AClient : TInterClient; ZoneServer : TZoneServer);
 	procedure SendZoneLANIPToInter(AClient : TInterClient; ZoneServer : TZoneServer);
 	procedure SendZoneOnlineUsersToInter(AClient : TInterClient; ZoneServer : TZoneServer);
-
+	procedure SendWhisperToInter(AClient : TInterClient; const AChara: TCharacter;const TargetName, Whisper: String);
+	procedure SendWhisperReplyToZone(AClient : TIdContext; CharID:LongWord; Code : byte);
+	procedure RedirectWhisperToZone(AClient : TIdContext;const ZoneID,FromID,CharID:LongWord;const FromName,Whisper: String);
+	procedure SendWhisperReplyToInter(AClient : TInterClient;const ZoneID, CharID:LongWord; Code : byte);
 implementation
 uses
 	BufferIO,
 	Globals,
 	PacketTypes,
-	TCPServerRoutines;
+	TCPServerRoutines,
+	SysUtils;
 
 //------------------------------------------------------------------------------
 //ValidateWithInterServer                                             PROCEDURE
@@ -153,5 +158,103 @@ uses
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2204));
 	end;//SendZoneOnlineUsersToInter
 //------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendWhisperToInter                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Send Whisper to Inter server
+//
+//  Changes -
+//    May 3rd, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+	procedure SendWhisperToInter(AClient : TInterClient; const AChara: TCharacter;const TargetName,Whisper: String);
+	var
+		OutBuffer : TBuffer;
+		Size : Integer;
+	begin
+		//Strlen is used here to count..since length count 2 byte character as one (UNICODE)
+		Size := StrLen(PChar(Whisper));
+		WriteBufferWord(0,$2210,OutBuffer);
+		WriteBufferWord(2,Size + 56,OutBuffer);
+		WriteBufferLongWord(4,AChara.CID,OutBuffer);
+		WriteBufferString(8,AChara.Name, 24, OutBuffer);
+		WriteBufferString(32,TargetName, 24, OutBuffer);
+		WriteBufferString(56,Whisper,Size,OutBuffer);
+		SendBuffer(AClient,OutBuffer,Size + 56);
+	end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendWhisperReplyToZone                                               PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Send Zone of whisper reply from Inter
+//
+//  Changes -
+//    May 3rd, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+	procedure SendWhisperReplyToZone(AClient : TIdContext; CharID:LongWord; Code : byte);
+	var
+		OutBuffer : TBuffer;
+	begin
+		WriteBufferWord(0,$2212,OutBuffer);
+		WriteBufferLongWord(2,CharID,OutBuffer);
+		WriteBufferByte(6, Code, OutBuffer);
+		SendBuffer(AClient, OutBuffer, GetPacketLength($2212));
+	end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RedirectWhisperToZone                                                PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Inter redirect whisper message to proper Zone
+//
+//  Changes -
+//    May 3rd, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+	procedure RedirectWhisperToZone(AClient : TIdContext;const ZoneID,FromID,CharID:LongWord;const FromName,Whisper: String);
+	var
+		OutBuffer : TBuffer;
+		Size : Integer;
+	begin
+		Size := StrLen(PChar(Whisper));
+		WriteBufferWord(0,$2210,OutBuffer);
+		WriteBufferWord(2,Size + 40,OutBuffer);
+		WriteBufferLongWord(4,ZoneID,OutBuffer);
+		WriteBufferLongWord(8,FromID,OutBuffer);
+		WriteBufferLongWord(12,CharID,OutBuffer);
+		WriteBufferString(16,FromName,24,OutBuffer);
+		WriteBufferString(40,Whisper,Size,OutBuffer);
+		SendBuffer(AClient, OutBuffer, Size + 40);
+	end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendWhisperReplyToInter                                              PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Zone send whisper status reply to Inter
+//
+//  Changes -
+//    May 3rd, 2007 - Aeomin - Created Header
+//------------------------------------------------------------------------------
+	procedure SendWhisperReplyToInter(AClient : TInterClient;const ZoneID, CharID:LongWord; Code : byte);
+	var
+		OutBuffer : TBuffer;
+	begin
+		WriteBufferWord(0,$2211,OutBuffer);
+		WriteBufferLongWord(2,ZoneID,OutBuffer);
+		WriteBufferLongWord(6,CharID,OutBuffer);
+		WriteBufferByte(10, Code, OutBuffer);
+		SendBuffer(AClient, OutBuffer, GetPacketLength($2211));
+	end;
+//------------------------------------------------------------------------------
+
 end.
  

@@ -873,12 +873,25 @@ begin
 			RecvBuffer(AClient,ABuffer[4],Size-4);
 			RecvGMCommandResultFromInter(ABuffer);
 		end;
+
 	$2209://Get warp request reply from inter
 		begin
 			RecvBuffer(AClient,ABuffer[2],2);
 			Size := BufferReadWord(2,ABuffer);
 			RecvBuffer(AClient,ABuffer[4],Size-4);
 			RecvWarpRequestReplyFromInter(ABuffer);
+		end;
+	$2210:
+		begin
+			RecvBuffer(AClient,ABuffer[2],2);
+			Size := BufferReadWord(2,ABuffer);
+			RecvBuffer(AClient,ABuffer[4],Size-4);
+			RecvRedirectWhisper(ABuffer);
+		end;
+	$2212:
+		begin
+			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2212)-2);
+			RecvWhisperReply(ABuffer);
 		end;
 	end;
 end;{InterClientRead}

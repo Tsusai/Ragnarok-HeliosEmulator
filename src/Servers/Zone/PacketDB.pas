@@ -179,10 +179,10 @@ Begin
 				{end else if Command = 'npcclicked' then begin
 					ExecCommand := NPCClick;}
 				end else if Command = 'getcharnamerequest' then begin
-					ExecCommand := GetNameAndID;{
+					ExecCommand := GetNameAndID;
 				end else if Command = 'wis' then begin
 					ExecCommand := Whisper;
-				end else if Command = 'gmmessage' then begin
+				{end else if Command = 'gmmessage' then begin
 					ExecCommand := GMBroadcast;}
 				end	else if Command = 'changedir' then begin
 					ExecCommand := CharaRotation;

@@ -15,6 +15,20 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 251 -
+[2007/05/03] - Aeomin - Overview: Implement Whisper.
+[2007/05/03] - Aeomin - Added RecvWhisperReply & RecvRedirectWhisper procedure [ZoneRecv.pas]
+[2007/05/03] - Aeomin - Added RedirectWhisperToZone & SendWhisperReplyToInter procedure [ZoneInterCommunication.pas]
+[2007/05/03] - Aeomin - Fixed type in Game database, lost '' in query [MySQLGameDatabase.pas(LoadChara)]
+[2007/04/27] - Aeomin - Fixed typo header in Static database of JanSql [JanSQLStaticDatabase.pas(GetMapZoneID)]
+[2007/04/27] - Aeomin - Added SendWhisperReply procedure to tell client about result of whisper [ZoneSend.pas]
+[2007/04/27] - Aeomin - Added SendWhisperReplyToZone procedure to parse the whisper reply code from Inter [ZoneInterCommunication.pas]
+[2007/04/27] - Aeomin - Added RecvWhisper procedure to parse the request from zone [InterServer.pas]
+[2007/04/27] - Aeomin - Added Whisper procedure to parse Whisper packet [ZoneRecv.pas]
+[2007/04/27] - Aeomin - Added SendWhisperToInter procedure to send whisper request from zone to inter [ZoneInterCommunication.pas]
+[2007/04/27] - Aeomin - Added 0x2210-0x2212 packet in packet_db.txt
+-
+
 - Rev 250 -
 [2007/05/02] - Tsusai - Notes/Overview: Added basic TNPC structures and added the
  first REAL lua script function, warp(), which will load the parameters it has,

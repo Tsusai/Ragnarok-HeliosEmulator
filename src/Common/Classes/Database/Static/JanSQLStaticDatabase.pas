@@ -396,10 +396,11 @@ end;//GetMapCanSave
 //GetMapZoneID							                                          FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Checks to see if a map can save or not.
+//			Returns the ID of a zone that is handling a certain map.
 //
 //	Changes -
 //		January 10th, 2007 - RaX - Created Header.
+//		April 27th, 2007 - Aeomin - Fixed header
 //
 //------------------------------------------------------------------------------
 Function TJanSQLStaticDatabase.GetMapZoneID(
