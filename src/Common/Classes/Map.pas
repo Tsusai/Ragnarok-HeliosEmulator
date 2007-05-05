@@ -8,6 +8,7 @@
 //    October 30th, 2006 - RaX - Created.
 //		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 //		[2007/04/23] Tsusai - Added lua
+//		[2007/04/28] Tsusai - Removed lua
 //
 //------------------------------------------------------------------------------
 unit Map;
@@ -31,9 +32,7 @@ uses
 type
 
 //------------------------------------------------------------------------------
-//TMap
-
-//		[2007/04/23] Tsusai - Added NPC Lua instance                                                                  CLASS
+//TMap								CLASS
 //------------------------------------------------------------------------------
 TMap = class(TObject)
 	private
@@ -89,7 +88,6 @@ uses
 	{Project}
 	GameConstants,
 	Globals,
-	LuaNPCCore,
 	Main,
 	{3rd Party}
 	List32
@@ -452,6 +450,7 @@ End;//LoadFromFile
 //  Changes -
 //		January 25th, 2007 - RaX - Created.
 //		[2007/04/23] Tsusai - Added lua setup and execution
+//		[2007/04/28] Tsusai - Removed lua
 //------------------------------------------------------------------------------
 Procedure TMap.Load;
 Var

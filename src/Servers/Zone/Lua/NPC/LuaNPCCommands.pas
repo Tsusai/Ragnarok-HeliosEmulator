@@ -9,24 +9,28 @@ function LoadNPCCommands(var ALua : TLua) : boolean;
 
 implementation
 uses
+	GameConstants,
 	LuaPas,
 	NPC,
 	Types,
 	Main,
 	SysUtils;
 
+//Forward declarations of delphi procedures that are added to the lua engine.
 function addnpc(ALua : TLua) : integer; cdecl; forward;
 function addwarp(ALua : TLua) : integer; cdecl; forward;
+function addhiddenwarp(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 3;
+	NPCCommandCount = 4;
 
 const
 	//"Function name in lua" , Delphi function name
 	NPCCommandList : array [1..NPCCommandCount] of lual_reg = (
 		(name:'npc';func:addnpc),
 		(name:'warp';func:addwarp),
+		(name:'hiddenwarp';func:addhiddenwarp),
 		(name:'print';func:lua_print)
 	);
 
@@ -58,18 +62,17 @@ begin
 	Result := 0;
 end;
 
-//[2007/04/23] Tsusai - Added result
-function addwarp(ALua : TLua) : integer; cdecl;
+//Verifies all lua information on the warp syntax
+//(hidden)warp("map","name",x,y,xradius,yradius)
+function CheckLuaWarpSyntax(
+	ALua : TLua
+) : boolean;
 var
-	AWarpNPC : TWarpNPC;
-	ParamCount : Word;
-	OnTouchFunction : string;
+	ParamCount : word;
 begin
-	Result := 0;
-	OnTouchFunction := '';
+	Result := false;
 	ParamCount := lua_gettop(ALua);
-	//warp("new_1-1","Start-Castle",148,112,2,3,"new_1-2",100,9)
-	if not (ParamCount in [9..10])  then
+	if (ParamCount <> 6)  then
 	begin
 		lual_error(ALua,'NPC Warp: Incorrect number of parameters');
 		exit;
@@ -104,36 +107,20 @@ begin
 		lual_error(ALua,'NPC Warp: Sixth parameter (Y Radius) must be a integer');
 		exit;
 	end;
-	if not Boolean(Lua_isNonNumberString(ALua,7)) then
-	begin
-		lual_error(ALua,'NPC Warp: Seventh parameter (Destination Map) must be a string');
-		exit;
-	end;
-	if not Boolean(lua_isnumber(ALua,8)) then
-	begin
-		lual_error(ALua,'NPC Warp: Eighth parameter (Destination X) must be a integer');
-		exit;
-	end;
-	if not Boolean(lua_isnumber(ALua,9)) then
-	begin
-		lual_error(ALua,'NPC Warp: Nineth parameter (Destination Y) must be a integer');
-		exit;
-	end;
-	if ParamCount = 10 then
-	begin
-		if not Lua_isNonNumberString(ALua,10) then
-		begin
-			lual_error(ALua,'NPC Warp: Optional Tenth parameter (OnTouch function) must be a string');
-			exit;
-		end else
-		begin
-			OnTouchFunction := lua_tostring(ALua,10);
-		end;
-	end;
+	Result := true;
+end;
 
-	AWarpNPC := TWarpNPC.Create(OnTouchFunction);
+//Takes lua information and makes the warp
+procedure MakeNPCWarp(
+	ALua : TLua;
+	const JID : Word
+);
+var
+	AWarpNPC : TWarpNPC;
+begin
+	AWarpNPC := TWarpNPC.Create(lua_tostring(ALua,2));
 	AWarpNPC.Map := lua_tostring(ALua,1);
-	AWarpNPC.Name := lua_tostring(ALua,2);
+	AWarpNPC.Name := AWarpNPC.TouchFunction;
 	AWarpNPC.Position :=
 		Point(
 			lua_tointeger(ALua,3),
@@ -141,14 +128,33 @@ begin
 		);
 	AWarpNPC.XRadius := lua_tointeger(ALua,5);
 	AWarpNPC.YRadius := lua_tointeger(ALua,6);
-	AWarpNPC.DestMap := lua_tostring(ALua,7);
-		AWarpNPC.DestPoint :=
-		Point(
-			lua_tointeger(ALua,8),
-			lua_tointeger(ALua,9)
-		);
-	MainProc.ZoneServer.NPCList.AddObject(AWarpNPC.ID,AWarpNPC); 
+	MainProc.ZoneServer.NPCList.AddObject(AWarpNPC.ID,AWarpNPC);
+end; 
 
+//[2007/04/23] Tsusai - Added result
+//warp("map","name",x,y,xradius,yradius)
+function addwarp(ALua : TLua) : integer; cdecl;
+begin
+	Result := 0;
+	//Check Syntax
+	if CheckLuaWarpSyntax(ALua) then
+	begin
+		//Make the warp
+		MakeNPCWarp(ALua,NPC_WARPSPRITE);
+	end;
+end;
+
+//[2007/05/03] Tsusai - Added
+//hiddenwarp("map","name",x,y,xradius,yradius)
+function addhiddenwarp(ALua : TLua) : integer; cdecl;
+begin
+	Result := 0;
+	//Check Syntax
+	if CheckLuaWarpSyntax(ALua) then
+	begin
+		//Make the warp
+		MakeNPCWarp(ALua,NPC_INVISIBLE);
+	end;
 end;
 
 //Random usage for testing.  Will take its string and output it on

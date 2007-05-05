@@ -25,6 +25,8 @@ begin
 	SetCharaIDToLua(ALua,CharaID)
 end;
 
+//Pushes the Character ID onto the global array of the lua
+//This is meant so that when a character executes a script, 
 procedure SetCharaIDToLua(ALua : TLua; CharaID : LongWord);
 begin
 	lua_pushliteral(ALua, 'char_id'); // Push global key for char_id
@@ -32,11 +34,12 @@ begin
 	lua_rawset(ALua,LUA_GLOBALSINDEX); // Tell Lua to set char_id as a global var
 end;
 
+//Pulls the Character ID from the lua global array.
 function GetCharaIDFromLua(ALua : TLua) : LongWord;
 begin
 	lua_pushliteral(ALua, 'char_id');
 	lua_rawget(ALua, LUA_GLOBALSINDEX);
-	Result := lua_tointeger(ALua, -1);
+	Result := Round(lua_tonumber(ALua, -1));
 	lua_pop(ALua, 1);
 end;
 

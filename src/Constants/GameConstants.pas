@@ -44,6 +44,9 @@ uses
 
 const
 
+	NPC_WARPSPRITE = 45;
+	NPC_INVISIBLE = 32767;	
+
 	L_HAND = 1;
 	R_HAND = 0;
 

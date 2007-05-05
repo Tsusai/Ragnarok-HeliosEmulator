@@ -45,6 +45,11 @@ uses
 
 implementation
 
+//Since 23235 is a valid number and string to lua, this routine checks for
+//non pure number string checking
+//345345 = false
+//Test = true
+//"test 123" = true
 function Lua_isNonNumberString(
 	ALua : TLua;
 	Index : word
@@ -98,11 +103,14 @@ procedure TerminateLuaThread(
 	const LuaInfo : TLuaInfo
 );
 begin
-	luaL_unref(
-		LuaInfo.ParentLua,
-		LUA_REGISTRYINDEX,
-		LuaInfo.LuaID
-	);
+	if not (LuaInfo.Lua = nil) then
+	begin
+		luaL_unref(
+			LuaInfo.ParentLua,
+			LUA_REGISTRYINDEX,
+			LuaInfo.LuaID
+		);
+	end;
 end;
 
 //Closes out the head only lua.  Make sure descendant threads are

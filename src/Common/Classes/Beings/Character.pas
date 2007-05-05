@@ -1664,6 +1664,7 @@ end;
 Destructor TCharacter.Destroy;
 begin
 	OnTouchIDs.Free;
+	TerminateLuaThread(LuaInfo);
 	inherited;
 end;
 //------------------------------------------------------------------------------

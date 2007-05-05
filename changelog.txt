@@ -15,6 +15,29 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 252-
+[2007/05/04] - Tsusai - Notes/Overview: More tweaks to TWarpNPC & its lua side,
+ and some documentation.
+ New warp syntax, npc name is also the lua function name to call
+  [hidden]warp("map","npc name and function name",x,y,xradius,yradius)
+[2007/05/04] - Tsusai - Character - TCharacter: Clears personal thread on destroy.
+[2007/05/04] - Tsusai - NPC - Added documentation, including a "tree" of how I
+ plan the NPC object structure.
+[2007/05/04] - Tsusai - NPC - TWarpNPC: Removed "Destination" values.  A warp 
+ will be a ontouch activated lua script.  This will allow for random warps as
+ well.  Removed static JID value.
+[2007/05/04] - Tsusai - Map: Removed Lua from maps.
+[2007/05/04] - Tsusai - GameConstants: Added NPC_WARPSPRITE & NPC_INVISIBLE 
+ constants.
+[2007/05/04] - Tsusai - LuaCoreRoutines: Documented Lua_isNonNumberString and
+ added a "is not nil" check in TerminateLuaThread.
+[2007/05/04] - Tsusai - LuaNPCCommands:  Added hiddenwarp support.  Broke up 
+ the npc warp reading.  Now the syntax checker is its own procedure, and 
+ addwarp and addhiddenwarp are designed to go through the checker and TWarpNPC
+ maker.
+[2007/05/04] - Tsusai - LuaNPCCore: Added comments.
+-
+
 - Rev 251 -
 [2007/05/03] - Aeomin - Overview: Implement Whisper.
 [2007/05/03] - Aeomin - Added RecvWhisperReply & RecvRedirectWhisper procedure [ZoneRecv.pas]
