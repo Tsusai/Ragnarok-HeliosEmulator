@@ -15,6 +15,25 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 255 -
+[2007/05/07] CR - Overview: Found the holy grail!  Speedup on pathing, with
+ a combination of logic simplification, and finding the proper spot and 
+ calculations for the Cost comparison.  Users should notice the faster pathing 
+ with points selected near the edge of the character's view.
+[2007/05/07] CR - Map - TMap.GetPath: Added to comment header to describe this
+ routine's behavior further.  Refactored StepCost out of main routine, and
+ improved the efficiency of that cost lookup by simplifying the comparison.
+ Refactored out routines InitializeAnArea and GetOptimalDirection.
+ Renamed local variables:  XMod and YMode now are Offset (TPoint), and
+ EndPointMod is now AreaEndPoint.
+ Using DiagonalCost to PROPERLY focus the search area.  In testing, this yields
+ speeds half the time of the algorithm used in rev 254.  This proper cost
+ comparison, along with the proper stepping DOWN the compared cost (not
+ incrementing it!), and with use of GetOptimalDirection, we are now aiming the
+ search toward the goal, and avoiding expensive searches that don't compute to
+ a low-cost path.
+-
+
 - Rev 254 -
 [2007/05/07] CR - Overview: Documentation and preparatory work in MapTypes for
  an improvement for Pathing on our maps.
