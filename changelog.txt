@@ -15,6 +15,15 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 253 -
+[2007/05/06] CR - Overview: Minor cleanup in some TCharacter Set* methods --
+  documenting the routines, making parameters constant, and minimizing flags set
+  for saving the Character State TCharacter.DataChanged isn't flagged when the
+  value is identical to the Set* method's stored property value.
+[2007/05/06] CR - Character - TCharacter.SetBAbyID, SetOnline, SetHomunID:
+  Aforementioned changes above applied to these property writing routines.
+-
+
 - Rev 252-
 [2007/05/04] - Tsusai - Notes/Overview: More tweaks to TWarpNPC & its lua side,
  and some documentation.

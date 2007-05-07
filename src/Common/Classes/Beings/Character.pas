@@ -168,9 +168,21 @@ protected
 	procedure SetPartnerID(Value : LongWord);
 	procedure SetParentID1(Value : LongWord);
 	procedure SetParentID2(Value : LongWord);
-	procedure SetBabyID(Value : LongWord);
-	procedure SetOnline(Value : Byte);
-	procedure SetHomunID(Value : LongWord);
+
+	Procedure SetBabyID(
+		const
+			Value : LongWord
+		);
+
+	Procedure SetOnline(
+		const
+			Value : Byte
+		);
+
+	Procedure SetHomunID(
+		const
+			Value : LongWord
+		);
 
 public
 	CID : LongWord;
@@ -1223,61 +1235,97 @@ end;{SetParentID2}
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//SetBabyID                                                           PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Sets the BabyID to Value. Also, lets our object know that data has
-//    changed.
-//
-//	Changes -
-//		December 22nd, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TCharacter.SetBabyID(Value : LongWord);
-begin
-	DataChanged := TRUE;
-	fBabyID     := Value;
-end;{SetBabyID}
-//------------------------------------------------------------------------------
+(*- Procedure -----------------------------------------------------------------*
+TCharacter.SetBabyID
+--------------------------------------------------------------------------------
+Overview:
+--
+
+	Sets the Online flag to Value, and flags DataChanged, if and only if Value
+differs.
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2006/12/22] RaX - Created Header.
+[2007/05/06] CR - Altered routine and description, to minimize data saves.
+	Value parameter made constant.
+*-----------------------------------------------------------------------------*)
+Procedure TCharacter.SetBabyID(
+	const
+		Value : LongWord
+	);
+Begin
+	if (Value <> fBabyID) then
+	begin
+		DataChanged := TRUE;
+		fBabyID     := Value;
+	end;
+End; (* Proc TCharacter.SetBabyID
+*-----------------------------------------------------------------------------*)
 
 
-//------------------------------------------------------------------------------
-//SetOnline                                                           PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Sets the Online to Value. Also, lets our object know that data has
-//    changed.
-//
-//	Changes -
-//		December 22nd, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TCharacter.SetOnline(Value : Byte);
-begin
-	DataChanged := TRUE;
-	fOnline     := Value;
-end;{SetOnline}
-//------------------------------------------------------------------------------
+(*- Procedure -----------------------------------------------------------------*
+TCharacter.SetOnline
+--------------------------------------------------------------------------------
+Overview:
+--
+
+	Sets the Online flag to Value, and flags DataChanged, if and only if Value
+differs.
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2006/12/22] RaX - Created Header.
+[2007/05/06] CR - Altered routine and description, to minimize data saves.
+	Value parameter made constant.
+*-----------------------------------------------------------------------------*)
+Procedure TCharacter.SetOnline(
+	const
+		Value : Byte
+	);
+Begin
+	if (Value <> fOnline) then
+	begin
+		DataChanged := TRUE;
+		fOnline     := Value;
+	end;
+End; (* Proc TCharacter.SetOnline
+*-----------------------------------------------------------------------------*)
 
 
-//------------------------------------------------------------------------------
-//SetHomunID                                                          PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Sets the HomunID to Value. Also, lets our object know that data has
-//    changed.
-//
-//	Changes -
-//		December 22nd, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TCharacter.SetHomunID(Value : LongWord);
-begin
-	DataChanged := TRUE;
-	fHomunID    := Value;
-end;{SetHomunID}
-//------------------------------------------------------------------------------
+(*- Procedure -----------------------------------------------------------------*
+TCharacter.SetHomunID
+--------------------------------------------------------------------------------
+Overview:
+--
+
+	Sets the HomunID to Value and flags DataChanged, if and only if Value is
+different.
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2006/12/22] RaX - Created Header.
+[2007/05/06] CR - Make Set only change if the Value is different. Altered
+	comment header.
+*-----------------------------------------------------------------------------*)
+Procedure TCharacter.SetHomunID(
+	const
+		Value : LongWord
+	);
+Begin
+	if (Value <> fHomunID) then
+	begin
+		DataChanged := TRUE;
+		fHomunID    := Value;
+	end;
+End; (* Proc TCharacter.SetHomunID
+*-----------------------------------------------------------------------------*)
 
 
 (*- Procedure -----------------------------------------------------------------*
