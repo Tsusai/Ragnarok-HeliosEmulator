@@ -666,7 +666,7 @@ var
 	TargetName : String;
 	Whisper : String;
 	Chara : TCharacter;
-	ZoneID : Integer;
+	ZoneID : LongWord;
 	Index  : Integer;
 begin
 	Size := BufferReadWord(2, InBuffer);
@@ -719,7 +719,7 @@ end;
 //------------------------------------------------------------------------------
 procedure TInterServer.RecvWhisperReply(AClient : TIdContext; InBuffer : TBuffer);
 var
-	ZoneID : Integer;
+	ZoneID : LongWord;
 	CharID : Integer;
 	Flag : Byte;
 	Index  : Integer;
@@ -822,7 +822,7 @@ var
 	MapName				: String;
 	ClientIPSize	: Word;
 	ClientIP			: String;
-	ZoneID				: LongWord;
+	ZoneID				: Integer;
 	ZServerInfo		: TZoneServerInfo;
 	ReturnIPCard	: LongWord;
 begin
