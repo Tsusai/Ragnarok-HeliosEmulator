@@ -23,15 +23,15 @@ uses
 	//3rd Party
 	IdContext;
 
-	procedure WriteBufferByte(Index:word; ByteIn:byte; var Buffer : TBuffer);
-	procedure WriteBufferWord(Index:word; WordIn:word; var Buffer : TBuffer);
-	procedure WriteBufferLongWord(Index:word; LongWordIn:LongWord; var Buffer : TBuffer);
-	procedure WriteBufferString(Index:word; StringIn:string; Count:word; var Buffer : TBuffer);
+	procedure WriteBufferByte(const Index:word; const ByteIn:byte; var Buffer : TBuffer);
+	procedure WriteBufferWord(const Index:word; const WordIn:word; var Buffer : TBuffer);
+	procedure WriteBufferLongWord(const Index:word; const LongWordIn:LongWord; var Buffer : TBuffer);
+	procedure WriteBufferString(const Index:word; const StringIn:string; const Count:word; var Buffer : TBuffer);
 	procedure WriteBufferPointAndDirection(
-		index:word;
-		xy:TPoint;
+		const index:word;
+		const xy:TPoint;
 		var Buffer : TBuffer;
-		Dir:byte = 0
+		const Dir:byte = 0
 	);
 
 	Procedure WriteBufferTwoPoints(
@@ -46,25 +46,25 @@ uses
 		);
 
 	procedure WriteBufferMD5String(
-		Index:word;
-		MD5String:string;
+		const Index:word;
+		const MD5String:string;
 		var Buffer : TBuffer
 	);
 
 
-	function BufferReadByte(Index:word; var Buffer : TBuffer) : byte;
-	function BufferReadWord(Index:word; var Buffer : TBuffer) : word;
-	function BufferReadLongWord(Index:word; var Buffer : TBuffer) : LongWord;
-	function BufferReadString(Index:word; Count:word; var Buffer : TBuffer) : string;
-	function BufferReadMD5(Index : word; var Buffer : TBuffer) : string;
-	function BufferReadOnePoint(Index:word; var Buffer : TBuffer) : TPoint;
+	function BufferReadByte(const Index:word; const Buffer : TBuffer) : byte;
+	function BufferReadWord(const Index:word; const Buffer : TBuffer) : word;
+	function BufferReadLongWord(const Index:word; const Buffer : TBuffer) : LongWord;
+	function BufferReadString(const Index:word; const Count:word; const Buffer : TBuffer) : string;
+	function BufferReadMD5(const Index : word; const Buffer : TBuffer) : string;
+	function BufferReadOnePoint(const Index:word; const Buffer : TBuffer) : TPoint;
 
-	procedure SendPadding(AClient : TIdContext);
+	procedure SendPadding(var AClient : TIdContext);
 
-	procedure SendBuffer(var AClient : TIdContext; const Buffer : TBuffer; Size : LongWord);overload;
-	procedure SendBuffer(var AClient : TInterClient; const Buffer : TBuffer; Size : LongWord);overload;
-	procedure RecvBuffer(var AClient : TIdContext; var Buffer; Size : LongWord); overload;
-	procedure RecvBuffer(var AClient : TInterClient; var Buffer; Size : LongWord);overload;
+	procedure SendBuffer(var AClient : TIdContext; const Buffer : TBuffer; const Size : LongWord);overload;
+	procedure SendBuffer(var AClient : TInterClient; const Buffer : TBuffer; const Size : LongWord);overload;
+	procedure RecvBuffer(var AClient : TIdContext; var Buffer; const Size : LongWord); overload;
+	procedure RecvBuffer(var AClient : TInterClient; var Buffer; const Size : LongWord);overload;
 
 implementation
 uses
@@ -76,28 +76,28 @@ uses
 //PUSHING DATA INTO THE BUFFER METHODS                                PROCEDURES
 //------------------------------------------------------------------------------
 	//Socket Method WriteBuffer - Writes a Byte to the buffer.
-	procedure WriteBufferByte(Index:word; ByteIn:byte; var Buffer : TBuffer);
+	procedure WriteBufferByte(const Index:word; const ByteIn:byte; var Buffer : TBuffer);
 	begin
 		Assert(Index <= 32767, 'WriteBuffer - Byte: index overflow ' + IntToStr(Index));
 		Move(ByteIn, Buffer[Index], 1);
 	end;
 
 	//Socket Method WriteBuffer - Writes a Word to the buffer.
-	procedure WriteBufferWord(Index : word; WordIn : word; var Buffer : TBuffer);
+	procedure WriteBufferWord(const Index : word; const WordIn : word; var Buffer : TBuffer);
 	begin
 		Assert(Index <= 32766, 'WriteBuffer - Word: index overflow ' + IntToStr(Index));
 		Move(WordIn, Buffer[Index], 2);
 	end;
 
 	//Socket Method WriteBuffer - Writes a LongWord to the buffer.
-	procedure WriteBufferLongWord(index : word; LongWordIn : LongWord; var Buffer : TBuffer);
+	procedure WriteBufferLongWord(const index : word; const LongWordIn : LongWord; var Buffer : TBuffer);
 	begin
 		Assert(Index <= 32766, 'WriteBuffer - LongWord: index overflow ' + IntToStr(Index));
 		Move(LongWordIn, Buffer[Index], 4);
 	end;
 
 	//Socket Method WriteBuffer - Writes a String to the buffer.
-	procedure WriteBufferString(Index:word; StringIn : string; Count : word; var Buffer : TBuffer);
+	procedure WriteBufferString(const Index:word; const StringIn : string; const Count : word; var Buffer : TBuffer);
 	var
 		StrLength :integer;
 	begin
@@ -205,10 +205,10 @@ End; (* Proc WriteBufferTwoPoints
 
 
 	procedure WriteBufferPointAndDirection(
-		index:word;
-		xy:TPoint;
+		const index:word;
+		const xy:TPoint;
 		var Buffer : TBuffer;
-		Dir:byte = 0
+		const Dir:byte = 0
 	);
 	var
 		l   :LongWord;
@@ -239,7 +239,7 @@ End; (* Proc WriteBufferTwoPoints
 //		March 12th, 2007 - Aeomin - Moved Header
 //
 //------------------------------------------------------------------------------
-	procedure WriteBufferMD5String(Index:word; MD5String:string; var Buffer : TBuffer);
+	procedure WriteBufferMD5String(const Index:word; const MD5String:string; var Buffer : TBuffer);
 	var
 		cnt : integer;
 		AByte : byte;
@@ -258,21 +258,21 @@ READING DATA FROM THE BUFFER METHODS
 ------------------------------------------------------------------------------*)
 
 	//Socket Method BufferReadByte - Reads a Byte from the buffer.
-	function BufferReadByte(Index:word; var Buffer : TBuffer) : byte;
+	function BufferReadByte(const Index:word; const Buffer : TBuffer) : byte;
 	begin
 		Assert(Index <= 32766, 'BufferReadByte: Index overflow ' + IntToStr(Index));
 		Move(Buffer[Index], Result, 1);
 	end;
 
 	//Socket Method BufferReadWord - Reads a Word from the buffer.
-	function BufferReadWord(Index:word; var Buffer : TBuffer) : word;
+	function BufferReadWord(const Index:word; const Buffer : TBuffer) : word;
 	begin
 		Assert(Index <= 32766, 'BufferReadWord: Index overflow ' + IntToStr(Index));
 		Move(Buffer[Index], Result, 2);
 	end;
 
 	//Socket Method BufferReadLongWord - Reads a LongWord from the buffer.
-	function BufferReadLongWord(Index:word; var Buffer : TBuffer) : LongWord;
+	function BufferReadLongWord(const Index:word; const Buffer : TBuffer) : LongWord;
 	begin
 		Assert(Index <= 32766, 'BufferReadLongWord: Index overflow ' + IntToStr(Index));
 		Move(Buffer[Index], Result, 4);
@@ -288,7 +288,7 @@ READING DATA FROM THE BUFFER METHODS
 //		December 17th, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-	function BufferReadMD5(Index : word; var Buffer : TBuffer) : string;
+	function BufferReadMD5(const Index : word; const Buffer : TBuffer) : string;
 	var
 		cnt : integer;
 	begin
@@ -313,7 +313,7 @@ READING DATA FROM THE BUFFER METHODS
 //		March 12th, 2007 - Aeomin - Reformat Header.
 //
 //------------------------------------------------------------------------------
-	function BufferReadString(Index:word; Count:word; var Buffer : TBuffer):string;
+	function BufferReadString(const Index:word; const Count:word; const Buffer : TBuffer):string;
 	begin
 		Assert(Index <= 32767, 'BufferReadString: Index overflow ' + IntToStr(Index));
 		Assert(Index + Count <= 32767, 'BufferReadString: Index+Count overflow ' + IntToStr(Index+Count));
@@ -334,7 +334,7 @@ READING DATA FROM THE BUFFER METHODS
 //		March 12th, 2007 - Aeomin - Reformat Header.
 //
 //------------------------------------------------------------------------------
-	function BufferReadOnePoint(Index:word; var Buffer : TBuffer) : TPoint;
+	function BufferReadOnePoint(const Index:word; const Buffer : TBuffer) : TPoint;
 	var
 		l   :LongWord;
 		bb  :array[0..3] of byte;
@@ -367,7 +367,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 //		March 12th, 2007 - Aeomin - Reformat Header.
 //
 //------------------------------------------------------------------------------
-	procedure SendPadding(AClient : TIdContext);
+	procedure SendPadding(var AClient : TIdContext);
 	var
 		ABuf : TBuffer;
 	begin
@@ -376,7 +376,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 	end;
 
 	//Socket Method SendBuffer - Writes the buffer to the socket.
-	procedure SendBuffer(var AClient : TInterClient; const Buffer : TBuffer; Size : LongWord);
+	procedure SendBuffer(var AClient : TInterClient; const Buffer : TBuffer; const Size : LongWord);
 	var
 		SendBytes : TIdBytes;
 	begin
@@ -386,7 +386,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 
 
 	//Socket Method SendBuffer - Writes the buffer to the socket.
-	procedure SendBuffer(var AClient : TIdContext; const Buffer : TBuffer; Size : LongWord);
+	procedure SendBuffer(var AClient : TIdContext; const Buffer : TBuffer; const Size : LongWord);
 	var
 		SendBytes : TIdBytes;
 	begin
@@ -396,7 +396,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 
 
 	//Socket Method RecvBuffer - Reads the buffer from the socket.
-	procedure RecvBuffer(var AClient : TIdContext; var Buffer; Size : LongWord);
+	procedure RecvBuffer(var AClient : TIdContext; var Buffer; const Size : LongWord);
 	var
 		RecvBytes : TIdBytes;
 	begin
@@ -409,7 +409,7 @@ PREMADE SENDING OF BUFFER TO CLIENT
 	end;
 
 		//Socket Method RecvBuffer - Reads the buffer from the socket.
-	procedure RecvBuffer(var AClient : TInterClient; var Buffer; Size : LongWord);
+	procedure RecvBuffer(var AClient : TInterClient; var Buffer; const Size : LongWord);
 	var
 		RecvBytes : TIdBytes;
 	begin

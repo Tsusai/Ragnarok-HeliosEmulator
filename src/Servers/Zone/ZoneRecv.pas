@@ -30,18 +30,17 @@ uses
 //------------------------------------------------------------------------------
 //NoCommand                                                           PROCEDURE
 //------------------------------------------------------------------------------
-	procedure NoCommand(
-			AChara : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
-		); overload;
+	Procedure NoCommand(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	); overload;
 
 //------------------------------------------------------------------------------
 //NoCommand                                                           PROCEDURE
 //------------------------------------------------------------------------------
 	procedure NoCommand(
-		const
+		var
 			AChara : TCharacter;
 		const
 			AvoidSelf:boolean = False
@@ -51,72 +50,65 @@ uses
 //MapConnect                                                          PROCEDURE
 //------------------------------------------------------------------------------
 	procedure MapConnect(
-		Version : Integer;
-		AClient : TIdContext;
-		Buffer  : TBuffer;
-		const
-			ReadPts : TReadPts
+		const Version : Integer;
+		var AClient : TIdContext;
+		const Buffer  : TBuffer;
+		const ReadPts : TReadPts
 		);
 
 //------------------------------------------------------------------------------
 //ShowMap                                                             PROCEDURE
 //------------------------------------------------------------------------------
 	Procedure ShowMap(
-			AChara  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
-		);
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 
 //------------------------------------------------------------------------------
 //RecvTick                                                            PROCEDURE
 //------------------------------------------------------------------------------
 	procedure RecvTick(
-			AChara  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 
 //------------------------------------------------------------------------------
 //CharacterWalkRequest                                                PROCEDURE
 //------------------------------------------------------------------------------
 	procedure CharacterWalkRequest(
-			AChara : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 
 //------------------------------------------------------------------------------
 //GetNameAndID                                                        PROCEDURE
 //------------------------------------------------------------------------------
 	Procedure GetNameAndID(
-			AChara  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 //------------------------------------------------------------------------------
 
 	procedure ReturnToCharacterSelect(
-			AChara  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 
 	procedure QuitGame(
-			AChara  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
+
 	procedure AreaChat(
-		ACharacter  : TCharacter;
-		InBuffer		: TBuffer;
-	const
-		ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 	procedure RecvGMCommandFromInter(
 		InBuffer : TBuffer
@@ -125,26 +117,27 @@ uses
 			InBuffer : TBuffer
 	);
 	procedure CharaRotation(
-			ACharacter  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
+
 	procedure SlashWho(
-			ACharacter  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
-procedure RecvWarpRequestReplyFromInter(
+
+	procedure RecvWarpRequestReplyFromInter(
 			InBuffer : TBuffer
 	);
+
 	procedure Whisper(
-			ACharacter  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
+
 	procedure RecvWhisperReply(
 			InBuffer : TBuffer
 	);
@@ -189,10 +182,9 @@ uses
 //    January 18th, 2007 - RaX - Created Header;
 //------------------------------------------------------------------------------
 	Procedure NoCommand(
-			AChara  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 	Begin
 		//Dummy Command for processes that don't have one.
@@ -211,7 +203,7 @@ uses
 //    January 18th, 2007 - RaX - Created Header;
 //------------------------------------------------------------------------------
 	Procedure NoCommand(
-		const
+		var
 			AChara    : TCharacter;
 		const
 			AvoidSelf : Boolean = False
@@ -237,11 +229,10 @@ uses
 //    April 12th, 2007 - Aeomin - Append check to disallow 0 of LoginKey
 //------------------------------------------------------------------------------
 	procedure MapConnect(
-			Version : Integer;
-			AClient : TIdContext;
-			Buffer  : TBuffer;
-		const
-			ReadPts : TReadPts
+		const Version : Integer;
+		var AClient : TIdContext;
+		const Buffer  : TBuffer;
+		const ReadPts : TReadPts
 	);
 	var
 		AccountID   : LongWord;
@@ -253,7 +244,6 @@ uses
 		ACharacter  : TCharacter;
 		OutBuffer   : Tbuffer; //temp
 		MapIndex    : Integer;
-
 	begin
 		AccountID      := BufferReadLongWord(ReadPts[0], Buffer);
 		CharacterID    := BufferReadLongWord(ReadPts[1], Buffer);
@@ -268,7 +258,6 @@ uses
 		TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
 		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID,true);
 		TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
-		writeln('GotClient');
 		if Assigned(AnAccount) and Assigned(ACharacter) then
 		begin
 			if (AnAccount.LoginKey[1] = ValidateID1) and
@@ -276,7 +265,6 @@ uses
 				(AnAccount.GenderNum = Gender) then
 			begin
 				// Duplicate session safe check!
-				writeln('Client key verified');
 				if MainProc.ZoneServer.CharacterList.IndexOf(ACharacter.CID) > -1 then
 				begin
 					ACharacter.ClientInfo.Connection.Disconnect;
@@ -333,10 +321,9 @@ uses
 //    March 30th, 2007 - Aeomin - Move SendZoneCharaIncrease to here.
 //------------------------------------------------------------------------------
 	Procedure ShowMap(
-			AChara  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 	var
 		OutBuffer : TBuffer;
@@ -418,10 +405,9 @@ uses
 //    January 18th, 2007 - RaX - Created Header;
 //------------------------------------------------------------------------------
 	procedure RecvTick(
-			AChara  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 	Begin
 		ZoneSendTickToClient(AChara);
@@ -439,10 +425,9 @@ uses
 //    Rebruary 27th, 2007 - RaX - Created Header;
 //------------------------------------------------------------------------------
 	procedure CharacterWalkRequest(
-			AChara		: TCharacter;
-			InBuffer	: TBuffer;
-		const
-			ReadPts		: TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 	var
 		MoveEvent : TMovementEvent;
@@ -507,10 +492,9 @@ uses
 //    January 18th, 2007 - RaX - Created Header;
 //------------------------------------------------------------------------------
 	Procedure GetNameAndID(
-			AChara  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 	var
 		ID : LongWord;
@@ -550,10 +534,9 @@ uses
 //    March 17th, 2007 - RaX - Created Header;
 //------------------------------------------------------------------------------
 	procedure ReturnToCharacterSelect(
-			AChara  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 	var
 		ActionByte : Byte;
@@ -595,10 +578,9 @@ uses
 //    March 17th, 2007 - RaX - Created Header;
 //------------------------------------------------------------------------------
 procedure QuitGame(
-			AChara  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 begin
 	//send client response.
@@ -617,10 +599,9 @@ end;
 //    March 18th, 2007 - Aeomin - Created Header
 //------------------------------------------------------------------------------
 procedure AreaChat(
-			ACharacter  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 var
 	ChatLength	: Word;
@@ -633,7 +614,7 @@ begin
 
 		//First, we remove the character's name and the colon after it from the
 		//chat string.
-		TempChat := Copy(Chat, Length(ACharacter.Name) + 3, Length(Chat));
+		TempChat := Copy(Chat, Length(AChara.Name) + 3, Length(Chat));
 		//We then check if it is a command.
 		if MainProc.ZoneServer.Commands.IsCommand(TempChat) then
 		begin
@@ -642,16 +623,16 @@ begin
 									 );
 			//if it is a command, we check the account's access level to see if it is
 			//able to use the gm command.
-			if TClientLink(ACharacter.ClientInfo.Data).AccountLink.Level >= MainProc.ZoneServer.Commands.GetCommandGMLevel(CommandID) then
+			if TClientLink(AChara.ClientInfo.Data).AccountLink.Level >= MainProc.ZoneServer.Commands.GetCommandGMLevel(CommandID) then
 			begin
-				ZoneSendGMCommandtoInter(ACharacter, TempChat);
+				ZoneSendGMCommandtoInter(AChara, TempChat);
 			end else
 			begin
-				SendAreaChat(Chat, ChatLength, ACharacter);
+				SendAreaChat(Chat, ChatLength, AChara);
 			end;
 		end else
 		begin
-			SendAreaChat(Chat, ChatLength, ACharacter);
+			SendAreaChat(Chat, ChatLength, AChara);
 		end;
 end;{AreaChat}
 //------------------------------------------------------------------------------
@@ -667,16 +648,15 @@ end;{AreaChat}
 //    March 20th, 2007 - Aeomin - Created Header
 //------------------------------------------------------------------------------
 procedure CharaRotation(
-			ACharacter  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 
 begin
-	ACharacter.HeadDirection := BufferReadWord(ReadPts[0], InBuffer);
-	ACharacter.Direction:=BufferReadByte(ReadPts[1], InBuffer);
-	ACharacter.UpdateDirection;
+	AChara.HeadDirection := BufferReadWord(ReadPts[0], InBuffer);
+	AChara.Direction:=BufferReadByte(ReadPts[1], InBuffer);
+	AChara.UpdateDirection;
 end;{CharaRotation}
 //------------------------------------------------------------------------------
 
@@ -690,13 +670,12 @@ end;{CharaRotation}
 //    April 5th, 2007 - Aeomin - Created Header
 //------------------------------------------------------------------------------
 procedure SlashWho(
-			ACharacter  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 begin
-	ZoneSendConnectionsCount(ACharacter.ClientInfo);
+	ZoneSendConnectionsCount(AChara.ClientInfo);
 end;
 //------------------------------------------------------------------------------
 
@@ -758,10 +737,9 @@ end;{RecvGMCommandFromInter}
 //    May 3rd, 2007 - Aeomin - Created Header
 //------------------------------------------------------------------------------
 procedure Whisper(
-			ACharacter  : TCharacter;
-			InBuffer : TBuffer;
-		const
-			ReadPts : TReadPts
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
 	);
 var
 	Len : Word;
@@ -771,7 +749,7 @@ begin
 	Len := BufferReadWord(ReadPts[0], InBuffer);
 	TargetName := BufferReadString(ReadPts[1], 24, InBuffer);
 	Msg := BufferReadString(ReadPts[2], Len - 28, InBuffer);
-	SendWhisperToInter(MainProc.ZoneServer.ToInterTCPClient, ACharacter, TargetName, Msg);
+	SendWhisperToInter(MainProc.ZoneServer.ToInterTCPClient, AChara, TargetName, Msg);
 end;
 //------------------------------------------------------------------------------
 

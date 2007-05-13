@@ -15,6 +15,14 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 257 -
+[2007/05/13] - Tsusai - Notes/Overview: Fixed packet_db/zone related parameters.
+[2007/05/13] - Tsusai - Packet_Db: Modified ExecCommand types to have var and
+ const for their parameters.
+[2007/05/13] - Tsusai - ZoneRecv: Updated all parameters for the above.
+[2007/05/13] - Tsusai - BufferIO: Added const/var to all parameters.
+-
+
 - Rev 256 -
 [2007/05/08] - RaX - Fixed hints and warnings that Turbo Delphi failed to catch.
  I finally fixed my compiler!
