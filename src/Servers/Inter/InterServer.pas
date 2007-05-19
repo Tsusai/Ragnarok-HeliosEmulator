@@ -24,6 +24,7 @@ uses
 	GMCommands,
 	InterOptions,
 	PacketTypes,
+	ZoneServerInfo,
 	{3rd Party}
 	IdContext,
 	IdTCPServer,
@@ -32,10 +33,32 @@ uses
 
 
 type
-	TInterServer = class
+(*= CLASS =====================================================================*
+TInterServer
+
+*------------------------------------------------------------------------------*
+Overview:
+*------------------------------------------------------------------------------*
+
+	Acts as the Inter-server that message passes and brokers between the Login,
+Chara, and Zone(Game) servers.
+
+[2007/05/19] CR - TODO: Someone with more knowledge of the overall workings
+	should mention which tasks the InterServer is charged with.  What specific
+	things is the InterServer responsible for?
+
+*------------------------------------------------------------------------------*
+Revisions:
+*------------------------------------------------------------------------------*
+(Format: [yyyy/mm/dd] <Author> - <Description of Change>)
+[2007/05/19] CR - Added class header.  Removed private section - all private
+	fields and methods are now protected.  Added properties ClientList,
+	ZoneServerInfo, and ZoneServerLink to encapsulate the lookup and casting
+	dirty work to shield it from other TInterServer routines.  Lends clarity to
+	code that used to do the casting work in-situ.
+*=============================================================================*)
+	TInterServer = class(TObject)
 	protected
-	//
-	private
 		fIP              : String;
 		fPort            : Word;
 
@@ -52,8 +75,29 @@ type
 		//procedure ProcessInterPacket(AClient : TIdContext);
 
 		Procedure SetIPLongWord(Value : string);
-    Procedure SetPort(Value : Word);
-		Function GetStarted() : Boolean;
+
+		Procedure SetPort(
+			const
+				Value : Word
+			);
+
+		Function  GetClientList(
+			const
+				Index : Integer
+			) : TIdContext;
+
+		Function  GetStarted : Boolean;
+
+		Function  GetZoneServerInfo(
+			const
+				Index : Integer
+			) : TZoneServerInfo;
+
+		Function  GetZoneServerLink(
+			const
+				Index : Integer
+			) : TZoneServerLink;
+
 
 		Procedure LoadOptions;
 
@@ -105,15 +149,36 @@ type
 
 		Options : TInterOptions;
 
-		property IP   : string read fIP write SetIPLongWord;
-		property Port : Word read fPort write SetPort;
-		property Started : Boolean read GetStarted;
+		Constructor Create;
+		Destructor  Destroy;Override;
+		Procedure   Start;
+		Procedure   Stop;
 
-		Constructor Create();
-		Destructor  Destroy();Override;
-		Procedure   Start();
-		Procedure   Stop();
-	end;
+
+		property IP   : String
+			read  fIP
+			write SetIPLongWord;
+
+		property ClientList[const Index : Integer] : TIdContext
+			read  GetClientList;
+
+		property Port : Word
+			read  fPort
+			write SetPort;
+
+		property Started : Boolean
+			read  GetStarted;
+
+		property ZoneServerInfo[const Index : Integer] : TZoneServerInfo
+			read  GetZoneServerInfo;
+
+		{[2007/05/19] CR - N.B.: This is the link held in the fClientList NOT the
+		objects held in fZoneServerList! }
+		property ZoneServerLink[const Index : Integer] : TZoneServerLink
+			read  GetZoneServerLink;
+
+	End;(* TInterServer
+*== CLASS ====================================================================*)
 
 
 implementation
@@ -130,7 +195,6 @@ uses
 	Main,
 	TCPServerRoutines,
 	ZoneInterCommunication,
-	ZoneServerInfo,
 	WinLinux
 	{3rd Party}
 	//none
@@ -535,211 +599,327 @@ end; //RecvGMCommand
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//RecvGMCommand   			                                             PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//      Gets a gm command from an authenticated zone server
-//
-//	Changes -
-//		March 19th, 2007 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TInterServer.RecvGMCommandReply(AClient : TIdContext; InBuffer : TBuffer);
-//See Notes/GM Command Packets for explanation.
-var
-	ErrorLength		: LongWord;
-	CharacterID		: LongWord;
-	ACharacter		: TCharacter;
-	ZoneID				: LongWord;
-	Index					: Integer;
-	ListClient		: TIdContext;
-	Size					: LongWord;
+(*- Procedure -----------------------------------------------------------------*
+TInterServer.RecvGMCommandReply
+--------------------------------------------------------------------------------
+Overview:
+--
+	Gets a gm command from an authenticated zone server
 
-begin
+--
+Pre:
+	TODO
+Post:
+	TODO
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/03/19] RaX - Created Header.
+[2007/05/19] CR - Altered header, indent and style changes.  Use of new
+	ClientList and ZoneServerLink property and a with clause to make code cleaner
+	to read.
+*-----------------------------------------------------------------------------*)
+Procedure TInterServer.RecvGMCommandReply(
+		AClient : TIdContext;
+		InBuffer : TBuffer
+	);
+//See Notes/GM Command Packets for explanation.
+Var
+	ErrorLength : LongWord;
+	CharacterID : LongWord;
+	ACharacter  : TCharacter;
+	ZoneID      : LongWord;
+	ZoneLink    : TZoneServerLink;
+	Index       : Integer;
+	ListClient  : TIdContext;
+	Size        : LongWord;
+
+Begin
 	//See Notes/GMCommand Packets.txt
-	ErrorLength		:= BufferReadLongWord(12,InBuffer);
-	if ErrorLength > 0 then
+	ErrorLength := BufferReadLongWord(12, InBuffer);
+	if (ErrorLength > 0) then
 	begin
 		Size := BufferReadLongWord(2, InBuffer);
 		CharacterID := BufferReadLongWord(10, InBuffer);
 
-		TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
-		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID);
-		TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
-
-		TThreadLink(AClient.Data).DatabaseLink.StaticData.Connect;
-		ZoneID := TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapZoneID(ACharacter.Map);
-		TThreadLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
-
-		for Index := 0 to fClientList.Count - 1 do
+		with TThreadLink(AClient.Data).DatabaseLink do
 		begin
-			if assigned(TZoneServerLink(TIdContext(fClientList[Index]).Data)) then
-			begin
-				if TZoneServerLink(TIdContext(fClientList[Index]).Data).Info.ZoneID = ZoneID then
-				begin
-					ListClient := TIdContext(fClientList[Index]);
-					SendBuffer(ListClient, InBuffer, Size);
-					Break;
-				end;
-			end;
+			GameData.Connect;
+			ACharacter := GameData.GetChara(CharacterID);
+			GameData.Disconnect;
+
+			StaticData.Connect;
+			ZoneID := StaticData.GetMapZoneID(ACharacter.Map);
+			StaticData.Disconnect;
 		end;
+
+		for Index := 0 to (fClientList.Count - 1) do
+		begin
+			ZoneLink := ZoneServerLink[Index];
+			if (ZoneLink <> NIL) AND
+				(ZoneLink.Info.ZoneID = ZoneID) then
+			begin
+				ListClient := ClientList[Index];
+				SendBuffer(ListClient, InBuffer, Size);
+				Break;
+			end;
+		end;//for
+
 	end;
-end; //RecvGMCommand
-//------------------------------------------------------------------------------
+End; (* Func TInterServer.RecvGMCommandReply
+*-----------------------------------------------------------------------------*)
 
 
-//------------------------------------------------------------------------------
-//InterSendGMCommandToZones                                           PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//      Sends the gm command to all connected zone servers.
-//
-//	Changes -
-//		March 19th, 2007 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TInterServer.InterSendGMCommandToZones(AClient : TIdContext; GMID : LongWord; CharacterID : LongWord; CommandSeparator : TStringList);
-var
-	Index			: Integer;
-	CommandID	: Integer;
-	ABuffer		: TBuffer;
-	Size			: Cardinal;
-	BufferIndex: Integer;
-	ListClient : TIdContext;
-begin
-  //Get the name do the command, remove the first character which is #
-	CommandSeparator[0] := Commands.GetCommandName(CommandSeparator[0]);
-  //Get the command ID to which the Command name is associated.
-	CommandID := Commands.GetCommandID(CommandSeparator[0]);
-  //If the command is a real gm command.
-	if CommandID >= 0 then
+(*- Procedure -----------------------------------------------------------------*
+TInterServer.InterSendGMCommandToZones
+--------------------------------------------------------------------------------
+Overview:
+--
+	Sends the GM command to all connected zone servers.
+
+{[2007/05/19] CR - TODO:
+	(open to anyone more knowledgable of this routine than I am!)
+	- Parameters are not yet explicitly var/const/in/out }
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/03/19] RaX - Created Header.
+[2007/05/19] CR - Altered header, indent and style changes.  Extracted a local
+	procedure to construct the packet ($2206), and slight optimizations made.
+	Used ClientList and ZoneServerLink properties for clarity.
+*-----------------------------------------------------------------------------*)
+Procedure TInterServer.InterSendGMCommandToZones(
+		AClient          : TIdContext;
+		GMID             : LongWord;
+		CharacterID      : LongWord;
+		CommandSeparator : TStringList
+	);
+Var
+	ABuffer     : TBuffer;
+	CommandID   : Integer;
+	Size        : Cardinal;
+
+	(*- Local Procedure .................*
+	WritePacket2206
+	--
+	[2007/05/19] CR - Extracted from main body.  Speedup: Using a local variable
+		to store the CommandSeparator length to avoid 2 extra function calls.
+	*...................................*)
+	procedure WritePacket2206;
+	var
+		BufferIndex : Integer;
+		CSLength    : Integer;
+		Index       : Integer;
 	begin
-    //start writing packet 2206 (see Notes/GM Command Packets.txt)
 		WriteBufferWord(0, $2206,ABuffer);
 		WriteBufferWord(4, CommandID, ABuffer);
 		WriteBufferLongWord(6, GMID, ABuffer);
 		WriteBufferLongWord(10, CharacterID, ABuffer);
 		WriteBufferWord(14, CommandSeparator.Count - 1, ABuffer);
 		BufferIndex := 16;//Where we are currently in the buffer.
-    //We then write the Command's arguments to the buffer.
+
+		//We then write the Command's arguments to the buffer.
 		for Index := 1 to CommandSeparator.Count - 1 do
 		begin
-			WriteBufferWord(BufferIndex, Length(CommandSeparator[Index]), ABuffer);
-			inc(BufferIndex, 2);
-			WriteBufferString(BufferIndex, CommandSeparator[Index], Length(CommandSeparator[Index]), ABuffer);
-			inc(BufferIndex, Length(CommandSeparator[Index]));
+			CSLength := Length(CommandSeparator[Index]);
+
+			WriteBufferWord(BufferIndex, CSLength, ABuffer);
+			Inc(BufferIndex, 2);
+
+			WriteBufferString(
+				BufferIndex,
+				CommandSeparator[Index],
+				CSLength,
+				ABuffer
+			);
+			Inc(BufferIndex, CSLength);
 		end;
-    //Then, after we're done building the buffer, we send it to all connected
-    //zones. - incomplete
-		Size := BufferIndex+1;
+
+		Size := BufferIndex + 1;
 		WriteBufferWord(2, Size, ABuffer);
-		for Index := 0 to fClientList.Count - 1 do
+	end;(* WritePacket2206
+	*...................................*)
+
+Var
+	Index      : Integer;
+	ListClient : TIdContext;
+Begin
+	//Get the name of the command, remove the first character which is #
+	CommandSeparator[0] := Commands.GetCommandName(CommandSeparator[0]);
+	//Get the command ID to which the Command name is associated.
+	CommandID := Commands.GetCommandID(CommandSeparator[0]);
+
+	//Test if valid gm command.
+	if (CommandID >= 0) then
+	begin
+		//start writing packet 2206 (see Notes/GM Command Packets.txt)
+		WritePacket2206;
+
+		//Then, after we're done building the buffer, we send it to all connected
+		//zones. - incomplete
+		{[2007/05/19] CR - Talking with RaX on IRC, simple commands work, but
+		this is still incomplete -- more complex GM commands aren't working or
+		are not yet verified. }
+
+		for Index := 0 to (fClientList.Count - 1) do
 		begin
-			if assigned(TZoneServerLink(TIdContext(fClientList[Index]).Data)) then
+			if Assigned(ZoneServerLink[Index]) then
 			begin
-				ListClient := fClientList[Index];
+				ListClient := ClientList[Index];
 				SendBuffer(ListClient, ABuffer, Size);
 			end;
 		end;
 	end;
-end; //RecvGMCommand
-//------------------------------------------------------------------------------
+End; (* Proc TInterServer.InterSendGMCommandToZones
+*-----------------------------------------------------------------------------*)
 
 
-//------------------------------------------------------------------------------
-//RecvWhisper                                                          PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//      Receive whisper message from zone server and find proper zone to direct
-//	to, if can not find, error flag is send back.
-//
-//	Changes -
-//		May 3rd, 2007 - Aeomin - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TInterServer.RecvWhisper(AClient : TIdContext; InBuffer : TBuffer);
-var
-	Size : Word;
-	FromID : LongWord;
-	FromName : String;
+(*- Procedure -----------------------------------------------------------------*
+TInterServer.RecvWhisper
+--------------------------------------------------------------------------------
+Overview:
+--
+	Receives a whisper message from zone server and finds proper zone to direct
+to.  If proper zone not found, an error is sent back.
+
+--
+Pre:
+	TODO
+Post:
+	TODO
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/05/03] Aeomin - Created Header.
+[2007/05/19] CR - Altered header, indent and style changes.  Use of with, and
+	ZoneServerLink to clarify code.
+*-----------------------------------------------------------------------------*)
+Procedure TInterServer.RecvWhisper(
+		AClient : TIdContext;
+		InBuffer : TBuffer
+	);
+Var
+	Size       : Word;
+	FromID     : LongWord;
+	FromName   : String;
 	TargetName : String;
-	Whisper : String;
-	Chara : TCharacter;
-	ZoneID : LongWord;
-	Index  : Integer;
-begin
-	Size := BufferReadWord(2, InBuffer);
-	FromID := BufferReadLongWord(4, InBuffer);
-	FromName := BufferReadString(8, 24, InBuffer);
+	Whisper    : String;
+	Chara      : TCharacter;
+	ZoneID     : LongWord;
+	Index      : Integer;
+
+	SentWhisper : Boolean;
+Begin
+	Size       := BufferReadWord(2, InBuffer);
+	FromID     := BufferReadLongWord(4, InBuffer);
+	FromName   := BufferReadString(8, 24, InBuffer);
 	TargetName := BufferReadString(32, 24, InBuffer);
-	Whisper := BufferReadString(56, Size - 56, InBuffer);
-	TZoneServerLink(AClient.Data).DatabaseLink.GameData.Connect;
-	Chara := TZoneServerLink(AClient.Data).DatabaseLink.GameData.GetChara(TargetName);
-	TZoneServerLink(AClient.Data).DatabaseLink.GameData.Disconnect;
-	if (Chara<>nil)and(Chara.Map<>'')then
+	Whisper    := BufferReadString(56, (Size - 56), InBuffer);
+
+	with TZoneServerLink(AClient.Data).DatabaseLink.GameData do
 	begin
-		TZoneServerLink(AClient.Data).DatabaseLink.StaticData.Connect;
-		ZoneID := TZoneServerLink(AClient.Data).DatabaseLink.StaticData.GetMapZoneID(Chara.Map);
-		TZoneServerLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
-		for Index := fClientList.Count - 1 downto 0 do
+		Connect;
+		Chara := GetChara(TargetName);
+		Disconnect;
+	end;
+
+	if (Chara <> NIL) AND (Chara.Map <> '') then
+	begin
+		with TZoneServerLink(AClient.Data).DatabaseLink.StaticData do
 		begin
-			if assigned(TZoneServerLink(TIdContext(fClientList[Index]).Data)) then
-			begin
-				if TZoneServerLink(TIdContext(fClientList[Index]).Data).Info.ZoneID = ZoneID then
-				begin
-					RedirectWhisperToZone(TIdContext(fClientList[Index]), TZoneServerLink(AClient.Data).Info.ZoneID, FromID, Chara.CID, FromName, Whisper);
-					Break;
-				end;
-			end;
+			Connect;
+			ZoneID := GetMapZoneID(Chara.Map);
+			Disconnect;
 		end;
+
+		Index := (fClientList.Count -1);
+		SentWhisper := False;
+
+		if (Index > -1) then
+		begin
+			repeat
+				if Assigned(ZoneServerLink[Index]) AND
+					(ZoneServerLink[Index].Info.ZoneID = ZoneID) then
+				begin
+					RedirectWhisperToZone(
+						ClientList[Index],
+						TZoneServerLink(AClient.Data).Info.ZoneID,
+						FromID,
+						Chara.CID,
+						FromName,
+						Whisper
+					);
+					SentWhisper := True;
+				end;
+
+				Dec(Index);
+			until (SentWhisper) OR (Index = -1);
+		end;
+
+
 		//This will fire if can't find any..WHY THE LIST DONT HAVE INDEXOF?
-		if Index = -1 then
+		if NOT SentWhisper then
 		begin
 			//Well..if zone is disconnected..then just say not online
 			SendWhisperReplyToZone(AClient, FromID, 1);
+			{[2007/05/19] CR - What does the "1" signify? Shouldn't this be a
+			descriptive constant? }
 		end;
 	end else
 	begin
 		SendWhisperReplyToZone(AClient, FromID, 1);  //Target is not online
 	end;
-end;
-//------------------------------------------------------------------------------
+End; (* Func TInterServer.RecvWhisper
+*-----------------------------------------------------------------------------*)
 
 
-//------------------------------------------------------------------------------
-//RecvWhisperReply                                                     PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//      Receive whisper result from zone, usually is 1 which character is not online.
-//
-//	Changes -
-//		May 3rd, 2007 - Aeomin - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TInterServer.RecvWhisperReply(AClient : TIdContext; InBuffer : TBuffer);
-var
+(*- Procedure -----------------------------------------------------------------*
+TInterServer.RecvWhisperReply
+--------------------------------------------------------------------------------
+Overview:
+--
+	Receives whisper result from zone, usually is 1 (which is character not
+online).
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/05/03] Aeomin - Created Header.
+[2007/05/19] CR - Alterd Comment Header, indent and style changes.  Used
+	ZoneServerLink and ClientLink properties to make code cleaner to read.
+*-----------------------------------------------------------------------------*)
+Procedure TInterServer.RecvWhisperReply(
+		AClient  : TIdContext;
+		InBuffer : TBuffer
+	);
+Var
 	ZoneID : LongWord;
 	CharID : Integer;
-	Flag : Byte;
+	Flag   : Byte;
 	Index  : Integer;
-begin
+Begin
 	ZoneID := BufferReadLongWord(2, InBuffer);
 	CharID := BufferReadLongWord(6, InBuffer);
 	Flag   := BufferReadByte(10, InBuffer);
-	for Index := fClientList.Count - 1 downto 0 do
+
+	for Index := (fClientList.Count - 1) downto 0 do
 	begin
-		if assigned(TZoneServerLink(TIdContext(fClientList[Index]).Data)) then
+		if Assigned(ZoneServerLink[Index]) AND
+			(ZoneServerLink[Index].Info.ZoneID = ZoneID) then
 		begin
-			if TZoneServerLink(TIdContext(fClientList[Index]).Data).Info.ZoneID = ZoneID then
-			begin
-				SendWhisperReplyToZone(TIdContext(fClientList[Index]), CharID, Flag);
-				Break;
-			end;
+			SendWhisperReplyToZone(ClientList[Index], CharID, Flag);
+			Break;
 		end;
 	end;
-end;
-//------------------------------------------------------------------------------
+End; (* Proc TInterServer.RecvWhisperReply
+*-----------------------------------------------------------------------------*)
 
 
 //------------------------------------------------------------------------------
@@ -763,23 +943,74 @@ end; //proc SetIPLongWord
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//SetPort                                                          PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Sets the internal fPort variable to the value specified. Also sets the
-//    TCPServer's port.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-Procedure TInterServer.SetPort(Value : Word);
-begin
-  fPort := Value;
-  TCPServer.DefaultPort := Value;
-end;//SetPort
-//------------------------------------------------------------------------------
+(*- Procedure -----------------------------------------------------------------*
+TInterServer.SetPort
+--------------------------------------------------------------------------------
+Overview:
+--
+
+	Sets the internal fPort variable to the value specified. Also sets the
+TCPServer's port.
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/12/17] RaX - Created Header.
+[2007/05/19] CR - Altered Comment Header.  Changed behavior so that fPort and
+	TCPServer.DefaultPort are only altered IFF Value is different from fPort.
+	Value parameter made constant.
+*-----------------------------------------------------------------------------*)
+Procedure TInterServer.SetPort(
+	const
+		Value : Word
+	);
+Begin
+	if (Value <> fPort) then
+	begin
+		fPort := Value;
+		TCPServer.DefaultPort := Value;
+	end;
+End; (* Proc TInterServer.SetPort
+*-----------------------------------------------------------------------------*)
+
+
+(*- Function ------------------------------------------------------------------*
+TInterServer.GetClientList
+--------------------------------------------------------------------------------
+Overview:
+--
+	Does the dirty work casting the TList entry to TIdContext.
+
+	Returns the given TIdContext stored at Index in fClientList
+
+--
+Pre:
+	Index must be within range 0..Count-1
+Post:
+	TODO
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/05/19] CR - Created routine.  Property read handler for ClientList.
+*-----------------------------------------------------------------------------*)
+Function TInterServer.GetClientList(
+	const
+		Index : Integer
+	): TIdContext;
+Begin
+	//Pre
+	Assert(
+		(Index >= 0) AND (Index < fClientList.Count),
+		'Index is out of bounds.'
+	);
+	//--
+
+	Result := TIdContext(fClientList[Index]);
+End;(* Func TInterServer.GetClientList
+*-----------------------------------------------------------------------------*)
 
 
 //------------------------------------------------------------------------------
@@ -793,60 +1024,155 @@ end;//SetPort
 //		January 4th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Function TInterServer.GetStarted() : Boolean;
-begin
-  Result := TCPServer.Active;
-end;{SetPort}
+Function TInterServer.GetStarted : Boolean;
+Begin
+	Result := TCPServer.Active;
+End;{SetPort}
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//RecvZoneWarpRequest                                                  PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Receives a zone's warp request, figures out what zone the map is on,
-//		and replies.
-//
-//	Changes -
-//		April 26th, 2007 - RaX - Created.
-//
-//------------------------------------------------------------------------------
+(*- Function ------------------------------------------------------------------*
+TInterServer.GetZoneServerInfo
+--------------------------------------------------------------------------------
+Overview:
+--
+	Does the dirty work of casting the object held in the TZoneServerList
+
+--
+Pre:
+	Index must be in range of the fZoneServerList count.
+Post:
+	TODO
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/05/19] CR - Created routine.  Property read handler for ZoneServerInfo.
+*-----------------------------------------------------------------------------*)
+Function TInterServer.GetZoneServerInfo(
+	const
+		Index : Integer
+	) : TZoneServerInfo;
+Begin
+	//Pre
+	Assert(
+		(Index >= 0) AND (Index < fZoneServerList.Count),
+		'ZoneServerInfo Index out of bounds.'
+	);
+	//--
+
+	Result := TZoneServerInfo(fZoneServerList.Objects[Index]);
+End;(* Func TInterServer.GetZoneServerInfo
+*-----------------------------------------------------------------------------*)
+
+
+(*- Function ------------------------------------------------------------------*
+TInterServer.GetZoneServerLink
+--------------------------------------------------------------------------------
+Overview:
+--
+	Does the dirty work of casting for our Client List entries, so that our
+calling code for ZoneServerLink[] is cleaner, and that both are cleaner than
+all the casting to dig and get this object reference from the fClientList.
+
+Returns the given TZoneServerLink associated with fClientLink at Index.
+
+--
+Pre:
+	Index must be in range of 0..fClientLink.Count-1
+Post:
+	TODO
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/05/19] CR - Created routine.  Property Read handler for ZoneServerLink.
+*-----------------------------------------------------------------------------*)
+Function TInterServer.GetZoneServerLink(
+	const
+		Index : Integer
+	) : TZoneServerLink;
+Begin
+	//Pre
+	Assert(
+		(Index >= 0) AND (Index < fClientList.Count),
+		'ClientList Index out of bounds.'
+	);
+	//--
+
+	Result := TZoneServerLink(TIdContext(fClientList[Index]).Data);
+End; (* Func TInterServer.GetZoneServerLink
+*-----------------------------------------------------------------------------*)
+
+
+(*- Procedure -----------------------------------------------------------------*
+TInterServer.RecvZoneWarpRequest
+--------------------------------------------------------------------------------
+Overview:
+--
+	Receives a zone's warp request, figures out what zone the map is on,
+and replies.
+
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/04/27] RaX - Created.
+[2007/05/19] CR - Altered Comment Header.  Indent and style changes, with clause
+	added to declutter a database value read.
+*-----------------------------------------------------------------------------*)
 Procedure TInterServer.RecvZoneWarpRequest(
-	AClient : TIdContext;
-	ABuffer : TBuffer
-);
-var
+		AClient : TIdContext;
+		ABuffer : TBuffer
+	);
+Var
 	CharacterID		: LongWord;
-	X, Y					: Word;
-	MapNameSize		: Word;
-	MapName				: String;
-	ClientIPSize	: Word;
-	ClientIP			: String;
-	ZoneID				: Integer;
-	ZServerInfo		: TZoneServerInfo;
-	ReturnIPCard	: LongWord;
-begin
-	CharacterID		:= BufferReadLongWord(4, ABuffer);
-	X							:= BufferReadWord(8, ABuffer);
-	Y							:= BufferReadWord(10, ABuffer);
-	MapNameSize		:= BufferReadWord(12, ABuffer);
-	MapName				:= BufferReadString(14, MapNameSize, ABuffer);
+	X             : Word;
+	Y             : Word;
+	MapNameSize   : Word;
+	MapName       : String;
+	ClientIPSize  : Word;
+	ClientIP      : String;
+	ZoneID        : Integer;
+	ZServerInfo   : TZoneServerInfo;
+	ReturnIPCard  : LongWord;
+Begin
+	CharacterID := BufferReadLongWord(4, ABuffer);
+	X						:= BufferReadWord(8, ABuffer);
+	Y						:= BufferReadWord(10, ABuffer);
+	MapNameSize := BufferReadWord(12, ABuffer);
+	MapName			:= BufferReadString(14, MapNameSize, ABuffer);
 
-	ClientIPSize	:= BufferReadWord(14+MapNameSize, ABuffer);
-	ClientIP			:= BufferReadString(16+MapNameSize, ClientIPSize, ABuffer);
-	TThreadLink(AClient.Data).DatabaseLink.StaticData.Connect;
-	ZoneID				:= TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapZoneID(MapName);
-	TThreadLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
-	//Why warp to a unknown zone..or reply to it.  Kill it here. They can walk fine
-	if ZoneID <> -1  then
+	ClientIPSize := BufferReadWord(14+MapNameSize, ABuffer);
+	ClientIP		 := BufferReadString(16+MapNameSize, ClientIPSize, ABuffer);
+
+	with TThreadLink(AClient.Data).DatabaseLink.StaticData do
 	begin
-		ZServerInfo		:= TZoneServerInfo(fZoneServerList.Objects[fZoneServerList.IndexOf(ZoneID)]);
-		ReturnIPCard	:= ZServerInfo.Address(ClientIP);
-		InterSendWarpReplyToZone(AClient, CharacterID, ReturnIPCard, ZServerInfo.Port, MapName, X, Y);
+		Connect;
+		ZoneID := GetMapZoneID(MapName);
+		Disconnect;
 	end;
-end;
-//------------------------------------------------------------------------------
 
+	//Why warp to a unknown zone..or reply to it.  Kill it here. They can walk fine
+	if (ZoneID <> -1) then
+	begin
+		ZServerInfo		:= Self.ZoneServerInfo[fZoneServerList.IndexOf(ZoneID)];
+		ReturnIPCard	:= ZServerInfo.Address(ClientIP);
+		InterSendWarpReplyToZone(
+			AClient,
+			CharacterID,
+			ReturnIPCard,
+			ZServerInfo.Port,
+			MapName,
+			X,
+			Y
+		);
+	end;
+End; (* Proc TInterServer.RecvZoneWarpRequest
+*-----------------------------------------------------------------------------*)
 
 //------------------------------------------------------------------------------
 //InterSendWarpReplyToZone                                           PROCEDURE
@@ -888,4 +1214,6 @@ begin
 	SendBuffer(AClient, ABuffer, Size);
 end;
 //------------------------------------------------------------------------------
+
+
 end.

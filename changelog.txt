@@ -15,6 +15,37 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 258 -
+[2007/05/19] CR - Overview: Cleanup in InterServer unit.  Added class header,
+ initial description of the purpose of the InterServer.  Made changes, including
+ new properties that lend clarity to routines that used to do the casting work
+ in-situ.
+[2007/05/19] CR - InterServer - TInterServer.RecvGMCommandReply: Altered header,
+ indent and style changes.  Use of new ClientList and ZoneServerLink property
+ and a with clause to make code cleaner to read.
+[2007/05/19] CR - InterServer - TInterServer.InterSendGMCommandToZones: Altered
+ header, indent and style changes.  Extracted a local procedure to construct
+ the packet ($2206), and slight optimizations made.  Used ClientList and
+ ZoneServerLink properties for clarity.
+[2007/05/19] CR - InterServer - TInterServer.RecvWhisper: Altered header,
+ indent and style changes.  Use of with, and ZoneServerLink to clarify code.
+[2007/05/19] CR - InterServer - TInterServer.RecvWhisperReply: Alterd Comment
+ Header, indent and style changes.  Used ZoneServerLink and ClientLink
+ properties to make code cleaner to read.
+[2007/05/19] CR - InterServer - TInterServer.SetPort: Altered Comment Header.  
+ Changed behavior so that fPort and TCPServer.DefaultPort are only altered IFF 
+ Value is different from fPort.  Value parameter made constant.
+[2007/05/19] CR - InterServer - TInterServer.GetClientList: Created routine.  
+ Property read handler for ClientList.
+[2007/05/19] CR - InterServer - TInterServer.GetZoneServerInfo: Created 
+ routine.  Property read handler for ZoneServerInfo.
+[2007/05/19] CR - InterServer - TInterServer.GetZoneServerLink: Created 
+ routine.  Property Read handler for ZoneServerLink.
+[2007/05/19] CR - InterServer - TInterServer.RecvZoneWarpRequest: Altered 
+ Comment Header.  Indent and style changes, with clause added to declutter a 
+ database value read.
+-
+
 - Rev 257 -
 [2007/05/13] - Tsusai - Notes/Overview: Fixed packet_db/zone related parameters.
 [2007/05/13] - Tsusai - Packet_Db: Modified ExecCommand types to have var and
