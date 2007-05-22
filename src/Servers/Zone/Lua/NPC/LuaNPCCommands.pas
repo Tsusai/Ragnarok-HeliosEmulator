@@ -51,14 +51,65 @@ begin
 	Result := true;
 end;
 
-//[2007/04/23] Tsusai - Added result
-//Dummy
-function addnpc(ALua : TLua) : integer; cdecl;
+//npc("new_1-1","Bulletin Board",spr_HIDDEN_NPC,66,114,4,0,0,"new_1-1_Bulletin_Board_66114"[,"optional ontouch"])
+function CheckLuaNPCSyntax(ALua : TLua) : boolean;
+var
+	ParamCount : word;
 begin
-	//Get Data
-	//Create TNPC
-	//Assign Data from stack to TNPC
-	Writeln('NPC Loaded');
+	//Assume true
+	Result := true;
+	ParamCount := lua_gettop(ALua);
+	if not ParamCount in [9..10] then
+	begin
+		if (ParamCount = 10) and
+			not Lua_isNonNumberString(ALua,10) then
+		begin
+			Result := false;
+		end;
+		if not Lua_isNonNumberString(ALua, 1) and
+			not Lua_isNonNumberString(ALua, 2) and
+			not lua_isnumber(ALua, 3) and
+			not lua_isnumber(ALua, 4) and
+			not lua_isnumber(ALua, 5) and
+			not lua_isnumber(ALua, 6) and
+			not lua_isnumber(ALua, 7) and
+			not lua_isnumber(ALua, 8) and
+			not Lua_isNonNumberString(ALua, 9) then
+		begin
+			Result := false;
+		end;
+	end;
+	if not Result then
+	begin
+		lual_error(ALua,'NPC Script Syntax Error');
+	end;
+end;
+
+//[2007/04/23] Tsusai - Added result
+//npc("new_1-1","Bulletin Board",spr_HIDDEN_NPC,66,114,4,0,0,"new_1-1_Bulletin_Board_66114"[,"optional ontouch"])
+function addnpc(ALua : TLua) : integer; cdecl;
+var
+	ANPC : TScriptNPC;
+	OnTouch : string;
+begin
+	OnTouch := '';
+	if CheckLuaNPCSyntax(ALua) then
+	begin
+		if lua_gettop(ALua) = 10 then
+		begin
+			OnTouch := lua_tostring(ALua,10);
+		end;
+		ANPC := TSCriptNPC.Create(lua_tostring(ALua,9),OnTouch);
+		ANPC.Map := lua_tostring(ALua,1);
+		ANPC.Name := lua_tostring(ALua,2);
+		ANPC.JID := lua_tointeger(ALua,3);
+		ANPC.Position :=
+			Point(lua_tointeger(ALua,4) , lua_tointeger(ALua,6));
+		ANPC.Direction := lua_tointeger(ALua,6);
+		ANPC.XRadius := lua_tointeger(ALua,7);
+		ANPC.YRadius := lua_tointeger(ALua,8);
+		MainProc.ZoneServer.NPCList.AddObject(ANPC.ID,ANPC);
+	end;
 	Result := 0;
 end;
 
@@ -70,44 +121,19 @@ function CheckLuaWarpSyntax(
 var
 	ParamCount : word;
 begin
-	Result := false;
-	ParamCount := lua_gettop(ALua);
-	if (ParamCount <> 6)  then
-	begin
-		lual_error(ALua,'NPC Warp: Incorrect number of parameters');
-		exit;
-	end;
-	if not Boolean(Lua_isNonNumberString(ALua,1)) then
-	begin
-		lual_error(ALua,'NPC Warp: First parameter (mapname) must be a string');
-		exit;
-	end;
-	if not Boolean(lua_isstring(ALua,2)) then
-	begin
-		lual_error(ALua,'NPC Warp: Second parameter (name) must be a string or number');
-		exit;
-	end;
-	if not Boolean(lua_isnumber(ALua,3)) then
-	begin
-		lual_error(ALua,'NPC Warp: Third parameter (X) must be a integer');
-		exit;
-	end;
-	if not Boolean(lua_isnumber(ALua,4)) then
-	begin
-		lual_error(ALua,'NPC Warp: Fourth parameter (Y) must be a integer');
-		exit;
-	end;
-	if not Boolean(lua_isnumber(ALua,5)) then
-	begin
-		lual_error(ALua,'NPC Warp: Fifth parameter (X Radius) must be a integer');
-		exit;
-	end;
-	if not Boolean(lua_isnumber(ALua,6)) then
-	begin
-		lual_error(ALua,'NPC Warp: Sixth parameter (Y Radius) must be a integer');
-		exit;
-	end;
 	Result := true;
+	ParamCount := lua_gettop(ALua);
+	if not (ParamCount = 6) and
+		not (Lua_isNonNumberString(ALua,1)) and
+		not (Lua_isNonNumberString(ALua,2)) and
+		not (lua_isnumber(ALua,3)) and
+		not (lua_isnumber(ALua,4)) and
+		not (lua_isnumber(ALua,5)) and
+		not (lua_isnumber(ALua,6)) then
+	begin
+		lual_error(ALua,'NPC Script Syntax Error');
+		Result := false;
+	end;
 end;
 
 //Takes lua information and makes the warp
@@ -129,10 +155,10 @@ begin
 	AWarpNPC.XRadius := lua_tointeger(ALua,5);
 	AWarpNPC.YRadius := lua_tointeger(ALua,6);
 	MainProc.ZoneServer.NPCList.AddObject(AWarpNPC.ID,AWarpNPC);
-end; 
+end;
 
 //[2007/04/23] Tsusai - Added result
-//warp("map","name",x,y,xradius,yradius)
+//warp("new_1-1","novicetraining1warp001",148,112,2,3)
 function addwarp(ALua : TLua) : integer; cdecl;
 begin
 	Result := 0;
@@ -145,7 +171,7 @@ begin
 end;
 
 //[2007/05/03] Tsusai - Added
-//hiddenwarp("map","name",x,y,xradius,yradius)
+//hiddenwarp("new_1-1","novicetraining1warp001",148,112,2,3)
 function addhiddenwarp(ALua : TLua) : integer; cdecl;
 begin
 	Result := 0;

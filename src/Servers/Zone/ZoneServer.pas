@@ -122,6 +122,7 @@ uses
 	BufferIO,
 	Globals,
 	LuaNPCCore,
+	LuaNPCCOmmands,
 	Main,
 	Map,
 	PacketDB,
@@ -324,11 +325,11 @@ begin
   if NOT Started then
 	begin
 		//Load our Zone.ini
-	  LoadOptions;
+		LoadOptions;
 
-    //Initialize ips and port.
-	  WANIP := Options.WANIP;
-	  LANIP := Options.LANIP;
+		//Initialize ips and port.
+		WANIP := Options.WANIP;
+		LANIP := Options.LANIP;
 		Port := Options.Port;
 
 		ZoneLocalDatabase := TDatabase.Create(NIL);
@@ -341,10 +342,9 @@ begin
 
 		//Initiate NPC Lua
 		InitLuaState(NPCLua);
-		PrepLuaForNPCScripts(NPCLua);
+		LoadNPCCommands(NPCLua);
 		//Run the Core script
 		RunLuaScript(NPCLua, MainProc.Options.ScriptDirectory + '/Core/Core.lua');
-
 
 		CharacterEventThread.Start;
 	end else
@@ -507,11 +507,14 @@ end;{SearchPacketListing}
 //    [2006/09/28] RaX - Re-formatted, re-indented, renamed - PIdx to PacketIndex,
 //    	CIdx to ClientBaseIndex to signify our supported client database or
 //      packet_db.
+//    [2007/05/21] Tsusai - Changed AChara to be a pointer OF TCharacter.  This
+//      way I can get the original character data and pass it down for use with
+//      lua.
 //------------------------------------------------------------------------------
 Procedure TZoneServer.ProcessZonePacket(AClient : TIdContext);
 Var
 	Lth             : Integer;
-	AChara          : TCharacter;
+	AChara          : ^TCharacter;
 	ClientBaseIndex : Word; //Index of the packet in the packet(allowed client)
 													//database (client-base).
 	PacketID        : Word; //The ID of a packet in said database.
@@ -525,10 +528,10 @@ Begin
 		Lth := AClient.Connection.IOHandler.InputBuffer.Size;
 		RecvBuffer(AClient,ABuffer[0], 2);
 		PacketID := BufferReadWord(0, ABuffer);
-		AChara := TClientLink(AClient.Data).CharacterLink;
+		AChara := @TClientLink(AClient.Data).CharacterLink;
 
 		Found := False;
-		if NOT Assigned(AChara) then
+		if NOT Assigned(AChara^) then
 		begin
 			for ClientBaseIndex := (Length(CodeBase) -1) downto 0 do
 			begin //Go through all the client-bases w/ packets
@@ -581,15 +584,15 @@ Begin
 		end else begin
 			if AChara.ClientVersion <> 0 then
 			begin
-				if not SearchPacketListing(AChara, AClient, ABuffer, AChara.ClientVersion, PacketID) then
+				if not SearchPacketListing(AChara^, AClient, ABuffer, AChara.ClientVersion, PacketID) then
 				begin //look for
-					if NOT SearchPacketListing(AChara, AClient, ABuffer, 0, PacketID) then
+					if NOT SearchPacketListing(AChara^, AClient, ABuffer, 0, PacketID) then
 					begin
 						Exit; //try the older
 					end;
 				end;
 			end
-			else if NOT SearchPacketListing(AChara, AClient, ABuffer, 0, PacketID) then
+			else if NOT SearchPacketListing(AChara^, AClient, ABuffer, 0, PacketID) then
 			begin //since it's older, use that
 				Exit;
 			end;

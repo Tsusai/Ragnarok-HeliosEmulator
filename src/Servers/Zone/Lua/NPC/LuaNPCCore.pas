@@ -3,43 +3,60 @@ unit LuaNPCCore;
 interface
 
 uses
+	Character,
 	LuaCoreRoutines;
 
-	procedure PrepLuaForNPCScripts(ALua : TLua; CharaID : LongWord = 0);
-	procedure SetCharaIDToLua(ALua : TLua; CharaID : LongWord);
-	function GetCharaIDFromLua(ALua : TLua) : LongWord;
+	procedure RunLuaNPCScript(
+		var AChara : TCharacter;
+		const LuaFunc : string
+	);
+	procedure SetCharaToLua(var AChara : TCharacter);
+	function GetCharaFromLua(var ALua : TLua) : TCharacter;
 
 implementation
 uses
+	Main,
 	LuaPas,
 	LuaNPCCommands;
 
 
-//Takes the passed Lua and applicable character id, and
-//loads the registers our delphi functions into it.
-procedure PrepLuaForNPCScripts(ALua : TLua; CharaID : LongWord = 0);
+procedure RunLuaNPCScript(
+	var AChara : TCharacter;
+	const LuaFunc : string
+);
 begin
-	//Register our npc commands
-	LoadNPCCommands(ALua);
-	//Push character ID into the global variables.
-	SetCharaIDToLua(ALua,CharaID)
+	//Set the player's lua thread
+	MakeLuaThread(MainProc.ZoneServer.NPCLua,AChara.LuaInfo);
+	//Set the character pointer to the global list
+	SetCharaToLua(AChara);
+	//Get the function
+	lua_getglobal(AChara.LuaInfo.Lua,PChar(LuaFunc));
+	lua_resume(AChara.LuaInfo.Lua,0);
 end;
 
-//Pushes the Character ID onto the global array of the lua
-//This is meant so that when a character executes a script, 
-procedure SetCharaIDToLua(ALua : TLua; CharaID : LongWord);
+//Pushes the Character Pointer onto the global array of the lua
+//This is meant so that when a character executes a script, we can retrieve the TCharacter object
+procedure SetCharaToLua(var AChara : TCharacter);
 begin
-	lua_pushliteral(ALua, 'char_id'); // Push global key for char_id
-	lua_pushnumber(ALua, CharaID); // Push value for char_id
-	lua_rawset(ALua,LUA_GLOBALSINDEX); // Tell Lua to set char_id as a global var
+	lua_pushlightuserdata(AChara.LuaInfo.Lua, @AChara); // Push pointer for the character
+	lua_setglobal(AChara.LuaInfo.Lua, 'character'); // Tell Lua to set it as global
 end;
 
-//Pulls the Character ID from the lua global array.
-function GetCharaIDFromLua(ALua : TLua) : LongWord;
+//Pulls the Character object pointer from the lua global array.
+function GetCharaFromLua(var ALua : TLua) : TCharacter;
+var
+	PCharacter : ^TCharacter;
 begin
-	lua_pushliteral(ALua, 'char_id');
-	lua_rawget(ALua, LUA_GLOBALSINDEX);
-	Result := Round(lua_tonumber(ALua, -1));
+	lua_getglobal(ALua, 'character');
+	PCharacter := lua_topointer(ALua, -1);
+	if Assigned(PCharacter) then
+	begin
+		Result := PCharacter^;
+	end else
+	begin
+		Writeln('Error retrieving a valid character data pointer!!!');
+		Result := nil;
+	end;
 	lua_pop(ALua, 1);
 end;
 

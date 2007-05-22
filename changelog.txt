@@ -15,6 +15,17 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 259 -
+[2007/05/21] Tsusai - Notes/Overview: Updated a bunch of lua stuff.
+[2007/05/21] Tsusai - ZoneServer - ProcessZonePacket: Changed the AChara from
+ TCharacter to a pointer of TCharacter.  This way I can get the original character
+ data, and pass it on.
+[2007/05/21] Tsusai - LuaNPCCommands: Redid the syntax checker, not as descriptive
+ as before.  Also added npc() to add NPCs
+[2007/05/21] Tsusai - LuaNPCCore: Removed existing commands, RunLuaNPCScript, 
+ SetCharaToLua, & GetCharaFromLua
+-
+
 - Rev 258 -
 [2007/05/19] CR - Overview: Cleanup in InterServer unit.  Added class header,
  initial description of the purpose of the InterServer.  Made changes, including
