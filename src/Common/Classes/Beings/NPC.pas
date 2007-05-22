@@ -3,7 +3,8 @@ unit NPC;
 interface
 uses
 	Being,
-	Types;
+	Types,
+	Character;
 
 	
 	(*
@@ -17,32 +18,51 @@ uses
 			TItemNPC
 			TShopNPC (May not exist, may JUST be a npc 
 				command to open the shop under)
-	
+
 	*)
-	
+
 	//Non Player Character class
 	type TNPC = class(TBeing)
+		protected
+			fEnabled        : Boolean;
+			Procedure SetEnabled(AValue : Boolean);virtual;
+
 		public
-			Enabled : boolean;
 			//Dunno why they are needed, but they are here to
 			//kill compiler warnings.
 			procedure CalcMaxHP; override;
 			procedure CalcMaxSP; override;
+
 			Constructor Create;
+			Destructor	Destroy; override;
+
+			property Enabled : Boolean read fEnabled write SetEnabled;
+
+
 	end;
 
 	//Basic scripted NPC.  Has ontouch & onclick function
 	//string names.  They are filled in on creation and can
 	//only be read for executing the lua script.
 	type TScriptNPC = class(TNPC)
-		private
-			fClickFunction : string;
-			fTouchFunction : string;
+		protected
+
+			fClickFunction	: string;
+			fTouchFunction	: string;
+
+			Procedure SetEnabled(AValue : Boolean);override;
+
 		public
 			//OnTouch
-			XRadius : word;
-			YRadius : word;
-			OnTouch : boolean;
+			OnTouchXRadius : word;
+			OnTouchYRadius : word;
+			OnTouchEnabled : boolean;
+
+			procedure OnTouch(ACharacter : TCharacter);
+			procedure OnClick(ACharacter : TCharacter);
+
+			Procedure Enable;
+			Procedure Disable;
 
 			//Properties for lua function names
 			property ClickFunction : string read fClickFunction;
@@ -53,6 +73,7 @@ uses
 				ClickFunc : string = '';
 				TouchFunc : string = ''
 			);
+			destructor Destroy();override;
 	end;
 
 	//Subclass of TScriptNPC, contains destination map and point, and
@@ -74,6 +95,11 @@ uses
 	end;
 
 implementation
+uses
+	LuaNPCCore,
+	Main,
+	Map,
+	OnTouchCellEvent;
 
 //Start NPC IDs at 100K
 const NPCIDBase = 100000;
@@ -83,8 +109,15 @@ var
 
 constructor TNPC.Create;
 begin
+	inherited;
 	ID := NowNPCID;
 	Inc(NowNPCID);
+end;
+
+destructor TNPC.Destroy;
+begin
+	//TODO
+	inherited;
 end;
 
 procedure TNPC.CalcMaxHP;
@@ -99,6 +132,13 @@ begin
 	MaxHP := HP;
 end;
 
+Procedure TNPC.SetEnabled(AValue: Boolean);
+begin
+	fEnabled := AValue;
+end;
+
+
+
 constructor TScriptNPC.Create(
 	ClickFunc : string = '';
 	TouchFunc : string = ''
@@ -108,6 +148,118 @@ begin
 	fClickFunction := ClickFunc;
 	fTouchFunction := TouchFunc;
 end;
+
+destructor TScriptNPC.Destroy;
+begin
+	//TODO
+	inherited;
+end;
+
+procedure TScriptNPC.OnTouch(ACharacter : TCharacter);
+begin
+	if TouchFunction <> '' then
+	begin
+  	RunLuaNPCScript(ACharacter, ClickFunction);
+	end;
+end;
+
+procedure TScriptNPC.OnClick(ACharacter : TCharacter);
+begin
+	if ClickFunction <> '' then
+	begin
+		RunLuaNPCScript(ACharacter, ClickFunction);
+	end;
+end;
+
+Procedure TScriptNPC.Enable;
+var
+	AMap						: TMap;
+	XIndex					: Integer;
+	YIndex					: Integer;
+	AnOnTouchEvent	: TOnTouchCellEvent;
+begin
+	fEnabled := TRUE;
+	//if we're not already enabled and ontouch is enabled...
+	if (NOT Enabled) AND OnTouchEnabled then
+	begin
+		//get our map.
+		AMap := TMap(MapPointer);
+		//make sure our ontouch coordinates are in the map's bounds.
+		if ((Position.X + OnTouchXRadius) < AMap.Size.X) AND
+			 ((Position.Y + OnTouchYRadius) < AMap.Size.Y) AND
+			 ((Position.X - OnTouchXRadius) > 0) AND
+			 ((Position.Y - OnTouchYRadius) > 0) then
+		begin
+			//loop through our ontouch area
+			for XIndex := (Position.X-OnTouchXRadius) to (Position.X + OnTouchXRadius) do
+			begin
+				for YIndex := (Position.Y-OnTouchYRadius) to (Position.Y + OnTouchYRadius) do
+				begin
+        	//add our ontouch events
+        	AnOnTouchEvent := TOnTouchCellEvent.Create(self);
+					AMap.Cell[XIndex][YIndex].Beings.AddObject(0, AnOnTouchEvent);
+        end;
+      end;
+		end;
+	end;
+end;
+
+Procedure TScriptNPC.Disable;
+var
+	AMap						: TMap;
+	XIndex					: Integer;
+	YIndex					: Integer;
+	Index						: Integer;
+	AnObject				: TObject;
+begin
+	fEnabled := FALSE;
+	//If this npc has been enabled and ontouch is enabled...
+	if (Enabled) AND OnTouchEnabled then
+	begin
+		//Get our map.
+		AMap := TMap(MapPointer);
+		//Loop through our ontouch area.
+		for XIndex := (Position.X-OnTouchXRadius) to (Position.X + OnTouchXRadius) do
+		begin
+			for YIndex := (Position.Y-OnTouchYRadius) to (Position.Y + OnTouchYRadius) do
+			begin
+				//loop through our beings list
+				for Index := AMap.Cell[XIndex][YIndex].Beings.Count - 1 downto 0 do
+				begin
+					//get our object
+					AnObject := AMap.Cell[XIndex][YIndex].Beings.Objects[Index];
+					//check to see if our object is an ontouch event
+					if AnObject is TOnTouchCellEvent then
+					begin
+						//since it is, is it this object's cell event?
+						if TOnTouchCellEvent(AnObject).ScriptNPC = self then
+						begin
+							//since it is, free and delete.
+							AnObject.Free;
+							AMap.Cell[XIndex][YIndex].Beings.Delete(Index);
+            end;
+          end;
+        end;
+			end;
+		end;
+	end;
+end;
+
+Procedure TScriptNPC.SetEnabled(AValue: Boolean);
+begin
+	if AValue <> fEnabled then
+	begin
+		Inherited;
+		if fEnabled then
+		begin
+			Enable;
+		end else
+		begin
+			Disable;
+    end;
+  end;
+end;
+
 
 constructor TWarpNPC.Create(
 	TouchFunc : string = ''

@@ -106,8 +106,8 @@ begin
 		ANPC.Position :=
 			Point(lua_tointeger(ALua,4) , lua_tointeger(ALua,6));
 		ANPC.Direction := lua_tointeger(ALua,6);
-		ANPC.XRadius := lua_tointeger(ALua,7);
-		ANPC.YRadius := lua_tointeger(ALua,8);
+		ANPC.OnTouchXRadius := lua_tointeger(ALua,7);
+		ANPC.OnTouchYRadius := lua_tointeger(ALua,8);
 		MainProc.ZoneServer.NPCList.AddObject(ANPC.ID,ANPC);
 	end;
 	Result := 0;
@@ -152,8 +152,8 @@ begin
 			lua_tointeger(ALua,3),
 			lua_tointeger(ALua,4)
 		);
-	AWarpNPC.XRadius := lua_tointeger(ALua,5);
-	AWarpNPC.YRadius := lua_tointeger(ALua,6);
+	AWarpNPC.OnTouchXRadius := lua_tointeger(ALua,5);
+	AWarpNPC.OnTouchYRadius := lua_tointeger(ALua,6);
 	MainProc.ZoneServer.NPCList.AddObject(AWarpNPC.ID,AWarpNPC);
 end;
 

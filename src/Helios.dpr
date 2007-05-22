@@ -125,6 +125,7 @@ compile for linux, at the same time*}
 	DelayDisconnectEvent in 'Common\Classes\Events\DelayDisconnectEvent.pas',
 	MovementEvent in 'Common\Classes\Events\MovementEvent.pas',
 	CharacterEventThread in 'Common\Classes\Events\CharacterEventThread.pas',
+	OnTouchCellEvent in 'Common\Classes\Events\OnTouchCellEvent.pas',
 
 	//Database
 	Database in 'Common\Classes\Database\Database.pas',
@@ -247,6 +248,7 @@ compile for linux, at the same time*}
 	DelayDisconnectEvent in 'Common/Classes/Events/DelayDisconnectEvent.pas',
 	MovementEvent in 'Common/Classes/Events/MovementEvent.pas',
 	CharacterEventThread in 'Common/Classes/Events/CharacterEventThread.pas',
+	OnTouchCellEvent in 'Common/Classes/Events/OnTouchCellEvent.pas',
 
 	//Database
 	Database in 'Common/Classes/Database/Database.pas',

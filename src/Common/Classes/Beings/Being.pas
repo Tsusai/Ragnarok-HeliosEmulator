@@ -238,7 +238,8 @@ uses
 	Main,
 	MovementEvent,
 	DelayDisconnectEvent,
-	ZoneSend
+	ZoneSend,
+	OnTouchCellEvent
 	{Third Party}
 	//none
 	;
@@ -273,6 +274,7 @@ Revisions:
 Procedure TBeing.Walk;
 Var
 	spd        : Word;
+	Index			 : Integer;
 	AMoveEvent : TMovementEvent;
 	OldPt      : TPoint;
 	idxY       : SmallInt;
@@ -486,6 +488,15 @@ Begin
 		begin
 			PathIndex := Path.Count -1;
 		end;
+
+		//Check for ontouch events.
+		for Index := MapInfo.Cell[Position.X, Position.Y].Beings.Count-1 downto 0 do
+		begin
+			if MapInfo.Cell[Position.X, Position.Y].Beings.Objects[Index] is TOnTouchCellEvent then
+			begin
+				TOnTouchCellEvent(MapInfo.Cell[Position.X, Position.Y].Beings[Index]).Execute(TCharacter(self));
+			end;
+    end;
 	end;
 
 	if (PathIndex = Path.Count - 1) then

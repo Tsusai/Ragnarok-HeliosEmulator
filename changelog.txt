@@ -15,6 +15,16 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 260 -
+[2007/05/22] RaX - Overview : Added OnTouch to TScriptNPC.
+[2007/05/22] RaX - TScriptNPC : Added Enable/Disable
+[2007/05/22] RaX - TNPC : Changed Enabled to a property.
+[2007/05/22] RaX - TBeing: Modified .Walk to check for OnTouchEvents and execute
+ them.
+[2007/05/22] RaX - Added TOnTouchCellEvent, an event object which resides in the
+ currently named Beings intlist32 in TMap.Cell[x][y].Beings (Possible rename to objects?)
+-
+
 - Rev 259 -
 [2007/05/21] Tsusai - Notes/Overview: Updated a bunch of lua stuff.
 [2007/05/21] Tsusai - ZoneServer - ProcessZonePacket: Changed the AChara from
