@@ -84,6 +84,8 @@ compile for linux, at the same time*}
 
 	//InterServer
 	InterServer in 'Servers\Inter\InterServer.pas',
+	InterSend in  'Servers\Inter\InterSend.pas',
+	InterRecv in  'Servers\Inter\InterRecv.pas',
 
 	//Zone Server
 	ZoneCharaCommunication in 'Servers\Zone\ZoneCharaCommunication.pas',
@@ -207,6 +209,8 @@ compile for linux, at the same time*}
 
 	//InterServer
 	InterServer in 'Servers/Inter/InterServer.pas',
+	InterSend in  'Servers/Inter/InterSend.pas',
+	InterRecv in  'Servers/Inter/InterRecv.pas',
 
 	//Zone Server
 	ZoneCharaCommunication in 'Servers/Zone/ZoneCharaCommunication.pas',

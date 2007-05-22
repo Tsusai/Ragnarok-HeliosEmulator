@@ -15,6 +15,17 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 261 -
+[2007/05/22] RaX - Overview : Broke Inter Server into the same design (*Server, *Send, *Recv)
+ as the zone server.
+[2007/05/22] RaX - Updated header in InterServer to reflect all it does.
+[2007/05/22] RaX - Moved send routines from interserver.pas into intersend.pas
+[2007/05/22] RaX - Moved Recv routines from interserver.pas into interrecv.pas
+[2007/05/22] RaX - Updated uses in all 3 files.
+[2007/05/22] RaX - Added InterSend.pas
+[2007/05/22] RaX - Added InterRecv.pas
+-
+
 - Rev 260 -
 [2007/05/22] RaX - Overview : Added OnTouch to TScriptNPC.
 [2007/05/22] RaX - TScriptNPC : Added Enable/Disable
