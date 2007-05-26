@@ -21,7 +21,6 @@ interface
 
 uses
 	{RTL/VCL}
-	SysUtils,
 	Types,
 	{Project}
 	Being,
@@ -75,7 +74,7 @@ uses
 		AClient : TIdContext
 	);
 	procedure ZoneUpdateDirection(
-		const Who:TCharacter;
+		const Who:TBeing;
 		AClient : TIdContext
 
 	);
@@ -100,11 +99,13 @@ implementation
 uses
 	{RTL/VCL}
 	Math,
-	WinLinux,
+	SysUtils,
 	{Project}
 	BufferIO,
+	GameConstants,
 	Main,
-	TCPServerRoutines
+	TCPServerRoutines,
+	WinLinux
 	{3rd Party}
 	//none
 	;
@@ -294,6 +295,8 @@ uses
 //  Changes -
 //    March 18th, 2007 - Aeomin - Created
 //		May 1st, 2007 - Tsusai - Added const to the parameters
+//		May 25th, 2007 - Tsusai - Removed ABeing, changed to
+//			APerson, and added TCharacter conditionals
 //------------------------------------------------------------------------------
 procedure SendAreaChat(
 	const Chat				: String;
@@ -302,7 +305,7 @@ procedure SendAreaChat(
 );
 var
 	OutBuffer : TBuffer;
-	ABeing		: TBeing;
+	APerson   : TCharacter;
 	idxY			: SmallInt;
 	idxX			: SmallInt;
 	BeingIdx	: integer;
@@ -314,8 +317,12 @@ begin
 		begin
 			for BeingIdx := ACharacter.MapInfo.Cell[idxX,idxY].Beings.Count - 1 downto 0 do
 			begin
-				ABeing := ACharacter.MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
-				if ABeing = ACharacter then
+				if not (ACharacter.MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] is TCharacter) then
+				begin
+					Continue;
+				end;
+				APerson := ACharacter.MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TCharacter;
+				if APerson = ACharacter then
 				begin
 					ZoneSendCharacterMessage(ACharacter, Chat);
 				end else
@@ -324,7 +331,7 @@ begin
 					WriteBufferWord(2, Length+9, OutBuffer);
 					WriteBufferLongWord(4, ACharacter.ID, OutBuffer);
 					WriteBufferString(8, Chat+#0, Length+1, OutBuffer);
-					Sendbuffer(TCharacter(ABeing).ClientInfo, OutBuffer, Length+9);
+					Sendbuffer(APerson.ClientInfo, OutBuffer, Length+9);
 				end;
 			end;
 		end;
@@ -432,6 +439,7 @@ end;
 //    March 23th, 2007 - Aeomin - Renamed from ZoneSendChar to ZoneSendBeing
 //                                and support for Npc/Mob etc
 //		May 1st, 2007 - Tsusai - Added const to the parameters
+//		May 25th, 2007 - Tsusai - Invisible npcs aren't sent
 //------------------------------------------------------------------------------
 	procedure ZoneSendBeing(
 		const Who:TBeing;
@@ -442,6 +450,10 @@ end;
 		ReplyBuffer : TBuffer;
 		Chara	    : TCharacter;
 	begin
+		if Who.JID = NPC_INVISIBLE then
+		begin
+			exit;
+		end;
 		//Old Packet Version
 		FillChar(ReplyBuffer,54,0);
 		if Logon then
@@ -588,7 +600,7 @@ end;
 //		May 1st, 2007 - Tsusai - Added const to the parameters
 //------------------------------------------------------------------------------
 procedure ZoneUpdateDirection(
-	Const Who:TCharacter;
+	Const Who:TBeing;
 	AClient : TIdContext
 );
 var
@@ -715,6 +727,7 @@ end;
 //  Changes -
 //    April 26th, 2007 - RaX - Created.
 //		May 1st, 2007 - Tsusai - Renamed, and modified parameters recieved.
+//		May 25th, 2007 - Tsusai - Removes player from current cell
 //------------------------------------------------------------------------------
 Procedure ZoneSendWarp(
 	const ACharacter : TCharacter;
@@ -728,11 +741,21 @@ var
 	MapNameSize : Word;
 	ClientIPSize : Word;
 
+procedure RemoveFromList;
+begin
+	with ACharacter do
+	begin
+		MapInfo.Cell[ACharacter.Position.X, Position.Y].Beings.Delete(
+		MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(ACharacter));
+	end;
+end;
+
 begin
 	TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	if Word(TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(MapName)) =
 		 MainProc.ZoneServer.Options.ID then
 	begin
+		RemoveFromList;
 		ACharacter.Map := MapName;
 		ACharacter.Position := Point(X,Y);
 		WriteBufferWord(0, $0091, OutBuffer);
@@ -740,7 +763,6 @@ begin
 		WriteBufferWord(18, X, OutBuffer);
 		WriteBufferWord(20, Y, OutBuffer);
 		SendBuffer(ACharacter.ClientInfo, OutBuffer, 22);
-
 	end else
 	begin
 		MapNameSize := Length(MapName);

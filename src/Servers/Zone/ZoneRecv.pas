@@ -161,6 +161,7 @@ uses
 	Map,
 	MapTypes,
 	MovementEvent,
+	NPC,
 	TCPServerRoutines,
 	ZoneSend,
 	ZoneServer,
@@ -227,6 +228,8 @@ uses
 //    January 18th, 2007 - RaX - Created Header;
 //    April 10th, 2007 - Aeomin - Added SendZoneCharaLogon.
 //    April 12th, 2007 - Aeomin - Append check to disallow 0 of LoginKey
+//    May 25th, 2007 - Tsusai - Removed Mapload. Wrong spot for it.  Added
+//		the zone increase here.
 //------------------------------------------------------------------------------
 	procedure MapConnect(
 		const Version : Integer;
@@ -243,7 +246,6 @@ uses
 		AnAccount   : TAccount;
 		ACharacter  : TCharacter;
 		OutBuffer   : Tbuffer; //temp
-		MapIndex    : Integer;
 	begin
 		AccountID      := BufferReadLongWord(ReadPts[0], Buffer);
 		CharacterID    := BufferReadLongWord(ReadPts[1], Buffer);
@@ -277,21 +279,12 @@ uses
 					ACharacter.Online  := 1;
 					MainProc.ZoneServer.CharacterList.Add(ACharacter);
 
-					//Load map cells if they are not already loaded
-					MapIndex := MainProc.ZoneServer.MapList.IndexOf(ACharacter.Map);
-					if MapIndex > -1 then
-					begin
-						if MainProc.ZoneServer.MapList[MapIndex].State = UNLOADED then
-						begin
-							MainProc.ZoneServer.MapList[MapIndex].Load;
-						end;
-					end;
-
 					SendZoneCharaLogon(MainProc.ZoneServer.ToCharaTCPClient, ACharacter);
 
 					SendPadding(ACharacter.ClientInfo);
 
 					ZoneSendMapConnectReply(ACharacter);
+					SendZoneCharaIncrease(MainProc.ZoneServer.ToCharaTCPClient,MainProc.ZoneServer);
 
 					//Friendslist placeholder
 					WriteBufferWord(0, $0201, OutBuffer);
@@ -319,6 +312,7 @@ uses
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header;
 //    March 30th, 2007 - Aeomin - Move SendZoneCharaIncrease to here.
+//    May 25th, 2007 - Tsusai - Moved MapLoad here, removed Zone increase.
 //------------------------------------------------------------------------------
 	Procedure ShowMap(
 		var AChara  : TCharacter;
@@ -328,9 +322,12 @@ uses
 	var
 		OutBuffer : TBuffer;
 		AMap : TMap;
-		MapIndex : Integer;
+		MapIndex    : Integer;
+		NPCIndex    : Integer;
+		AnNPC       : TNPC;
 	Begin
-		SendZoneCharaIncrease(MainProc.ZoneServer.ToCharaTCPClient,MainProc.ZoneServer);
+		AChara.EventList.Clear;
+		//Load map cells if they are not already loaded
 		MapIndex := MainProc.ZoneServer.MapList.IndexOf(AChara.Map);
 		if MapIndex > -1 then
 		begin
@@ -338,57 +335,68 @@ uses
 			begin
 				MainProc.ZoneServer.MapList[MapIndex].Load;
 			end;
-		end;
-		AMap := MainProc.ZoneServer.MapList[MapIndex];
-		AChara.MapInfo := AMap;
-
-
-		AChara.OnTouchIDs.Clear;
-
-		//Update character options
-		//Clear all vending/trading/etc id storages.
-		//Clear some possible events from the event list.
-
-
-		if (AChara.HP = 0) then
-		begin
-			if ((AChara.JID = JOB_NOVICE) or
-				(AChara.JID = HJOB_HIGH_NOVICE) or
-				(AChara.JID = HJOB_BABY) {OR
-			 AChara can fully recover (Osiris card?) }) then
+			AMap := MainProc.ZoneServer.MapList[MapIndex];
+			AChara.MapInfo := AMap;
+			AChara.MapPointer := AMap;
+			//Enable all npcs on this map.
+			for NPCIndex := 0 to MainProc.ZoneServer.NPCList.Count -1 do
 			begin
-				AChara.CalcMaxHP;
-				AChara.HP := AChara.MaxHP;
-				AChara.SP := AChara.MaxSP;
-			end else begin
-				AChara.HP := 1;
-				AChara.SP := 1;
+				AnNPC := TNPC(MainProc.ZoneServer.NPCList.Objects[NPCIndex]);
+				if AnNPC.Map = MainProc.ZoneServer.MapList[MapIndex].Name then
+				begin
+					MainProc.ZoneServer.MapList[MapIndex].Cell[AnNPC.Position.X][AnNPC.Position.Y].Beings.AddObject(AnNPC.ID, AnNPC);
+					AnNPC.MapPointer := MainProc.ZoneServer.MapList[MapIndex];
+					AnNPC.Enabled := true;
+				end;
 			end;
+
+			AChara.OnTouchIDs.Clear;
+
+			//Update character options
+			//Clear all vending/trading/etc id storages.
+			//Clear some possible events from the event list.
+
+
+			if (AChara.HP = 0) then
+			begin
+				if ((AChara.JID = JOB_NOVICE) or
+					(AChara.JID = HJOB_HIGH_NOVICE) or
+					(AChara.JID = HJOB_BABY) {OR
+				 AChara can fully recover (Osiris card?) }) then
+			begin
+					AChara.CalcMaxHP;
+					AChara.HP := AChara.MaxHP;
+					AChara.SP := AChara.MaxSP;
+				end else begin
+					AChara.HP := 1;
+					AChara.SP := 1;
+				end;
 		end;
 
-		//skilllist placeholder
-		WriteBufferWord(0, $010F, OutBuffer);
-		WriteBufferWord(2, 4, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
+			//skilllist placeholder
+			WriteBufferWord(0, $010F, OutBuffer);
+			WriteBufferWord(2, 4, OutBuffer);
+			SendBuffer(AChara.ClientInfo, OutBuffer, 4);
 
-		AChara.SendCharacterStats;
+			AChara.SendCharacterStats;
 
-		//Inventory Placeholder
-		WriteBufferWord(0, $00a3, OutBuffer);
-		WriteBufferWord(2, 4, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
-		//Equip Placeholder
-		WriteBufferWord(0, $00a4, OutBuffer);
-		WriteBufferWord(2, 4, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
-		//Arrow Placeholder
-		WriteBufferWord(0, $013c, OutBuffer);
-		WriteBufferWord(2, 0, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($013c,AChara.ClientVersion));
-		//Weather updates
-		//Various other tweaks
-		AChara.ShowTeleportIn;
-		AMap.Cell[AChara.Position.X][AChara.Position.Y].Beings.AddObject(AChara.ID,AChara);
+			//Inventory Placeholder
+			WriteBufferWord(0, $00a3, OutBuffer);
+			WriteBufferWord(2, 4, OutBuffer);
+			SendBuffer(AChara.ClientInfo, OutBuffer, 4);
+			//Equip Placeholder
+			WriteBufferWord(0, $00a4, OutBuffer);
+			WriteBufferWord(2, 4, OutBuffer);
+			SendBuffer(AChara.ClientInfo, OutBuffer, 4);
+			//Arrow Placeholder
+			WriteBufferWord(0, $013c, OutBuffer);
+			WriteBufferWord(2, 0, OutBuffer);
+			SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($013c,AChara.ClientVersion));
+			//Weather updates
+			//Various other tweaks
+			AChara.ShowTeleportIn;
+			AMap.Cell[AChara.Position.X][AChara.Position.Y].Beings.AddObject(AChara.ID,AChara);
+		end;
 	end;//ShowMap
 //------------------------------------------------------------------------------
 
@@ -607,7 +615,7 @@ var
 	ChatLength	: Word;
 	Chat				: String;
 	TempChat		: String;
-  CommandID   : Word;
+	CommandID   : Word;
 begin
 		ChatLength	:= BufferReadWord(ReadPts[0], InBuffer)-4;
 		Chat				:= BufferReadString(ReadPts[1], ChatLength, InBuffer);
@@ -618,8 +626,8 @@ begin
 		//We then check if it is a command.
 		if MainProc.ZoneServer.Commands.IsCommand(TempChat) then
 		begin
-      CommandID := MainProc.ZoneServer.Commands.GetCommandID(
-                    MainProc.ZoneServer.Commands.GetCommandName(TempChat)
+			CommandID := MainProc.ZoneServer.Commands.GetCommandID(
+										MainProc.ZoneServer.Commands.GetCommandName(TempChat)
 									 );
 			//if it is a command, we check the account's access level to see if it is
 			//able to use the gm command.
@@ -889,7 +897,11 @@ begin
 	MapNameLength := BufferReadWord(18, InBuffer);
 	MapName				:= BufferReadString(20, MapNameLength, InBuffer);
 	ACharacter		:= MainProc.ZoneServer.CharacterList.Items[MainProc.ZoneServer.CharacterList.IndexOf(CharacterID)];
-
+	with ACharacter do
+	begin
+		MapInfo.Cell[ACharacter.Position.X, Position.Y].Beings.Delete(
+		MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(ACharacter));
+	end;
 	ACharacter.Map := MapName;
 	ACharacter.Position := Point(X,Y);
 

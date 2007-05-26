@@ -15,6 +15,23 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 268 -
+[2007/05/25] Tsusai - Notes/Overview: Zone Updates.
+[2007/05/25] Tsusai - ZoneRecv: Moved things around a bit.  Moved maploading back
+ into ShowMap, and moved the Zone count increase from ShowMap into MapConnect.
+[2007/05/25] Tsusai - ZoneRecv -RecvWarpRequestReplyFromInter: Removes player from 
+ current cell.
+[2007/05/25] Tsusai - ZoneSend: Cleaned up uses
+[2007/05/25] Tsusai - ZoneSend - ZoneUpdateDirection: Changed TBeing to TCharacter.
+[2007/05/25] Tsusai - ZoneSend - SendAreaChat: Removed ABeing, changed to APerson, 
+ and added TCharacter conditionals.
+[2007/05/25] Tsusai - ZoneSend - ZoneSendBeing: Will not send information on 
+ hidden npcs.
+[2007/05/25] Tsusai - ZoneSend - ZoneUpdateDirection: Changed TCharacter to TBeing.
+[2007/05/25] Tsusai - ZoneSend - ZoneSendWarp: removes player from cell (same zone
+ warp)
+-
+
 - Rev 267 -
 [2007/05/25] Tsusai - Notes/Overview: Lua Updates
 [2007/05/25] Tsusai - LuaCoreRoutines - MakeLuaThread: Finally got it to work
