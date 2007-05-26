@@ -6,13 +6,11 @@ uses
 	Character;
 
 type
-	TOnTouchCellEvent = class(TObject)
+	TOnTouchCellEvent = class
 		protected
-
-
+			fScriptNPC : TScriptNPC;
 		public
-			ScriptNPC : TScriptNPC;
-
+			property ScriptNPC : TScriptNPC read fScriptNPC;
 			Constructor Create(AScriptNPC : TScriptNPC);
 			Procedure Execute(ACharacter : TCharacter);
 	end;
@@ -21,11 +19,11 @@ implementation
 	Constructor TOnTouchCellEvent.Create(AScriptNPC : TScriptNPC);
 	begin
 		inherited Create;
-		ScriptNPC := AScriptNPC;
+		fScriptNPC := AScriptNPC;
 	end;
 
 	Procedure TOnTouchCellEvent.Execute(ACharacter : TCharacter);
 	begin
-		ScriptNPC.OnTouch(ACharacter);
-  end;
+		fScriptNPC.OnTouch(ACharacter);
+	end;
 end.
