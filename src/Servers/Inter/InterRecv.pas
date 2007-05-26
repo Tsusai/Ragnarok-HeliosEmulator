@@ -17,8 +17,6 @@ interface
 
 uses
 	{RTL/VCL}
-	Classes,
-
 	{Project}
 	PacketTypes,
 
@@ -48,9 +46,8 @@ implementation
 
 uses
 	{RTL/VCL}
-
+	Classes,
 	{Project}
-	//none
 	BufferIO,
 	Character,
 

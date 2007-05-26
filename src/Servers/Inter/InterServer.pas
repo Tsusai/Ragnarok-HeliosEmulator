@@ -159,7 +159,6 @@ uses
 	Main,
 	TCPServerRoutines,
 	ZoneInterCommunication,
-	InterSend,
 	InterRecv
 	{3rd Party}
 	//none

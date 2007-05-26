@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 266 -
+[2007/05/25] Tsusai - Notes/Overview: Fixed USES in the following:
+ ZoneServer, InterServer, InterRecv.
+-
+
 - Rev 265 -
 [2007/05/25] Tsusai - Being - TBeing.Walk: Fixed The ontouch event firing, due
  to an array typo.  Also added sets the character to "standing" so the walk
