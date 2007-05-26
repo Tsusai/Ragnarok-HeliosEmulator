@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 264 -
+[2007/05/25] Tsusai - Added IS TCHARACTER conditionals to all routines (We were
+ sending chat, and various packets to NPCs)
+-
+
 - Rev 263 -
 [2007/05/25] Tsusai - OnTouchCellEvent : made the ScriptNPC protected, and added
  a readonly property.

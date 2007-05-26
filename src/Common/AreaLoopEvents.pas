@@ -80,6 +80,7 @@ Revisions:
 [2007/03/22] Aeomin - Created Header
 [2007/03/28] CR - Modified Comment Header, eliminated with clause.  Reduced
 	parameter list, and made all constant, to follow new TLoopCall declaration.
+[2007/05/25] Tsusai - Added IS TCHARACTER conditionals	
 [yyyy/mm/dd] <Author> - <Comment>
 *-----------------------------------------------------------------------------*)
 Procedure ShowBeingWalk(
@@ -89,12 +90,15 @@ Procedure ShowBeingWalk(
 		ABeing        : TBeing
 	);
 Begin
-	ZoneWalkingBeing(
-		ACurrentBeing,
-		ACurrentBeing.Path[ACurrentBeing.Path.Count -1],
-		ACurrentBeing.Position,
-		TCharacter(ABeing).ClientInfo
-	);
+	if ABeing is TCharacter then
+	begin
+		ZoneWalkingBeing(
+			ACurrentBeing,
+			ACurrentBeing.Path[ACurrentBeing.Path.Count -1],
+			ACurrentBeing.Position,
+			TCharacter(ABeing).ClientInfo
+		);
+	end;
 End; (* Proc ShowBeingWalk
 *-----------------------------------------------------------------------------*)
 
@@ -114,6 +118,7 @@ Revisions:
 [2007/03/22] Aeomin - Created Header
 [2007/03/28] CR - Modified Comment Header.  Reduced parameter list, and made
 	all constant, to follow new TLoopCall declaration.
+[2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
 Procedure ShowTeleIn(
 	const
@@ -122,8 +127,14 @@ Procedure ShowTeleIn(
 		ABeing        : TBeing
 	);
 Begin
-	ZoneSendBeing(ACurrentBeing, TCharacter(ABeing).ClientInfo, True);
-	ZoneSendbeing(ABeing, TCharacter(ACurrentBeing).ClientInfo);
+	if ABeing is TCharacter then
+	begin
+		ZoneSendBeing(ACurrentBeing, TCharacter(ABeing).ClientInfo, True);
+	end;
+	if ACurrentBeing is TCharacter then
+	begin
+		ZoneSendBeing(ABeing, TCharacter(ACurrentBeing).ClientInfo);
+	end;
 End; (* Proc ShowTeleIn
 *-----------------------------------------------------------------------------*)
 
@@ -142,6 +153,7 @@ Revisions:
 [2007/03/22] Aeomin - Created Header
 [2007/03/28] CR - Modified Comment Header.  Reduced parameter list, and made
 	all constant, to follow new TLoopCall declaration.
+[2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
 Procedure TeleOut(
 	const
@@ -150,7 +162,10 @@ Procedure TeleOut(
 		ABeing        : TBeing
 	);
 Begin
-	ZoneDisappearBeing(ACurrentBeing, TCharacter(Abeing).ClientInfo, 2);
+	if ABeing is TCharacter then
+	begin
+		ZoneDisappearBeing(ACurrentBeing, TCharacter(Abeing).ClientInfo, 2);
+	end;
 End; (* Proc TeleOut
 *-----------------------------------------------------------------------------*)
 
@@ -170,6 +185,7 @@ Revisions:
 [2007/03/22] Aeomin - Created Header
 [2007/03/28] CR - Modified Comment Header.  Reduced parameter list, and made
 	all constant, to follow new TLoopCall declaration.
+[2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
 Procedure UpdateDir(
 	const
@@ -178,7 +194,10 @@ Procedure UpdateDir(
 		ABeing        : TBeing
 	);
 Begin
-	ZoneUpdateDirection(TCharacter(ACurrentBeing), TCharacter(Abeing).ClientInfo);
+	if ABeing is TCharacter then
+	begin
+		ZoneUpdateDirection(ACurrentBeing, TCharacter(Abeing).ClientInfo);
+	end;
 End; (* Proc UpdateDir
 *-----------------------------------------------------------------------------*)
 
