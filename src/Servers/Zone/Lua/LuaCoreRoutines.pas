@@ -62,14 +62,28 @@ end;
 //Takes an existing lua, and makes a new execution thread for a
 //descendant.  Also stores the parent's info so that it can
 //be deferenced and freed.
+//Also Creates a table environment with a reference to the sourcelua's global
+//functions, variables etc, so that the creation of new globals do not
+//becomed shared with the source lua or other descendant threads.
 procedure MakeLuaThread(
 	var SourceLua : TLua;
 	var DestLua   : TLuaInfo
 );
 begin
 	DestLua.Lua := lua_newthread(SourceLua);
+	lua_pushvalue(SourceLua, -1);
 	DestLua.LuaID := luaL_ref(SourceLua, LUA_REGISTRYINDEX);
 	DestLua.ParentLua := SourceLua;
+	//Create a local environment with a link to global environment via
+	//    __index metamethod
+	//This allows for thread only globals
+	lua_newtable(SourceLua);
+	lua_pushvalue(SourceLua, -1);
+	lua_setmetatable(SourceLua, -2); //Set itself as metatable
+	lua_pushvalue(SourceLua, LUA_GLOBALSINDEX);
+	lua_setfield(SourceLua, -2, '__index');
+	lua_setfenv(SourceLua, -2);
+	lua_pop(SourceLua, 1);
 end;
 
 //Initializes a brand new lua, not for descendant threads.

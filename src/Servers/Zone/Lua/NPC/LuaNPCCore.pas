@@ -11,13 +11,12 @@ uses
 		const LuaFunc : string
 	);
 	procedure SetCharaToLua(var AChara : TCharacter);
-	function GetCharaFromLua(var ALua : TLua) : TCharacter;
+	function GetCharaFromLua(var ALua : TLua; var AChara : TCharacter) : boolean;
 
 implementation
 uses
 	Main,
-	LuaPas,
-	LuaNPCCommands;
+	LuaPas;
 
 
 procedure RunLuaNPCScript(
@@ -31,7 +30,10 @@ begin
 	SetCharaToLua(AChara);
 	//Get the function
 	lua_getglobal(AChara.LuaInfo.Lua,PChar(LuaFunc));
+	//run the function
 	lua_resume(AChara.LuaInfo.Lua,0);
+	//Terminate the thread
+	TerminateLuaThread(AChara.LuaInfo);
 end;
 
 //Pushes the Character Pointer onto the global array of the lua
@@ -43,21 +45,19 @@ begin
 end;
 
 //Pulls the Character object pointer from the lua global array.
-function GetCharaFromLua(var ALua : TLua) : TCharacter;
+function GetCharaFromLua(var ALua : TLua; var AChara : TCharacter) : boolean;
 var
 	PCharacter : ^TCharacter;
 begin
+	Result := false;
 	lua_getglobal(ALua, 'character');
 	PCharacter := lua_topointer(ALua, -1);
 	if Assigned(PCharacter) then
 	begin
-		Result := PCharacter^;
-	end else
-	begin
-		Writeln('Error retrieving a valid character data pointer!!!');
-		Result := nil;
+		AChara := PCharacter^;
+		Result := true;
 	end;
-	lua_pop(ALua, 1);
+	//lua_pop(ALua, 1);
 end;
 
 end.

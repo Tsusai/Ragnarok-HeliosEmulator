@@ -15,6 +15,22 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 267 -
+[2007/05/25] Tsusai - Notes/Overview: Lua Updates
+[2007/05/25] Tsusai - LuaCoreRoutines - MakeLuaThread: Finally got it to work
+ the way I want it.  Creates a new execution thread, links to the original globals,
+ and keeps its own globals.
+[2007/05/25] Tsusai - LuaNPCCommands: Cleaned up USES, added the first real NPC
+ command, "moveto".  
+[2007/05/25] Tsusai - LuaNPCCommands - MakeNPCWarp: Forgot to add Job ID
+ assignment.  
+[2007/05/25] Tsusai - LuaNPCCore: Cleared up uses.
+[2007/05/25] Tsusai - LuaNPCCore - GetCharaFromLua: Returns a boolean function if
+ retrieval of character data was successful.
+[2007/05/25] Tsusai - LuaNPCCore - RunLuaNPCScript: Added termination of lua
+ thread.  Not sure if that is a good spot or not.  I will know soon.
+-
+
 - Rev 266 -
 [2007/05/25] Tsusai - Notes/Overview: Fixed USES in the following:
  ZoneServer, InterServer, InterRecv.

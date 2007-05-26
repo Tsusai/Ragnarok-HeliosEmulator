@@ -9,21 +9,28 @@ function LoadNPCCommands(var ALua : TLua) : boolean;
 
 implementation
 uses
-	GameConstants,
-	LuaPas,
-	NPC,
+	//RTL
+	SysUtils,
 	Types,
+	//Project
+	Character,
+	GameConstants,
+	LuaNPCCore,
+	LuaPas,
 	Main,
-	SysUtils;
+	NPC,
+	ZoneSend
+	;
 
 //Forward declarations of delphi procedures that are added to the lua engine.
 function addnpc(ALua : TLua) : integer; cdecl; forward;
 function addwarp(ALua : TLua) : integer; cdecl; forward;
 function addhiddenwarp(ALua : TLua) : integer; cdecl; forward;
+function script_moveto(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 4;
+	NPCCommandCount = 5;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -31,6 +38,7 @@ const
 		(name:'npc';func:addnpc),
 		(name:'warp';func:addwarp),
 		(name:'hiddenwarp';func:addhiddenwarp),
+		(name:'moveto';func:script_moveto),
 		(name:'print';func:lua_print)
 	);
 
@@ -147,6 +155,7 @@ begin
 	AWarpNPC := TWarpNPC.Create(lua_tostring(ALua,2));
 	AWarpNPC.Map := lua_tostring(ALua,1);
 	AWarpNPC.Name := AWarpNPC.TouchFunction;
+	AWarpNPC.JID := JID;
 	AWarpNPC.Position :=
 		Point(
 			lua_tointeger(ALua,3),
@@ -181,6 +190,35 @@ begin
 		//Make the warp
 		MakeNPCWarp(ALua,NPC_INVISIBLE);
 	end;
+end;
+
+//moveto("map",x,y)
+//Warps the character to the given destination
+function script_moveto(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+begin
+
+	if (lua_gettop(ALua) = 3) and
+		(Lua_isNonNumberString(ALua,1)) and
+		(lua_isnumber(ALua,2)) and
+		(lua_isnumber(ALua,3)) then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			ZoneSendWarp(
+				AChara,
+				lua_tostring(ALua,1),
+				lua_tointeger(ALua,2),
+				lua_tointeger(ALua,3)
+			);
+		end;
+		lua_yield(ALua,0);//end the script
+	end else
+	begin
+		luaL_error(ALua,'moveto syntax error');
+	end;
+	Result := 0;
 end;
 
 //Random usage for testing.  Will take its string and output it on
