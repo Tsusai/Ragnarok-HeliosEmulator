@@ -15,6 +15,18 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 265 -
+[2007/05/25] Tsusai - Being - TBeing.Walk: Fixed The ontouch event firing, due
+ to an array typo.  Also added sets the character to "standing" so the walk
+ routine exits properly.
+[2007/05/25] Tsusai - NPC - TScriptNPC.OnTouch: fixed caller (was executing the
+ clicking version).
+[2007/05/25] Tsusai - NPC - TScriptNPC.Enable & Disable: Fixed initial check to
+ just check for OnTouchEnabled.
+[2007/05/25] Tsusai - TWarpNPC.Create: Now automatically sets the warp npc to
+ an enabled state.
+-
+
 - Rev 264 -
 [2007/05/25] Tsusai - Added IS TCHARACTER conditionals to all routines (We were
  sending chat, and various packets to NPCs)

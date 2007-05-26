@@ -404,7 +404,7 @@ Var
 	end;
 
 Begin
-  //Setup visual radius
+	//Setup visual radius
 	Radius := MainProc.ZoneServer.Options.CharShowArea + 1;
 
 	if Self is TCharacter then
@@ -429,7 +429,7 @@ Begin
 	//Bounds are set on the for loop from -> to to prevent searching from outside
 	//the known map if the being is close to the edge or corner.
 	//In a pure situation, first two rows and last 2 rows, and first 2 columns and
-	//the last two columns are checked. 
+	//the last two columns are checked.
 	// This is how things should look on a 9x9 grid.
 	(*
 	XXXXXXXXXX
@@ -490,13 +490,18 @@ Begin
 		end;
 
 		//Check for ontouch events.
-		for Index := MapInfo.Cell[Position.X, Position.Y].Beings.Count-1 downto 0 do
+		for Index := MapInfo.Cell[Position.X][Position.Y].Beings.Count-1 downto 0 do
 		begin
-			if MapInfo.Cell[Position.X, Position.Y].Beings.Objects[Index] is TOnTouchCellEvent then
+			if MapInfo.Cell[Position.X][Position.Y].Beings.Objects[Index] is TOnTouchCellEvent then
 			begin
-				TOnTouchCellEvent(MapInfo.Cell[Position.X, Position.Y].Beings[Index]).Execute(TCharacter(self));
+				TOnTouchCellEvent(MapInfo.Cell[Position.X][Position.Y].Beings.Objects[Index]).Execute(TCharacter(Self));
+				//TOnTouchCellEvent(MapInfo.Cell[Position.X, Position.Y].Beings[Index]).Execute(TCharacter(self));
+				if Self IS TCharacter then
+				begin
+					TCharacter(Self).CharaState := charaStanding;
+				end;
 			end;
-    end;
+		end;
 	end;
 
 	if (PathIndex = Path.Count - 1) then
@@ -526,6 +531,13 @@ Begin
 		PathIndex := 0;}
 	end else
 	begin
+		if Self IS TCharacter then
+		begin
+			if TCharacter(Self).CharaState = charaStanding then
+			begin
+				exit;
+			end;
+		end;
 		//Setup first speed
 		{[2007/04/28] CR - Pardon? }
 		Inc(PathIndex);
@@ -590,11 +602,17 @@ begin
 		begin
 			for BeingIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
 			begin
-				ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
-				if (Self = ABeing) and AIgnoreCurrentBeing then Continue;
-//				if (ABeing is TNpc) and IgnoreNPC then Continue;
-				{TODO : support other than TCharacter...}
-				ALoopCall(Self, ABeing);
+				if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
+				begin
+					if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
+					begin
+						ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
+						if (Self = ABeing) and AIgnoreCurrentBeing then Continue;
+						//if (ABeing is TNPC) and IgnoreNPC then Continue;
+						{TODO : support other than TCharacter...}
+						ALoopCall(Self, ABeing);
+					end;
+				end;
 			end;
 		end;
 	end;

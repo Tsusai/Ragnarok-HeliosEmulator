@@ -3,7 +3,6 @@ unit NPC;
 interface
 uses
 	Being,
-	Types,
 	Character;
 
 	
@@ -96,6 +95,9 @@ uses
 
 implementation
 uses
+	//RTL
+	Types,
+	//Project
 	LuaNPCCore,
 	Main,
 	Map,
@@ -110,6 +112,7 @@ var
 constructor TNPC.Create;
 begin
 	inherited;
+  fEnabled  := FALSE;
 	ID := NowNPCID;
 	Inc(NowNPCID);
 end;
@@ -159,7 +162,7 @@ procedure TScriptNPC.OnTouch(ACharacter : TCharacter);
 begin
 	if TouchFunction <> '' then
 	begin
-  	RunLuaNPCScript(ACharacter, ClickFunction);
+		RunLuaNPCScript(ACharacter, TouchFunction);
 	end;
 end;
 
@@ -177,29 +180,34 @@ var
 	XIndex					: Integer;
 	YIndex					: Integer;
 	AnOnTouchEvent	: TOnTouchCellEvent;
+  MapIndex        : Integer;
 begin
 	fEnabled := TRUE;
 	//if we're not already enabled and ontouch is enabled...
-	if (NOT Enabled) AND OnTouchEnabled then
+	if OnTouchEnabled then
 	begin
 		//get our map.
-		AMap := TMap(MapPointer);
-		//make sure our ontouch coordinates are in the map's bounds.
-		if ((Position.X + OnTouchXRadius) < AMap.Size.X) AND
+    MapIndex := MainProc.ZoneServer.MapList.IndexOf(self.Map);
+    if MapIndex <> -1 then
+    begin
+		  AMap := MainProc.ZoneServer.MapList[MapIndex];
+		  //make sure our ontouch coordinates are in the map's bounds.
+		  if ((Position.X + OnTouchXRadius) < AMap.Size.X) AND
 			 ((Position.Y + OnTouchYRadius) < AMap.Size.Y) AND
 			 ((Position.X - OnTouchXRadius) > 0) AND
 			 ((Position.Y - OnTouchYRadius) > 0) then
-		begin
-			//loop through our ontouch area
-			for XIndex := (Position.X-OnTouchXRadius) to (Position.X + OnTouchXRadius) do
-			begin
-				for YIndex := (Position.Y-OnTouchYRadius) to (Position.Y + OnTouchYRadius) do
-				begin
-        	//add our ontouch events
-        	AnOnTouchEvent := TOnTouchCellEvent.Create(self);
-					AMap.Cell[XIndex][YIndex].Beings.AddObject(0, AnOnTouchEvent);
-        end;
-      end;
+		  begin
+			  //loop through our ontouch area
+			  for XIndex := (Position.X-OnTouchXRadius) to (Position.X + OnTouchXRadius) do
+			  begin
+				  for YIndex := (Position.Y-OnTouchYRadius) to (Position.Y + OnTouchYRadius) do
+				  begin
+						//add our ontouch events
+						AnOnTouchEvent := TOnTouchCellEvent.Create(self);
+						AMap.Cell[XIndex][YIndex].Beings.AddObject(0, AnOnTouchEvent);
+					end;
+				end;
+			end;
 		end;
 	end;
 end;
@@ -214,7 +222,7 @@ var
 begin
 	fEnabled := FALSE;
 	//If this npc has been enabled and ontouch is enabled...
-	if (Enabled) AND OnTouchEnabled then
+	if OnTouchEnabled then
 	begin
 		//Get our map.
 		AMap := TMap(MapPointer);
@@ -266,6 +274,7 @@ constructor TWarpNPC.Create(
 );
 begin
 	inherited Create('',TouchFunc);
+	OnTouchEnabled := true;
 end;
 
 end.
