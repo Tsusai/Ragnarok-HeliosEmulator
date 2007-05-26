@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 262 -
+[2007/05/25] Tsusai - Notes/Overview: Moved linux notes to bin folder, and updated
+ it with the full list of required libraries.
+-
+
 - Rev 261 -
 [2007/05/22] RaX - Overview : Broke Inter Server into the same design (*Server, *Send, *Recv)
  as the zone server.

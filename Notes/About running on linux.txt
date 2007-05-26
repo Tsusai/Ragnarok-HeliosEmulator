@@ -1,2 +1,0 @@
-This program requires zlib
-www.zlib.net or check your distro's packages
