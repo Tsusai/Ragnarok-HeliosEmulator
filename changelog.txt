@@ -15,6 +15,30 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 269 -
+[2007/05/27] CR - Overview: Bugfix!  Solved out 3 bugs with walking/pathing,
+ two pointed out by Tsusai and RaX while testing NPC Warps, and then the map-
+ edge errors found trying to quell the complaints about unwalkable tiles that
+ shouldn't be.
+  That said, there still remains an issue with some unwalkable tiles, while I
+ was testing this on the new1-2 map at 100,9 (as Tsusai suggested to test).
+ Situation:  the little "coves" to the left and right at the bottom, that are
+ 1x3 tiles aren't reachable.
+
+  I'm committing my changes to solve the aformentioned 3 bugs, because that
+ solves out 98% of the issues found, and now we'll have more people to test
+ and sort out that last remaining pesky problem. :P :)
+
+[2007/05/27] CR - Map TMap.GetPath: Applied 3 sets of bugfixes, two caused by
+ my algorithm tweaks, one pre-existing:
+ Mea Culpa:  Infinite Loops, and improper pathing when the mouse button is held
+ down to walk are solved.
+ Pre-existing and discovered while dealing with the rest: We failed to account
+ for map edges properly in our 16 radius search range, and this caused improper
+ coordinates to be sent for the path.  This one wasn't found right away,
+ because we weren't testing on more than the new1-1 map.
+-
+
 - Rev 268 -
 [2007/05/25] Tsusai - Notes/Overview: Zone Updates.
 [2007/05/25] Tsusai - ZoneRecv: Moved things around a bit.  Moved maploading back

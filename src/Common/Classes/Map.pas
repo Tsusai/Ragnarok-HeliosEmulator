@@ -168,6 +168,19 @@ shortest path.
 	My tests using the client and server on the same PC, always yielded individual
 	timings in the micro-second range.
 
+[2007/05/27] CR - Solved out 3 bugs with walking/pathing, two pointed out by
+	Tsusai and RaX while testing NPC Warps, and then the map-edge errors found
+	trying to quell the complaints about unwalkable tiles that shouldn't be.
+
+	That said, there still remains an issue with some unwalkable tiles, while I 
+	was testing this on the new1-2 map at 100,9 (as Tsusai suggested to test).
+	Situation:  the little "coves" to the left and right at the bottom, that are
+	1x3 tiles aren't reachable.
+
+	I'm committing my changes to solve the aformentioned 3 bugs, because that
+	solves out 98% of the issues found, and now we'll have more people to test
+	and sort out that last remaining pesky problem. :P :)
+
 --
 Revisions:
 --
@@ -189,6 +202,14 @@ Revisions:
 	cost (not incrementing it!), and with use of GetOptimalDirection, we are now
 	aiming the search toward the goal, and avoiding expensive searches that don't
 	compute to a low-cost path.
+[2007/05/27] CR - Applied 3 sets of bugfixes, two caused by my algorithm tweaks,
+	one pre-existing:
+	Mea Culpa:  Infinite Loops, and improper pathing when the mouse button is held
+	down to walk are solved.
+	Pre-existing and discovered while dealing with the rest: We failed to account 
+	for map edges properly in our 16 radius search range, and this caused improper
+	coordinates to be sent for the path.  This one wasn't found right away,
+	because we weren't testing on more than the new1-1 map.
 [yyyy/mm/dd] <Author> - <Comment>
 *-----------------------------------------------------------------------------*)
 Function TMap.GetPath(
@@ -207,7 +228,7 @@ var
 	NewFloodItem     : TFloodItem;//Created with supplied data to test if an item
 											//is valid. If it is, it is added to the floodlist
 	Index            : Integer;
-	WriteIndex       : Integer;
+//	WriteIndex       : Integer;
 
 	DirectionIndex   : SmallInt;
 	PossDir          : Byte;
@@ -349,6 +370,55 @@ var
 	end;(* GetOptimalDirection
 	*...................................*)
 
+	(*- Local Procedure .................*
+	AdjustPathOffsets
+
+	Adjusts APath coordinates iff Offset.X
+	or Offset.Y are negative.
+
+	Corrects a bug that existed with
+	path results to points less than
+	"CharClickArea" tiles from the Left and
+	Bottom map edges.
+	
+	--
+	[2007/03/24] CR - Created.
+	*...................................*)
+	procedure AdjustPathOffsets;
+	var
+		PIndex : Integer;
+		XNeg   : Boolean;
+		YNeg   : Boolean;
+	begin
+		for PIndex := 0 to (APath.Count - 1) do
+		begin
+			XNeg := (0 > Offset.X);
+			YNeg := (0 > Offset.Y);
+			if (XNeg AND YNeg) then
+			begin
+				APath[PIndex] := Point(
+					(APath[PIndex].X + Offset.X),
+					(APath[PIndex].Y + Offset.Y)
+				);
+			end
+			else if XNeg then
+			begin
+				APath[PIndex] := Point(
+					(APath[PIndex].X + Offset.X),
+					APath[PIndex].Y
+				);
+			end
+			else if YNeg then
+			begin
+				APath[PIndex] := Point(
+					APath[PIndex].X,
+					(APath[PIndex].Y + Offset.Y)
+				);
+			end;
+		end;
+	end;(* AdjustPathOffsets
+	*...................................*)
+
 Begin
 	//Initialize data
 	Result				:= FALSE;
@@ -357,6 +427,8 @@ Begin
 	AFloodItem		:= TFloodItem.Create;
 	AFloodList		:= TList.Create;
 
+	{[2007/05/25] CR - N.B: The map coordinates are zero based, so we must add
+	one to each. }
 	//grab our area from the map
 	Offset.X := EndPoint.X - CharClickArea; //get our modifiers
 	Offset.Y := EndPoint.Y - CharClickArea;
@@ -365,26 +437,37 @@ Begin
 
 	//Get the endpoint's position in AnArea, we are searching from the end to the
 	//start to emulate the client.
+	{[2007/05/25] CR - Going normal, start to end... }
 	AreaEndPoint := Point(
-		StartPoint.X - Abs(Offset.X),
-		StartPoint.Y - Abs(Offset.Y)
-	);
+		EndPoint.X - Offset.X,
+		EndPoint.Y - Offset.Y
+//		EndPoint.X - Abs(Offset.X),
+//		EndPoint.Y - Abs(Offset.Y)
+	);//
 
 	//initialize our first flood item, the start point is the endpoint that we're
 	//searching. This is to emulate the client.
-	AFloodItem.Position.X := EndPoint.X - Abs(Offset.X);
-	AFloodItem.Position.Y := EndPoint.Y - Abs(Offset.Y);
+	{[2007/05/25] CR - First Flood Item starts with Starting position, and we
+	"flood" out to EndPoint }
+	AFloodItem.Position.X := StartPoint.X - Offset.X;//
+	AFloodItem.Position.Y := StartPoint.Y - Offset.Y;//
+//	AFloodItem.Position.X := StartPoint.X - Abs(Offset.X);//
+//	AFloodItem.Position.Y := StartPoint.Y - Abs(Offset.Y);//
+	{[2007/05/25] CR - Remove starting path point -- it's the starting position. }
+	{
 	AFloodItem.Path.Add(
 		AnArea[AFloodItem.Position.X, AFloodItem.Position.Y].Position
 	);
-
+}
 	{[2007/05/06] CR - Init Cost to beat as Diagonal distance }
 	AFloodItem.Cost := AFloodItem.DiagonalCost(AreaEndPoint);
 	CostTick := AFloodItem.Cost;
 	AFloodList.Add(AFloodItem);
 
 	//While endpoint not found and still cells to check do
-	While (NOT Result) AND (NOT Done) do
+	{[2007/05/25] CR - Tricky code: CostTick > 4 covers a straight or diagonal
+	cost being "too small to path" }
+	While (NOT Result) AND (NOT Done) AND (CostTick >= 5) do
 	begin
 		//Start at end of list, and go to the beginning (so removing items is FAST)
 		Index := AFloodList.Count;
@@ -413,6 +496,8 @@ Begin
 					//decrease our direction index(remember, we started at 8 for a reason!)
 					Dec(DirectionIndex);
 
+					{[2007/05/25] CR - Tricky Code (mine!), TODO: need to comment because
+					I lost RaX here, likely others too. :( }
 					PossDir := DirectionIndex;
 					if (DirOffset > DirectionIndex) then
 					begin
@@ -421,10 +506,8 @@ Begin
 					Dec(PossDir, DirOffset);
 
 					//grab our possible position
-					PosPosition.X := AFloodItem.Position.X +
-						Directions[PossDir].X;
-					PosPosition.Y := AFloodItem.Position.Y +
-						Directions[PossDir].Y;
+					PosPosition.X := AFloodItem.Position.X + Directions[PossDir].X;
+					PosPosition.Y := AFloodItem.Position.Y + Directions[PossDir].Y;
 
 					//Make sure the new point is inside our search boundaries.
 					//AND Make sure we can move to the new point.
@@ -448,6 +531,10 @@ Begin
 						AnArea[NewFloodItem.Position.X, NewFloodItem.Position.Y].Attribute :=
 							BLOCKED_CELL;
 
+						NewFloodItem.Path.Add(
+							AnArea[PosPosition.X, PosPosition.Y].Position
+						);
+
 						//check to see if we've found the end point.
 						{[2007/05/07] CR - PointsEqual removed - doing the math local is
 						faster, even if less legible. }
@@ -457,7 +544,9 @@ Begin
 							//We've found it!
 							Result := TRUE;
 							APath.Clear;
-							for WriteIndex := (NewFloodItem.Path.Count - 1) downto 0 do
+							APath.Assign(NewFloodItem.Path);
+							AdjustPathOffsets;
+{							for WriteIndex := (NewFloodItem.Path.Count - 1) downto 0 do
 							begin
 								APath.Add(NewFloodItem.Path[WriteIndex]);
 							end;
@@ -465,12 +554,6 @@ Begin
 							that the NewFloodItem.Path starts from the destination and goes
 							to the source.  So the server never updates the character
 							position because we finish walking where we start. }
-						end else begin
-							//If we've not found it, add the new point to the list
-							//( we're searching backwards!)
-							NewFloodItem.Path.Add(
-								AnArea[PosPosition.X, PosPosition.Y].Position
-							);
 						end;
 					end;
 				end;
@@ -502,30 +585,41 @@ Begin
 End; (* Func GetPath
 *-----------------------------------------------------------------------------*)
 
-//------------------------------------------------------------------------------
-//IsBlocked()                                                     FUNCTION
-//------------------------------------------------------------------------------
-//  What it does -
-//      It figures out if a specified cell is blocked.
-//
-//  Changes -
-//    November 1st, 2006 - Tsusai - Created.
-//------------------------------------------------------------------------------
-function TMap.IsBlocked(const APoint : TPoint; AGraph : TGraph = NIL) : boolean;
+
+(*- Function ------------------------------------------------------------------*
+TMap.IsBlocked
+--------------------------------------------------------------------------------
+Overview:
+--
+	Determines if a specified cell is blocked.
+	Returns True if a blocked (impassible) tile, False if passible.
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2006/11/01] Tsusai - Created.
+[2007/05/26] CR - Altered Comment Header.  Bugfix: TGraph is a zero-based
+	2D array, thus we must offset APoint when AGraph is non Nil.  To achieve this,
+	we now use LUPoint, internally.
+*-----------------------------------------------------------------------------*)
+Function  TMap.IsBlocked(
+	const
+		APoint : TPoint;
+		AGraph : TGraph = NIL
+	) : Boolean;
 begin
 	if NOT Assigned(AGraph) then
 	begin
 		AGraph := Cell;
 	end;
-	//Assume it is not.
-	Result := False;
-	if (AGraph[APoint.X][APoint.Y].Attribute in [1,5]) OR
-		(AGraph[APoint.X][APoint.Y].ObstructionCount > 0 ) then
+
+	with AGraph[APoint.X, APoint.Y] do
 	begin
-		Result := True
+		Result := (Attribute in [1,5]) OR (ObstructionCount > 0 );
 	end;
-end;
-//------------------------------------------------------------------------------
+End; (* Func TMap.IsBlocked
+*-----------------------------------------------------------------------------*)
 
 
 (*- Function ------------------------------------------------------------------*
