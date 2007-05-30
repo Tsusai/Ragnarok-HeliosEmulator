@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 271 -
+[2007/05/29] Tsusai - Apparently my Div by 0 test survived the Ctrl-S.  Removed
+-
+
 - Rev 270 -
 [2007/05/29] Tsusai - Notes/Overview: More addons to the lua npc engine and 
  various tweaks.

@@ -344,7 +344,6 @@ begin
 	SetupCRT;
 	//Allow Helios to capture termination messages
 	SetupTerminationCapturing;
-  c:= a div b;
 	//setup our paths before anything else is done.
 	AppPath		:= ExtractFilePath(ParamStr(0));
 	ExeName		:= ExtractFileNameMod(ParamStr(0));
