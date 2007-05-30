@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 272 -
+[2007/05/29] Tsusai - LuaNPCCore - RunLuaNPCScript: Forgot to uncomment a test
+ line and remove the pcall line.
+-
+
 - Rev 271 -
 [2007/05/29] Tsusai - Apparently my Div by 0 test survived the Ctrl-S.  Removed
 -

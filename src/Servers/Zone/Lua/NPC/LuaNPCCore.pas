@@ -54,8 +54,7 @@ begin
 	//Get the function
 	lua_getglobal(AChara.LuaInfo.Lua,PChar(LuaFunc));
 	//run the function
-	//lua_resume(AChara.LuaInfo.Lua,0);
-	lua_pcall(AChara.LuaInfo.Lua,0,0,0);
+	lua_resume(AChara.LuaInfo.Lua,0);
 end;
 
 procedure ResumeLuaNPCScript(
