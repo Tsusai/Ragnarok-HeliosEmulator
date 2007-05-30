@@ -13,12 +13,14 @@ uses
 	SysUtils,
 	Types,
 	//Project
+	BufferIO,
 	Character,
 	GameConstants,
 	LuaNPCCore,
 	LuaPas,
 	Main,
 	NPC,
+	PacketTypes,
 	ZoneSend
 	;
 
@@ -27,10 +29,13 @@ function addnpc(ALua : TLua) : integer; cdecl; forward;
 function addwarp(ALua : TLua) : integer; cdecl; forward;
 function addhiddenwarp(ALua : TLua) : integer; cdecl; forward;
 function script_moveto(ALua : TLua) : integer; cdecl; forward;
+function script_dialog(ALua : TLua) : integer; cdecl; forward;
+function script_wait(ALua : TLua) : integer; cdecl; forward;
+function script_close(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 5;
+	NPCCommandCount = 8;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -39,6 +44,9 @@ const
 		(name:'warp';func:addwarp),
 		(name:'hiddenwarp';func:addhiddenwarp),
 		(name:'moveto';func:script_moveto),
+		(name:'dialog';func:script_dialog),
+		(name:'wait';func:script_wait),
+		(name:'close';func:script_close),
 		(name:'print';func:lua_print)
 	);
 
@@ -94,6 +102,7 @@ begin
 end;
 
 //[2007/04/23] Tsusai - Added result
+//[2007/05/28] Tsusai - Fixed npc point reading
 //npc("new_1-1","Bulletin Board",spr_HIDDEN_NPC,66,114,4,0,0,"new_1-1_Bulletin_Board_66114"[,"optional ontouch"])
 function addnpc(ALua : TLua) : integer; cdecl;
 var
@@ -112,7 +121,7 @@ begin
 		ANPC.Name := lua_tostring(ALua,2);
 		ANPC.JID := lua_tointeger(ALua,3);
 		ANPC.Position :=
-			Point(lua_tointeger(ALua,4) , lua_tointeger(ALua,6));
+			Point(lua_tointeger(ALua,4) , lua_tointeger(ALua,5));
 		ANPC.Direction := lua_tointeger(ALua,6);
 		ANPC.OnTouchXRadius := lua_tointeger(ALua,7);
 		ANPC.OnTouchYRadius := lua_tointeger(ALua,8);
@@ -216,9 +225,80 @@ begin
 		lua_yield(ALua,0);//end the script
 	end else
 	begin
-		luaL_error(ALua,'moveto syntax error');
+		luaL_error(ALua,'script moveto syntax error');
 	end;
 	Result := 0;
+end;
+
+//NPC Dialog to the character
+function script_dialog(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	Len : integer;
+	Dialog : string;
+	OutBuffer : TBuffer;
+begin
+	Result := 0;
+	if (lua_gettop(ALua) = 1) and
+		(Lua_isNonNumberString(ALua,1)) then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			Dialog := lua_tostring(ALua,1);
+			Len := Length(Dialog);
+			WriteBufferWord(0, $00b4, OutBuffer);
+			WriteBufferWord(2, Len + 8, OutBuffer);
+			WriteBufferLongWord(4, AChara.ScriptID, OutBuffer);
+			WriteBufferString(8, Dialog, Len, OutBuffer);
+			SendBuffer(AChara.ClientInfo, OutBuffer, len + 8);
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script dialog syntax error');
+	end;
+end;
+
+function script_wait(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	OutBuffer : TBuffer;
+begin
+	Result := 0;
+	if lua_gettop(ALua) = 0 then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			WriteBufferWord(0, $00b5, OutBuffer);
+			WriteBufferLongWord(2, AChara.ScriptID, OutBuffer);
+			SendBuffer(AChara.ClientInfo, OutBuffer, 6);
+			AChara.ScriptStatus := SCRIPT_YIELD_WAIT;
+			Result := lua_yield(ALua,0);
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script wait syntax error');
+	end;
+end;
+
+function script_close(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	OutBuffer : TBuffer;
+begin
+	Result := 0;
+	if lua_gettop(ALua) = 0 then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			WriteBufferWord(0, $00b6, OutBuffer);
+			WriteBufferLongWord(2, AChara.ScriptID, OutBuffer);
+			SendBuffer(AChara.ClientInfo, OutBuffer, 6);
+			AChara.ScriptStatus := SCRIPT_NOTRUNNING;
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script close syntax error');
+	end;
 end;
 
 //Random usage for testing.  Will take its string and output it on

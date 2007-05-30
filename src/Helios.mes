@@ -30,7 +30,7 @@ MailFailureMsg=Sorry, sending the mail didn't work.
 BugReportFile=bugreports.txt
 AppendBugReports=1
 BugReportFileSize=100000
-VersionVariable=
+VersionVariable=Version.HeliosVersion
 [ExceptionBox]
 TitleBar=%appname%
 ExceptionMessage=An error occurred in the application.

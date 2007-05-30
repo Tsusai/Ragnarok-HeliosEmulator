@@ -22,8 +22,14 @@ implementation
 		fScriptNPC := AScriptNPC;
 	end;
 
+	//[2007/05/28] Tsusai - Added execution checks.
 	Procedure TOnTouchCellEvent.Execute(ACharacter : TCharacter);
 	begin
-		fScriptNPC.OnTouch(ACharacter);
+		if (ACharacter.ScriptStatus = SCRIPT_NOTRUNNING) and
+		(ACharacter.CharaState = charaStanding) then
+		begin
+			ACharacter.ScriptID := fScriptNPC.ID;
+			fScriptNPC.OnTouch(ACharacter);
+		end;
 	end;
 end.

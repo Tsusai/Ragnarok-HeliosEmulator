@@ -93,6 +93,7 @@ Revisions:
 	AreaLoop into protected.
 [2007/04/28] CR - Changed fParamBase from an array to an equivalent type of
 	ByteStatArray.
+[2007/05/28] Tsusai - Removed MapPointer
 *=============================================================================*)
 TBeing = class(TObject)
 protected
@@ -157,7 +158,6 @@ protected
 
 public
 	ID					: LongWord;
-	MapPointer	: Pointer;
 	Speed 			: Word;
 	HeadDirection	: Word;
 	Direction 	: Byte;
@@ -270,6 +270,8 @@ Revisions:
 	hand and SHOULD KNOW BETTER than to leave code of this complexity unadorned
 	with ANY sensible comments.  On a positive note, the explanation for the
 	routine was fine.
+[2007/05/28] Tsusai - Mixed OnTouch to only run just once if a character is
+	in the walking ontouch field.
 *-----------------------------------------------------------------------------*)
 Procedure TBeing.Walk;
 Var
@@ -280,6 +282,8 @@ Var
 	idxY       : SmallInt;
 	idxX       : SmallInt;
 	Radius     : Word;
+	OnTouchCellFound : boolean;
+	OnTouchCell : TOnTouchCellEvent;
 
 	(*. local function ...................*
 	Gets our new direction
@@ -406,6 +410,7 @@ Var
 Begin
 	//Setup visual radius
 	Radius := MainProc.ZoneServer.Options.CharShowArea + 1;
+	OnTouchCellFound := false;
 
 	if Self is TCharacter then
 	begin
@@ -425,7 +430,7 @@ Begin
 	//-Tsusai
 	//17 (Radius) covers the old 16x16 grid, no matter which dir we go I think
 	//This is some complicated mathematics here, so I hope I do explain this right.
-	
+
 	//Bounds are set on the for loop from -> to to prevent searching from outside
 	//the known map if the being is close to the edge or corner.
 	//In a pure situation, first two rows and last 2 rows, and first 2 columns and
@@ -494,14 +499,28 @@ Begin
 		begin
 			if MapInfo.Cell[Position.X][Position.Y].Beings.Objects[Index] is TOnTouchCellEvent then
 			begin
-				TOnTouchCellEvent(MapInfo.Cell[Position.X][Position.Y].Beings.Objects[Index]).Execute(TCharacter(Self));
-				//TOnTouchCellEvent(MapInfo.Cell[Position.X, Position.Y].Beings[Index]).Execute(TCharacter(self));
 				if Self IS TCharacter then
 				begin
-					TCharacter(Self).CharaState := charaStanding;
+					OnTouchCellFound := true;
+					OnTouchCell := TOnTouchCellEvent(MapInfo.Cell[Position.X][Position.Y].Beings.Objects[Index]);
+					if TCharacter(Self).OnTouchIDs.IndexOf(OnTouchCell.ScriptNPC.ID) = -1 then
+					begin
+						TCharacter(Self).OnTouchIDs.Add(OnTouchCell.ScriptNPC.ID);
+						TCharacter(Self).CharaState := charaStanding;
+						OnTouchCell.Execute(TCharacter(Self));
+					end;
 				end;
 			end;
 		end;
+
+		if (not OnTouchCellFound) and (Self is TCharacter) then
+		begin
+			if TCharacter(Self).OnTouchIDs.Count > 0 then
+			begin
+				TCharacter(Self).OnTouchIDs.Clear;
+			end;
+		end;
+
 	end;
 
 	if (PathIndex = Path.Count - 1) then

@@ -99,6 +99,12 @@ uses
 		const ReadPts : TReadPts
 	);
 
+	procedure NPCNext(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
 	procedure QuitGame(
 		var AChara  : TCharacter;
 		const InBuffer : TBuffer;
@@ -110,11 +116,18 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure NPCClick(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
 	procedure RecvGMCommandFromInter(
-		InBuffer : TBuffer
+		const InBuffer : TBuffer
 	);
 	procedure RecvGMCommandResultFromInter(
-			InBuffer : TBuffer
+		const InBuffer : TBuffer
 	);
 	procedure CharaRotation(
 		var AChara  : TCharacter;
@@ -129,7 +142,7 @@ uses
 	);
 
 	procedure RecvWarpRequestReplyFromInter(
-			InBuffer : TBuffer
+		const InBuffer : TBuffer
 	);
 
 	procedure Whisper(
@@ -157,6 +170,7 @@ uses
 	BufferIO,
 	GameConstants,
 	GMCommands,
+	LuaNPCCore,
 	Main,
 	Map,
 	MapTypes,
@@ -313,6 +327,7 @@ uses
 //    January 18th, 2007 - RaX - Created Header;
 //    March 30th, 2007 - Aeomin - Move SendZoneCharaIncrease to here.
 //    May 25th, 2007 - Tsusai - Moved MapLoad here, removed Zone increase.
+//	  May 28th, 2007 - Tsusai - Removed MapPointer.
 //------------------------------------------------------------------------------
 	Procedure ShowMap(
 		var AChara  : TCharacter;
@@ -337,15 +352,14 @@ uses
 			end;
 			AMap := MainProc.ZoneServer.MapList[MapIndex];
 			AChara.MapInfo := AMap;
-			AChara.MapPointer := AMap;
 			//Enable all npcs on this map.
 			for NPCIndex := 0 to MainProc.ZoneServer.NPCList.Count -1 do
 			begin
 				AnNPC := TNPC(MainProc.ZoneServer.NPCList.Objects[NPCIndex]);
 				if AnNPC.Map = MainProc.ZoneServer.MapList[MapIndex].Name then
 				begin
+					AnNPC.MapInfo := MainProc.ZoneServer.MapList[MapIndex];
 					MainProc.ZoneServer.MapList[MapIndex].Cell[AnNPC.Position.X][AnNPC.Position.Y].Beings.AddObject(AnNPC.ID, AnNPC);
-					AnNPC.MapPointer := MainProc.ZoneServer.MapList[MapIndex];
 					AnNPC.Enabled := true;
 				end;
 			end;
@@ -430,7 +444,9 @@ uses
 //      Processes a Character's request to walk to a certain point.
 //
 //  Changes -
-//    Rebruary 27th, 2007 - RaX - Created Header;
+//    February 27th, 2007 - RaX - Created Header;
+//    May 28th, 2007 - Tsusai - Changed Rebruary to February, and added conditionals
+//     for walking
 //------------------------------------------------------------------------------
 	procedure CharacterWalkRequest(
 		var AChara  : TCharacter;
@@ -444,7 +460,8 @@ uses
 		Index			: Integer;
 	begin
 		DestPoint := BufferReadOnePoint(ReadPts[0], InBuffer);
-		if true {Various checks (not sitting)} then
+		if (AChara.ScriptStatus = SCRIPT_NOTRUNNING) and
+		((AChara.CharaState = charaStanding) or (AChara.CharaState = charaWalking)) then
 		begin
 
 			if AChara.MapInfo.GetPath(AChara.Position, DestPoint, AChara.Path) then
@@ -508,6 +525,7 @@ uses
 		ID : LongWord;
 		idx : integer;
 		RecvCharacter : TCharacter;
+		RecvNPC : TNPC;
 	begin
 		ID := BufferReadLongWord(ReadPts[0], InBuffer);
 		idx := MainProc.ZoneServer.CharacterList.IndexOfAID(ID);
@@ -525,9 +543,17 @@ uses
 		end else
 		begin
 			//NPC and Mob shit here
+			idx := MainProc.ZoneServer.NPCList.IndexOf(ID);
+			if idx > -1 then
+			begin
+				RecvNPC := MainProc.ZoneServer.NPCList.Objects[idx] as TNPC;
+				ZoneSendObjectNameAndIDBasic(
+					AChara,
+					RecvNPC.ID,
+					RecvNPC.Name
+				);
+			end;
 		end;
-
-
 	end;//GetNameAndID
 //------------------------------------------------------------------------------
 
@@ -575,6 +601,32 @@ uses
 	end;{ReturnToCharacterSelect}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//NPCNext                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Resumes a npc script
+//
+//  Changes -
+//    May 25th, 2007 - Tsusai - Created
+//------------------------------------------------------------------------------
+	procedure NPCNext(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+	var
+		NPCID : LongWord;
+	begin
+		NPCID := BufferReadLongWord(ReadPts[0], InBuffer);
+		if (AChara.ScriptID = NPCID) and
+			(AChara.ScriptStatus = SCRIPT_YIELD_WAIT) then
+		begin
+			AChara.ScriptStatus := SCRIPT_RUNNING;
+			ResumeLuaNPCScript(AChara);
+		end;
+	end;
 
 //------------------------------------------------------------------------------
 //QuitGame							                                             PROCEDURE
@@ -647,6 +699,39 @@ end;{AreaChat}
 
 
 //------------------------------------------------------------------------------
+//NPCClick							       PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Runs a NPC script when someone clicks it (if conditions are ok)
+//
+//  Changes -
+//    [2007/05/27] Tsusai - Created
+//------------------------------------------------------------------------------
+procedure NPCClick(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+var
+	NPCID : LongWord;
+	ANPC : TNPC;
+begin
+	if (AChara.ScriptStatus = SCRIPT_NOTRUNNING) and
+		(AChara.CharaState = charaStanding) then
+	begin
+		NPCID := BufferReadLongWord(ReadPts[0], InBuffer);
+		//TEMPORARY
+		ANPC := MainProc.ZoneServer.NPCList.Objects
+		 [MainProc.ZoneServer.NPCList.IndexOf(NPCID)] as TNPC;
+		if ANPC is TScriptNPC then
+		begin
+			AChara.ScriptID := ANPC.ID;
+			TScriptNPC(ANPC).OnClick(AChara);
+		end;
+	end;
+
+end;
+//------------------------------------------------------------------------------
 //CharaRotation							       PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
@@ -698,7 +783,7 @@ end;
 //    March 21st, 2007 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure RecvGMCommandFromInter(
-			InBuffer : TBuffer
+		const InBuffer : TBuffer
 	);
 var
 	CommandID		: Word;
@@ -845,7 +930,7 @@ end;
 //    March 21st, 2007 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure RecvGMCommandResultFromInter(
-			InBuffer : TBuffer
+		const InBuffer : TBuffer
 	);
 var
 	CharacterID : LongWord;
@@ -876,7 +961,7 @@ end;{RecvGMCommandFromInter}
 //    April 29th, 2007 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure RecvWarpRequestReplyFromInter(
-			InBuffer : TBuffer
+		const InBuffer : TBuffer
 	);
 var
 	CharacterID : LongWord;

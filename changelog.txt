@@ -15,6 +15,33 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 270 -
+[2007/05/29] Tsusai - Notes/Overview: More addons to the lua npc engine and 
+ various tweaks.
+[2007/05/29] Tsusai - MadExcept: Linked the VERSION that appears in reports,
+ to read from Version.pas.HeliosVersion
+[2007/05/29] Tsusai - Being - TBeing: Removed MapPointer.  Useless
+[2007/05/29] Tsusai - NPC - TScriptNPC.Disable: Removed MapPointer
+[2007/05/29] Tsusai - Being - TBeing.Walk: Added OnTouchCellFound and OnTouchCell,
+ so that I can 1) make code look prety 2) Make sure that once i trigger an Ontouch
+ npc, I don't do it again within its field.
+[2007/05/29] Tsusai - Character - TScriptState: Added more fields for it.
+[2007/05/29] Tsusai - Character - TCharacter.Create: Initiallize CharaState.
+[2007/05/29] Tsusai - OnTouchCellEvent - TOnTouchCellEvent.Execute: Makes sure
+ conditions are right for running the script.
+[2007/05/29] Tsusai - LuaNPCCommands: Added script_dialog, script_wait, &
+ script_close
+[2007/05/29] Tsusai - LuaNPCCommands - addnpc: Corrected the TNPC.Point setting
+[2007/05/29] Tsusai - LuaNPCCore: Added Resuming functions to resume Lua threads.
+[2007/05/29] Tsusai - PacketDB: Enabled 'npcclicked' & 'npcnextclicked'
+[2007/05/29] Tsusai - ZoneRecv: Added NPCNext & NPCClick. Const'd InterServer recv
+ commands' InBuffer.
+[2007/05/29] Tsusai - ZoneRecv - ShowMap: Removed MapPointer
+[2007/05/29] Tsusai - ZoneRecv - CharaWalkRequest: Added some conditionals before
+ walking.
+[2007/05/29] Tsusai - ZoneRecv - GetNameAndID: Added NPC data retrieval
+-
+
 - Rev 269 -
 [2007/05/27] CR - Overview: Bugfix!  Solved out 3 bugs with walking/pathing,
  two pointed out by Tsusai and RaX while testing NPC Warps, and then the map-

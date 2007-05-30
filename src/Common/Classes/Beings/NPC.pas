@@ -112,7 +112,7 @@ var
 constructor TNPC.Create;
 begin
 	inherited;
-  fEnabled  := FALSE;
+	fEnabled  := FALSE;
 	ID := NowNPCID;
 	Inc(NowNPCID);
 end;
@@ -180,28 +180,28 @@ var
 	XIndex					: Integer;
 	YIndex					: Integer;
 	AnOnTouchEvent	: TOnTouchCellEvent;
-  MapIndex        : Integer;
+	MapIndex        : Integer;
 begin
 	fEnabled := TRUE;
 	//if we're not already enabled and ontouch is enabled...
 	if OnTouchEnabled then
 	begin
 		//get our map.
-    MapIndex := MainProc.ZoneServer.MapList.IndexOf(self.Map);
-    if MapIndex <> -1 then
-    begin
-		  AMap := MainProc.ZoneServer.MapList[MapIndex];
-		  //make sure our ontouch coordinates are in the map's bounds.
-		  if ((Position.X + OnTouchXRadius) < AMap.Size.X) AND
+		MapIndex := MainProc.ZoneServer.MapList.IndexOf(self.Map);
+		if MapIndex <> -1 then
+		begin
+			AMap := MainProc.ZoneServer.MapList[MapIndex];
+			//make sure our ontouch coordinates are in the map's bounds.
+			if ((Position.X + OnTouchXRadius) < AMap.Size.X) AND
 			 ((Position.Y + OnTouchYRadius) < AMap.Size.Y) AND
 			 ((Position.X - OnTouchXRadius) > 0) AND
 			 ((Position.Y - OnTouchYRadius) > 0) then
-		  begin
-			  //loop through our ontouch area
-			  for XIndex := (Position.X-OnTouchXRadius) to (Position.X + OnTouchXRadius) do
-			  begin
-				  for YIndex := (Position.Y-OnTouchYRadius) to (Position.Y + OnTouchYRadius) do
-				  begin
+			begin
+				//loop through our ontouch area
+				for XIndex := (Position.X-OnTouchXRadius) to (Position.X + OnTouchXRadius) do
+				begin
+					for YIndex := (Position.Y-OnTouchYRadius) to (Position.Y + OnTouchYRadius) do
+					begin
 						//add our ontouch events
 						AnOnTouchEvent := TOnTouchCellEvent.Create(self);
 						AMap.Cell[XIndex][YIndex].Beings.AddObject(0, AnOnTouchEvent);
@@ -212,6 +212,7 @@ begin
 	end;
 end;
 
+//[2007/05/27] Tsusai - Removed MapPointer (useless...)
 Procedure TScriptNPC.Disable;
 var
 	AMap						: TMap;
@@ -225,7 +226,7 @@ begin
 	if OnTouchEnabled then
 	begin
 		//Get our map.
-		AMap := TMap(MapPointer);
+		AMap := MapInfo;
 		//Loop through our ontouch area.
 		for XIndex := (Position.X-OnTouchXRadius) to (Position.X + OnTouchXRadius) do
 		begin
@@ -246,7 +247,7 @@ begin
 							AnObject.Free;
 							AMap.Cell[XIndex][YIndex].Beings.Delete(Index);
             end;
-          end;
+					end;
         end;
 			end;
 		end;

@@ -4,12 +4,35 @@ interface
 
 uses
 	Character,
-	LuaCoreRoutines;
+	LuaCoreRoutines,
+	NPC;
 
-	procedure RunLuaNPCScript(
+  procedure RunLuaNPCScript(
 		var AChara : TCharacter;
 		const LuaFunc : string
 	);
+
+	procedure ResumeLuaNPCScript(
+		var AChara : TCharacter;
+		const ReturnAValue : Boolean = false
+	);
+
+	procedure ResumeLuaNPCScriptWithString(
+		var AChara : TCharacter;
+		const ReturnString : string
+	);
+
+	procedure ResumeLuaNPCScriptWithInteger(
+		var AChara : TCharacter;
+		const ReturnInteger : integer
+	);
+
+	procedure ResumeLuaNPCScriptWithDouble(
+		var AChara : TCharacter;
+		const ReturnDouble : double
+	);
+
+
 	procedure SetCharaToLua(var AChara : TCharacter);
 	function GetCharaFromLua(var ALua : TLua; var AChara : TCharacter) : boolean;
 
@@ -31,9 +54,44 @@ begin
 	//Get the function
 	lua_getglobal(AChara.LuaInfo.Lua,PChar(LuaFunc));
 	//run the function
-	lua_resume(AChara.LuaInfo.Lua,0);
-	//Terminate the thread
-	TerminateLuaThread(AChara.LuaInfo);
+	//lua_resume(AChara.LuaInfo.Lua,0);
+	lua_pcall(AChara.LuaInfo.Lua,0,0,0);
+end;
+
+procedure ResumeLuaNPCScript(
+	var AChara : TCharacter;
+	const ReturnAValue : Boolean = false
+);
+begin
+	SetCharaToLua(AChara); //put the global back on the stack
+	lua_resume(AChara.LuaInfo.Lua, Byte(ReturnAValue));
+end;
+
+procedure ResumeLuaNPCScriptWithString(
+	var AChara : TCharacter;
+	const ReturnString : string
+);
+begin
+	lua_pushstring(AChara.LuaInfo.Lua, PChar(ReturnString));
+	ResumeLuaNPCScript(AChara,true);
+end;
+
+procedure ResumeLuaNPCScriptWithInteger(
+	var AChara : TCharacter;
+	const ReturnInteger : integer
+);
+begin
+	lua_pushinteger(AChara.LuaInfo.Lua, ReturnInteger);
+	ResumeLuaNPCScript(AChara,true);
+end;
+
+procedure ResumeLuaNPCScriptWithDouble(
+	var AChara : TCharacter;
+	const ReturnDouble : Double
+);
+begin
+	lua_pushnumber(AChara.LuaInfo.Lua, ReturnDouble);
+	ResumeLuaNPCScript(AChara,true);
 end;
 
 //Pushes the Character Pointer onto the global array of the lua
@@ -55,9 +113,11 @@ begin
 	if Assigned(PCharacter) then
 	begin
 		AChara := PCharacter^;
-		Result := true;
+		if Assigned(AChara) then
+		begin
+			Result := true;
+		end;
 	end;
-	//lua_pop(ALua, 1);
 end;
 
 end.

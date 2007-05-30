@@ -8,6 +8,7 @@
 //		December 22nd, 2006 - RaX - Created Header.
 //		[2007/03/28] CR - Cleaned up uses clauses with help of Icarus.
 //		[2007/04/23] Tsusai - Changed lua filename
+//		[2007/05/28] Tsusai - Added more to the TScriptStatus
 //
 //------------------------------------------------------------------------------
 unit Character;
@@ -33,9 +34,11 @@ type
 
 
 TCharaScriptStatus = (
-		SCRIPT_PAUSED,
 		SCRIPT_RUNNING,
-		SCRIPT_NOTRUNNING
+		SCRIPT_NOTRUNNING,
+		SCRIPT_YIELD_WAIT,
+		SCRIPT_YIELD_INPUT,
+		SCRIPT_YIELD_MENU
 	);
 
 TCharaState = (
@@ -73,6 +76,7 @@ Revisions:
 	IDENTICAL to those in TBeing (to avoid a repeat of problems like we had with
 	fZeny in an earlier commit).  Changed ParamUP and ParamBonus so they use the
 	ByteStatArray type like TBeing uses for ParamBase.
+[2007/05/28] Tsusai - Added ScriptID, to store current(/last?) script id in use
 *=============================================================================*)
 TCharacter = class(TBeing)
 protected
@@ -191,6 +195,7 @@ public
 
 	LuaInfo : TLuaInfo; //personal lua "thread"
 	ScriptStatus : TCharaScriptStatus; //lets us know what is going on with lua,
+	ScriptID : LongWord;
 	// if its paused or running
 
 	BaseNextEXP  : LongWord;
@@ -1687,6 +1692,7 @@ end;{CalcMaxWeight}
 //
 //	Changes -
 //		January 24th, 2007 - RaX - Created.
+//		[2007/05/28] Tsusai - Sets character to standing on create.
 //
 //------------------------------------------------------------------------------
 Constructor TCharacter.Create(AClient : TIdContext);
@@ -1695,6 +1701,7 @@ begin
 	ClientInfo := AClient;
 	OnTouchIDs := TIntList32.Create;
 	ScriptStatus := SCRIPT_NOTRUNNING;
+	CharaState := charaStanding;
 end;
 //------------------------------------------------------------------------------
 

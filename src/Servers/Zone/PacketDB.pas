@@ -176,8 +176,8 @@ Begin
 					ExecCommand := ActionRequest;}
 				end else if Command = 'globalmessage' then begin
 					ExecCommand := AreaChat;
-				{end else if Command = 'npcclicked' then begin
-					ExecCommand := NPCClick;}
+				end else if Command = 'npcclicked' then begin
+					ExecCommand := NPCClick;
 				end else if Command = 'getcharnamerequest' then begin
 					ExecCommand := GetNameAndID;
 				end else if Command = 'wis' then begin
@@ -199,10 +199,10 @@ Begin
 				end else if Command = 'restart' then begin
 					ExecCommand := ReturnToCharacterSelect;
 				{end else if Command = 'npcselectmenu' then begin
-					ExecCommand := NPCMenu;
+					ExecCommand := NPCMenu;}
 				end else if Command = 'npcnextclicked' then begin
 					ExecCommand := NPCNext;
-				end else if Command = 'statusup' then begin
+				{end else if Command = 'statusup' then begin
 					ExecCommand := StatUP;
 				end else if Command = 'emotion' then begin
 					ExecCommand := EmotionCheck;}
