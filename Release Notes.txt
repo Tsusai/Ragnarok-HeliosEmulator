@@ -1,0 +1,85 @@
+  _    _          _   _
+ | |  | |        | | (_)              
+ | |__| |   ___  | |  _    ___    ___
+ |  __  |  / _ \ | | | |  / _ \  / __|
+ | |  | | |  __/ | | | | | (_) | \__ \
+ |_|  |_|  \___| |_| |_|  \___/  |___/
+
+
+Ragnarok Emulator
+Developers & Contributers
+- Tsusai
+- RaX
+- Aeomin
+- ChrstphrR (CR)
+
+--------------------------------------------------------------------------------
+Release 1: Proof of Concepts
+
+I'm pleased to announce our first release: The "Proof of Concepts"  I will explain
+the history of this program first before moving to features.
+
+This program was initially created by myself back in December of 2004 as a packet 
+test program, designed to parse the simple login request using different TCP/IP 
+server components.  Knowledge of these components, and the best one, would then 
+be integrated into Prometheus.  I played with this off and on for a whole year, 
+making only a handful of commits and learning about how data packets worked.  
+In 2006, all the developers either became bogged down w/ life things, and/or 
+started to have become angry at the futility of continuously patching random 
+crashes.  Sometime in May of 2006, RaX brought to my attention that if we were to 
+start over (which all the developers past and present had talked about), Helios 
+would be a good start.  I decided to allow him access to the SVN repository and 
+he took off with it, and I followed.  In the fall of 2006, we decided to do 
+everything we could not with the weiss family.  Prometheus eventually came to a 
+stand still, and RaX and I started working on this.  Eventually, we gained a new 
+developer, Aeomin, who has added his knowledge to the project by granting us 
+various map area routines, such as talking, whisper, etc.  ChrstphrR and some of 
+the other supporters eventually came over and so...here we are.
+
+Thus we arrive at the server features:
+*New code core:  No eAthena base, no weiss base, nothing..nada.
+*One binary to rule them all:  Run all servers from 1 single exe, or mix and 
+ match.  The same binary could run a login and character server, or just a zone.  
+ You decide how to allocate your resources.  We designed it for ex weiss users and 
+ those who want to do multi-server configurations.
+*MySQL support: RaX has designed the database in the most unique way.  The code
+ is so abstract, that if someone were to want to use...lets say Oracle, someone
+ must write 3 files (for query information) and attach them to the source.
+*Text (*.txt) support: It exists, but may be ripped out in the future.
+*MD5 Key verification between servers: No one should be able to add their
+ character server to your login server w/o your permission.
+*Written in Delphi: I've yet to see a buffer overflow exploit on any past/present
+ Delphi Ragnarok emus.  Why? because C code integers are weird like that.  We
+ range check all we can to prevent overflows and crashes.  We tell the program
+ to do integer range checking instead of leaving it be.
+*Packet_db.txt support: Its a bit different in ours, but it allows for different
+ versions of clients to connect.
+*The Lua Scripting language: This was a bit of a challenge to setup.  In the weiss
+ family, every command was placed in a "array of shit to do" with frequent goto's
+ to jump in that array.  This caused issues w/ design because you couldn't run
+ functions or use large if else conditions.  With this new system, commands can
+ be added easily, it checks for basic syntax errors, and can actually
+ compile/run the script.
+ Currently the only scripts available are the novice training ground warps, as
+ they are deadly similar to Aegis (hidden)warp NPCs.  More elaborate NPCs will
+ be converted from Aegis soon.
+
+Now since it IS a new Ragnarok emulator, and that we are not pulling code from
+ other emulators, the following features are new and operational:
+ - Walking
+ - Talking
+ - Warp NPCs (slightly modified Aegis scripts)
+ - Whisper chat (including between Zone Servers)
+ - Warping (including between Zone Servers)
+ - Simple GM Commands
+
+WE ARE LOOKING FOR
+ - Anyone with pascal knowledge that wants to work w/ us.
+ - People to help convert Aegis scripts to lua syntax standards (my converter 
+    does only so much)
+ - People to keep our databases up to date (likely exporting the Aegis values
+    and importing them)
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------

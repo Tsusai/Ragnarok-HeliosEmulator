@@ -15,6 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
+Release 1
+--------------------------------------------------------------------------------
+- Rev 274 -
+[2007/05/29] Tsusai - RELEASE 1. See Release Notes.txt.
+-
+
 - Rev 273 -
 [2007/05/29] RaX - Added in #warp for the proof of concept release, this is a HACKED
  IN ADDITION, do not expect it to stay, It'll be replaced by a much cleaner and better
