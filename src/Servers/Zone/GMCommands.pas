@@ -80,6 +80,7 @@ begin
 	fNames := TStringList.Create;
 	fLevels:= TIntList32.Create;
 	AddCommand('ZoneStatus',ZoneStatus, 99);
+	AddCommand('Warp',ZoneStatus, 0);
 end;{Create}
 //------------------------------------------------------------------------------
 

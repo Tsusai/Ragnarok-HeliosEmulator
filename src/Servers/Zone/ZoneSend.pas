@@ -105,7 +105,8 @@ uses
 	GameConstants,
 	Main,
 	TCPServerRoutines,
-	WinLinux
+	WinLinux,
+	Classes
 	{3rd Party}
 	//none
 	;
@@ -357,16 +358,31 @@ end;
 	var
 		ReplyBuffer : TBuffer;
 		TotalLength	: Integer;
+		AStringList	: TStringList;
 	begin
-		//See Notes/GM Command Packets.txt
-		TotalLength := 19+Length(Command);
-		WriteBufferWord(0, $2205, ReplyBuffer);
-		WriteBufferWord(2, TotalLength, ReplyBuffer);
-		WriteBufferLongWord(4, ACharacter.ID, ReplyBuffer);
-		WriteBufferLongWord(8, ACharacter.CID, ReplyBuffer);
-		WriteBufferWord(12, Length(Command), ReplyBuffer);
-		WriteBufferString(14, Command, Length(Command), ReplyBuffer);
-		SendBuffer(MainProc.ZoneServer.ToInterTCPClient, ReplyBuffer, TotalLength);
+		if MainProc.ZoneServer.Commands.GetCommandName(Command) = 'warp' then
+		begin
+			AStringList := TStringList.Create;
+			AStringList.DelimitedText := Command;
+			if AStringList.Count > 3 then
+			begin
+			 //	if AStringList.Strings[1] then
+				
+				ZoneSendWarp(ACharacter, AStringList.Strings[1], StrToIntDef(AStringList.Strings[2], 0), StrToIntDef(AStringList.Strings[3], 0));
+			end;
+			AStringList.Free;
+		end else
+		begin
+			//See Notes/GM Command Packets.txt
+			TotalLength := 19+Length(Command);
+			WriteBufferWord(0, $2205, ReplyBuffer);
+			WriteBufferWord(2, TotalLength, ReplyBuffer);
+			WriteBufferLongWord(4, ACharacter.ID, ReplyBuffer);
+			WriteBufferLongWord(8, ACharacter.CID, ReplyBuffer);
+			WriteBufferWord(12, Length(Command), ReplyBuffer);
+			WriteBufferString(14, Command, Length(Command), ReplyBuffer);
+			SendBuffer(MainProc.ZoneServer.ToInterTCPClient, ReplyBuffer, TotalLength);
+		end;
 	end;//ZoneSendGMCommandToInter
 //------------------------------------------------------------------------------
 
@@ -740,20 +756,28 @@ var
 	Size : Word;
 	MapNameSize : Word;
 	ClientIPSize : Word;
+	MapZoneID			: Word;
 
 procedure RemoveFromList;
 begin
 	with ACharacter do
 	begin
-		MapInfo.Cell[ACharacter.Position.X, Position.Y].Beings.Delete(
-		MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(ACharacter));
+		//Quick change to prevent characters from being added in bad places.
+		if (ACharacter.Position.X < MapInfo.Size.X) AND
+			 (ACharacter.Position.Y < MapInfo.Size.Y) AND
+			 (ACharacter.Position.X >= 0) AND
+			 (ACharacter.Position.X >= 0) then
+		begin
+			MapInfo.Cell[ACharacter.Position.X, Position.Y].Beings.Delete(
+			MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(ACharacter));
+		end;
 	end;
 end;
 
 begin
 	TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.Connect;
-	if Word(TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(MapName)) =
-		 MainProc.ZoneServer.Options.ID then
+	MapZoneID := Word(TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(MapName));
+	if MapZoneID = MainProc.ZoneServer.Options.ID then
 	begin
 		RemoveFromList;
 		ACharacter.Map := MapName;

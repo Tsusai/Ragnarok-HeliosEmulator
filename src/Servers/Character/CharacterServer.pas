@@ -621,36 +621,43 @@ begin
 			ACharacter.Map := ACharacter.SaveMap;
 			ACharacter.Position := ACharacter.SavePoint;
 		end;
-		TThreadLink(AClient.Data).DatabaseLink.GameData.SaveChara(ACharacter);
+
 		//get zone ID for the map.
 		ZoneID := TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapZoneID(ACharacter.Map);
 		//get the zone info from that
-		TThreadLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
-		TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
+
 		idx := fZoneServerList.IndexOf(ZoneID);
 		if idx > -1 then
 		begin
-			TClientLink(AClient.Data).AccountInfo.CharacterID := ACharacter.CID;
-			TClientLink(AClient.Data).Transfering := True;
-			ZServerInfo := TZoneServerInfo(fZoneServerList.Objects[idx]);
+			ACharacter.Map := Options.DefaultMap;
+			ACharacter.Position := Options.DefaultPoint;
+		end;
+		TThreadLink(AClient.Data).DatabaseLink.GameData.SaveChara(ACharacter);
+		
+		TThreadLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
+		TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
 
-			WriteBufferWord(0, $0071, OutBuffer);
-			WriteBufferLongWord(2, ACharacter.CID, OutBuffer);
-			WriteBufferString(6, ACharacter.Map + '.rsw', 16, OutBuffer);
-			WriteBufferLongWord(22,
-				ZServerInfo.Address(AClient.Binding.PeerIP
-				),
-				OutBuffer
-			);
-			WriteBufferWord(26, ZServerInfo.Port, OutBuffer);
-			SendBuffer(AClient, OutBuffer, GetPacketLength($0071));
-		end else
+		TClientLink(AClient.Data).AccountInfo.CharacterID := ACharacter.CID;
+		TClientLink(AClient.Data).Transfering := True;
+		ZServerInfo := TZoneServerInfo(fZoneServerList.Objects[idx]);
+
+		WriteBufferWord(0, $0071, OutBuffer);
+		WriteBufferLongWord(2, ACharacter.CID, OutBuffer);
+		WriteBufferString(6, ACharacter.Map + '.rsw', 16, OutBuffer);
+		WriteBufferLongWord(22,
+			ZServerInfo.Address(AClient.Binding.PeerIP
+			),
+			OutBuffer
+		);
+		WriteBufferWord(26, ZServerInfo.Port, OutBuffer);
+		SendBuffer(AClient, OutBuffer, GetPacketLength($0071));
+		{end else
 		begin
 			//Server offline error goes here
 			WriteBufferWord(0, $0081, Outbuffer);
 			WriteBufferByte(2, 01, OutBuffer);
 			SendBuffer(AClient, OutBuffer, GetPacketLength($0081));
-		end;
+		end; }
 		ACharacter.Free;
 	end;
 

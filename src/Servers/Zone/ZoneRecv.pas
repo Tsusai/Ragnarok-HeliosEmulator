@@ -409,7 +409,15 @@ uses
 			//Weather updates
 			//Various other tweaks
 			AChara.ShowTeleportIn;
-			AMap.Cell[AChara.Position.X][AChara.Position.Y].Beings.AddObject(AChara.ID,AChara);
+
+			//Quick change to prevent characters from being added in bad places.
+			if (AChara.Position.X < AMap.Size.X) AND
+				 (AChara.Position.Y < AMap.Size.Y) AND
+				 (AChara.Position.X >= 0) AND
+				 (AChara.Position.X >= 0) then
+			begin
+				AMap.Cell[AChara.Position.X][AChara.Position.Y].Beings.AddObject(AChara.ID,AChara);
+      end;
 		end;
 	end;//ShowMap
 //------------------------------------------------------------------------------
