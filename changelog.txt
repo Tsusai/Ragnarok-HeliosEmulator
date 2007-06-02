@@ -15,6 +15,15 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 277 -
+[2007/06/01] CR - Overview: Bugfix -- A memory leak plugged.  More still to plug
+ yet, but YAY for Memproof!  Oh, and Happy Birthday to my sister! :)
+[2007/06/01] CR - ZoneServer: TZoneServer.LoadMaps: Altered Comment Header.  
+ Major Memory leak fixed. (649 maps as of this writing, so 649 dangling strings
+ freed).  We now free MapNames on routine completion, since this routine owns 
+ that object, it MUST clean it up.
+-
+
 - Rev 276 -
 [2007/05/30] Tsusai - Updated Changelog.
 -

@@ -615,53 +615,80 @@ End;{ProcessZonePacket}
 //------------------------------------------------------------------------------
 Procedure TZoneServer.LoadOptions;
 begin
-	Options    := TZoneOptions.Create(MainProc.Options.ConfigDirectory+'/Zone.ini');
+	Options := TZoneOptions.Create(MainProc.Options.ConfigDirectory+'/Zone.ini');
 	Options.Load;
 end;{LoadOptions}
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//LoadMaps                                                           PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Loads all maps into the maplist.
-//
-//	Changes -
-//		January 25th, 2007 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-Procedure TZoneServer.LoadMaps;
-var
-  Index     : Integer;
-  AMap      : TMap;
-  MapNames  : TStringList;
-begin
-	Console.WriteLn('      - Loading Maps...');
-	
-	ZoneLocalDatabase.StaticData.Connect;
-	MapNames := ZoneLocalDatabase.StaticData.GetMapsForZone(Options.ID);
-	Console.WriteLn('        : '+ IntToStr(MapNames.Count)+ ' Found!');
-	ZoneLocalDatabase.StaticData.Disconnect;
+(*- Procedure -----------------------------------------------------------------*
+TZoneServer.LoadMaps
+--------------------------------------------------------------------------------
+Overview:
+--
+	Loads all maps into the maplist.
 
-  for Index := 0 to MapNames.Count - 1 do
+--
+Pre:
+	TODO
+Post:
+	TODO
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/01/25] RaX - Created Header.
+[2007/06/01] CR - Altered Comment Header.  Major Memory leak fixed. (649 maps as
+	of this writing, so 649 dangling strings freed).  We now free MapNames on
+	routine completion, since this routine owns that object, it MUST clean it up.
+*-----------------------------------------------------------------------------*)
+Procedure TZoneServer.LoadMaps;
+Const
+	FSTR_MAPFILE = '%s/%s.pms';
+Var
+	Index       : Integer;
+	AMap        : TMap;
+	MapNames    : TStringList;
+	MapFileName : String;
+Begin
+	Console.WriteLn('      - Loading Maps...');
+
+	{[2007/06/01] CR - Get List of Map Names from DB. }
+	with ZoneLocalDatabase.StaticData do
 	begin
-		if FileExists(MainProc.Options.MapDirectory+'/'+MapNames[Index]+'.pms') then
+		Connect;
+		MapNames := GetMapsForZone(Options.ID);
+		Disconnect;
+	end;
+
+	try
+		Console.WriteLn('        : '+ IntToStr(MapNames.Count)+ ' Found!');
+
+		for Index := 0 to (MapNames.Count - 1) do
 		begin
-			AMap := TMap.Create;
-			if AMap.LoadFromFile(MainProc.Options.MapDirectory+'/'+MapNames[Index]+'.pms') then
+			MapFileName := Format(
+				FSTR_MAPFILE,
+				[MainProc.Options.MapDirectory, MapNames[Index]]
+			);
+			if FileExists(MapFileName) then
 			begin
-				AMap.Name := MapNames[Index];
-        MapList.Add(AMap);
-      end;
-    end else
-    begin
-			Console.WriteLn('      - Map '+MainProc.Options.MapDirectory+'/'+MapNames[Index]+'.pms does not exist!');
-    end;
-  end;
+				AMap := TMap.Create;
+				if AMap.LoadFromFile(MapFileName) then
+				begin
+					AMap.Name := MapNames[Index];
+					MapList.Add(AMap);
+				end;
+			end else begin
+				Console.WriteLn('      - Map ' + MapFileName + ' does not exist!');
+			end;
+		end;
+	finally
+		MapNames.Free;
+	end;
 	Console.WriteLn('      - Maps Loaded!');
-end;{LoadMaps}
-//------------------------------------------------------------------------------
+End; (* Proc TZoneServer.LoadMaps
+*-----------------------------------------------------------------------------*)
 
 
 //------------------------------------------------------------------------------

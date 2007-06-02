@@ -111,7 +111,7 @@ AutoIncBuild=1
 MajorVer=0
 MinorVer=0
 Release=0
-Build=269
+Build=277
 Debug=0
 PreRelease=0
 Special=0
@@ -122,7 +122,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=Project Helios
 FileDescription=Emumation Server
-FileVersion=0.0.0.269
+FileVersion=0.0.0.277
 InternalName=
 LegalCopyright=
 LegalTrademarks=
@@ -142,8 +142,10 @@ Item0=C:\Program Files\Indy 10 for Delphi 7\Core;C:\Program Files\Indy 10 for De
 Item1=C:\Program Files\Indy 10 for Delphi 7\Core;C:\Program Files\Indy 10 for Delphi 7\System
 Item2=C:\Program Files\Indy 10 for Delphi 7\Source\Core;C:\Program Files\Indy 10 for Delphi 7\Source\System
 [HistoryLists\hlUnitOutputDirectory]
-Count=1
+Count=2
 Item0=../obj
+Item1=..\obj
 [HistoryLists\hlOutputDirectorry]
-Count=1
+Count=2
 Item0=../bin
+Item1=..\bin
