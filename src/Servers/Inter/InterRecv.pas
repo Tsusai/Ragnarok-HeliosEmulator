@@ -17,30 +17,41 @@ interface
 
 uses
 	{RTL/VCL}
+	//none
 	{Project}
 	PacketTypes,
-
 	{3rd Party}
 	IdContext
 	;
 
-procedure RecvGMCommand(AClient : TIdContext; InBuffer : TBuffer);
+Procedure RecvGMCommand(
+	const
+		AClient : TIdContext;
+	const
+		InBuffer : TBuffer
+	);
+
 Procedure RecvGMCommandReply(
 		AClient : TIdContext;
 		InBuffer : TBuffer
 	);
+
 Procedure RecvWhisper(
 		AClient : TIdContext;
 		InBuffer : TBuffer
 	);
+
 Procedure RecvWhisperReply(
 		AClient  : TIdContext;
 		InBuffer : TBuffer
 	);
+
 Procedure RecvZoneWarpRequest(
 		AClient : TIdContext;
 		ABuffer : TBuffer
 	);
+
+
 implementation
 
 
@@ -50,7 +61,6 @@ uses
 	{Project}
 	BufferIO,
 	Character,
-
 	Main,
 	ZoneServerInfo,
 	ZoneInterCommunication,
@@ -59,43 +69,57 @@ uses
 	//none
 	;
 
-//------------------------------------------------------------------------------
-//RecvGMCommand   			                                             PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//      Gets a gm command from an authenticated zone server
-//
-//	Changes -
-//		March 19th, 2007 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure RecvGMCommand(AClient : TIdContext; InBuffer : TBuffer);
-//See Notes/GM Command Packets for explanation.
-var
-	GMID						: LongWord;
-	CharaID					: LongWord;
-	CommandLength		: LongWord;
-	CommandString		: String;
-	CommandSeparator: TStringList;
 
-begin
+(*- Procedure -----------------------------------------------------------------*
+RecvGMCommand
+--------------------------------------------------------------------------------
+Overview:
+--
+	Gets a GM command from an authenticated zone server
+
+N.B: See Notes/GM Command Packets for explanation.
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/03/19] RaX - Created Header.
+[2007/06/01] CR - Made all parameters constant.  Added try-finally construct
+	around the use of the local TStringList, to safeguard against a memory leak if
+	InterSendGMCommandToZones were to cause errors.
+*-----------------------------------------------------------------------------*)
+Procedure RecvGMCommand(
+	const
+		AClient : TIdContext;
+	const
+		InBuffer : TBuffer
+	);
+Var
+	GMID             : LongWord;
+	CharaID          : LongWord;
+	CommandLength    : LongWord;
+	CommandString    : String;
+	CommandSeparator : TStringList;
+Begin
 	//See Notes/GMCommand Packets.txt
-	GMID						:= BufferReadLongWord(4, InBuffer);
-	CharaID					:= BufferReadLongWord(8, InBuffer);
-	CommandLength		:= BufferReadWord(12,InBuffer);
-	CommandString		:= BufferReadString(14, CommandLength, InBuffer);
+	GMID          := BufferReadLongWord(4, InBuffer);
+	CharaID       := BufferReadLongWord(8, InBuffer);
+	CommandLength := BufferReadWord(12,InBuffer);
+	CommandString := BufferReadString(14, CommandLength, InBuffer);
 
 	CommandSeparator := TStringList.Create;
-	CommandSeparator.Delimiter := ',';
-	CommandSeparator.DelimitedText := CommandString;
+	try
+		CommandSeparator.Delimiter := ',';
+		CommandSeparator.DelimitedText := CommandString;
 
-	//after getting the command information, we get ready to send it to the other
-	//zones.
-	InterSendGMCommandToZones(AClient, GMID, CharaID, CommandSeparator);
-
-	CommandSeparator.Free;
-end; //RecvGMCommand
-//------------------------------------------------------------------------------
+		//after getting the command information, we get ready to send it to the
+		//other zones.
+		InterSendGMCommandToZones(AClient, GMID, CharaID, CommandSeparator);
+	finally
+		CommandSeparator.Free;
+	end;
+End; (* Proc RecvGMCommand
+*-----------------------------------------------------------------------------*)
 
 
 (*- Procedure -----------------------------------------------------------------*

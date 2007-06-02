@@ -15,6 +15,17 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 278 -
+[2007/06/02] CR - Overview: Cleanup commit.
+[2007/06/01] CR - InterRecv: RecvGMCommand: Made all parameters constant.
+ Added try-finally construct around the use of the local TStringList, to
+ safeguard against a memory leak if InterSendGMCommandToZones were to cause
+ errors.
+[2007/06/01] CR - ZoneSend: ZoneSendGMCommandtoInter: Altered Comment Header,
+ minor formatting/bracketing changes, use of try-finally to ensure no leaks if
+ errors occur before our local Stringlist is freed.
+-
+
 - Rev 277 -
 [2007/06/01] CR - Overview: Bugfix -- A memory leak plugged.  More still to plug
  yet, but YAY for Memproof!  Oh, and Happy Birthday to my sister! :)

@@ -341,50 +341,72 @@ end;
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//ZoneSendGMCommandToInter                                           PROCEDURE
-//------------------------------------------------------------------------------
-//  What it does -
-//      Sends the received gm command to the inter server.
-//
-//  Changes -
-//    March 19th, 2007 - RaX - Created Header;
-//		May 1st, 2007 - Tsusai - Added const to the parameters
-//------------------------------------------------------------------------------
-	procedure ZoneSendGMCommandtoInter(
-		const ACharacter : TCharacter;
-		const Command : String
+(*- Procedure -----------------------------------------------------------------*
+ZoneSendGMCommandtoInter
+--------------------------------------------------------------------------------
+Overview:
+--
+	Sends the received GM command to the inter server.
+
+
+--
+Pre:
+	TODO
+Post:
+	TODO
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/03/19] RaX - Created Header;
+[2007/05/01] Tsusai - Added const to the parameters
+[2007/06/01] CR - Altered Comment Header, minor formatting/bracketing changes,
+	use of try-finally to ensure no leaks if errors occur before our local
+	Stringlist is freed.
+*-----------------------------------------------------------------------------*)
+Procedure ZoneSendGMCommandtoInter(
+	const
+		ACharacter : TCharacter;
+	const
+		Command    : String
 	);
-	var
-		ReplyBuffer : TBuffer;
-		TotalLength	: Integer;
-		AStringList	: TStringList;
+Var
+	ReplyBuffer : TBuffer;
+	TotalLength : Integer;
+	AStringList : TStringList;
+Begin
+	if (MainProc.ZoneServer.Commands.GetCommandName(Command) = 'warp') then
 	begin
-		if MainProc.ZoneServer.Commands.GetCommandName(Command) = 'warp' then
-		begin
-			AStringList := TStringList.Create;
+		AStringList := TStringList.Create;
+		try
 			AStringList.DelimitedText := Command;
-			if AStringList.Count > 3 then
+			if (AStringList.Count > 3) then
 			begin
-			 //	if AStringList.Strings[1] then
-				
-				ZoneSendWarp(ACharacter, AStringList.Strings[1], StrToIntDef(AStringList.Strings[2], 0), StrToIntDef(AStringList.Strings[3], 0));
+				ZoneSendWarp(
+					ACharacter,
+					AStringList[1],
+					StrToIntDef(AStringList[2], 0),
+					StrToIntDef(AStringList.Strings[3], 0)
+				);
 			end;
+		finally
 			AStringList.Free;
-		end else
-		begin
-			//See Notes/GM Command Packets.txt
-			TotalLength := 19+Length(Command);
-			WriteBufferWord(0, $2205, ReplyBuffer);
-			WriteBufferWord(2, TotalLength, ReplyBuffer);
-			WriteBufferLongWord(4, ACharacter.ID, ReplyBuffer);
-			WriteBufferLongWord(8, ACharacter.CID, ReplyBuffer);
-			WriteBufferWord(12, Length(Command), ReplyBuffer);
-			WriteBufferString(14, Command, Length(Command), ReplyBuffer);
-			SendBuffer(MainProc.ZoneServer.ToInterTCPClient, ReplyBuffer, TotalLength);
-		end;
-	end;//ZoneSendGMCommandToInter
-//------------------------------------------------------------------------------
+		end;//t-f
+	end else
+	begin
+		//See Notes/GM Command Packets.txt
+		TotalLength := 19+Length(Command);
+		WriteBufferWord(0, $2205, ReplyBuffer);
+		WriteBufferWord(2, TotalLength, ReplyBuffer);
+		WriteBufferLongWord(4, ACharacter.ID, ReplyBuffer);
+		WriteBufferLongWord(8, ACharacter.CID, ReplyBuffer);
+		WriteBufferWord(12, Length(Command), ReplyBuffer);
+		WriteBufferString(14, Command, Length(Command), ReplyBuffer);
+		SendBuffer(MainProc.ZoneServer.ToInterTCPClient, ReplyBuffer, TotalLength);
+	end;
+End; (* Proc ZoneSendGMCommandtoInter
+*-----------------------------------------------------------------------------*)
 
 
 //------------------------------------------------------------------------------
