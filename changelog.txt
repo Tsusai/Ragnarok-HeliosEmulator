@@ -15,6 +15,17 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 279 -
+[2007/06/02] CR - Overview: Bugfix: Memory leak fix in our Zone server.  This
+ would end up being a larger leak in time, because we are *JUST* starting to add
+ NPC scripting.  Thanks to Tsusai for the heads-up on where to look here.
+[2007/06/02] CR - ZoneServer: TZoneServer.Destroy: Improved description.
+ Bugfix: Memory leak plugged -- NPCList objects are now freed before freeing
+ the list itself.  Did the research, and RaX's lists for MapList and
+ CharacterList are self-cleaning (Good job there!).
+ Added comments to point out which are potentially unsafe Free calls.
+-
+
 - Rev 278 -
 [2007/06/02] CR - Overview: Cleanup commit.
 [2007/06/01] CR - InterRecv: RecvGMCommand: Made all parameters constant.

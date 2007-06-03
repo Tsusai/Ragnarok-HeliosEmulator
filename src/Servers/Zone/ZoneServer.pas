@@ -61,12 +61,21 @@ type
 		Procedure InterClientRead(AClient : TInterClient);
 
 		Procedure ProcessZonePacket(AClient : TIdContext);
-		Function  SearchPacketListing(var AChara : TCharacter; var AClient : TIdContext;
-																	var InBuffer :  TBuffer; const Version   : Word;
-																	const Packet    : Word  ) :Boolean;
+		Function  SearchPacketListing(
+			var
+				AChara   : TCharacter;
+			var
+				AClient  : TIdContext;
+			var
+				InBuffer :  TBuffer;
+			const
+				Version  : Word;
+			const
+				Packet   : Word
+			) : Boolean;
 
 		Procedure SetPort(Value : Word);
-		Function GetStarted() : Boolean;
+		Function GetStarted : Boolean;
 
 		Procedure LoadOptions;
 		Procedure LoadMaps;
@@ -98,11 +107,11 @@ type
 		property Started : Boolean read GetStarted;
 		property Port : Word read fPort write SetPort;
 
-		Constructor Create();
-		Destructor  Destroy();Override;
+		Constructor Create;
+		Destructor  Destroy;Override;
 
 		Procedure   Start(Reload : Boolean = FALSE);
-		Procedure   Stop();
+		Procedure   Stop;
 
 		Procedure   ConnectToCharacter;
 		Procedure   ConnectToInter;
@@ -174,30 +183,57 @@ end;{Create}
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//Destroy()                                                        DESTRUCTOR
-//------------------------------------------------------------------------------
-//	What it does-
-//			Destroys our zone server
-//
-//	Changes -
-//		September 19th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
+(*- Destructor ----------------------------------------------------------------*
+TZoneServer.Destroy
+--------------------------------------------------------------------------------
+Overview:
+--
+	Cleans up lists and objects owned by the Zone Server instance.
+
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2006/09/19] RaX - Created Header.
+[2007/06/02] CR - Improved description.  Bugfix: Memory leak plugged -- NPCList
+	objects are now freed before freeing the list itself.  Did the research, and
+	RaX's lists for MapList and CharacterList are self-cleaning (Good job there!).
+	Added comments to point out which are potentially unsafe Free calls.
+*-----------------------------------------------------------------------------*)
 Destructor TZoneServer.Destroy;
-begin
+Var
+	Idx : Integer;
+Begin
+	{[2007/06/02] CR - MapList and CharacterList are both self-cleaning. }
 	MapList.Free;
 	CharacterList.Free;
+
+	{[2007/06/02] CR - Tsusai was right, we did need to free up this list - the
+	Zone owns the NPCs on it's maps. }
+	for Idx := NPCList.Count -1 downto 0 do
+	begin
+		if Assigned(NPCList.Objects[Idx]) then
+		begin
+			NPCList.Objects[Idx].Free;
+		end;
+	end;
 	NPCList.Free;
-  
+
+	//--
+	{[2007/06/02] CR - These are still a it suspect for freeing up their sub-
+	objects properly... }
 	CharacterEventThread.Free;
 
 	TCPServer.Free;
 	ToCharaTCPClient.Free;
 	ToInterTCPClient.Free;
+	//--
+
+	{[2007/06/02] CR - Safe. }
 	Commands.Free;
-end;{Destroy}
-//------------------------------------------------------------------------------
+End; (* Dest TZoneServer.Destroy
+*-----------------------------------------------------------------------------*)
 
 
 //------------------------------------------------------------------------------
