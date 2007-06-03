@@ -15,6 +15,18 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 280 -
+[2007/06/03] CR - Overview: Bugfix: Reverting BufferReadString to the old 
+ original style weiss/eWeiss/Fusion/Prometheus RFIFOS code.  Yes, it uses a BIG 
+ buffer, but...  Yes, it works correctly, as it did originally.  Now clients can
+ re-logon without being refused and given a "Failed to connect to server" error
+ when they use their username/password again.
+[2007/06/03] CR - BufferIO: BufferReadString: Bugfix - allows clients to re-
+ login now.  Thoroughly commented code, and pre-requisite assertions, so that
+ no one haphazardly goes into this code to "improve" it without knowing the
+ perils before them.
+-
+
 - Rev 279 -
 [2007/06/02] CR - Overview: Bugfix: Memory leak fix in our Zone server.  This
  would end up being a larger leak in time, because we are *JUST* starting to add

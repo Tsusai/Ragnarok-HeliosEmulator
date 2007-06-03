@@ -63,8 +63,16 @@ uses
 
 	procedure SendBuffer(var AClient : TIdContext; const Buffer : TBuffer; const Size : LongWord);overload;
 	procedure SendBuffer(var AClient : TInterClient; const Buffer : TBuffer; const Size : LongWord);overload;
-	procedure RecvBuffer(var AClient : TIdContext; var Buffer; const Size : LongWord); overload;
-	procedure RecvBuffer(var AClient : TInterClient; var Buffer; const Size : LongWord);overload;
+	procedure RecvBuffer(
+		var AClient : TIdContext;
+		var Buffer;
+		const Size : LongWord
+		); overload;
+	procedure RecvBuffer(
+		var AClient : TInterClient;
+		var Buffer;
+		const Size : LongWord
+		); overload;
 
 implementation
 uses
@@ -303,26 +311,69 @@ READING DATA FROM THE BUFFER METHODS
 //------------------------------------------------------------------------------
 
 
-//------------------------------------------------------------------------------
-//BufferReadString                                                      FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//		Socket Method BufferReadString - Reads a String from the buffer.
-//
-//	Changes -
-//		March 12th, 2007 - Aeomin - Reformat Header.
-//
-//------------------------------------------------------------------------------
-	function BufferReadString(const Index:word; const Count:word; const Buffer : TBuffer):string;
-	begin
-		Assert(Index <= 32767, 'BufferReadString: Index overflow ' + IntToStr(Index));
-		Assert(Index + Count <= 32767, 'BufferReadString: Index+Count overflow ' + IntToStr(Index+Count));
-    SetLength(Result, Count);
-    Move(Buffer[Index], Result[1], Count);
-    Result := Trim(Result);
-	end;
-//------------------------------------------------------------------------------
+(*- Function ------------------------------------------------------------------*
+BufferReadString
+--------------------------------------------------------------------------------
+Overview:
+--
+	Socket Method BufferReadString - Reads a String from the buffer.
 
+[2007/06/03] CR - Reverted to original weiss-based code, instead of the latest
+	RFIFOS code that was present in Prometheus when Tsusai began filling out his
+	buffer read/write routines.
+
+	Contains Tricky Code:
+		By using an array of character (StrArray) as an intermediary, it trims the
+	Result string up to the first Null (#0) character.
+
+		This sidesteps the need to do an explicit Trim(), for the one case where the
+	Client completely foregoes security when re-logging into the Login server when
+	dropping from the Zone -- it sends the password, a null, and whatever random
+	data you have in that 24 byte block of RAM.  Just hope your credit card number
+	wasn't that spot before!
+
+--
+Pre:
+	(Our buffers are 32k in size, which is also the max packet size for RO packets
+	by design. So:)
+	Ensure that Index is less than the 32k barrier.
+	Ensure that Index + Count together, are less than the 32k barrier.
+Post:
+	None.
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/03/12] Aeomin - Reformat Header.
+[2007/06/03] CR - Bugfix - allows clients to re-login now.  Thoroughly commented
+	code, and pre-requisite assertions, so that no one haphazardly goes into this
+	code to "improve" it without knowing the perils before them.
+*-----------------------------------------------------------------------------*)
+Function  BufferReadString(
+	const
+		Index  : Word; //Starting point on the buffer.
+	const
+		Count  : Word; //Max number of characters to copy to the string.
+	const
+		Buffer : TBuffer //Our source Byte Buffer
+	) : String;
+Var
+	StrArray : TCBuffer;
+Begin
+	//Pre
+	Assert(Index <= 32767, 'BufferReadString: Index overflow ' + IntToStr(Index));
+	Assert(
+		Index + Count <= 32767,
+		'BufferReadString: Index+Count overflow ' + IntToStr(Index+Count)
+	);
+	//--
+
+	StrArray[Count] := #0; //Ensure the string is null terminated, just in case.
+	Move(Buffer[Index], StrArray, Count);
+	Result := StrArray; //Does more than you think here (read description).
+End; (* Func BufferReadString
+*-----------------------------------------------------------------------------*)
 
 //------------------------------------------------------------------------------
 //BufferReadOnePoint                                                    FUNCTION
@@ -396,7 +447,11 @@ PREMADE SENDING OF BUFFER TO CLIENT
 
 
 	//Socket Method RecvBuffer - Reads the buffer from the socket.
-	procedure RecvBuffer(var AClient : TIdContext; var Buffer; const Size : LongWord);
+	procedure RecvBuffer(
+		var AClient : TIdContext;
+		var Buffer;
+		const Size : LongWord
+		);
 	var
 		RecvBytes : TIdBytes;
 	begin
