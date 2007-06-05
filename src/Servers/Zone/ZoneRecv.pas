@@ -105,6 +105,12 @@ uses
 		const ReadPts : TReadPts
 	);
 
+	procedure NPCMenu(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
 	procedure QuitGame(
 		var AChara  : TCharacter;
 		const InBuffer : TBuffer;
@@ -633,6 +639,41 @@ uses
 		begin
 			AChara.ScriptStatus := SCRIPT_RUNNING;
 			ResumeLuaNPCScript(AChara);
+		end;
+	end;
+
+//------------------------------------------------------------------------------
+//NPCMenu                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Resumes a npc script with a menu selection
+//      First menu choice returns a 1, 2nd returns 2, etc.  $ff = cancel
+//
+//  Changes -
+//    June 03rd, 2007 - Tsusai - Created
+//------------------------------------------------------------------------------
+	procedure NPCMenu(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+	var
+		NPCID : LongWord;
+		Choice : Byte;
+	begin
+		NPCID := BufferReadLongWord(ReadPts[0], InBuffer);
+		Choice := BufferReadByte(ReadPts[1], InBuffer);
+		if (AChara.ScriptID = NPCID) and
+			(AChara.ScriptStatus = SCRIPT_YIELD_MENU) then
+		begin
+			if Choice <> $FF then
+			begin
+				AChara.ScriptStatus := SCRIPT_RUNNING;
+				ResumeLuaNPCScriptWithInteger(AChara,Choice);
+			end else
+			begin
+				AChara.ScriptStatus := SCRIPT_NOTRUNNING;
+			end;
 		end;
 	end;
 

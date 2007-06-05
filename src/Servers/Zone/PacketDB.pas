@@ -198,8 +198,8 @@ Begin
 					ExecCommand := ItemUnequip;}
 				end else if Command = 'restart' then begin
 					ExecCommand := ReturnToCharacterSelect;
-				{end else if Command = 'npcselectmenu' then begin
-					ExecCommand := NPCMenu;}
+				end else if Command = 'npcselectmenu' then begin
+					ExecCommand := NPCMenu;
 				end else if Command = 'npcnextclicked' then begin
 					ExecCommand := NPCNext;
 				{end else if Command = 'statusup' then begin

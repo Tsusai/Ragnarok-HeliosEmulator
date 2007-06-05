@@ -15,6 +15,16 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 281 -
+[2007/06/05] Tsusai - Notes/Overview: More Lua commands.
+[2007/06/05] Tsusai - LuaNPCCommands: Added script_checkpoint, script_menu,
+ script_get_charaname
+[2007/06/05] Tsusai - LuaNPCCommands - script_dialog: Now allows for a integer
+ string to be passed to it
+[2007/06/05] Tsusai - ZoneRecv: Added NPCMenu to parse the npc menu result
+[2007/06/05] Tsusai - PacketDB.pas: Enabled NPC Menu reply packet
+-
+
 - Rev 280 -
 [2007/06/03] CR - Overview: Bugfix: Reverting BufferReadString to the old 
  original style weiss/eWeiss/Fusion/Prometheus RFIFOS code.  Yes, it uses a BIG 

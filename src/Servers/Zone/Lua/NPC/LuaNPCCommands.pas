@@ -32,21 +32,31 @@ function script_moveto(ALua : TLua) : integer; cdecl; forward;
 function script_dialog(ALua : TLua) : integer; cdecl; forward;
 function script_wait(ALua : TLua) : integer; cdecl; forward;
 function script_close(ALua : TLua) : integer; cdecl; forward;
+function script_checkpoint(ALua : TLua) : integer; cdecl; forward;
+function script_menu(ALua : TLua) : integer; cdecl; forward;
+function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 8;
+	NPCCommandCount = 11;
 
 const
 	//"Function name in lua" , Delphi function name
 	NPCCommandList : array [1..NPCCommandCount] of lual_reg = (
+		//TNPC adding
 		(name:'npc';func:addnpc),
 		(name:'warp';func:addwarp),
 		(name:'hiddenwarp';func:addhiddenwarp),
+		//NPC Commands
 		(name:'moveto';func:script_moveto),
 		(name:'dialog';func:script_dialog),
 		(name:'wait';func:script_wait),
 		(name:'close';func:script_close),
+		(name:'checkpoint';func:script_checkpoint),
+		(name:'menu';func:script_menu),
+		//Special Variable retrieving functions
+		(name:'PcName';func:script_get_charaname),
+		//Misc tools.
 		(name:'print';func:lua_print)
 	);
 
@@ -230,6 +240,7 @@ begin
 	Result := 0;
 end;
 
+//dialog "this is my text"
 //NPC Dialog to the character
 function script_dialog(ALua : TLua) : integer; cdecl;
 var
@@ -240,7 +251,7 @@ var
 begin
 	Result := 0;
 	if (lua_gettop(ALua) = 1) and
-		(Lua_isNonNumberString(ALua,1)) then
+		(lua_isstring(ALua,1)) then
 	begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
@@ -258,13 +269,15 @@ begin
 	end;
 end;
 
+//wait()
+//Sends the next button to the client
 function script_wait(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
 	OutBuffer : TBuffer;
 begin
 	Result := 0;
-	if lua_gettop(ALua) = 0 then
+	if (lua_gettop(ALua) = 0) then
 	begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
@@ -280,6 +293,8 @@ begin
 	end;
 end;
 
+//close()
+//Sends the close button to the client and flags the script user as not running.
 function script_close(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
@@ -298,6 +313,93 @@ begin
 	end else
 	begin
 		luaL_error(ALua,'script close syntax error');
+	end;
+end;
+
+//checkpoint("map",x,y)
+//Sets the specified save point to the character
+function script_checkpoint(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+begin
+	Result := 0;
+	if (lua_gettop(ALua) = 3) and
+		(Lua_isNonNumberString(ALua,1)) and
+		(lua_isnumber(ALua,2)) and
+		(lua_isnumber(ALua,3)) then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			AChara.SaveMap := lua_tostring(ALua,1);
+			AChara.SavePoint := Point(
+				lua_tointeger(ALua,2), lua_tointeger(ALua,3)
+			);
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script checkpoint syntax error');
+	end;
+end;
+
+//menu("choice1","choice2","choice3",etc)
+//Sets the specified save point to the character
+//R 00b7 <len>.w <ID>.l <str>.?B
+//Each menu choice is delimited by ":"
+function script_menu(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	ParamCount : word;
+	MenuString : string;
+	Size : word;
+	OutBuffer : TBuffer;
+	idx : word;
+begin
+	Result := 0;
+	MenuString := '';
+	ParamCount := lua_gettop(ALua);
+	if ParamCount > 0 then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			for idx := 1 to ParamCount do
+			begin
+				if idx = 1 then
+				begin
+					MenuString := lua_tostring(Alua,idx);
+				end else
+				begin
+					MenuString := MenuString + ':' + lua_tostring(Alua,idx);
+				end;
+			end;
+			WriteBufferWord(0, $00b7, OutBuffer);
+			Size := Length(MenuString);
+			WriteBufferWord(2, Size + 8, OutBuffer);
+			WriteBufferLongWord(4, AChara.ScriptID, OutBuffer);
+			WriteBufferString(8, MenuString, Size, OutBuffer);
+			SendBuffer(AChara.ClientInfo, OutBuffer, Size + 8);
+			AChara.ScriptStatus := SCRIPT_YIELD_MENU;
+			Result := lua_yield(ALua,1);
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script menu syntax error');
+	end;
+end;
+
+function script_get_charaname(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+begin
+	Result := 1; //we are going to return 1 result
+	if (lua_gettop(ALua) = 0) then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			lua_pushstring(ALua,PChar(AChara.Name));
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script PcName syntax error');
 	end;
 end;
 
