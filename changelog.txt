@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 282 -
+[2007/06/07] RaX - Reverted walking to before the fixes and fixed the an area
+ grabbing bug, you are now free to move about the ragnarok.
+-
+
 - Rev 281 -
 [2007/06/05] Tsusai - Notes/Overview: More Lua commands.
 [2007/06/05] Tsusai - LuaNPCCommands: Added script_checkpoint, script_menu,
