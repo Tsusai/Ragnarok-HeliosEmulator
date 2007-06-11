@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 283 -
+[2007/06/11] RaX - Corrected Typos in Helios' resource file.
+-
+
 - Rev 282 -
 [2007/06/07] RaX - Reverted walking to before the fixes and fixed the an area
  grabbing bug, you are now free to move about the ragnarok.

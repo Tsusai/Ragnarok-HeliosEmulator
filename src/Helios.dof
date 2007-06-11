@@ -105,17 +105,13 @@ HostApplication=
 Launcher=
 UseLauncher=0
 DebugCWD=
-[Language]
-ActiveLang=
-ProjectLang=
-RootDir=
 [Version Info]
 IncludeVerInfo=1
 AutoIncBuild=1
 MajorVer=0
 MinorVer=0
-Release=0
-Build=280
+Release=1
+Build=283
 Debug=0
 PreRelease=0
 Special=0
@@ -125,14 +121,14 @@ Locale=1033
 CodePage=1252
 [Version Info Keys]
 CompanyName=Project Helios
-FileDescription=Emumation Server
-FileVersion=0.0.0.280
+FileDescription=Ragnarok Online Server
+FileVersion=0.0.1.283
 InternalName=
 LegalCopyright=
 LegalTrademarks=
 OriginalFilename=
 ProductName=
-ProductVersion=1.0.0.0
+ProductVersion=0.0.1.0
 Comments=
 [HistoryLists\hlConditionals]
 Count=1
