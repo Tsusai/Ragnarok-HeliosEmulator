@@ -1,0 +1,3 @@
+For full usage, the Maps and Scripts folder are needed, but aren't in the source package
+
+Please consult SVN.txt in the Notes folder.

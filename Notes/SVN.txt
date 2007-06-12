@@ -1,0 +1,13 @@
+Helios Project uses Subversion (SVN) for its repository.
+Each section has its own individual repository.
+
+Core	: http://heliosproject.svn.sourceforge.net/svnroot/heliosproject/
+		/branches
+		/tags  (Stores Releases)
+		/trunk (Main development folder)
+Scripts	: http://tools.assembla.com/svn/HeliosScripts/
+		/tags  (Stores Releases)
+		/Scripts (Main script folder.  Can be put directly into the bin folder)
+Maps	: http://tools.assembla.com/svn/HeliosMaps/
+		/tags  (Stores Releases)
+		/Maps (Main map folder.  Can be put directly into the bin folder)

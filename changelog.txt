@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 284 -
+[2007/06/12] Tsusai - Added a text file to bin about the Maps and Scripts folder.
+[2007/06/12] Tsusai - Notes\SVN.txt - Added.  Contains SVN paths and dir structure.
+-
+
 - Rev 283 -
 [2007/06/11] RaX - Corrected Typos in Helios' resource file.
 -
