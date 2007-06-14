@@ -72,7 +72,8 @@ uses
 	Main,
 	MySQLCommonDatabase,
 	MySQLGameDatabase,
-	MySQLStaticDatabase
+	MySQLStaticDatabase,
+	SQLiteCommonDatabase
 	{3rd Party}
 	//none
 	;
@@ -150,6 +151,11 @@ Begin
 	MYSQL://2
 		begin
 			CommonData  := TMySQLCommonDatabase.Create(self);
+		end;
+
+	SQLITE://3
+		begin
+			CommonData := TSQLiteCommonDatabase.Create(self);
 		end;
 
 	else

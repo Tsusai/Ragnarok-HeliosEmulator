@@ -16,7 +16,8 @@ interface
 const
 	TEXT				= 1;//TEXT database, set ServerConfig.DatabaseType to this integer.
 	MYSQL				= 2;//MySQL database.
-	MAX_DBTYPE	= 2;//The highest database type, used for ensurerange.
+	SQLITE			= 3;//SQLite.  Will be #1 soon.
+	MAX_DBTYPE	= 3;//The highest database type, used for ensurerange.
 
 implementation
 

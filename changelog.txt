@@ -15,6 +15,20 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 285 -
+[2007/06/14] Tsusai - Notes/Overview: Added basic SQLite support.  Common DB support
+ only at this time.
+[2007/06/14] Tsusai - ThirdParty/SQLite/*.* : Added SQLite3 Delphi wrappers. They
+ are not originals, but modified for our uses.  Please see the comments placed in
+ their headers for more details.
+[2007/06/14] Tsusai - Save/helioscommon.db : Added Common database for SQLite.
+[2007/06/14] Tsusai - SQLiteCommonDatabase : Added. Provides access to accounts.
+[2007/06/14] Tsusai - Database : Added a third option for SQLite in the Common DB
+ creation.
+[2007/06/14] Tsusai - DatabaseConstants : Added another const for SQLite.  This
+ probably be undone when JanSQL is removed.
+-
+
 - Rev 284 -
 [2007/06/12] Tsusai - Added a text file to bin about the Maps and Scripts folder.
 [2007/06/12] Tsusai - Notes\SVN.txt - Added.  Contains SVN paths and dir structure.

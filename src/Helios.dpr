@@ -135,6 +135,7 @@ compile for linux, at the same time*}
 	GameDatabaseTemplate in 'Common\Classes\Database\Game\GameDatabaseTemplate.pas',
 	StaticDatabaseTemplate in 'Common\Classes\Database\Static\StaticDatabaseTemplate.pas',
 	JanSQLCommonDatabase in 'Common\Classes\Database\Common\JanSQLCommonDatabase.pas',
+	SQLiteCommonDatabase in 'Common\Classes\Database\Common\SQLiteCommonDatabase.pas',
 	MySQLCommonDatabase in 'Common\Classes\Database\Common\MySQLCommonDatabase.pas',
 	JanSQLGameDatabase in 'Common\Classes\Database\Game\JanSQLGameDatabase.pas',
 	MySQLGameDatabase in 'Common\Classes\Database\Game\MySQLGameDatabase.pas',
@@ -142,6 +143,9 @@ compile for linux, at the same time*}
 	MySQLStaticDatabase in 'Common\Classes\Database\Static\MySQLStaticDatabase.pas',
 
 	//Database Clients
+	//SQLite
+	SQLite3 in 'Common\ThirdParty\SQLite\SQLite3.pas',
+	SQLiteTable3 in 'Common\ThirdParty\SQLite\SQLiteTable3.pas',
 	//jansql
 	janSQL in 'Common\ThirdParty\JanSQL\janSQL.pas',
 	janSQLExpression2 in 'Common\ThirdParty\JanSQL\janSQLExpression2.pas',
@@ -260,6 +264,7 @@ compile for linux, at the same time*}
 	GameDatabaseTemplate in 'Common/Classes/Database/Game/GameDatabaseTemplate.pas',
 	StaticDatabaseTemplate in 'Common/Classes/Database/Static/StaticDatabaseTemplate.pas',
 	JanSQLCommonDatabase in 'Common/Classes/Database/Common/JanSQLCommonDatabase.pas',
+	SQLiteCommonDatabase in 'Common/Classes/Database/Common/SQLiteCommonDatabase.pas',
 	MySQLCommonDatabase in 'Common/Classes/Database/Common/MySQLCommonDatabase.pas',
 	JanSQLGameDatabase in 'Common/Classes/Database/Game/JanSQLGameDatabase.pas',
 	MySQLGameDatabase in 'Common/Classes/Database/Game/MySQLGameDatabase.pas',
@@ -267,6 +272,9 @@ compile for linux, at the same time*}
 	MySQLStaticDatabase in 'Common/Classes/Database/Static/MySQLStaticDatabase.pas',
 
 	//Database Clients
+	//SQLite
+	SQLite3 in 'Common/ThirdParty/SQLite/SQLite3.pas',
+	SQLiteTable3 in 'Common/ThirdParty/SQLite/SQLiteTable3.pas',
 	//jansql
 	janSQL in 'Common/ThirdParty/JanSQL/janSQL.pas',
 	janSQLExpression2 in 'Common/ThirdParty/JanSQL/janSQLExpression2.pas',
