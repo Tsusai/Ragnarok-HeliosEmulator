@@ -87,10 +87,10 @@ CREATE TABLE `characters` (
   `head_top` int(11) unsigned NOT NULL default '0',
   `head_mid` int(11) unsigned NOT NULL default '0',
   `head_bottom` int(11) unsigned NOT NULL default '0',
-  `last_map` varchar(20) NOT NULL default 'new_5-1.gat',
+  `last_map` varchar(20) NOT NULL default 'new_1-1.gat',
   `last_x` int(4) NOT NULL default '53',
   `last_y` int(11) NOT NULL default '111',
-  `save_map` varchar(20) NOT NULL default 'new_5-1.gat',
+  `save_map` varchar(20) NOT NULL default 'new_1-1.gat',
   `save_x` int(11) NOT NULL default '53',
   `save_y` int(11) NOT NULL default '111',
   `partner_id` int(11) NOT NULL default '0',
@@ -104,7 +104,7 @@ CREATE TABLE `characters` (
   KEY `party_id` (`party_id`),
   KEY `guild_id` (`guild_id`),
   KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=53 DEFAULT CHARSET=latin1 AUTO_INCREMENT=53 ;
+) ENGINE=MyISAM AUTO_INCREMENT=53 DEFAULT CHARSET=latin1 AUTO_INCREMENT=53;
 
 -- 
 -- Dumping data for table `characters`

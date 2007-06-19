@@ -15,6 +15,16 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 286 -
+[2007/06/18] Tsusai - Notes/Overview: A bunch of SQLite stuff that would've been
+ done alot sooner if the many GUI programs didn't suck.
+[2007/06/18] Tsusai - Moved all MySQL .sql files (bin/SQL Files/) to 
+ bin/SQL/MySQL/.
+[2007/06/18] Tsusai - Added modified dumps for SQLite to bin/SQL/SQLite/
+[2007/06/18] Tsusai - bin/Save/*.db - Added heliosgame.db and heliosstatic.db
+ Also updated helioscommon.db to autoincrement account ids.
+-
+
 - Rev 285 -
 [2007/06/14] Tsusai - Notes/Overview: Added basic SQLite support.  Common DB support
  only at this time.
