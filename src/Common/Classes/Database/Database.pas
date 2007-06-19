@@ -73,7 +73,9 @@ uses
 	MySQLCommonDatabase,
 	MySQLGameDatabase,
 	MySQLStaticDatabase,
-	SQLiteCommonDatabase
+	SQLiteCommonDatabase,
+	SQLiteGameDatabase,
+	SQLiteStaticDatabase
 	{3rd Party}
 	//none
 	;
@@ -180,6 +182,11 @@ Begin
 			GameData := TMySQLGameDatabase.Create(Self);
 		end;
 
+	SQLITE://3
+		begin
+			GameData := TSQLiteGameDatabase.Create(self);
+		end;
+
 	else
 		begin //anything else
 			Console.WriteLn(
@@ -200,6 +207,11 @@ Begin
 	MYSQL://2
 		begin
 			StaticData := TMySQLStaticDatabase.Create(Self);
+		end;
+
+	SQLITE://3
+		begin
+			StaticData := TSQLiteStaticDatabase.Create(self);
 		end;
 
 	else

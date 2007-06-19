@@ -15,6 +15,15 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 287 -
+[2007/06/18] Tsusai - Notes/Overview: SQLite fully implemented.  I like for it
+ to be tested alot as the main database before removal of JanSQL.
+[2007/06/18] Tsusai - Database: Added SQLite options (type 3) to Game and Static
+ databases.
+[2007/06/18] Tsusai - SQLiteGameDatabase: Added.
+[2007/06/18] Tsusai - SQLiteStaticDatabase: Added.
+-
+
 - Rev 286 -
 [2007/06/18] Tsusai - Notes/Overview: A bunch of SQLite stuff that would've been
  done alot sooner if the many GUI programs didn't suck.

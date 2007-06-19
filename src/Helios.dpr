@@ -139,8 +139,10 @@ compile for linux, at the same time*}
 	MySQLCommonDatabase in 'Common\Classes\Database\Common\MySQLCommonDatabase.pas',
 	JanSQLGameDatabase in 'Common\Classes\Database\Game\JanSQLGameDatabase.pas',
 	MySQLGameDatabase in 'Common\Classes\Database\Game\MySQLGameDatabase.pas',
+	SQLiteGameDatabase in 'Common\Classes\Database\Game\SQLiteGameDatabase.pas',
 	JanSQLStaticDatabase in 'Common\Classes\Database\Static\JanSQLStaticDatabase.pas',
 	MySQLStaticDatabase in 'Common\Classes\Database\Static\MySQLStaticDatabase.pas',
+	SQLiteStaticDatabase in 'Common\Classes\Database\Static\SQLiteStaticDatabase.pas',
 
 	//Database Clients
 	//SQLite
@@ -268,8 +270,10 @@ compile for linux, at the same time*}
 	MySQLCommonDatabase in 'Common/Classes/Database/Common/MySQLCommonDatabase.pas',
 	JanSQLGameDatabase in 'Common/Classes/Database/Game/JanSQLGameDatabase.pas',
 	MySQLGameDatabase in 'Common/Classes/Database/Game/MySQLGameDatabase.pas',
+	SQLiteGameDatabase in 'Common/Classes/Database/Game/SQLiteGameDatabase.pas',
 	JanSQLStaticDatabase in 'Common/Classes/Database/Static/JanSQLStaticDatabase.pas',
 	MySQLStaticDatabase in 'Common/Classes/Database/Static/MySQLStaticDatabase.pas',
+	SQLiteStaticDatabase in 'Common/Classes/Database/Static/SQLiteStaticDatabase.pas',
 
 	//Database Clients
 	//SQLite
