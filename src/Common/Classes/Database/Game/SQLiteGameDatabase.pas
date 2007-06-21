@@ -375,7 +375,7 @@ begin
 			QueryResult.Next;
 		end;
 	end;
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //-----------------------------------------------------------------------------
 
@@ -403,7 +403,7 @@ begin
 			SendQuery(
 			Format('SELECT char_id FROM characters WHERE char_num = %d and account_id = %d',[Slot, AccountID]));
 	Result := (QueryResult.Count > 0);
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------
 
@@ -429,7 +429,7 @@ begin
 			SendQuery(
 			Format('SELECT char_id FROM characters WHERE name = ''%s''',[Name]));
 	Result := (QueryResult.Count > 0);
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;
 //------------------------------------------------------------------------------
 
@@ -442,6 +442,7 @@ end;
 //
 //	Changes -
 //		[2007/06/18] Tsusai - Created.
+//		[2007/06/19] Tsusai - SQLite makes a return table anyways, so we need to free it.
 //
 //------------------------------------------------------------------------------
 procedure TSQLiteGameDatabase.SaveChara(
@@ -450,6 +451,7 @@ procedure TSQLiteGameDatabase.SaveChara(
 	);
 var
 	QueryString : string;
+	QueryResult : TSQLiteTable;
 begin
 	with AChara do
 	begin
@@ -561,7 +563,8 @@ begin
 			CID
 			]);
 	end;
-	SendQuery(QueryString);
+	QueryResult := SendQuery(QueryString);
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//SaveChara
 //------------------------------------------------------------------------------
 
@@ -610,7 +613,8 @@ begin
 		ACharacter := GetChara(QueryResult.FieldAsInteger(0));
 		Result := Assigned(ACharacter);
 	end;
-	QueryResult.Free;
+	
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//CreateChara
 //------------------------------------------------------------------------------
 
@@ -703,7 +707,7 @@ begin
 			CalcSpeed;
 		end;
 	end else Result := nil;
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//LoadChara
 //------------------------------------------------------------------------------
 
@@ -796,7 +800,7 @@ begin
 			CalcSpeed;
 		end;
 	end else Result := nil;
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//LoadChara
 //------------------------------------------------------------------------------
 
@@ -809,13 +813,17 @@ end;//LoadChara
 //
 //	Changes -
 //		[2007/06/18] Tsusai - Created.
+//		[2007/06/19] Tsusai - SQLite makes a return table anyways, so we need to free it.
 //
 //------------------------------------------------------------------------------
 function TSQLiteGameDatabase.DeleteChara(var ACharacter : TCharacter) : boolean;
+var
+	QueryResult : TSQLiteTable;
 begin
-	SendQuery(
+	QueryResult := SendQuery(
 		Format('DELETE FROM characters WHERE char_id=%d',[ACharacter.CID]));
 	Result := true;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//DeleteChara
 //------------------------------------------------------------------------------
 

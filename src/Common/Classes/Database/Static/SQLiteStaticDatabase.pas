@@ -264,7 +264,7 @@ begin
 	begin
 			Result := QueryResult.FieldAsInteger(0);
 	end else Result := 0;
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetBaseHP
 //------------------------------------------------------------------------------
 
@@ -294,7 +294,7 @@ begin
 	begin
 			Result  := QueryResult.FieldAsInteger(0);
 	end else Result := 0;
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetBaseSP
 //------------------------------------------------------------------------------
 
@@ -324,7 +324,7 @@ begin
 	begin
 			Result  := QueryResult.FieldAsInteger(0);
 	end else Result := 0;
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetBaseSP
 //------------------------------------------------------------------------------
 
@@ -356,7 +356,7 @@ begin
 	begin
 			Result  := Boolean(QueryResult.FieldAsInteger(0));
 	end;
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetMapCanSave
 //------------------------------------------------------------------------------
 
@@ -387,7 +387,7 @@ begin
 	begin
 		Result  := QueryResult.FieldAsInteger(0);
 	end;
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetMapZoneID
 //------------------------------------------------------------------------------
 
@@ -451,7 +451,7 @@ begin
 			6 : Result.Smog     := TRUE;
 		end;
 	end;
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetMapFlags
 //------------------------------------------------------------------------------
 
@@ -487,7 +487,7 @@ begin
 			QueryResult.Next;
 		end;
 	end;
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetMapsForZone
 //------------------------------------------------------------------------------
 {END SQLiteStaticDatabase}

@@ -15,6 +15,14 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 288 -
+[2007/06/20] Tsusai - Notes/Overview: The query for SQLite automatically makes
+ a table, so I went ahead and made it return one regardless, so that the data
+ could be freed.
+[2007/06/20] Tsusai - SQLite*****Database: Assigned data to a result, so that
+ it may be freed.
+-
+
 - Rev 287 -
 [2007/06/18] Tsusai - Notes/Overview: SQLite fully implemented.  I like for it
  to be tested alot as the main database before removal of JanSQL.

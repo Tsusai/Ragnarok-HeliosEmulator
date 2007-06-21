@@ -342,7 +342,7 @@ begin
 	begin
 		Result := NIL;
 	end;
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetAccount
 //------------------------------------------------------------------------------
 
@@ -375,7 +375,7 @@ begin
 	begin
 		Result := NIL;
 	end;
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetAccount
 //------------------------------------------------------------------------------
 
@@ -401,6 +401,7 @@ begin
 		SendQuery(
 			Format('SELECT userid FROM accounts WHERE userid = ''%s''',[UserName]));
 	Result := (QueryResult.Count > 0);
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//AccountExists
 //------------------------------------------------------------------------------
 
@@ -438,6 +439,7 @@ const
 		'WHERE account_id=%d';
 var
 	QueryString : String;
+	QueryResult : TSQLiteTable;
 begin
 	QueryString :=
 		Format(BaseString,
@@ -455,7 +457,8 @@ begin
 			 AnAccount.State,
 			 AnAccount.ID]
 		);
-	SendQuery(QueryString);
+	QueryResult := SendQuery(QueryString);
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//SaveAccount
 //------------------------------------------------------------------------------
 
@@ -468,6 +471,7 @@ end;//SaveAccount
 //
 //	Changes -
 //		[2007/06/14] Tsusai - Created.
+//		[2007/06/19] Tsusai - Added QueryResult so that any data can be freed.
 //
 //------------------------------------------------------------------------------
 procedure TSQLiteCommonDatabase.CreateAccount(
@@ -475,10 +479,13 @@ procedure TSQLiteCommonDatabase.CreateAccount(
 	const Password : string;
 	const GenderChar : char
 );
+var
+	QueryResult : TSQLiteTable;
 begin
-	SendQuery(
+	QueryResult := SendQuery(
 		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(''%s'', ''%s'', ''%s'')',
 		[Username,Password,GenderChar]));
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//CreateAccount
 //------------------------------------------------------------------------------
 
@@ -508,7 +515,7 @@ begin
 	AnAccount.LoginKey[2]  := QueryResult.FieldAsInteger(1);
 	AnAccount.ConnectUntil := ConvertMySQLTime(QueryResult.Fields[2]);
 	AnAccount.Bantime := ConvertMySQLTime(QueryResult.Fields[3]);
-	QueryResult.Free;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetAccountBanAndConnectTime
 //------------------------------------------------------------------------------
 
