@@ -83,6 +83,7 @@ uses
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
+//		[2007/06/21] Tsusai - Removed server creation.
 //
 //------------------------------------------------------------------------------
 constructor TMainProc.Create(AOwner : TComponent);
@@ -93,10 +94,6 @@ begin
 	LoadOptions;
 	EnsureFileStructure;
 
-	LoginServer      := TLoginServer.Create;
-  CharacterServer  := TCharacterServer.Create;
-	InterServer      := TInterServer.Create;
-	ZoneServer       := TZoneServer.Create;
 end;{TMainProc.Create}
 //------------------------------------------------------------------------------
 
@@ -109,18 +106,19 @@ end;{TMainProc.Create}
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
+//		[2007/06/21] Tsusai - Servers removed only if they are created.
 //
 //------------------------------------------------------------------------------
 destructor  TMainProc.Destroy;
 begin
-	ZoneServer.Free;
-	InterServer.Free;
-	CharacterServer.Free;
-	LoginServer.Free;
+	if Assigned(ZoneServer) then ZoneServer.Free;
+	if Assigned(InterServer) then InterServer.Free;
+	if Assigned(CharacterServer) then CharacterServer.Free;
+	if Assigned(LoginServer) then LoginServer.Free;
 
-  Options.Save;
+	Options.Save;
 	Options.Free;
-	
+
 	inherited Destroy;
 end;{TMainProc.Destroy}
 //------------------------------------------------------------------------------
@@ -135,8 +133,9 @@ end;{TMainProc.Destroy}
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
 //		January 20th, 2007 - Tsusai - If server passes PreLoad check (packet_db
-//			and database connect), then start the servers.  Readded Failed to 
+//			and database connect), then start the servers.  Readded Failed to
 //			Start message.
+//		[2007/06/21] Tsusai - Creates the servers only if they are needed.
 //
 //------------------------------------------------------------------------------
 procedure TMainProc.Startup;
@@ -148,28 +147,32 @@ begin
 	PreloadOK := InitGlobals;
 
 	LoadDatabaseOptions;
-	
+
 	if PreloadOK then
 	begin
 
 		//Start and create Enabled Servers
 		if Options.LoginEnabled then
 		begin
+			LoginServer      := TLoginServer.Create;
 			LoginServer.Start;
 		end;
 		//NOTE: Prior
 		if Options.CharaEnabled then
 		begin
+			CharacterServer  := TCharacterServer.Create;
 			CharacterServer.Start;
 		end;
 
 		if Options.InterEnabled then
 		begin
+			InterServer      := TInterServer.Create;
 			InterServer.Start;
 		end;
 
 		if Options.ZoneEnabled then
 		begin
+			ZoneServer       := TZoneServer.Create;
 			ZoneServer.Start;
 		end;
 
@@ -213,6 +216,7 @@ end;{TMainProc.Startup}
 //		January 20th, 2007 - Tsusai - Reversed shutdown order so server clients
 //			aren't disconnected and attempt to reconnect (cleaner shutdown 
 //			messages)
+//		[2007/06/21] Tsusai - Stops created servers.
 //
 //------------------------------------------------------------------------------
 procedure TMainProc.Shutdown;
@@ -222,12 +226,13 @@ begin
 	//Go backwards (so zone doesn't try and connect to character while shutting down)
 
 	//Disconnect clients.
-  ZoneServer.Stop;
-	InterServer.Stop;
-  CharacterServer.Stop;
-	LoginServer.Stop;
 
-  
+
+	if Assigned(ZoneServer) then ZoneServer.Stop;
+	if Assigned(InterServer) then InterServer.Stop;
+	if Assigned(CharacterServer) then CharacterServer.Stop;
+	if Assigned(LoginServer) then LoginServer.Stop;
+
 	DatabaseOptions.Save;
 	DatabaseOptions.Free;
 

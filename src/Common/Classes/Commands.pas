@@ -17,24 +17,24 @@ unit Commands;
 
 interface
 uses
-  Classes;
+	Classes;
 
 type
 //------------------------------------------------------------------------------
 //TCommands                                                               CLASS
 //------------------------------------------------------------------------------
-  TCommands = class
-  public
-    Procedure Parse(InputText : String);
+	TCommands = class
+	public
+		Procedure Parse(InputText : String);
 
 	private
 		function Credits : String;
-    function Help : String;
-    //function Reload() : String;
-    function Restart() : String;
-    function Start(Values : TStringList) : String;
-    function Stop(Values : TStringList) : String;
-  end;{TCommands}
+		function Help : String;
+		//function Reload() : String;
+		function Restart() : String;
+		function Start(Values : TStringList) : String;
+		function Stop(Values : TStringList) : String;
+	end;{TCommands}
 //------------------------------------------------------------------------------
 
 implementation
@@ -42,11 +42,11 @@ implementation
 	uses
 		SysUtils,
 		Main,
-    LoginServer,
-    CharacterServer,
-    InterServer,
-    ZoneServer,
-    Globals;
+		LoginServer,
+		CharacterServer,
+		InterServer,
+		ZoneServer,
+		Globals;
 
 //------------------------------------------------------------------------------
 //Parse()				                                           PROCEDURE
@@ -84,35 +84,35 @@ begin
 					end;
 					{Start Command Parser}
 					if Command = '/exit' then
-          begin
+					begin
 						MainProc.Run  := FALSE;
 						Error   := '';
 					end else
-          if Command = '/reload' then
+					if Command = '/reload' then
 					begin
 						Error   := 'Reload not setup till all DB is done';//ADataBase.Reload;
 					end else
 					if Command = '/credits' then
-          begin
+					begin
 						Error   := Credits;
 					end else
-          if Command = '/help' then
-          begin
+					if Command = '/help' then
+					begin
 						Error   := Help;
 					end else
-          if Command = '/restart' then
-          begin
+					if Command = '/restart' then
+					begin
 						Error   := Restart;
 					end else
-          if Command = '/start' then
-          begin
-            Error   := Start(Values);
-          end else
-          if Command = '/stop' then
-          begin
-            Error   := Stop(Values);
-          end else
-          begin
+					if Command = '/start' then
+					begin
+						Error   := Start(Values);
+					end else
+					if Command = '/stop' then
+					begin
+						Error   := Stop(Values);
+					end else
+					begin
 						Error   := Command + ' does not exist!';
 					end;
 					{End Command Parser}
@@ -232,39 +232,44 @@ end;{Restart}
 //
 //	Changes -
 //		September 20th, 2006 - RaX - Created Header.
+//		[2007/06/21] Tsusai - Creates the servers now.
 //
 //------------------------------------------------------------------------------
 function TCommands.Start(Values :  TStringList) : String;
 begin
-  if Values.Count > 0 then
-  begin
-    Values[0] := LowerCase(Values[0]);
-    if Values[0] = 'login' then
-    begin
-      MainProc.LoginServer.Start;
-    end else
-    if Values[0] = 'character' then
-    begin
-      MainProc.CharacterServer.Start();
-    end else
-    if Values[0] = 'inter' then
-    begin
-      MainProc.InterServer.Start;
-    end else
-    if Values[0] = 'zone' then
-    begin
-      MainProc.ZoneServer.Start;
-    end else
-    begin
-      Result := Values[0] + ' is not a valid server';
-    end;
-  end else
-  begin
-    //display help for Start()
+	if Values.Count > 0 then
+	begin
+		Values[0] := LowerCase(Values[0]);
+		if Values[0] = 'login' then
+		begin
+			MainProc.LoginServer := TLoginServer.Create;
+			MainProc.LoginServer.Start;
+		end else
+		if Values[0] = 'character' then
+		begin
+			MainProc.CharacterServer := TCharacterServer.Create;
+			MainProc.CharacterServer.Start;
+		end else
+		if Values[0] = 'inter' then
+		begin
+			MainProc.InterServer := TInterServer.Create;
+			MainProc.InterServer.Start;
+		end else
+		if Values[0] = 'zone' then
+		begin
+			MainProc.ZoneServer := TZoneServer.Create;
+			MainProc.ZoneServer.Start;
+		end else
+		begin
+			Result := Values[0] + ' is not a valid server';
+		end;
+	end else
+	begin
+		//display help for Start()
 		Console.WriteLn('Using /Start...');
 		Console.WriteLn('"/Start <ServerName>" - starts <ServerName>');
 		Console.WriteLn('ServerName can be "Login", "Character", "Zone", or "Inter"');
-  end;
+	end;
 
 end;{Start}
 //------------------------------------------------------------------------------
@@ -278,39 +283,44 @@ end;{Start}
 //
 //	Changes -
 //		September 20th, 2006 - RaX - Created Header.
+//		[2007/06/21] Tsusai - Frees the servers now.
 //
 //------------------------------------------------------------------------------
 function TCommands.Stop(Values :  TStringList) : String;
 begin
-  if Values.Count > 0 then
-  begin
-    Values[0] := LowerCase(Values[0]);
-    if Values[0] = 'login' then
-    begin
-      MainProc.LoginServer.Stop;;
-    end else
-    if Values[0] = 'character' then
-    begin
-      MainProc.CharacterServer.Stop;
-    end else
-    if Values[0] = 'inter' then
-    begin
-      MainProc.InterServer.Stop;
-    end else
-    if Values[0] = 'zone' then
-    begin
-      MainProc.ZoneServer.Stop;
-    end else
-    begin
+	if Values.Count > 0 then
+	begin
+		Values[0] := LowerCase(Values[0]);
+		if Values[0] = 'login' then
+		begin
+			MainProc.LoginServer.Stop;
+			MainProc.LoginServer.Free;
+		end else
+		if Values[0] = 'character' then
+		begin
+			MainProc.CharacterServer.Stop;
+			MainProc.CharacterServer.Free;
+		end else
+		if Values[0] = 'inter' then
+		begin
+			MainProc.InterServer.Stop;
+			MainProc.InterServer.Free;
+		end else
+		if Values[0] = 'zone' then
+		begin
+			MainProc.ZoneServer.Stop;
+			MainProc.ZoneServer.Free;
+		end else
+		begin
 			Result := Values[0] + ' is not a valid server';
-    end;
-  end else
-  begin
+		end;
+	end else
+	begin
 		//display help for Stop()
 		Console.WriteLn('Using /Stop...');
 		Console.WriteLn('"/Stop <ServerName>" - stops <ServerName>');
 		Console.WriteLn('ServerName can be "Login", "Character", "Zone", or "Inter"');
-  end;
+	end;
 
 end;{Stop}
 //------------------------------------------------------------------------------

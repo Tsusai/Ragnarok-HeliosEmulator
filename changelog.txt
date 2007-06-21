@@ -15,6 +15,21 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 289 -
+[2007/06/21] Tsusai - Notes/Overview: Made the 4 servers create and free themselves
+ dynamically when needed or not needed.  Why make a bunch of threads (listening
+ threads, event threads) and other lists, when we aren't really using them?
+ (Login server doesn't need zone's listening thread running now does it?)
+[2007/06/21] Tsusai - Main - MainProc.Create: Removed all server creation.
+[2007/06/21] Tsusai - Main - MainProc.Destroy: Frees a server if its created.
+[2007/06/21] Tsusai - Main - MainProc.Startup: Creates the servers if needed and
+ then starts them.
+[2007/06/21] Tsusai - Main - MainProc.Shutdown: Stops Assigned() servers.
+[2007/06/21] Tsusai - Commands - TCommands.Start: Creates and then starts the
+ specified server.
+[2007/06/21] Tsusai - Commands - TCommands.Stop: Stops then frees specified server.
+-
+
 - Rev 288 -
 [2007/06/20] Tsusai - Notes/Overview: The query for SQLite automatically makes
  a table, so I went ahead and made it return one regardless, so that the data
