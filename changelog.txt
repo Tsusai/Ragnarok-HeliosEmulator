@@ -15,6 +15,18 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 270 -
+[2007/06/21] Tsusai - Notes/Overview: When a developer and a program tell you the
+ hours upon hours you spent securing threads wasn't working, they are leaking, 
+ and so are 2000 pointers....something's not right in the land of Oz.
+[2007/06/21] Tsusai - WinLinux - KillProcess: Removed.  Both the linux and the
+ windows code to kill the application were doing the same thing a Ctrl-Alt-Del
+ was doing, the emergency kill.  The built in System.Halt command (which I'm 
+ seriously pissed off for not seeing this long ago) does the job.
+[2007/06/21] Tsusai - Globals - TerminateApplication: Replaced KillProcess with
+ Halt.
+-
+
 - Rev 289 -
 [2007/06/21] Tsusai - Notes/Overview: Made the 4 servers create and free themselves
  dynamically when needed or not needed.  Why make a bunch of threads (listening

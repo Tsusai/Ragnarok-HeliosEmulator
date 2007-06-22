@@ -26,7 +26,6 @@ uses
 	function GetIPStringFromHostname(Hostname : String) : TIPSet;
 	procedure SetupTerminationCapturing;
 	procedure KillTerminationCapturing;
-	procedure KillProcess;
 	function GetTick : Cardinal;
 	procedure LowerPriority(AThread : TThread);
 	function ExtractFileNameMod(Path : String) : string;
@@ -172,31 +171,6 @@ uses
 		SetConsoleCtrlHandler(@ConProc,False);
 		{$ENDIF}
 	end;{KillTerminationCapturing}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//KillProcess                                                         PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Kills the Helios Process.
-//
-//	Changes -
-//		December 22nd, 2006 - RaX - Created Header.
-//		January 21, 2007 - Tsusai - Added a message for linux shutdown, and changed
-//			the exit code.
-//
-//------------------------------------------------------------------------------
-	procedure KillProcess;
-	begin
-		{$IFDEF MSWINDOWS}
-		TerminateProcess(GetCurrentProcess, 0);
-		{$ENDIF}
-		{$IFDEF LINUX}
-		WriteLn('Helios will generate a QUIT message.  Please ignore.');
-		kill(getpid,SIGQUIT);
-		{$ENDIF}
-	end;{KillProcess}
 //------------------------------------------------------------------------------
 
 

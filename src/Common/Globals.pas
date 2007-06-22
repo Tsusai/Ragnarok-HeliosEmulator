@@ -140,6 +140,8 @@ end;{DestroyGlobals}
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		[2007/06/21] Tsusai - Replaced KillProcess with Halt.  Halt does the job
+//			better.
 //
 //------------------------------------------------------------------------------
 procedure TerminateApplication;
@@ -152,7 +154,8 @@ begin
 		FreeAndNil(MainProc);
 		//Free up console handler.
 		Console.Free;
-		KillProcess;
+		//Exit the program PROPERYLY
+		Halt;
 	end else
 	begin
 		Console.Message('Please wait to shutdown helios until after it has finished starting/stopping', 'System', MS_ALERT);
