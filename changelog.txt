@@ -15,7 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
-- Rev 270 -
+- Rev 291 -
+[2007/07/07] RaX - Removed all traces of JANSQL.
+-
+
+- Rev 290 -
 [2007/06/21] Tsusai - Notes/Overview: When a developer and a program tell you the
  hours upon hours you spent securing threads wasn't working, they are leaking, 
  and so are 2000 pointers....something's not right in the land of Oz.

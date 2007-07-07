@@ -134,13 +134,10 @@ compile for linux, at the same time*}
 	CommonDatabaseTemplate in 'Common\Classes\Database\Common\CommonDatabaseTemplate.pas',
 	GameDatabaseTemplate in 'Common\Classes\Database\Game\GameDatabaseTemplate.pas',
 	StaticDatabaseTemplate in 'Common\Classes\Database\Static\StaticDatabaseTemplate.pas',
-	JanSQLCommonDatabase in 'Common\Classes\Database\Common\JanSQLCommonDatabase.pas',
 	SQLiteCommonDatabase in 'Common\Classes\Database\Common\SQLiteCommonDatabase.pas',
 	MySQLCommonDatabase in 'Common\Classes\Database\Common\MySQLCommonDatabase.pas',
-	JanSQLGameDatabase in 'Common\Classes\Database\Game\JanSQLGameDatabase.pas',
 	MySQLGameDatabase in 'Common\Classes\Database\Game\MySQLGameDatabase.pas',
 	SQLiteGameDatabase in 'Common\Classes\Database\Game\SQLiteGameDatabase.pas',
-	JanSQLStaticDatabase in 'Common\Classes\Database\Static\JanSQLStaticDatabase.pas',
 	MySQLStaticDatabase in 'Common\Classes\Database\Static\MySQLStaticDatabase.pas',
 	SQLiteStaticDatabase in 'Common\Classes\Database\Static\SQLiteStaticDatabase.pas',
 
@@ -148,12 +145,6 @@ compile for linux, at the same time*}
 	//SQLite
 	SQLite3 in 'Common\ThirdParty\SQLite\SQLite3.pas',
 	SQLiteTable3 in 'Common\ThirdParty\SQLite\SQLiteTable3.pas',
-	//jansql
-	janSQL in 'Common\ThirdParty\JanSQL\janSQL.pas',
-	janSQLExpression2 in 'Common\ThirdParty\JanSQL\janSQLExpression2.pas',
-	janSQLStrings in 'Common\ThirdParty\JanSQL\janSQLStrings.pas',
-	janSQLTokenizer in 'Common\ThirdParty\JanSQL\janSQLTokenizer.pas',
-	mwStringHashList in 'Common\ThirdParty\JanSQL\mwStringHashList.pas',
 	//mysql
 	uMysqlClient in 'Common\ThirdParty\MySQL\uMysqlClient.pas',
 	uMysqlCT in 'Common\ThirdParty\MySQL\uMysqlCT.pas',
@@ -265,13 +256,10 @@ compile for linux, at the same time*}
 	CommonDatabaseTemplate in 'Common/Classes/Database/Common/CommonDatabaseTemplate.pas',
 	GameDatabaseTemplate in 'Common/Classes/Database/Game/GameDatabaseTemplate.pas',
 	StaticDatabaseTemplate in 'Common/Classes/Database/Static/StaticDatabaseTemplate.pas',
-	JanSQLCommonDatabase in 'Common/Classes/Database/Common/JanSQLCommonDatabase.pas',
 	SQLiteCommonDatabase in 'Common/Classes/Database/Common/SQLiteCommonDatabase.pas',
 	MySQLCommonDatabase in 'Common/Classes/Database/Common/MySQLCommonDatabase.pas',
-	JanSQLGameDatabase in 'Common/Classes/Database/Game/JanSQLGameDatabase.pas',
 	MySQLGameDatabase in 'Common/Classes/Database/Game/MySQLGameDatabase.pas',
 	SQLiteGameDatabase in 'Common/Classes/Database/Game/SQLiteGameDatabase.pas',
-	JanSQLStaticDatabase in 'Common/Classes/Database/Static/JanSQLStaticDatabase.pas',
 	MySQLStaticDatabase in 'Common/Classes/Database/Static/MySQLStaticDatabase.pas',
 	SQLiteStaticDatabase in 'Common/Classes/Database/Static/SQLiteStaticDatabase.pas',
 
@@ -279,12 +267,6 @@ compile for linux, at the same time*}
 	//SQLite
 	SQLite3 in 'Common/ThirdParty/SQLite/SQLite3.pas',
 	SQLiteTable3 in 'Common/ThirdParty/SQLite/SQLiteTable3.pas',
-	//jansql
-	janSQL in 'Common/ThirdParty/JanSQL/janSQL.pas',
-	janSQLExpression2 in 'Common/ThirdParty/JanSQL/janSQLExpression2.pas',
-	janSQLStrings in 'Common/ThirdParty/JanSQL/janSQLStrings.pas',
-	janSQLTokenizer in 'Common/ThirdParty/JanSQL/janSQLTokenizer.pas',
-	mwStringHashList in 'Common/ThirdParty/JanSQL/mwStringHashList.pas',
 	//mysql
 	uMysqlClient in 'Common/ThirdParty/MySQL/uMysqlClient.pas',
 	uMysqlCT in 'Common/ThirdParty/MySQL/uMysqlCT.pas',

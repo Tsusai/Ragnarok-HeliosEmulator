@@ -14,10 +14,9 @@ unit DatabaseConstants;
 interface
 
 const
-	TEXT				= 1;//TEXT database, set ServerConfig.DatabaseType to this integer.
+	SQLITE			= 1;//SQLite.
 	MYSQL				= 2;//MySQL database.
-	SQLITE			= 3;//SQLite.  Will be #1 soon.
-	MAX_DBTYPE	= 3;//The highest database type, used for ensurerange.
+	MAX_DBTYPE	= 2;//The highest database type, used for ensurerange.
 
 implementation
 

@@ -66,9 +66,6 @@ uses
 	DatabaseOptions,
 	DatabaseConstants,
 	Globals,
-	JanSQLCommonDatabase,
-	JanSQLGameDatabase,
-	JanSQLStaticDatabase,
 	Main,
 	MySQLCommonDatabase,
 	MySQLGameDatabase,
@@ -145,19 +142,14 @@ Begin
 	//Common
 	case CommonDatabaseType of
 
-	TEXT ://1    Helios Text Database
+	SQLITE ://1    Helios Text Database
 		begin
-			CommonData  := TJanSQLCommonDatabase.Create(Self);
+			CommonData := TSQLiteCommonDatabase.Create(self);
 		end;
 
 	MYSQL://2
 		begin
 			CommonData  := TMySQLCommonDatabase.Create(self);
-		end;
-
-	SQLITE://3
-		begin
-			CommonData := TSQLiteCommonDatabase.Create(self);
 		end;
 
 	else
@@ -172,19 +164,14 @@ Begin
 	//Game
 	case GameDatabaseType of
 
-	TEXT ://1    Helios Text Database
+	SQLITE://1
 		begin
-			GameData := TJanSQLGameDatabase.Create(self);
+			GameData := TSQLiteGameDatabase.Create(self);
 		end;
 
 	MYSQL://2
 		begin
 			GameData := TMySQLGameDatabase.Create(Self);
-		end;
-
-	SQLITE://3
-		begin
-			GameData := TSQLiteGameDatabase.Create(self);
 		end;
 
 	else
@@ -199,19 +186,14 @@ Begin
 	//Static
 	case StaticDatabaseType of
 
-	TEXT ://1    Helios Text Database
+	SQLITE://1
 		begin
-			StaticData := TJanSQLStaticDatabase.Create(Self);
+			StaticData := TSQLiteStaticDatabase.Create(self);
 		end;
 
 	MYSQL://2
 		begin
 			StaticData := TMySQLStaticDatabase.Create(Self);
-		end;
-
-	SQLITE://3
-		begin
-			StaticData := TSQLiteStaticDatabase.Create(self);
 		end;
 
 	else

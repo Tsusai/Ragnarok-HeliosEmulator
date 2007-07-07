@@ -22,7 +22,7 @@ Overview:
 ================================================================================
 
 Houses an abstract class, TStaticDatabaseTemplate, that defines all the calls
-that are made to each specifically implemented database (JanSQL, MySQL, MSSQL,
+that are made to each specifically implemented database (SQLite, MySQL, MSSQL,
 etc., etc.)
 
 ================================================================================

@@ -67,7 +67,7 @@ Overview:
 
 	This is the abstract parent class for the Game database.
 Defines all database routines common to the child classes that implement
-specific databases (i.e. JanSQL, MySQL, etc.).
+specific databases (i.e. SQLite, MySQL, etc.).
 
 *------------------------------------------------------------------------------*
 Revisions:

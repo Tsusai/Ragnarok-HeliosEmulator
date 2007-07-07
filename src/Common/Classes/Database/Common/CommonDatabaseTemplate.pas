@@ -28,7 +28,7 @@ Login server.
 	The abstract class defined here also includes a function for choosing which 
 database we're using based on a configuration variable.  Since this is an
 abstract class, it defines the interface for descendant classes to follow, for
-their specific Database (i.e. JanSQL, MySQL, MSSQL, etc., etc.)
+their specific Database (i.e. SQLITE, MySQL, MSSQL, etc., etc.)
 
 ================================================================================
 Revisions:

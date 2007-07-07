@@ -219,7 +219,7 @@ end;
 //TSQLiteStaticDatabase.SendQuery()                                     Function
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sends a query to the jansql object.
+//			Sends a query to the SQLite object.
 //
 //	Changes -
 //		[2007/06/18] Tsusai - Created.
