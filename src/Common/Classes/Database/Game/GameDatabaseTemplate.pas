@@ -120,16 +120,12 @@ public
 
 	function  GetChara(
 		const
-			CharaID : LongWord;
-		const
-			JanSQLClearTable : Boolean = False
+			CharaID : LongWord
 		) : TCharacter; overload; virtual; abstract;
 
 	function  GetChara(
 		const
-			CharaName : String;
-		const
-			JanSQLClearTable : Boolean = False
+			CharaName : String
 		) : TCharacter; overload; virtual; abstract;
 
 	function  LoadChara(

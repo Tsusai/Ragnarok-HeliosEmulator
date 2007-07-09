@@ -278,7 +278,7 @@ uses
 
 		//use client local game database
 		TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
-		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID,true);
+		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID);
 		TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
 		if Assigned(AnAccount) and Assigned(ACharacter) then
 		begin

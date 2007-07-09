@@ -612,7 +612,7 @@ begin
 	if AnAccount.CharaID[CharaIdx] <> 0 then
 	begin
 		TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
-		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(AnAccount.CharaID[CharaIdx],true);
+		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(AnAccount.CharaID[CharaIdx]);
 		//ACharacter.ClientVersion := -1; //Need to either save, or make sure its cleared
 																			//later on
 		TThreadLink(AClient.Data).DatabaseLink.StaticData.Connect;
@@ -856,7 +856,7 @@ begin
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TClientLink(AClient.Data).AccountLink;
 	TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
-	ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID,true);
+	ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID);
 	if Assigned(ACharacter) then
 	begin
 		if AnAccount.EMail = EmailOrID then

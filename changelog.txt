@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 292 -
+[2007/07/09] RaX - Removed the now unused JanSQLClearTable parameter of various
+ game database functions.
+-
+
 - Rev 291 -
 [2007/07/07] RaX - Removed all traces of JANSQL.
 -

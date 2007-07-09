@@ -128,16 +128,12 @@ public
 
 	function GetChara(
 		const
-			CharaID : LongWord;
-		const
-			JanSQLClearTable : Boolean = False
+			CharaID : LongWord
 		) : TCharacter; overload; override;
 
 	function GetChara(
 		const
-			CharaName : String;
-		const
-			JanSQLClearTable : Boolean = False
+			CharaName : String
 		) : TCharacter; overload; override;
 
 	function DeleteChara(
@@ -326,10 +322,7 @@ end;
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.GetChara(
 	const
-		CharaID : LongWord;
-	//JanSQLClearTable is never used.
-	const
-		JanSQLClearTable : Boolean = False
+		CharaID : LongWord
 	) : TCharacter;
 begin
 	Result := LoadChara(CharaID);
@@ -349,10 +342,7 @@ end;
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.GetChara(
 	const
-		CharaName : String;
-	//JanSQLClearTable is never used.
-	const
-		JanSQLClearTable : Boolean = False
+		CharaName : String
 	) : TCharacter;
 begin
 	Result := LoadChara(CharaName);
