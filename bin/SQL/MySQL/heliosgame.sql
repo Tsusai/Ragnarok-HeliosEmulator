@@ -112,7 +112,23 @@ CREATE TABLE `characters` (
 
 
 -- --------------------------------------------------------
+-- 
+-- Table structure for table `character_vars`
+-- 
 
+CREATE TABLE `character_vars` (
+  `char_id` int(11) NOT NULL default '0',
+  `key` varchar(255) NOT NULL default '',
+  `value` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`char_id`,`key`),
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- 
+-- Dumping data for table `character_vars`
+-- 
+
+
+-- --------------------------------------------------------
 -- 
 -- Table structure for table `friend`
 -- 
@@ -132,27 +148,7 @@ CREATE TABLE `friend` (
 
 -- --------------------------------------------------------
 
--- 
--- Table structure for table `global_reg_value`
--- 
 
-CREATE TABLE `global_reg_value` (
-  `char_id` int(11) NOT NULL default '0',
-  `str` varchar(255) NOT NULL default '',
-  `value` varchar(255) NOT NULL default '0',
-  `type` int(11) NOT NULL default '3',
-  `account_id` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`char_id`,`str`,`account_id`),
-  KEY `account_id` (`account_id`),
-  KEY `char_id` (`char_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- 
--- Dumping data for table `global_reg_value`
--- 
-
-
--- --------------------------------------------------------
 
 -- 
 -- Table structure for table `guild`

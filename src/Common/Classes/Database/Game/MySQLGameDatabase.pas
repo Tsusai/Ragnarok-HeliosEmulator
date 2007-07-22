@@ -76,6 +76,7 @@ Revisions:
 [2007/04/06] CR - Altered header, private fields are now protected, and read
 	only properties set for original field names.  Parameters altered to match
 	TGameDatabaseTemplate for all routines.
+[2007/06/30] Tsusai - Added Get/SetCharaVariable
 *=============================================================================*)
 TMySQLGameDatabase = class(TGameDatabaseTemplate)
 protected
@@ -156,6 +157,22 @@ public
 	procedure SaveChara(
 		const
 			AChara : TCharacter
+		); override;
+
+	function GetCharaVariable(
+		const
+			AChara : TCharacter;
+		const
+			Key : string
+		) : integer; override;
+
+	procedure SetCharaVariable(
+		const
+			AChara : TCharacter;
+		const
+			Key : string;
+		const
+			Value : integer
 		); override;
 
 	function Connect : Boolean; override;
@@ -891,6 +908,88 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//TMySQLGameDatabase.GetCharaFlag()                                  FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets a character variable from the database
+//
+//	Changes -
+//		[2007/06/30] Tsusai - Created.
+//
+//------------------------------------------------------------------------------
+function TMySQLGameDatabase.GetCharaVariable(
+	const AChara : TCharacter;
+	const Key : string
+) : integer;
+var
+	QueryResult : TMySQLResult;
+	Success : boolean;
+begin
+	Result := 0;
+	QueryResult :=
+		SendQuery(
+			Format('Select value FROM character_vars WHERE char_id = %d and key = ''%s''',[AChara.CID,Key]),
+			True,Success
+		);
+	if (QueryResult.RowsCount = 1) and Success then
+	begin
+		Result := StrToInt(QueryResult.FieldValue(0));
+	end;
+	if Assigned(QueryResult) then QueryResult.Free;
+end;//GetCharaVariable
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TMySQLGameDatabase.SaveCharaVariable()                                     FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Saves a character variable.
+//
+//	Changes -
+//		[2007/06/30] Tsusai - Created.
+//
+//------------------------------------------------------------------------------
+procedure TMySQLGameDatabase.SetCharaVariable(
+	const AChara : TCharacter; 
+	const Key : string;
+	const Value : integer
+);
+var
+	QueryResult : TMySQLResult;
+	Success : boolean;
+	Existing : integer;
+begin
+(*
+MySQL: INSERT INTO TABLENAME (char_id, key, value) VALUES (%d,%s,%d) ON DUPLICATE KEY UPDATE value = %d;
+http://dev.mysql.com/doc/refman/5.0/en/insert-on-duplicate.html
+*)
+	Existing := GetCharaVariable(AChara,Key);
+	//Check to see if its actually changing.
+	if Existing <> Value then
+	begin
+		//Not in the database if its 0
+		if Value <> 0 then
+		begin
+			//Update
+			QueryResult :=
+				SendQuery(
+					Format('INSERT INTO character_vars (char_id, key, value) VALUES (%d,''%s'',%d) ON DUPLICATE KEY UPDATE value = %d',[AChara.CID,Key,Value,Value]),
+					False,Success
+				);
+		end else
+		begin
+			//Delete the key.
+			QueryResult :=
+				SendQuery(
+					Format('DELETE FROM character_vars WHERE char_id = %d and key = ''%s''',[AChara.CID,Key]),
+					False,Success
+				);
+		end;
+		if Assigned(QueryResult) then QueryResult.Free;
+	end;
+end;//SetCharaVariable
+//------------------------------------------------------------------------------
 
 {END MySQLGameDatabase}
 end.

@@ -15,6 +15,21 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 293 -
+[2007/07/22] Tsusai - Notes/Overview: Added getvar and setvar lua commands.  This
+ will allow read/write to the new character_vars table in SQLite and MySQL.
+[2007/07/22] Tsusai - heliosgame.db: Dropped global_reg_vars and added character_vars.
+[2007/07/22] Tsusai - SQL/*/heliosgame.sql: Removed global_reg_vars sql query and
+ replaced with character_vars query.
+[2007/07/22] Tsusai - SQL/*/Patches/Game_292-293.sql: Added patches for those w/
+ existing databases.
+[2007/07/22] Tsusai - GameDatabaseTemplate, MySQLGameDatabase, SQLiteGameDatabase:
+ Added GetCharaVar and SetCharaVar code to interact with the database.
+[2007/07/22] Tsusai - SQLiteStaticDatabase - GetMapsForZone: Corrected loop error
+ (Index out of bounds)
+[2007/07/22] Tsusai - LuaNPCCommands: Added getvar and setvar commands.
+-
+
 - Rev 292 -
 [2007/07/09] RaX - Removed the now unused JanSQLClearTable parameter of various
  game database functions.

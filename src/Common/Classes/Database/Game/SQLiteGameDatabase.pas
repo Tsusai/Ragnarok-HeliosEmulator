@@ -65,6 +65,7 @@ Revisions:
 *------------------------------------------------------------------------------*
 (Format: [yyyy/mm/dd] <Author> - <Description of Change>)
 [2007/06/18] Tsusai - Created.
+[2007/06/30] Tsusai - Added Get/SetCharaVariable
 *=============================================================================*)
 Type
 TSQLiteGameDatabase = class(TGameDatabaseTemplate)
@@ -142,6 +143,22 @@ public
 	procedure SaveChara(
 		const
 			AChara : TCharacter
+		); override;
+	
+	function GetCharaVariable(
+		const 
+			AChara : TCharacter; 
+		const 
+			Key : string
+		) : integer; override;
+		
+	procedure SetCharaVariable(
+		const 
+			AChara : TCharacter; 
+		const 
+			Key : string;
+		const 
+			Value : integer
 		); override;
 
 	function  Connect : Boolean; override;
@@ -809,6 +826,80 @@ begin
 	Result := true;
 	if Assigned(QueryResult) then QueryResult.Free;
 end;//DeleteChara
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//TSQLiteGameDatabase.GetCharaFlag()                                  FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets a character variable from the database
+//
+//	Changes -
+//		[2007/06/30] Tsusai - Created.
+//
+//------------------------------------------------------------------------------
+function TSQLiteGameDatabase.GetCharaVariable(
+	const AChara : TCharacter;
+	const Key : string
+) : integer;
+var
+	QueryResult : TSQLiteTable;
+begin
+	Result := 0;
+	QueryResult := 
+		SendQuery(
+			Format('Select value FROM character_vars WHERE char_id = %d and key = ''%s''',[AChara.CID,Key])
+		);
+	if QueryResult.Count = 1 then
+	begin
+		Result := QueryResult.FieldAsInteger(0);
+	end;
+	if Assigned(QueryResult) then QueryResult.Free;
+end;//GetCharaVariable
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//TSQLiteGameDatabase.SaveCharaVariable()                                     FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Saves a character variable.
+//
+//	Changes -
+//		[2007/06/30] Tsusai - Created.
+//
+//------------------------------------------------------------------------------
+procedure TSQLiteGameDatabase.SetCharaVariable(
+	const AChara : TCharacter;
+	const Key : string;
+	const Value : integer
+);
+var
+	QueryResult : TSQLiteTable;
+	Existing : integer;
+begin
+	Existing := GetCharaVariable(AChara,Key);
+	//Check to see if its actually changing.
+	if Existing <> Value then
+	begin
+		if Value <> 0 then
+		begin
+			//Update
+			QueryResult :=
+				SendQuery(
+					Format('INSERT OR REPLACE INTO character_vars (char_id, key, value) VALUES (%d,''%s'',%d)',[AChara.CID,Key,Value])
+				);
+		end else
+		begin
+			//Delete the key.  Value is 0
+			QueryResult :=
+				SendQuery(
+					Format('DELETE FROM character_vars WHERE char_id = %d and key = ''%s''',[AChara.CID,Key])
+				);
+		end;
+		if Assigned(QueryResult) then QueryResult.Free;
+	end;
+end;//SetCharaVariable
 //------------------------------------------------------------------------------
 
 {END SQLiteGameDatabase}

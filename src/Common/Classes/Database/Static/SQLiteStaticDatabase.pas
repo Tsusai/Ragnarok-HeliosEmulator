@@ -464,6 +464,7 @@ end;//GetMapFlags
 //
 //	Changes -
 //		[2007/06/18] Tsusai - Created.
+//		[2007/07/22] Tsusai - Index out of bounds fix w/ the loop
 //
 //------------------------------------------------------------------------------
 Function TSQLiteStaticDatabase.GetMapsForZone(
@@ -483,7 +484,7 @@ begin
 	begin
 		for Index := 0 to (QueryResult.Count - 1) do
 		begin
-			Result.Add(QueryResult.Fields[Index]);
+			Result.Add(QueryResult.Fields[0]);
 			QueryResult.Next;
 		end;
 	end;

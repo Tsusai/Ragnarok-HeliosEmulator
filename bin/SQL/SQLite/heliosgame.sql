@@ -92,6 +92,24 @@ CREATE TABLE "characters" (
 -- --------------------------------------------------------
 
 -- 
+-- Table structure for table "character_vars"
+-- 
+
+CREATE TABLE "character_vars" (
+  char_id INTEGER NOT NULL default 0,
+  key TEXT NOT NULL default '',
+  value INTEGER NOT NULL default 0,
+  PRIMARY KEY ("char_id","key")
+
+-- 
+-- Dumping data for table "character_vars"
+-- 
+
+
+
+-- --------------------------------------------------------
+
+-- 
 -- Table structure for table "friend"
 -- 
 
@@ -104,26 +122,6 @@ CREATE TABLE "friend" (
 
 -- 
 -- Dumping data for table "friend"
--- 
-
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table "global_reg_value"
--- 
-
-CREATE TABLE "global_reg_value" (
-  char_id INTEGER NOT NULL default '0',
-  str TEXT NOT NULL default '',
-  value TEXT NOT NULL default '0',
-  type INTEGER NOT NULL default '3',
-  account_id INTEGER NOT NULL default '0',
-  PRIMARY KEY ("char_id","str","account_id")
-);
-
--- 
--- Dumping data for table "global_reg_value"
 -- 
 
 

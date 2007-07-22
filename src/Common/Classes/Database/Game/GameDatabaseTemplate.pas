@@ -78,6 +78,7 @@ Revisions:
 	Create holds connection result
 [2007/04/06] CR - Altered header.  All methods made abstract, and all parameters
 	now specified by in/out/var/const to self-document.
+[2007/06/30] Tsusai - Added Get/SetCharaVariable
 *=============================================================================*)
 TGameDatabaseTemplate = class(TObject)
 protected
@@ -141,6 +142,22 @@ public
 	procedure SaveChara(
 		const
 			AChara : TCharacter
+		); virtual; abstract;
+	
+	function GetCharaVariable(
+		const 
+			AChara : TCharacter; 
+		const 
+			Key : string
+		) : integer; virtual; abstract;
+
+	procedure SetCharaVariable(
+		const 
+			AChara : TCharacter; 
+		const 
+			Key : string;
+		const 
+			Value : integer
 		); virtual; abstract;
 
 	function  Connect : Boolean; virtual; abstract;

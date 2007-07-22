@@ -35,10 +35,12 @@ function script_close(ALua : TLua) : integer; cdecl; forward;
 function script_checkpoint(ALua : TLua) : integer; cdecl; forward;
 function script_menu(ALua : TLua) : integer; cdecl; forward;
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
+function script_getcharavar(ALua : TLua) : integer; cdecl; forward;
+function script_setcharavar(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 11;
+	NPCCommandCount = 13;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -54,6 +56,8 @@ const
 		(name:'close';func:script_close),
 		(name:'checkpoint';func:script_checkpoint),
 		(name:'menu';func:script_menu),
+		(name:'getvar';func:script_getcharavar),
+		(name:'setvar';func:script_setcharavar),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -386,6 +390,62 @@ begin
 	end;
 end;
 
+//getvar(key)
+//Returns a character variable.
+function script_getcharavar(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	Value : integer;
+	Key : string;
+begin
+	//Returns 1 result
+	Result := 1;
+	if (lua_gettop(ALua) = 1) and //1 parameter count
+		(lua_isString(ALua,1)) then //first param is a string
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
+			Key := lua_tostring(ALua, 1);
+			Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.GetCharaVariable(AChara,Key);
+			lua_pushinteger(ALua, Value);
+			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script getvar syntax error');
+	end;
+end;
+
+//setvar(key,value)
+//Sets a character variable
+function script_setcharavar(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	Value : integer;
+	Key : string;
+begin
+	//Returns 0 results
+	Result := 0;
+	if (lua_gettop(ALua) = 2) and
+		(lua_isString(ALua,1)) and
+		(lua_isnumber(ALua,2)) then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			Key := lua_tostring(ALua, 1);
+			Value := lua_tointeger(ALua, 2);
+			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
+			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.SetCharaVariable(AChara,Key,Value);
+			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script setvar syntax error');
+	end;
+end;
+
+//Special commands here
 function script_get_charaname(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
