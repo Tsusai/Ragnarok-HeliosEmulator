@@ -308,7 +308,7 @@ begin
 				ACharacter.ShowTeleportOut;
 			end;
 		end;
-
+		ACharacter.ZoneStatus := isOffline;
 		CharacterIndex := CharacterList.IndexOf(ACharacter.CID);
 		if CharacterIndex > -1 then
 		begin

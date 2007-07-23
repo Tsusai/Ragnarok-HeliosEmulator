@@ -15,6 +15,19 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 294 -
+[2007/07/23] Tsusai - Notes/Overview: Added Zeny related thingies!
+[2007/07/23] Tsusai - Character - TCharaZoneStatus: Added enumerator type to know
+ if the TCharacter is in the zone or not. (isOnline/isOffline).
+[2007/07/23] Tsusai - Character - TCharacter.ZoneStatus: Added the above.
+[2007/07/23] Tsusai - Character - TCharacter.SetZeny: Sends the update packet if
+ the TCharacter.ZoneStatus = isOnline
+[2007/07/23] Tsusai - LuaNPCCommands: Added Aegis 'getgold' command.
+[2007/07/23] Tsusai - ZoneRecv - MapConnect: Sets the TCharacter as in the zone.
+[2007/07/23] Tsusai - ZoneServer - TZoneServer.OnDisconnect: Sets the Tcharacter
+ as not in the zone.
+-
+
 - Rev 293 -
 [2007/07/22] Tsusai - Notes/Overview: Added getvar and setvar lua commands.  This
  will allow read/write to the new character_vars table in SQLite and MySQL.

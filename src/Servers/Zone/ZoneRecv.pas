@@ -298,7 +298,8 @@ uses
 					ACharacter.ClientVersion := Version;
 					ACharacter.Online  := 1;
 					MainProc.ZoneServer.CharacterList.Add(ACharacter);
-
+					
+					ACharacter.ZoneStatus := isOnline;
 					SendZoneCharaLogon(MainProc.ZoneServer.ToCharaTCPClient, ACharacter);
 
 					SendPadding(ACharacter.ClientInfo);
@@ -423,7 +424,7 @@ uses
 				 (AChara.Position.X >= 0) then
 			begin
 				AMap.Cell[AChara.Position.X][AChara.Position.Y].Beings.AddObject(AChara.ID,AChara);
-      end;
+			end;
 		end;
 	end;//ShowMap
 //------------------------------------------------------------------------------

@@ -49,6 +49,11 @@ TCharaState = (
 		charaWalking
 	);
 
+TCharaZoneStatus = (
+		isOffline,
+		isOnline
+	);
+
 
 (*= CLASS =====================================================================*
 TCharacter
@@ -195,8 +200,8 @@ public
 
 	LuaInfo : TLuaInfo; //personal lua "thread"
 	ScriptStatus : TCharaScriptStatus; //lets us know what is going on with lua,
+	ZoneStatus : TCharaZoneStatus; //Is the chara online in the Zone or not?
 	ScriptID : LongWord;
-	// if its paused or running
 
 	BaseNextEXP  : LongWord;
 	JobNextEXP   : LongWord;
@@ -586,12 +591,18 @@ end;{SetJobEXP}
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		[2007/07/22] Tsusai - Added sending of update packet.
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.SetZeny(Value : LongWord);
 begin
 	Inherited;
 	DataChanged := TRUE;
+	if ZoneStatus = isOnline then 
+	begin
+		// Update Zeny
+		SendSubStat(1, $0014, Zeny);
+	end;
 end;{SetZeny}
 //------------------------------------------------------------------------------
 
@@ -1702,6 +1713,7 @@ begin
 	OnTouchIDs := TIntList32.Create;
 	ScriptStatus := SCRIPT_NOTRUNNING;
 	CharaState := charaStanding;
+	ZoneStatus := isOffline;
 end;
 //------------------------------------------------------------------------------
 

@@ -19,6 +19,7 @@ uses
 	LuaNPCCore,
 	LuaPas,
 	Main,
+	Math,
 	NPC,
 	PacketTypes,
 	ZoneSend
@@ -37,10 +38,11 @@ function script_menu(ALua : TLua) : integer; cdecl; forward;
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function script_getcharavar(ALua : TLua) : integer; cdecl; forward;
 function script_setcharavar(ALua : TLua) : integer; cdecl; forward;
+function script_getgold(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 13;
+	NPCCommandCount = 14;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -58,6 +60,7 @@ const
 		(name:'menu';func:script_menu),
 		(name:'getvar';func:script_getcharavar),
 		(name:'setvar';func:script_setcharavar),
+		(name:'getgold';func:script_getgold),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -444,6 +447,35 @@ begin
 		luaL_error(ALua,'script setvar syntax error');
 	end;
 end;
+
+//getgold
+//Gives or takes money/zeny to/from the character
+function script_getgold(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	Zeny : LongInt;
+begin
+	//Returns 0 results
+	Result := 0;
+	if (lua_gettop(ALua) = 1) and
+		(lua_isnumber(ALua,1)) then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			//it can be a negative number.  It should be alright w/ the +
+			// 5 +-1 = 4 :)
+			//combining signed and unsigned types warning.  Ignoring
+			{$WARNINGS OFF}
+			Zeny := EnsureRange(lua_tointeger(ALua, 1),Low(LongInt),High(LongInt));
+			AChara.Zeny := EnsureRange(AChara.Zeny + Zeny,
+											Low(AChara.Zeny),
+											High(AChara.Zeny)
+			);
+			{$WARNINGS ON}
+		end;
+	end;
+end;
+
 
 //Special commands here
 function script_get_charaname(ALua : TLua) : integer; cdecl;
