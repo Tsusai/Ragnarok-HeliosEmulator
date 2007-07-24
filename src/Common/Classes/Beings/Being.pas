@@ -56,9 +56,6 @@ uses
 	//none
 	;
 
-//------------------------------------------------------------------------------
-//TBeing                                                                  CLASS
-//------------------------------------------------------------------------------
 type
 
 ByteStatArray = array [STR..LUK] of Byte;
@@ -372,7 +369,7 @@ Var
 		ABeing : TBeing;
 		BeingIdx : Integer;
 	begin
-		//This is the oposite of the above.  We check to see if we are making the apropriate change, and seeing if a tbeing will be in the visual range if we made the step forward
+		//This is the opposite of the above.  We check to see if we are making the apropriate change, and seeing if a tbeing will be in the visual range if we made the step forward
 		if {X axis}((Directions[Direction].X <> 0) and
 			(abs(Position.Y - idxY) < Radius) and
 			(Position.X = idxX - Directions[Direction].X * (Radius - 1)))
@@ -557,8 +554,7 @@ Begin
 				exit;
 			end;
 		end;
-		//Setup first speed
-		{[2007/04/28] CR - Pardon? }
+		//Move to the next element in the path list.
 		Inc(PathIndex);
 
 		{[2007/04/28] CR - Why isn't this if branch part of the Speed Property? }

@@ -1,16 +1,34 @@
-//------------------------------------------------------------------------------
-//Character                                                                UNIT
-//------------------------------------------------------------------------------
-//	What it does-
-//			Holds our TCharacter Class
-//
-//	Changes -
-//		December 22nd, 2006 - RaX - Created Header.
-//		[2007/03/28] CR - Cleaned up uses clauses with help of Icarus.
-//		[2007/04/23] Tsusai - Changed lua filename
-//		[2007/05/28] Tsusai - Added more to the TScriptStatus
-//
-//------------------------------------------------------------------------------
+(*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+Unit
+Character
+
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+
+[2006/??/??] Helios - No author stated
+
+================================================================================
+License:  (FreeBSD, plus commercial with written permission clause.)
+================================================================================
+
+Project Helios - Copyright (c) 2005-2007
+
+All rights reserved.
+
+Please refer to Helios.dpr for full license terms.
+
+================================================================================
+Overview:
+================================================================================
+
+Class, interface, and common defaults for a "Character" are defined here.
+
+================================================================================
+Revisions:
+================================================================================
+(Format: [yyyy/mm/dd] <Author> - <Desc of Changes>)
+[2007/07/24] RaX - Created Header.
+*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*)
 unit Character;
 
 
@@ -196,22 +214,22 @@ protected
 public
 	CID : LongWord;
 
-	DcAndKeepData : Boolean;
+	DcAndKeepData	: Boolean;
 
-	LuaInfo : TLuaInfo; //personal lua "thread"
-	ScriptStatus : TCharaScriptStatus; //lets us know what is going on with lua,
-	ZoneStatus : TCharaZoneStatus; //Is the chara online in the Zone or not?
-	ScriptID : LongWord;
+	LuaInfo				: TLuaInfo; //personal lua "thread"
+	ScriptStatus	: TCharaScriptStatus; //lets us know what is going on with lua,
+	ZoneStatus		: TCharaZoneStatus; //Is the chara online in the Zone or not?
+	ScriptID			: LongWord;
 
-	BaseNextEXP  : LongWord;
-	JobNextEXP   : LongWord;
-	Weight       : LongWord;
-	MaxWeight    : LongWord;
+	BaseNextEXP		: LongWord;
+	JobNextEXP		: LongWord;
+	Weight				: LongWord;
+	MaxWeight			: LongWord;
 
-	ClientInfo   : TIdContext;
+	ClientInfo		: TIdContext;
 
-	ParamUP      : ByteStatArray;
-	ParamBonus   : ByteStatArray;
+	ParamUP				: ByteStatArray;
+	ParamBonus		: ByteStatArray;
 
 	//Stat Calculations should fill these in
 	//Maybe a record type for this crap for shared info between mobs and chars
@@ -1549,10 +1567,11 @@ End; (* Proc TCharacter.SendSubStats
 //SendCharacterStats                                                   PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Send chatacter stats, Such speed,hp(max),sp(max).. and tons of it
+//			Sends a character's stats to the client.
 //
 //	Changes -
 //		March 12th, 2007 - Aeomin - Created Header
+//		July 24th, 2007 - RaX - updated header
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.SendCharacterStats(UpdateView : boolean = false);
@@ -1647,13 +1666,21 @@ End;
 //
 //	Changes -
 //		January 17th, 2007 - RaX - Created.
+//		July 24th, 2007 - RaX - Cleaned up super long calculation to make it
+//			easier to read, also added try finally around connect/disconnect.
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxSP;
 begin
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
-	MAXSP := MAXSP + BaseLV * TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxSP(self) * (100 + ParamBase[INT]) div 100;
-	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+	try
+		MAXSP :=
+			MAXSP + BaseLV *
+			TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxSP(self) *
+			(100 + ParamBase[INT]) div 100;
+  finally
+		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+	end;
 end;{CalcMaxSP}
 //------------------------------------------------------------------------------
 
@@ -1666,11 +1693,12 @@ end;{CalcMaxSP}
 //
 //	Changes -
 //		January 17th, 2007 - RaX - Created.
-//
+//		July 24th, 2007 - RaX - Changed to use the inherited calculation first to
+//			set the default value rather than having the default set in two places.
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcSpeed;
 begin
-  Speed := 150;
+  inherited;
 end;{CalcSpeed}
 //------------------------------------------------------------------------------
 
@@ -1683,14 +1711,20 @@ end;{CalcSpeed}
 //
 //	Changes -
 //		January 24th, 2007 - RaX - Created.
+//		July 24th, 2007 - RaX - Cleaned up super long calculation to make it
+//			easier to read, also added try finally around connect/disconnect.
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxWeight;
 begin
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
-	MaxWeight  := LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
-                TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxWeight(self);
-	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+	try
+		MaxWeight  :=
+			LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
+			TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxWeight(self);
+  finally
+		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+  end;
 end;{CalcMaxWeight}
 //------------------------------------------------------------------------------
 

@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 295 -
+[2007/07/23] RaX - Updated headers in Being and Being Descendants along with
+ random cleanup and typo corrections.
+-
+
 - Rev 294 -
 [2007/07/23] Tsusai - Notes/Overview: Added Zeny related thingies!
 [2007/07/23] Tsusai - Character - TCharaZoneStatus: Added enumerator type to know
