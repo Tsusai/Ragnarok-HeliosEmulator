@@ -14,9 +14,13 @@ Developers & Contributers
 - ChrstphrR (CR)
 
 --------------------------------------------------------------------------------
+- Rev 296 -
+[2007/07/25] RaX - Added try-finally blocks around all database connections to
+ make sure we don't leak connections on exceptions.
+-
 
 - Rev 295 -
-[2007/07/23] RaX - Updated headers in Being and Being Descendants along with
+[2007/07/24] RaX - Updated headers in Being and Being Descendants along with
  random cleanup and typo corrections.
 -
 

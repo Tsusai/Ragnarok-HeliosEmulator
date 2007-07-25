@@ -172,12 +172,18 @@ Begin
 			with TThreadLink(AClient.Data).DatabaseLink do
 			begin
 				GameData.Connect;
-				ACharacter := GameData.GetChara(CharacterID);
-				GameData.Disconnect;
+        try
+				  ACharacter := GameData.GetChara(CharacterID);
+        finally
+				  GameData.Disconnect;
+        end;
 
 				StaticData.Connect;
-				ZoneID := StaticData.GetMapZoneID(ACharacter.Map);
-				StaticData.Disconnect;
+        try
+				  ZoneID := StaticData.GetMapZoneID(ACharacter.Map);
+        finally
+				  StaticData.Disconnect;
+        end;
 			end;
 
 			for Index := 0 to (fClientList.Count - 1) do

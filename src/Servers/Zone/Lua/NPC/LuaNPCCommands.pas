@@ -409,10 +409,13 @@ begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
 			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
-			Key := lua_tostring(ALua, 1);
-			Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.GetCharaVariable(AChara,Key);
-			lua_pushinteger(ALua, Value);
-			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+      try
+			  Key := lua_tostring(ALua, 1);
+			  Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.GetCharaVariable(AChara,Key);
+			  lua_pushinteger(ALua, Value);
+      finally
+			  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+      end;
 		end;
 	end else
 	begin
@@ -439,8 +442,11 @@ begin
 			Key := lua_tostring(ALua, 1);
 			Value := lua_tointeger(ALua, 2);
 			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
-			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.SetCharaVariable(AChara,Key,Value);
-			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+      try
+			  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.SetCharaVariable(AChara,Key,Value);
+      finally
+			  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+      end;
 		end;
 	end else
 	begin

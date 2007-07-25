@@ -294,9 +294,14 @@ begin
 	if AConnection.Data is TClientLink then
 	begin
 		ACharacter := TClientLink(AConnection.Data).CharacterLink;
+
 		TThreadLink(AConnection.Data).DatabaseLink.GameData.Connect;
-		TThreadLink(AConnection.Data).DatabaseLink.GameData.SaveChara(ACharacter);
-		TThreadLink(AConnection.Data).DatabaseLink.GameData.Disconnect;
+    try
+		  TThreadLink(AConnection.Data).DatabaseLink.GameData.SaveChara(ACharacter);
+    finally
+		  TThreadLink(AConnection.Data).DatabaseLink.GameData.Disconnect;
+    end;
+
 		SendZoneCharaLogOut(ToCharaTCPClient, ACharacter, Byte(ACharacter.DcAndKeepData));
 		if Started and (ACharacter.MapInfo <> nil) then
 		begin

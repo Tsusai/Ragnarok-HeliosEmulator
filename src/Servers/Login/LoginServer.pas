@@ -416,14 +416,17 @@ end;{OnException}
 			Username := AnsiLeftStr(Username,Length(Username)-2);
 			//Check to see if the account already exists.
 			TThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
-			if NOT TThreadLink(AClient.Data).DatabaseLink.CommonData.AccountExists(Username) then
-			begin
-				//Create the account.
-				TThreadLink(AClient.Data).DatabaseLink.CommonData.CreateAccount(
-					Username,Password,GenderStr[2]
-				);
-			end;
-			TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
+      try
+			  if NOT TThreadLink(AClient.Data).DatabaseLink.CommonData.AccountExists(Username) then
+			  begin
+				  //Create the account.
+				  TThreadLink(AClient.Data).DatabaseLink.CommonData.CreateAccount(
+					  Username,Password,GenderStr[2]
+				  );
+			  end;
+      finally
+			  TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
+      end;
 		end;
 	end;{ParseMF}
 //----------------------------------------------------------------------------
@@ -476,81 +479,89 @@ end;{OnException}
 		end;
 
 		TThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
-		AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(UserName);
-		if Assigned(AnAccount) then begin
-			AccountPassword := AnAccount.Password;
-			if not(MD5Key = '') then
-			begin
-				AccountPassword := GetMD5(MD5Key + AccountPassword);
-			end;
-			if AccountPassword = Password then
-			begin
+    try
+		  AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(UserName);
+		  if Assigned(AnAccount) then begin
+			  AccountPassword := AnAccount.Password;
+			  if not(MD5Key = '') then
+			  begin
+				  AccountPassword := GetMD5(MD5Key + AccountPassword);
+			  end;
+			  if AccountPassword = Password then
+			  begin
 //				if not AnAccount.IsBanned then
-				if AnAccount.State = 0 then
-				begin
-					if AnAccount.Bantime <= Now then
-					begin
-						if not AnAccount.GameTimeUp then
-						begin
-							Idx := fAccountList.IndexOf(AnAccount.ID);
-							if Idx > -1 then
-							begin
-								AccountInfo := fAccountList.Objects[idx] as TLoginAccountInfo;
-								if AccountInfo.OnCharSrvList then
-								begin
-									fAccountList.Delete(Idx);
-									SendDcError(AClient, 8); //Server still recognizes your last login
-								end else
-								begin
-									if AccountInfo.UnderKickQuery then
-									begin
-										SendDcError(AClient, 8); //Server still recognizes your last login
-									end else
-									begin
-										CharSrvIdx := fCharaServerList.IndexOf(AccountInfo.CharServerID);
-										if CharSrvIdx > -1 then
-										begin
-											AccountInfo.UnderKickQuery := True;
-											SendKickAccountChara(TCharaServerInfo(fCharaServerList.Objects[CharSrvIdx]).Connection, AnAccount.ID);
-											SendDcError(AClient, 8);  //Server still recognizes your last login
-										end else
-										begin
-											SendLoginError(AClient, LOGIN_REJECTED);
-										end;
-									end;
-								end;
-							end else
-							begin
-							AnAccount.LoginKey[1] := Random($7FFFFFFF) + 1;
-							AnAccount.LoginKey[2] := Random($7FFFFFFF) + 1;
-							AnAccount.LastIP := AClient.Binding.PeerIP;
-							AnAccount.LastLoginTime := Now;
-							Inc(AnAccount.LoginCount);
-							TThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
+				  if AnAccount.State = 0 then
+				  begin
+					  if AnAccount.Bantime <= Now then
+					  begin
+						  if not AnAccount.GameTimeUp then
+						  begin
+							  Idx := fAccountList.IndexOf(AnAccount.ID);
+							  if Idx > -1 then
+							  begin
+								  AccountInfo := fAccountList.Objects[idx] as TLoginAccountInfo;
+								  if AccountInfo.OnCharSrvList then
+								  begin
+									  fAccountList.Delete(Idx);
+									  SendDcError(AClient, 8); //Server still recognizes your last login
+								  end else
+								  begin
+									  if AccountInfo.UnderKickQuery then
+									  begin
+										  SendDcError(AClient, 8); //Server still recognizes your last login
+									  end else
+									  begin
+										  CharSrvIdx := fCharaServerList.IndexOf(AccountInfo.CharServerID);
+										  if CharSrvIdx > -1 then
+										  begin
+											  AccountInfo.UnderKickQuery := True;
+											  SendKickAccountChara(TCharaServerInfo(fCharaServerList.Objects[CharSrvIdx]).Connection, AnAccount.ID);
+											  SendDcError(AClient, 8);  //Server still recognizes your last login
+										  end else
+										  begin
+											  SendLoginError(AClient, LOGIN_REJECTED);
+										  end;
+									  end;
+								  end;
+							  end else
+							  begin
+							    AnAccount.LoginKey[1] := Random($7FFFFFFF) + 1;
+							    AnAccount.LoginKey[2] := Random($7FFFFFFF) + 1;
+							    AnAccount.LastIP := AClient.Binding.PeerIP;
+							    AnAccount.LastLoginTime := Now;
+							    Inc(AnAccount.LoginCount);
+							    TThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
 						
-							AccountInfo := TLoginAccountInfo.Create(AnAccount.ID);
-							AccountInfo.OnCharSrvList := True;
-							fAccountList.AddObject(AnAccount.ID,AccountInfo);
+							    AccountInfo := TLoginAccountInfo.Create(AnAccount.ID);
+							    AccountInfo.OnCharSrvList := True;
+							    fAccountList.AddObject(AnAccount.ID,AccountInfo);
 
-							SendCharacterServers(AnAccount,AClient);
-							end;
-						end else begin
-							SendLoginError(AClient,LOGIN_TIMEUP);
-						end;
-					end else begin
-						SendLoginError(AClient, LOGIN_TEMPERARYBAN, AnAccount.GetBanUntilTimeString);
-					end;
-				end else begin
-				SendLoginError(AClient, AnAccount.State-1);
-				end;
-			end else begin
-				SendLoginError(AClient,LOGIN_INVALIDPASSWORD);
-			end;
-		end else begin
-			SendLoginError(AClient,LOGIN_UNREGISTERED);
-		end;
-		AnAccount.Free;
-		TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
+							    SendCharacterServers(AnAccount,AClient);
+							  end;
+						  end else
+              begin
+							  SendLoginError(AClient,LOGIN_TIMEUP);
+						  end;
+					  end else
+            begin
+						  SendLoginError(AClient, LOGIN_TEMPERARYBAN, AnAccount.GetBanUntilTimeString);
+					  end;
+				  end else
+          begin
+				    SendLoginError(AClient, AnAccount.State-1);
+				  end;
+			  end else
+        begin
+				  SendLoginError(AClient,LOGIN_INVALIDPASSWORD);
+			  end;
+		  end else
+      begin
+			  SendLoginError(AClient,LOGIN_UNREGISTERED);
+		  end;
+		  AnAccount.Free;
+    finally
+		  TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
+    end;
 	end;//ValidateLogin
 //------------------------------------------------------------------------------
 
@@ -684,14 +695,17 @@ begin
 	if Idx > -1 then
 	begin
 		TCharaServerLink(AClient.Data).DatabaseLink.CommonData.Connect;
-		AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
-		if Assigned(AnAccount) then begin
-			{AnAccount.LoginKey[1] := 0;
-			AnAccount.LoginKey[2] := 0;}
-			fAccountList.Delete(Idx);
-			TThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
-		end;
-		TCharaServerLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
+    try
+		  AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
+		  if Assigned(AnAccount) then begin
+			  {AnAccount.LoginKey[1] := 0;
+			  AnAccount.LoginKey[2] := 0;}
+			  fAccountList.Delete(Idx);
+			  TThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
+		  end;
+    finally
+		  TCharaServerLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
+    end;
 	end;
 end;
 //------------------------------------------------------------------------------

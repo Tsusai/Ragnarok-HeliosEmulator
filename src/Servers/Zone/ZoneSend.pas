@@ -798,40 +798,43 @@ end;
 
 begin
 	TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.Connect;
-	MapZoneID := Word(TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(MapName));
-	if MapZoneID = MainProc.ZoneServer.Options.ID then
-	begin
-		RemoveFromList;
-		ACharacter.Map := MapName;
-		ACharacter.Position := Point(X,Y);
-		WriteBufferWord(0, $0091, OutBuffer);
-		WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
-		WriteBufferWord(18, X, OutBuffer);
-		WriteBufferWord(20, Y, OutBuffer);
-		SendBuffer(ACharacter.ClientInfo, OutBuffer, 22);
-	end else
-	begin
-		MapNameSize := Length(MapName);
-		ClientIPSize := Length(ACharacter.ClientInfo.Binding.PeerIP);
-		Size := ClientIPSize + MapNameSize + 16;
-		//<id>,<size>,<cid>,<mapnamesize>,<mapname>,<clientipsize>,<clientip>
-		WriteBufferWord(0, $2208, OutBuffer);
-		WriteBufferWord(2, Size, OutBuffer);
-		WriteBufferLongWord(4, ACharacter.CID, OutBuffer);
-		WriteBufferWord(8, X, OutBuffer);
-		WriteBufferWord(10, Y, OutBuffer);
-		WriteBufferWord(12, MapNameSize, OutBuffer);
-		WriteBufferString(14, MapName, Length(MapName), OutBuffer);
-		WriteBufferWord(14+MapNameSize, ClientIPSize, OutBuffer);
-		WriteBufferString(
-			16+MapNameSize,
-			ACharacter.ClientInfo.Binding.PeerIP,
-			Length(ACharacter.ClientInfo.Binding.PeerIP),
-			OutBuffer
-		);
-		SendBuffer(MainProc.ZoneServer.ToInterTCPClient,OutBuffer,Size);
-	end;
-	TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+  try
+	  MapZoneID := Word(TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(MapName));
+	  if MapZoneID = MainProc.ZoneServer.Options.ID then
+	  begin
+		  RemoveFromList;
+		  ACharacter.Map := MapName;
+		  ACharacter.Position := Point(X,Y);
+		  WriteBufferWord(0, $0091, OutBuffer);
+		  WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
+		  WriteBufferWord(18, X, OutBuffer);
+		  WriteBufferWord(20, Y, OutBuffer);
+		  SendBuffer(ACharacter.ClientInfo, OutBuffer, 22);
+	  end else
+  	begin
+		  MapNameSize := Length(MapName);
+		  ClientIPSize := Length(ACharacter.ClientInfo.Binding.PeerIP);
+		  Size := ClientIPSize + MapNameSize + 16;
+		  //<id>,<size>,<cid>,<mapnamesize>,<mapname>,<clientipsize>,<clientip>
+		  WriteBufferWord(0, $2208, OutBuffer);
+		  WriteBufferWord(2, Size, OutBuffer);
+		  WriteBufferLongWord(4, ACharacter.CID, OutBuffer);
+		  WriteBufferWord(8, X, OutBuffer);
+		  WriteBufferWord(10, Y, OutBuffer);
+		  WriteBufferWord(12, MapNameSize, OutBuffer);
+		  WriteBufferString(14, MapName, Length(MapName), OutBuffer);
+		  WriteBufferWord(14+MapNameSize, ClientIPSize, OutBuffer);
+		  WriteBufferString(
+			  16+MapNameSize,
+			  ACharacter.ClientInfo.Binding.PeerIP,
+			  Length(ACharacter.ClientInfo.Binding.PeerIP),
+			  OutBuffer
+		  );
+		  SendBuffer(MainProc.ZoneServer.ToInterTCPClient,OutBuffer,Size);
+	  end;
+  finally
+	  TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+  end;
 end;
 //------------------------------------------------------------------------------
 

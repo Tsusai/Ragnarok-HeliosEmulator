@@ -272,14 +272,22 @@ uses
 		ValidateID1    := BufferReadLongWord(ReadPts[2], Buffer);
 		{ClientTick     := }BufferReadLongWord(ReadPts[3], Buffer);
 		Gender         := BufferReadByte    (ReadPts[4], Buffer);
+
 		TThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
-		AnAccount  := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
-		TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
+    try
+		  AnAccount  := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
+    finally
+		  TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
+    end;
 
 		//use client local game database
 		TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
-		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID);
-		TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
+    try
+		  ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID);
+    finally
+		  TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
+    end;
+
 		if Assigned(AnAccount) and Assigned(ACharacter) then
 		begin
 			if (AnAccount.LoginKey[1] = ValidateID1) and

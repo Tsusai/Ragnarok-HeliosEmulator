@@ -130,8 +130,11 @@ procedure TAccount.SetBannedTime(TimeString : string);
 begin
 	Self.Bantime := ConvertMySQLTime(TimeString);
 	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Connect;
-	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
-	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Disconnect;
+  try
+	  TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
+  finally
+	  TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Disconnect;
+  end;
 end;{SetBannedTime}
 //------------------------------------------------------------------------------
 
@@ -150,8 +153,11 @@ procedure TAccount.TemperaryBan(Seconds:Integer);
 begin
 	Self.Bantime := UnixToDateTime(DateTimeToUnix(Now) + Seconds);
 	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Connect;
-	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
-	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Disconnect;
+  try
+	  TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
+  finally
+	  TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Disconnect;
+  end;
 end;{SetBannedTime}
 //------------------------------------------------------------------------------
 
@@ -188,8 +194,11 @@ procedure TAccount.SetConnectUntilTime(TimeString : string);
 begin
 	Self.ConnectUntil := ConvertMySQLTime(TimeString);
 	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Connect;
-	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
-	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Disconnect;
+  try
+  	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
+  finally
+	  TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Disconnect;
+  end;
 end;{SetConnectUntilTime}
 //------------------------------------------------------------------------------
 
