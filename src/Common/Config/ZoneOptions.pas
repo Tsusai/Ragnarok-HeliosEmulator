@@ -46,6 +46,9 @@ interface
 			fCharShowArea	: Word;//The distance in cells away from a character that
                             	//other entities appear in.
 
+      fBXPMultiplier: LongWord;
+      fJXPMultiplier: LongWord;
+
 			fKickOnShutdown : Boolean;
 
 //Gets/Sets
@@ -85,6 +88,9 @@ interface
 
 			//Game
 			property KickOnShutdown : Boolean read fKickOnShutdown;
+
+      property BXPMultiplier: LongWord read fBXPMultiplier;
+      property JXPMultiplier: LongWord read fJXPMultiplier;
 
 			//Public methods
 			procedure Load;
@@ -200,6 +206,8 @@ implementation
 		begin
 			ReadSectionValues('Game', Section);
 			fKickOnShutdown := StrToBoolDef(Section.Values['Kick On Shutdown'] ,False);
+      fBXPMultiplier  := Min(StrToIntDef(Section.Values['Base EXP Multiplier'], 1), High(LongWord));
+      fJXPMultiplier  := Min(StrToIntDef(Section.Values['Job EXP Multiplier'], 1), High(LongWord));
 		end;{Subroutine LoadPerformance}
 	//--------------------------------------------------------------------------
 
@@ -271,7 +279,8 @@ implementation
 
 		//Game
 		WriteString('Game','Kick On Shutdown',BoolToStr(fKickOnShutdown));
-
+    WriteString('Game','Base EXP Multiplier',IntToStr(fBXPMultiplier));
+    WriteString('Game','Job EXP Multiplier',IntToStr(fJXPMultiplier));
 
 		//Options
 

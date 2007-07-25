@@ -14,6 +14,11 @@ Developers & Contributers
 - ChrstphrR (CR)
 
 --------------------------------------------------------------------------------
+
+- Rev 297 -
+[2007/07/25] RaX - Added Base and Job EXP Multiplier fields to Zone.ini.
+-
+
 - Rev 296 -
 [2007/07/25] RaX - Added try-finally blocks around all database connections to
  make sure we don't leak connections on exceptions.
