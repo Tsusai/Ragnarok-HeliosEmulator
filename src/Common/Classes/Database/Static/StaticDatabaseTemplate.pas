@@ -114,6 +114,16 @@ public
 			ZoneID : LongWord
 		) : TStringList; virtual; abstract;
 
+  Function  GetBaseEXPToNextLevel(
+		const
+			ACharacter : TCharacter
+		) : LongWord; virtual; abstract;
+
+  Function  GetJobEXPToNextLevel(
+		const
+			ACharacter : TCharacter
+		) : LongWord; virtual; abstract;
+
 	function  Connect : Boolean; virtual; abstract;
 
 	procedure Disconnect; virtual; abstract;

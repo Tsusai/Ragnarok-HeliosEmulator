@@ -153,6 +153,8 @@ protected
 	procedure SetJobLV(Value : Byte); override;
 	procedure SetBaseEXP(Value : LongWord); override;
 	procedure SetJobEXP(Value : LongWord); override;
+  procedure SetBaseEXPToNextLevel(Value : LongWord);
+  procedure SetJobEXPToNextLevel(Value : LongWord);
 	procedure SetZeny(Value : LongWord); override;
 
 	Procedure SetBaseStats(
@@ -211,6 +213,8 @@ protected
 			Value : LongWord
 		);
 
+  procedure BaseLevelUp(Levels : Word);
+  procedure JobLevelUp(Levels : Word);
 public
 	CID : LongWord;
 
@@ -272,6 +276,8 @@ public
 	//For timed save procedure to activate.
 	property BaseEXP   : LongWord    read fBaseEXP write SetBaseEXP;
 	property JobEXP    : LongWord    read fJobEXP write SetJobEXP;
+  property BaseEXPToNextLevel : LongWord read fBaseEXPToNextLevel write SetBaseEXPToNextLevel;
+  property JobEXPToNextLevel : LongWord read fJobEXPToNextLevel write SetJobEXPToNextLevel;
 	property Zeny      : LongWord    read fZeny write SetZeny;
 	property CharaNum  : Byte       read fCharacterNumber write SetCharaNum;
 	property StatusPts : Word       read fStatusPts write SetStatusPts;
@@ -319,6 +325,7 @@ uses
 	Math,
 	SysUtils,
 	{Project}
+  Main,
 	BufferIO,
 	Globals,
 	PacketTypes,
@@ -536,8 +543,10 @@ end;{SetClass}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetBaseLV(Value : byte);
 begin
-	Inherited;
+  //we do not inherit here for a reason! See BaseLevelUp
 	DataChanged := TRUE;
+  BaseLevelUp(Value-fBaseLv);
+
 end;{SetBaseLV}
 //------------------------------------------------------------------------------
 
@@ -556,8 +565,9 @@ end;{SetBaseLV}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetJobLV(Value : byte);
 begin
-	Inherited;
+	//we do not inherit here for a reason! See BaseLevelUp
 	DataChanged := TRUE;
+  JobLevelUp(Value-fJobLv);
 end;{SetJobLV}
 //------------------------------------------------------------------------------
 
@@ -577,6 +587,10 @@ procedure TCharacter.SetBaseEXP(Value : LongWord);
 begin
 	Inherited;
 	DataChanged := TRUE;
+  if Value > BaseEXPToNextLevel then
+  begin
+    BaseLv := BaseLv+1;
+  end;
 end;{SetBaseEXP}
 //------------------------------------------------------------------------------
 
@@ -596,7 +610,46 @@ procedure TCharacter.SetJobEXP(Value : LongWord);
 begin
 	Inherited;
 	DataChanged := TRUE;
+
+  if Value > JobEXPToNextLevel then
+  begin
+    JobLv := JobLv+1;
+  end;
 end;{SetJobEXP}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetBaseEXPToNextLevel                                                PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets BaseEXPToNextLevel to Value.
+//
+//	Changes -
+//		July 27th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.SetBaseEXPToNextLevel(Value : LongWord);
+begin
+	fBaseEXPToNextLevel := Value;
+end;{SetBaseEXPToNextLevel}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetJobEXPToNextLevel                                                PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets JobEXPToNextLevel to Value.
+//
+//	Changes -
+//		July 27th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.SetJobEXPToNextLevel(Value : LongWord);
+begin
+	fJobEXPToNextLevel := Value;
+end;{SetJobEXPToNextLevel}
 //------------------------------------------------------------------------------
 
 
@@ -1421,9 +1474,9 @@ Begin
 		High(fMaxHP)
 	);
 
-	if (fHP > fMaxHP) then
+	if (HP > MaxHP) then
 	begin
-		fHP := fMaxHP;
+		HP := MaxHP;
 	end;
 End; (* Proc TCharacter.CalcMaxHP
 *-----------------------------------------------------------------------------*)
@@ -1678,6 +1731,10 @@ begin
 			MAXSP + BaseLV *
 			TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxSP(self) *
 			(100 + ParamBase[INT]) div 100;
+    if SP > MAXSP then
+    begin
+      SP := MAXSP;
+    end;
   finally
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 	end;
@@ -1726,6 +1783,64 @@ begin
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
   end;
 end;{CalcMaxWeight}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//BaseLevelUp                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Increases the character's level and updates all changed fields.
+//
+//	Changes -
+//		July 25th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.BaseLevelUp(Levels  : Word);
+begin
+  //Make sure fBaseLv is in range.
+  fBaseLv := Max(Min(fBaseLv+Levels, MainProc.ZoneServer.Options.MaxBaseLevel), 1);
+	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
+	try
+    //Gets the base experience to next level, divides by the multiplier to lower
+    //numbers, prevent overflows, and prevent large integer math. Also, this is
+    //only calculated at level up rather than at each experience gain.
+    BaseEXPToNextLevel :=
+      TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(self)
+      DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
+  finally
+		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+	end;
+  CalcMaxWeight;
+  CalcMaxHP;
+  CalcMaxSP;
+  CalcSpeed;
+end;{BaseLevelUp}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//JobLevelUp                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Increases the character's job level and updates all changed fields.
+//
+//	Changes -
+//		July 25th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.JobLevelUp(Levels  : Word);
+begin
+  //Make sure fJobLv is in range.
+  fJobLv := Max(Min(fJobLv+Levels, MainProc.ZoneServer.Options.MaxJobLevel), 1);
+	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
+	try
+    //Update job experience to next level from static database.
+    JobEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(self);
+  finally
+		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+	end;
+end;{JobLevelUp}
 //------------------------------------------------------------------------------
 
 

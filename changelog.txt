@@ -15,6 +15,19 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 298 -
+[2007/07/27] RaX - Added Max. Base and Job Level fields to Zone.ini.
+[2007/07/27] RaX - Added Base and JobLevelUp methods to TCharacter.
+[2007/07/27] RaX - Added Base and Job EXPToNextLevel properties to TCharacter.
+[2007/07/27] RaX - Implemented Both base and job leveling internally. Need exp
+ to next level table added before continuing.
+[2007/07/27] RaX - Added Stubs for Retrieving the base and job exp to next level
+ to the static databases.
+[2007/07/27] RaX - Added exp calculations where exp to next level is divided
+ rather than the exp gained multiplied. Hopefully this will be an albeit small
+ performance increase as well as a bit of insurance that we don't overflow.
+-
+
 - Rev 297 -
 [2007/07/25] RaX - Added Base and Job EXP Multiplier fields to Zone.ini.
 -

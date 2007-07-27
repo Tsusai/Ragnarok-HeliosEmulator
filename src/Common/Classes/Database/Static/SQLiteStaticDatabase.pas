@@ -102,6 +102,16 @@ public
 			ID : LongWord
 		) : TStringList; override;
 
+  Function  GetBaseEXPToNextLevel(
+		const
+			ACharacter : TCharacter
+		) : LongWord; override;
+
+  Function  GetJobEXPToNextLevel(
+		const
+			ACharacter : TCharacter
+		) : LongWord; override;
+
 	function  Connect : Boolean; override;
 
 	procedure Disconnect; override;
@@ -491,5 +501,46 @@ begin
 	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetMapsForZone
 //------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetBaseEXPToNextLevel 			                                         FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Queries and returns a map's flags.
+//
+//	Changes -
+//		July 25th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function TSQLiteStaticDatabase.GetBaseEXPToNextLevel(
+		const
+			ACharacter : TCharacter
+		) : LongWord;
+begin
+  Result := 0;
+end;//GetBaseEXPToNextLevel
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetJobEXPToNextLevel 			                                         FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Queries and returns a map's flags.
+//
+//	Changes -
+//		July 25th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function TSQLiteStaticDatabase.GetJobEXPToNextLevel(
+		const
+			ACharacter : TCharacter
+		) : LongWord;
+begin
+  Result := 0;
+end;//GetJobEXPToNextLevel
+//------------------------------------------------------------------------------
+
 {END SQLiteStaticDatabase}
 end.

@@ -100,6 +100,8 @@ protected
 	fJobLV            : Byte;
 	fBaseEXP          : LongWord;
 	fJobEXP           : LongWord;
+  fBaseEXPToNextLevel: LongWord;
+  fJobEXPToNextLevel: LongWord;
 	fZeny             : LongWord;
 	fParamBase        : ByteStatArray;
 	fMaxHP            : Word;
@@ -182,10 +184,14 @@ public
 	PathIndex		: Word;
 	MoveTick		: LongWord;
 
-	property Name      : string     read fName write SetName;
-	property JID       : Word       read fJID write SetClass;
-	property BaseLV    : Byte       read fBaseLV write SetBaseLV;
-	property JobLV     : Byte       read fJobLV write SetJobLV;
+	property Name      : string     read fName    write SetName;
+	property JID       : Word       read fJID     write SetClass;
+	property BaseLV    : Byte       read fBaseLV  write SetBaseLV;
+	property JobLV     : Byte       read fJobLV   write SetJobLV;
+  property BaseEXP   : LongWord   read fBaseEXP write fBaseEXP;
+  property JobEXP    : LongWord   read fJobEXP  write fJobEXP;
+  property BaseEXPToNextLevel : LongWord read fBaseEXPToNextLevel write fBaseEXPToNextLevel;
+  property JobEXPToNextLevel  : LongWord read fJobEXPToNextLevel  write fJobEXPToNextLevel;
 	property ParamBase[const Index : Byte] : Byte
 		read  GetBaseStats
 		write SetBaseStats;

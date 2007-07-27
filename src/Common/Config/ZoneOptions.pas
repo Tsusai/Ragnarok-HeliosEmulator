@@ -46,8 +46,14 @@ interface
 			fCharShowArea	: Word;//The distance in cells away from a character that
                             	//other entities appear in.
 
-      fBXPMultiplier: LongWord;
-      fJXPMultiplier: LongWord;
+      fBaseXPMultiplier: LongWord;
+      fJobXPMultiplier: LongWord;
+
+      fMaxBaseLevel : Word;
+      fMaxJobLevel  : Word;
+
+
+
 
 			fKickOnShutdown : Boolean;
 
@@ -89,8 +95,11 @@ interface
 			//Game
 			property KickOnShutdown : Boolean read fKickOnShutdown;
 
-      property BXPMultiplier: LongWord read fBXPMultiplier;
-      property JXPMultiplier: LongWord read fJXPMultiplier;
+      property BaseXPMultiplier: LongWord read fBaseXPMultiplier;
+      property JobXPMultiplier: LongWord read fJobXPMultiplier;
+
+      property MaxBaseLevel : Word read fMaxBaseLevel;
+      property MaxJobLevel  : Word read fMaxJobLevel;
 
 			//Public methods
 			procedure Load;
@@ -206,8 +215,13 @@ implementation
 		begin
 			ReadSectionValues('Game', Section);
 			fKickOnShutdown := StrToBoolDef(Section.Values['Kick On Shutdown'] ,False);
-      fBXPMultiplier  := Min(StrToIntDef(Section.Values['Base EXP Multiplier'], 1), High(LongWord));
-      fJXPMultiplier  := Min(StrToIntDef(Section.Values['Job EXP Multiplier'], 1), High(LongWord));
+
+      fBaseXPMultiplier  := Min(StrToIntDef(Section.Values['Base EXP Multiplier'], 1), High(LongWord));
+      fJobXPMultiplier  := Min(StrToIntDef(Section.Values['Job EXP Multiplier'], 1), High(LongWord));
+
+      fMaxBaseLevel  := Min(StrToIntDef(Section.Values['Max. Base Level'], 99), High(Word));
+      fMaxJobLevel   := Min(StrToIntDef(Section.Values['Max. Job Level'], 70), High(Word));
+
 		end;{Subroutine LoadPerformance}
 	//--------------------------------------------------------------------------
 
@@ -279,9 +293,11 @@ implementation
 
 		//Game
 		WriteString('Game','Kick On Shutdown',BoolToStr(fKickOnShutdown));
-    WriteString('Game','Base EXP Multiplier',IntToStr(fBXPMultiplier));
-    WriteString('Game','Job EXP Multiplier',IntToStr(fJXPMultiplier));
+    WriteString('Game','Base EXP Multiplier',IntToStr(fBaseXPMultiplier));
+    WriteString('Game','Job EXP Multiplier',IntToStr(fJobXPMultiplier));
 
+    WriteString('Game','Max. Base Level',IntToStr(fMaxBaseLevel));
+    WriteString('Game','Max. Job Level',IntToStr(fMaxJobLevel));
 		//Options
 
 		UpdateFile;
