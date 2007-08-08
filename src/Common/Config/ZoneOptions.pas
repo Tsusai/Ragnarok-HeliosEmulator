@@ -51,8 +51,8 @@ interface
 
       fMaxBaseLevel : Word;
       fMaxJobLevel  : Word;
-
-
+      fMaxBaseLevelsPerEXPGain : Word;
+      fMaxJobLevelsPerEXPGain : Word;
 
 
 			fKickOnShutdown : Boolean;
@@ -100,7 +100,8 @@ interface
 
       property MaxBaseLevel : Word read fMaxBaseLevel;
       property MaxJobLevel  : Word read fMaxJobLevel;
-
+      property MaxBaseLevelsPerEXPGain : Word read fMaxBaseLevelsPerEXPGain;
+      property MaxJobLevelsPerEXPGain : Word read fMaxJobLevelsPerEXPGain;
 			//Public methods
 			procedure Load;
 			procedure Save;
@@ -219,9 +220,10 @@ implementation
       fBaseXPMultiplier  := Min(StrToIntDef(Section.Values['Base EXP Multiplier'], 1), High(LongWord));
       fJobXPMultiplier  := Min(StrToIntDef(Section.Values['Job EXP Multiplier'], 1), High(LongWord));
 
-      fMaxBaseLevel  := Min(StrToIntDef(Section.Values['Max. Base Level'], 99), High(Word));
-      fMaxJobLevel   := Min(StrToIntDef(Section.Values['Max. Job Level'], 70), High(Word));
-
+      fMaxBaseLevel   := Min(StrToIntDef(Section.Values['Max. Base Level'], 99), High(Word));
+      fMaxJobLevel    := Min(StrToIntDef(Section.Values['Max. Job Level'], 70), High(Word));
+      fMaxBaseLevelsPerEXPGain := Min(StrToIntDef(Section.Values['Max. Base Levels Allowed Per EXP Gain'], 1), High(Word));
+      fMaxJobLevelsPerEXPGain := Min(StrToIntDef(Section.Values['Max. Job Levels Allowed Per EXP Gain'], 1), High(Word));
 		end;{Subroutine LoadPerformance}
 	//--------------------------------------------------------------------------
 
@@ -298,6 +300,8 @@ implementation
 
     WriteString('Game','Max. Base Level',IntToStr(fMaxBaseLevel));
     WriteString('Game','Max. Job Level',IntToStr(fMaxJobLevel));
+    WriteString('Game','Max. Base Levels Allowed Per EXP Gain',IntToStr(fMaxBaseLevelsPerEXPGain));
+    WriteString('Game','Max. Job Levels Allowed Per EXP Gain',IntToStr(fMaxJobLevelsPerEXPGain));
 		//Options
 
 		UpdateFile;

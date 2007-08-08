@@ -562,7 +562,7 @@ end;//GetMapsForZone
 //GetBaseEXPToNextLevel 			                                         FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Queries and returns a map's flags.
+//			Queries and returns a character's base experience to the next level.
 //
 //	Changes -
 //		July 25th, 2007 - RaX - Created.
@@ -572,8 +572,20 @@ Function TMySQLStaticDatabase.GetBaseEXPToNextLevel(
 		const
 			ACharacter : TCharacter
 		) : LongWord;
+var
+	Success     : Boolean;
+	QueryResult : TMySQLResult;
 begin
-  Result := 0;
+	QueryResult :=
+		SendQuery(
+		Format('SELECT %s FROM baseexp WHERE level = %d',
+			[ACharacter.JobName, ACharacter.BaseLV])
+		,TRUE,Success);
+	if (QueryResult.RowsCount = 1) then
+	begin
+			Result              := StrToInt(QueryResult.FieldValue(0));
+	end else Result := 0;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetBaseEXPToNextLevel
 //------------------------------------------------------------------------------
 
@@ -582,7 +594,7 @@ end;//GetBaseEXPToNextLevel
 //GetJobEXPToNextLevel 			                                         FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
-//			Queries and returns a map's flags.
+//			Queries and returns a character's job experience to the next level.
 //
 //	Changes -
 //		July 25th, 2007 - RaX - Created.
@@ -592,8 +604,20 @@ Function TMySQLStaticDatabase.GetJobEXPToNextLevel(
 		const
 			ACharacter : TCharacter
 		) : LongWord;
+var
+	Success     : Boolean;
+	QueryResult : TMySQLResult;
 begin
-  Result := 0;
+	QueryResult :=
+		SendQuery(
+		Format('SELECT %s FROM jobexp WHERE level = %d',
+			[ACharacter.JobName, ACharacter.BaseLV])
+		,TRUE,Success);
+	if (QueryResult.RowsCount = 1) then
+	begin
+			Result              := StrToInt(QueryResult.FieldValue(0));
+	end else Result := 0;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetJobEXPToNextLevel
 //------------------------------------------------------------------------------
 

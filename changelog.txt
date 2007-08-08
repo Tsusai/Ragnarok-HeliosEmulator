@@ -15,6 +15,16 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 299 -
+[2007/08/07] RaX - Added Baseexp and jobexp tables to the static database.
+[2007/08/07] RaX - Fleshed out the MYSQL queries for the exp databases
+ I can't test SQLITE right now so I have to wait to finish sqlite.
+[2007/08/07] RaX - Added Max. Base Levels Allowed per EXP Gain and Max Job Levels
+ Allowed Per EXP Gain fields to Zone.ini.
+[2007/08/07] RaX - Finished the leveling routines in TCharacter, made them take into
+ account the above fields.
+-
+
 - Rev 298 -
 [2007/07/27] RaX - Added Max. Base and Job Level fields to Zone.ini.
 [2007/07/27] RaX - Added Base and JobLevelUp methods to TCharacter.

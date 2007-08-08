@@ -584,12 +584,20 @@ end;{SetJobLV}
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.SetBaseEXP(Value : LongWord);
+var
+  Index : Integer;
 begin
 	Inherited;
 	DataChanged := TRUE;
-  if Value > BaseEXPToNextLevel then
+  For Index := 0 to MainProc.ZoneServer.Options.MaxBaseLevelsPerEXPGain do
   begin
-    BaseLv := BaseLv+1;
+    if Value > BaseEXPToNextLevel then
+    begin
+      BaseLv := BaseLv+1;
+    end else
+    begin
+      Break;
+    end;
   end;
 end;{SetBaseEXP}
 //------------------------------------------------------------------------------
@@ -607,13 +615,20 @@ end;{SetBaseEXP}
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.SetJobEXP(Value : LongWord);
+var
+  Index : Integer;
 begin
 	Inherited;
 	DataChanged := TRUE;
-
-  if Value > JobEXPToNextLevel then
+  For Index := 0 to MainProc.ZoneServer.Options.MaxJobLevelsPerEXPGain do
   begin
-    JobLv := JobLv+1;
+    if Value > JobEXPToNextLevel then
+    begin
+      JobLv := JobLv+1;
+    end else
+    begin
+      Break;
+    end;
   end;
 end;{SetJobEXP}
 //------------------------------------------------------------------------------
