@@ -1,4 +1,4 @@
-(*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+(*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@3@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
 
 Unit
 Character
@@ -106,6 +106,8 @@ protected
 	fCharacterNumber  : Byte;
 	fStatusPts        : Word;
 	fSkillPts         : Word;
+	fWeight				    : LongWord;
+	fMaxWeight			  : LongWord;
 	fKarma            : Word;
 	fManner           : Word;
 	fPartyID          : LongWord;
@@ -197,7 +199,8 @@ protected
 	procedure SetPartnerID(Value : LongWord);
 	procedure SetParentID1(Value : LongWord);
 	procedure SetParentID2(Value : LongWord);
-
+  procedure SetWeight(Value : LongWord);
+  procedure SetMaxWeight(Value : LongWord);
 	Procedure SetBabyID(
 		const
 			Value : LongWord
@@ -224,11 +227,6 @@ public
 	ScriptStatus	: TCharaScriptStatus; //lets us know what is going on with lua,
 	ZoneStatus		: TCharaZoneStatus; //Is the chara online in the Zone or not?
 	ScriptID			: LongWord;
-
-	BaseNextEXP		: LongWord;
-	JobNextEXP		: LongWord;
-	Weight				: LongWord;
-	MaxWeight			: LongWord;
 
 	ClientInfo		: TIdContext;
 
@@ -310,7 +308,8 @@ public
 	property BabyID    : LongWord    read fBabyID write SetBabyID;
 	property Online    : Byte       read fOnline write SetOnline;
 	property HomunID   : LongWord    read fHomunID write SetHomunID;
-
+  property Weight    : LongWord   read fWeight write SetWeight;
+  property MaxWeight : LongWord   read fMaxWeight write SetMaxWeight;
 	Property JobName   : String
 		read  fJobName;
 End;(* TCharacter
@@ -546,7 +545,10 @@ begin
   //we do not inherit here for a reason! See BaseLevelUp
 	DataChanged := TRUE;
   BaseLevelUp(Value-fBaseLv);
-
+  if ZoneStatus = IsOnline then
+  begin
+    SendSubStat(0, $000b, BaseLv);
+  end;
 end;{SetBaseLV}
 //------------------------------------------------------------------------------
 
@@ -568,6 +570,10 @@ begin
 	//we do not inherit here for a reason! See BaseLevelUp
 	DataChanged := TRUE;
   JobLevelUp(Value-fJobLv);
+  if ZoneStatus = IsOnline then
+  begin
+    SendSubStat(0, $0037, JobLv);
+  end;
 end;{SetJobLV}
 //------------------------------------------------------------------------------
 
@@ -599,6 +605,12 @@ begin
       Break;
     end;
   end;
+
+  if ZoneStatus = IsOnline then
+  begin
+   	SendSubStat(1, $0001, BaseEXP);
+  end;
+
 end;{SetBaseEXP}
 //------------------------------------------------------------------------------
 
@@ -630,6 +642,11 @@ begin
       Break;
     end;
   end;
+
+  if ZoneStatus = IsOnline then
+  begin
+	  SendSubStat(1, $0002, JobEXP);
+  end;
 end;{SetJobEXP}
 //------------------------------------------------------------------------------
 
@@ -647,6 +664,10 @@ end;{SetJobEXP}
 procedure TCharacter.SetBaseEXPToNextLevel(Value : LongWord);
 begin
 	fBaseEXPToNextLevel := Value;
+  if ZoneStatus = IsOnline then
+  begin
+	  SendSubStat(1, $0016, BaseEXPToNextLevel);
+  end;
 end;{SetBaseEXPToNextLevel}
 //------------------------------------------------------------------------------
 
@@ -664,6 +685,10 @@ end;{SetBaseEXPToNextLevel}
 procedure TCharacter.SetJobEXPToNextLevel(Value : LongWord);
 begin
 	fJobEXPToNextLevel := Value;
+  if ZoneStatus = IsOnline then
+  begin
+	  SendSubStat(1, $0017, JobEXPToNextLevel);
+  end;
 end;{SetJobEXPToNextLevel}
 //------------------------------------------------------------------------------
 
@@ -744,6 +769,10 @@ End; (* Proc TCharacter.SetBaseStats
 procedure TCharacter.SetMaxHP(Value : word);
 begin
 	Inherited;
+  if ZoneStatus = IsOnline then
+  begin
+	  SendSubStat(0, 6, MAXHP);
+  end;
 	DataChanged := TRUE;
 end;{SetMaxHP}
 //------------------------------------------------------------------------------
@@ -762,6 +791,11 @@ end;{SetMaxHP}
 procedure TCharacter.SetHP(Value : word);
 begin
 	Inherited;
+
+  if ZoneStatus = IsOnline then
+  begin
+    SendSubStat(0, 5, HP);
+  end;
 	DataChanged := TRUE;
 end;{SetHP}
 //------------------------------------------------------------------------------
@@ -781,6 +815,10 @@ end;{SetHP}
 procedure TCharacter.SetMaxSP(Value : word);
 begin
 	Inherited;
+  if ZoneStatus = IsOnline then
+  begin
+	  SendSubStat(0, 8, MAXSP);
+  end;
 	DataChanged := TRUE;
 end;{SetMaxSP}
 //------------------------------------------------------------------------------
@@ -800,6 +838,10 @@ end;{SetMaxSP}
 procedure TCharacter.SetSP(Value : word);
 begin
 	Inherited;
+  if ZoneStatus = IsOnline then
+  begin
+	  SendSubStat(0, 7, SP);
+  end;
 	DataChanged := TRUE;
 end;{SetSP}
 //------------------------------------------------------------------------------
@@ -1399,6 +1441,50 @@ End; (* Proc TCharacter.SetOnline
 *-----------------------------------------------------------------------------*)
 
 
+//------------------------------------------------------------------------------
+//SetWeight                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Weight
+//
+//	Changes -
+//		August 8th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.SetWeight(Value : LongWord);
+begin
+	Inherited;
+  if ZoneStatus = IsOnline then
+  begin
+	  SendSubStat(0, $0018, Weight);
+  end;
+	DataChanged := TRUE;
+end;{SetWeight}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetMaxWeight                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets the Max Weight
+//
+//	Changes -
+//		August 8th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.SetMaxWeight(Value : LongWord);
+begin
+	Inherited;
+  if ZoneStatus = IsOnline then
+  begin
+	  SendSubStat(0, $0019, MaxWeight);
+  end;
+	DataChanged := TRUE;
+end;{SetMaxWeight}
+//------------------------------------------------------------------------------
+
+
 (*- Procedure -----------------------------------------------------------------*
 TCharacter.SetHomunID
 --------------------------------------------------------------------------------
@@ -1493,6 +1579,8 @@ Begin
 	begin
 		HP := MaxHP;
 	end;
+
+  SendSubStat(0, 6, MAXHP);
 End; (* Proc TCharacter.CalcMaxHP
 *-----------------------------------------------------------------------------*)
 
@@ -1682,11 +1770,11 @@ Begin
 
 	// Update base XP
 	SendSubStat(1, 1, BaseEXP);
-	SendSubStat(1, $0016, BaseNextEXP);
+	SendSubStat(1, $0016, BaseEXPToNextLevel);
 
 	// Update job XP
 	SendSubStat(1, 2, JobEXP);
-	SendSubStat(1, $0017, JobNextEXP);
+	SendSubStat(1, $0017, JobEXPToNextLevel);
 
 	// Update Zeny
 	SendSubStat(1, $0014, Zeny);
@@ -1753,6 +1841,7 @@ begin
   finally
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 	end;
+
 end;{CalcMaxSP}
 //------------------------------------------------------------------------------
 

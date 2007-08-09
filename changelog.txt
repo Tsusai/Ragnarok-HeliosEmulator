@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 300 -
+[2007/08/08] RaX - Added packets to many Set functions in TCharacter. BaseEXP JobEXP
+ JobEXP To next level Base EXP to next level, hp, sp, etc. should all update when
+ they change now.
+-
+
 - Rev 299 -
 [2007/08/07] RaX - Added Baseexp and jobexp tables to the static database.
 [2007/08/07] RaX - Fleshed out the MYSQL queries for the exp databases
