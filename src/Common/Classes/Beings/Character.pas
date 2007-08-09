@@ -1580,7 +1580,6 @@ Begin
 		HP := MaxHP;
 	end;
 
-  SendSubStat(0, 6, MAXHP);
 End; (* Proc TCharacter.CalcMaxHP
 *-----------------------------------------------------------------------------*)
 

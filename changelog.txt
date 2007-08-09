@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 301 -
+[2007/08/08] RaX - Fixed a mistake in the last commit, I forgot to remove a sendsubstat
+ test line that caused the character server to freak out. Removed.
+-
+
 - Rev 300 -
 [2007/08/08] RaX - Added packets to many Set functions in TCharacter. BaseEXP JobEXP
  JobEXP To next level Base EXP to next level, hp, sp, etc. should all update when
