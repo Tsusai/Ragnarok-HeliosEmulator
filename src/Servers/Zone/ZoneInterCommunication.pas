@@ -17,6 +17,11 @@ uses
 	IdContext,
 	Character;
 
+const
+	WHISPER_SUCCESS  = 0;
+	WHISPER_FAILED   = 1;
+	WHISPER_BLOCKED  = 2;
+	
 	procedure ValidateWithInterServer(
 		AClient : TInterClient;
 		ZoneServer : TZoneServer
@@ -29,6 +34,7 @@ uses
 	procedure SendWhisperReplyToZone(AClient : TIdContext; CharID:LongWord; Code : byte);
 	procedure RedirectWhisperToZone(AClient : TIdContext;const ZoneID,FromID,CharID:LongWord;const FromName,Whisper: String);
 	procedure SendWhisperReplyToInter(AClient : TInterClient;const ZoneID, CharID:LongWord; Code : byte);
+	procedure ZoneSendGMCommandtoInter(AClient : TInterClient;const AID, CharID:LongWord;const Command : string);
 implementation
 uses
 	BufferIO,
@@ -256,5 +262,45 @@ uses
 	end;
 //------------------------------------------------------------------------------
 
+
+(*- Procedure -----------------------------------------------------------------*
+ZoneSendGMCommandtoInter
+--------------------------------------------------------------------------------
+Overview:
+--
+	Sends the received GM command to the inter server.
+
+
+--
+Pre:
+	TODO
+Post:
+	TODO
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/03/19] RaX - Created Header;
+[2007/05/01] Tsusai - Added const to the parameters
+[2007/06/01] CR - Altered Comment Header, minor formatting/bracketing changes,
+	use of try-finally to ensure no leaks if errors occur before our local
+	Stringlist is freed.
+[2007/7/23] Aeomin - Moved from ZoneSend.pas
+*-----------------------------------------------------------------------------*)
+procedure ZoneSendGMCommandtoInter(AClient : TInterClient;const AID, CharID:LongWord;const Command : string);
+var
+	TotalLength : Integer;
+	OutBuffer   : TBuffer;
+begin
+		TotalLength := 19 + StrLen(PChar(Command));
+		WriteBufferWord(0, $2205, OutBuffer);
+		WriteBufferWord(2, TotalLength, OutBuffer);
+		WriteBufferLongWord(4, AID, OutBuffer);
+		WriteBufferLongWord(8, CharID, OutBuffer);
+		WriteBufferWord(12, Length(Command), OutBuffer);
+		WriteBufferString(14, Command, Length(Command), OutBuffer);
+		SendBuffer(AClient, OutBuffer, TotalLength);
+end; (* Proc ZoneSendGMCommandtoInter
+*-----------------------------------------------------------------------------*)
 end.
- 

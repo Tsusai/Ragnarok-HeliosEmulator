@@ -206,7 +206,7 @@ begin
 	begin
 		Result :=
 			Database.Connect(
-				ExpandFileName(MainProc.DatabaseOptions.GameHost)
+				ExpandFileName(MainProc.DatabaseOptions.StaticHost)
 				 + '/'+MainProc.DatabaseOptions.StaticDB+'.db');
 	end else
 	begin
@@ -242,7 +242,7 @@ begin
 	Result := Database.GetTable(QString);
 	{if (Result = 0) AND (Database.Error <> 'SELECT FROM: no records') then
 	begin
-		Console.Message('Text Query Error: ' + QString + '- ' + Database.Error, 'Game Database', MS_ERROR);
+		Console.Message('Text Query Error: ' + QString + '- ' + Database.Error, 'Static Database', MS_ERROR);
 		Console.WriteLn(Database.Error);
 	end;}
 end;//SendQuery
@@ -388,7 +388,7 @@ Function TSQLiteStaticDatabase.GetMapZoneID(
 var
 	QueryResult : TSQLiteTable;
 begin
-	Result := 1; //Assume 1
+	Result := -1;
 	QueryResult :=
 		SendQuery(
 		Format('SELECT zoneid FROM maps WHERE mapname = ''%s''',

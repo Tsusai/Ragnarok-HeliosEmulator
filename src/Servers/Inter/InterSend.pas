@@ -33,11 +33,25 @@ uses
 		Y							: Word
 	);
 
-	Procedure InterSendGMCommandToZones(
-		AClient          : TIdContext;
-		GMID             : LongWord;
-		CharacterID      : LongWord;
-		CommandSeparator : TStringList
+	Procedure InterSendGMCommandToZone(
+			AClient          : TIdContext;
+		const
+			GMID             : LongWord;
+		const
+			CharacterID      : LongWord;
+		CommandSeparator : TStringList;
+		const
+			TargetAID: LongWord = 0;
+		const
+			TargetCID: LongWord = 0
+	);
+
+	procedure InterSendGMCommandReplyToZone(
+			AClient          : TIdContext;
+		const
+			CID              : LongWord;
+		const
+			Error            : String
 	);
 
 implementation
@@ -45,7 +59,7 @@ implementation
 
 uses
 	{RTL/VCL}
-
+	SysUtils,
 	{Project}
 	//none
 	PacketTypes,
@@ -58,7 +72,7 @@ uses
 
 
 (*- Procedure -----------------------------------------------------------------*
-InterSendGMCommandToZones
+InterSendGMCommandToZone
 --------------------------------------------------------------------------------
 Overview:
 --
@@ -77,11 +91,17 @@ Revisions:
 	procedure to construct the packet ($2206), and slight optimizations made.
 	Used ClientList and ZoneServerLink properties for clarity.
 *-----------------------------------------------------------------------------*)
-Procedure InterSendGMCommandToZones(
-		AClient          : TIdContext;
-		GMID             : LongWord;
-		CharacterID      : LongWord;
-		CommandSeparator : TStringList
+Procedure InterSendGMCommandToZone(
+			AClient          : TIdContext;
+		const
+			GMID             : LongWord;
+		const
+			CharacterID      : LongWord;
+			CommandSeparator : TStringList;
+		const
+			TargetAID: LongWord = 0;
+		const
+			TargetCID: LongWord = 0
 	);
 Var
 	ABuffer     : TBuffer;
@@ -104,8 +124,10 @@ Var
 		WriteBufferWord(4, CommandID, ABuffer);
 		WriteBufferLongWord(6, GMID, ABuffer);
 		WriteBufferLongWord(10, CharacterID, ABuffer);
-		WriteBufferWord(14, CommandSeparator.Count - 1, ABuffer);
-		BufferIndex := 16;//Where we are currently in the buffer.
+		WriteBufferLongWord(14, TargetAID, ABuffer);
+		WriteBufferLongWord(18, TargetCID, ABuffer);
+		WriteBufferWord(22, CommandSeparator.Count - 1, ABuffer);
+		BufferIndex := 24;//Where we are currently in the buffer.
 
 		//We then write the Command's arguments to the buffer.
 		for Index := 1 to CommandSeparator.Count - 1 do
@@ -129,9 +151,6 @@ Var
 	end;(* WritePacket2206
 	*...................................*)
 
-Var
-	Index      : Integer;
-	ListClient : TIdContext;
 Begin
 	with MainProc.InterServer do
 	begin
@@ -145,24 +164,10 @@ Begin
 		begin
 			//start writing packet 2206 (see Notes/GM Command Packets.txt)
 			WritePacket2206;
-
-				//Then, after we're done building the buffer, we send it to all connected
-			//zones. - incomplete
-			{[2007/05/19] CR - Talking with RaX on IRC, simple commands work, but
-			this is still incomplete -- more complex GM commands aren't working or
-			are not yet verified. }
-
-			for Index := 0 to (fClientList.Count - 1) do
-			begin
-				if Assigned(ZoneServerLink[Index]) then
-				begin
-					ListClient := ClientList[Index];
-					SendBuffer(ListClient, ABuffer, Size);
-				end;
-			end;
+			SendBuffer(AClient, ABuffer, Size);
 		end;
 	end;
-End; (* Proc TInterServer.InterSendGMCommandToZones
+End; (* Proc TInterServer.InterSendGMCommandToZone
 *-----------------------------------------------------------------------------*)
 
 
@@ -208,4 +213,33 @@ end;
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//InterSendGMCommandReplyToZone                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send command result to client
+//
+//	Changes -
+//		[2007/08/09] Aeomin - Create.
+//------------------------------------------------------------------------------
+procedure InterSendGMCommandReplyToZone(
+		AClient          : TIdContext;
+	const
+		CID              : LongWord;
+	const
+		Error            : String
+);
+var
+	Size        : Word;
+	ABuffer     : TBuffer;
+begin
+	Size := StrLen(PChar(Error));
+	WriteBufferWord(0, $2207, ABuffer);
+	WriteBufferWord(2, Size + 10, ABuffer);
+	WriteBufferLongWord(4, CID, ABuffer);
+	WriteBufferWord(8, Size, ABuffer);
+	WriteBufferString(10, Error, Size, ABuffer);
+	SendBuffer(AClient, ABuffer, Size + 10);
+end;
+//------------------------------------------------------------------------------
 end.

@@ -45,11 +45,9 @@ uses
 	procedure SendAreaChat(const Chat : String; const Length : Word; const ACharacter : TCharacter);
 
 
-	procedure ZoneSendGMCommandtoInter(const ACharacter : TCharacter; const Command : String);
 	procedure ZoneSendGMCommandResultToInter(
 		const AccountID : LongWord;
 		const CharacterID : LongWord;
-		const Success : Boolean;
 		const Error : String
 	);
 
@@ -80,12 +78,12 @@ uses
 	);
 	procedure ZoneSendConnectionsCount(AClient : TIdContext);
 
-	Procedure ZoneSendWarp(
+	function ZoneSendWarp(
 		const ACharacter : TCharacter;
 		const MapName : String;
 		const X : Word;
 		const Y : Word
-	);
+	):Boolean;
 
 	procedure Kick(const Who:TCharacter);
 	procedure KickAll;
@@ -341,74 +339,6 @@ end;
 //------------------------------------------------------------------------------
 
 
-(*- Procedure -----------------------------------------------------------------*
-ZoneSendGMCommandtoInter
---------------------------------------------------------------------------------
-Overview:
---
-	Sends the received GM command to the inter server.
-
-
---
-Pre:
-	TODO
-Post:
-	TODO
-
---
-Revisions:
---
-(Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2007/03/19] RaX - Created Header;
-[2007/05/01] Tsusai - Added const to the parameters
-[2007/06/01] CR - Altered Comment Header, minor formatting/bracketing changes,
-	use of try-finally to ensure no leaks if errors occur before our local
-	Stringlist is freed.
-*-----------------------------------------------------------------------------*)
-Procedure ZoneSendGMCommandtoInter(
-	const
-		ACharacter : TCharacter;
-	const
-		Command    : String
-	);
-Var
-	ReplyBuffer : TBuffer;
-	TotalLength : Integer;
-	AStringList : TStringList;
-Begin
-	if (MainProc.ZoneServer.Commands.GetCommandName(Command) = 'warp') then
-	begin
-		AStringList := TStringList.Create;
-		try
-			AStringList.DelimitedText := Command;
-			if (AStringList.Count > 3) then
-			begin
-				ZoneSendWarp(
-					ACharacter,
-					AStringList[1],
-					StrToIntDef(AStringList[2], 0),
-					StrToIntDef(AStringList.Strings[3], 0)
-				);
-			end;
-		finally
-			AStringList.Free;
-		end;//t-f
-	end else
-	begin
-		//See Notes/GM Command Packets.txt
-		TotalLength := 19+Length(Command);
-		WriteBufferWord(0, $2205, ReplyBuffer);
-		WriteBufferWord(2, TotalLength, ReplyBuffer);
-		WriteBufferLongWord(4, ACharacter.ID, ReplyBuffer);
-		WriteBufferLongWord(8, ACharacter.CID, ReplyBuffer);
-		WriteBufferWord(12, Length(Command), ReplyBuffer);
-		WriteBufferString(14, Command, Length(Command), ReplyBuffer);
-		SendBuffer(MainProc.ZoneServer.ToInterTCPClient, ReplyBuffer, TotalLength);
-	end;
-End; (* Proc ZoneSendGMCommandtoInter
-*-----------------------------------------------------------------------------*)
-
-
 //------------------------------------------------------------------------------
 //ZoneSendGMCommandResultToInter                                           PROCEDURE
 //------------------------------------------------------------------------------
@@ -422,22 +352,18 @@ End; (* Proc ZoneSendGMCommandtoInter
 	procedure ZoneSendGMCommandResultToInter(
 		const AccountID : LongWord;
 		const CharacterID : LongWord;
-		const Success : Boolean;
 		const Error : String
 	);
 	var
 		ReplyBuffer : TBuffer;
 	begin
-		if Success then
-		begin
-			WriteBufferWord(0, $2207, ReplyBuffer);
-			WriteBufferLongWord(2, 18+Length(Error), ReplyBuffer);
-			WriteBufferLongWord(6, AccountID, ReplyBuffer);
-			WriteBufferLongWord(10, CharacterID, ReplyBuffer);
-			WriteBufferLongWord(14, Length(Error), ReplyBuffer);
-			WriteBufferString(18, Error, Length(Error), ReplyBuffer);
-			SendBuffer(MainProc.ZoneServer.ToInterTCPClient,ReplyBuffer,18+Length(Error));
-		end;
+		WriteBufferWord(0, $2207, ReplyBuffer);
+		WriteBufferLongWord(2, 16+Length(Error), ReplyBuffer);
+		WriteBufferLongWord(6, AccountID, ReplyBuffer);
+		WriteBufferLongWord(10, CharacterID, ReplyBuffer);
+		WriteBufferWord(14, Length(Error), ReplyBuffer);
+		WriteBufferString(16, Error, Length(Error), ReplyBuffer);
+		SendBuffer(MainProc.ZoneServer.ToInterTCPClient,ReplyBuffer,16+Length(Error));
 	end;//ZoneSendGMCommandToInter
 //------------------------------------------------------------------------------
 
@@ -767,18 +693,18 @@ end;
 //		May 1st, 2007 - Tsusai - Renamed, and modified parameters recieved.
 //		May 25th, 2007 - Tsusai - Removes player from current cell
 //------------------------------------------------------------------------------
-Procedure ZoneSendWarp(
+function ZoneSendWarp(
 	const ACharacter : TCharacter;
 	const MapName : String;
 	const X : Word;
 	const Y : Word
-);
+):boolean;
 var
 	OutBuffer : TBuffer;
 	Size : Word;
 	MapNameSize : Word;
 	ClientIPSize : Word;
-	MapZoneID			: Word;
+	MapZoneID			: SmallInt;
 
 procedure RemoveFromList;
 begin
@@ -799,39 +725,46 @@ end;
 begin
 	TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.Connect;
   try
-	  MapZoneID := Word(TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(MapName));
-	  if MapZoneID = MainProc.ZoneServer.Options.ID then
-	  begin
-		  RemoveFromList;
-		  ACharacter.Map := MapName;
-		  ACharacter.Position := Point(X,Y);
-		  WriteBufferWord(0, $0091, OutBuffer);
-		  WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
-		  WriteBufferWord(18, X, OutBuffer);
-		  WriteBufferWord(20, Y, OutBuffer);
-		  SendBuffer(ACharacter.ClientInfo, OutBuffer, 22);
-	  end else
-  	begin
-		  MapNameSize := Length(MapName);
-		  ClientIPSize := Length(ACharacter.ClientInfo.Binding.PeerIP);
-		  Size := ClientIPSize + MapNameSize + 16;
-		  //<id>,<size>,<cid>,<mapnamesize>,<mapname>,<clientipsize>,<clientip>
-		  WriteBufferWord(0, $2208, OutBuffer);
-		  WriteBufferWord(2, Size, OutBuffer);
-		  WriteBufferLongWord(4, ACharacter.CID, OutBuffer);
-		  WriteBufferWord(8, X, OutBuffer);
-		  WriteBufferWord(10, Y, OutBuffer);
-		  WriteBufferWord(12, MapNameSize, OutBuffer);
-		  WriteBufferString(14, MapName, Length(MapName), OutBuffer);
-		  WriteBufferWord(14+MapNameSize, ClientIPSize, OutBuffer);
-		  WriteBufferString(
-			  16+MapNameSize,
-			  ACharacter.ClientInfo.Binding.PeerIP,
-			  Length(ACharacter.ClientInfo.Binding.PeerIP),
-			  OutBuffer
-		  );
-		  SendBuffer(MainProc.ZoneServer.ToInterTCPClient,OutBuffer,Size);
-	  end;
+	MapZoneID := TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(MapName);
+	if MapZoneID < 0 then
+	begin
+		Result := False;
+	end else
+	begin
+		if MapZoneID = MainProc.ZoneServer.Options.ID then
+		begin
+			  RemoveFromList;
+			  ACharacter.Map := MapName;
+			  ACharacter.Position := Point(X,Y);
+			  WriteBufferWord(0, $0091, OutBuffer);
+			  WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
+			  WriteBufferWord(18, X, OutBuffer);
+			  WriteBufferWord(20, Y, OutBuffer);
+			  SendBuffer(ACharacter.ClientInfo, OutBuffer, 22);
+		end else
+		begin
+			MapNameSize := Length(MapName);
+			ClientIPSize := Length(ACharacter.ClientInfo.Binding.PeerIP);
+			Size := ClientIPSize + MapNameSize + 16;
+			//<id>,<size>,<cid>,<mapnamesize>,<mapname>,<clientipsize>,<clientip>
+			WriteBufferWord(0, $2208, OutBuffer);
+			WriteBufferWord(2, Size, OutBuffer);
+			WriteBufferLongWord(4, ACharacter.CID, OutBuffer);
+			WriteBufferWord(8, X, OutBuffer);
+			WriteBufferWord(10, Y, OutBuffer);
+			WriteBufferWord(12, MapNameSize, OutBuffer);
+			WriteBufferString(14, MapName, Length(MapName), OutBuffer);
+			WriteBufferWord(14+MapNameSize, ClientIPSize, OutBuffer);
+			WriteBufferString(
+				16+MapNameSize,
+			ACharacter.ClientInfo.Binding.PeerIP,
+			Length(ACharacter.ClientInfo.Binding.PeerIP),
+				OutBuffer
+				);
+			SendBuffer(MainProc.ZoneServer.ToInterTCPClient,OutBuffer,Size);
+		end;
+		Result := True;
+	end;
   finally
 	  TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
   end;

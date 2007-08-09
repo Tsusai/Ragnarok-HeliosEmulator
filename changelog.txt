@@ -14,6 +14,18 @@ Developers & Contributers
 - ChrstphrR (CR)
 
 --------------------------------------------------------------------------------
+- Rev 302 -
+[2007/08/09] Overview : "Upgrade" GM commands.
+[2007/08/09] Aeomin - Split RecvGMCommandReply into a new procedure InterSendGMCommandReplyToZone, so that inter can directly send error message [InterRecv.pas, InterSend.pas]
+[2007/08/08] Aeomin - Add GM Command GiveBaseExperience (Requested by RaX).
+[2007/08/08] Aeomin - As ChrstphrR stated, "Shouldn't this be a descriptive constant?", added const WHISPER_SUCCESS, WHISPER_FAILED, WHISPER_BLOCKED(block not supported yet) [ZoneInterCommunication.pas]
+[2007/08/08] Aeomin - Fixed a careless bug in whisper (and no one found it out -.-") [InterServer.pas(RecvWhisper)]
+[2007/08/08] Aeomin - Added GMWarp to handle #warp command [GMCommandExe.pas]
+[2007/08/08] Aeomin - Renamed InterSendGMCommandToZones => InterSendGMCommandToZone (removed "s") [InterSend.pas]
+[2007/08/08] Aeomin - Added fTypes let Inter knows where to send (Return back? broadcast?) [GMCommands.pas]
+[2007/07/23] Aeomin - Moved ZoneSendGMCommandtoInter procedure from ZoneSend.pas to ZoneInterCommunication
+[2007/07/23] Aeomin - Fixed a typo in SQLite Satic DB, GameHost => StaticHost [SQLiteStaticDatabase.pas(Connect)]
+-
 
 - Rev 301 -
 [2007/08/08] RaX - Fixed a mistake in the last commit, I forgot to remove a sendsubstat

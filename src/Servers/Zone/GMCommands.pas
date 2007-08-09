@@ -19,15 +19,22 @@ uses
 	{RTL/VCL}
 	Classes,
 	{Project}
-	//none
+	Character,
 	{3rd Party}
 	List32
 	;
 
-
+const
+	TYPE_BROADCAST  = 0;  //All zone receive, no player involved
+	TYPE_RETURNBACK = 1;  //Orignal zone receiv, no player involved
+	TYPE_ALLPLAYERS = 2;  //All players in all zone involved
+	TYPE_TARGETCHAR = 3;  //Specific player(character) involved
+	TYPE_TARGETMAP  = 4;  //All players in specific map involved
 type
 	TGMCommand = function(
+		const
 			Arguments : array of String;
+			ACharacter : TCharacter;
 		var
 			Error : String
 		) : Boolean;
@@ -36,6 +43,7 @@ type
 	protected
 		fNames  : TStringList;
 		fLevels : TIntList32;
+		fTypes  : TIntList32;  //Should the command send to single zone/broadcast? or something else
 	public
 		Commands : array of TGMCommand;
 
@@ -48,7 +56,9 @@ type
 			const
 				Command : TGMCommand;
 			const
-				Level   : Byte
+				Level   : Byte;
+			const
+				AType   : Byte
 			) : Word;
 
 		function IsCommand(
@@ -69,6 +79,11 @@ type
 			const
 				Chat : String
 			) : String;
+
+		function GetCommandType(
+			const
+				CommandID : Word
+                        ): Byte;
 	end;
 
 
@@ -78,19 +93,14 @@ uses
 	{RTL/VCL}
 	SysUtils,
 	{Project}
-	Main
+	Main,
+	GMCommandExe
 	{3rd Party}
 	//none
 	;
 
-
-function ZoneStatus(Arguments : array of String; var Error : String) : Boolean;
-begin
-	Result := TRUE;
-	Error := 'Zone '+ IntToStr(MainProc.ZoneServer.Options.ID) + ' : ' + IntToStr(MainProc.ZoneServer.CharacterList.Count) + ' Online!';
-end;
 //------------------------------------------------------------------------------
-//Create																														CONSTRUCTOR
+//Create                                                             CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //      	Creates our gm command component.
@@ -104,14 +114,17 @@ begin
 	inherited;
 	fNames := TStringList.Create;
 	fLevels:= TIntList32.Create;
-	AddCommand('ZoneStatus',ZoneStatus, 99);
-	AddCommand('Warp',ZoneStatus, 0);
+	fTypes := TIntList32.Create;
+	//AddCommand( Command Name , Calling Function, Default GM Lvl required, command type)
+	AddCommand('ZoneStatus', GMZoneStatus, 99, TYPE_BROADCAST);
+	AddCommand('Warp', GMWarp, 0, TYPE_RETURNBACK);
+	AddCommand('GiveBaseExperience', GMGiveBaseExperience, 99, TYPE_TARGETCHAR);
 end;{Create}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//Destroy																														DESTRUCTOR
+//Destroy                                                             DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //      	destroys our component.
@@ -124,6 +137,7 @@ Destructor TGMCommands.Destroy;
 begin
 	fNames.Free;
 	fLevels.Free;
+	fTypes.Free;
 	inherited;
 end;{Create}
 //------------------------------------------------------------------------------
@@ -153,12 +167,15 @@ function TGMCommands.AddCommand(
 	const
 		Command : TGMCommand;
 	const
-		Level   : Byte
+		Level   : Byte;
+	const
+		AType   : Byte
 	) : Word;
 Begin
 	SetLength(Commands, Length(Commands)+1);
 	Commands[Length(Commands)-1] := Command;
 	fLevels.Add(Level);
+        fTypes.Add(AType);
 	Result := fNames.Add(Lowercase(Name));
 End; (* Func TGMCommands.AddCommand
 *-----------------------------------------------------------------------------*)
@@ -288,4 +305,25 @@ End; (* Func TGMCommands.GetCommandID
 *-----------------------------------------------------------------------------*)
 
 
-end.
+(*- Function ------------------------------------------------------------------*
+TGMCommands.GetCommandType
+--------------------------------------------------------------------------------
+Overview:
+--
+	Gets the command type (used in inter server)
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/08/08] Aeomin - Created
+*-----------------------------------------------------------------------------*)
+function TGMCommands.GetCommandType(
+	const
+		CommandID : Word
+	): Byte;
+begin
+	Result := fTypes[CommandID];
+end; (* Func TGMCommands.GetCommandType
+*-----------------------------------------------------------------------------*)
+end{GMCommands}.

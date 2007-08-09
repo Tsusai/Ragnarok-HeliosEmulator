@@ -728,7 +728,7 @@ var
 	CommandID   : Word;
 begin
 		ChatLength	:= BufferReadWord(ReadPts[0], InBuffer)-4;
-		Chat				:= BufferReadString(ReadPts[1], ChatLength, InBuffer);
+		Chat		:= BufferReadString(ReadPts[1], ChatLength, InBuffer);
 
 		//First, we remove the character's name and the colon after it from the
 		//chat string.
@@ -743,7 +743,7 @@ begin
 			//able to use the gm command.
 			if TClientLink(AChara.ClientInfo.Data).AccountLink.Level >= MainProc.ZoneServer.Commands.GetCommandGMLevel(CommandID) then
 			begin
-				ZoneSendGMCommandtoInter(AChara, TempChat);
+				ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.ID, AChara.CID, TempChat);
 			end else
 			begin
 				SendAreaChat(Chat, ChatLength, AChara);
@@ -844,24 +844,30 @@ procedure RecvGMCommandFromInter(
 		const InBuffer : TBuffer
 	);
 var
-	CommandID		: Word;
-	GMID				: LongWord;
+	CommandID	: Word;
+	GMID		: LongWord;
 	CharacterID	: LongWord;
-	ArgCount		: Word;
-	Arguments		: array of String;
+//	TargetAID	: LongWord;
+	TargetCID	: LongWord;
+	ArgCount	: Word;
+	Arguments	: array of String;
 	ArgumentLen	: Integer;
-	Index				: Integer;
+	Index		: Integer;
 	BufferIndex	: Integer;
-	Error				: String;
-	Success			: Boolean;
-
+	Error		: String;
+	ACharacter	: TCharacter;
+	idxY		: SmallInt;
+	idxX		: SmallInt;
+	Map		: TMap;
 begin
 	CommandID 	:= BufferReadWord(4,InBuffer);
-	GMID				:= BufferReadLongWord(6, InBuffer);
+	GMID		:= BufferReadLongWord(6, InBuffer);
 	CharacterID	:= BufferReadLongWord(10, InBuffer);
-	ArgCount		:= BufferReadWord(14, InBuffer);
+//	TargetAID	:= BufferReadLongWord(14, InBuffer);
+	TargetCID	:= BufferReadLongWord(18, InBuffer);
+	ArgCount	:= BufferReadWord(22, InBuffer);
 
-	BufferIndex := 16;
+	BufferIndex := 24;
 
 	SetLength(Arguments, ArgCount);
 	for Index := 0 to ArgCount - 1 do
@@ -871,9 +877,74 @@ begin
 		Arguments[Index] := BufferReadString(BufferIndex,ArgumentLen,InBuffer);
 		inc(BufferIndex, ArgumentLen);
 	end;
+	case MainProc.ZoneServer.Commands.GetCommandType(CommandID) of
+		TYPE_BROADCAST: begin
+			//Server only, no player involved
+			MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, nil, Error);
+		end;
 
-	Success := MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, Error);
-	ZoneSendGMCommandResultToInter(GMID,CharacterID, Success, Error);
+		TYPE_RETURNBACK: begin
+			//Recycle
+			Index := MainProc.ZoneServer.CharacterList.IndexOf(CharacterID);
+			if Index > -1 then
+			begin
+				ACharacter := MainProc.ZoneServer.CharacterList.Items[Index];
+				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, ACharacter, Error);
+			end;
+		end;
+
+		TYPE_ALLPLAYERS: begin
+			for Index := MainProc.ZoneServer.CharacterList.Count -1 downto 0 do
+			begin
+				ACharacter := MainProc.ZoneServer.CharacterList.Items[Index];
+				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, ACharacter, Error);
+			end;
+		end;
+		
+		TYPE_TARGETCHAR: begin
+			Index := MainProc.ZoneServer.CharacterList.IndexOf(TargetCID);
+			if Index > -1 then
+			begin
+				ACharacter := MainProc.ZoneServer.CharacterList.Items[Index];
+				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, ACharacter, Error);
+			end else
+			begin
+				Error := 'Character ' + Arguments[0] + ' not found!';
+			end;
+		end;
+
+		TYPE_TARGETMAP: begin
+			//Arguments[0] should be map name
+			Index := MainProc.ZoneServer.MapList.IndexOf(Arguments[0]);
+			if Index > -1 then
+			begin
+				Map := MainProc.ZoneServer.MapList.Items[Index];
+				//Every player will be executed!
+				//more checking should done in actual gm command code
+				for idxY := Map.Size.Y - 1 downto 0 do
+				begin
+					for idxX := Map.Size.X - 1 downto 0 do
+					begin
+						for Index := Map.Cell[idxX, idxY].Beings.Count - 1 downto 0 do
+						begin
+							if not (Map.Cell[idxX,idxY].Beings.Objects[Index] is TCharacter) then
+							begin
+								Continue;
+							end;
+							ACharacter := Map.Cell[idxX,idxY].Beings.Objects[Index] as TCharacter;
+							MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, ACharacter, Error);
+						end;
+					end;
+				end;
+			end else
+			begin
+				Error := 'Map ' + Arguments[0] + ' not found!';
+			end;
+		end;
+	end;
+
+
+	ZoneSendGMCommandResultToInter(GMID, CharacterID, Error);
 end;{RecvGMCommandFromInter}
 //------------------------------------------------------------------------------
 
@@ -968,11 +1039,11 @@ begin
 	begin
 		Chara := MainProc.ZoneServer.CharacterList.Items[idx];
 		SendWhisper(FromName, Whisper, Chara.ClientInfo);
-		SendWhisperReplyToInter(MainProc.ZoneServer.ToInterTCPClient, ZoneID, FromID, 0);
-                {TODO: Check if ignored}
+		SendWhisperReplyToInter(MainProc.ZoneServer.ToInterTCPClient, ZoneID, FromID, WHISPER_SUCCESS);
+		{TODO: Check if ignored}
 	end else
 	begin
-		SendWhisperReplyToInter(MainProc.ZoneServer.ToInterTCPClient, ZoneID, FromID, 1);
+		SendWhisperReplyToInter(MainProc.ZoneServer.ToInterTCPClient, ZoneID, FromID, WHISPER_FAILED);
 	end;
 end;
 //------------------------------------------------------------------------------
@@ -992,14 +1063,14 @@ procedure RecvGMCommandResultFromInter(
 	);
 var
 	CharacterID : LongWord;
-	ErrorLength	: LongWord;
+	ErrorLength	: Word;
 	Error				: String;
 	ACharacter	: TCharacter;
 
 begin
-	CharacterID := BufferReadLongWord(10, InBuffer);
-	ErrorLength := BufferReadLongWord(14, InBuffer);
-	Error				:= BufferReadString(18, ErrorLength, InBuffer);
+	CharacterID := BufferReadLongWord(4, InBuffer);
+	ErrorLength := BufferReadWord(8, InBuffer);
+	Error				:= BufferReadString(10, ErrorLength, InBuffer);
 	ACharacter	:= MainProc.ZoneServer.CharacterList[
 										MainProc.ZoneServer.CharacterList.IndexOf(CharacterID)
 									];

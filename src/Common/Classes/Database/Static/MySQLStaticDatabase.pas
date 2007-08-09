@@ -442,7 +442,7 @@ var
 	QueryResult : TMySQLResult;
 	Success			: Boolean;
 begin
-	Result := 1; //Assume 1
+	Result := -1; //-1 as default
 	QueryResult :=
 		SendQuery(
 		Format('SELECT zoneid FROM maps WHERE mapname = ''%s''',

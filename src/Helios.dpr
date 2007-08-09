@@ -96,6 +96,7 @@ compile for linux, at the same time*}
 	ZoneSend in 'Servers\Zone\ZoneSend.pas',
 	GMCommands in 'Servers\Zone\GMCommands.pas',
 	PacketDB in 'Servers\Zone\PacketDB.pas',
+	GMCommandExe in 'Servers\Zone\GMCommandExe.pas',
 
 	//Constants
 	GameConstants in 'Constants\GameConstants.pas',

@@ -64,11 +64,12 @@ uses
 	Main,
 	ZoneServerInfo,
 	ZoneInterCommunication,
-	InterSend
+	InterSend,
+	GMCommands,
+	Account
 	{3rd Party}
 	//none
 	;
-
 
 (*- Procedure -----------------------------------------------------------------*
 RecvGMCommand
@@ -87,6 +88,7 @@ Revisions:
 [2007/06/01] CR - Made all parameters constant.  Added try-finally construct
 	around the use of the local TStringList, to safeguard against a memory leak if
 	InterSendGMCommandToZones were to cause errors.
+[2007/08/08] Aeomin - "upgraded" GM command parsing...
 *-----------------------------------------------------------------------------*)
 Procedure RecvGMCommand(
 	const
@@ -100,6 +102,14 @@ Var
 	CommandLength    : LongWord;
 	CommandString    : String;
 	CommandSeparator : TStringList;
+	CommandID        : Word;
+	Index            : Integer;
+	ListClient       : TIdContext;
+	ACharacter       : TCharacter;
+	ZoneID           : Integer;
+	LoopIndex        : Integer;
+	ZoneLink         : TZoneServerLink;
+	AAccount         : TAccount;
 Begin
 	//See Notes/GMCommand Packets.txt
 	GMID          := BufferReadLongWord(4, InBuffer);
@@ -107,14 +117,109 @@ Begin
 	CommandLength := BufferReadWord(12,InBuffer);
 	CommandString := BufferReadString(14, CommandLength, InBuffer);
 
+	CommandID := MainProc.InterServer.Commands.GetCommandID(
+								MainProc.InterServer.Commands.GetCommandName(CommandString)
+								);
+
 	CommandSeparator := TStringList.Create;
 	try
 		CommandSeparator.Delimiter := ',';
 		CommandSeparator.DelimitedText := CommandString;
+		//Get command type
+		case MainProc.InterServer.Commands.GetCommandType(CommandID) of
+			//Send to ALL zones!
+			TYPE_ALLPLAYERS,
+			TYPE_BROADCAST: begin
+				//after getting the command information, we get ready to send it to the
+				//other zones.
+				for Index := 0 to (MainProc.InterServer.fClientList.Count - 1) do
+				begin
+					if Assigned(MainProc.InterServer.ZoneServerLink[Index]) then
+					begin
+						ListClient := MainProc.InterServer.ClientList[Index];
+						InterSendGMCommandToZone(ListClient, GMID, CharaID, CommandSeparator);
+					end;
+				end;
+			end;
 
-		//after getting the command information, we get ready to send it to the
-		//other zones.
-		InterSendGMCommandToZones(AClient, GMID, CharaID, CommandSeparator);
+			//Send back to orignal Zone
+			TYPE_RETURNBACK: begin
+				InterSendGMCommandToZone(AClient, GMID, CharaID, CommandSeparator);
+			end;
+
+			//We are controling other player
+			TYPE_TARGETCHAR: begin
+				with TZoneServerLink(AClient.Data).DatabaseLink do
+				begin
+					//At least 2 parameters required
+					if CommandSeparator.Count >= 2 then
+					begin
+						GameData.Connect;
+						ACharacter := GameData.LoadChara(CommandSeparator[1]);
+						GameData.Disconnect;
+						if ACharacter <> nil then
+						begin
+							StaticData.Connect;
+							ZoneID := StaticData.GetMapZoneID(ACharacter.Map);
+							Index := -1;
+							for LoopIndex := (MainProc.InterServer.fClientList.Count - 1) downto 0 do
+							begin
+								ZoneLink := MainProc.InterServer.ZoneServerLink[LoopIndex];
+								if (ZoneLink <> NIL) AND
+								(ZoneLink.Info.ZoneID = ZoneID) then
+								begin
+									Index := LoopIndex;
+									Break;
+								end;
+							end;
+							StaticData.Disconnect;
+							if Index > -1 then
+							begin
+								//Same thing, but extra 2 parameter to store target character
+								InterSendGMCommandToZone(MainProc.InterServer.ClientList[Index], GMID, CharaID, CommandSeparator, ACharacter.ID, ACharacter.CID);
+							end;
+						end else
+						begin
+							InterSendGMCommandReplyToZone(AClient, CharaID, 'Character ''' + CommandSeparator[1] + ''' not found!');
+						end;
+					end;
+				end;
+			end;
+
+			//Map based control, ex. Kill all players in prontera
+			TYPE_TARGETMAP: begin
+				with TZoneServerLink(AClient.Data).DatabaseLink do
+				begin
+					if CommandSeparator.Count >= 2 then
+					begin
+						StaticData.Connect;
+						ZoneID := StaticData.GetMapZoneID(CommandSeparator[1]);
+						if ZoneID > -1 then
+						begin
+							Index := -1;
+							for LoopIndex := 0 to (MainProc.InterServer.fClientList.Count - 1) do
+							begin
+								ZoneLink := MainProc.InterServer.ZoneServerLink[LoopIndex];
+								if (ZoneLink <> NIL) AND
+								(ZoneLink.Info.ZoneID = ZoneID) then
+								begin
+									Index := LoopIndex;
+									Break;
+								end;
+							end;
+							StaticData.Disconnect;
+							if Index > -1 then
+							begin
+								InterSendGMCommandToZone(MainProc.InterServer.ClientList[Index], GMID, CharaID, CommandSeparator);
+							end;
+						end else
+						begin
+							InterSendGMCommandReplyToZone(AClient, CharaID, 'Map name ''' + CommandSeparator[1] + ''' not found!');
+						end;
+					end;
+				end;
+			end;
+		end;
 	finally
 		CommandSeparator.Free;
 	end;
@@ -150,7 +255,7 @@ Procedure RecvGMCommandReply(
 	);
 //See Notes/GM Command Packets for explanation.
 Var
-	ErrorLength : LongWord;
+	ErrorLength : Word;
 	CharacterID : LongWord;
 	ACharacter  : TCharacter;
 	ZoneID      : LongWord;
@@ -158,12 +263,13 @@ Var
 	Index       : Integer;
 	ListClient  : TIdContext;
 	Size        : LongWord;
-
+	Error       : String;
 Begin
 	with MainProc.InterServer do
 	begin
 		//See Notes/GMCommand Packets.txt
-		ErrorLength := BufferReadLongWord(12, InBuffer);
+		ErrorLength := BufferReadWord(14, InBuffer);
+		Error       := BufferReadString(16, ErrorLength, InBuffer);
 		if (ErrorLength > 0) then
 		begin
 			Size := BufferReadLongWord(2, InBuffer);
@@ -193,7 +299,8 @@ Begin
 					(ZoneLink.Info.ZoneID = ZoneID) then
 				begin
 					ListClient := ClientList[Index];
-					SendBuffer(ListClient, InBuffer, Size);
+					InterSendGMCommandReplyToZone(ListClient, CharacterID, Error);
+//					SendBuffer(ListClient, InBuffer, Size);
 					Break;
 				end;
 			end;//for
@@ -238,8 +345,9 @@ Var
 	Chara      : TCharacter;
 	ZoneID     : LongWord;
 	Index      : Integer;
-
+	LoopIndex  : Integer;
 	SentWhisper : Boolean;
+	ZoneLink    : TZoneServerLink;
 Begin
 	Size       := BufferReadWord(2, InBuffer);
 	FromID     := BufferReadLongWord(4, InBuffer);
@@ -263,8 +371,18 @@ Begin
 				ZoneID := GetMapZoneID(Chara.Map);
 				Disconnect;
 		end;
+			Index := -1;
+			for LoopIndex := 0 to (fClientList.Count - 1) do
+			begin
+				ZoneLink := ZoneServerLink[LoopIndex];
+				if (ZoneLink <> NIL) AND
+					(ZoneLink.Info.ZoneID = ZoneID) then
+				begin
+					Index := LoopIndex;
+					Break;
+				end;
+			end;
 
-			Index := (fClientList.Count -1);
 			SentWhisper := False;
 
 			if (Index > -1) then
@@ -293,13 +411,11 @@ Begin
 			if NOT SentWhisper then
 			begin
 				//Well..if zone is disconnected..then just say not online
-				SendWhisperReplyToZone(AClient, FromID, 1);
-				{[2007/05/19] CR - What does the "1" signify? Shouldn't this be a
-				descriptive constant? }
+				SendWhisperReplyToZone(AClient, FromID, WHISPER_FAILED);
 			end;
 		end else
 		begin
-			SendWhisperReplyToZone(AClient, FromID, 1);  //Target is not online
+			SendWhisperReplyToZone(AClient, FromID, WHISPER_FAILED);  //Target is not online
 		end;
 	end;
 End; (* Func TInterServer.RecvWhisper
