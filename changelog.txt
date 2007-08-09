@@ -14,6 +14,10 @@ Developers & Contributers
 - ChrstphrR (CR)
 
 --------------------------------------------------------------------------------
+- Rev 303-
+[2008/08/09] Aeomin - Forgot to remove a test function [GMCommandExe.pas]
+-
+
 - Rev 302 -
 [2007/08/09] Overview : "Upgrade" GM commands.
 [2007/08/09] Aeomin - Split RecvGMCommandReply into a new procedure InterSendGMCommandReplyToZone, so that inter can directly send error message [InterRecv.pas, InterSend.pas]

@@ -19,7 +19,6 @@ uses
 	function GMZoneStatus(const Arguments : array of String;ACharacter: TCharacter; var Error : String) : Boolean;
 	function GMWarp(const Arguments : array of String;ACharacter: TCharacter; var Error : String) : Boolean;
 	function GMGiveBaseExperience(const Arguments : array of String;ACharacter: TCharacter; var Error : String) : Boolean;
-	function GMtest(const Arguments : array of String;ACharacter: TCharacter; var Error : String) : Boolean;
 implementation
 uses
 	{RTL/VCL}
