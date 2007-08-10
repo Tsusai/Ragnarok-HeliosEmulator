@@ -520,8 +520,18 @@ Function TSQLiteStaticDatabase.GetBaseEXPToNextLevel(
       JobName : String;
 			Level : Word
 		) : LongWord;
+var
+	QueryResult : TSQLiteTable;
 begin
-  Result := 0;
+	QueryResult :=
+		SendQuery(
+		Format('SELECT %s FROM baseexp WHERE level = %d',
+			[JobName, Level]));
+	if (QueryResult.RowCount = 1) then
+	begin
+			Result              := StrToInt(QueryResult.Fields[0]);
+	end else Result := 0;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetBaseEXPToNextLevel
 //------------------------------------------------------------------------------
 
@@ -541,8 +551,18 @@ Function TSQLiteStaticDatabase.GetJobEXPToNextLevel(
       JobName : String;
 			Level : Word
 		) : LongWord;
+var
+	QueryResult : TSQLiteTable;
 begin
-  Result := 0;
+	QueryResult :=
+		SendQuery(
+		Format('SELECT %s FROM jobexp WHERE level = %d',
+			[JobName, Level]));
+	if (QueryResult.RowCount = 1) then
+	begin
+			Result              := StrToInt(QueryResult.Fields[0]);
+	end else Result := 0;
+	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetJobEXPToNextLevel
 //------------------------------------------------------------------------------
 
