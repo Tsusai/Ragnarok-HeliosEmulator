@@ -83,7 +83,8 @@ begin
 		end;
 	end else
 	begin
-		Error.Add('Command Warp Failed');
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
 		Result := False;
 	end;
 end;{GMWarp}
@@ -109,7 +110,8 @@ begin
 		Result := True;
 	end else
 	begin
-		Error.Add('Command GiveBaseExp Failed');
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
 		Result := False;
 	end;
 end;{GMGiveBaseExperience}
@@ -135,7 +137,8 @@ begin
 		Result := True;
 	end else
 	begin
-		Error.Add('Command GiveJobExp Failed');
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
 		Result := False;
 	end;
 end;{GMGiveJobExperience}

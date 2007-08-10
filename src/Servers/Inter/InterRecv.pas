@@ -135,8 +135,14 @@ Begin
 			//DelimitedText will break parameter even when no need to, so using this way
 			GMFLAG_NOSPLIT: begin
 				Position := Pos(' ', CommandString);
-				CommandSeparator.Add(Copy(CommandString, 1, Position - 1));
-				CommandSeparator.Add(Copy(CommandString, Position + 1, StrLen(PChar(CommandString)) - Cardinal(Position)));
+				if Position > 0 then
+				begin
+					CommandSeparator.Add(Copy(CommandString, 1, Position - 1));
+					CommandSeparator.Add(Copy(CommandString, Position + 1, StrLen(PChar(CommandString)) - Cardinal(Position)));
+				end else
+				begin
+					CommandSeparator.Add(CommandString);
+				end;
 			end;
 		end;
 

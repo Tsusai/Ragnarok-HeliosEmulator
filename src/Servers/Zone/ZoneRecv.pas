@@ -879,7 +879,8 @@ begin
 
 	BufferIndex := 24;
 
-	SetLength(Arguments, ArgCount);
+	//We need extra for store syntax help message
+	SetLength(Arguments, ArgCount + 1);
 	for Index := 0 to ArgCount - 1 do
 	begin
 		ArgumentLen := BufferReadWord(BufferIndex, InBuffer);
@@ -887,11 +888,15 @@ begin
 		Arguments[Index] := BufferReadString(BufferIndex,ArgumentLen,InBuffer);
 		inc(BufferIndex, ArgumentLen);
 	end;
+	//Since array is 0 based, this would be perfect index
+	Arguments[ArgCount] := MainProc.ZoneServer.Commands.GetSyntax(CommandID);
+
 	MainProc.ZoneServer.ZoneLocalDatabase.GameData.Connect;
 	FromChar := MainProc.ZoneServer.ZoneLocalDatabase.GameData.GetCharaName(CharacterID);
 	MainProc.ZoneServer.ZoneLocalDatabase.GameData.Disconnect;
 
 	Error := TStringList.Create;
+
 	case MainProc.ZoneServer.Commands.GetCommandType(CommandID) of
 		//Whole zone server, no player involved
 		TYPE_BROADCAST: begin

@@ -14,6 +14,11 @@ Developers & Contributers
 - ChrstphrR (CR)
 
 --------------------------------------------------------------------------------
+- Rev 312 -
+[2007/08/10] Aeomin - Modified GMFLAG_NOSPLIT to prevent unexpected problem(s)
+[2007/08/10] Aeomin - Append Syntax help to Arguments, be aware when checking Argument count!
+-
+
 - Rev 311 -
 [2007/08/10] Aeomin - Add a simple Syntax help, show when theres no argument passed through (Request by RaX)
                                                                                                   YAR!
