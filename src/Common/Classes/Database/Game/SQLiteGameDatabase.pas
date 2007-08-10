@@ -161,6 +161,11 @@ public
 			Value : integer
 		); override;
 
+	function GetCharaName(
+	const
+		CharID    : LongWord
+		):String;override;
+
 	function  Connect : Boolean; override;
 	procedure Disconnect; override;
 
@@ -902,5 +907,37 @@ begin
 end;//SetCharaVariable
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetCharaName                                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Get character name based on char id.
+//
+//	Changes -
+//		[2007/08/09] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function TSQLiteGameDatabase.GetCharaName(
+	const
+		CharID    : LongWord
+):String;
+var
+	QueryResult : TSQLiteTable;
+begin
+	QueryResult :=
+		SendQuery(
+		Format('SELECT * FROM characters WHERE char_id = %d',
+			[CharID]));
+	if (QueryResult.Count = 1) then
+	begin
+		Result := QueryResult.Fields[3];
+	end else
+	begin
+		Result := '';
+	end;
+	if Assigned(QueryResult) then QueryResult.Free;
+end;
+//------------------------------------------------------------------------------
 {END SQLiteGameDatabase}
 end.

@@ -30,11 +30,15 @@ const
 	TYPE_ALLPLAYERS = 2;  //All players in all zone involved
 	TYPE_TARGETCHAR = 3;  //Specific player(character) involved
 	TYPE_TARGETMAP  = 4;  //All players in specific map involved
+
+	GMFLAG_NORMAL   = 0;
+	GMFLAG_NOSPLIT  = 1;
 type
 	TGMCommand = function(
 		const
-			Arguments : array of String;
-			ACharacter : TCharacter;
+			Arguments  : array of String;
+			FromChar   : String;
+			TargetChar : TCharacter;
 		var
 			Error : String
 		) : Boolean;
@@ -44,6 +48,7 @@ type
 		fNames  : TStringList;
 		fLevels : TIntList32;
 		fTypes  : TIntList32;  //Should the command send to single zone/broadcast? or something else
+		fFlag   : TIntList32;  //To tell inter server don't break parameter!
 	public
 		Commands : array of TGMCommand;
 
@@ -58,7 +63,9 @@ type
 			const
 				Level   : Byte;
 			const
-				AType   : Byte
+				AType   : Byte;
+			const
+				AFlag   : Byte
 			) : Word;
 
 		function IsCommand(
@@ -83,7 +90,12 @@ type
 		function GetCommandType(
 			const
 				CommandID : Word
-                        ): Byte;
+			): Byte;
+
+		function GetCommandFlag(
+			const
+				CommandID : Word
+			): Byte;
 	end;
 
 
@@ -115,10 +127,13 @@ begin
 	fNames := TStringList.Create;
 	fLevels:= TIntList32.Create;
 	fTypes := TIntList32.Create;
+	fFlag  := TIntList32.Create;
 	//AddCommand( Command Name , Calling Function, Default GM Lvl required, command type)
-	AddCommand('ZoneStatus', GMZoneStatus, 99, TYPE_BROADCAST);
-	AddCommand('Warp', GMWarp, 0, TYPE_RETURNBACK);
-	AddCommand('GiveBaseExperience', GMGiveBaseExperience, 99, TYPE_TARGETCHAR);
+	AddCommand('ZoneStatus', GMZoneStatus, 99, TYPE_BROADCAST, GMFLAG_NORMAL);
+	AddCommand('Warp', GMWarp, 0, TYPE_RETURNBACK, GMFLAG_NORMAL);
+	AddCommand('GiveBaseExperience', GMGiveBaseExperience, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL);
+	AddCommand('BroadCast', GMBroadCast, 99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT);
+	AddCommand('BroadCastN', GMBroadCastNoName, 99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT);
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -138,6 +153,7 @@ begin
 	fNames.Free;
 	fLevels.Free;
 	fTypes.Free;
+	fFlag.Free;
 	inherited;
 end;{Create}
 //------------------------------------------------------------------------------
@@ -169,13 +185,16 @@ function TGMCommands.AddCommand(
 	const
 		Level   : Byte;
 	const
-		AType   : Byte
+		AType   : Byte;
+	const
+		AFlag   : Byte
 	) : Word;
 Begin
 	SetLength(Commands, Length(Commands)+1);
 	Commands[Length(Commands)-1] := Command;
 	fLevels.Add(Level);
-        fTypes.Add(AType);
+	fTypes.Add(AType);
+	fFlag.Add(AFlag);
 	Result := fNames.Add(Lowercase(Name));
 End; (* Func TGMCommands.AddCommand
 *-----------------------------------------------------------------------------*)
@@ -325,5 +344,28 @@ function TGMCommands.GetCommandType(
 begin
 	Result := fTypes[CommandID];
 end; (* Func TGMCommands.GetCommandType
+*-----------------------------------------------------------------------------*)
+
+
+(*- Function ------------------------------------------------------------------*
+TGMCommands.GetCommandFlag
+--------------------------------------------------------------------------------
+Overview:
+--
+	Gets the command Flag (used in inter server)
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/08/09] Aeomin - Created
+*-----------------------------------------------------------------------------*)
+function TGMCommands.GetCommandFlag(
+	const
+		CommandID : Word
+	): Byte;
+begin
+	Result := fFlag[CommandID];
+end; (* Func TGMCommands.GetCommandFlag
 *-----------------------------------------------------------------------------*)
 end{GMCommands}.

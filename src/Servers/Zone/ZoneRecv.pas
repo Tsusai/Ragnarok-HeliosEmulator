@@ -163,6 +163,12 @@ uses
 	procedure RecvRedirectWhisper(
 			InBuffer : TBuffer
 	);
+	
+	procedure GMBroadcast(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 implementation
 
 
@@ -186,7 +192,8 @@ uses
 	ZoneSend,
 	ZoneServer,
 	ZoneCharaCommunication,
-	ZoneInterCommunication
+	ZoneInterCommunication,
+	Database
 	{3rd Party}
 	//none
 	;
@@ -715,6 +722,7 @@ end;
 //
 //  Changes -
 //    March 18th, 2007 - Aeomin - Created Header
+//	[2007/08/09] Aeomin - change + 3 to + 4, other wise theres extra space
 //------------------------------------------------------------------------------
 procedure AreaChat(
 		var AChara  : TCharacter;
@@ -732,7 +740,7 @@ begin
 
 		//First, we remove the character's name and the colon after it from the
 		//chat string.
-		TempChat := Copy(Chat, Length(AChara.Name) + 3, Length(Chat));
+		TempChat := Copy(Chat, Length(AChara.Name) + 4, Length(Chat));
 		//We then check if it is a command.
 		if MainProc.ZoneServer.Commands.IsCommand(TempChat) then
 		begin
@@ -855,7 +863,8 @@ var
 	Index		: Integer;
 	BufferIndex	: Integer;
 	Error		: String;
-	ACharacter	: TCharacter;
+	FromChar	: String;
+	TargetChar	: TCharacter;
 	idxY		: SmallInt;
 	idxX		: SmallInt;
 	Map		: TMap;
@@ -877,42 +886,51 @@ begin
 		Arguments[Index] := BufferReadString(BufferIndex,ArgumentLen,InBuffer);
 		inc(BufferIndex, ArgumentLen);
 	end;
+	MainProc.ZoneServer.ZoneLocalDatabase.GameData.Connect;
+	FromChar := MainProc.ZoneServer.ZoneLocalDatabase.GameData.GetCharaName(CharacterID);
+	MainProc.ZoneServer.ZoneLocalDatabase.GameData.Disconnect;
+
 	case MainProc.ZoneServer.Commands.GetCommandType(CommandID) of
+		//Whole zone server, no player involved
 		TYPE_BROADCAST: begin
 			//Server only, no player involved
-			MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, nil, Error);
+			MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, nil, Error);
 		end;
 
+		//The Orignal GM
 		TYPE_RETURNBACK: begin
 			//Recycle
 			Index := MainProc.ZoneServer.CharacterList.IndexOf(CharacterID);
 			if Index > -1 then
 			begin
-				ACharacter := MainProc.ZoneServer.CharacterList.Items[Index];
-				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, ACharacter, Error);
+				TargetChar := MainProc.ZoneServer.CharacterList.Items[Index];
+				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
 			end;
 		end;
 
+		//All players
 		TYPE_ALLPLAYERS: begin
 			for Index := MainProc.ZoneServer.CharacterList.Count -1 downto 0 do
 			begin
-				ACharacter := MainProc.ZoneServer.CharacterList.Items[Index];
-				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, ACharacter, Error);
+				TargetChar := MainProc.ZoneServer.CharacterList.Items[Index];
+				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
 			end;
 		end;
-		
+
+		//Specific Character
 		TYPE_TARGETCHAR: begin
 			Index := MainProc.ZoneServer.CharacterList.IndexOf(TargetCID);
 			if Index > -1 then
 			begin
-				ACharacter := MainProc.ZoneServer.CharacterList.Items[Index];
-				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, ACharacter, Error);
+				TargetChar := MainProc.ZoneServer.CharacterList.Items[Index];
+				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
 			end else
 			begin
 				Error := 'Character ' + Arguments[0] + ' not found!';
 			end;
 		end;
 
+		//All players in Specific map
 		TYPE_TARGETMAP: begin
 			//Arguments[0] should be map name
 			Index := MainProc.ZoneServer.MapList.IndexOf(Arguments[0]);
@@ -931,8 +949,8 @@ begin
 							begin
 								Continue;
 							end;
-							ACharacter := Map.Cell[idxX,idxY].Beings.Objects[Index] as TCharacter;
-							MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, ACharacter, Error);
+							TargetChar := Map.Cell[idxX,idxY].Beings.Objects[Index] as TCharacter;
+							MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
 						end;
 					end;
 				end;
@@ -1127,5 +1145,31 @@ begin
 	WriteBufferWord(26, Port, Outbuffer);
 	SendBuffer(ACharacter.ClientInfo, OutBuffer, 28);
 end;{RecvWarpRequestReplyFromInter}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMBroadcast                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Convert /b , /nb command
+//
+//  Changes -
+//	[2007/08/09] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure GMBroadcast(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+var
+	Size     : Word;
+	Announce : String;
+begin
+	Size     := BufferReadWord(2, InBuffer);
+	Announce := BufferReadString(4, Size - 4, InBuffer);
+	//Convert XD
+	ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.ID, AChara.CID, '#BroadCastN ' + Announce);
+end;
 //------------------------------------------------------------------------------
 end.

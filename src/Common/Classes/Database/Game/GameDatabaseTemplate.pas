@@ -160,6 +160,11 @@ public
 			Value : integer
 		); virtual; abstract;
 
+	function GetCharaName(
+		const
+			CharID    : LongWord
+		):String; virtual; abstract;
+
 	function  Connect : Boolean; virtual; abstract;
 
 	procedure Disconnect; virtual; abstract;

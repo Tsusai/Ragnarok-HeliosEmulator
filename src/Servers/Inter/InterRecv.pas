@@ -58,6 +58,7 @@ implementation
 uses
 	{RTL/VCL}
 	Classes,
+	SysUtils,
 	{Project}
 	BufferIO,
 	Character,
@@ -109,7 +110,7 @@ Var
 	ZoneID           : Integer;
 	LoopIndex        : Integer;
 	ZoneLink         : TZoneServerLink;
-	AAccount         : TAccount;
+	Position         : Integer;
 Begin
 	//See Notes/GMCommand Packets.txt
 	GMID          := BufferReadLongWord(4, InBuffer);
@@ -123,8 +124,20 @@ Begin
 
 	CommandSeparator := TStringList.Create;
 	try
-		CommandSeparator.Delimiter := ',';
-		CommandSeparator.DelimitedText := CommandString;
+		//Let's flag it!
+		case MainProc.InterServer.Commands.GetCommandFlag(CommandID) of
+			GMFLAG_NORMAL: begin
+				CommandSeparator.Delimiter := ',';
+				CommandSeparator.DelimitedText := CommandString;
+			end;
+			//DelimitedText will break parameter even when no need to, so using this way
+			GMFLAG_NOSPLIT: begin
+				Position := Pos(' ', CommandString);
+				CommandSeparator.Add(Copy(CommandString, 1, Position - 1));
+				CommandSeparator.Add(Copy(CommandString, Position + 1, StrLen(PChar(CommandString)) - Cardinal(Position)));
+			end;
+		end;
+
 		//Get command type
 		case MainProc.InterServer.Commands.GetCommandType(CommandID) of
 			//Send to ALL zones!
@@ -166,7 +179,7 @@ Begin
 							begin
 								ZoneLink := MainProc.InterServer.ZoneServerLink[LoopIndex];
 								if (ZoneLink <> NIL) AND
-								(ZoneLink.Info.ZoneID = ZoneID) then
+								(ZoneLink.Info.ZoneID = Cardinal(ZoneID)) then
 								begin
 									Index := LoopIndex;
 									Break;
@@ -201,7 +214,7 @@ Begin
 							begin
 								ZoneLink := MainProc.InterServer.ZoneServerLink[LoopIndex];
 								if (ZoneLink <> NIL) AND
-								(ZoneLink.Info.ZoneID = ZoneID) then
+								(ZoneLink.Info.ZoneID = Cardinal(ZoneID)) then
 								begin
 									Index := LoopIndex;
 									Break;
@@ -262,7 +275,6 @@ Var
 	ZoneLink    : TZoneServerLink;
 	Index       : Integer;
 	ListClient  : TIdContext;
-	Size        : LongWord;
 	Error       : String;
 Begin
 	with MainProc.InterServer do
@@ -272,7 +284,6 @@ Begin
 		Error       := BufferReadString(16, ErrorLength, InBuffer);
 		if (ErrorLength > 0) then
 		begin
-			Size := BufferReadLongWord(2, InBuffer);
 			CharacterID := BufferReadLongWord(10, InBuffer);
 
 			with TThreadLink(AClient.Data).DatabaseLink do

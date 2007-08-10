@@ -175,6 +175,11 @@ public
 			Value : integer
 		); override;
 
+	function GetCharaName(
+	const
+		CharID    : LongWord
+		):String;override;
+
 	function Connect : Boolean; override;
 	procedure Disconnect; override;
 
@@ -991,5 +996,46 @@ http://dev.mysql.com/doc/refman/5.0/en/insert-on-duplicate.html
 end;//SetCharaVariable
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetCharaName                                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Get character name based on char id.
+//
+//	Changes -
+//		[2007/08/09] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function TMySQLGameDatabase.GetCharaName(
+	const
+		CharID    : LongWord
+):String;
+var
+	Success     : Boolean;
+	QueryResult : TMySQLResult;
+begin
+	QueryResult := SendQuery(
+		Format(
+			'SELECT * FROM characters WHERE char_id = ''%d'';',
+			[CharID]
+			),
+		TRUE,
+		Success
+		);
+	if (QueryResult.RowsCount = 1) then
+	begin
+		Result := QueryResult.FieldValue(3);
+	end else
+	begin
+		Result := '';
+	end;
+
+	if Assigned(QueryResult) then
+	begin
+		QueryResult.Free;
+	end;
+end;
+//------------------------------------------------------------------------------
 {END MySQLGameDatabase}
 end.

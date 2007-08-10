@@ -14,6 +14,15 @@ Developers & Contributers
 - ChrstphrR (CR)
 
 --------------------------------------------------------------------------------
+- Rev 304-
+[2008/08/09] Aeomin - Added GetCharaName function in Game Database.
+[2008/08/09] Aeomin - Added GM Command flag, so that TStringList won't break parameter when not needed.
+[2008/08/09] Aeomin - Support Aegis /b , /nb broadcast command.
+[2008/08/09] Aeomin - added Gm command #BroadCast and #BroadCastN (with name and no name)
+[2008/08/09] Aeomin - Removed extra useless declares, and Signed/Unsigned warnings (caused in rev 302)
+[2008/08/09] Aeomin - Add FromChar[String] store GM name [GMCommands.pas, GMCommandExe.pas]
+-
+
 - Rev 303-
 [2008/08/09] Aeomin - Forgot to remove a test function [GMCommandExe.pas]
 -

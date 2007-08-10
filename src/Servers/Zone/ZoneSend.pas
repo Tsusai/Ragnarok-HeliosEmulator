@@ -90,6 +90,7 @@ uses
 	procedure DuplicateSessionKick(InBuffer : TBuffer);
 	procedure SendWhisper(const FromName,Whisper: String;AClient : TIdContext);
 	procedure SendWhisperReply(const AChara:TCharacter; const Code : Byte);
+	procedure SendGMAnnounce(AClient : TIdContext;const Announce:String;const Blue:boolean=False);
 
 implementation
 
@@ -731,7 +732,7 @@ begin
 		Result := False;
 	end else
 	begin
-		if MapZoneID = MainProc.ZoneServer.Options.ID then
+		if Cardinal(MapZoneID) = MainProc.ZoneServer.Options.ID then
 		begin
 			  RemoveFromList;
 			  ACharacter.Map := MapName;
@@ -792,4 +793,35 @@ begin
 	WriteBufferByte(2, Code, OutBuffer);
 	SendBuffer(AChara.ClientInfo,OutBuffer,GetPacketLength($0098));
 end;
+
+
+//------------------------------------------------------------------------------
+//SendGMAnnounce                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Sends a GM announcement =p
+//
+//  Changes -
+//	[2007/08/09] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure SendGMAnnounce(AClient : TIdContext;const Announce:String;const Blue:boolean=False);
+var
+	OutBuffer : TBuffer;
+	Size      : Word;
+	OffSet    : Byte;
+begin
+	Size := StrLen(PChar(Announce));
+	if Blue then
+		Offset := 8
+	else
+		Offset := 4;
+	WriteBufferWord(0, $009a, OutBuffer);
+	WriteBufferWord(2, Size + Offset, OutBuffer);
+	if Blue then
+		WriteBufferLongWord(4, $65756c62, OutBuffer);
+	WriteBufferString(Offset, Announce, Size, OutBuffer);
+	SendBuffer(AClient, OutBuffer, Size + Offset);
+end;
+//------------------------------------------------------------------------------
 end.

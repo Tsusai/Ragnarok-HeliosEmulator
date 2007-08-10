@@ -182,8 +182,8 @@ Begin
 					ExecCommand := GetNameAndID;
 				end else if Command = 'wis' then begin
 					ExecCommand := Whisper;
-				{end else if Command = 'gmmessage' then begin
-					ExecCommand := GMBroadcast;}
+				end else if Command = 'gmmessage' then begin
+					ExecCommand := GMBroadcast;
 				end	else if Command = 'changedir' then begin
 					ExecCommand := CharaRotation;
 				{end	else if Command = 'takeitem' then	begin
