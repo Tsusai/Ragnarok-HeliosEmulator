@@ -1165,11 +1165,19 @@ procedure GMBroadcast(
 var
 	Size     : Word;
 	Announce : String;
+  CommandID: Integer;
+  RequiredGMLevel : Byte;
 begin
-	Size     := BufferReadWord(2, InBuffer);
-	Announce := BufferReadString(4, Size - 4, InBuffer);
-	//Convert XD
-	ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.ID, AChara.CID, '#BroadCastN ' + Announce);
+  CommandID := MainProc.ZoneServer.Commands.GetCommandID('BroadCastN');
+  RequiredGMLevel := MainProc.ZoneServer.Commands.GetCommandGMLevel(CommandID);
+  if TClientLink(AChara.ClientInfo.Data).AccountLink.Level >= RequiredGMLevel then
+  begin
+	  Size     := BufferReadWord(2, InBuffer);
+	  Announce := BufferReadString(4, Size - 4, InBuffer);
+	  //Convert XD
+	  ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.ID, AChara.CID, '#BroadCastN ' + Announce);
+
+  end;
 end;
 //------------------------------------------------------------------------------
 end.

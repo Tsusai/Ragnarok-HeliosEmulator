@@ -1,2 +1,0 @@
-account_id;userid;user_pass;lastlogin;sex;logincount;email;loginkey1;loginkey2;level;error_message;connect_until;last_ip;memo;ban_until;state
-100100;test;test;2007-01-20 14:45:56;M;106;-@-;1530723634;877574651;1;0;9999-12-31 23:59:59;5.117.124.174;0;1900-01-01 00:00:00;0

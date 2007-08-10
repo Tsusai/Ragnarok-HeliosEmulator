@@ -59,7 +59,7 @@ const
 	INT = 3; {Intelligence - Increases magic attack and magic defense. }
 	DEX = 4; {Dexterity - Increases accuracy and stabilizes the amount of damage
 			done by a weapon. As well as lowers the cast time to some skills/spells. }
-	LUK = 6; {Luck - Increases Critical hits and perfect dodge rate, and brings
+	LUK = 5; {Luck - Increases Critical hits and perfect dodge rate, and brings
 			about lots of luck. }
 
 

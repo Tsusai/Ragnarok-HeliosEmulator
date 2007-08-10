@@ -138,12 +138,14 @@ public
 
   Function  GetBaseEXPToNextLevel(
 		const
-			ACharacter : TCharacter
+      JobName : String;
+			Level : Word
 		) : LongWord; override;
 
   Function  GetJobEXPToNextLevel(
 		const
-			ACharacter : TCharacter
+      JobName : String;
+			Level : Word
 		) : LongWord; override;
 
 	function  Connect : Boolean; override;
@@ -570,7 +572,8 @@ end;//GetMapsForZone
 //------------------------------------------------------------------------------
 Function TMySQLStaticDatabase.GetBaseEXPToNextLevel(
 		const
-			ACharacter : TCharacter
+      JobName : String;
+			Level : Word
 		) : LongWord;
 var
 	Success     : Boolean;
@@ -579,7 +582,7 @@ begin
 	QueryResult :=
 		SendQuery(
 		Format('SELECT %s FROM baseexp WHERE level = %d',
-			[ACharacter.JobName, ACharacter.BaseLV])
+			[JobName, Level])
 		,TRUE,Success);
 	if (QueryResult.RowsCount = 1) then
 	begin
@@ -602,7 +605,8 @@ end;//GetBaseEXPToNextLevel
 //------------------------------------------------------------------------------
 Function TMySQLStaticDatabase.GetJobEXPToNextLevel(
 		const
-			ACharacter : TCharacter
+      JobName : String;
+			Level : Word
 		) : LongWord;
 var
 	Success     : Boolean;
@@ -611,7 +615,7 @@ begin
 	QueryResult :=
 		SendQuery(
 		Format('SELECT %s FROM jobexp WHERE level = %d',
-			[ACharacter.JobName, ACharacter.BaseLV])
+			[JobName, Level])
 		,TRUE,Success);
 	if (QueryResult.RowsCount = 1) then
 	begin

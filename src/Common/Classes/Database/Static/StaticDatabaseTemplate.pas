@@ -116,12 +116,14 @@ public
 
   Function  GetBaseEXPToNextLevel(
 		const
-			ACharacter : TCharacter
+      JobName : String;
+			Level : Word
 		) : LongWord; virtual; abstract;
 
   Function  GetJobEXPToNextLevel(
 		const
-			ACharacter : TCharacter
+      JobName : String;
+			Level : Word
 		) : LongWord; virtual; abstract;
 
 	function  Connect : Boolean; virtual; abstract;

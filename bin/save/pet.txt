@@ -1,1 +1,0 @@
-pet_id;class;name;account_id;char_id;level;egg_id;equip;intimate;hungry;rename_flag;incubate

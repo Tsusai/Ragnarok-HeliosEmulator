@@ -120,7 +120,7 @@ CREATE TABLE `character_vars` (
   `char_id` int(11) NOT NULL default '0',
   `key` varchar(255) NOT NULL default '',
   `value` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`char_id`,`key`),
+  PRIMARY KEY  (`char_id`,`key`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- 

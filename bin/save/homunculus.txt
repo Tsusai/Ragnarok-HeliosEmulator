@@ -1,1 +1,0 @@
-homun_id;class;name;account_id;char_id;base_level;base_exp;max_hp;hp;max_sp;sp;str;agi;vit;int;dex;luk;status_point;skill_point;equip;intimate;hungry;rename_flag;incubate

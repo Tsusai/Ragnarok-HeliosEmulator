@@ -545,6 +545,7 @@ begin
   //we do not inherit here for a reason! See BaseLevelUp
 	DataChanged := TRUE;
   BaseLevelUp(Value-fBaseLv);
+
   if ZoneStatus = IsOnline then
   begin
     SendSubStat(0, $000b, BaseLv);
@@ -592,18 +593,29 @@ end;{SetJobLV}
 procedure TCharacter.SetBaseEXP(Value : LongWord);
 var
   Index : Integer;
+  OldBaseEXPToNextLevel: LongWord;
 begin
 	Inherited;
 	DataChanged := TRUE;
-  For Index := 0 to MainProc.ZoneServer.Options.MaxBaseLevelsPerEXPGain do
+  For Index := 1 to MainProc.ZoneServer.Options.MaxBaseLevelsPerEXPGain do
   begin
-    if Value > BaseEXPToNextLevel then
+    if BaseEXP > BaseEXPToNextLevel then
     begin
       BaseLv := BaseLv+1;
     end else
     begin
       Break;
     end;
+  end;
+
+  if BaseEXP > BaseEXPToNextLevel then
+  begin
+    TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
+    OldBaseEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(JobName, BaseLv-1)
+      DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
+    BaseEXP := (BaseEXPToNextLevel - OldBaseEXPToNextLevel) DIV 2 + OldBaseEXPToNextLevel;
+
+    TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
   end;
 
   if ZoneStatus = IsOnline then
@@ -629,10 +641,11 @@ end;{SetBaseEXP}
 procedure TCharacter.SetJobEXP(Value : LongWord);
 var
   Index : Integer;
+  OldJobEXPToNextLevel : LongWord;
 begin
 	Inherited;
 	DataChanged := TRUE;
-  For Index := 0 to MainProc.ZoneServer.Options.MaxJobLevelsPerEXPGain do
+  For Index := 1 to MainProc.ZoneServer.Options.MaxJobLevelsPerEXPGain do
   begin
     if Value > JobEXPToNextLevel then
     begin
@@ -641,6 +654,16 @@ begin
     begin
       Break;
     end;
+  end;
+
+  if JobEXP > JobEXPToNextLevel then
+  begin
+    TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
+    OldJobEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, JobLv-1)
+      DIV MainProc.ZoneServer.Options.JobXPMultiplier;
+    JobEXP := (JobEXPToNextLevel - OldJobEXPToNextLevel) DIV 2 + OldJobEXPToNextLevel;
+
+    TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
   end;
 
   if ZoneStatus = IsOnline then
@@ -1566,10 +1589,7 @@ Begin
 
 	fMaxHP := EnsureRange(
 		(
-			(35 + BaseLV * 5 + (
-				(1 + BaseLV) * BaseLV div 2) *
-				BaseMaxHP div 100
-			) * (100 + ParamBase[VIT]) div 100
+			BaseMaxHP * (100 + ParamBase[VIT]) div 100
 		),
 		1,
 		High(fMaxHP)
@@ -1787,8 +1807,8 @@ Begin
 	begin
 		WriteBufferWord( 0, $0141, OutBuffer);
 		WriteBufferLongWord( 2, 13+idx, OutBuffer);
-		WriteBufferLongWord( 6, ParamBase[idx+1], OutBuffer);
-		WriteBufferLongWord(10, ParamBonus[idx+1], OutBuffer);
+		WriteBufferLongWord( 6, ParamBase[idx], OutBuffer);
+		WriteBufferLongWord(10, ParamBonus[idx], OutBuffer);
 		SendBuffer(ClientInfo, OutBuffer, GetPacketLength($0141,ClientVersion));
 	end;
 	// Send attack range.
@@ -1830,7 +1850,6 @@ begin
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	try
 		MAXSP :=
-			MAXSP + BaseLV *
 			TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxSP(self) *
 			(100 + ParamBase[INT]) div 100;
     if SP > MAXSP then
@@ -1909,7 +1928,7 @@ begin
     //numbers, prevent overflows, and prevent large integer math. Also, this is
     //only calculated at level up rather than at each experience gain.
     BaseEXPToNextLevel :=
-      TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(self)
+      TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(Jobname, BaseLv)
       DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
   finally
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
@@ -1939,7 +1958,7 @@ begin
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	try
     //Update job experience to next level from static database.
-    JobEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(self);
+    JobEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, JobLv);
   finally
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 	end;

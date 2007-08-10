@@ -104,12 +104,14 @@ public
 
   Function  GetBaseEXPToNextLevel(
 		const
-			ACharacter : TCharacter
+      JobName : String;
+			Level : Word
 		) : LongWord; override;
 
   Function  GetJobEXPToNextLevel(
 		const
-			ACharacter : TCharacter
+      JobName : String;
+			Level : Word
 		) : LongWord; override;
 
 	function  Connect : Boolean; override;
@@ -515,7 +517,8 @@ end;//GetMapsForZone
 //------------------------------------------------------------------------------
 Function TSQLiteStaticDatabase.GetBaseEXPToNextLevel(
 		const
-			ACharacter : TCharacter
+      JobName : String;
+			Level : Word
 		) : LongWord;
 begin
   Result := 0;
@@ -535,7 +538,8 @@ end;//GetBaseEXPToNextLevel
 //------------------------------------------------------------------------------
 Function TSQLiteStaticDatabase.GetJobEXPToNextLevel(
 		const
-			ACharacter : TCharacter
+      JobName : String;
+			Level : Word
 		) : LongWord;
 begin
   Result := 0;

@@ -1,1 +1,0 @@
-guild_id;position;name;mode;exp_mode

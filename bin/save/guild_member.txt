@@ -1,1 +1,0 @@
-guild_id;account_id;char_id;hair;hair_color;gender;class;lv;exp;exp_payper;online;position;rsv1;rsv2;name

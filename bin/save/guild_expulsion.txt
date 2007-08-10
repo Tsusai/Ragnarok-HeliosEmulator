@@ -1,1 +1,0 @@
-guild_id;name;mes;acc;account_id;rsv1;rsv2;rsv3
