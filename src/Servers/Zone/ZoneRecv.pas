@@ -176,6 +176,7 @@ uses
 	{RTL/VCL}
 	Types,
 	WinLinux,
+	Classes,
 	{Project}
 	Account,
 	Being,
@@ -862,7 +863,7 @@ var
 	ArgumentLen	: Integer;
 	Index		: Integer;
 	BufferIndex	: Integer;
-	Error		: String;
+	Error		: TStringList;
 	FromChar	: String;
 	TargetChar	: TCharacter;
 	idxY		: SmallInt;
@@ -890,6 +891,7 @@ begin
 	FromChar := MainProc.ZoneServer.ZoneLocalDatabase.GameData.GetCharaName(CharacterID);
 	MainProc.ZoneServer.ZoneLocalDatabase.GameData.Disconnect;
 
+	Error := TStringList.Create;
 	case MainProc.ZoneServer.Commands.GetCommandType(CommandID) of
 		//Whole zone server, no player involved
 		TYPE_BROADCAST: begin
@@ -926,7 +928,7 @@ begin
 				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
 			end else
 			begin
-				Error := 'Character ' + Arguments[0] + ' not found!';
+				Error.Add('Character ' + Arguments[0] + ' not found!');
 			end;
 		end;
 
@@ -956,13 +958,15 @@ begin
 				end;
 			end else
 			begin
-				Error := 'Map ' + Arguments[0] + ' not found!';
+				Error.Add('Map ' + Arguments[0] + ' not found!');
 			end;
 		end;
 	end;
 
 
 	ZoneSendGMCommandResultToInter(GMID, CharacterID, Error);
+
+	Error.Free;
 end;{RecvGMCommandFromInter}
 //------------------------------------------------------------------------------
 
@@ -1081,18 +1085,39 @@ procedure RecvGMCommandResultFromInter(
 	);
 var
 	CharacterID : LongWord;
-	ErrorLength	: Word;
-	Error				: String;
 	ACharacter	: TCharacter;
-
+	Index : Integer;
+	ErrCount    : Word;
+	BufferIndex : Integer;
+	ErrLen      : Word;
+	Error       : TStringList;
 begin
 	CharacterID := BufferReadLongWord(4, InBuffer);
-	ErrorLength := BufferReadWord(8, InBuffer);
-	Error				:= BufferReadString(10, ErrorLength, InBuffer);
-	ACharacter	:= MainProc.ZoneServer.CharacterList[
-										MainProc.ZoneServer.CharacterList.IndexOf(CharacterID)
-									];
-	ZoneSendCharacterMessage(ACharacter, Error);
+	ErrCount   := BufferReadWord(8, InBuffer);
+	if (ErrCount > 0) then
+	begin
+		Error := TStringList.Create;
+		BufferIndex := 10;
+		
+		for Index := 0 to ErrCount - 1 do
+		begin
+			ErrLen := BufferReadWord(BufferIndex, InBuffer);
+			inc(BufferIndex, 2);
+			Error.Add(BufferReadString(BufferIndex,ErrLen,InBuffer));
+			inc(BufferIndex, ErrLen);
+		end;
+
+		Index := MainProc.ZoneServer.CharacterList.IndexOf(CharacterID);
+		if Index > -1 then
+		begin
+			ACharacter	:= MainProc.ZoneServer.CharacterList[Index];
+			for Index := 0 to Error.Count - 1 do
+			begin
+				ZoneSendCharacterMessage(ACharacter, Error[Index]);
+			end;
+		end;
+		Error.Free;
+	end;
 end;{RecvGMCommandFromInter}
 //------------------------------------------------------------------------------
 

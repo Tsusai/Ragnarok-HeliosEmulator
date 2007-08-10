@@ -12,15 +12,17 @@ unit GMCommandExe;
 
 interface
 uses
+	Classes,
 	{Project}
 	Character
 	;
 
-	function GMZoneStatus(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : String) : Boolean;
-	function GMWarp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : String) : Boolean;
-	function GMGiveBaseExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : String) : Boolean;
-	function GMBroadCast(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : String) : Boolean;
-	function GMBroadCastNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : String) : Boolean;
+	function GMZoneStatus(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList) : Boolean;
+	function GMWarp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList) : Boolean;
+	function GMGiveBaseExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList) : Boolean;
+	function GMGiveJobExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList) : Boolean;
+	function GMBroadCast(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList) : Boolean;
+	function GMBroadCastNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList) : Boolean;
 implementation
 uses
 	{RTL/VCL}
@@ -44,10 +46,10 @@ uses
 //		[2007/?/?] RaX - Create (Rax, correct date if you remember...)
 //		[2007/8/8] Aeomin - Moved from GMCommands.pas and create header.
 //------------------------------------------------------------------------------
-function GMZoneStatus(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : String) : Boolean;
+function GMZoneStatus(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList) : Boolean;
 begin
 	Result := TRUE;
-	Error := 'Zone '+ IntToStr(MainProc.ZoneServer.Options.ID) + ' : ' + IntToStr(MainProc.ZoneServer.CharacterList.Count) + ' Online!';
+	Error.Add('Zone '+ IntToStr(MainProc.ZoneServer.Options.ID) + ' : ' + IntToStr(MainProc.ZoneServer.CharacterList.Count) + ' Online!');
 end;{GMZoneStatus}
 //------------------------------------------------------------------------------
 
@@ -61,7 +63,7 @@ end;{GMZoneStatus}
 //	Changes-
 //		[2007/8/8] Aeomin - Create.
 //------------------------------------------------------------------------------
-function GMWarp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : String) : Boolean;
+function GMWarp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList) : Boolean;
 begin
 	if (Length(Arguments) >= 3) then
 	begin
@@ -72,16 +74,16 @@ begin
 				StrToIntDef(Arguments[2], 0)
 			)
 		then begin
-			Error := 'Map ' + Arguments[0] + ' not found!';
+			Error.Add('Map ' + Arguments[0] + ' not found!');
 			Result := False;
 		end else
 		begin
-			Error := 'Warped to ' + Arguments[0];
+			Error.Add('Warped to ' + Arguments[0]);
 			Result := True;
 		end;
 	end else
 	begin
-		Error := 'Command Warp Failed';
+		Error.Add('Command Warp Failed');
 		Result := False;
 	end;
 end;{GMWarp}
@@ -97,20 +99,46 @@ end;{GMWarp}
 //	Changes-
 //		[2007/8/8] Aeomin - Create.
 //------------------------------------------------------------------------------
-function GMGiveBaseExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : String) : Boolean;
+function GMGiveBaseExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList) : Boolean;
 begin
 	if (Length(Arguments) >= 2) then
 	begin
 		//Thats the solution i know of..
 		TargetChar.BaseEXP := TargetChar.BaseEXP + Cardinal(StrToIntDef(Arguments[1], 0));
-		Error := 'Experience Given to ' + TargetChar.Name;
+		Error.Add('Base experience Given to ' + TargetChar.Name);
 		Result := True;
 	end else
 	begin
-		Error := 'Command GiveBaseExperience Failed';
+		Error.Add('Command GiveBaseExp Failed');
 		Result := False;
 	end;
 end;{GMGiveBaseExperience}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMGiveJobExperience                                                   FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//		Give character job experience
+//
+//	Changes-
+//		[2007/8/10] Aeomin - Create.
+//------------------------------------------------------------------------------
+function GMGiveJobExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList) : Boolean;
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		//Thats the solution i know of..
+		TargetChar.JobEXP := TargetChar.JobEXP + Cardinal(StrToIntDef(Arguments[1], 0));
+		Error.Add('Job experience Given to ' + TargetChar.Name);
+		Result := True;
+	end else
+	begin
+		Error.Add('Command GiveJobExp Failed');
+		Result := False;
+	end;
+end;{GMGiveJobExperience}
 //------------------------------------------------------------------------------
 
 
@@ -123,7 +151,7 @@ end;{GMGiveBaseExperience}
 //	Changes-
 //		[2007/8/9] Aeomin - Create.
 //------------------------------------------------------------------------------
-function GMBroadCast(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : String) : Boolean;
+function GMBroadCast(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList) : Boolean;
 var
 	Announce  : String;
 begin
@@ -144,7 +172,7 @@ end;
 //	Changes-
 //		[2007/8/9] Aeomin - Create.
 //------------------------------------------------------------------------------
-function GMBroadCastNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : String) : Boolean;
+function GMBroadCastNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList) : Boolean;
 begin
 	SendGMAnnounce(TargetChar.ClientInfo, Arguments[0]);
 	

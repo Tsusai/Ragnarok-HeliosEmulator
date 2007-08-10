@@ -111,6 +111,7 @@ Var
 	LoopIndex        : Integer;
 	ZoneLink         : TZoneServerLink;
 	Position         : Integer;
+	Error            : TStringList;
 Begin
 	//See Notes/GMCommand Packets.txt
 	GMID          := BufferReadLongWord(4, InBuffer);
@@ -123,6 +124,7 @@ Begin
 								);
 
 	CommandSeparator := TStringList.Create;
+	Error := TStringList.Create;
 	try
 		//Let's flag it!
 		case MainProc.InterServer.Commands.GetCommandFlag(CommandID) of
@@ -193,7 +195,8 @@ Begin
 							end;
 						end else
 						begin
-							InterSendGMCommandReplyToZone(AClient, CharaID, 'Character ''' + CommandSeparator[1] + ''' not found!');
+							Error.Add('Character ''' + CommandSeparator[1] + ''' not found!');
+							InterSendGMCommandReplyToZone(AClient, CharaID, Error);
 						end;
 					end;
 				end;
@@ -227,7 +230,8 @@ Begin
 							end;
 						end else
 						begin
-							InterSendGMCommandReplyToZone(AClient, CharaID, 'Map name ''' + CommandSeparator[1] + ''' not found!');
+							Error.Add('Map name ''' + CommandSeparator[1] + ''' not found!');
+							InterSendGMCommandReplyToZone(AClient, CharaID, Error);
 						end;
 					end;
 				end;
@@ -235,6 +239,7 @@ Begin
 		end;
 	finally
 		CommandSeparator.Free;
+		Error.Free;
 	end;
 End; (* Proc RecvGMCommand
 *-----------------------------------------------------------------------------*)
@@ -268,39 +273,50 @@ Procedure RecvGMCommandReply(
 	);
 //See Notes/GM Command Packets for explanation.
 Var
-	ErrorLength : Word;
 	CharacterID : LongWord;
 	ACharacter  : TCharacter;
 	ZoneID      : LongWord;
 	ZoneLink    : TZoneServerLink;
 	Index       : Integer;
 	ListClient  : TIdContext;
-	Error       : String;
+	ErrCount    : Word;
+	BufferIndex : Integer;
+	ErrLen      : Word;
+	Error       : TStringList;
 Begin
 	with MainProc.InterServer do
 	begin
-		//See Notes/GMCommand Packets.txt
-		ErrorLength := BufferReadWord(14, InBuffer);
-		Error       := BufferReadString(16, ErrorLength, InBuffer);
-		if (ErrorLength > 0) then
+		ErrCount   := BufferReadWord(12, InBuffer);
+		if (ErrCount > 0) then
 		begin
-			CharacterID := BufferReadLongWord(10, InBuffer);
+			CharacterID := BufferReadLongWord(8, InBuffer);
+
+			BufferIndex := 14;
+
+			Error := TStringList.Create;
+			for Index := 0 to ErrCount - 1 do
+			begin
+				ErrLen := BufferReadWord(BufferIndex, InBuffer);
+				inc(BufferIndex, 2);
+				Error.Add(BufferReadString(BufferIndex,ErrLen,InBuffer));
+				inc(BufferIndex, ErrLen);
+			end;
 
 			with TThreadLink(AClient.Data).DatabaseLink do
 			begin
 				GameData.Connect;
-        try
-				  ACharacter := GameData.GetChara(CharacterID);
-        finally
-				  GameData.Disconnect;
-        end;
+				try
+					ACharacter := GameData.GetChara(CharacterID);
+				finally
+					GameData.Disconnect;
+				end;
 
 				StaticData.Connect;
-        try
-				  ZoneID := StaticData.GetMapZoneID(ACharacter.Map);
-        finally
-				  StaticData.Disconnect;
-        end;
+				try
+					ZoneID := StaticData.GetMapZoneID(ACharacter.Map);
+				finally
+					StaticData.Disconnect;
+				end;
 			end;
 
 			for Index := 0 to (fClientList.Count - 1) do
@@ -311,10 +327,11 @@ Begin
 				begin
 					ListClient := ClientList[Index];
 					InterSendGMCommandReplyToZone(ListClient, CharacterID, Error);
-//					SendBuffer(ListClient, InBuffer, Size);
 					Break;
 				end;
 			end;//for
+
+			Error.Free;
 		end;
 	end;
 End; (* Func TInterServer.RecvGMCommandReply

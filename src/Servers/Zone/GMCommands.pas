@@ -20,6 +20,7 @@ uses
 	Classes,
 	{Project}
 	Character,
+	GMCommandsOptions,
 	{3rd Party}
 	List32
 	;
@@ -40,7 +41,7 @@ type
 			FromChar   : String;
 			TargetChar : TCharacter;
 		var
-			Error : String
+			Error : TStringList
 		) : Boolean;
 
 	TGMCommands = class(TObject)
@@ -49,6 +50,8 @@ type
 		fLevels : TIntList32;
 		fTypes  : TIntList32;  //Should the command send to single zone/broadcast? or something else
 		fFlag   : TIntList32;  //To tell inter server don't break parameter!
+
+		Options : TGMCommandsOptions;
 	public
 		Commands : array of TGMCommand;
 
@@ -128,12 +131,18 @@ begin
 	fLevels:= TIntList32.Create;
 	fTypes := TIntList32.Create;
 	fFlag  := TIntList32.Create;
+
+	Options := TGMCommandsOptions.Create(MainProc.Options.ConfigDirectory+'/GMCommands.ini');
+	
 	//AddCommand( Command Name , Calling Function, Default GM Lvl required, command type)
 	AddCommand('ZoneStatus', GMZoneStatus, 99, TYPE_BROADCAST, GMFLAG_NORMAL);
 	AddCommand('Warp', GMWarp, 0, TYPE_RETURNBACK, GMFLAG_NORMAL);
-	AddCommand('GiveBaseExperience', GMGiveBaseExperience, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL);
+	AddCommand('GiveBaseExp', GMGiveBaseExperience, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL);
+	AddCommand('GiveJobExp', GMGiveJobExperience, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL);
 	AddCommand('BroadCast', GMBroadCast, 99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT);
 	AddCommand('BroadCastN', GMBroadCastNoName, 99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT);
+
+	Options.Load(fNames, fLevels);
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -150,10 +159,14 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TGMCommands.Destroy;
 begin
+	Options.Save(fNames, fLevels);
+
 	fNames.Free;
 	fLevels.Free;
 	fTypes.Free;
 	fFlag.Free;
+
+	Options.Free;
 	inherited;
 end;{Create}
 //------------------------------------------------------------------------------

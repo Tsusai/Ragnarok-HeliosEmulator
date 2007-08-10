@@ -22,6 +22,7 @@ interface
 uses
 	{RTL/VCL}
 	Types,
+	Classes,
 	{Project}
 	Being,
 	Character,
@@ -48,7 +49,7 @@ uses
 	procedure ZoneSendGMCommandResultToInter(
 		const AccountID : LongWord;
 		const CharacterID : LongWord;
-		const Error : String
+		const Error : TStringList
 	);
 
 	procedure ZoneSendCharacterMessage(
@@ -104,8 +105,7 @@ uses
 	GameConstants,
 	Main,
 	TCPServerRoutines,
-	WinLinux,
-	Classes
+	WinLinux
 	{3rd Party}
 	//none
 	;
@@ -353,18 +353,37 @@ end;
 	procedure ZoneSendGMCommandResultToInter(
 		const AccountID : LongWord;
 		const CharacterID : LongWord;
-		const Error : String
+		const Error : TStringList
 	);
 	var
 		ReplyBuffer : TBuffer;
+		BufferIndex : Integer;
+		CSLength    : Integer;
+		Index       : Integer;
 	begin
 		WriteBufferWord(0, $2207, ReplyBuffer);
-		WriteBufferLongWord(2, 16+Length(Error), ReplyBuffer);
-		WriteBufferLongWord(6, AccountID, ReplyBuffer);
-		WriteBufferLongWord(10, CharacterID, ReplyBuffer);
-		WriteBufferWord(14, Length(Error), ReplyBuffer);
-		WriteBufferString(16, Error, Length(Error), ReplyBuffer);
-		SendBuffer(MainProc.ZoneServer.ToInterTCPClient,ReplyBuffer,16+Length(Error));
+		WriteBufferLongWord(4, AccountID, ReplyBuffer);
+		WriteBufferLongWord(8, CharacterID, ReplyBuffer);
+		WriteBufferWord(12, Error.Count, ReplyBuffer);
+		BufferIndex := 14;
+
+		for Index := 0 to Error.Count - 1 do
+		begin
+			CSLength := Length(Error[Index]);
+
+			WriteBufferWord(BufferIndex, CSLength, ReplyBuffer);
+			Inc(BufferIndex, 2);
+
+			WriteBufferString(
+				BufferIndex,
+				Error[Index],
+				CSLength,
+				ReplyBuffer
+			);
+			Inc(BufferIndex, CSLength);
+		end;
+		WriteBufferWord(2, BufferIndex + 1, ReplyBuffer);
+		SendBuffer(MainProc.ZoneServer.ToInterTCPClient,ReplyBuffer,BufferIndex + 1);
 	end;//ZoneSendGMCommandToInter
 //------------------------------------------------------------------------------
 

@@ -51,7 +51,7 @@ uses
 		const
 			CID              : LongWord;
 		const
-			Error            : String
+			Error            : TStringList
 	);
 
 implementation
@@ -227,19 +227,35 @@ procedure InterSendGMCommandReplyToZone(
 	const
 		CID              : LongWord;
 	const
-		Error            : String
+		Error            : TStringList
 );
 var
-	Size        : Word;
 	ABuffer     : TBuffer;
+	BufferIndex : Integer;
+	CSLength    : Integer;
+	Index       : Integer;
 begin
-	Size := StrLen(PChar(Error));
 	WriteBufferWord(0, $2207, ABuffer);
-	WriteBufferWord(2, Size + 10, ABuffer);
 	WriteBufferLongWord(4, CID, ABuffer);
-	WriteBufferWord(8, Size, ABuffer);
-	WriteBufferString(10, Error, Size, ABuffer);
-	SendBuffer(AClient, ABuffer, Size + 10);
+	WriteBufferWord(8, Error.Count, ABuffer);
+
+	BufferIndex := 10;
+	for Index := 0 to Error.Count - 1 do
+	begin
+		CSLength := Length(Error[Index]);
+		WriteBufferWord(BufferIndex, CSLength, ABuffer);
+		Inc(BufferIndex, 2);
+
+		WriteBufferString(
+			BufferIndex,
+			Error[Index],
+			CSLength,
+			ABuffer
+		);
+		Inc(BufferIndex, CSLength);
+	end;
+	WriteBufferWord(2, BufferIndex + 1, ABuffer);
+	SendBuffer(AClient, ABuffer, BufferIndex + 1);
 end;
 //------------------------------------------------------------------------------
 end.

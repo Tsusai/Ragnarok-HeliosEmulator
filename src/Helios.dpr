@@ -165,6 +165,7 @@ compile for linux, at the same time*}
 	ZoneOptions in 'Common\Config\ZoneOptions.pas',
 	DatabaseOptions in 'Common\Config\DatabaseOptions.pas',
 	ConsoleOptions in 'Common\Config\ConsoleOptions.pas',
+	GMCommandsOptions in 'Common\Config\GMCommandsOptions.pas',
 
 	//Types
 	MapTypes in 'Common\MapTypes.pas',
@@ -219,6 +220,7 @@ compile for linux, at the same time*}
 	ZoneSend in 'Servers/Zone/ZoneSend.pas',
 	GMCommands in 'Servers/Zone/GMCommands.pas',
 	PacketDB in 'Servers/Zone/PacketDB.pas',
+	GMCommandExe in 'Servers/Zone/GMCommandExe.pas',
 
 	//Constants
 	GameConstants in 'Constants/GameConstants.pas',
@@ -287,6 +289,7 @@ compile for linux, at the same time*}
 	ZoneOptions in 'Common/Config/ZoneOptions.pas',
 	DatabaseOptions in 'Common/Config/DatabaseOptions.pas',
 	ConsoleOptions in 'Common/Config/ConsoleOptions.pas',
+	GMCommandsOptions in 'Common/Config/GMCommandsOptions.pas',
 
 	//Types
 	MapTypes in 'Common/MapTypes.pas',
