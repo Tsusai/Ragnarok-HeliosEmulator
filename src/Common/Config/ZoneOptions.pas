@@ -54,6 +54,8 @@ interface
       fMaxBaseLevelsPerEXPGain : Word;
       fMaxJobLevelsPerEXPGain : Word;
 
+      fFullHPOnLevelUP : Boolean;
+      fFullSPOnLevelUP : Boolean;
 
 			fKickOnShutdown : Boolean;
 
@@ -102,6 +104,10 @@ interface
       property MaxJobLevel  : Word read fMaxJobLevel;
       property MaxBaseLevelsPerEXPGain : Word read fMaxBaseLevelsPerEXPGain;
       property MaxJobLevelsPerEXPGain : Word read fMaxJobLevelsPerEXPGain;
+
+      property FullHPOnLevelUp : Boolean read fFullHPOnLevelUp;
+      property FullSPOnLevelUp : Boolean read fFullSPOnLevelUp;
+
 			//Public methods
 			procedure Load;
 			procedure Save;
@@ -224,6 +230,8 @@ implementation
       fMaxJobLevel    := Min(StrToIntDef(Section.Values['Max. Job Level'], 70), High(Word));
       fMaxBaseLevelsPerEXPGain := Min(StrToIntDef(Section.Values['Max. Base Levels Allowed Per EXP Gain'], 1), High(Word));
       fMaxJobLevelsPerEXPGain := Min(StrToIntDef(Section.Values['Max. Job Levels Allowed Per EXP Gain'], 1), High(Word));
+      fFullHPOnLevelUp := StrToBoolDef(Section.Values['Full HP on Level up?'], TRUE);
+      fFullSPOnLevelUp := StrToBoolDef(Section.Values['Full SP on Level up?'], TRUE);
 		end;{Subroutine LoadPerformance}
 	//--------------------------------------------------------------------------
 
@@ -302,6 +310,10 @@ implementation
     WriteString('Game','Max. Job Level',IntToStr(fMaxJobLevel));
     WriteString('Game','Max. Base Levels Allowed Per EXP Gain',IntToStr(fMaxBaseLevelsPerEXPGain));
     WriteString('Game','Max. Job Levels Allowed Per EXP Gain',IntToStr(fMaxJobLevelsPerEXPGain));
+
+    WriteString('Game','Full HP On Level Up?',BoolToStr(fFullHPOnLevelUp));
+    WriteString('Game','Full SP On Level Up?',BoolToStr(fFullSPOnLevelUp));
+
 		//Options
 
 		UpdateFile;

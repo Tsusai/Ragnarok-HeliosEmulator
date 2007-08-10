@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 307-
+[2007/08/10] RaX - Fixed MaxHP not showing on level up.
+[2007/08/10] RaX - Implemented FullHPOnLevel and FullSPOnLevel fields in zone.ini.
+-
+
 - Rev 306-
 [2007/08/10] RaX - Added jobexp and baseexp tables to sqlite heliosstatic database.
 -

@@ -794,7 +794,7 @@ begin
 	Inherited;
   if ZoneStatus = IsOnline then
   begin
-	  SendSubStat(0, 6, MAXHP);
+	  SendSubStat(0, $0006, MAXHP);
   end;
 	DataChanged := TRUE;
 end;{SetMaxHP}
@@ -817,7 +817,7 @@ begin
 
   if ZoneStatus = IsOnline then
   begin
-    SendSubStat(0, 5, HP);
+    SendSubStat(0, $0005, HP);
   end;
 	DataChanged := TRUE;
 end;{SetHP}
@@ -840,7 +840,7 @@ begin
 	Inherited;
   if ZoneStatus = IsOnline then
   begin
-	  SendSubStat(0, 8, MAXSP);
+	  SendSubStat(0, $0008, MAXSP);
   end;
 	DataChanged := TRUE;
 end;{SetMaxSP}
@@ -863,7 +863,7 @@ begin
 	Inherited;
   if ZoneStatus = IsOnline then
   begin
-	  SendSubStat(0, 7, SP);
+	  SendSubStat(0, $0007, SP);
   end;
 	DataChanged := TRUE;
 end;{SetSP}
@@ -1587,7 +1587,7 @@ Begin
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 	end;
 
-	fMaxHP := EnsureRange(
+	MaxHP := EnsureRange(
 		(
 			BaseMaxHP * (100 + ParamBase[VIT]) div 100
 		),
@@ -1937,6 +1937,16 @@ begin
   CalcMaxHP;
   CalcMaxSP;
   CalcSpeed;
+
+  //Set hp and sp to full if enabled.
+  if MainProc.ZoneServer.Options.FullHPOnLevelUp then
+  begin
+    HP := MAXHP;
+  end;
+  if MainProc.ZoneServer.Options.FullSPOnLevelUp then
+  begin
+    SP := MAXSP;
+  end;
 end;{BaseLevelUp}
 //------------------------------------------------------------------------------
 
