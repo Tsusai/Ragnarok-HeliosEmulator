@@ -235,27 +235,30 @@ var
 	CSLength    : Integer;
 	Index       : Integer;
 begin
-	WriteBufferWord(0, $2207, ABuffer);
-	WriteBufferLongWord(4, CID, ABuffer);
-	WriteBufferWord(8, Error.Count, ABuffer);
-
-	BufferIndex := 10;
-	for Index := 0 to Error.Count - 1 do
+	if Error.Count > 0 then
 	begin
-		CSLength := Length(Error[Index]);
-		WriteBufferWord(BufferIndex, CSLength, ABuffer);
-		Inc(BufferIndex, 2);
+		WriteBufferWord(0, $2207, ABuffer);
+		WriteBufferLongWord(4, CID, ABuffer);
+		WriteBufferWord(8, Error.Count, ABuffer);
 
-		WriteBufferString(
-			BufferIndex,
-			Error[Index],
-			CSLength,
-			ABuffer
-		);
-		Inc(BufferIndex, CSLength);
+		BufferIndex := 10;
+		for Index := 0 to Error.Count - 1 do
+		begin
+			CSLength := Length(Error[Index]);
+			WriteBufferWord(BufferIndex, CSLength, ABuffer);
+			Inc(BufferIndex, 2);
+
+			WriteBufferString(
+				BufferIndex,
+				Error[Index],
+				CSLength,
+				ABuffer
+			);
+			Inc(BufferIndex, CSLength);
+		end;
+		WriteBufferWord(2, BufferIndex + 1, ABuffer);
+		SendBuffer(AClient, ABuffer, BufferIndex + 1);
 	end;
-	WriteBufferWord(2, BufferIndex + 1, ABuffer);
-	SendBuffer(AClient, ABuffer, BufferIndex + 1);
 end;
 //------------------------------------------------------------------------------
 end.

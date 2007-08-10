@@ -14,6 +14,10 @@ Developers & Contributers
 - ChrstphrR (CR)
 
 --------------------------------------------------------------------------------
+- Rev 311 -
+[2007/08/10] Aeomin - Add a simple Syntax help, show when theres no argument passed through (Request by RaX)
+                                                                                                  YAR!
+-
 
 - Rev 310 -
 [2007/08/10] Aeomin - Changed Error type from String to TStringList, now can send more than 1 line of GM Command result! [GMCommands.pas, GMCommandExe.pas, ZoneRecv.pas, ZoneSend.pas, InterRecv.pas, InterSend.pas]

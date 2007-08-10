@@ -50,6 +50,7 @@ type
 		fLevels : TIntList32;
 		fTypes  : TIntList32;  //Should the command send to single zone/broadcast? or something else
 		fFlag   : TIntList32;  //To tell inter server don't break parameter!
+		fSyntax : TStringList; //Help message XD
 
 		Options : TGMCommandsOptions;
 	public
@@ -68,7 +69,9 @@ type
 			const
 				AType   : Byte;
 			const
-				AFlag   : Byte
+				AFlag   : Byte;
+			const
+				ASyntax : String
 			) : Word;
 
 		function IsCommand(
@@ -99,6 +102,11 @@ type
 			const
 				CommandID : Word
 			): Byte;
+
+		function GetSyntax(
+			const
+				CommandID : Word
+			): String;
 	end;
 
 
@@ -127,20 +135,21 @@ uses
 Constructor TGMCommands.Create;
 begin
 	inherited;
-	fNames := TStringList.Create;
-	fLevels:= TIntList32.Create;
-	fTypes := TIntList32.Create;
-	fFlag  := TIntList32.Create;
+	fNames  := TStringList.Create;
+	fLevels := TIntList32.Create;
+	fTypes  := TIntList32.Create;
+	fFlag   := TIntList32.Create;
+	fSyntax := TStringList.Create;
 
 	Options := TGMCommandsOptions.Create(MainProc.Options.ConfigDirectory+'/GMCommands.ini');
 	
 	//AddCommand( Command Name , Calling Function, Default GM Lvl required, command type)
-	AddCommand('ZoneStatus', GMZoneStatus, 99, TYPE_BROADCAST, GMFLAG_NORMAL);
-	AddCommand('Warp', GMWarp, 0, TYPE_RETURNBACK, GMFLAG_NORMAL);
-	AddCommand('GiveBaseExp', GMGiveBaseExperience, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL);
-	AddCommand('GiveJobExp', GMGiveJobExperience, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL);
-	AddCommand('BroadCast', GMBroadCast, 99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT);
-	AddCommand('BroadCastN', GMBroadCastNoName, 99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT);
+	AddCommand('ZoneStatus', GMZoneStatus, 99, TYPE_BROADCAST, GMFLAG_NORMAL, '');
+	AddCommand('Warp', GMWarp, 0, TYPE_RETURNBACK, GMFLAG_NORMAL, '#Warp <Map Name>,<X>,<Y>');
+	AddCommand('GiveBaseExp', GMGiveBaseExperience, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL, '#GiveBaseExp <Player Name>,<Amount>');
+	AddCommand('GiveJobExp', GMGiveJobExperience, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL, '#GiveJobExp <Player Name>,<Amount>');
+	AddCommand('BroadCast', GMBroadCast, 99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '#BroadCast <Message>');
+	AddCommand('BroadCastN', GMBroadCastNoName, 99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '#BroadCastN <Message>');
 
 	Options.Load(fNames, fLevels);
 end;{Create}
@@ -165,6 +174,7 @@ begin
 	fLevels.Free;
 	fTypes.Free;
 	fFlag.Free;
+	fSyntax.Free;
 
 	Options.Free;
 	inherited;
@@ -200,7 +210,9 @@ function TGMCommands.AddCommand(
 	const
 		AType   : Byte;
 	const
-		AFlag   : Byte
+		AFlag   : Byte;
+	const
+		ASyntax : String
 	) : Word;
 Begin
 	SetLength(Commands, Length(Commands)+1);
@@ -208,6 +220,7 @@ Begin
 	fLevels.Add(Level);
 	fTypes.Add(AType);
 	fFlag.Add(AFlag);
+	fSyntax.Add(ASyntax);
 	Result := fNames.Add(Lowercase(Name));
 End; (* Func TGMCommands.AddCommand
 *-----------------------------------------------------------------------------*)
@@ -380,5 +393,28 @@ function TGMCommands.GetCommandFlag(
 begin
 	Result := fFlag[CommandID];
 end; (* Func TGMCommands.GetCommandFlag
+*-----------------------------------------------------------------------------*)
+
+
+(*- Function ------------------------------------------------------------------*
+TGMCommands.GetSyntax
+--------------------------------------------------------------------------------
+Overview:
+--
+	Gets the command Syntax help message (used in inter server)
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/08/10] Aeomin - Created
+*-----------------------------------------------------------------------------*)
+function TGMCommands.GetSyntax(
+			const
+				CommandID : Word
+			): String;
+begin
+	Result := fSyntax[CommandID];
+end; (* Func TGMCommands.GetSyntax
 *-----------------------------------------------------------------------------*)
 end{GMCommands}.
