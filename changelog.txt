@@ -15,6 +15,15 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 309-
+[2007/08/10] RaX - Fixed Base Leveling to check the experience databases to make
+ sure we don't level outside of the values set there(checks for nulls). Even if
+ your max level field in the zone.ini is greater than that allowed in the database
+ your character will not level.
+[2007/08/10] RaX - modified packet sending routines for base level to avoid sending
+ more levels than needed.
+-
+
 - Rev 308-
 [2007/08/10] RaX - Implemented SQLite->job and base exp tables routines.
 -

@@ -545,11 +545,6 @@ begin
   //we do not inherit here for a reason! See BaseLevelUp
 	DataChanged := TRUE;
   BaseLevelUp(Value-fBaseLv);
-
-  if ZoneStatus = IsOnline then
-  begin
-    SendSubStat(0, $000b, BaseLv);
-  end;
 end;{SetBaseLV}
 //------------------------------------------------------------------------------
 
@@ -568,13 +563,9 @@ end;{SetBaseLV}
 //------------------------------------------------------------------------------
 procedure TCharacter.SetJobLV(Value : byte);
 begin
-	//we do not inherit here for a reason! See BaseLevelUp
+	//we do not inherit here for a reason! See JobLevelUp
 	DataChanged := TRUE;
   JobLevelUp(Value-fJobLv);
-  if ZoneStatus = IsOnline then
-  begin
-    SendSubStat(0, $0037, JobLv);
-  end;
 end;{SetJobLV}
 //------------------------------------------------------------------------------
 
@@ -599,7 +590,7 @@ begin
 	DataChanged := TRUE;
   For Index := 1 to MainProc.ZoneServer.Options.MaxBaseLevelsPerEXPGain do
   begin
-    if BaseEXP > BaseEXPToNextLevel then
+    if (BaseEXP > BaseEXPToNextLevel) AND (BaseLv <= MainProc.ZoneServer.Options.MaxBaseLevel) then
     begin
       BaseLv := BaseLv+1;
     end else
@@ -656,7 +647,7 @@ begin
     end;
   end;
 
-  if JobEXP > JobEXPToNextLevel then
+  if (JobEXP > JobEXPToNextLevel) AND (JobLv <= MainProc.ZoneServer.Options.MaxJobLevel) then
   begin
     TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
     OldJobEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, JobLv-1)
@@ -1919,33 +1910,47 @@ end;{CalcMaxWeight}
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.BaseLevelUp(Levels  : Word);
+var
+  TempEXP : LongWord;
+  TempLevel : Word;
 begin
-  //Make sure fBaseLv is in range.
-  fBaseLv := Max(Min(fBaseLv+Levels, MainProc.ZoneServer.Options.MaxBaseLevel), 1);
+  TempLevel := Max(Min(fBaseLv+Levels, MainProc.ZoneServer.Options.MaxBaseLevel), 1);
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	try
     //Gets the base experience to next level, divides by the multiplier to lower
     //numbers, prevent overflows, and prevent large integer math. Also, this is
     //only calculated at level up rather than at each experience gain.
-    BaseEXPToNextLevel :=
-      TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(Jobname, BaseLv)
-      DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
+    TempEXP :=
+      TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(Jobname, TempLevel);
   finally
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 	end;
-  CalcMaxWeight;
-  CalcMaxHP;
-  CalcMaxSP;
-  CalcSpeed;
 
-  //Set hp and sp to full if enabled.
-  if MainProc.ZoneServer.Options.FullHPOnLevelUp then
+  if (TempEXP > 0) AND(TempLevel <> BaseLv) then
   begin
-    HP := MAXHP;
-  end;
-  if MainProc.ZoneServer.Options.FullSPOnLevelUp then
-  begin
-    SP := MAXSP;
+    //Make sure fBaseLv is in range.
+    fBaseLv := TempLevel;
+    //Run stat calculations.
+    BaseEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
+    CalcMaxWeight;
+    CalcMaxHP;
+    CalcMaxSP;
+    CalcSpeed;
+
+    //Set hp and sp to full if enabled.
+    if MainProc.ZoneServer.Options.FullHPOnLevelUp then
+    begin
+      HP := MAXHP;
+    end;
+    if MainProc.ZoneServer.Options.FullSPOnLevelUp then
+    begin
+      SP := MAXSP;
+    end;
+
+    if ZoneStatus = IsOnline then
+    begin
+      SendSubStat(0, $000b, BaseLv);
+    end;
   end;
 end;{BaseLevelUp}
 //------------------------------------------------------------------------------
@@ -1962,16 +1967,30 @@ end;{BaseLevelUp}
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.JobLevelUp(Levels  : Word);
+var
+  TempEXP : LongWord;
+  TempLevel : Word;
 begin
   //Make sure fJobLv is in range.
-  fJobLv := Max(Min(fJobLv+Levels, MainProc.ZoneServer.Options.MaxJobLevel), 1);
+  TempLevel := Max(Min(fJobLv+Levels, MainProc.ZoneServer.Options.MaxJobLevel), 1);
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	try
     //Update job experience to next level from static database.
-    JobEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, JobLv);
+    TempEXP := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, TempLevel);
   finally
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 	end;
+
+  if (TempEXP > 0) AND (TempLevel <> JobLv) then
+  begin
+    JobEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.JobXPMultiplier;
+    fJobLv := TempLevel;
+
+    if ZoneStatus = IsOnline then
+    begin
+      SendSubStat(0, $0037, JobLv);
+    end;
+  end;
 end;{JobLevelUp}
 //------------------------------------------------------------------------------
 
