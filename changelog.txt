@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 306-
+[2007/08/10] RaX - Added jobexp and baseexp tables to sqlite heliosstatic database.
+-
+
 - Rev 305-
 [2007/08/09] RaX - Added GM Level checking to /b and /bb gm commands.
 [2007/08/09] RaX - Fixed Dexterity not showing correctly, a typo was made in 
