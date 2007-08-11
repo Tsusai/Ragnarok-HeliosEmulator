@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 314 -
+[2007/08/11] RaX - Fixed character position not saving goofyness. I had some legacy code in
+ that was supposed to protect against a hacked #warp for the proof of concept release.
+ No longer needed.
+-
+
 - Rev 313 -
 [2007/08/11] RaX - Fixed Queries dealing with character variables in mysql, 'key'
  is a reserved word in mysql and was causing problems Solution :: use backticks

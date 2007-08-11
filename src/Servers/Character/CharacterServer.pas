@@ -635,11 +635,6 @@ begin
 		  //get the zone info from that
 
 		  idx := fZoneServerList.IndexOf(ZoneID);
-		  if idx > -1 then
-		  begin
-			  ACharacter.Map := Options.DefaultMap;
-			  ACharacter.Position := Options.DefaultPoint;
-		  end;
 		  TThreadLink(AClient.Data).DatabaseLink.GameData.SaveChara(ACharacter);
 		finally
 		  TThreadLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
