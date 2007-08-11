@@ -15,6 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 315 -
+[2007/08/11] RaX - Fixed +1-1 bugs dealing with showing other characters and hiding them
+ Only surfaced once we were able to warp to the edges of maps =P ShowBeings and HideBeings
+ was crashing due to bad map x and y values, they were too close to the edge so when it
+ checked +1 it broke.
+-
+
 - Rev 314 -
 [2007/08/11] RaX - Fixed character position not saving goofyness. I had some legacy code in
  that was supposed to protect against a hacked #warp for the proof of concept release.
