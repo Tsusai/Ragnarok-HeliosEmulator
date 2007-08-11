@@ -14,6 +14,13 @@ Developers & Contributers
 - ChrstphrR (CR)
 
 --------------------------------------------------------------------------------
+
+- Rev 313 -
+[2007/08/11] RaX - Fixed Queries dealing with character variables in mysql, 'key'
+ is a reserved word in mysql and was causing problems Solution :: use backticks
+ around the perpetrator (`key`)
+-
+
 - Rev 312 -
 [2007/08/10] Aeomin - Modified GMFLAG_NOSPLIT to prevent unexpected problem(s)
 [2007/08/10] Aeomin - Append Syntax help to Arguments, be aware when checking Argument count!

@@ -934,7 +934,7 @@ begin
 	Result := 0;
 	QueryResult :=
 		SendQuery(
-			Format('Select value FROM character_vars WHERE char_id = %d and key = ''%s''',[AChara.CID,Key]),
+			Format('SELECT `value` FROM `character_vars` WHERE `char_id` = %d AND `key` = ''%s''',[AChara.CID,Key]),
 			True,Success
 		);
 	if (QueryResult.RowsCount = 1) and Success then
@@ -979,7 +979,7 @@ http://dev.mysql.com/doc/refman/5.0/en/insert-on-duplicate.html
 			//Update
 			QueryResult :=
 				SendQuery(
-					Format('INSERT INTO character_vars (char_id, key, value) VALUES (%d,''%s'',%d) ON DUPLICATE KEY UPDATE value = %d',[AChara.CID,Key,Value,Value]),
+					Format('INSERT INTO `character_vars` (`char_id`, `key`, `value`) VALUES (%d,''%s'',%d) ON DUPLICATE KEY UPDATE `value` = %d',[AChara.CID,Key,Value,Value]),
 					False,Success
 				);
 		end else
@@ -987,7 +987,7 @@ http://dev.mysql.com/doc/refman/5.0/en/insert-on-duplicate.html
 			//Delete the key.
 			QueryResult :=
 				SendQuery(
-					Format('DELETE FROM character_vars WHERE char_id = %d and key = ''%s''',[AChara.CID,Key]),
+					Format('DELETE FROM `character_vars` WHERE `char_id` = %d and `key` = ''%s''',[AChara.CID,Key]),
 					False,Success
 				);
 		end;
