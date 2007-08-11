@@ -126,6 +126,11 @@ public
 			Level : Word
 		) : LongWord; virtual; abstract;
 
+  Function GetStatPoints(
+		const
+			Level : Word
+		) : LongWord; virtual; abstract;
+
 	function  Connect : Boolean; virtual; abstract;
 
 	procedure Disconnect; virtual; abstract;

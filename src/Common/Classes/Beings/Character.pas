@@ -876,6 +876,10 @@ procedure TCharacter.SetStatusPts(Value : Word);
 begin
 	DataChanged := TRUE;
 	fStatusPts  := Value;
+  if ZoneStatus = IsOnline then
+  begin
+    SendSubStat(0,$0009,fStatusPts);
+  end;
 end;{SetStatusPts}
 //------------------------------------------------------------------------------
 
@@ -895,6 +899,10 @@ procedure TCharacter.SetSkillPts(Value : Word);
 begin
 	DataChanged := TRUE;
 	fSkillPts   := Value;
+  if ZoneStatus = IsOnline then
+  begin
+    SendSubStat(0,$000c,fSkillPts);
+  end;
 end;{SetSkillPts}
 //------------------------------------------------------------------------------
 
@@ -1911,8 +1919,11 @@ end;{CalcMaxWeight}
 //------------------------------------------------------------------------------
 procedure TCharacter.BaseLevelUp(Levels  : Word);
 var
-  TempEXP : LongWord;
+  TempEXP   : LongWord;
   TempLevel : Word;
+  Index     : Integer;
+  Index2    : Integer;
+  TempPoints: Word;
 begin
   TempLevel := Max(Min(fBaseLv+Levels, MainProc.ZoneServer.Options.MaxBaseLevel), 1);
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
@@ -1928,7 +1939,34 @@ begin
 
   if (TempEXP > 0) AND(TempLevel <> BaseLv) then
   begin
-    //Make sure fBaseLv is in range.
+    //check if we're goijng up or down in level
+    if fBaseLv < TempLevel then
+    begin
+      //Get stat points from database
+      fStatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(TempLevel);
+      //loop through all stats and calculate how many stat points they're worth...
+      //remove stats from statpoints to get the amount of statuspts free.
+      For Index := STR to LUK do
+      begin
+        For Index2 := 2 to ParamBase[Index] do
+        begin
+          TempPoints := 2 + (Index2 DIV 10);
+          fStatusPts := fStatusPts - TempPoints;
+        end;
+      end;
+      //Fire off the status pts packet.
+      StatusPts := StatusPts;
+    end else
+    begin
+      ParamBase[STR] := 1;
+      ParamBase[AGI] := 1;
+      ParamBase[DEX] := 1;
+      ParamBase[VIT] := 1;
+      ParamBase[INT] := 1;
+      ParamBase[LUK] := 1;
+      StatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(TempLevel);
+    end;
+
     fBaseLv := TempLevel;
     //Run stat calculations.
     BaseEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
@@ -1984,12 +2022,15 @@ begin
   if (TempEXP > 0) AND (TempLevel <> JobLv) then
   begin
     JobEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.JobXPMultiplier;
+
+    SkillPts := SkillPts+(TempLevel-fJobLv);
     fJobLv := TempLevel;
 
     if ZoneStatus = IsOnline then
     begin
       SendSubStat(0, $0037, JobLv);
     end;
+
   end;
 end;{JobLevelUp}
 //------------------------------------------------------------------------------

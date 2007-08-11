@@ -148,6 +148,11 @@ public
 			Level : Word
 		) : LongWord; override;
 
+  Function GetStatPoints(
+		const
+			Level : Word
+		) : LongWord; override;
+
 	function  Connect : Boolean; override;
 
 	procedure Disconnect;override;
@@ -586,7 +591,7 @@ begin
 		,TRUE,Success);
 	if (QueryResult.RowsCount = 1) then
 	begin
-			Result              := StrToInt(QueryResult.FieldValue(0));
+			Result              := StrToIntDef(QueryResult.FieldValue(0),0);
 	end else Result := 0;
 	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetBaseEXPToNextLevel
@@ -619,11 +624,42 @@ begin
 		,TRUE,Success);
 	if (QueryResult.RowsCount = 1) then
 	begin
-			Result              := StrToInt(QueryResult.FieldValue(0));
+			Result              := StrToIntDef(QueryResult.FieldValue(0), 0);
 	end else Result := 0;
 	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetJobEXPToNextLevel
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetStatPoints 			                                         FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Queries and returns a character's stat points for a level.
+//
+//	Changes -
+//		August 11th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function TMySQLStaticDatabase.GetStatPoints(
+		const
+			Level : Word
+		) : LongWord;
+var
+	Success     : Boolean;
+	QueryResult : TMySQLResult;
+begin
+	QueryResult :=
+		SendQuery(
+		Format('SELECT points FROM statpoints WHERE level = %d',
+			[Level])
+		,TRUE,Success);
+	if (QueryResult.RowsCount = 1) then
+	begin
+			Result              := StrToIntDef(QueryResult.FieldValue(0), 0);
+	end else Result := 0;
+	if Assigned(QueryResult) then QueryResult.Free;
+end;//GetStatPoints
+//------------------------------------------------------------------------------
 {END MySQLStaticDatabase}
 end.

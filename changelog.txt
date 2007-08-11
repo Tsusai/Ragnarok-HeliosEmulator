@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 316 -
+[2007/08/11] RaX - Implemented Skill and Status Points adding and subtracting on base/job level up.
+[2007/08/11] RaX - Added new GetStatPoints db functions in static database.
+[2007/08/11] RaX - Added SendSubStat packets to set routines in TCharacter.
+-
+
 - Rev 315 -
 [2007/08/11] RaX - Fixed +1-1 bugs dealing with showing other characters and hiding them
  Only surfaced once we were able to warp to the edges of maps =P ShowBeings and HideBeings
