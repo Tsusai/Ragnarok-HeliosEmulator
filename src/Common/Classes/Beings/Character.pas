@@ -216,8 +216,8 @@ protected
 			Value : LongWord
 		);
 
-  procedure BaseLevelUp(Levels : Word);
-  procedure JobLevelUp(Levels : Word);
+  procedure BaseLevelUp(Levels : Integer);
+  procedure JobLevelUp(Levels : Integer);
 public
 	CID : LongWord;
 
@@ -1917,7 +1917,7 @@ end;{CalcMaxWeight}
 //		July 25th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.BaseLevelUp(Levels  : Word);
+procedure TCharacter.BaseLevelUp(Levels  : Integer);
 var
   TempEXP   : LongWord;
   TempLevel : Word;
@@ -2004,7 +2004,7 @@ end;{BaseLevelUp}
 //		July 25th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.JobLevelUp(Levels  : Word);
+procedure TCharacter.JobLevelUp(Levels  : Integer);
 var
   TempEXP : LongWord;
   TempLevel : Word;

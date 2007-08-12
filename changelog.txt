@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 318 -
+[2007/08/12] RaX - Adjustment to allow deleveling of characters via baselevelup with a negative levels value.
+[2007/08/12] RaX - Changed Levels parameter in Job and BaseLevelUp routines(TCharacter)
+ from word to integer to allow a negative levels value.
+-
+
 - Rev 317 -
 [2007/08/11] Aeomin - Add #GiveBaseLevel & #GiveJobLevel (Request by RaX)
 [2007/08/11] Aeomin - Set amount limit for #GiveBaseExp and #GiveBaseExp (1-2147483647) [GMCommandExe.pas]
