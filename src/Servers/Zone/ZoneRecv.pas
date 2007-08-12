@@ -841,13 +841,14 @@ end;
 
 
 //------------------------------------------------------------------------------
-//RecvGMCommandFromInter																							PROCEDURE
+//RecvGMCommandFromInter                                               PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
 //      Gets the gm command information from the buffer.
 //
 //  Changes -
 //    March 21st, 2007 - RaX - Created.
+//	[2007/08/09] Aeomin - "Upgraded" Almost everything..
 //------------------------------------------------------------------------------
 procedure RecvGMCommandFromInter(
 		const InBuffer : TBuffer
@@ -856,7 +857,6 @@ var
 	CommandID	: Word;
 	GMID		: LongWord;
 	CharacterID	: LongWord;
-//	TargetAID	: LongWord;
 	TargetCID	: LongWord;
 	ArgCount	: Word;
 	Arguments	: array of String;
@@ -873,7 +873,6 @@ begin
 	CommandID 	:= BufferReadWord(4,InBuffer);
 	GMID		:= BufferReadLongWord(6, InBuffer);
 	CharacterID	:= BufferReadLongWord(10, InBuffer);
-//	TargetAID	:= BufferReadLongWord(14, InBuffer);
 	TargetCID	:= BufferReadLongWord(18, InBuffer);
 	ArgCount	:= BufferReadWord(22, InBuffer);
 
@@ -968,9 +967,11 @@ begin
 		end;
 	end;
 
-
-	ZoneSendGMCommandResultToInter(GMID, CharacterID, Error);
-
+	if Error.Count > 0 then
+	begin
+		ZoneSendGMCommandResultToInter(GMID, CharacterID, Error);
+	end;
+	
 	Error.Free;
 end;{RecvGMCommandFromInter}
 //------------------------------------------------------------------------------
@@ -1182,7 +1183,7 @@ end;{RecvWarpRequestReplyFromInter}
 //GMBroadcast                                                          PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
-//      Convert /b , /nb command
+//      Convert /b , /nb command (apparently, /bb works too)
 //
 //  Changes -
 //	[2007/08/09] Aeomin - Created.
@@ -1195,19 +1196,18 @@ procedure GMBroadcast(
 var
 	Size     : Word;
 	Announce : String;
-  CommandID: Integer;
-  RequiredGMLevel : Byte;
+	CommandID: Integer;
+	RequiredGMLevel : Byte;
 begin
-  CommandID := MainProc.ZoneServer.Commands.GetCommandID('BroadCastN');
-  RequiredGMLevel := MainProc.ZoneServer.Commands.GetCommandGMLevel(CommandID);
-  if TClientLink(AChara.ClientInfo.Data).AccountLink.Level >= RequiredGMLevel then
-  begin
-	  Size     := BufferReadWord(2, InBuffer);
-	  Announce := BufferReadString(4, Size - 4, InBuffer);
-	  //Convert XD
-	  ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.ID, AChara.CID, '#BroadCastN ' + Announce);
-
-  end;
+	CommandID := MainProc.ZoneServer.Commands.GetCommandID('BroadCastN');
+	RequiredGMLevel := MainProc.ZoneServer.Commands.GetCommandGMLevel(CommandID);
+	if TClientLink(AChara.ClientInfo.Data).AccountLink.Level >= RequiredGMLevel then
+	begin
+		Size     := BufferReadWord(2, InBuffer);
+		Announce := BufferReadString(4, Size - 4, InBuffer);
+		//Convert XD
+		ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.ID, AChara.CID, '#BroadCastN ' + Announce);
+	end;
 end;
 //------------------------------------------------------------------------------
 end.

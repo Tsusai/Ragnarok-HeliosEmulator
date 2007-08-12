@@ -32,17 +32,17 @@ const
 	TYPE_TARGETCHAR = 3;  //Specific player(character) involved
 	TYPE_TARGETMAP  = 4;  //All players in specific map involved
 
-	GMFLAG_NORMAL   = 0;
-	GMFLAG_NOSPLIT  = 1;
+	GMFLAG_NORMAL   = 0;  //Normal mode, argument will be splitted for use
+	GMFLAG_NOSPLIT  = 1;  //NO Split mode, use for only one argument, eg #broadcast, prevent split space and ","
 type
-	TGMCommand = function(
+	TGMCommand = procedure(
 		const
 			Arguments  : array of String;
 			FromChar   : String;
 			TargetChar : TCharacter;
 		var
 			Error : TStringList
-		) : Boolean;
+		);
 
 	TGMCommands = class(TObject)
 	protected
@@ -143,15 +143,18 @@ begin
 
 	Options := TGMCommandsOptions.Create(MainProc.Options.ConfigDirectory+'/GMCommands.ini');
 	
-	//AddCommand( Command Name , Calling Function, Default GM Lvl required, command type)
-	AddCommand('ZoneStatus', GMZoneStatus, 99, TYPE_BROADCAST, GMFLAG_NORMAL, '');
-	AddCommand('Warp', GMWarp, 0, TYPE_RETURNBACK, GMFLAG_NORMAL, '#Warp <Map Name>,<X>,<Y>');
-	AddCommand('GiveBaseExp', GMGiveBaseExperience, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL, '#GiveBaseExp <Player Name>,<Amount>');
-	AddCommand('GiveJobExp', GMGiveJobExperience, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL, '#GiveJobExp <Player Name>,<Amount>');
-	AddCommand('BaseLevelUp', GMBaseLevelUp, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL, '#BaseLevelUp <Player Name>,<Amount>');
-	AddCommand('JobLevelUp', GMJobLevelUp, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL, '#JobLevelUp <Player Name>,<Amount>');
-	AddCommand('BroadCast', GMBroadCast, 99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '#BroadCast <Message>');
-	AddCommand('BroadCastN', GMBroadCastNoName, 99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '#BroadCastN <Message>');
+	//AddCommand( Command Name , Calling Function, Default GM Lvl required, command type, argument parsing mode, Syntax Help Message)
+	AddCommand('ZoneStatus',  GMZoneStatus,           1,  TYPE_BROADCAST,  GMFLAG_NORMAL,  '');
+	AddCommand('Warp',        GMWarp,                 99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '#Warp <Map Name>,<X>,<Y>');
+	AddCommand('GiveBaseExp', GMGiveBaseExperience,   99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#GiveBaseExp <Player Name>,<Amount>');
+	AddCommand('GiveJobExp',  GMGiveJobExperience,    99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#GiveJobExp <Player Name>,<Amount>');
+	AddCommand('BaseLevelUp', GMBaseLevelUp,          99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#BaseLevelUp <Player Name>,<Amount>');
+	AddCommand('JobLevelUp',  GMJobLevelUp,           99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#JobLevelUp <Player Name>,<Amount>');
+	AddCommand('BroadCast',   GMBroadCast,            99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '#BroadCast <Message>');
+	AddCommand('BroadCastN',  GMBroadCastNoName,      99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '#BroadCastN <Message>');
+	AddCommand('BroadCastL',  GMBroadCastLocal,       99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '#BroadCastL <Message>');
+	AddCommand('BroadCastLN', GMBroadCastLocalNoName, 99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '#BroadCastLN <Message>');
+        AddCommand('BroadCastLB', GMBroadCastLocalBlue,   99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '#BroadCastLB <Message>');
 
 	Options.Load(fNames, fLevels);
 end;{Create}

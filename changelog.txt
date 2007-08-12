@@ -15,6 +15,14 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 319 -
+[2007/08/11] Aeomin - Added GM Command #BroadCastL, #BroadCastLN, #BroadCastLB (All local broadcast, LN = w/o name, LB = blue)
+[2007/08/11] Aeomin - Add check to prevent empty command result send back to inter server [ZoneRecv.pas (RecvGMCommandFromInter)]
+[2007/08/11] Aeomin - Changed typed GM Commands functions to procedure (really, return of boolean is useless) [GMCommands.pas, GMCommandExe.pas]
+[2007/08/11] Aeomin - Fixed crash when area chat at edge of map [ZoneSend.pas]
+                      (*cough* yet another one of +1 -1 problem)
+-
+
 - Rev 318 -
 [2007/08/12] RaX - Adjustment to allow deleveling of characters via baselevelup with a negative levels value.
 [2007/08/12] RaX - Changed Levels parameter in Job and BaseLevelUp routines(TCharacter)
