@@ -731,12 +731,12 @@ begin
 	with ACharacter do
 	begin
 		//Quick change to prevent characters from being added in bad places.
-		if (ACharacter.Position.X < MapInfo.Size.X) AND
-			 (ACharacter.Position.Y < MapInfo.Size.Y) AND
-			 (ACharacter.Position.X >= 0) AND
-			 (ACharacter.Position.X >= 0) then
+		if (Position.X < MapInfo.Size.X) AND
+			 (Position.Y < MapInfo.Size.Y) AND
+			 (Position.X >= 0) AND
+			 (Position.X >= 0) then
 		begin
-			MapInfo.Cell[ACharacter.Position.X, Position.Y].Beings.Delete(
+			MapInfo.Cell[Position.X, Position.Y].Beings.Delete(
 			MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(ACharacter));
 		end;
 	end;

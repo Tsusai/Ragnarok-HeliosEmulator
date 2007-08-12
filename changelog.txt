@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 317 -
+[2007/08/11] Aeomin - Add #GiveBaseLevel & #GiveJobLevel (Request by RaX)
+[2007/08/11] Aeomin - Set amount limit for #GiveBaseExp and #GiveBaseExp (1-2147483647) [GMCommandExe.pas]
+[2007/08/10] Aeomin - Changed Min to EnsureRange in GMCommandsOptions.pas (OPS)
+-
+
 - Rev 316 -
 [2007/08/11] RaX - Implemented Skill and Status Points adding and subtracting on base/job level up.
 [2007/08/11] RaX - Added new GetStatPoints db functions in static database.

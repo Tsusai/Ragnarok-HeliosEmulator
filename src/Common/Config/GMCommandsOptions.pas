@@ -62,7 +62,7 @@ var
 		for Index := Commands.Count -1 downto 0 do
 		begin
 			// Set default GM level require 99, to prevent mistakes
-			Levels[Index] := Min(StrToIntDef(Section.Values[Commands[Index]], 99), High(Byte));
+			Levels[Index] := EnsureRange(StrToIntDef(Section.Values[Commands[Index]], 99), 0, High(Byte));
 		end;
 	end;{LoadGMCommandsOptions}
 	//----------------------------------------------------------------------

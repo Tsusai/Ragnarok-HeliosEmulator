@@ -148,6 +148,8 @@ begin
 	AddCommand('Warp', GMWarp, 0, TYPE_RETURNBACK, GMFLAG_NORMAL, '#Warp <Map Name>,<X>,<Y>');
 	AddCommand('GiveBaseExp', GMGiveBaseExperience, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL, '#GiveBaseExp <Player Name>,<Amount>');
 	AddCommand('GiveJobExp', GMGiveJobExperience, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL, '#GiveJobExp <Player Name>,<Amount>');
+	AddCommand('BaseLevelUp', GMBaseLevelUp, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL, '#BaseLevelUp <Player Name>,<Amount>');
+	AddCommand('JobLevelUp', GMJobLevelUp, 99, TYPE_TARGETCHAR, GMFLAG_NORMAL, '#JobLevelUp <Player Name>,<Amount>');
 	AddCommand('BroadCast', GMBroadCast, 99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '#BroadCast <Message>');
 	AddCommand('BroadCastN', GMBroadCastNoName, 99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '#BroadCastN <Message>');
 
