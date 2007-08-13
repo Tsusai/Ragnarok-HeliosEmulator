@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 321 -
+[2007/08/13] Aeomin - Fixed a query error caused Helios freeze (Sqlite) [SQLiteGameDatabase.pas]
+-
+
 - Rev 320 -
 [2007/08/12] Aeomin - Support Aegis GM command /MapMove (/mm)
 [2007/08/12] Aeomin - Added EnsureRange for #warp to keep x/y in size.

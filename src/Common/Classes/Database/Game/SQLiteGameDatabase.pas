@@ -738,7 +738,7 @@ var
 begin
 	QueryResult :=
 		SendQuery(
-		Format('SELECT * FROM characters WHERE name = %s',
+		Format('SELECT * FROM characters WHERE name = ''%s''',
 			[CharaName]));
 	if (QueryResult.Count = 1) then
 	begin
