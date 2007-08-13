@@ -306,10 +306,10 @@ Begin
 				end else if Command = 'purchasereq' then begin
 					ExecCommand := BuyFromVender;
 				end else if Command = 'itemmonster' then begin
-					ExecCommand := GMSummonItemMob;
+					ExecCommand := GMSummonItemMob;}
 				end else if Command = 'mapmove' then begin
 					ExecCommand := GMMapMove;
-				end else if Command = 'npcamountinput' then begin
+				{end else if Command = 'npcamountinput' then begin
 					ExecCommand := NPCIntegerInput;
 				end else if Command = 'npccloseclicked' then begin
 					ExecCommand := NPCClickClose;

@@ -169,6 +169,12 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure GMMapMove(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 implementation
 
 
@@ -177,6 +183,8 @@ uses
 	Types,
 	WinLinux,
 	Classes,
+	SysUtils,
+	Math,
 	{Project}
 	Account,
 	Being,
@@ -1209,5 +1217,40 @@ begin
 		ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.ID, AChara.CID, '#BroadCastN ' + Announce);
 	end;
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMMapMove                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Convert /mm /mapmove command
+//
+//  Changes -
+//	[2007/08/12] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure GMMapMove(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+var
+	MapName : String;
+	X       : Word;
+	Y       : Word;
+	CommandID: Integer;
+	RequiredGMLevel : Byte;
+begin
+	CommandID := MainProc.ZoneServer.Commands.GetCommandID('Warp');
+	RequiredGMLevel := MainProc.ZoneServer.Commands.GetCommandGMLevel(CommandID);
+	if TClientLink(AChara.ClientInfo.Data).AccountLink.Level >= RequiredGMLevel then
+	begin
+		//get the request
+		MapName := BufferReadString(ReadPts[0], ReadPts[1] - ReadPts[0], InBuffer);
+		X       := BufferReadWord(ReadPts[1], InBuffer);
+		Y       := BufferReadWord(ReadPts[2], InBuffer);
+		ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.ID, AChara.CID, '#Warp "' + MapName +'",' + IntToStr(X) + ',' + IntToStr(Y));
+	end;
+end;{GMMapMove}
 //------------------------------------------------------------------------------
 end.

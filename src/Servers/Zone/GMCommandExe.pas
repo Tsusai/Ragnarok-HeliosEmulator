@@ -75,8 +75,8 @@ begin
 		if not ZoneSendWarp(
 				TargetChar,
 				Arguments[0],
-				StrToIntDef(Arguments[1], 0),
-				StrToIntDef(Arguments[2], 0)
+				EnsureRange(StrToIntDef(Arguments[1], 0), 0, High(Word)),
+				EnsureRange(StrToIntDef(Arguments[2], 0), 0, High(Word))
 			)
 		then begin
 			Error.Add('Map ' + Arguments[0] + ' not found!');

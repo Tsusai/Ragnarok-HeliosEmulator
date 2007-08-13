@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 320 -
+[2007/08/12] Aeomin - Support Aegis GM command /MapMove (/mm)
+[2007/08/12] Aeomin - Added EnsureRange for #warp to keep x/y in size.
+-
+
 - Rev 319 -
 [2007/08/11] Aeomin - Added GM Command #BroadCastL, #BroadCastLN, #BroadCastLB (All local broadcast, LN = w/o name, LB = blue)
 [2007/08/11] Aeomin - Add check to prevent empty command result send back to inter server [ZoneRecv.pas (RecvGMCommandFromInter)]
