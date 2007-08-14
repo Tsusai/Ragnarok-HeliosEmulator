@@ -437,6 +437,26 @@ begin
 				RecvWhisperReply(AClient, ABuffer);
 			end;
 		end;
+	$2213:
+		begin
+			if AClient.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AClient,ABuffer[2],2);
+				Size := BufferReadWord(2,ABuffer);
+				RecvBuffer(AClient,ABuffer[4],Size-4);
+				RecvZoneMapWarpRequest(AClient, ABuffer);
+			end;
+		end;
+	$2214:
+		begin
+			if AClient.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AClient,ABuffer[2],2);
+				Size := BufferReadWord(2,ABuffer);
+				RecvBuffer(AClient,ABuffer[4],Size-4);
+				RecvZoneMapWarpResult(AClient, ABuffer);
+			end;
+		end;
 	else
 		begin
 			Console.Message('Unknown Inter Server Packet : ' + IntToHex(PacketID,4), 'Inter Server', MS_WARNING);
@@ -513,6 +533,7 @@ begin
 		Console.Message('Zone Server connection validated.','Inter Server', MS_INFO);
 
 		ZServerInfo :=  TZoneServerInfo.Create;
+		ZServerInfo.Connection := AClient;
 		ZServerInfo.ZoneID := ID;
 		ZServerInfo.Port := BufferReadWord(6,InBuffer);
 		AClient.Data := TZoneServerLink.Create(AClient);

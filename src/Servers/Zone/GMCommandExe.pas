@@ -19,6 +19,7 @@ uses
 
 	procedure GMZoneStatus(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMWarp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMWarpDev(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMGiveBaseExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMGiveJobExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBaseLevelUp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
@@ -33,17 +34,21 @@ uses
 	{RTL/VCL}
 	SysUtils,
 	Math,
+	Types,
 	{Project}
 	Main,
 	ZoneSend,
 	PacketTypes,
 	BufferIO,
+	Map,
+	MapTypes,
+	ZoneInterCommunication,
 	{Third Party}
 	IdContext
 	;
 
 //------------------------------------------------------------------------------
-//ZoneStatus                                                           PROCEDURE
+//GMZoneStatus                                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //		Response zone status, only when zone is online.
@@ -60,15 +65,113 @@ end;{GMZoneStatus}
 
 
 //------------------------------------------------------------------------------
-//ZoneWarp                                                             PROCEDURE
+//GMWarp                                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Warp the character, a wrapper of #WarpDev
+//
+//	Changes-
+//		[2007/08/13] Aeomin - Create.
+//------------------------------------------------------------------------------
+procedure GMWarp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+var
+	MapZoneID      : SmallInt;
+	Index          : Integer;
+	Map            : TMap;
+	APoint         : TPoint;
+begin
+	if (Length(Arguments) >= 1) then
+	begin
+		TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.StaticData.Connect;
+		MapZoneID := TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(Arguments[0]);
+		TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+		//Map not found
+		if MapZoneID < 0 then
+		begin
+			Error.Add('Map ' + Arguments[0] + ' not found!');
+		end else
+		begin
+			if (Length(Arguments) >= 3) then
+			begin
+				//Lets just as player's wish (first)
+				APoint.X := EnsureRange(StrToIntDef(Arguments[1], 0), 0, High(Word));
+				APoint.Y := EnsureRange(StrToIntDef(Arguments[2], 0), 0, High(Word));
+			end else
+			begin
+				APoint.X := -1;
+				APoint.Y := -1;
+			end;
+
+			if Cardinal(MapZoneID) = MainProc.ZoneServer.Options.ID then
+			begin
+				//The map is at same zone, so lets find the index id
+				Index := MainProc.ZoneServer.MapList.IndexOf(Arguments[0]);
+				if Index < 0 then
+				begin
+					//This is impossible as i know of, but IF it happened...
+					Error.Add('Map ' + Arguments[0] + ' not found!');
+				end else
+				begin
+					//So, found it!
+					Map := MainProc.ZoneServer.MapList.Items[Index];
+
+					if Map.SafeLoad then
+					begin
+						if (APoint.X > Map.Size.X -1) or (APoint.Y > Map.Size.Y -1)
+						or (APoint.X < 0) or (APoint.Y < 0) or Map.IsBlocked(APoint) then
+						begin
+							APoint := Map.RandomCell;
+						end;
+						if not ZoneSendWarp(
+								TargetChar,
+								Arguments[0],
+								APoint.X,
+								APoint.Y
+							)
+						then begin
+							Error.Add('Map ' + Arguments[0] + ' not found!');
+						end else
+						begin
+							Error.Add('Warped to ' + Arguments[0]);
+						end;
+					end else
+					begin
+						//Well.. it just failed...
+						Error.Add('Warp Failed!');
+						Error.Add('An unexpected error occured during map load...');
+					end;
+				end;
+			end else
+			begin
+				if APoint.X < 0 then
+					APoint.X := Random(High(Word));
+				if APoint.Y < 0 then
+					APoint.Y := Random(High(Word));
+				//The map is not in same zone..~
+				ZoneSendMapWarpRequestToInter(MainProc.ZoneServer.ToInterTCPClient, TargetChar.CID, Cardinal(MapZoneID), Arguments[0], APoint);
+			end;
+		end;
+	end else
+	begin
+		//Not enough parameters
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMWarpDev                                                            PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //		Warp the character
 //
 //	Changes-
-//		[2007/8/8] Aeomin - Create.
+//		[2007/08/08] Aeomin - Create.
+//		[2007/08/13] Aeomin - Renamed from GMWarp
 //------------------------------------------------------------------------------
-procedure GMWarp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMWarpDev(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 begin
 	if (Length(Arguments) >= 3) then
 	begin
@@ -77,8 +180,8 @@ begin
 				Arguments[0],
 				EnsureRange(StrToIntDef(Arguments[1], 0), 0, High(Word)),
 				EnsureRange(StrToIntDef(Arguments[2], 0), 0, High(Word))
-			)
-		then begin
+			) then
+		begin
 			Error.Add('Map ' + Arguments[0] + ' not found!');
 		end else
 		begin
@@ -89,7 +192,7 @@ begin
 		Error.Add('Syntax Help:');
 		Error.Add(Arguments[Length(Arguments)-1]);
 	end;
-end;{GMWarp}
+end;{GMWarpDev}
 //------------------------------------------------------------------------------
 
 

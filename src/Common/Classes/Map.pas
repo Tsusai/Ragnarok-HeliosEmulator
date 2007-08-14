@@ -73,6 +73,9 @@ TMap = class(TObject)
 				APath      : TPointList
 		) : Boolean;
 
+		function RandomCell: TPoint;
+		function SafeLoad: Boolean;
+
 end;
 //------------------------------------------------------------------------------
 
@@ -82,6 +85,7 @@ implementation
 
 uses
 	{RTL/VCL}
+	SysUtils,
 	Classes,
 	Math,
 	WinLinux,
@@ -512,6 +516,111 @@ Begin
 		State := UNLOADED;
 	end;
 End;//Unload
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RandomCell                                                            FUNCTION
+//------------------------------------------------------------------------------
+//  What it does -
+//      Random a walkable cell
+//
+//  Changes -
+//	[2007/08/13] Aeomin - Created.
+//------------------------------------------------------------------------------
+function TMap.RandomCell: TPoint;
+var
+	LoopTrials : Byte;
+	LoopOk     : Boolean;
+	idxX       : Word;
+	idxY       : Word;
+begin
+	LoopTrials := 0;
+	LoopOk     := False;
+	while LoopTrials < 20 do
+	begin
+	//Random one!
+		Result.X := Random(Size.X -1);
+		Result.Y := Random(Size.Y -1);
+		if IsBlocked(Result) then
+			Inc(LoopTrials)
+		else begin
+			LoopOk := True;
+			Break;
+		end;
+	end;
+
+	//We just tried 10 times, if still cant find one..
+	if not LoopOK then
+	begin
+		for idxX := 0 to Size.X - 1 do
+		begin
+			if LoopOK then
+				Break;
+			for idxY := 0 to Size.Y - 1 do
+			begin
+				//Then just get one that works..
+				Result.X := idxX;
+				Result.Y := idxY;
+				if not IsBlocked(Result) then
+				begin
+					LoopOk := True;
+					Break;
+				end;
+			end;
+		end;
+	end;
+
+	//Really.. i can't help anymore...
+	if not LoopOk then
+	begin
+		Result.X := 0;
+		Result.Y := 0;
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SafeLoad                                                              FUNCTION
+//------------------------------------------------------------------------------
+//  What it does -
+//      Check and load map, return false of failed.
+//
+//  Changes -
+//	[2007/08/14] Aeomin - Created.
+//------------------------------------------------------------------------------
+function TMap.SafeLoad: Boolean;
+var
+	LoopTries : Byte;
+begin
+	Result := False;
+	case State of
+		UNLOADED: begin
+			// Just load it
+			Load;
+			if State = LOADED then
+				Result := True;
+		end;
+		LOADING: begin
+			//We can't do anything but wait...
+			LoopTries := 0;
+			while LoopTries <= 10 do
+			begin
+				if State = LOADED then
+				begin
+					Result := True;
+					Break;
+				end;
+				Sleep(1000);
+			end;
+		end;
+		LOADED: begin
+			//Simple!
+			Result := True;
+		end;
+	end;
+end;
 //------------------------------------------------------------------------------
 end.
 

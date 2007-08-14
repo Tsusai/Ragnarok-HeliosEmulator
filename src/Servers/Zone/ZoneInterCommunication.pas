@@ -12,6 +12,7 @@ unit ZoneInterCommunication;
 
 interface
 uses
+	Types,
 	ZoneServer,
 	CommClient,
 	IdContext,
@@ -35,6 +36,8 @@ const
 	procedure RedirectWhisperToZone(AClient : TIdContext;const ZoneID,FromID,CharID:LongWord;const FromName,Whisper: String);
 	procedure SendWhisperReplyToInter(AClient : TInterClient;const ZoneID, CharID:LongWord; Code : byte);
 	procedure ZoneSendGMCommandtoInter(AClient : TInterClient;const AID, CharID:LongWord;const Command : string);
+	procedure ZoneSendMapWarpRequestToInter(AClient : TInterClient; const CharID, ZoneID : LongWord; const MapName: String; const APoint:TPoint);
+	procedure ZoneSendMapWarpResultToInter(AClient : TInterClient; const CharID, ZoneID : LongWord; const MapName: String; const APoint:TPoint);
 implementation
 uses
 	BufferIO,
@@ -293,14 +296,71 @@ var
 	TotalLength : Integer;
 	OutBuffer   : TBuffer;
 begin
-		TotalLength := 19 + StrLen(PChar(Command));
-		WriteBufferWord(0, $2205, OutBuffer);
-		WriteBufferWord(2, TotalLength, OutBuffer);
-		WriteBufferLongWord(4, AID, OutBuffer);
-		WriteBufferLongWord(8, CharID, OutBuffer);
-		WriteBufferWord(12, Length(Command), OutBuffer);
-		WriteBufferString(14, Command, Length(Command), OutBuffer);
-		SendBuffer(AClient, OutBuffer, TotalLength);
+	TotalLength := 19 + StrLen(PChar(Command));
+	WriteBufferWord(0, $2205, OutBuffer);
+	WriteBufferWord(2, TotalLength, OutBuffer);
+	WriteBufferLongWord(4, AID, OutBuffer);
+	WriteBufferLongWord(8, CharID, OutBuffer);
+	WriteBufferWord(12, Length(Command), OutBuffer);
+	WriteBufferString(14, Command, Length(Command), OutBuffer);
+	SendBuffer(AClient, OutBuffer, TotalLength);
 end; (* Proc ZoneSendGMCommandtoInter
 *-----------------------------------------------------------------------------*)
+
+
+//------------------------------------------------------------------------------
+//ZoneSendMapWarpRequestToInter                                        PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//	Send a warp request
+//
+//  Changes -
+//	[2007/08/13] Aeomin - Creaed.
+//------------------------------------------------------------------------------
+procedure ZoneSendMapWarpRequestToInter(AClient : TInterClient; const CharID, ZoneID : LongWord; const MapName: String; const APoint:TPoint);
+var
+	OutBuffer   : TBuffer;
+	Size        : Byte;
+begin
+	Size := Length(MapName);
+	WriteBufferWord(0, $2213, OutBuffer);
+	WriteBufferWord(2, Size + 17, OutBuffer);
+	WriteBufferLongWord(4, CharID, OutBuffer);
+	WriteBufferLongWord(8, ZoneID, OutBuffer);
+	WriteBufferWord(12, APoint.X, OutBuffer);               //X, Y is before map name XD
+	WriteBufferWord(14, APoint.Y, OutBuffer);
+	WriteBufferByte(16, Size, OutBuffer);
+	WriteBufferString(17, MapName, Size, OutBuffer);
+	SendBuffer(AClient, OutBuffer, Size + 17);
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ZoneSendMapWarpResultToInter                                         PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//	Send warp request result back to inter then used to "convert" to command
+//	Packet structure is same as request -.-
+//
+//  Changes -
+//	[2007/08/13] Aeomin - Creaed.
+//------------------------------------------------------------------------------
+procedure ZoneSendMapWarpResultToInter(AClient : TInterClient; const CharID, ZoneID : LongWord; const MapName: String; const APoint:TPoint);
+var
+	OutBuffer   : TBuffer;
+	Size        : Byte;
+begin
+	Size := Length(MapName);
+	WriteBufferWord(0, $2214, OutBuffer);
+	WriteBufferWord(2, Size + 17, OutBuffer);
+	WriteBufferLongWord(4, CharID, OutBuffer);
+	WriteBufferLongWord(8, ZoneID, OutBuffer);
+	WriteBufferWord(12, APoint.X, OutBuffer);
+	WriteBufferWord(14, APoint.Y, OutBuffer);
+	WriteBufferByte(16, Size, OutBuffer);
+	WriteBufferString(17, MapName, Size, OutBuffer);
+	SendBuffer(AClient, OutBuffer, Size + 17);
+end;
+//------------------------------------------------------------------------------
 end.

@@ -963,6 +963,13 @@ begin
 			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2212)-2);
 			RecvWhisperReply(ABuffer);
 		end;
+	$2213:
+		begin
+			RecvBuffer(AClient,ABuffer[2],2);
+			Size := BufferReadWord(2,ABuffer);
+			RecvBuffer(AClient,ABuffer[4],Size-4);
+			RecvMapWarpRequest(ABuffer);
+		end;
 	end;
 end;{InterClientRead}
 //------------------------------------------------------------------------------

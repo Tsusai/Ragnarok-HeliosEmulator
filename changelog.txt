@@ -15,6 +15,20 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 324 -
+[2007/08/14] Aeomin - Completion of #Warp
+[2007/08/13] Aeomin - Apparently someone forgot assign ZServerInfo.Connection, took ages for me find out my code DIDNT WORK (because it's always nil) [InterServer.pas]
+[2007/08/13] Aeomin - Fixed Inter server does not broadcast GM command to all zones
+[2007/08/13] Aeomin - Added procedure RecvMapWarpRequest to receive warp request from Inter [ZoneRecv.pas]
+[2007/08/13] Aeomin - Added procedure InterSendMapWarpRequest to redirect request [InterSend.pas]
+[2007/08/13] Aeomin - Added procedure RecvZoneMapWarpRequest for receive [InterRecv.pas]
+[2007/08/13] Aeomin - Added procedure ZoneSendMapRandomRequestToInter [ZoneInterCommunication.pas]
+[2007/08/13] Aeomin - Added packet 0x2213 to get a walkable location
+[2007/08/13] Aeomin - Added function RandomCell to generate a location that is walkable [Map.pas]
+[2007/08/13] Aeomin - Moved code from RecvGMCommand to a new procedure InterParseGMCommand [InterRecv.pas, InterSend.pas]
+[2007/08/13] Aeomin - Renamed #Warp -> #WarpDev
+-
+
 - Rev 323 -
 [2007/08/13] RaX - Moved the check for ZoneStatus in TCharacter from before each
  SendSubStat Call to inside SendSubStat Itself. Removed a bunch of repeated conditions.

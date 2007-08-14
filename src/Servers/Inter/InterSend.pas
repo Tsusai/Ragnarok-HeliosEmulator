@@ -39,7 +39,10 @@ uses
 			GMID             : LongWord;
 		const
 			CharacterID      : LongWord;
-		CommandSeparator : TStringList;
+		const
+			ZoneID           : LongWord;
+		const
+			CommandSeparator : TStringList;
 		const
 			TargetAID: LongWord = 0;
 		const
@@ -54,6 +57,29 @@ uses
 			Error            : TStringList
 	);
 
+	procedure InterParseGMCommand(
+		const
+			AClient : TIdContext;
+		const
+			GMID             : LongWord;
+		const
+			CharaID          : LongWord;
+		const
+			AZoneID          : LongWord;
+		const
+			CommandString    : String
+	);
+
+	procedure InterSendMapWarpRequest(
+			AClient : TIdContext;
+		const
+			CharID, ZoneID : LongWord;
+		const
+			MapName: String;
+		const
+			X, Y:Word
+		);
+
 implementation
 
 
@@ -65,7 +91,8 @@ uses
 	PacketTypes,
 	GMCommands,
 	BufferIO,
-	Main
+	Main,
+	Character
 	{3rd Party}
 	//none
 	;
@@ -97,6 +124,9 @@ Procedure InterSendGMCommandToZone(
 			GMID             : LongWord;
 		const
 			CharacterID      : LongWord;
+		const
+			ZoneID           : LongWord;
+		const
 			CommandSeparator : TStringList;
 		const
 			TargetAID: LongWord = 0;
@@ -124,10 +154,11 @@ Var
 		WriteBufferWord(4, CommandID, ABuffer);
 		WriteBufferLongWord(6, GMID, ABuffer);
 		WriteBufferLongWord(10, CharacterID, ABuffer);
-		WriteBufferLongWord(14, TargetAID, ABuffer);
-		WriteBufferLongWord(18, TargetCID, ABuffer);
-		WriteBufferWord(22, CommandSeparator.Count - 1, ABuffer);
-		BufferIndex := 24;//Where we are currently in the buffer.
+		WriteBufferLongWord(14, ZoneID, ABuffer);
+		WriteBufferLongWord(18, TargetAID, ABuffer);
+		WriteBufferLongWord(22, TargetCID, ABuffer);
+		WriteBufferWord(26, CommandSeparator.Count - 1, ABuffer);
+		BufferIndex := 28;//Where we are currently in the buffer.
 
 		//We then write the Command's arguments to the buffer.
 		for Index := 1 to CommandSeparator.Count - 1 do
@@ -155,9 +186,10 @@ Begin
 	with MainProc.InterServer do
 	begin
 		//Get the name of the command, remove the first character which is #
-		CommandSeparator[0] := Commands.GetCommandName(CommandSeparator[0]);
 		//Get the command ID to which the Command name is associated.
-		CommandID := Commands.GetCommandID(CommandSeparator[0]);
+		CommandID := Commands.GetCommandID(
+						Commands.GetCommandName(CommandSeparator[0])
+						);
 
 		//Test if valid gm command.
 		if (CommandID >= 0) then
@@ -259,6 +291,218 @@ begin
 		WriteBufferWord(2, BufferIndex + 1, ABuffer);
 		SendBuffer(AClient, ABuffer, BufferIndex + 1);
 	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//InterParseGMCommand                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		parse then send command result to client (Moved from RecvGMCommand)
+//	AZoneID should be the zone where commad result send to
+//
+//	Changes -
+//		[2007/08/13] Aeomin - Create, Moved from RecvGMCommand.
+//------------------------------------------------------------------------------
+procedure InterParseGMCommand(
+		const
+			AClient : TIdContext;
+		const
+			GMID             : LongWord;
+		const
+			CharaID          : LongWord;
+		const
+			AZoneID          : LongWord;
+		const
+			CommandString    : String
+	);
+var
+	CommandID        : Word;
+	CommandSeparator : TStringList;
+	Index            : Integer;
+	ListClient       : TIdContext;
+	ACharacter       : TCharacter;
+	ZoneID           : Integer;
+	LoopIndex        : Integer;
+	ZoneLink         : TZoneServerLink;
+	Position         : Integer;
+	Error            : TStringList;
+begin
+	CommandID := MainProc.InterServer.Commands.GetCommandID(
+								MainProc.InterServer.Commands.GetCommandName(CommandString)
+								);
+
+	CommandSeparator := TStringList.Create;
+	Error := TStringList.Create;
+	try
+		//Let's flag it!
+		case MainProc.InterServer.Commands.GetCommandFlag(CommandID) of
+			GMFLAG_NORMAL: begin
+				CommandSeparator.Delimiter := ',';
+				CommandSeparator.DelimitedText := CommandString;
+			end;
+			//DelimitedText will break parameter even when no need to, so using this way
+			GMFLAG_NOSPLIT: begin
+				Position := Pos(' ', CommandString);
+				if Position > 0 then
+				begin
+					CommandSeparator.Add(Copy(CommandString, 1, Position - 1));
+					CommandSeparator.Add(Copy(CommandString, Position + 1, StrLen(PChar(CommandString)) - Cardinal(Position)));
+				end else
+				begin
+					CommandSeparator.Add(CommandString);
+				end;
+			end;
+		end;
+
+		//Get command type
+		case MainProc.InterServer.Commands.GetCommandType(CommandID) of
+			//Send to ALL zones!
+			TYPE_ALLPLAYERS,
+			TYPE_BROADCAST: begin
+				//after getting the command information, we get ready to send it to the
+				//other zones.
+				for Index := (MainProc.InterServer.fClientList.Count - 1) downto 0 do
+				begin
+					if Assigned(MainProc.InterServer.ZoneServerLink[Index]) then
+					begin
+						ListClient := MainProc.InterServer.ClientList[Index];
+						InterSendGMCommandToZone(ListClient, GMID, CharaID, AZoneID, CommandSeparator);
+					end;
+				end;
+			end;
+
+			//Send back to orignal Zone
+			TYPE_RETURNBACK: begin
+				InterSendGMCommandToZone(AClient, GMID, CharaID, AZoneID, CommandSeparator);
+			end;
+
+			//We are controling other player
+			TYPE_TARGETCHAR: begin
+				with TZoneServerLink(AClient.Data).DatabaseLink do
+				begin
+					//At least 2 parameters required
+					if CommandSeparator.Count >= 2 then
+					begin
+						GameData.Connect;
+						ACharacter := GameData.LoadChara(CommandSeparator[1]);
+						GameData.Disconnect;
+						if ACharacter <> nil then
+						begin
+							StaticData.Connect;
+							ZoneID := StaticData.GetMapZoneID(ACharacter.Map);
+							Index := -1;
+							for LoopIndex := (MainProc.InterServer.fClientList.Count - 1) downto 0 do
+							begin
+								ZoneLink := MainProc.InterServer.ZoneServerLink[LoopIndex];
+								if (ZoneLink <> NIL) AND
+								(ZoneLink.Info.ZoneID = Cardinal(ZoneID)) then
+								begin
+									Index := LoopIndex;
+									Break;
+								end;
+							end;
+							StaticData.Disconnect;
+							if Index > -1 then
+							begin
+								//Same thing, but extra 2 parameter to store target character
+								InterSendGMCommandToZone(MainProc.InterServer.ClientList[Index], GMID, CharaID, AZoneID, CommandSeparator, ACharacter.ID, ACharacter.CID);
+							end;
+						end else
+						begin
+							Error.Add('Character ''' + CommandSeparator[1] + ''' not found!');
+							InterSendGMCommandReplyToZone(AClient, CharaID, Error);
+						end;
+					end else
+					begin
+						Error.Add('Syntax Help:');
+						Error.Add(MainProc.InterServer.Commands.GetSyntax(CommandID));
+						InterSendGMCommandReplyToZone(AClient, CharaID, Error);
+					end;
+				end;
+			end;
+
+			//Map based control, ex. Kill all players in prontera
+			TYPE_TARGETMAP: begin
+				with TZoneServerLink(AClient.Data).DatabaseLink do
+				begin
+					if CommandSeparator.Count >= 2 then
+					begin
+						StaticData.Connect;
+						ZoneID := StaticData.GetMapZoneID(CommandSeparator[1]);
+						if ZoneID > -1 then
+						begin
+							Index := -1;
+							for LoopIndex := 0 to (MainProc.InterServer.fClientList.Count - 1) do
+							begin
+								ZoneLink := MainProc.InterServer.ZoneServerLink[LoopIndex];
+								if (ZoneLink <> NIL) AND
+								(ZoneLink.Info.ZoneID = Cardinal(ZoneID)) then
+								begin
+									Index := LoopIndex;
+									Break;
+								end;
+							end;
+							StaticData.Disconnect;
+							if Index > -1 then
+							begin
+								InterSendGMCommandToZone(MainProc.InterServer.ClientList[Index], GMID, CharaID, AZoneID, CommandSeparator);
+							end;
+						end else
+						begin
+							Error.Add('Map name ''' + CommandSeparator[1] + ''' not found!');
+							InterSendGMCommandReplyToZone(AClient, CharaID, Error);
+						end;
+					end else
+					begin
+						Error.Add('Syntax Help:');
+						Error.Add(MainProc.InterServer.Commands.GetSyntax(CommandID));
+						InterSendGMCommandReplyToZone(AClient, CharaID, Error);
+					end;
+				end;
+			end;
+		end;
+	finally
+		CommandSeparator.Free;
+		Error.Free;
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//InterSendMapWarpRequest                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Redirect request to target zone, ZoneID here is the zone of orignal one
+//
+//	Changes -
+//		[2007/08/13] Aeomin - Create
+//------------------------------------------------------------------------------
+procedure InterSendMapWarpRequest(
+			AClient : TIdContext;
+		const
+			CharID, ZoneID : LongWord;
+		const
+			MapName: String;
+		const
+			X, Y:Word
+		);
+var
+	OutBuffer   : TBuffer;
+	Size        : Byte;
+begin
+	Size := Length(MapName);
+	WriteBufferWord(0, $2213, OutBuffer);
+	WriteBufferWord(2, Size + 17, OutBuffer);
+	WriteBufferLongWord(4, CharID, OutBuffer);
+	WriteBufferLongWord(8, ZoneID, OutBuffer);
+	WriteBufferWord(12, X, OutBuffer);
+	WriteBufferWord(14, Y, OutBuffer);
+	WriteBufferByte(16, Size, OutBuffer);
+	WriteBufferString(17, MapName, Size, OutBuffer);
+	SendBuffer(AClient, OutBuffer, Size + 17);
 end;
 //------------------------------------------------------------------------------
 end.

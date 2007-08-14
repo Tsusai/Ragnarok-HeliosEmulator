@@ -175,6 +175,9 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+	procedure RecvMapWarpRequest(
+			InBuffer : TBuffer
+	);
 implementation
 
 
@@ -865,6 +868,7 @@ var
 	CommandID	: Word;
 	GMID		: LongWord;
 	CharacterID	: LongWord;
+	ZoneID		: LongWord;
 	TargetCID	: LongWord;
 	ArgCount	: Word;
 	Arguments	: array of String;
@@ -881,10 +885,11 @@ begin
 	CommandID 	:= BufferReadWord(4,InBuffer);
 	GMID		:= BufferReadLongWord(6, InBuffer);
 	CharacterID	:= BufferReadLongWord(10, InBuffer);
-	TargetCID	:= BufferReadLongWord(18, InBuffer);
-	ArgCount	:= BufferReadWord(22, InBuffer);
+	ZoneID		:= BufferReadLongWord(14, InBuffer);
+	TargetCID	:= BufferReadLongWord(22, InBuffer);
+	ArgCount	:= BufferReadWord(26, InBuffer);
 
-	BufferIndex := 24;
+	BufferIndex := 28;
 
 	//We need extra for store syntax help message
 	SetLength(Arguments, ArgCount + 1);
@@ -977,7 +982,7 @@ begin
 
 	if Error.Count > 0 then
 	begin
-		ZoneSendGMCommandResultToInter(GMID, CharacterID, Error);
+		ZoneSendGMCommandResultToInter(GMID, CharacterID, ZoneID, Error);
 	end;
 	
 	Error.Free;
@@ -1105,6 +1110,7 @@ var
 	BufferIndex : Integer;
 	ErrLen      : Word;
 	Error       : TStringList;
+	LoopTrials  : Byte;
 begin
 	CharacterID := BufferReadLongWord(4, InBuffer);
 	ErrCount   := BufferReadWord(8, InBuffer);
@@ -1121,13 +1127,22 @@ begin
 			inc(BufferIndex, ErrLen);
 		end;
 
-		Index := MainProc.ZoneServer.CharacterList.IndexOf(CharacterID);
-		if Index > -1 then
+		LoopTrials := 0;
+		While LoopTrials < 10 do
 		begin
-			ACharacter	:= MainProc.ZoneServer.CharacterList[Index];
-			for Index := 0 to Error.Count - 1 do
+			Index := MainProc.ZoneServer.CharacterList.IndexOf(CharacterID);
+			if Index > -1 then
 			begin
-				ZoneSendCharacterMessage(ACharacter, Error[Index]);
+				ACharacter	:= MainProc.ZoneServer.CharacterList[Index];
+				for Index := 0 to Error.Count - 1 do
+				begin
+					ZoneSendCharacterMessage(ACharacter, Error[Index]);
+				end;
+				Break;
+			end else
+			begin
+				Inc(LoopTrials);
+				Sleep(1000);
 			end;
 		end;
 		Error.Free;
@@ -1175,7 +1190,7 @@ begin
 	end;
 	ACharacter.Map := MapName;
 	ACharacter.Position := Point(X,Y);
-
+	
 	WriteBufferWord(0, $0092, OutBuffer);
 	WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
 	WriteBufferWord(18, X, OutBuffer);
@@ -1252,5 +1267,54 @@ begin
 		ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.ID, AChara.CID, '#Warp "' + MapName +'",' + IntToStr(X) + ',' + IntToStr(Y));
 	end;
 end;{GMMapMove}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvMapWarpRequest                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Receive Map warp request from Inter server.
+//
+//  Changes -
+//	[2007/08/13] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvMapWarpRequest(
+			InBuffer : TBuffer
+	);
+var
+	CharID        : LongWord;
+	ZoneID        : LongWord;
+	MapNameLen    : Byte;
+	MapName       : String;
+	Map           : TMap;
+	Index         : Integer;
+	APoint        : TPoint;
+begin
+	CharID     := BufferReadLongWord(4, InBuffer);
+	ZoneID     := BufferReadLongWord(8, InBuffer);
+	APoint.X   := BufferReadWord(12, InBuffer);
+	APoint.Y   := BufferReadWord(14, InBuffer);
+	MapNameLen := BufferReadByte(16, InBuffer);
+	MapName    := BufferReadString(17, MapNameLen, InBuffer);
+
+	Index := MainProc.ZoneServer.MapList.IndexOf(MapName);
+	if Index > -1 then
+	begin
+		Map := MainProc.ZoneServer.MapList.Items[Index];
+
+		if Map.SafeLoad then
+		begin
+
+			if (APoint.X > Map.Size.X -1) or (APoint.Y > Map.Size.Y -1)
+			or (APoint.X < 0) or (APoint.Y < 0) or Map.IsBlocked(APoint) then
+			begin
+				APoint := Map.RandomCell;
+			end;
+
+			ZoneSendMapWarpResultToInter(MainProc.ZoneServer.ToInterTCPClient, CharID, ZoneID, MapName, APoint);
+		end;
+	end;
+end;
 //------------------------------------------------------------------------------
 end.

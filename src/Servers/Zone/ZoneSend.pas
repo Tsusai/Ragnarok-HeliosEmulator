@@ -49,6 +49,7 @@ uses
 	procedure ZoneSendGMCommandResultToInter(
 		const AccountID : LongWord;
 		const CharacterID : LongWord;
+		const ZoneID : LongWord;
 		const Error : TStringList
 	);
 
@@ -353,6 +354,7 @@ end;
 	procedure ZoneSendGMCommandResultToInter(
 		const AccountID : LongWord;
 		const CharacterID : LongWord;
+		const ZoneID : LongWord;
 		const Error : TStringList
 	);
 	var
@@ -364,8 +366,9 @@ end;
 		WriteBufferWord(0, $2207, ReplyBuffer);
 		WriteBufferLongWord(4, AccountID, ReplyBuffer);
 		WriteBufferLongWord(8, CharacterID, ReplyBuffer);
-		WriteBufferWord(12, Error.Count, ReplyBuffer);
-		BufferIndex := 14;
+		WriteBufferLongWord(12, ZoneID, ReplyBuffer);
+		WriteBufferWord(16, Error.Count, ReplyBuffer);
+		BufferIndex := 18;
 
 		for Index := 0 to Error.Count - 1 do
 		begin
