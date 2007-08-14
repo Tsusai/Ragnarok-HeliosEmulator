@@ -147,6 +147,7 @@ begin
 	AddCommand('ZoneStatus',  GMZoneStatus,           1,  TYPE_BROADCAST,  GMFLAG_NORMAL,  '');
 	AddCommand('Warp',        GMWarp,                 99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '#Warp <Map Name>,<X>,<Y>');
 	AddCommand('WarpDev',     GMWarpDev,              99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '#WarpDev <Map Name>,<X>,<Y>');
+	AddCommand('Jump',        GMJump,                 99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '#Jump [X],[Y]');
 	AddCommand('GiveBaseExp', GMGiveBaseExperience,   99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#GiveBaseExp <Player Name>,<Amount>');
 	AddCommand('GiveJobExp',  GMGiveJobExperience,    99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#GiveJobExp <Player Name>,<Amount>');
 	AddCommand('BaseLevelUp', GMBaseLevelUp,          99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#BaseLevelUp <Player Name>,<Amount>');

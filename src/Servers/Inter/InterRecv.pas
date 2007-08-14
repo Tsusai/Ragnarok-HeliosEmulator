@@ -276,23 +276,19 @@ Begin
 
 			if (Index > -1) then
 			begin
-				repeat
-					if Assigned(ZoneServerLink[Index]) AND
-						(ZoneServerLink[Index].Info.ZoneID = ZoneID) then
-					begin
-						RedirectWhisperToZone(
-							ClientList[Index],
-							TZoneServerLink(AClient.Data).Info.ZoneID,
-							FromID,
-							Chara.CID,
-							FromName,
-							Whisper
-					);
-						SentWhisper := True;
-					end;
-
-					Dec(Index);
-				until (SentWhisper) OR (Index = -1);
+				if Assigned(ZoneServerLink[Index]) AND
+					(ZoneServerLink[Index].Info.ZoneID = ZoneID) then
+				begin
+					RedirectWhisperToZone(
+						ClientList[Index],
+						TZoneServerLink(AClient.Data).Info.ZoneID,
+						FromID,
+						Chara.CID,
+						FromName,
+						Whisper
+				);
+					SentWhisper := True;
+				end;
 			end;
 
 

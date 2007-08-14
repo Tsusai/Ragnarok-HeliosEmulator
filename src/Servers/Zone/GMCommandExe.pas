@@ -20,6 +20,7 @@ uses
 	procedure GMZoneStatus(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMWarp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMWarpDev(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMJump(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMGiveBaseExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMGiveJobExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBaseLevelUp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
@@ -193,6 +194,54 @@ begin
 		Error.Add(Arguments[Length(Arguments)-1]);
 	end;
 end;{GMWarpDev}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMJump                                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		jump to random or specific cell
+//
+//	Changes-
+//		[2007/08/14] Aeomin - Create.
+//------------------------------------------------------------------------------
+procedure GMJump(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+var
+	APoint : TPoint;
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		APoint.X := EnsureRange(StrToIntDef(Arguments[0], 0), 0, High(Word));
+		APoint.Y := EnsureRange(StrToIntDef(Arguments[1], 0), 0, High(Word));
+	end else
+	begin
+		//Just try it, if works then you are on LUCK!
+		APoint.X := Random(High(Word));
+		APoint.Y := Random(High(Word));
+	end;
+
+	//Lets see.. XD
+	if (APoint.X > TargetChar.MapInfo.Size.X -1) or (APoint.Y > TargetChar.MapInfo.Size.Y -1)
+	or (APoint.X < 0) or (APoint.Y < 0) or TargetChar.MapInfo.IsBlocked(APoint) then
+	begin
+		APoint := TargetChar.MapInfo.RandomCell;
+	end;
+
+	if not ZoneSendWarp(
+			TargetChar,
+			TargetChar.Map,
+			APoint.X,
+			APoint.Y
+		)
+	then begin
+		//I'm not sure what just happened..
+		Error.Add('Failed to Jump');
+	end else
+	begin
+		Error.Add('Jumped to ' + IntToStr(APoint.X) + ',' + IntToStr(APoint.Y));
+	end;
+end;
 //------------------------------------------------------------------------------
 
 

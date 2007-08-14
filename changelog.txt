@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 325 -
+[2007/08/14] Aeomin - Delete few lines of code used for Whisper (really.. i have no idea why i put those before)
+[2007/08/14] Aeomin - Add #Jump command
+-
+
 - Rev 324 -
 [2007/08/14] Aeomin - Completion of #Warp
 [2007/08/13] Aeomin - Apparently someone forgot assign ZServerInfo.Connection, took ages for me find out my code DIDNT WORK (because it's always nil) [InterServer.pas]
