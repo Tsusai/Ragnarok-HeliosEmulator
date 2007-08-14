@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 328 -
+[2007/08/14] Aeomin - Fixed wrong message show when type #warp
+-
+
 - Rev 327 -
 [2007/08/14] RaX - Added SkillPoints Database.
 [2007/08/14] RaX - implemented skill points database so the amount of skill points given 

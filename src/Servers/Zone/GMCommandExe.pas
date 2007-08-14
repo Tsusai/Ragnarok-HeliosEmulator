@@ -83,7 +83,7 @@ var
 	Map            : TMap;
 	APoint         : TPoint;
 begin
-	if (Length(Arguments) >= 1) then
+	if (Length(Arguments) >= 2) then
 	begin
 		TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.StaticData.Connect;
 		MapZoneID := TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(Arguments[0]);
