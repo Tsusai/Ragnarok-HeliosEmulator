@@ -1919,11 +1919,32 @@ end;{CalcMaxWeight}
 //------------------------------------------------------------------------------
 procedure TCharacter.BaseLevelUp(Levels  : Integer);
 var
-  TempEXP   : LongWord;
-  TempLevel : Word;
-  Index     : Integer;
-  Index2    : Integer;
-  TempPoints: Word;
+  TempEXP               : LongWord;//Temporary BaseEXP.
+  TempLevel             : Word;//Temporary BaseLv
+  TempStatusPts         : Word;//Temporary StatusPts
+  ParamBaseStatPoints   : Word;//How many stat points a character's stats are worth.
+  LastLevelStatusPoints : Integer;//The total status points for the last level in
+                                  //the database.
+
+  //Gets the amount of stat points all a character's stats are worth together.
+  function GetParamBaseWorthInStatPoints : Word;
+  var
+    StatIndex : Integer;
+    StatPoints : Integer;
+  begin
+      Result := 0;
+      For StatIndex := STR to LUK do
+      begin
+        For StatPoints := 2 to ParamBase[StatIndex] do
+        begin
+          //Here, we're figuring out how many points each stat is worth based on
+          //how high the stat is. For every 10 points we go up each stat is worth
+          //one extra point.
+          Result := 2 + (StatPoints DIV 10);
+        end;
+      end;
+  end;
+
 begin
   TempLevel := Max(Min(fBaseLv+Levels, MainProc.ZoneServer.Options.MaxBaseLevel), 1);
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
@@ -1937,36 +1958,37 @@ begin
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 	end;
 
+  //If there is EXP to be gotten for the next level and we aren't leveling to the
+  //same level...
   if (TempEXP > 0) AND(TempLevel <> BaseLv) then
   begin
-    //check if we're goijng up or down in level
+    //Get stat points from database
+    TempStatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(TempLevel);
+    LastLevelStatusPoints := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(fBaseLv);
+
+    //Get stats' worth in points.
+    ParamBaseStatPoints := GetParamBaseWorthInStatPoints;
+
+    //remove stats from statpoints to get the amount of statuspts free.
+    LastLevelStatusPoints := StatusPts + ParamBaseStatPoints - LastLevelStatusPoints;
+
+    //check if we're going up or down in level
     if fBaseLv < TempLevel then
     begin
-      //Get stat points from database
-      fStatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(TempLevel);
-      //loop through all stats and calculate how many stat points they're worth...
-      //remove stats from statpoints to get the amount of statuspts free.
-      For Index := STR to LUK do
-      begin
-        For Index2 := 2 to ParamBase[Index] do
-        begin
-          TempPoints := 2 + (Index2 DIV 10);
-          fStatusPts := fStatusPts - TempPoints;
-        end;
-      end;
-      //Fire off the status pts packet.
-      StatusPts := StatusPts;
+      //raise stat points if we leveled.
+      StatusPts := TempStatusPts - ParamBaseStatPoints + LastLevelStatusPoints;
     end else
     begin
+      //reset stats if we deleveled.
       ParamBase[STR] := 1;
       ParamBase[AGI] := 1;
       ParamBase[DEX] := 1;
       ParamBase[VIT] := 1;
       ParamBase[INT] := 1;
       ParamBase[LUK] := 1;
-      StatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(TempLevel);
+      StatusPts := TempStatusPts+LastLevelStatusPoints;
     end;
-
+    //assign our new level.
     fBaseLv := TempLevel;
     //Run stat calculations.
     BaseEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
@@ -1975,7 +1997,7 @@ begin
     CalcMaxSP;
     CalcSpeed;
 
-    //Set hp and sp to full if enabled.
+    //Set hp and sp to full if enabled in the ini.
     if MainProc.ZoneServer.Options.FullHPOnLevelUp then
     begin
       HP := MAXHP;
@@ -1985,6 +2007,7 @@ begin
       SP := MAXSP;
     end;
 
+    //Send Base Level packet
     if ZoneStatus = IsOnline then
     begin
       SendSubStat(0, $000b, BaseLv);
@@ -2023,7 +2046,17 @@ begin
   begin
     JobEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.JobXPMultiplier;
 
-    SkillPts := SkillPts+(TempLevel-fJobLv);
+    if TempLevel > fJobLv then
+    begin
+      //if we gain a level set skill points.
+      SkillPts := SkillPts+(TempLevel-fJobLv);
+    end else
+    begin
+      //If we delevel...
+      //TODO reset skills here
+      SkillPts := fJobLv;//temporary until a database is made.
+    end;
+
     fJobLv := TempLevel;
 
     if ZoneStatus = IsOnline then
