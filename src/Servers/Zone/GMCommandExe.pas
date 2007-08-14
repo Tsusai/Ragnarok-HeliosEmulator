@@ -25,6 +25,8 @@ uses
 	procedure GMGiveJobExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBaseLevelUp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMJobLevelUp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMAddStatusPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMAddSkillPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCast(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastLocal(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
@@ -386,6 +388,84 @@ begin
 		Error.Add(Arguments[Length(Arguments)-1]);
 	end;
 end;{GMJobLevelUp}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMAddStatusPoints                                                    PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Give target player status points
+//
+//	Changes-
+//		[2007/8/14] Aeomin - Create.
+//------------------------------------------------------------------------------
+procedure GMAddStatusPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+var
+	ToChange : SmallInt;
+	OldPoint : SmallInt;
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		ToChange := EnsureRange(StrToIntDef(Arguments[1], 0), -32767, 32767);
+		if ToChange = 0 then
+		begin
+			Error.Add('Amount of points can only between -32767 to 32767 (Can not be 0)');
+		end else
+		begin
+			OldPoint := TargetChar.StatusPts;
+
+			ToChange := Min(Max(TargetChar.StatusPts + ToChange, 0), 32767);
+
+			TargetChar.StatusPts := ToChange;
+
+			Error.Add(IntToStr(TargetChar.StatusPts - OldPoint) + ' status points given to ' + TargetChar.Name);
+		end;
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMAddSkillPoints                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Give target player skill points
+//
+//	Changes-
+//		[2007/8/14] Aeomin - Create.
+//------------------------------------------------------------------------------
+procedure GMAddSkillPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+var
+	ToChange : SmallInt;
+	OldPoint : SmallInt;
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		ToChange := EnsureRange(StrToIntDef(Arguments[1], 0), -32767, 32767);
+		if ToChange = 0 then
+		begin
+			Error.Add('Amount of points can only between -32767 to 32767 (Can not be 0)');
+		end else
+		begin
+			OldPoint := TargetChar.SkillPts;
+
+			ToChange := Min(Max(TargetChar.SkillPts + ToChange, 0), 32767);
+
+			TargetChar.SkillPts := ToChange;
+
+			Error.Add(IntToStr(TargetChar.SkillPts - OldPoint) + ' skill points given to ' + TargetChar.Name);
+		end;
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;
 //------------------------------------------------------------------------------
 
 
