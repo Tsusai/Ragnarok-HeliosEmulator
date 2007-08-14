@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 323 -
+[2007/08/13] RaX - Moved the check for ZoneStatus in TCharacter from before each
+ SendSubStat Call to inside SendSubStat Itself. Removed a bunch of repeated conditions.
+-
+
 - Rev 322 -
 [2007/08/13] RaX - Updated stat points code to remember extra stat points given by outside sources.
 -
