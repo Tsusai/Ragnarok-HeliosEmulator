@@ -131,6 +131,12 @@ public
 			Level : Word
 		) : LongWord; virtual; abstract;
 
+  Function GetSkillPoints(
+		const
+      JobName : String;
+			Level : Word
+		) : LongWord; virtual; abstract;
+
 	function  Connect : Boolean; virtual; abstract;
 
 	procedure Disconnect; virtual; abstract;

@@ -15,7 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
-- Rev 325 -
+- Rev 327 -
+[2007/08/14] RaX - Added SkillPoints Database.
+[2007/08/14] RaX - implemented skill points database so the amount of skill points given 
+ on job level could be changed easily(hey, stat points did it, why not skill? =P)
+-
+
+- Rev 326 -
 [2007/08/14] Aeomin - Added GM command #GiveStatusPoints & #GiveSkillPoints (Request by Rax)
 -
 

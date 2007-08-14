@@ -119,6 +119,12 @@ public
 			Level : Word
 		) : LongWord;override;
 
+  Function GetSkillPoints(
+		const
+      JobName : String;
+			Level : Word
+		) : LongWord; override;
+
 	function  Connect : Boolean; override;
 
 	procedure Disconnect; override;
@@ -601,5 +607,35 @@ begin
 end;//GetStatPoints
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GetSkillPoints         			                                         FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Queries and returns a character's skill points for a level.
+//
+//	Changes -
+//		August 14th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function TSQLiteStaticDatabase.GetSkillPoints(
+		const
+      JobName : String;
+			Level : Word
+		) : LongWord;
+var
+	QueryResult : TSQLiteTable;
+begin
+	QueryResult :=
+		SendQuery(
+		Format('SELECT %s FROM skillpoints WHERE level = %d',
+			[JobName, Level]));
+	if (QueryResult.RowCount = 1) then
+	begin
+			Result              := StrToIntDef(QueryResult.Fields[0], 0);
+	end else Result := 0;
+	if Assigned(QueryResult) then QueryResult.Free;
+end;//GetSkillPoints
+//------------------------------------------------------------------------------
 {END SQLiteStaticDatabase}
 end.

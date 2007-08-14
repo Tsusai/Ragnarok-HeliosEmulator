@@ -1991,6 +1991,8 @@ procedure TCharacter.JobLevelUp(Levels  : Integer);
 var
   TempEXP : LongWord;
   TempLevel : Word;
+  //OldSkillPts : Word;
+  TempSkillPts: Word;
 begin
   //Make sure fJobLv is in range.
   TempLevel := Max(Min(fJobLv+Levels, MainProc.ZoneServer.Options.MaxJobLevel), 1);
@@ -2005,16 +2007,21 @@ begin
   if (TempEXP > 0) AND (TempLevel <> JobLv) then
   begin
     JobEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.JobXPMultiplier;
+    TempSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.StaticData.GetSkillPoints(JobName,TempLevel);
+    //Will be used once skills are implemented to "remember" added skill points.
+    //OldSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.StaticData.GetSkillPoints(JobName,JobLv);
 
+    //Will be changed once skills are implemented, extra skill points will be
+    //'remembered' between levels.
     if TempLevel > fJobLv then
     begin
       //if we gain a level set skill points.
-      SkillPts := SkillPts+(TempLevel-fJobLv);
+      SkillPts := TempSkillPts;
     end else
     begin
       //If we delevel...
       //TODO reset skills here
-      SkillPts := fJobLv;//temporary until a database is made.
+      SkillPts := TempSkillPts;
     end;
 
     fJobLv := TempLevel;
