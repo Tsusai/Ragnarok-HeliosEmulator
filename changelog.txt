@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 329 -
+[2007/08/14] Aeomin - Hopefully fixed warp caused character "stuck".
+-
+
 - Rev 328 -
 [2007/08/14] Aeomin - Fixed wrong message show when type #warp
 -

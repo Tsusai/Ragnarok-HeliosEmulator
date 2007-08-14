@@ -433,9 +433,9 @@ Begin
 		TCharacter(Self).CharaState := charaWalking;
 	end;
 
-	MapInfo.Cell[Position.X, Position.Y].Beings.Delete(
-		MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(Self)
-	);
+	Index := MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(Self);
+	if Index > -1 then
+		MapInfo.Cell[Position.X, Position.Y].Beings.Delete(Index);
 
 	OldPt     := Position;
 	Position	:= Path[PathIndex];

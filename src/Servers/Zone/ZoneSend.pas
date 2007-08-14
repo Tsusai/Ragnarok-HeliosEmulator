@@ -106,7 +106,8 @@ uses
 	GameConstants,
 	Main,
 	TCPServerRoutines,
-	WinLinux
+	WinLinux,
+	MovementEvent
 	{3rd Party}
 	//none
 	;
@@ -728,6 +729,7 @@ var
 	MapNameSize : Word;
 	ClientIPSize : Word;
 	MapZoneID			: SmallInt;
+	Index  : Integer;
 
 procedure RemoveFromList;
 begin
@@ -756,14 +758,21 @@ begin
 	begin
 		if Cardinal(MapZoneID) = MainProc.ZoneServer.Options.ID then
 		begin
-			  RemoveFromList;
-			  ACharacter.Map := MapName;
-			  ACharacter.Position := Point(X,Y);
-			  WriteBufferWord(0, $0091, OutBuffer);
-			  WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
-			  WriteBufferWord(18, X, OutBuffer);
-			  WriteBufferWord(20, Y, OutBuffer);
-			  SendBuffer(ACharacter.ClientInfo, OutBuffer, 22);
+			for Index := ACharacter.EventList.Count -1 downto 0 do
+			begin
+				if ACharacter.EventList.Items[Index] is TMovementEvent then
+				begin
+					ACharacter.EventList.Delete(Index);
+				end;
+			end;
+			RemoveFromList;
+			ACharacter.Map := MapName;
+			ACharacter.Position := Point(X,Y);
+			WriteBufferWord(0, $0091, OutBuffer);
+			WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
+			WriteBufferWord(18, X, OutBuffer);
+			WriteBufferWord(20, Y, OutBuffer);
+			SendBuffer(ACharacter.ClientInfo, OutBuffer, 22);
 		end else
 		begin
 			MapNameSize := Length(MapName);
