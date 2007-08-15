@@ -28,6 +28,7 @@ uses
 	procedure GMAddStatusPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMAddSkillPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMGiveZeny(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMGiveStat(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCast(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastLocal(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
@@ -47,7 +48,7 @@ uses
 	Map,
 	MapTypes,
 	ZoneInterCommunication,
-  GameConstants,
+	GameConstants,
 	{Third Party}
 	IdContext
 	;
@@ -409,10 +410,10 @@ var
 begin
 	if (Length(Arguments) >= 2) then
 	begin
-		ToChange := EnsureRange(StrToIntDef(Arguments[1], 0), -32767, 32767);
+		ToChange := EnsureRange(StrToIntDef(Arguments[1], 0), -CHAR_STATPOINT_MAX, CHAR_STATPOINT_MAX);
 		if ToChange = 0 then
 		begin
-			Error.Add('Amount of points must be between -32767 and 32767 (Can not be 0)')
+			Error.Add('Amount of points must be between -' + IntToStr(CHAR_STATPOINT_MAX) + ' and ' + IntToStr(CHAR_STATPOINT_MAX) + ' (Can not be 0)');
 		end else
 		begin
 			OldPoint := TargetChar.StatusPts;
@@ -448,10 +449,10 @@ var
 begin
 	if (Length(Arguments) >= 2) then
 	begin
-		ToChange := EnsureRange(StrToIntDef(Arguments[1], 0), -32767, 32767);
+		ToChange := EnsureRange(StrToIntDef(Arguments[1], 0), -CHAR_SKILLPOINT_MAX, CHAR_SKILLPOINT_MAX);
 		if ToChange = 0 then
 		begin
-			Error.Add('Amount of points must be between -32767 and 32767 (Can not be 0)')
+			Error.Add('Amount of points can only between -' + IntToStr(CHAR_SKILLPOINT_MAX) + ' to ' + IntToStr(CHAR_SKILLPOINT_MAX) + ' (Can not be 0)');
 		end else
 		begin
 			OldPoint := TargetChar.SkillPts;
@@ -503,6 +504,94 @@ begin
 			TargetChar.Zeny := ToChange;
 
 			Error.Add(IntToStr(TargetChar.Zeny - OldAmount) + ' zeny given to ' + TargetChar.Name);
+		end;
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMGiveStat                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Give target player stat, Type can be str/int/dex/ bla bla.. or number
+//
+//	Changes-
+//		[2007/8/14] Aeomin - Create.
+//------------------------------------------------------------------------------
+procedure GMGiveStat(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+var
+	ToChange  : Integer;
+	OldAmount : Integer;
+	State     : String;
+	SType     : Byte;
+	OK        : Boolean;
+begin
+	if (Length(Arguments) >= 4) then
+	begin
+		ToChange := EnsureRange(StrToIntDef(Arguments[2], 0), -CHAR_STAT_MAX, CHAR_STAT_MAX);
+		if ToChange = 0 then
+		begin
+			Error.Add('Amount of stats can only between -' + IntToStr(CHAR_STAT_MAX) + ' to ' + IntToStr(CHAR_STAT_MAX) + ' (Can not be 0) at a time');
+		end else
+		begin
+			State := UpperCase(Arguments[1]);
+
+			OK := False;
+			SType := 0;
+			if (State = 'STR') or (State = '0') then
+			begin
+				State := 'STR';
+				SType := 0;
+				OK    := True;
+			end else
+			if (State = 'AGI') or (State = '1') then
+			begin
+				State := 'AGI';
+				SType := 1;
+				OK    := True;
+			end else
+			if (State = 'VIT') or (State = '2') then
+			begin
+				State := 'VIT';
+				SType := 2;
+				OK    := True;
+			end else
+			if (State = 'INT') or (State = '3') then
+			begin
+				State := 'INT';
+				SType := 3;
+				OK    := True;
+			end else
+			if (State = 'DEX') or (State = '4') then
+			begin
+				State := 'DEX';
+				SType := 4;
+				OK    := True;
+			end else
+			if (State = 'LUK') or (State = '5') then
+			begin
+				State := 'LUK';
+				SType := 5;
+				OK    := True;
+			end else
+			begin
+				Error.Add(State + ' is an invalide type');
+			end;
+			if OK then
+			begin
+				OldAmount := TargetChar.ParamBase[SType];
+				if High(Integer) - OldAmount < ToChange then
+					ToChange := High(Integer)
+				else
+					ToChange := EnsureRange(TargetChar.ParamBase[SType] + ToChange, 1, CHAR_STAT_MAX);
+				TargetChar.ParamBase[SType] := ToChange;
+				Error.Add(IntToStr(TargetChar.ParamBase[SType] - OldAmount) + ' ' + State + ' stats given to ' + TargetChar.Name);
+			end;
 		end;
 	end else
 	begin

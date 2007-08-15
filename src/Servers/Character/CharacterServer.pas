@@ -313,7 +313,7 @@ begin
 		WriteBufferWord(Offset + 54, Hair,ReplyBuffer);
 		WriteBufferWord(Offset + 56, RightHand,ReplyBuffer);
 		WriteBufferWord(Offset + 58, BaseLV,ReplyBuffer);
-		WriteBufferWord(Offset + 60, SkillPts,ReplyBuffer);
+		WriteBufferWord(Offset + 60, EnsureRange(SkillPts, 0, High(Word)),ReplyBuffer);
 		WriteBufferWord(Offset + 62, HeadBottom,ReplyBuffer);
 		WriteBufferWord(Offset + 64, LeftHand,ReplyBuffer);
 		WriteBufferWord(Offset + 66, HeadTop,ReplyBuffer);
