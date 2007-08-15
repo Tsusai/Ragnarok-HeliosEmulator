@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 336 -
+[2007/08/14] Aeomin - Fixed char server crash occur when theres more than 1 characters [sqlite]
+-
+
 - Rev 335 -
 [2007/08/14] Aeomin - Add EnsureRange so that char server crash with big amount of skill points
 [2007/08/14] Aeomin - Modified limit of #AddStatusPoints and #AddSkillPoints to 1 million

@@ -377,7 +377,7 @@ begin
 	begin
 		for Index := 0 to QueryResult.RowCount - 1 do
 		begin
-			Result.Add(GetChara(QueryResult.FieldAsInteger(Index)));
+			Result.Add(GetChara(QueryResult.FieldAsInteger(0)));
 			QueryResult.Next;
 		end;
 	end;
