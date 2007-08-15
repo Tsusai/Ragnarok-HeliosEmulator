@@ -303,7 +303,7 @@ begin
 		WriteBufferLongWord(Offset + 28, Option,ReplyBuffer);
 		WriteBufferLongWord(Offset + 32, Karma,ReplyBuffer);
 		WriteBufferLongWord(Offset + 36, Manner,ReplyBuffer);
-		WriteBufferWord(Offset + 40, StatusPts,ReplyBuffer);
+		WriteBufferWord(Offset + 40, EnsureRange(StatusPts, 0, High(SmallInt)),ReplyBuffer);
 		WriteBufferWord(Offset + 42, HP,ReplyBuffer);
 		WriteBufferWord(Offset + 44, MAXHP,ReplyBuffer);
 		WriteBufferWord(Offset + 46, SP,ReplyBuffer);
@@ -322,12 +322,12 @@ begin
 		WriteBufferWord(Offset + 72, ClothesColor,ReplyBuffer);
 		WriteBufferString(Offset + 74, Name, 24,ReplyBuffer);
 
-		WriteBufferByte(Offset + 98,  ParamBase[STR],ReplyBuffer);
-		WriteBufferByte(Offset + 99,  ParamBase[AGI],ReplyBuffer);
-		WriteBufferByte(Offset + 100, ParamBase[VIT],ReplyBuffer);
-		WriteBufferByte(Offset + 101, ParamBase[INT],ReplyBuffer);
-		WriteBufferByte(Offset + 102, ParamBase[DEX],ReplyBuffer);
-		WriteBufferByte(Offset + 103, ParamBase[LUK],ReplyBuffer);
+		WriteBufferByte(Offset + 98,  EnsureRange(ParamBase[STR], 0, High(Byte)),ReplyBuffer);
+		WriteBufferByte(Offset + 99,  EnsureRange(ParamBase[AGI], 0, High(Byte)),ReplyBuffer);
+		WriteBufferByte(Offset + 100, EnsureRange(ParamBase[VIT], 0, High(Byte)),ReplyBuffer);
+		WriteBufferByte(Offset + 101, EnsureRange(ParamBase[INT], 0, High(Byte)),ReplyBuffer);
+		WriteBufferByte(Offset + 102, EnsureRange(ParamBase[DEX], 0, High(Byte)),ReplyBuffer);
+		WriteBufferByte(Offset + 103, EnsureRange(ParamBase[LUK], 0, High(Byte)),ReplyBuffer);
 	end;
 end;
 

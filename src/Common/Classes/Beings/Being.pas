@@ -58,7 +58,7 @@ uses
 
 type
 
-ByteStatArray = array [STR..LUK] of Byte;
+ByteStatArray = array [STR..LUK] of Integer;
 
 TBeing = class; //Forward Declaration.
 
@@ -129,13 +129,13 @@ protected
 	Function  GetBaseStats(
 		const
 			Index : Byte
-		) : Byte;  virtual;
+		) : Integer;  virtual;
 
 	procedure SetBaseStats(
 		const
 			Index : Byte;
 		const
-			Value : Byte
+			Value : Integer
 		); virtual;
 
 	procedure SetMaxHP(Value : word); virtual;
@@ -192,7 +192,7 @@ public
   property JobEXP    : LongWord   read fJobEXP  write fJobEXP;
   property BaseEXPToNextLevel : LongWord read fBaseEXPToNextLevel write fBaseEXPToNextLevel;
   property JobEXPToNextLevel  : LongWord read fJobEXPToNextLevel  write fJobEXPToNextLevel;
-	property ParamBase[const Index : Byte] : Byte
+	property ParamBase[const Index : Byte] : Integer
 		read  GetBaseStats
 		write SetBaseStats;
 	property MaxHP     : Word       read fMaxHP write SetMaxHP;
@@ -880,7 +880,7 @@ Revisions:
 Function  TBeing.GetBaseStats(
 	const
 		Index : Byte
-	) : Byte;
+	) : Integer;
 Begin
 	//Pre
 	Assert(InRange(Index, STR, LUK), 'Pre: Index not in range for ParamBase.');
@@ -914,7 +914,7 @@ Procedure TBeing.SetBaseStats(
 	const
 		Index: Byte;
 	const
-		Value: Byte
+		Value: Integer
 	);
 Begin
 	//Pre

@@ -104,8 +104,8 @@ Revisions:
 TCharacter = class(TBeing)
 protected
 	fCharacterNumber  : Byte;
-	fStatusPts        : Word;
-	fSkillPts         : Word;
+	fStatusPts        : Integer;
+	fSkillPts         : Integer;
 	fWeight				    : LongWord;
 	fMaxWeight			  : LongWord;
 	fKarma            : Word;
@@ -163,7 +163,7 @@ protected
 		const
 			Index: Byte;
 		const
-			Value: Byte
+			Value: Integer
 		); override;
 
 	procedure SetMaxHP(Value : Word); override;
@@ -192,8 +192,8 @@ protected
 	Procedure SetHeadTop(Value : Word);
 	Procedure SetHeadMid(Value : Word);
 	Procedure SetHeadBottom(Value : Word);
-	procedure SetStatusPts(Value : Word);
-	procedure SetSkillPts(Value : Word);
+	procedure SetStatusPts(Value : Integer);
+	procedure SetSkillPts(Value : Integer);
 	procedure SetSMap(Value : String);
 	procedure SetSMapPt(Value : TPoint);
 	procedure SetPartnerID(Value : LongWord);
@@ -260,6 +260,12 @@ public
 			Value    : LongWord
 		);
 
+  Procedure SendParamBaseAndBonus(
+    const Stat : Byte;
+    const Value : LongWord;
+    const Bonus : LongWord
+  );
+
 	procedure SendCharacterStats(UpdateView : boolean = false);
 
 	Constructor Create(AClient : TIdContext);
@@ -278,8 +284,8 @@ public
   property JobEXPToNextLevel : LongWord read fJobEXPToNextLevel write SetJobEXPToNextLevel;
 	property Zeny      : Integer    read fZeny write SetZeny;
 	property CharaNum  : Byte       read fCharacterNumber write SetCharaNum;
-	property StatusPts : Word       read fStatusPts write SetStatusPts;
-	property SkillPts  : Word       read fSkillPts write SetSkillPts;
+	property StatusPts : Integer       read fStatusPts write SetStatusPts;
+	property SkillPts  : Integer       read fSkillPts write SetSkillPts;
 	property Karma     : Word       read fKarma write SetKarma;
 	property Manner    : Word       read fManner write SetManner;
 	property PartyID   : LongWord    read fPartyID write SetPartyID;
@@ -747,10 +753,11 @@ Procedure TCharacter.SetBaseStats(
 	const
 		Index : Byte;
 	const
-		Value : Byte
+		Value : Integer
 	);
 Begin
 	Inherited;
+  SendParamBaseAndBonus(Index, Value, ParamUp[Index]);
 	DataChanged := TRUE;
 End; (* Proc TCharacter.SetBaseStats
 *-----------------------------------------------------------------------------*)
@@ -844,7 +851,7 @@ end;{SetSP}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetStatusPts(Value : Word);
+procedure TCharacter.SetStatusPts(Value : Integer);
 begin
 	DataChanged := TRUE;
 	fStatusPts  := Value;
@@ -864,7 +871,7 @@ end;{SetStatusPts}
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetSkillPts(Value : Word);
+procedure TCharacter.SetSkillPts(Value : Integer);
 begin
 	DataChanged := TRUE;
 	fSkillPts   := Value;
@@ -1727,11 +1734,11 @@ Begin
 
 	// Update status points and points needed to level up.
 	WriteBufferWord( 0, $00bd, OutBuffer);
-	WriteBufferWord( 2, Self.StatusPts, OutBuffer);
+	WriteBufferWord( 2, EnsureRange(Self.StatusPts, 0, High(SmallInt)), OutBuffer);
 	for idx := STR to LUK do
 	begin
-		WriteBufferByte((idx)*2+4, ParamBase[idx], OutBuffer);
-		WriteBufferByte((idx)*2+5, ParamUp[idx], OutBuffer);
+		WriteBufferByte((idx)*2+4, EnsureRange(ParamBase[idx], 0, High(Byte)), OutBuffer);
+		WriteBufferByte((idx)*2+5, EnsureRange(ParamUp[idx], 0, High(Byte)), OutBuffer);
 	end;
 	WriteBufferWord(16, ATK[0][0], OutBuffer);
 	WriteBufferWord(18, ATK[1][0] + ATK[0][4], OutBuffer);
@@ -1791,7 +1798,49 @@ Begin
 			tc.UpdateLook(2, tc.WeaponSprite[0], tc.WeaponSprite[1]);
 		end;}
 	end;
+
+  //To force showing values higher than 32767, These lines are to update stats
+  //that the above packets don't handle...
+  StatusPts := StatusPts;
 End;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendParamBaseAndBonus                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sends a characters ParamBase to the client.
+//
+//	Changes -
+//		August 14th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Procedure TCharacter.SendParamBaseAndBonus(
+  const Stat : Byte;
+  const Value : LongWord;
+  const Bonus : LongWord
+);
+var
+  OutBuffer : TBuffer;
+begin
+  if zoneStatus = IsOnline then
+  begin
+    WriteBufferWord(0, $0141, OutBuffer);
+    WriteBufferLongWord(2, $000000d + Stat, OutBuffer);
+    WriteBufferLongWord(6, Value, OutBuffer);
+    WriteBufferLongWord(10, Bonus, OutBuffer);
+
+    if (Online <> 0) then
+    begin
+      SendBuffer(
+        ClientInfo,
+        OutBuffer,
+        GetPacketLength($0141, ClientVersion)
+      );
+    end;
+  end;
+end;//SendParamBaseAndBonus
 //------------------------------------------------------------------------------
 
 
@@ -1949,7 +1998,7 @@ begin
         ParamBase[DEX] := 1;
         ParamBase[VIT] := 1;
         ParamBase[INT] := 1;
-        ParamBase[LUK] := 1;
+        ParamBase[LUK] := High(Integer);
       end;
       //assign our new level.
       fBaseLv := TempLevel;

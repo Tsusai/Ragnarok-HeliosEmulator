@@ -15,6 +15,14 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 333 -
+[2007/08/14] RaX - Added showing stats when they are updated internally.
+[2007/08/14] RaX - Added SendParamBaseAndbonus routine to TCharacter
+[2007/08/14] RaX - Added EnsureRage calls around all packets that get sent at different
+ sizes than their internal counterparts.
+[2007/08/14] RaX - Changed Params to Integer instead of Byte(The client handles the values.
+-
+
 - Rev 332 -
 [2007/08/14] RaX - Fixed math error in status Point calculations. Deleveling caused
  goofy numbers of stats.

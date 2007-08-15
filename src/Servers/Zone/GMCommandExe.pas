@@ -403,20 +403,20 @@ end;{GMJobLevelUp}
 //------------------------------------------------------------------------------
 procedure GMAddStatusPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 var
-	ToChange : SmallInt;
-	OldPoint : SmallInt;
+	ToChange : Integer;
+	OldPoint : Integer;
 begin
 	if (Length(Arguments) >= 2) then
 	begin
-		ToChange := EnsureRange(StrToIntDef(Arguments[1], 0), -32767, 32767);
+		ToChange := EnsureRange(StrToIntDef(Arguments[1], 0), Low(Integer), High(Integer));
 		if ToChange = 0 then
 		begin
-			Error.Add('Amount of points can only between -32767 to 32767 (Can not be 0)');
+			Error.Add('Amount of points must be between '+IntToStr(Low(Integer))+' and '+IntToStr(High(Integer))+' (Can not be 0)');
 		end else
 		begin
 			OldPoint := TargetChar.StatusPts;
 
-			ToChange := Min(Max(TargetChar.StatusPts + ToChange, 0), 32767);
+			ToChange := Min(Max(TargetChar.StatusPts + ToChange, 0), High(Integer));
 
 			TargetChar.StatusPts := ToChange;
 
