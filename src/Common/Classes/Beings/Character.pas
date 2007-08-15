@@ -1903,7 +1903,7 @@ var
           //Here, we're figuring out how many points each stat is worth based on
           //how high the stat is. For every 10 points we go up each stat is worth
           //one extra point.
-          Result := 2 + (StatPoints DIV 10);
+          Result := Result + 2 + (StatPoints DIV 10);
         end;
       end;
   end;
@@ -1917,61 +1917,63 @@ begin
     //only calculated at level up rather than at each experience gain.
     TempEXP :=
       TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(Jobname, TempLevel);
+
+    //If there is EXP to be gotten for the next level and we aren't leveling to the
+    //same level...
+    if (TempEXP > 0) AND(TempLevel <> BaseLv) then
+    begin
+      //Get stat points from database
+      TempStatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(TempLevel);
+      LastLevelStatusPoints := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(fBaseLv);
+
+      //Get stats' worth in points.
+      ParamBaseStatPoints := GetParamBaseWorthInStatPoints;
+
+      //check if we're going up or down in level
+      if fBaseLv < TempLevel then
+      begin
+        //remove stats from statpoints to get the amount of statuspts free.
+        LastLevelStatusPoints := StatusPts + ParamBaseStatPoints - LastLevelStatusPoints;
+
+        //raise stat points if we leveled.
+        StatusPts := TempStatusPts - ParamBaseStatPoints + LastLevelStatusPoints;
+      end else
+      begin
+        //remove stats from statpoints to get the amount of statuspts free.
+        LastLevelStatusPoints := StatusPts - LastLevelStatusPoints;//-48
+        StatusPts := TempStatusPts+LastLevelStatusPoints+ParamBaseStatPoints;
+
+        //reset stats since we deleveled.
+        ParamBase[STR] := 1;
+        ParamBase[AGI] := 1;
+        ParamBase[DEX] := 1;
+        ParamBase[VIT] := 1;
+        ParamBase[INT] := 1;
+        ParamBase[LUK] := 1;
+      end;
+      //assign our new level.
+      fBaseLv := TempLevel;
+      //Run stat calculations.
+      BaseEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
+      CalcMaxWeight;
+      CalcMaxHP;
+      CalcMaxSP;
+      CalcSpeed;
+
+      //Set hp and sp to full if enabled in the ini.
+      if MainProc.ZoneServer.Options.FullHPOnLevelUp then
+      begin
+        HP := MAXHP;
+      end;
+      if MainProc.ZoneServer.Options.FullSPOnLevelUp then
+      begin
+        SP := MAXSP;
+      end;
+      //Send Base Level packet
+      SendSubStat(0, $000b, BaseLv);
+    end;
   finally
-		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-	end;
-
-  //If there is EXP to be gotten for the next level and we aren't leveling to the
-  //same level...
-  if (TempEXP > 0) AND(TempLevel <> BaseLv) then
-  begin
-    //Get stat points from database
-    TempStatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(TempLevel);
-    LastLevelStatusPoints := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(fBaseLv);
-
-    //Get stats' worth in points.
-    ParamBaseStatPoints := GetParamBaseWorthInStatPoints;
-
-    //remove stats from statpoints to get the amount of statuspts free.
-    LastLevelStatusPoints := StatusPts + ParamBaseStatPoints - LastLevelStatusPoints;
-
-    //check if we're going up or down in level
-    if fBaseLv < TempLevel then
-    begin
-      //raise stat points if we leveled.
-      StatusPts := TempStatusPts - ParamBaseStatPoints + LastLevelStatusPoints;
-    end else
-    begin
-      //reset stats if we deleveled.
-      ParamBase[STR] := 1;
-      ParamBase[AGI] := 1;
-      ParamBase[DEX] := 1;
-      ParamBase[VIT] := 1;
-      ParamBase[INT] := 1;
-      ParamBase[LUK] := 1;
-      StatusPts := TempStatusPts+LastLevelStatusPoints;
-    end;
-    //assign our new level.
-    fBaseLv := TempLevel;
-    //Run stat calculations.
-    BaseEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
-    CalcMaxWeight;
-    CalcMaxHP;
-    CalcMaxSP;
-    CalcSpeed;
-
-    //Set hp and sp to full if enabled in the ini.
-    if MainProc.ZoneServer.Options.FullHPOnLevelUp then
-    begin
-      HP := MAXHP;
-    end;
-    if MainProc.ZoneServer.Options.FullSPOnLevelUp then
-    begin
-      SP := MAXSP;
-    end;
-
-    //Send Base Level packet
-    SendSubStat(0, $000b, BaseLv);
+    TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
   end;
 end;{BaseLevelUp}
 //------------------------------------------------------------------------------

@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 332 -
+[2007/08/14] RaX - Fixed math error in status Point calculations. Deleveling caused
+ goofy numbers of stats.
+-
+
 - Rev 331 -
 [2007/08/14] Aeomin - Added a check to prevent integer overflow in #GiveZeny (ah...)
 -
