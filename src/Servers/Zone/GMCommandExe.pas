@@ -27,6 +27,7 @@ uses
 	procedure GMJobLevelUp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMAddStatusPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMAddSkillPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMGiveZeny(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCast(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastLocal(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
@@ -459,6 +460,45 @@ begin
 			TargetChar.SkillPts := ToChange;
 
 			Error.Add(IntToStr(TargetChar.SkillPts - OldPoint) + ' skill points given to ' + TargetChar.Name);
+		end;
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMGiveZeny                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Give target player zeny (XD)
+//
+//	Changes-
+//		[2007/8/14] Aeomin - Create.
+//------------------------------------------------------------------------------
+procedure GMGiveZeny(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+var
+	ToChange  : Integer;
+	OldAmount : Integer;
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		ToChange := EnsureRange(StrToIntDef(Arguments[1], 0), Low(Integer), High(Integer));
+		if ToChange = 0 then
+		begin
+			Error.Add('Amount of zeny can only between -2147483647 to 2147483647 (Can not be 0)');
+		end else
+		begin
+			OldAmount := TargetChar.Zeny;
+
+			ToChange := Min(Max(TargetChar.Zeny + ToChange, 0), 2147483647);
+
+			TargetChar.Zeny := ToChange;
+
+			Error.Add(IntToStr(TargetChar.Zeny - OldAmount) + ' zeny given to ' + TargetChar.Name);
 		end;
 	end else
 	begin

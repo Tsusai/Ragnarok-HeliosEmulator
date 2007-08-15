@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 330 -
+[2007/08/14] Aeomin - Changed Zeny type from LongWord -> Integer, really pointless, since client treat as integer [Character.pas, Being.pas]
+[2007/08/14] Aeomin - Added GM command #GiveZeny
+-
+
 - Rev 329 -
 [2007/08/14] Aeomin - Hopefully fixed warp caused character "stuck".
 -

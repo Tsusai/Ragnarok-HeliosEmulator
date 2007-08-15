@@ -157,7 +157,7 @@ protected
 	procedure SetJobEXP(Value : LongWord); override;
   procedure SetBaseEXPToNextLevel(Value : LongWord);
   procedure SetJobEXPToNextLevel(Value : LongWord);
-	procedure SetZeny(Value : LongWord); override;
+	procedure SetZeny(Value : Integer); override;
 
 	Procedure SetBaseStats(
 		const
@@ -276,7 +276,7 @@ public
 	property JobEXP    : LongWord    read fJobEXP write SetJobEXP;
   property BaseEXPToNextLevel : LongWord read fBaseEXPToNextLevel write SetBaseEXPToNextLevel;
   property JobEXPToNextLevel : LongWord read fJobEXPToNextLevel write SetJobEXPToNextLevel;
-	property Zeny      : LongWord    read fZeny write SetZeny;
+	property Zeny      : Integer    read fZeny write SetZeny;
 	property CharaNum  : Byte       read fCharacterNumber write SetCharaNum;
 	property StatusPts : Word       read fStatusPts write SetStatusPts;
 	property SkillPts  : Word       read fSkillPts write SetSkillPts;
@@ -707,7 +707,7 @@ end;{SetJobEXPToNextLevel}
 //		[2007/07/22] Tsusai - Added sending of update packet.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetZeny(Value : LongWord);
+procedure TCharacter.SetZeny(Value : Integer);
 begin
 	Inherited;
 	DataChanged := TRUE;

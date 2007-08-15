@@ -102,7 +102,7 @@ protected
 	fJobEXP           : LongWord;
   fBaseEXPToNextLevel: LongWord;
   fJobEXPToNextLevel: LongWord;
-	fZeny             : LongWord;
+	fZeny             : Integer;
 	fParamBase        : ByteStatArray;
 	fMaxHP            : Word;
 	fHP               : Word;
@@ -124,7 +124,7 @@ protected
 	procedure SetJobLV(Value : byte); virtual;
 	procedure SetBaseEXP(Value : LongWord); virtual;
 	procedure SetJobEXP(Value : LongWord); virtual;
-	procedure SetZeny(Value : LongWord); virtual;
+	procedure SetZeny(Value : Integer); virtual;
 
 	Function  GetBaseStats(
 		const
@@ -851,7 +851,7 @@ begin
 end;
 
 procedure TBeing.SetZeny(
-		Value : LongWord
+		Value : Integer
 	);
 begin
 	fZeny := Value;
