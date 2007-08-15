@@ -550,7 +550,7 @@ procedure TCharacter.SetBaseLV(Value : byte);
 begin
   //we do not inherit here for a reason! See BaseLevelUp
 	DataChanged := TRUE;
-  BaseLevelUp(Value-fBaseLv);
+  BaseLevelUp(EnsureRange(Value-fBaseLv, -CHAR_BLEVEL_MAX, CHAR_BLEVEL_MAX));
 end;{SetBaseLV}
 //------------------------------------------------------------------------------
 
@@ -571,7 +571,7 @@ procedure TCharacter.SetJobLV(Value : byte);
 begin
 	//we do not inherit here for a reason! See JobLevelUp
 	DataChanged := TRUE;
-  JobLevelUp(Value-fJobLv);
+  JobLevelUp(EnsureRange(Value-fJobLv, -CHAR_JLEVEL_MAX, CHAR_JLEVEL_MAX));
 end;{SetJobLV}
 //------------------------------------------------------------------------------
 
@@ -757,7 +757,7 @@ Procedure TCharacter.SetBaseStats(
 	);
 Begin
 	Inherited;
-  SendParamBaseAndBonus(Index, Value, ParamUp[Index]);
+  SendParamBaseAndBonus(Index, ParamBase[Index], ParamUp[Index]);
 	DataChanged := TRUE;
 End; (* Proc TCharacter.SetBaseStats
 *-----------------------------------------------------------------------------*)
@@ -854,7 +854,7 @@ end;{SetSP}
 procedure TCharacter.SetStatusPts(Value : Integer);
 begin
 	DataChanged := TRUE;
-	fStatusPts  := Value;
+	fStatusPts  := EnsureRange(Value, 0, CHAR_STATPOINT_MAX);
   SendSubStat(0,$0009,fStatusPts);
 end;{SetStatusPts}
 //------------------------------------------------------------------------------
@@ -874,7 +874,7 @@ end;{SetStatusPts}
 procedure TCharacter.SetSkillPts(Value : Integer);
 begin
 	DataChanged := TRUE;
-	fSkillPts   := Value;
+	fSkillPts   := EnsureRange(Value, 0, CHAR_SKILLPOINT_MAX);
   SendSubStat(0,$000c,fSkillPts);
 end;{SetSkillPts}
 //------------------------------------------------------------------------------
@@ -1933,18 +1933,19 @@ procedure TCharacter.BaseLevelUp(Levels  : Integer);
 var
   TempEXP               : LongWord;//Temporary BaseEXP.
   TempLevel             : Word;//Temporary BaseLv
-  TempStatusPts         : Word;//Temporary StatusPts
-  ParamBaseStatPoints   : Word;//How many stat points a character's stats are worth.
+  TempStatusPts         : Integer;//Temporary StatusPts
+  ParamBaseStatPoints   : Integer;//How many stat points a character's stats are worth.
   LastLevelStatusPoints : Integer;//The total status points for the last level in
                                   //the database.
 
   //Gets the amount of stat points all a character's stats are worth together.
-  function GetParamBaseWorthInStatPoints : Word;
+  function GetParamBaseWorthInStatPoints : Integer;
   var
+    TempResult : Int64;
     StatIndex : Integer;
     StatPoints : Integer;
   begin
-      Result := 0;
+      TempResult := 0;
       For StatIndex := STR to LUK do
       begin
         For StatPoints := 2 to ParamBase[StatIndex] do
@@ -1952,9 +1953,10 @@ var
           //Here, we're figuring out how many points each stat is worth based on
           //how high the stat is. For every 10 points we go up each stat is worth
           //one extra point.
-          Result := Result + 2 + (StatPoints DIV 10);
+          TempResult := TempResult + 2 + (StatPoints DIV 10);
         end;
       end;
+      Result := EnsureRange(TempResult, 0, High(Integer));
   end;
 
 begin
@@ -1998,7 +2000,7 @@ begin
         ParamBase[DEX] := 1;
         ParamBase[VIT] := 1;
         ParamBase[INT] := 1;
-        ParamBase[LUK] := High(Integer);
+        ParamBase[LUK] := 1;
       end;
       //assign our new level.
       fBaseLv := TempLevel;

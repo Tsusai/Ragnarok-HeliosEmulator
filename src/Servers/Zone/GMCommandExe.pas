@@ -47,6 +47,7 @@ uses
 	Map,
 	MapTypes,
 	ZoneInterCommunication,
+  GameConstants,
 	{Third Party}
 	IdContext
 	;
@@ -338,7 +339,7 @@ begin
 		begin
 			OldLevel := TargetChar.BaseLV;
 
-			ToChange := Min(Max(TargetChar.BaseLV + ToChange, 1), Min(MainProc.ZoneServer.Options.MaxBaseLevel, High(Word)));
+			ToChange := Min(Max(TargetChar.BaseLV + ToChange, 1), Min(MainProc.ZoneServer.Options.MaxBaseLevel, CHAR_BLEVEL_MAX));
 
 			TargetChar.BaseLV := ToChange;
 
@@ -377,7 +378,7 @@ begin
 		begin
 			OldLevel := TargetChar.JobLV;
 
-			ToChange := Min(Max(TargetChar.JobLV + ToChange, 1), Min(MainProc.ZoneServer.Options.MaxJobLevel, High(Word)));
+			ToChange := Min(Max(TargetChar.JobLV + ToChange, 1), Min(MainProc.ZoneServer.Options.MaxJobLevel, CHAR_JLEVEL_MAX));
 
 			TargetChar.JobLV := ToChange;
 
@@ -408,15 +409,15 @@ var
 begin
 	if (Length(Arguments) >= 2) then
 	begin
-		ToChange := EnsureRange(StrToIntDef(Arguments[1], 0), Low(Integer), High(Integer));
+		ToChange := EnsureRange(StrToIntDef(Arguments[1], 0), -32767, 32767);
 		if ToChange = 0 then
 		begin
-			Error.Add('Amount of points must be between '+IntToStr(Low(Integer))+' and '+IntToStr(High(Integer))+' (Can not be 0)');
+			Error.Add('Amount of points must be between -32767 and 32767 (Can not be 0)')
 		end else
 		begin
 			OldPoint := TargetChar.StatusPts;
 
-			ToChange := Min(Max(TargetChar.StatusPts + ToChange, 0), High(Integer));
+			ToChange := EnsureRange(TargetChar.StatusPts + ToChange, 0, CHAR_STATPOINT_MAX);
 
 			TargetChar.StatusPts := ToChange;
 
@@ -442,20 +443,20 @@ end;
 //------------------------------------------------------------------------------
 procedure GMAddSkillPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 var
-	ToChange : SmallInt;
-	OldPoint : SmallInt;
+	ToChange : Integer;
+	OldPoint : Integer;
 begin
 	if (Length(Arguments) >= 2) then
 	begin
 		ToChange := EnsureRange(StrToIntDef(Arguments[1], 0), -32767, 32767);
 		if ToChange = 0 then
 		begin
-			Error.Add('Amount of points can only between -32767 to 32767 (Can not be 0)');
+			Error.Add('Amount of points must be between -32767 and 32767 (Can not be 0)')
 		end else
 		begin
 			OldPoint := TargetChar.SkillPts;
 
-			ToChange := Min(Max(TargetChar.SkillPts + ToChange, 0), 32767);
+			ToChange := EnsureRange(TargetChar.SkillPts + ToChange, 0, CHAR_SKILLPOINT_MAX);
 
 			TargetChar.SkillPts := ToChange;
 

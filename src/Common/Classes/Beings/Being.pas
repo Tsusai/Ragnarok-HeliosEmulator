@@ -921,7 +921,7 @@ Begin
 	Assert(InRange(Index, STR, LUK), 'Pre: Index not in range for ParamBase.');
 	//--
 
-	fParamBase[Index] := Value;
+	fParamBase[Index] := EnsureRange(Value, 0, 9999);
 End; (* Proc TBeing.SetBaseStats
 *-----------------------------------------------------------------------------*)
 

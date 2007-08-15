@@ -59,6 +59,8 @@ interface
 
 			fKickOnShutdown : Boolean;
 
+      fMaxStats : Integer;
+
 //Gets/Sets
 			procedure SetPort(Value : Word);
 			procedure SetWANIP(Value : String);
@@ -107,6 +109,8 @@ interface
 
       property FullHPOnLevelUp : Boolean read fFullHPOnLevelUp;
       property FullSPOnLevelUp : Boolean read fFullSPOnLevelUp;
+
+      property MaxCharacterStats : Integer read fMaxStats;
 
 			//Public methods
 			procedure Load;
@@ -232,6 +236,7 @@ implementation
       fMaxJobLevelsPerEXPGain := Min(StrToIntDef(Section.Values['Max. Job Levels Allowed Per EXP Gain'], 1), High(Word));
       fFullHPOnLevelUp := StrToBoolDef(Section.Values['Full HP on Level up?'], TRUE);
       fFullSPOnLevelUp := StrToBoolDef(Section.Values['Full SP on Level up?'], TRUE);
+      fMaxStats := StrToIntDef(Section.Values['Max. Character Stats'], 99);
 		end;{Subroutine LoadPerformance}
 	//--------------------------------------------------------------------------
 
@@ -314,6 +319,7 @@ implementation
     WriteString('Game','Full HP On Level Up?',BoolToStr(fFullHPOnLevelUp));
     WriteString('Game','Full SP On Level Up?',BoolToStr(fFullSPOnLevelUp));
 
+    WriteString('Game','Max. Character Stats',IntToStr(fMaxStats));
 		//Options
 
 		UpdateFile;

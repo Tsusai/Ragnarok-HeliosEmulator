@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 334 -
+[2007/08/14] RaX - fixed stupid errors from last commit. added constants to prevent
+ overflows of levels, stat points, etc. 
+-
+
 - Rev 333 -
 [2007/08/14] RaX - Added showing stats when they are updated internally.
 [2007/08/14] RaX - Added SendParamBaseAndbonus routine to TCharacter
