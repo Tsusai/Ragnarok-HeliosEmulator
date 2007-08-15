@@ -489,12 +489,15 @@ begin
 		ToChange := EnsureRange(StrToIntDef(Arguments[1], 0), Low(Integer), High(Integer));
 		if ToChange = 0 then
 		begin
-			Error.Add('Amount of zeny can only between -2147483647 to 2147483647 (Can not be 0)');
+			Error.Add('Amount of zeny can only between -2147483647 to 2147483647 (Can not be 0) at a time');
 		end else
 		begin
 			OldAmount := TargetChar.Zeny;
 
-			ToChange := Min(Max(TargetChar.Zeny + ToChange, 0), 2147483647);
+			if High(Integer) - OldAmount < ToChange then
+				ToChange := High(Integer)
+			else
+				ToChange := EnsureRange(TargetChar.Zeny + ToChange, 0, 2147483647);
 
 			TargetChar.Zeny := ToChange;
 
