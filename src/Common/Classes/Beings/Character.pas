@@ -1860,9 +1860,9 @@ procedure TCharacter.CalcMaxSP;
 begin
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	try
-		MAXSP :=
-			TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxSP(self) *
-			(100 + ParamBase[INT]) div 100;
+		MAXSP := EnsureRange(
+      TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxSP(self) *
+			(100 + ParamBase[INT]) div 100, 0, High(fMaxSP));
     if SP > MAXSP then
     begin
       SP := MAXSP;
@@ -1909,9 +1909,10 @@ procedure TCharacter.CalcMaxWeight;
 begin
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	try
-		MaxWeight  :=
-			LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
-			TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxWeight(self);
+		MaxWeight  := EnsureRange(
+			  LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
+			  TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxWeight(self)
+      , 0, High(fMaxWeight));
   finally
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
   end;
