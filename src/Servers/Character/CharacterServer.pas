@@ -304,10 +304,10 @@ begin
 		WriteBufferLongWord(Offset + 32, Karma,ReplyBuffer);
 		WriteBufferLongWord(Offset + 36, Manner,ReplyBuffer);
 		WriteBufferWord(Offset + 40, EnsureRange(StatusPts, 0, High(SmallInt)),ReplyBuffer);
-		WriteBufferWord(Offset + 42, HP,ReplyBuffer);
-		WriteBufferWord(Offset + 44, MAXHP,ReplyBuffer);
-		WriteBufferWord(Offset + 46, SP,ReplyBuffer);
-		WriteBufferWord(Offset + 48, MAXSP,ReplyBuffer);
+		WriteBufferWord(Offset + 42, EnsureRange(HP, 0, High(SmallInt)),ReplyBuffer);
+		WriteBufferWord(Offset + 44, EnsureRange(MAXHP, 0, High(SmallInt)),ReplyBuffer);
+		WriteBufferWord(Offset + 46, EnsureRange(SP, 0, High(SmallInt)),ReplyBuffer);
+		WriteBufferWord(Offset + 48, EnsureRange(MAXSP, 0, High(SmallInt)),ReplyBuffer);
 		WriteBufferWord(Offset + 50, Speed,ReplyBuffer);
 		WriteBufferWord(Offset + 52, JID,ReplyBuffer);
 		WriteBufferWord(Offset + 54, Hair,ReplyBuffer);

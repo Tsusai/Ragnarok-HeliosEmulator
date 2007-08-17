@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 337 -
+[2007/08/16] RaX - Added range checking to hp and sp packets send in character server
+ (caused negative values to be shown).
+-
+
 - Rev 336 -
 [2007/08/14] Aeomin - Fixed char server crash occur when theres more than 1 characters [sqlite]
 -
