@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 339 -
+[2007/08/16] RaX - Updated default for Max. Job Level to 99(Zone.ini).
+-
+
 - Rev 338 -
 [2007/08/16] RaX - Added range checking to TCharacter calculations(CalcMaxHP, CalcMaxSP, etc.)
 -

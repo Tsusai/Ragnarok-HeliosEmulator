@@ -231,7 +231,7 @@ implementation
       fJobXPMultiplier  := Min(StrToIntDef(Section.Values['Job EXP Multiplier'], 1), High(LongWord));
 
       fMaxBaseLevel   := Min(StrToIntDef(Section.Values['Max. Base Level'], 99), High(Word));
-      fMaxJobLevel    := Min(StrToIntDef(Section.Values['Max. Job Level'], 70), High(Word));
+      fMaxJobLevel    := Min(StrToIntDef(Section.Values['Max. Job Level'], 99), High(Word));
       fMaxBaseLevelsPerEXPGain := Min(StrToIntDef(Section.Values['Max. Base Levels Allowed Per EXP Gain'], 1), High(Word));
       fMaxJobLevelsPerEXPGain := Min(StrToIntDef(Section.Values['Max. Job Levels Allowed Per EXP Gain'], 1), High(Word));
       fFullHPOnLevelUp := StrToBoolDef(Section.Values['Full HP on Level up?'], TRUE);
