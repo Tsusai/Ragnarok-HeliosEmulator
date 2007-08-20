@@ -29,20 +29,24 @@ uses
 function addnpc(ALua : TLua) : integer; cdecl; forward;
 function addwarp(ALua : TLua) : integer; cdecl; forward;
 function addhiddenwarp(ALua : TLua) : integer; cdecl; forward;
+//Standard NPC Commands
 function script_moveto(ALua : TLua) : integer; cdecl; forward;
 function script_dialog(ALua : TLua) : integer; cdecl; forward;
 function script_wait(ALua : TLua) : integer; cdecl; forward;
 function script_close(ALua : TLua) : integer; cdecl; forward;
 function script_checkpoint(ALua : TLua) : integer; cdecl; forward;
 function script_menu(ALua : TLua) : integer; cdecl; forward;
-function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function script_getcharavar(ALua : TLua) : integer; cdecl; forward;
 function script_setcharavar(ALua : TLua) : integer; cdecl; forward;
 function script_getgold(ALua : TLua) : integer; cdecl; forward;
+function script_getexp(ALua : TLua) : integer; cdecl; forward;
+function script_getJexp(ALua : TLua) : integer; cdecl; forward;
+//Special Commands
+function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 14;
+	NPCCommandCount = 16;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -61,6 +65,8 @@ const
 		(name:'getvar';func:script_getcharavar),
 		(name:'setvar';func:script_setcharavar),
 		(name:'getgold';func:script_getgold),
+		(name:'getexp';func:script_getexp),
+		(name:'getJexp';func:script_getJexp),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -408,14 +414,17 @@ begin
 	begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
-			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
-      try
-			  Key := lua_tostring(ALua, 1);
-			  Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.GetCharaVariable(AChara,Key);
-			  lua_pushinteger(ALua, Value);
-      finally
-			  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
-      end;
+			Key := lua_tostring(ALua, 1);
+			//if key = 'VAR_JLEVEL' stuff here
+			//else begin
+				TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
+				try
+					Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.GetCharaVariable(AChara,Key);
+					lua_pushinteger(ALua, Value);
+				finally
+					TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+				end;
+			//end
 		end;
 	end else
 	begin
@@ -442,11 +451,11 @@ begin
 			Key := lua_tostring(ALua, 1);
 			Value := lua_tointeger(ALua, 2);
 			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
-      try
+			try
 			  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.SetCharaVariable(AChara,Key,Value);
-      finally
+			finally
 			  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
-      end;
+			end;
 		end;
 	end else
 	begin
@@ -454,7 +463,7 @@ begin
 	end;
 end;
 
-//getgold
+//getgold(value)
 //Gives or takes money/zeny to/from the character
 function script_getgold(ALua : TLua) : integer; cdecl;
 var
@@ -478,6 +487,44 @@ begin
 											High(AChara.Zeny)
 			);
 			{$WARNINGS ON}
+		end;
+	end;
+end;
+
+//getexp(value)
+//Gives or takes money/zeny to/from the character
+function script_getexp(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+begin
+	//Returns 0 results
+	Result := 0;
+	if (lua_gettop(ALua) = 1) and
+		(lua_isnumber(ALua,1)) then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			AChara.BaseEXP := AChara.BaseEXP +
+						Cardinal(EnsureRange(lua_tointeger(ALua, 1),0,High(Integer)));
+		end;
+	end;
+end;
+
+//getJexp(value)
+//Gives or takes money/zeny to/from the character
+function script_getJexp(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+begin
+	//Returns 0 results
+	Result := 0;
+	if (lua_gettop(ALua) = 1) and
+		(lua_isnumber(ALua,1)) then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			AChara.JobEXP := AChara.JobEXP +
+						Cardinal(EnsureRange(lua_tointeger(ALua, 1),0,High(Integer)));
 		end;
 	end;
 end;
