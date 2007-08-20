@@ -15,6 +15,15 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 340 -
+[2007/08/20] RaX - Overview  : Implemented Job Bonuses.
+[2007/08/20] RaX - Added jobbonus table to heliosstatic database.
+[2007/08/20] RaX - Added appropriate queries to mysql and sqlite databases for the
+ above table.
+[2007/08/20] RaX - Modified JobLevelUp in tcharacter to update job bonuses as well
+ as send the packets for them.
+-
+
 - Rev 339 -
 [2007/08/16] RaX - Updated default for Max. Job Level to 99(Zone.ini).
 -

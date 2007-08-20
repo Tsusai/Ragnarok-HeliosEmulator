@@ -230,8 +230,8 @@ public
 
 	ClientInfo		: TIdContext;
 
-	ParamUP				: ByteStatArray;
-	ParamBonus		: ByteStatArray;
+	ParamUP				: StatArray;
+  ParamBonus		    : StatArray;
 
 	//Stat Calculations should fill these in
 	//Maybe a record type for this crap for shared info between mobs and chars
@@ -757,7 +757,7 @@ Procedure TCharacter.SetBaseStats(
 	);
 Begin
 	Inherited;
-  SendParamBaseAndBonus(Index, ParamBase[Index], ParamUp[Index]);
+  SendParamBaseAndBonus(Index, ParamBase[Index], ParamBonus[Index]);
 	DataChanged := TRUE;
 End; (* Proc TCharacter.SetBaseStats
 *-----------------------------------------------------------------------------*)
@@ -2045,8 +2045,10 @@ procedure TCharacter.JobLevelUp(Levels  : Integer);
 var
   TempEXP : LongWord;
   TempLevel : Word;
+  TempStatArray : StatArray;
   //OldSkillPts : Word;
   TempSkillPts: Word;
+  Index : Integer;
 begin
   //Make sure fJobLv is in range.
   TempLevel := Max(Min(fJobLv+Levels, MainProc.ZoneServer.Options.MaxJobLevel), 1);
@@ -2054,34 +2056,44 @@ begin
 	try
     //Update job experience to next level from static database.
     TempEXP := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, TempLevel);
-  finally
-		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-	end;
 
-  if (TempEXP > 0) AND (TempLevel <> JobLv) then
-  begin
-    JobEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.JobXPMultiplier;
-    TempSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.StaticData.GetSkillPoints(JobName,TempLevel);
-    //Will be used once skills are implemented to "remember" added skill points.
-    //OldSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.StaticData.GetSkillPoints(JobName,JobLv);
 
-    //Will be changed once skills are implemented, extra skill points will be
-    //'remembered' between levels.
-    if TempLevel > fJobLv then
+    if (TempEXP > 0) AND (TempLevel <> JobLv) then
     begin
-      //if we gain a level set skill points.
-      SkillPts := TempSkillPts;
-    end else
-    begin
-      //If we delevel...
-      //TODO reset skills here
-      SkillPts := TempSkillPts;
+      JobEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.JobXPMultiplier;
+      TempSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.StaticData.GetSkillPoints(JobName,TempLevel);
+      //Will be used once skills are implemented to "remember" added skill points.
+      //OldSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.StaticData.GetSkillPoints(JobName,JobLv);
+
+      //Will be changed once skills are implemented, extra skill points will be
+      //'remembered' between levels.
+      if TempLevel > fJobLv then
+      begin
+        //if we gain a level set skill points.
+        SkillPts := TempSkillPts;
+      end else
+      begin
+        //If we delevel...
+        //TODO reset skills here
+        SkillPts := TempSkillPts;
+      end;
+
+      //Apply job bonuses
+      TempStatArray := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobBonus(JobName, TempLevel);
+      ParamBonus := TempStatArray;
+
+      fJobLv := TempLevel;
+
+      SendSubStat(0, $0037, JobLv);
+
+      for Index := STR to DEX do
+      begin
+        SendParamBaseAndBonus(Index,ParamBase[Index],ParamBonus[Index]);
+      end;
+
     end;
-
-    fJobLv := TempLevel;
-
-    SendSubStat(0, $0037, JobLv);
-
+  finally
+    TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
   end;
 end;{JobLevelUp}
 //------------------------------------------------------------------------------

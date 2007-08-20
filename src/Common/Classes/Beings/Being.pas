@@ -58,7 +58,7 @@ uses
 
 type
 
-ByteStatArray = array [STR..LUK] of Integer;
+StatArray = array [STR..LUK] of Integer;
 
 TBeing = class; //Forward Declaration.
 
@@ -103,7 +103,7 @@ protected
   fBaseEXPToNextLevel: LongWord;
   fJobEXPToNextLevel: LongWord;
 	fZeny             : Integer;
-	fParamBase        : ByteStatArray;
+	fParamBase        : StatArray;
 	fMaxHP            : Word;
 	fHP               : Word;
 	fMaxSP            : Word;

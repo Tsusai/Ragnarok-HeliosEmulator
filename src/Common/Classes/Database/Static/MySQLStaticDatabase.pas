@@ -44,6 +44,7 @@ uses
 	{RTL/VCL}
 	Classes,
 	{Project}
+  Being,
 	Character,
 	Database,
 	MapTypes,
@@ -158,6 +159,12 @@ Function GetSkillPoints(
       JobName : String;
 			Level : Word
 		) : LongWord; override;
+
+Function GetJobBonus(
+		const
+      JobName : String;
+			Level : Word
+		) : StatArray;override;
 
 	function  Connect : Boolean; override;
 
@@ -699,6 +706,75 @@ begin
 	end else Result := 0;
 	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetSkillPoints
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetJobBonus         			                                         FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Queries and returns a character's job bonus for a level.
+//
+//	Changes -
+//		August 19th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Function TMySQLStaticDatabase.GetJobBonus(
+		const
+      JobName : String;
+			Level : Word
+		) : StatArray;
+var
+	Success     : Boolean;
+	QueryResult : TMySQLResult;
+  AStringList : TStringList;
+begin
+	QueryResult :=
+		SendQuery(
+		Format('SELECT %s FROM jobbonus WHERE level = %d',
+			[JobName, Level])
+		,TRUE,Success);
+	if (QueryResult.RowsCount = 1) then
+	begin
+    AStringList := TStringList.Create;
+    try
+      AStringList.Delimiter := ',';
+      AStringList.QuoteChar := '"';
+      AStringList.DelimitedText := QueryResult.FieldValue(0);
+      if AStringList.Count = 6 then
+      begin
+        Result[0] := StrToIntDef(AStringList.Strings[0], 0);
+        Result[1] := StrToIntDef(AStringList.Strings[1], 0);
+        Result[2] := StrToIntDef(AStringList.Strings[2], 0);
+        Result[3] := StrToIntDef(AStringList.Strings[3], 0);
+        Result[4] := StrToIntDef(AStringList.Strings[4], 0);
+        Result[5] := StrToIntDef(AStringList.Strings[5], 0);
+      end else
+      begin
+        Console.WriteLn('jobbonus Database Error. Count of parameters should be 6, actual value : '
+          +IntToStr(AStringList.Count)+ ' for job '+JobName
+          +' at level '+IntToStr(level)+'. Please fix this and try again.');
+        Result[0] := 0;
+        Result[1] := 0;
+        Result[2] := 0;
+        Result[3] := 0;
+        Result[4] := 0;
+        Result[5] := 0;
+      end;
+    finally
+      AStringList.Free;
+    end;
+	end else
+  begin
+    Result[0] := 0;
+    Result[1] := 0;
+    Result[2] := 0;
+    Result[3] := 0;
+    Result[4] := 0;
+    Result[5] := 0;
+  end;
+	if Assigned(QueryResult) then QueryResult.Free;
+end;//GetJobBonus
 //------------------------------------------------------------------------------
 {END MySQLStaticDatabase}
 end.

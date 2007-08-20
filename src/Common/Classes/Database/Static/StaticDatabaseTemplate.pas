@@ -42,6 +42,7 @@ uses
 	{RTL/VCL}
 	Classes,
 	{Project}
+  Being,
 	Character,
 	MapTypes
 	{Third Party}
@@ -136,6 +137,12 @@ public
       JobName : String;
 			Level : Word
 		) : LongWord; virtual; abstract;
+
+  Function GetJobBonus(
+		const
+      JobName : String;
+			Level : Word
+		) : StatArray; virtual; abstract;
 
 	function  Connect : Boolean; virtual; abstract;
 
