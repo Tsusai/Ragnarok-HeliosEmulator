@@ -266,6 +266,7 @@ public
     const Bonus : LongWord
   );
 
+	procedure SendRequiredStatusPoint(const Stat : Byte;const Value : Byte);
 	procedure SendCharacterStats(UpdateView : boolean = false);
 
 	Constructor Create(AClient : TIdContext);
@@ -757,7 +758,9 @@ Procedure TCharacter.SetBaseStats(
 	);
 Begin
 	Inherited;
-  SendParamBaseAndBonus(Index, ParamBase[Index], ParamBonus[Index]);
+	SendParamBaseAndBonus(Index, ParamBase[Index], ParamBonus[Index]);
+	ParamUP[Index] := 2 + (Value DIV 10);
+	SendRequiredStatusPoint(Index, ParamUP[Index]);
 	DataChanged := TRUE;
 End; (* Proc TCharacter.SetBaseStats
 *-----------------------------------------------------------------------------*)
@@ -1834,13 +1837,50 @@ begin
     if (Online <> 0) then
     begin
       SendBuffer(
-        ClientInfo,
-        OutBuffer,
-        GetPacketLength($0141, ClientVersion)
+	ClientInfo,
+	OutBuffer,
+	GetPacketLength($0141, ClientVersion)
       );
     end;
   end;
 end;//SendParamBaseAndBonus
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendRequiredStatusPoint                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Update stat point requirement for client
+//
+//	Changes -
+//		[2007/08/20] - Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.SendRequiredStatusPoint(
+			const Stat : Byte;
+			const Value : Byte
+			);
+var
+	OutBuffer : TBuffer;
+begin
+	if ZoneStatus = IsOnline then
+	begin
+		WriteBufferWord(0, $00be, OutBuffer);
+		//Gravity's trick -.-
+		WriteBufferWord(2, Stat + $0020, OutBuffer);
+		WriteBufferByte(4, Value, OutBuffer);
+
+		if (Online <> 0) then
+		begin
+			SendBuffer(
+			ClientInfo,
+			OutBuffer,
+			GetPacketLength($00be, ClientVersion)
+			);
+		end;
+	end;
+end;
 //------------------------------------------------------------------------------
 
 

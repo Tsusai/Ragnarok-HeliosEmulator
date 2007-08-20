@@ -178,6 +178,11 @@ uses
 	procedure RecvMapWarpRequest(
 			InBuffer : TBuffer
 	);
+	procedure StatUP(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 implementation
 
 
@@ -1313,6 +1318,71 @@ begin
 			end;
 
 			ZoneSendMapWarpResultToInter(MainProc.ZoneServer.ToInterTCPClient, CharID, ZoneID, MapName, APoint);
+		end;
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//StatUP                                                               PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Receive stat up request from client.
+//
+//  Changes -
+//	[2007/08/20] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure StatUP(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+var
+	StatType  : Word;
+	LocalType : Byte;
+	Amount    : Byte;
+	Index     : Integer;
+	OldAmount : Integer;
+	Def       : Byte;
+begin
+	StatType   := BufferReadWord(ReadPts[0], InBuffer);
+	Amount     := BufferReadByte(ReadPts[1], InBuffer);
+	if Amount > 0 then
+	begin
+		//Gravity loves to play, so lets play then
+		if (StatType >= $000d) and (StatType <= $0012) then
+		begin
+			LocalType := StatType - $000d;
+		end else
+		begin
+			LocalType := 0;
+		end;
+		OldAmount := AChara.ParamBase[LocalType];
+		//Loop, 1 stat a time
+		for Index := 1 to Amount do
+		begin
+			if AChara.ParamUp[LocalType] <= AChara.StatusPts then
+			begin
+				AChara.StatusPts := AChara.StatusPts - AChara.ParamUp[LocalType];
+				AChara.ParamBase[LocalType] := AChara.ParamBase[LocalType] + 1;
+			end else
+			begin
+				//Not enough status point
+				Break;
+			end;
+		end;
+
+		//How many stats added?
+		Def := AChara.ParamBase[LocalType] - OldAmount;
+
+		if Def = 0 then
+		begin
+			//Nothing has changed, assume failed
+			SendStatUPResult(AChara, True, Def);
+		end else
+		begin
+			SendStatUPResult(AChara, False, Def);
 		end;
 	end;
 end;

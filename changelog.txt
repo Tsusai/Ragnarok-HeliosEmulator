@@ -15,6 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 341 -
+[2007/08/20] Aeomin - Now client able to add stats!!! 
+[2007/08/20] Aeomin - Added procedure SendRequiredStatusPoint [Character.pas]
+[2007/08/20] Aeomin - Added procedure SendStatUPResult [ZoneSend.pas]
+[2007/08/20] Aeomin - Added procedure StatUP [ZoneRecv.pas]
+-
+
 - Rev 340 -
 [2007/08/20] RaX - Overview  : Implemented Job Bonuses.
 [2007/08/20] RaX - Added jobbonus table to heliosstatic database.

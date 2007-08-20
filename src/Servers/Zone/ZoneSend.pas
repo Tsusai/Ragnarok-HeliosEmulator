@@ -93,7 +93,7 @@ uses
 	procedure SendWhisper(const FromName,Whisper: String;AClient : TIdContext);
 	procedure SendWhisperReply(const AChara:TCharacter; const Code : Byte);
 	procedure SendGMAnnounce(AClient : TIdContext;const Announce:String;const Blue:boolean=False);
-
+	procedure SendStatUPResult(const AChara:TCharacter;const Failed:Boolean;const Amount:Byte);
 implementation
 
 
@@ -853,6 +853,31 @@ begin
 		WriteBufferLongWord(4, $65756c62, OutBuffer);
 	WriteBufferString(Offset, Announce, Size, OutBuffer);
 	SendBuffer(AClient, OutBuffer, Size + Offset);
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendStatUPResult                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Tell client if stat up was success or not
+//
+//  Changes -
+//	[2007/08/20] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure SendStatUPResult(const AChara:TCharacter;const Failed:Boolean;const Amount:Byte);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00bc, OutBuffer);
+	if Failed then
+		WriteBufferByte(2, 0, OutBuffer)
+	else
+		WriteBufferByte(2, 1, OutBuffer);
+	WriteBufferByte(3, Amount, OutBuffer);
+	SendBuffer(AChara.ClientInfo,OutBuffer,GetPacketLength($00bc));
 end;
 //------------------------------------------------------------------------------
 end.
