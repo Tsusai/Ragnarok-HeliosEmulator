@@ -537,7 +537,6 @@ end;
 function script_ResetStat(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
-	StatusPts : Integer;
 begin
 	Result := 0;
 	if GetCharaFromLua(ALua,AChara) then

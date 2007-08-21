@@ -375,7 +375,7 @@ begin
 		ZoneLocalDatabase := TDatabase.Create(NIL);
 
 		//Activate server and clients.
-		ActivateServer('Zone',TCPServer);
+		ActivateServer('Zone',TCPServer, Options.IndySchedulerType, Options.IndyThreadPoolSize);
 
 		//Load Maps
 		LoadMaps;

@@ -298,7 +298,7 @@ begin
     LoadOptions;
 
     Port := Options.Port;
-    ActivateServer('Inter',TCPServer);
+    ActivateServer('Inter',TCPServer, Options.IndySchedulerType, Options.IndyThreadPoolSize);
   end else
   begin
 		Console.Message('Cannot Start():: Inter Server already running!', 'Inter Server', MS_ALERT);

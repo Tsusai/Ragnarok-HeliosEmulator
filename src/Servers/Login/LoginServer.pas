@@ -153,7 +153,7 @@ Destructor TLoginServer.Destroy();
 begin
 	TCPServer.Free;
 	fCharaServerList.Free;
-        fAccountList.Free;
+  fAccountList.Free;
 	Inherited;
 end;{Destroy}
 //------------------------------------------------------------------------------
@@ -176,7 +176,7 @@ begin
 	  LoadOptions;
 
 	  Port := Options.Port;
-		ActivateServer('Login',TCPServer);
+		ActivateServer('Login',TCPServer, Options.IndySchedulerType, Options.IndyThreadPoolSize);
   end else
 	begin
 		Console.Message('Cannot start():: Login server is already running.', 'Login Server', MS_ALERT);

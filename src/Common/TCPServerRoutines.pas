@@ -15,7 +15,7 @@ uses
 	IdTCPServer,
 	CommClient;
 
-	function ActivateServer(Name : string; var AServer : TIdTCPServer) : Boolean;
+	function ActivateServer(Name : string; var AServer : TIdTCPServer; SchedulerType : Byte = 0; ThreadPoolSize : Word = 0) : boolean;
 	procedure DeActivateServer(const Name : String; var AServer : TIdTCPServer);
 
 	function ActivateClient(var AClient : TInterClient) : Boolean;
@@ -29,7 +29,13 @@ uses
 	IdException,
 	Classes,
 	Globals,
-	PacketDB;
+	PacketDB,
+  Main,
+  IdSchedulerOfThreadDefault,
+  IdSchedulerOfThreadPool,
+  IdSchedulerOfFiber,
+  IdFiberWeaverThreaded,
+  IdFiberWeaverInline;
 
 //------------------------------------------------------------------------------
 //ActivateServer                                                       FUNCTION
@@ -41,7 +47,7 @@ uses
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-function ActivateServer(Name : string; var AServer : TIdTCPServer) : boolean;
+function ActivateServer(Name : string; var AServer : TIdTCPServer; SchedulerType : Byte = 0; ThreadPoolSize : Word = 0) : boolean;
 Const
 	PORT_ERR =
 		'The %s port (%d) is in use.  Please correct and restart.';
@@ -54,6 +60,30 @@ begin
 	begin
 		AServer := TIdTCPServer.Create;
 	end;
+
+  //Set up the thread scheduler
+  AServer.Scheduler.Free;
+  case SchedulerType of
+    0 :
+        begin
+          //Create thread scheduler
+          AServer.Scheduler := TIdSchedulerOfThreadDefault.Create(AServer);
+        end;
+    1 :
+        begin
+          //create thread pool scheduler.
+          AServer.Scheduler := TIdSchedulerOfThreadPool.Create(AServer);
+          TIdSchedulerOfThreadPool(AServer.Scheduler).PoolSize :=
+            ThreadPoolSize;
+        end;
+    2 :
+        begin
+          //create multithreaded fibered scheduler
+          AServer.Scheduler := TIdSchedulerOfFiber.Create(AServer);
+          TIdSchedulerOfFiber(AServer.Scheduler).FiberWeaver :=
+            TIdFiberWeaverThreaded.Create(AServer.Scheduler);
+        end;
+  end;
 	Result := true;
 	Console.WriteLn(Format(LOADING, [Name]));
 	try

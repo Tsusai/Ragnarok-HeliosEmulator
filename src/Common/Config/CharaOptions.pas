@@ -52,6 +52,9 @@ interface
 			fDefaultAccessory1: Word;
 			fDefaultAccessory2: Word;
 
+      fIndySchedulerType  : Byte;
+      fIndyThreadPoolSize : Word;
+
 //Gets/Sets
 			procedure SetPort(Value : Word);
 			procedure SetWANIP(Value : String);
@@ -94,6 +97,10 @@ interface
 			property DefaultShoes: Word read fDefaultShoes write fDefaultShoes;
 			property DefaultAccessory1: Word read fDefaultAccessory1 write fDefaultAccessory1;
       property DefaultAccessory2: Word read fDefaultAccessory2 write fDefaultAccessory2;
+
+      //Performance
+      property IndySchedulerType : Byte read fIndySchedulerType;
+      property IndyThreadPoolSize : Word read fIndyThreadPoolSize;
 
 			//Public methods
 			procedure Load;
@@ -226,6 +233,18 @@ implementation
     end;{LoadCharacterDefaults}
     //--------------------------------------------------------------------------
 
+
+    //--------------------------------------------------------------------------
+    //LoadPerformance                                             SUB PROCEDURE
+    //--------------------------------------------------------------------------
+		procedure LoadPerformance;
+		begin
+			ReadSectionValues('Performance', Section);
+      fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 2);
+      fIndyThreadPoolSize := EnsureRange(StrToIntDef(Section.Values['Indy Thread Pool Size'], 1), 1, High(Word));
+		end;{Subroutine LoadPerformance}
+    //--------------------------------------------------------------------------
+
 	begin
 		Section    := TStringList.Create;
 
@@ -237,6 +256,7 @@ implementation
 	LoadSecurity;
 	LoadOptions;
 	LoadCharacterDefaults;
+  LoadPerformance;
 
 		Section.Free;
 
@@ -289,6 +309,10 @@ implementation
     WriteString('CharacterDefaults','Garment',IntToStr(DefaultGarment));
     WriteString('CharacterDefaults','Accessory1',IntToStr(DefaultAccessory1));
     WriteString('CharacterDefaults','Accessory2',IntToStr(DefaultAccessory2));
+
+    //Performance
+    WriteString('Performance','Indy Scheduler Type',IntToStr(IndySchedulerType));
+    WriteString('Performance','Indy Thread Pool Size',IntToStr(IndyThreadPoolSize));
 
 		UpdateFile;
 	end;{Save}

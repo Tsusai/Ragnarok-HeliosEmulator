@@ -223,7 +223,7 @@ begin
 	ServerName := Options.ServerName;
 	WANPort := Options.Port;
 
-	  ActivateServer('Character',TCPServer);
+	  ActivateServer('Character',TCPServer, Options.IndySchedulerType, Options.IndyThreadPoolSize);
 	  WANIP := Options.WANIP;
 	  LANIP := Options.LANIP;
   end else

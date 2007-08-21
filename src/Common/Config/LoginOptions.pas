@@ -26,7 +26,8 @@ interface
 			fPort		      : Word;
       fKey          : String;
 			fEnableMF			: Boolean;
-
+      fIndySchedulerType  : Byte;
+      fIndyThreadPoolSize : Word;
 //Gets/Sets
 			procedure SetPort(Value : Word);
 			procedure SetEnableMF(Value : Boolean);
@@ -40,6 +41,10 @@ interface
 
       //Options
       property EnableMF     : boolean read fEnableMF write SetEnableMF;
+
+      //Performance
+      property IndySchedulerType : Byte read fIndySchedulerType;
+      property IndyThreadPoolSize : Word read fIndyThreadPoolSize;
 
 			//Public methods
 			procedure Load;
@@ -103,6 +108,18 @@ implementation
 		end;{Subroutine LoadOptions}
     //--------------------------------------------------------------------------
 
+
+    //--------------------------------------------------------------------------
+    //LoadPerformance                                             SUB PROCEDURE
+    //--------------------------------------------------------------------------
+		procedure LoadPerformance;
+		begin
+			ReadSectionValues('Performance', Section);
+      fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 2);
+      fIndyThreadPoolSize := EnsureRange(StrToIntDef(Section.Values['Indy Thread Pool Size'], 1), 1, High(Word));
+		end;{Subroutine LoadPerformance}
+    //--------------------------------------------------------------------------
+
 	begin
 		Section    := TStringList.Create;
 
@@ -112,6 +129,7 @@ implementation
     LoadCommunication;
     LoadSecurity;
     LoadOptions;
+    LoadPerformance;
 
 		Section.Free;
 
@@ -139,6 +157,10 @@ implementation
 
     //Options
 		WriteString('Options','EnableMF',BoolToStr(EnableMF));
+
+    //Performance
+    WriteString('Performance','Indy Scheduler Type',IntToStr(IndySchedulerType));
+    WriteString('Performance','Indy Thread Pool Size',IntToStr(IndyThreadPoolSize));
 
 		UpdateFile;
 	end;{Save}

@@ -46,6 +46,9 @@ interface
 			fCharShowArea	: Word;//The distance in cells away from a character that
                             	//other entities appear in.
 
+      fIndySchedulerType  : Byte;
+      fIndyThreadPoolSize : Word;
+
       fBaseXPMultiplier: LongWord;
       fJobXPMultiplier: LongWord;
 
@@ -95,6 +98,8 @@ interface
 			property EventTick		: Word read fEventTick;
 			property CharClickArea: Word read fCharClickArea;
 			property CharShowArea	: Word read fCharShowArea;
+      property IndySchedulerType : Byte read fIndySchedulerType;
+      property IndyThreadPoolSize : Word read fIndyThreadPoolSize;
 
 			//Game
 			property KickOnShutdown : Boolean read fKickOnShutdown;
@@ -215,6 +220,8 @@ implementation
 			fEventTick		:= EnsureRange(StrToIntDef(Section.Values['Event Tick'], 10), Low(Word), High(Word));
 			fCharClickArea:= EnsureRange(StrToIntDef(Section.Values['Click Area'], 16), Low(Word), High(Word));
 			fCharShowArea	:= EnsureRange(StrToIntDef(Section.Values['Show Area'], 16), Low(Word), High(Word));
+      fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 2);
+      fIndyThreadPoolSize := EnsureRange(StrToIntDef(Section.Values['Indy Thread Pool Size'], 1), 1, High(Word));
 		end;{Subroutine LoadPerformance}
 	//--------------------------------------------------------------------------
 
@@ -305,6 +312,9 @@ implementation
 		WriteString('Performance','Event Tick',IntToStr(fEventTick));
 		WriteString('Performance','Click Area',IntToStr(fCharClickArea));
 		WriteString('Performance','ShowArea',IntToStr(fCharShowArea));
+    WriteString('Performance','Indy Scheduler Type',IntToStr(IndySchedulerType));
+    WriteString('Performance','Indy Thread Pool Size',IntToStr(IndyThreadPoolSize));
+
 
 		//Game
 		WriteString('Game','Kick On Shutdown',BoolToStr(fKickOnShutdown));

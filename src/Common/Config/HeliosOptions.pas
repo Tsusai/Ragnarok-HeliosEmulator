@@ -54,7 +54,8 @@ implementation
 	uses
 		Classes,
 		SysUtils,
-		WinLinux;
+		WinLinux,
+    Math;
 
 //------------------------------------------------------------------------------
 //Load()                                               PROCEDURE
@@ -147,6 +148,7 @@ implementation
       fZoneEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
 		end;{Subroutine LoadZone}
     //--------------------------------------------------------------------------
+
 
 	begin
 		Section    := TStringList.Create;
