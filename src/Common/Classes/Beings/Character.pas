@@ -759,8 +759,8 @@ Procedure TCharacter.SetBaseStats(
 Begin
 	Inherited;
 	SendParamBaseAndBonus(Index, ParamBase[Index], ParamBonus[Index]);
-	ParamUP[Index] := 2 + (Value DIV 10);
-	SendRequiredStatusPoint(Index, ParamUP[Index]);
+	ParamUP[Index] := 2 + (Value - 1) DIV 10;
+	SendRequiredStatusPoint(Index, EnsureRange(ParamUP[Index], 0, High(Byte)));
 	DataChanged := TRUE;
 End; (* Proc TCharacter.SetBaseStats
 *-----------------------------------------------------------------------------*)
@@ -1989,13 +1989,13 @@ var
       TempResult := 0;
       For StatIndex := STR to LUK do
       begin
-        For StatPoints := 2 to ParamBase[StatIndex] do
+	For StatPoints := 2 to ParamBase[StatIndex] do
         begin
           //Here, we're figuring out how many points each stat is worth based on
-          //how high the stat is. For every 10 points we go up each stat is worth
-          //one extra point.
-          TempResult := TempResult + 2 + (StatPoints DIV 10);
-        end;
+	  //how high the stat is. For every 10 points we go up each stat is worth
+	  //one extra point.
+	  TempResult := TempResult + 2 + (StatPoints - 2) DIV 10;
+	end;
       end;
       Result := EnsureRange(TempResult, 0, High(Integer));
   end;
@@ -2036,7 +2036,7 @@ begin
         StatusPts := TempStatusPts+LastLevelStatusPoints+ParamBaseStatPoints;
 
         //reset stats since we deleveled.
-        ParamBase[STR] := 1;
+	ParamBase[STR] := 1;
         ParamBase[AGI] := 1;
         ParamBase[DEX] := 1;
         ParamBase[VIT] := 1;

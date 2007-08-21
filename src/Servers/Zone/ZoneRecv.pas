@@ -1364,8 +1364,15 @@ begin
 		begin
 			if AChara.ParamUp[LocalType] <= AChara.StatusPts then
 			begin
-				AChara.StatusPts := AChara.StatusPts - AChara.ParamUp[LocalType];
-				AChara.ParamBase[LocalType] := AChara.ParamBase[LocalType] + 1;
+				if OldAmount < CHAR_STAT_MAX then
+				begin
+					AChara.StatusPts := AChara.StatusPts - AChara.ParamUp[LocalType];
+					AChara.ParamBase[LocalType] := AChara.ParamBase[LocalType] + 1;
+				end else
+				begin
+					//Too much already!
+					Break;
+				end;
 			end else
 			begin
 				//Not enough status point
