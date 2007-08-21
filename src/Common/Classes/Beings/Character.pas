@@ -269,6 +269,8 @@ public
 	procedure SendRequiredStatusPoint(const Stat : Byte;const Value : Byte);
 	procedure SendCharacterStats(UpdateView : boolean = false);
 
+	procedure ResetStats;
+	
 	Constructor Create(AClient : TIdContext);
 	Destructor  Destroy; override;
 
@@ -1977,29 +1979,28 @@ var
   TempStatusPts         : Integer;//Temporary StatusPts
   ParamBaseStatPoints   : Integer;//How many stat points a character's stats are worth.
   LastLevelStatusPoints : Integer;//The total status points for the last level in
-                                  //the database.
+				  //the database.
 
-  //Gets the amount of stat points all a character's stats are worth together.
-  function GetParamBaseWorthInStatPoints : Integer;
-  var
-    TempResult : Int64;
-    StatIndex : Integer;
-    StatPoints : Integer;
-  begin
-      TempResult := 0;
-      For StatIndex := STR to LUK do
-      begin
-	For StatPoints := 2 to ParamBase[StatIndex] do
-        begin
-          //Here, we're figuring out how many points each stat is worth based on
-	  //how high the stat is. For every 10 points we go up each stat is worth
-	  //one extra point.
-	  TempResult := TempResult + 2 + (StatPoints - 2) DIV 10;
+//Gets the amount of stat points all a character's stats are worth together.
+function GetParamBaseWorthInStatPoints : Integer;
+var
+	TempResult : Int64;
+	StatIndex : Integer;
+	StatPoints : Integer;
+begin
+	TempResult := 0;
+	For StatIndex := STR to LUK do
+	begin
+		For StatPoints := 2 to ParamBase[StatIndex] do
+		begin
+			//Here, we're figuring out how many points each stat is worth based on
+			//how high the stat is. For every 10 points we go up each stat is worth
+			//one extra point.
+			TempResult := TempResult + 2 + (StatPoints DIV 10);
+		end;
 	end;
-      end;
-      Result := EnsureRange(TempResult, 0, High(Integer));
-  end;
-
+	Result := EnsureRange(TempResult, 0, High(Integer));
+end;
 begin
   TempLevel := Max(Min(fBaseLv+Levels, MainProc.ZoneServer.Options.MaxBaseLevel), 1);
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
@@ -2136,6 +2137,36 @@ begin
     TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
   end;
 end;{JobLevelUp}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ResetStats                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Reset character's stats
+//
+//	Changes -
+//		[2007/08/20] - Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.ResetStats;
+begin
+	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
+	try
+		StatusPts := 0;
+		StatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(BaseLV);
+	finally
+		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+	end;
+
+	ParamBase[STR] := 1;
+	ParamBase[AGI] := 1;
+	ParamBase[DEX] := 1;
+	ParamBase[VIT] := 1;
+	ParamBase[INT] := 1;
+	ParamBase[LUK] := 1;
+end;
 //------------------------------------------------------------------------------
 
 

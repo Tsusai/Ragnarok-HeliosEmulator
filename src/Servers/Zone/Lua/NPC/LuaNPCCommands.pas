@@ -41,12 +41,13 @@ function script_setcharavar(ALua : TLua) : integer; cdecl; forward;
 function script_getgold(ALua : TLua) : integer; cdecl; forward;
 function script_getexp(ALua : TLua) : integer; cdecl; forward;
 function script_getJexp(ALua : TLua) : integer; cdecl; forward;
+function script_ResetStat(ALua : TLua) : integer; cdecl; forward;
 //Special Commands
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 16;
+	NPCCommandCount = 17;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -67,6 +68,7 @@ const
 		(name:'getgold';func:script_getgold),
 		(name:'getexp';func:script_getexp),
 		(name:'getJexp';func:script_getJexp),
+		(name:'ResetStat';func:script_ResetStat),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -526,6 +528,21 @@ begin
 			AChara.JobEXP := AChara.JobEXP +
 						Cardinal(EnsureRange(lua_tointeger(ALua, 1),0,High(Integer)));
 		end;
+	end;
+end;
+
+
+//ResetStat
+//Reset character's status
+function script_ResetStat(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	StatusPts : Integer;
+begin
+	Result := 0;
+	if GetCharaFromLua(ALua,AChara) then
+	begin
+		AChara.ResetStats;
 	end;
 end;
 

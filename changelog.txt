@@ -15,12 +15,17 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
-- Rev 342 -
+- Rev 344 -
+[2007/08/20] Aeomin - Added GM Command #ResetStats
+[2007/08/20] Aeomin - Added script command ResetStat()
+-
+
+- Rev 343 -
 [2007/08/20] Aeomin - Fixed extra "free" status points when deleveling
 [2007/08/20] Aeomin - Fixed when stats reached max cap caused points taken away with no stat added
 -
 
-- Rev 341 -
+- Rev 342 -
 [2007/08/20] Aeomin - Added Tsusai's 2 script command (getexp & getJexp)
 -
 

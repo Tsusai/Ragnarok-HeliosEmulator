@@ -29,6 +29,7 @@ uses
 	procedure GMAddSkillPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMGiveZeny(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMGiveStat(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMResetStats(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCast(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastLocal(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
@@ -598,6 +599,23 @@ begin
 		Error.Add('Syntax Help:');
 		Error.Add(Arguments[Length(Arguments)-1]);
 	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMResetStats                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Reset target character's stats
+//
+//	Changes-
+//		[2007/8/20] Aeomin - Create.
+//------------------------------------------------------------------------------
+procedure GMResetStats(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+begin
+	TargetChar.ResetStats;
+	Error.Add('Status reset successful!');
 end;
 //------------------------------------------------------------------------------
 
