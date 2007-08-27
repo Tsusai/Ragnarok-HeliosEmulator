@@ -146,7 +146,7 @@ implementation
 		procedure LoadPerformance;
 		begin
 			ReadSectionValues('Performance', Section);
-      fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 2);
+      fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 1);
       fIndyThreadPoolSize := EnsureRange(StrToIntDef(Section.Values['Indy Thread Pool Size'], 1), 1, High(Word));
 		end;{Subroutine LoadPerformance}
     //--------------------------------------------------------------------------

@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 346 -
+[2007/08/27] RaX - Removed Multithreaded-fibered configuration from the inis and
+ internally, Indy's supercore is not ready for use yet...
+-
+
 - Rev 345 -
 [2007/08/21] RaX - Overview: Added Configuration of indy's scheduler. Committed
  INI entries so we can comment them.

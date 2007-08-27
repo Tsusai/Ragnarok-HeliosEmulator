@@ -32,10 +32,7 @@ uses
 	PacketDB,
   Main,
   IdSchedulerOfThreadDefault,
-  IdSchedulerOfThreadPool,
-  IdSchedulerOfFiber,
-  IdFiberWeaverThreaded,
-  IdFiberWeaverInline;
+  IdSchedulerOfThreadPool;
 
 //------------------------------------------------------------------------------
 //ActivateServer                                                       FUNCTION
@@ -75,13 +72,6 @@ begin
           AServer.Scheduler := TIdSchedulerOfThreadPool.Create(AServer);
           TIdSchedulerOfThreadPool(AServer.Scheduler).PoolSize :=
             ThreadPoolSize;
-        end;
-    2 :
-        begin
-          //create multithreaded fibered scheduler
-          AServer.Scheduler := TIdSchedulerOfFiber.Create(AServer);
-          TIdSchedulerOfFiber(AServer.Scheduler).FiberWeaver :=
-            TIdFiberWeaverThreaded.Create(AServer.Scheduler);
         end;
   end;
 	Result := true;

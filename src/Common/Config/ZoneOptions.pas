@@ -220,7 +220,7 @@ implementation
 			fEventTick		:= EnsureRange(StrToIntDef(Section.Values['Event Tick'], 10), Low(Word), High(Word));
 			fCharClickArea:= EnsureRange(StrToIntDef(Section.Values['Click Area'], 16), Low(Word), High(Word));
 			fCharShowArea	:= EnsureRange(StrToIntDef(Section.Values['Show Area'], 16), Low(Word), High(Word));
-      fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 2);
+      fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 1);
       fIndyThreadPoolSize := EnsureRange(StrToIntDef(Section.Values['Indy Thread Pool Size'], 1), 1, High(Word));
 		end;{Subroutine LoadPerformance}
 	//--------------------------------------------------------------------------
