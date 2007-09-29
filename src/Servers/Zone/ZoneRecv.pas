@@ -739,7 +739,7 @@ end;
 //
 //  Changes -
 //    March 18th, 2007 - Aeomin - Created Header
-//	[2007/08/09] Aeomin - change + 3 to + 4, other wise theres extra space
+//	[2007/08/09] Aeomin - change + 3 to + 4, otherwise theres extra space
 //------------------------------------------------------------------------------
 procedure AreaChat(
 		var AChara  : TCharacter;

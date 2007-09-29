@@ -299,6 +299,7 @@ begin
 	TotalLength := 19 + StrLen(PChar(Command));
 	WriteBufferWord(0, $2205, OutBuffer);
 	WriteBufferWord(2, TotalLength, OutBuffer);
+
 	WriteBufferLongWord(4, AID, OutBuffer);
 	WriteBufferLongWord(8, CharID, OutBuffer);
 	WriteBufferWord(12, Length(Command), OutBuffer);

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//GMCommands																															 UNIT
+//GMCommands                                                                UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //      	Holds all of our GMCommand related routines.
@@ -21,6 +21,7 @@ uses
 	{Project}
 	Character,
 	GMCommandsOptions,
+	CustomGMCommandNameOptions,
 	{3rd Party}
 	List32
 	;
@@ -46,32 +47,38 @@ type
 
 	TGMCommands = class(TObject)
 	protected
-		fNames  : TStringList;
-		fLevels : TIntList32;
-		fTypes  : TIntList32;  //Should the command send to single zone/broadcast? or something else
-		fFlag   : TIntList32;  //To tell inter server don't break parameter!
-		fSyntax : TStringList; //Help message XD
+		fCommands : TStringList;
+		fTmpCommandList : TStringList; // Initial use only
+//		fNames  : TStringList;
+//		fLevels : TIntList32;
+//		fTypes  : TIntList32;
+//		fFlag   : TIntList32;
+//		fSyntax : TStringList;
 
-		Options : TGMCommandsOptions;
+		LevelOptions : TGMCommandsOptions;
+		NameOptions  : TCustomGMCommandNameOptions;
 	public
-		Commands : array of TGMCommand;
+//		Commands : array of TGMCommand;
+		// Replacement XD
+		function GetCommandFunc(Index: Integer): TGMCommand;
+
+		property Commands[Index: Integer]: TGMCommand read GetCommandFunc;
 
 		Constructor Create;
 		Destructor  Destroy; override;
-
 		function AddCommand(
 			const
-				Name    : String;
+				Name        : String;
 			const
-				Command : TGMCommand;
+				CommandFunc : TGMCommand;
 			const
-				Level   : Byte;
+				Level       : Byte;
 			const
-				AType   : Byte;
+				AType       : Byte;
 			const
-				AFlag   : Byte;
+				AFlag       : Byte;
 			const
-				ASyntax : String
+				ASyntax     : String
 			) : Word;
 
 		function IsCommand(
@@ -109,7 +116,15 @@ type
 			): String;
 	end;
 
+	TCommand = class
+		Name        : String;
+		Level       : Byte;
+		CommandType : Byte;    //Should the command send to single zone/broadcast? or something else
+		Flag        : Byte;    //To tell inter server don't break parameter!
+		Syntax      : String;  //Help message XD
 
+		CommandFunc : TGMCommand;
+	end;
 implementation
 
 uses
@@ -135,14 +150,17 @@ uses
 Constructor TGMCommands.Create;
 begin
 	inherited;
-	fNames  := TStringList.Create;
-	fLevels := TIntList32.Create;
-	fTypes  := TIntList32.Create;
-	fFlag   := TIntList32.Create;
-	fSyntax := TStringList.Create;
+	fCommands := TStringList.Create;
+	fTmpCommandList := TStringList.Create;
+//	fNames  := TStringList.Create;
+//	fLevels := TIntList32.Create;
+//	fTypes  := TIntList32.Create;
+//	fFlag   := TIntList32.Create;
+//	fSyntax := TStringList.Create;
 
-	Options := TGMCommandsOptions.Create(MainProc.Options.ConfigDirectory+'/GMCommands.ini');
-	
+	LevelOptions := TGMCommandsOptions.Create(MainProc.Options.ConfigDirectory+'/GMCommandLevels.ini');
+	NameOptions := TCustomGMCommandNameOptions.Create(MainProc.Options.ConfigDirectory+'/GMCommandNames.ini');
+
 	//AddCommand(Command Name,   Calling Function, Lvl required, command type, argument parsing mode, Syntax Help Message)
 	AddCommand('ZoneStatus',      GMZoneStatus,           1,  TYPE_BROADCAST,  GMFLAG_NORMAL,  '');
 	// - - - Warps
@@ -166,7 +184,11 @@ begin
 	AddCommand('BroadCastLN',     GMBroadCastLocalNoName, 99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '#BroadCastLN <Message>');
 	AddCommand('BroadCastLB',     GMBroadCastLocalBlue,   99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '#BroadCastLB <Message>');
 
-	Options.Load(fNames, fLevels);
+	// Use temperary list!!!
+	LevelOptions.Load(fTmpCommandList);
+	LevelOptions.Save(fTmpCommandList);
+
+	NameOptions.Load(fTmpCommandList, fCommands);
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -183,15 +205,16 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TGMCommands.Destroy;
 begin
-	Options.Save(fNames, fLevels);
+	fCommands.Free;
+	fTmpCommandList.Free;
+//	fNames.Free;
+//	fLevels.Free;
+//	fTypes.Free;
+//	fFlag.Free;
+//	fSyntax.Free;
 
-	fNames.Free;
-	fLevels.Free;
-	fTypes.Free;
-	fFlag.Free;
-	fSyntax.Free;
-
-	Options.Free;
+	LevelOptions.Free;
+	NameOptions.Free;
 	inherited;
 end;{Create}
 //------------------------------------------------------------------------------
@@ -217,27 +240,40 @@ Revisions:
 *-----------------------------------------------------------------------------*)
 function TGMCommands.AddCommand(
 	const
-		Name    : String;
+		Name        : String;
 	const
-		Command : TGMCommand;
+		CommandFunc : TGMCommand;
 	const
-		Level   : Byte;
+		Level       : Byte;
 	const
-		AType   : Byte;
+		AType       : Byte;
 	const
-		AFlag   : Byte;
+		AFlag       : Byte;
 	const
-		ASyntax : String
+		ASyntax     : String
 	) : Word;
+var
+	Command : TCommand;
 Begin
-	SetLength(Commands, Length(Commands)+1);
-	Commands[Length(Commands)-1] := Command;
-	fLevels.Add(Level);
-	fTypes.Add(AType);
-	fFlag.Add(AFlag);
-	fSyntax.Add(ASyntax);
-	Result := fNames.Add(Lowercase(Name));
-End; (* Func TGMCommands.AddCommand
+//	SetLength(Commands, Length(Commands)+1);
+//	Commands[Length(Commands)-1] := Command;
+
+	Command := TCommand.Create;
+	Command.Name := Name;
+	Command.Level := Level;
+	Command.CommandType := AType;
+	Command.Flag := AFlag;
+	Command.Syntax := ASyntax;
+	Command.CommandFunc := CommandFunc;
+
+	Result := fTmpCommandList.AddObject(Name, Command);
+
+//	fLevels.Add(Level);
+//	fTypes.Add(AType);
+//	fFlag.Add(AFlag);
+//	fSyntax.Add(ASyntax);
+//	Result := fNames.Add(Lowercase(Name));
+end; (* Func TGMCommands.AddCommand
 *-----------------------------------------------------------------------------*)
 
 
@@ -283,7 +319,7 @@ End; (* Func TGMCommands.GetCommandName
 *-----------------------------------------------------------------------------*)
 
 //------------------------------------------------------------------------------
-//GetCommandName        																						PROCEDURE
+//GetCommandName                                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //      	Parses a gm command and returns the command name
@@ -293,8 +329,11 @@ End; (* Func TGMCommands.GetCommandName
 //
 //------------------------------------------------------------------------------
 function TGMCommands.GetCommandGMLevel(CommandID: Integer) : Byte;
+var
+	Command : TCommand;
 begin
-	Result := fLevels[CommandID];
+	Command := fCommands.Objects[CommandID] as TCommand;
+	Result := Command.Level;
 end;
 //------------------------------------------------------------------------------
 
@@ -360,7 +399,7 @@ Function  TGMCommands.GetCommandID(
 		Name : String
 	) : Integer;
 Begin
-	Result := fNames.IndexOf(LowerCase(Name));
+	Result := fCommands.IndexOf(LowerCase(Name));
 End; (* Func TGMCommands.GetCommandID
 *-----------------------------------------------------------------------------*)
 
@@ -382,8 +421,11 @@ function TGMCommands.GetCommandType(
 	const
 		CommandID : Word
 	): Byte;
+var
+	Command : TCommand;
 begin
-	Result := fTypes[CommandID];
+	Command := fCommands.Objects[CommandID] as TCommand;
+	Result := Command.CommandType;
 end; (* Func TGMCommands.GetCommandType
 *-----------------------------------------------------------------------------*)
 
@@ -405,8 +447,11 @@ function TGMCommands.GetCommandFlag(
 	const
 		CommandID : Word
 	): Byte;
+var
+	Command : TCommand;
 begin
-	Result := fFlag[CommandID];
+	Command := fCommands.Objects[CommandID] as TCommand;
+	Result := Command.Flag;
 end; (* Func TGMCommands.GetCommandFlag
 *-----------------------------------------------------------------------------*)
 
@@ -428,8 +473,19 @@ function TGMCommands.GetSyntax(
 			const
 				CommandID : Word
 			): String;
+var
+	Command : TCommand;
 begin
-	Result := fSyntax[CommandID];
+	Command := fCommands.Objects[CommandID] as TCommand;
+	Result := Command.Syntax;
 end; (* Func TGMCommands.GetSyntax
 *-----------------------------------------------------------------------------*)
+
+function TGMCommands.GetCommandFunc(Index: Integer): TGMCommand;
+var
+	Command : TCommand;
+begin
+	Command := fCommands.Objects[Index] as TCommand;
+	Result := Command.CommandFunc;
+end;
 end{GMCommands}.

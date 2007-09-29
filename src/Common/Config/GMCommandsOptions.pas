@@ -6,6 +6,7 @@
 //
 //	Changes -
 //		[2007/08/10] Aeomin - Created.
+//		[2007/09/08] Aeomin - Update to support new command structure
 //
 //------------------------------------------------------------------------------
 unit GMCommandsOptions;
@@ -23,8 +24,8 @@ type
 	//----------------------------------------------------------------------
 	TGMCommandsOptions = class(TMemIniFile)
 	public
-		procedure Load(const Commands : TStringList;var Levels: TIntList32);
-		procedure Save(const Commands : TStringList;const Levels: TIntList32);
+		procedure Load(const Commands : TStringList);
+		procedure Save(const Commands : TStringList);
 	end;
 
 implementation
@@ -45,7 +46,7 @@ uses
 //		[2007/08/10] Aeomin - Created.
 //
 //------------------------------------------------------------------------------
-procedure TGMCommandsOptions.Load(const Commands : TStringList;var Levels: TIntList32);
+procedure TGMCommandsOptions.Load(const Commands : TStringList);
 var
 	Section    : TStringList;
 
@@ -54,15 +55,17 @@ var
 	//----------------------------------------------------------------------
 	procedure LoadGMCommandsOptions;
 	var
-		Index : Integer;
+		Index   : Integer;
+		Command : TCommand;
 	begin
 		ReadSectionValues('GMCommands', Section);
 
 		//Loop through all commands, and try to get each level config
 		for Index := Commands.Count -1 downto 0 do
 		begin
+			Command := Commands.Objects[Index] as TCommand;
 			// Set default GM level require 99, to prevent mistakes
-			Levels[Index] := EnsureRange(StrToIntDef(Section.Values[Commands[Index]], 99), 0, High(Byte));
+			Command.Level := EnsureRange(StrToIntDef(Section.Values[Commands[Index]], 99), 0, High(Byte));
 		end;
 	end;{LoadGMCommandsOptions}
 	//----------------------------------------------------------------------
@@ -74,19 +77,33 @@ begin
 	LoadGMCommandsOptions;
 
 	Section.Free;
-end;
+end;{Load}
 //------------------------------------------------------------------------------
 
-procedure TGMCommandsOptions.Save(const Commands : TStringList;const Levels: TIntList32);
+
+//------------------------------------------------------------------------------
+//Load                                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Loop through list of commands, and try get each level
+//		setting.
+//
+//	Changes -
+//		[2007/09/28] Aeomin - Created header...
+//
+//------------------------------------------------------------------------------
+procedure TGMCommandsOptions.Save(const Commands : TStringList);
 var
-	Index : Integer;
+	Index   : Integer;
+	Command : TCommand;
 begin
 	for Index := Commands.Count -1 downto 0 do
 	begin
-		WriteString('GMCommands',Commands[Index], IntToStr(Levels[Index]));
+		Command := Commands.Objects[Index] as TCommand;
+		WriteString('GMCommands',Command.Name, IntToStr(Command.Level));
 	end;
 
 	UpdateFile;
-end;
-
+end;{Save}
+//------------------------------------------------------------------------------
 end{GMCommandsOptions}.

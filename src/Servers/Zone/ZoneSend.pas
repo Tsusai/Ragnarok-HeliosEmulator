@@ -338,7 +338,7 @@ begin
 			end;
 		end;
 	end;
-end;
+end;{SendAreaChat}
 //------------------------------------------------------------------------------
 
 
@@ -388,7 +388,7 @@ end;
 		end;
 		WriteBufferWord(2, BufferIndex + 1, ReplyBuffer);
 		SendBuffer(MainProc.ZoneServer.ToInterTCPClient,ReplyBuffer,BufferIndex + 1);
-	end;//ZoneSendGMCommandToInter
+	end;{ZoneSendGMCommandResultToInter}
 //------------------------------------------------------------------------------
 
 

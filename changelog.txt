@@ -15,6 +15,14 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 347 -
+[2007/09/28] Note: So yeh, Helios halted for one month. Everyone is busy on job/school (sucks, i know).
+             Now able to customize Gm Command name (with alias support!)
+             To do so, edit GMCommandNames.ini, aliases should seperated by comma or space.
+[2007/09/08] Aeomin - added CustomGMCommandNameOptions.pas (Yes, long name)
+[2007/09/08] Aeomin - Edited bunch files to fix some header typo or so... (I'm very tired.. can't remember)
+-
+
 - Rev 346 -
 [2007/08/27] RaX - Removed Multithreaded-fibered configuration from the inis and
  internally, Indy's supercore is not ready for use yet...
