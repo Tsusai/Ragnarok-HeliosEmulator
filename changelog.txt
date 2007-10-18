@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 348 -
+[2007/10/18] Aeomin - CLEAN up, custom GM command name left bunch of *craps*..
+-
+
 - Rev 347 -
 [2007/09/28] Note: So yeh, Helios halted for one month. Everyone is busy on job/school (sucks, i know).
              Now able to customize Gm Command name (with alias support!)

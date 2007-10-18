@@ -49,16 +49,10 @@ type
 	protected
 		fCommands : TStringList;
 		fTmpCommandList : TStringList; // Initial use only
-//		fNames  : TStringList;
-//		fLevels : TIntList32;
-//		fTypes  : TIntList32;
-//		fFlag   : TIntList32;
-//		fSyntax : TStringList;
 
 		LevelOptions : TGMCommandsOptions;
 		NameOptions  : TCustomGMCommandNameOptions;
 	public
-//		Commands : array of TGMCommand;
 		// Replacement XD
 		function GetCommandFunc(Index: Integer): TGMCommand;
 
@@ -152,11 +146,6 @@ begin
 	inherited;
 	fCommands := TStringList.Create;
 	fTmpCommandList := TStringList.Create;
-//	fNames  := TStringList.Create;
-//	fLevels := TIntList32.Create;
-//	fTypes  := TIntList32.Create;
-//	fFlag   := TIntList32.Create;
-//	fSyntax := TStringList.Create;
 
 	LevelOptions := TGMCommandsOptions.Create(MainProc.Options.ConfigDirectory+'/GMCommandLevels.ini');
 	NameOptions := TCustomGMCommandNameOptions.Create(MainProc.Options.ConfigDirectory+'/GMCommandNames.ini');
@@ -189,6 +178,7 @@ begin
 	LevelOptions.Save(fTmpCommandList);
 
 	NameOptions.Load(fTmpCommandList, fCommands);
+	fTmpCommandList.Clear;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -207,11 +197,6 @@ Destructor TGMCommands.Destroy;
 begin
 	fCommands.Free;
 	fTmpCommandList.Free;
-//	fNames.Free;
-//	fLevels.Free;
-//	fTypes.Free;
-//	fFlag.Free;
-//	fSyntax.Free;
 
 	LevelOptions.Free;
 	NameOptions.Free;
@@ -255,9 +240,6 @@ function TGMCommands.AddCommand(
 var
 	Command : TCommand;
 Begin
-//	SetLength(Commands, Length(Commands)+1);
-//	Commands[Length(Commands)-1] := Command;
-
 	Command := TCommand.Create;
 	Command.Name := Name;
 	Command.Level := Level;
@@ -267,12 +249,6 @@ Begin
 	Command.CommandFunc := CommandFunc;
 
 	Result := fTmpCommandList.AddObject(Name, Command);
-
-//	fLevels.Add(Level);
-//	fTypes.Add(AType);
-//	fFlag.Add(AFlag);
-//	fSyntax.Add(ASyntax);
-//	Result := fNames.Add(Lowercase(Name));
 end; (* Func TGMCommands.AddCommand
 *-----------------------------------------------------------------------------*)
 
