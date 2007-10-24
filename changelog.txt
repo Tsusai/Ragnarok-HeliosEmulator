@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 349 -
+[2007/10/23] RaX - Initial item commit, added Item.pas along with comments,
+ headers, and constructors/destructors.
+-
+
 - Rev 348 -
 [2007/10/18] Aeomin - CLEAN up, custom GM command name left bunch of *craps*..
 -
