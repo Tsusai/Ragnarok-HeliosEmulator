@@ -1,11 +1,11 @@
 (*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
 
 Unit
-Item
+MiscItem
 
 *@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
 
-[2007/10/23] Helios - RaX
+[2007/10/25] Helios - RaX
 
 ================================================================================
 License:  (FreeBSD, plus commercial with written permission clause.)
@@ -21,16 +21,15 @@ Please refer to Helios.dpr for full license terms.
 Overview:
 ================================================================================
 
-Item base class, useableItem, miscitem, and equipmentitem will be derived from
-here.
+all misc Items.
 
 ================================================================================
 Revisions:
 ================================================================================
 (Format: [yyyy/mm/dd] <Author> - <Desc of Changes>)
-[2007/10/23] RaX - Created.
+[2007/10/25] RaX - Created.
 *@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*)
-unit Item;
+unit MiscItem;
 
 
 interface
@@ -38,8 +37,9 @@ interface
 
 uses
 	{RTL/VCL}
-	Types
+	Types,
 	{Project}
+	Item
 	{Third Party}
 	//none
 	;
@@ -47,40 +47,29 @@ uses
 type
 
 (*= CLASS =====================================================================*
-TItem
+TMiscItem
 
 *------------------------------------------------------------------------------*
 Overview:
 *------------------------------------------------------------------------------*
 
-	Common class for Items, TEquipmentItem, TMiscItem and TUseableItem will be
-   descendants.
+	All Misc Items
 
 *------------------------------------------------------------------------------*
 Revisions:
 *------------------------------------------------------------------------------*
 (Format: [yyyy/mm/dd] <Author> - <Description of Change>)
-[2007/10/23] RaX - Created.
+[2007/10/25] RaX - Created.
 *=============================================================================*)
-TItem = class(TObject)
+TMiscItem = class(TItem)
 protected
-	fName : String;
-	fID   : LongWord;
-
-	Procedure SetName(Value : String);
-	Function GetName : String;
-
-	Procedure SetID(Value : LongWord);
-	Function GetID : LongWord;
 
 public
-	Property Name : String Read GetName Write SetName;
-	Property ID : LongWord Read GetID Write SetID;
 
 	Constructor Create;
 	Destructor Destroy;override;
 
-End;(* TItem
+End;(* TMiscItem
 *== CLASS ====================================================================*)
 
 
@@ -95,24 +84,23 @@ implementation
 	//none
 
 (*- Cons ----------------------------------------------------------------------*
-TItem.Create
+TMiscItem.Create
 --------------------------------------------------------------------------------
 Overview:
 --
 
-Creates our TItem.
+Creates our TMiscItem.
 
 --
 Post:
-	EventList and Path lists are both created and initialized.
 
 --
 Revisions:
 --
 (Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2007/10/23] RaX - Created.
+[2007/10/25] RaX - Created.
 *-----------------------------------------------------------------------------*)
-Constructor TItem.Create;
+Constructor TMiscItem.Create;
 begin
 	inherited;
 
@@ -121,12 +109,12 @@ End; (* Cons TBeing.Create
 
 
 (*- Dest ----------------------------------------------------------------------*
-TItem.Destroy
+TMiscItem.Destroy
 
 --
 Overview:
 --
-	Destroys our TItem
+	Destroys our TMiscItem
 
 --
 Pre:
@@ -137,9 +125,9 @@ Post:
 --
 Revisions:
 --
-[2007/10/23] RaX - Created.
+[2007/10/25] RaX - Created.
 *-----------------------------------------------------------------------------*)
-Destructor TItem.Destroy;
+Destructor TMiscItem.Destroy;
 Begin
 	//Pre
 
@@ -147,28 +135,7 @@ Begin
 
 	//Always clean up your owned objects/memory first, then call ancestor.
 	inherited;
-End;(* Dest TItem.Destroy
+End;(* Dest TMiscItem.Destroy
 *-----------------------------------------------------------------------------*)
-
-
-Procedure TItem.SetName(Value: string);
-begin
-	fName := Value;
-end;
-
-Function TItem.GetName;
-begin
-	Result := fName;
-end;
-
-Procedure TItem.SetID(Value: Cardinal);
-begin
-	fID := Value;
-end;
-
-Function TItem.GetID;
-begin
-	Result := fID;
-end;
 
 end.
