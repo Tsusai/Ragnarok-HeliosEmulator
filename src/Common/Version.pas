@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//Version                                                                  UNIT
+//Version                                                                   UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //			Holds our version value for easy access.  MUST be updated to match the
@@ -14,7 +14,7 @@ unit Version;
 interface
 
 var
-	HeliosVersion : String = 'Helios Ragnarok Server Version 0.0.1.350';
+	HeliosVersion : String = 'Helios Ragnarok Server Version 0.0.1.351';
 
 implementation
 end.

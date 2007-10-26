@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 351 -
+[2007/10/25] Aeomin - [Major Clean Up] for ZoneSend.pas(#1) & ZoneInterCommunication.pas(#1)
+[2007/10/25] Aeomin - Clean up included: Move misplaced procedure; reorganize procedures by group or alphabet;
+[2007/10/25] Aeomin - Revert new header style to old with Pre/Post;Tabs clean up
+-
+
 - Rev 350 -
 [2007/10/25] RaX - Added Item descendant classes UseableItem, EquipmentItem and
 MiscItem. Added 2 properties, Name and ID, to TItem. Will create database
