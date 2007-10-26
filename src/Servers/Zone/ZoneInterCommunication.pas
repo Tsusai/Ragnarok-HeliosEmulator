@@ -8,6 +8,7 @@
 //  Changes -
 //    March 18th, 2007 - RaX - Created.
 //	[2007/10/25] Aeomin - Major clean up #1
+//	[2007/10/25] Aeomin - Major clean up #1b
 //------------------------------------------------------------------------------
 unit ZoneInterCommunication;
 
@@ -24,17 +25,25 @@ const
 	WHISPER_SUCCESS  = 0;
 	WHISPER_FAILED   = 1;
 	WHISPER_BLOCKED  = 2;
-	
+
+	//----------------------------------------------------------------------
+	// Server Validation
+	//----------------------------------------------------------------------
 	procedure ValidateWithInterServer(
 		AClient : TInterClient;
 		ZoneServer : TZoneServer
 	);
+
 	procedure SendValidateFlagToZone(
 		AClient : TIdContext;
 		Validated : byte
 	);
+	//----------------------------------------------------------------------
 
 
+	//----------------------------------------------------------------------
+	// Update IP Address
+	//----------------------------------------------------------------------
 	procedure SendZoneWANIPToInter(
 		AClient : TInterClient;
 		ZoneServer : TZoneServer
@@ -43,14 +52,22 @@ const
 		AClient : TInterClient;
 		ZoneServer : TZoneServer
 	);
+	//----------------------------------------------------------------------
 
 
+	//----------------------------------------------------------------------
+	//  Update Online player count
+	//----------------------------------------------------------------------
 	procedure SendZoneOnlineUsersToInter(
 		AClient : TInterClient;
 		ZoneServer : TZoneServer
 	);
+	//----------------------------------------------------------------------
 
 
+	//----------------------------------------------------------------------
+	//  Whisper handle
+	//----------------------------------------------------------------------
 	procedure SendWhisperToInter(
 		AClient : TInterClient;
 		const AChara: TCharacter;
@@ -71,8 +88,12 @@ const
 		const ZoneID, CharID:LongWord;
 		Code : byte
 	);
+	//----------------------------------------------------------------------
 
 
+	//----------------------------------------------------------------------
+	// GM Command Handle
+	//----------------------------------------------------------------------
 	procedure ZoneSendGMCommandtoInter(
 		AClient : TInterClient;
 		const AID, CharID:LongWord;
@@ -84,8 +105,12 @@ const
 		const ZoneID : LongWord;
 		const Error : TStringList
 	);
+	//----------------------------------------------------------------------
 
 
+	//----------------------------------------------------------------------
+	// Map Warp request
+	//----------------------------------------------------------------------
 	procedure ZoneSendMapWarpRequestToInter(
 		AClient : TInterClient;
 		const CharID, ZoneID : LongWord;
@@ -98,6 +123,8 @@ const
 		const MapName: String;
 		const APoint:TPoint
 	);
+	//----------------------------------------------------------------------
+
 implementation
 uses
 	Main,
@@ -125,7 +152,7 @@ uses
 procedure ValidateWithInterServer(
 	AClient : TInterClient;
 	ZoneServer : TZoneServer
-);
+	);
 var
 	OutBuffer : TBuffer;
 begin
@@ -157,7 +184,7 @@ end;{ValidateWithInterServer}
 procedure SendValidateFlagToZone(
 	AClient : TIdContext;
 	Validated : byte
-);
+	);
 var
 	OutBuffer : TBuffer;
 begin
@@ -185,7 +212,7 @@ end;{SendValidateFlagToZone}
 procedure SendZoneWANIPToInter(
 	AClient : TInterClient;
 	ZoneServer : TZoneServer
-);
+	);
 var
 	OutBuffer : TBuffer;
 	Size : integer;
@@ -216,7 +243,7 @@ end;{SendZoneWANIPToInter}
 procedure SendZoneLANIPToInter(
 	AClient : TInterClient;
 	ZoneServer : TZoneServer
-);
+	);
 var
 	OutBuffer : TBuffer;
 	Size : integer;
@@ -244,7 +271,10 @@ end;{SendZoneLANIPToInter}
 //  Changes -
 //    March 18th, 2007 - RaX - Created.
 //------------------------------------------------------------------------------
-procedure SendZoneOnlineUsersToInter(AClient : TInterClient; ZoneServer : TZoneServer);
+procedure SendZoneOnlineUsersToInter(
+	AClient : TInterClient;
+	ZoneServer : TZoneServer
+	);
 var
 	OutBuffer : TBuffer;
 begin
@@ -269,7 +299,11 @@ end;{SendZoneOnlineUsersToInter}
 //  Changes -
 //    May 3rd, 2007 - Aeomin - Created Header
 //------------------------------------------------------------------------------
-procedure SendWhisperToInter(AClient : TInterClient; const AChara: TCharacter;const TargetName,Whisper: String);
+procedure SendWhisperToInter(
+	AClient : TInterClient;
+	const AChara: TCharacter;
+	const TargetName,Whisper: String
+	);
 var
 	OutBuffer : TBuffer;
 	Size : Integer;
@@ -301,7 +335,11 @@ end;{SendWhisperToInter}
 //  Changes -
 //    May 3rd, 2007 - Aeomin - Created Header
 //------------------------------------------------------------------------------
-procedure SendWhisperReplyToZone(AClient : TIdContext; CharID:LongWord; Code : byte);
+procedure SendWhisperReplyToZone(
+	AClient : TIdContext;
+	CharID:LongWord;
+	Code : byte
+	);
 var
 	OutBuffer : TBuffer;
 begin
@@ -327,7 +365,11 @@ end;{SendWhisperReplyToZone}
 //  Changes -
 //    May 3rd, 2007 - Aeomin - Created Header
 //------------------------------------------------------------------------------
-procedure RedirectWhisperToZone(AClient : TIdContext;const ZoneID,FromID,CharID:LongWord;const FromName,Whisper: String);
+procedure RedirectWhisperToZone(
+	AClient : TIdContext;
+	const ZoneID,FromID,CharID:LongWord;
+	const FromName,Whisper: String
+	);
 var
 	OutBuffer : TBuffer;
 	Size : Integer;
@@ -359,7 +401,11 @@ end;{RedirectWhisperToZone}
 //  Changes -
 //    May 3rd, 2007 - Aeomin - Created Header
 //------------------------------------------------------------------------------
-procedure SendWhisperReplyToInter(AClient : TInterClient;const ZoneID, CharID:LongWord; Code : byte);
+procedure SendWhisperReplyToInter(
+	AClient : TInterClient;
+	const ZoneID, CharID:LongWord;
+	Code : byte
+	);
 var
 	OutBuffer : TBuffer;
 begin
@@ -391,7 +437,11 @@ end;{SendWhisperReplyToInter}
 //	Stringlist is freed.
 //[2007/7/23] Aeomin - Moved from ZoneSend.pas
 //------------------------------------------------------------------------------
-procedure ZoneSendGMCommandtoInter(AClient : TInterClient;const AID, CharID:LongWord;const Command : string);
+procedure ZoneSendGMCommandtoInter(
+	AClient : TInterClient;
+	const AID, CharID:LongWord;
+	const Command : string
+	);
 var
 	TotalLength : Integer;
 	OutBuffer   : TBuffer;
@@ -475,7 +525,12 @@ end;{ZoneSendGMCommandResultToInter}
 //  Changes -
 //	[2007/08/13] Aeomin - Creaed.
 //------------------------------------------------------------------------------
-procedure ZoneSendMapWarpRequestToInter(AClient : TInterClient; const CharID, ZoneID : LongWord; const MapName: String; const APoint:TPoint);
+procedure ZoneSendMapWarpRequestToInter(
+	AClient : TInterClient;
+	const CharID, ZoneID : LongWord;
+	const MapName: String;
+	const APoint:TPoint
+	);
 var
 	OutBuffer   : TBuffer;
 	Size        : Byte;
@@ -509,7 +564,12 @@ end;{ZoneSendMapWarpRequestToInter}
 //  Changes -
 //	[2007/08/13] Aeomin - Creaed.
 //------------------------------------------------------------------------------
-procedure ZoneSendMapWarpResultToInter(AClient : TInterClient; const CharID, ZoneID : LongWord; const MapName: String; const APoint:TPoint);
+procedure ZoneSendMapWarpResultToInter(
+	AClient : TInterClient;
+	const CharID, ZoneID : LongWord;
+	const MapName: String;
+	const APoint:TPoint
+	);
 var
 	OutBuffer   : TBuffer;
 	Size        : Byte;

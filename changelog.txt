@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 352 -
+[2007/10/25] Aeomin - [Major Clean Up] for ZoneRecv.pas(#1) & ZoneInterCommunication.pas(#1b)
+[2007/10/25] Aeomin - Not just as previous clean up! EVEN MORE CLEANER!
+-
+
 - Rev 351 -
 [2007/10/25] Aeomin - [Major Clean Up] for ZoneSend.pas(#1) & ZoneInterCommunication.pas(#1)
 [2007/10/25] Aeomin - Clean up included: Move misplaced procedure; reorganize procedures by group or alphabet;
