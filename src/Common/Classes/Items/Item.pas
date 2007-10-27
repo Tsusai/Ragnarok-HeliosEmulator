@@ -61,21 +61,23 @@ Revisions:
 *------------------------------------------------------------------------------*
 (Format: [yyyy/mm/dd] <Author> - <Description of Change>)
 [2007/10/23] RaX - Created.
+[2007/10/26] RaX - Added basic item properties.
 *=============================================================================*)
 TItem = class(TObject)
 protected
-	fName : String;
-	fID   : LongWord;
-
-	Procedure SetName(Value : String);
-	Function GetName : String;
-
-	Procedure SetID(Value : LongWord);
-	Function GetID : LongWord;
-
+	fName		: String;
+	fID			: LongWord;
+	fWeight : LongWord;
+	fPrice	: LongWord; //The price of the item in a standard shop
+	fSell		: LongWord; //The selling price of an item to a shop
+	
 public
-	Property Name : String Read GetName Write SetName;
-	Property ID : LongWord Read GetID Write SetID;
+	Property Name		: String Read fName Write fName;
+	Property ID			: LongWord Read fID Write fID;
+	Property Weight : LongWord Read fWeight Write fWeight;
+	Property Price	: LongWord Read fPrice Write fPrice;
+	Property Sell		: LongWord Read fSell Write fSell;
+
 
 	Constructor Create;
 	Destructor Destroy;override;
@@ -149,26 +151,5 @@ Begin
 	inherited;
 End;(* Dest TItem.Destroy
 *-----------------------------------------------------------------------------*)
-
-
-Procedure TItem.SetName(Value: string);
-begin
-	fName := Value;
-end;
-
-Function TItem.GetName;
-begin
-	Result := fName;
-end;
-
-Procedure TItem.SetID(Value: Cardinal);
-begin
-	fID := Value;
-end;
-
-Function TItem.GetID;
-begin
-	Result := fID;
-end;
 
 end.

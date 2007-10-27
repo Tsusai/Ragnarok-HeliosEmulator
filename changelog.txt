@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 353 -
+[2007/10/26] RaX - Added numerous properties to Item classes. Finished designing the
+ item databases.
+-
+
 - Rev 352 -
 [2007/10/25] Aeomin - [Major Clean Up] for ZoneRecv.pas(#1) & ZoneInterCommunication.pas(#1b)
 [2007/10/25] Aeomin - Not just as previous clean up! EVEN MORE CLEANER!

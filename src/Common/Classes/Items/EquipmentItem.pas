@@ -60,12 +60,40 @@ Revisions:
 *------------------------------------------------------------------------------*
 (Format: [yyyy/mm/dd] <Author> - <Description of Change>)
 [2007/10/25] RaX - Created.
+[2007/10/26] RaX - Added numerous equipment related properties.
 *=============================================================================*)
 TEquipmentItem = class(TItem)
 protected
+	fViewID : LongWord; //The view id, for the client to show the correct sprite.
+	fEquipmentLocation : Byte; //What equipment locations this item resides in
+	fAttack : Word;  //this item's attack
+	fDefense : Word; //This item's defense
+	fRange	: Word; //The range of this item.
+	fSlots : Byte; //The number of slots this item has.
+	fJob : Word; //The required job.
+	fGender : Byte; //The required gender, if applicable.
+	fMinimumLevel : Word;//The minimum base level required to euip this item
+	fWeaponLevel : Byte; //The weapon level of an item.
+	fOnEquip : String;//Script function, executes when the item is equipped.
+	fOnDisarm : String;//Script Function, executes when the item is unequipped.
+	fOnAttack : String;//Script function, executes when an Item is usedf to attack
+	fOnDefend : String;//Script function, executes when an Item is used to defend.
 
 public
-
+	Property ViewID : LongWord Read fViewID Write fViewID;
+	Property EquipmentLocation : Byte Read fEquipmentLocation write fEquipmentLocation;
+	Property Attack : Word Read fAttack Write fAttack;
+	Property Defense : Word Read fDefense Write fDefense;
+	Property Range : Word Read fRange Write fRange;
+	Property Job : Word Read fJob Write fJob;
+	Property Gender : Byte Read fGender Write fGender;
+	Property MinimumLevel : Word Read fMinimumLevel Write fMinimumLevel;
+	Property WeaponLevel : Byte Read fWeaponLevel Write fWeaponLevel;
+	Property OnEquip : String Read fOnEquip Write fOnEquip;
+	Property OnDisarm : String Read fOnDisarm Write fOnDisarm;
+	Property OnAttack : String Read fOnAttack Write fOnAttack;
+	Property OnDefend : String Read fOnDefend Write fOnDefend;
+	
 	Constructor Create;
 	Destructor Destroy;override;
 

@@ -60,11 +60,13 @@ Revisions:
 *------------------------------------------------------------------------------*
 (Format: [yyyy/mm/dd] <Author> - <Description of Change>)
 [2007/10/25] RaX - Created.
+[2007/10/26] RaX - Added OnUse property.
 *=============================================================================*)
 TUseableItem = class(TItem)
 protected
-
+	fOnUse : String;//Script function, executes when an item is used.
 public
+	Property OnUse : String Read fOnUse Write fOnUse;
 
 	Constructor Create;
 	Destructor Destroy;override;

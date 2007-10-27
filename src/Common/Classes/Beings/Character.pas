@@ -231,7 +231,7 @@ public
 	ClientInfo		: TIdContext;
 
 	ParamUP				: StatArray;
-  ParamBonus		    : StatArray;
+  ParamBonus		: StatArray;
 
 	//Stat Calculations should fill these in
 	//Maybe a record type for this crap for shared info between mobs and chars

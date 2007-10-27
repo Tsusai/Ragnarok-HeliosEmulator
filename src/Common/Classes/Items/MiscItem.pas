@@ -60,11 +60,14 @@ Revisions:
 *------------------------------------------------------------------------------*
 (Format: [yyyy/mm/dd] <Author> - <Description of Change>)
 [2007/10/25] RaX - Created.
+[2007/10/26] RaX - Added OnCompound Property
 *=============================================================================*)
 TMiscItem = class(TItem)
 protected
-
+	fOnCompound : String; //Script function, executed when a card is compounded
+												//onto an item.
 public
+	Property OnCompound : String Read fOnCompound Write fOnCompound;
 
 	Constructor Create;
 	Destructor Destroy;override;
