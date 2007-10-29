@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 354 -
+[2007/10/29] RaX - Added Inventory object, will handle character inventory,
+-
+
 - Rev 353 -
 [2007/10/26] RaX - Added numerous properties to Item classes. Finished designing the
  item databases.

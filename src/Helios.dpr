@@ -113,6 +113,7 @@ compile for linux, at the same time*}
 	EquipmentItem in 'Common\Classes\Items\EquipmentItem.pas',
 	UseableItem in 'Common\Classes\Items\UseableItem.pas',
 	MiscItem in 'Common\Classes\Items\MiscItem.pas',
+	Inventory in 'Common\Classes\Inventory.pas',
 
 	//Lua
 	LuaPas in 'Common\ThirdParty\LuaPas.pas',
@@ -242,6 +243,7 @@ compile for linux, at the same time*}
 	EquipmentItem in 'Common/Classes/Items/EquipmentItem.pas',
 	UseableItem in 'Common/Classes/Items/UseableItem.pas',
 	MiscItem in 'Common/Classes/Items/MiscItem.pas',
+	Inventory in 'Common/Classes/Inventory.pas',
 
 	//Lua
 	LuaPas in 'Common/ThirdParty/LuaPas.pas',

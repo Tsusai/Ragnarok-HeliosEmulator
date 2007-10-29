@@ -42,6 +42,7 @@ uses
 	Being,
 	GameConstants,
 	LuaCoreRoutines,
+	Inventory,
 	{Third Party}
 	IdContext,
 	List32
@@ -232,6 +233,10 @@ public
 
 	ParamUP				: StatArray;
   ParamBonus		: StatArray;
+
+	//Our Character's inventory
+	Inventory			: TInventory;
+
 
 	//Stat Calculations should fill these in
 	//Maybe a record type for this crap for shared info between mobs and chars
@@ -2186,6 +2191,7 @@ begin
 	inherited Create;
 	ClientInfo := AClient;
 	OnTouchIDs := TIntList32.Create;
+	Inventory := TInventory.Create;
 	ScriptStatus := SCRIPT_NOTRUNNING;
 	CharaState := charaStanding;
 	ZoneStatus := isOffline;
@@ -2205,6 +2211,7 @@ end;
 //------------------------------------------------------------------------------
 Destructor TCharacter.Destroy;
 begin
+	Inventory.Free;
 	OnTouchIDs.Free;
 	TerminateLuaThread(LuaInfo);
 	inherited;
