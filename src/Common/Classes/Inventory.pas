@@ -41,8 +41,10 @@ uses
 	Types,
 	Classes,
 	{Project}
-	Item
+	Item,
+	InventoryList,
 	{Third Party}
+	IdContext
 	//none
 	;
 
@@ -66,16 +68,16 @@ Revisions:
 *=============================================================================*)
 TInventory = class(TObject)
 protected
-	fItemList : TList;
-
+	fItemList : TInventoryList;
+	ClientInfo : TIdContext;
 	Function GetItem(Index : Integer) : TItem;
-
+	Procedure UpdateItemQuantity(const Index : Integer; const Quantity : Word);
 public
 	Property Items[Index : Integer] : TItem Read GetItem;
 	Procedure Add(AnItem : TItem; Quantity : Word);
 	Procedure Remove(AnItem : TItem; Quantity : Word);
-
-	Constructor Create;
+	Procedure Delete(Index : Integer);
+	Constructor Create(Parent : TObject);
 	Destructor Destroy;override;
 
 End;(* TInventory
@@ -83,7 +85,8 @@ End;(* TInventory
 
 
 implementation
-
+uses
+	Character;
 
 //uses
 	{RTL/VCL}
@@ -111,10 +114,11 @@ Revisions:
 (Format: [yyyy/mm/dd] <Author> - <Comment>)
 [2007/10/29] RaX - Created.
 *-----------------------------------------------------------------------------*)
-Constructor TInventory.Create;
+Constructor TInventory.Create(Parent : TObject);
 begin
-	inherited;
-	fItemList := TList.Create;
+	inherited Create;
+	self.ClientInfo := TCharacter(Parent).ClientInfo;
+	fItemList := TInventoryList.Create(FALSE);
 End; (* Cons TInventory.Create
 *-----------------------------------------------------------------------------*)
 
@@ -163,16 +167,42 @@ begin
 	Result := TItem(fItemList[Index]);
 end;
 
+
 Procedure TInventory.Add(AnItem: TItem; Quantity: Word);
 begin
-	//Needs to attach quantity somehow...
-	fItemList.Add(AnItem);
+	fItemList.Add(AnItem, Quantity);
+	//Send Packet here
 end;
 
-Procedure TInventory.Remove(AnItem: TItem; Quantity: Word);
+
+Procedure TInventory.Delete(Index : Integer);
 begin
-	//See Add
-	//Needs to remove by ID rather than address.
-	fItemList.Remove(AnItem);
+	fItemList.Delete(Index);
+	//Send packet here.
+end;
+
+
+Procedure TInventory.Remove(AnItem: TItem; Quantity: Word);
+var
+	ItemIndex : Integer;
+begin
+	ItemIndex := fItemList.IndexOf(AnItem.ID);
+	if ItemIndex > -1 then
+	begin
+		if fItemList.Items[ItemIndex].Quantity <= Quantity then
+		begin
+			self.Delete(ItemIndex);
+		end else
+		begin
+			UpdateItemQuantity(ItemIndex, fItemList.Items[ItemIndex].Quantity - Quantity);
+    end;
+	end;
+end;
+
+
+Procedure TInventory.UpdateItemQuantity(const Index: Integer; const Quantity: Word);
+begin
+	fItemList.Items[Index].Quantity := Quantity;
+	//Send Packets Here
 end;
 end.

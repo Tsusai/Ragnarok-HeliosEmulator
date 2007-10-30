@@ -15,6 +15,17 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 358 -
+[2007/10/30] RaX - Overview - changed how internal lists are built, they now use
+ an internal TList rather than my custom list. EventList is the exception, and will
+ be modified soon. Added InventoryList, which contains items and quantities of items.
+[2007/10/30] RaX - Changed Listws to use internal TList.
+[2007/10/30] RaX - Added InventoryList.
+[2007/10/30] RaX - Implemented InventoryList in TInventory. All it needs now is packets!
+[2007/10/30] RaX - TODO - add stubs for parsing inventory code and add sending display
+ packets from inventory.
+-
+
 - Rev 357 -
 [2007/10/30] RaX - Fixed broken build, removed references to CustomGMCommandNameOptions,
 -

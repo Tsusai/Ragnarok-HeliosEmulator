@@ -127,6 +127,7 @@ compile for linux, at the same time*}
 	List32 in 'Common\ThirdParty\List32.pas',
 	PointList in 'Common\Classes\Lists\PointList.pas',
 	EventList in 'Common\Classes\Events\EventList.pas',
+	InventoryList in 'Common\Classes\Lists\InventoryList.pas',
 
 	//Events
 	Event in 'Common\Classes\Events\Event.pas',
@@ -256,6 +257,7 @@ compile for linux, at the same time*}
 	List32 in 'Common/ThirdParty/List32.pas',
 	PointList in 'Common/Classes/Lists/PointList.pas',
 	EventList in 'Common/Classes/Events/EventList.pas',
+	InventoryList in 'Common/Classes/Lists/InventoryList.pas',
 
 	//Events
 	Event in 'Common/Classes/Events/Event.pas',

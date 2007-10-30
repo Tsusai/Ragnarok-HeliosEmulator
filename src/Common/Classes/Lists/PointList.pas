@@ -12,7 +12,8 @@ unit PointList;
 interface
 uses
 	SyncObjs,
-	Types;
+	Types,
+	Classes;
 
 type
 	PPoint = ^TPoint;

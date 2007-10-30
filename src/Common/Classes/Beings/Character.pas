@@ -2191,7 +2191,7 @@ begin
 	inherited Create;
 	ClientInfo := AClient;
 	OnTouchIDs := TIntList32.Create;
-	Inventory := TInventory.Create;
+	Inventory := TInventory.Create(self);
 	ScriptStatus := SCRIPT_NOTRUNNING;
 	CharaState := charaStanding;
 	ZoneStatus := isOffline;
