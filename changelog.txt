@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 359 -
+[2007/10/30] RaX - Fixed broken build, Added InventoryList.pas
+-
+
 - Rev 358 -
 [2007/10/30] RaX - Overview - changed how internal lists are built, they now use
  an internal TList rather than my custom list. EventList is the exception, and will
