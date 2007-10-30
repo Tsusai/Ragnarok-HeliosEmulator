@@ -21,7 +21,6 @@ uses
 	{Project}
 	Character,
 	GMCommandsOptions,
-	CustomGMCommandNameOptions,
 	{3rd Party}
 	List32
 	;

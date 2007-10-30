@@ -171,7 +171,6 @@ compile for linux, at the same time*}
 	DatabaseOptions in 'Common\Config\DatabaseOptions.pas',
 	ConsoleOptions in 'Common\Config\ConsoleOptions.pas',
 	GMCommandsOptions in 'Common\Config\GMCommandsOptions.pas',
-	CustomGMCommandNameOptions in 'Common\Config\CustomGMCommandNameOptions.pas',
 
 	//Types
 	MapTypes in 'Common\MapTypes.pas',
@@ -301,7 +300,6 @@ compile for linux, at the same time*}
 	DatabaseOptions in 'Common/Config/DatabaseOptions.pas',
 	ConsoleOptions in 'Common/Config/ConsoleOptions.pas',
 	GMCommandsOptions in 'Common/Config/GMCommandsOptions.pas',
-	CustomGMCommandNameOptions in 'Common/Config/CustomGMCommandNameOptions.pas',
 
 	//Types
 	MapTypes in 'Common/MapTypes.pas',

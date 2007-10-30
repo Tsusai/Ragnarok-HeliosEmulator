@@ -15,12 +15,16 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
-- Rev 356 -
+- Rev 357 -
+[2007/10/30] RaX - Fixed broken build, removed references to CustomGMCommandNameOptions,
+-
+
+- Rev 356 - BROKEN
 [2007/10/29] Aeomin - Well well, tired of # ? Now you can customize it, change to say.. i dunno.. Changes done in GMCommands.ini
 Limitaion on purpose: ONE CHAR ONLY! so, #~!@$#$^&*()_+ is NOT going to be work (automatically pick first one!)
 -
 
-- Rev 355 -
+- Rev 355 - BROKEN
 [2007/10/29] Aeomin - Merged 2 gm command related ini config (forgot name) into GMCommands.ini
 -
 
