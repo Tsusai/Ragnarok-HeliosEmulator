@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 355 -
+[2007/10/29] Aeomin - Merged 2 gm command related ini config (forgot name) into GMCommands.ini
+-
+
 - Rev 354 -
 [2007/10/29] RaX - Added Inventory object, will handle character inventory,
 -

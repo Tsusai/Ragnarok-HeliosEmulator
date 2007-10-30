@@ -7,6 +7,7 @@
 //	Changes -
 //		[2007/08/10] Aeomin - Created.
 //		[2007/09/08] Aeomin - Update to support new command structure
+//		[2007/10/29] Aeomin - Merge from CustomGMCommandNameOptions.pas
 //
 //------------------------------------------------------------------------------
 unit GMCommandsOptions;
@@ -24,7 +25,7 @@ type
 	//----------------------------------------------------------------------
 	TGMCommandsOptions = class(TMemIniFile)
 	public
-		procedure Load(const Commands : TStringList);
+		procedure Load(const CommandList : TStringList;var Commands: TStringList);
 		procedure Save(const Commands : TStringList);
 	end;
 
@@ -33,6 +34,7 @@ implementation
 uses
 	SysUtils,
 	Math,
+	Globals,
 	GMCommands;
 
 //------------------------------------------------------------------------------
@@ -44,9 +46,10 @@ uses
 //
 //	Changes -
 //		[2007/08/10] Aeomin - Created.
+//		[2007/10/29] Aeomin - Merge from CustomGMCommandNameOptions.pas
 //
 //------------------------------------------------------------------------------
-procedure TGMCommandsOptions.Load(const Commands : TStringList);
+procedure TGMCommandsOptions.Load(const CommandList : TStringList;var Commands: TStringList);
 var
 	Section    : TStringList;
 
@@ -58,16 +61,65 @@ var
 		Index   : Integer;
 		Command : TCommand;
 	begin
-		ReadSectionValues('GMCommands', Section);
+		ReadSectionValues('Command Level', Section);
 
 		//Loop through all commands, and try to get each level config
-		for Index := Commands.Count -1 downto 0 do
+		for Index := CommandList.Count -1 downto 0 do
 		begin
-			Command := Commands.Objects[Index] as TCommand;
+			Command := CommandList.Objects[Index] as TCommand;
 			// Set default GM level require 99, to prevent mistakes
-			Command.Level := EnsureRange(StrToIntDef(Section.Values[Commands[Index]], 99), 0, High(Byte));
+			Command.Level := EnsureRange(StrToIntDef(Section.Values[CommandList[Index]], 99), 0, High(Byte));
 		end;
 	end;{LoadGMCommandsOptions}
+	//----------------------------------------------------------------------
+
+
+	//----------------------------------------------------------------------
+	//LoadCustomGMCommandNames                                 SUB PROCEDURE
+	//----------------------------------------------------------------------
+	procedure LoadCustomGMCommandNames;
+	var
+		Index      : Integer;
+		Splitter   : TStringList;
+		SplitIdx   : Integer;
+		CommandObj : TObject;
+	begin
+		ReadSectionValues('Command Names', Section);
+		Commands.Clear;
+		Splitter := TStringList.Create;
+		Splitter.Delimiter := ',';
+		//Loop through all commands
+		for Index := CommandList.Count -1 downto 0 do
+		begin
+			// So yeh, nothing is best
+			// If there's empty or called entry not exit, then just set as default name!
+			if Section.Values[CommandList[Index]] = '' then
+			begin
+				Section.Values[CommandList[Index]] := CommandList[Index];
+				//And don't forget to write it!
+				WriteString('Command Names', CommandList[Index], CommandList[Index]);
+			end;
+			Splitter.DelimitedText := Section.Values[CommandList[Index]];
+                        // Get TCommand object
+			CommandObj := CommandList.Objects[Index];
+
+			for SplitIdx := Splitter.Count -1 downto 0 do
+			begin
+				if ( Commands.IndexOf(Splitter[SplitIdx]) = -1 ) then
+				begin
+					Commands.AddObject(Splitter[SplitIdx], CommandObj);
+				end else
+				begin
+					// Duplicated!
+					Console.Message('Duplicated GM Command name '''+Splitter[SplitIdx]+'''', 'Config', MS_WARNING);
+				end;
+			end;
+		end;
+		Splitter.Clear;
+		Splitter.Free;
+		//Well, update it, even though "may" not needed it..
+		UpdateFile;
+	end;{LoadCustomGMCommandNames}
 	//----------------------------------------------------------------------
 begin
 	Section    := TStringList.Create;
@@ -75,6 +127,7 @@ begin
 	Section.Delimiter := ',';
 
 	LoadGMCommandsOptions;
+	LoadCustomGMCommandNames;
 
 	Section.Free;
 end;{Load}
@@ -100,7 +153,7 @@ begin
 	for Index := Commands.Count -1 downto 0 do
 	begin
 		Command := Commands.Objects[Index] as TCommand;
-		WriteString('GMCommands',Command.Name, IntToStr(Command.Level));
+		WriteString('Command Level',Command.Name, IntToStr(Command.Level));
 	end;
 
 	UpdateFile;
