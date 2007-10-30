@@ -12,7 +12,7 @@ unit InventoryList;
 interface
 uses
 	Item,
-	Classes;
+	ContNrs;
 
 type
 
@@ -32,7 +32,7 @@ end;
 	TInventoryList = Class(TObject)
 
 	Private
-		fList : TList;
+		fList : TObjectList;
 
 		Function GetValue(Index : Integer) : TInventoryItem;
 		Procedure SetValue(Index : Integer; Value : TInventoryItem);
@@ -71,8 +71,8 @@ implementation
 constructor TInventoryList.Create(OwnsItems : Boolean);
 begin
 	inherited Create;
-	fList := TList.Create;
-	self.OwnsITems := OwnsItems;
+	fList := TObjectList.Create(TRUE);
+	self.OwnsItems := OwnsItems;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -92,14 +92,13 @@ var
 begin
 	//if we own the items, free all of them in the list.
 
-		for Index := 0 to fList.Count-1 do
+	for Index := 0 to fList.Count-1 do
+	begin
+		if OwnsItems then
 		begin
-			if OwnsItems then
-			begin
-				Items[Index].Item.Free;
-			end;
-			Items[Index].Free;
+			Items[Index].Item.Free;
 		end;
+	end;
 	fList.Free;
 	// Call TObject destructor
 	inherited;
@@ -164,8 +163,6 @@ begin
 	begin
 		Items[Index].Item.Free;
 	end;
-	Items[Index].Free;
-
 	fList.Delete(Index);
 end;{Delete}
 //------------------------------------------------------------------------------
@@ -220,7 +217,6 @@ begin
 			begin
 				Items[Index].Item.Free;
 			end;
-			Items[Index].Free;
 		end;
 
 

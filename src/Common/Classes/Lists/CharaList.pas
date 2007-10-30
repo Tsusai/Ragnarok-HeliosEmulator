@@ -12,7 +12,7 @@ unit CharaList;
 interface
 uses
 	Character,
-	Classes;
+	ContNrs;
 
 type
 	PCharacter = ^TCharacter;
@@ -23,13 +23,13 @@ type
 	TCharacterList = Class(TObject)
 
 	Private
-		fList : TList;
+		fList : TObjectList;
 
 		Function GetValue(Index : Integer) : TCharacter;
 		Procedure SetValue(Index : Integer; Value : TCharacter);
 		Function GetCount : Integer;
+
 	Public
-		OwnsCharacters : Boolean;
 		Constructor Create(OwnsCharacters : Boolean);
 		Destructor Destroy; override;
 		Property Items[Index : Integer] : TCharacter
@@ -61,8 +61,7 @@ implementation
 constructor TCharacterList.Create(OwnsCharacters : Boolean);
 begin
 	inherited Create;
-	fList := TList.Create;
-	self.OwnsCharacters := OwnsCharacters;
+	fList := TObjectList.Create(OwnsCharacters);
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -77,17 +76,7 @@ end;{Create}
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 destructor TCharacterList.Destroy;
-var
-  Index : Integer;
 begin
-  //if we own the characters, free all of them in the list.
-	if OwnsCharacters then
-	begin
-		for Index := 0 to fList.Count-1 do
-		begin
-			Items[Index].Free;
-		end;
-	end;
 	fList.Free;
 	// Call TObject destructor
 	inherited;
@@ -138,11 +127,6 @@ end;{Insert}
 //------------------------------------------------------------------------------
 procedure TCharacterList.Delete(Index : Integer);
 begin
-	//if we own the Character, free it.
-	if OwnsCharacters then
-	begin
-		Items[Index].Free;
-	end;
 	fList.Delete(Index);
 end;{Delete}
 //------------------------------------------------------------------------------
@@ -214,21 +198,8 @@ end;{IndexOfAID}
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure TCharacterList.Clear;
-var
-  Index : Integer;
 begin
-
-  //if we own the characters, the free them.
-  if OwnsCharacters then
-  begin
-		for Index := 0 to fList.Count - 1 do
-    begin
-			Items[Index].Free;
-    end;
-  end;
-
 	fList.Clear;
-
 end;{Clear}
 //------------------------------------------------------------------------------
 

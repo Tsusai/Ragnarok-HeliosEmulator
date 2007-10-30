@@ -12,7 +12,7 @@ unit MapList;
 interface
 uses
 	Map,
-	Classes;
+	ContNrs;
 
 type
 
@@ -22,8 +22,7 @@ type
 	TMapList = Class(TObject)
 
 	Private
-		fList : TList;
-    OwnsMaps : Boolean;//If we own the Maps, we handle free'ing them.
+		fList : TObjectList;
 
 		Function GetValue(Index : Integer) : TMap;
 		Procedure SetValue(Index : Integer; Value : TMap);
@@ -60,8 +59,7 @@ implementation
 constructor TMapList.Create(OwnsMaps : Boolean);
 begin
 	inherited Create;
-	fList := TList.Create;
-  self.OwnsMaps := OwnsMaps;
+	fList := TObjectList.Create(OwnsMaps);
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -76,18 +74,7 @@ end;{Create}
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 destructor TMapList.Destroy;
-var
-  Index : Integer;
 begin
-  //if we own the Maps, free all of them in the list.
-  if OwnsMaps then
-  begin
-		for Index := 0 to fList.Count - 1 do
-    begin
-      Items[Index].Free;
-    end;
-  end;
-
 	fList.Free;
 
 	// Call TObject destructor
@@ -139,12 +126,6 @@ end;{Insert}
 //------------------------------------------------------------------------------
 procedure TMapList.Delete(Index : Integer);
 begin
-	//if we own the Map, free it.
-  if OwnsMaps then
-  begin
-    Items[Index].Free;
-	end;
-  
 	fList.Delete(Index);
 end;{Delete}
 //------------------------------------------------------------------------------
@@ -188,21 +169,8 @@ end;{IndexOf}
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure TMapList.Clear;
-var
-  Index : Integer;
 begin
-
-  //if we own the Maps, the free them.
-  if OwnsMaps then
-  begin
-		for Index := 0 to fList.Count - 1 do
-    begin
-      Items[Index].Free;
-    end;
-  end;
-
 	fList.Clear;
-
 end;{Clear}
 //------------------------------------------------------------------------------
 
