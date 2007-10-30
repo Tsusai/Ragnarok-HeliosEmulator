@@ -47,11 +47,11 @@ type
 
 	TGMCommands = class(TObject)
 	protected
+		fCommandPrefix : Char;
 		fCommands : TStringList;
 		fTmpCommandList : TStringList; // Initial use only
 
-		LevelOptions : TGMCommandsOptions;
-		NameOptions  : TCustomGMCommandNameOptions;
+		CommandOptions : TGMCommandsOptions;
 	public
 		// Replacement XD
 		function GetCommandFunc(Index: Integer): TGMCommand;
@@ -147,37 +147,35 @@ begin
 	fCommands := TStringList.Create;
 	fTmpCommandList := TStringList.Create;
 
-	LevelOptions := TGMCommandsOptions.Create(MainProc.Options.ConfigDirectory+'/GMCommandLevels.ini');
-	NameOptions := TCustomGMCommandNameOptions.Create(MainProc.Options.ConfigDirectory+'/GMCommandNames.ini');
+	CommandOptions := TGMCommandsOptions.Create(MainProc.Options.ConfigDirectory+'/GMCommands.ini');
 
 	//AddCommand(Command Name,   Calling Function, Lvl required, command type, argument parsing mode, Syntax Help Message)
 	AddCommand('ZoneStatus',      GMZoneStatus,           1,  TYPE_BROADCAST,  GMFLAG_NORMAL,  '');
 	// - - - Warps
-	AddCommand('Warp',            GMWarp,                 99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '#Warp <Map Name>,<X>,<Y>');
-	AddCommand('WarpDev',         GMWarpDev,              99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '#WarpDev <Map Name>,<X>,<Y>');
-	AddCommand('Jump',            GMJump,                 99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '#Jump [X],[Y]');
+	AddCommand('Warp',            GMWarp,                 99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '<Map Name>,<X>,<Y>');
+	AddCommand('WarpDev',         GMWarpDev,              99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '<Map Name>,<X>,<Y>');
+	AddCommand('Jump',            GMJump,                 99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '[X],[Y]');
         // - - - Player Control
-	AddCommand('GiveBaseExp',     GMGiveBaseExperience,   99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#GiveBaseExp <Player Name>,<Amount>');
-	AddCommand('GiveJobExp',      GMGiveJobExperience,    99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#GiveJobExp <Player Name>,<Amount>');
-	AddCommand('BaseLevelUp',     GMBaseLevelUp,          99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#BaseLevelUp <Player Name>,<Amount>');
-	AddCommand('JobLevelUp',      GMJobLevelUp,           99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#JobLevelUp <Player Name>,<Amount>');
-	AddCommand('AddStatusPoints', GMAddStatusPoints,      99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#AddStatusPoints <Player Name>,<Amount>');
-	AddCommand('AddSkillPoints',  GMAddSkillPoints,       99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#AddSkillPoints <Player Name>,<Amount>');
-	AddCommand('GiveZeny',        GMGiveZeny,             99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#GiveZeny <Player Name>,<Amount>');
-	AddCommand('GiveStat',        GMGiveStat,             99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '#GiveStat <Player Name>,<Type>,<Amount>');
-        AddCommand('ResetStats',      GMResetStats,           99, TYPE_TARGETCHAR, GMFLAG_NOSPLIT, '#ResetStats <Player Name>');
+	AddCommand('GiveBaseExp',     GMGiveBaseExperience,   99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
+	AddCommand('GiveJobExp',      GMGiveJobExperience,    99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
+	AddCommand('BaseLevelUp',     GMBaseLevelUp,          99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
+	AddCommand('JobLevelUp',      GMJobLevelUp,           99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
+	AddCommand('AddStatusPoints', GMAddStatusPoints,      99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
+	AddCommand('AddSkillPoints',  GMAddSkillPoints,       99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
+	AddCommand('GiveZeny',        GMGiveZeny,             99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
+	AddCommand('GiveStat',        GMGiveStat,             99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Type>,<Amount>');
+	AddCommand('ResetStats',      GMResetStats,           99, TYPE_TARGETCHAR, GMFLAG_NOSPLIT, '<Player Name>');
 	// - - - Broadcast Sets
-	AddCommand('BroadCast',       GMBroadCast,            99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '#BroadCast <Message>');
-	AddCommand('BroadCastN',      GMBroadCastNoName,      99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '#BroadCastN <Message>');
-	AddCommand('BroadCastL',      GMBroadCastLocal,       99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '#BroadCastL <Message>');
-	AddCommand('BroadCastLN',     GMBroadCastLocalNoName, 99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '#BroadCastLN <Message>');
-	AddCommand('BroadCastLB',     GMBroadCastLocalBlue,   99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '#BroadCastLB <Message>');
+	AddCommand('BroadCast',       GMBroadCast,            99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
+	AddCommand('BroadCastN',      GMBroadCastNoName,      99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
+	AddCommand('BroadCastL',      GMBroadCastLocal,       99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '<Message>');
+	AddCommand('BroadCastLN',     GMBroadCastLocalNoName, 99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '<Message>');
+	AddCommand('BroadCastLB',     GMBroadCastLocalBlue,   99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '<Message>');
 
 	// Use temperary list!!!
-	LevelOptions.Load(fTmpCommandList);
-	LevelOptions.Save(fTmpCommandList);
+	fCommandPrefix := CommandOptions.Load(fTmpCommandList, fCommands);
+	CommandOptions.Save(fTmpCommandList);
 
-	NameOptions.Load(fTmpCommandList, fCommands);
 	fTmpCommandList.Clear;
 end;{Create}
 //------------------------------------------------------------------------------
@@ -198,8 +196,7 @@ begin
 	fCommands.Free;
 	fTmpCommandList.Free;
 
-	LevelOptions.Free;
-	NameOptions.Free;
+	CommandOptions.Free;
 	inherited;
 end;{Create}
 //------------------------------------------------------------------------------
@@ -340,7 +337,7 @@ Var
 Begin
 	Result := FALSE;
 	TempChat := Trim(Chat);
-	if (TempChat[1] = '#') then
+	if (TempChat[1] = fCommandPrefix) then
 	begin
 		TempList := TStringList.Create;
 		try

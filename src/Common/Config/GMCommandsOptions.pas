@@ -25,7 +25,7 @@ type
 	//----------------------------------------------------------------------
 	TGMCommandsOptions = class(TMemIniFile)
 	public
-		procedure Load(const CommandList : TStringList;var Commands: TStringList);
+		function Load(const CommandList : TStringList;var Commands: TStringList):Char;
 		procedure Save(const Commands : TStringList);
 	end;
 
@@ -49,9 +49,33 @@ uses
 //		[2007/10/29] Aeomin - Merge from CustomGMCommandNameOptions.pas
 //
 //------------------------------------------------------------------------------
-procedure TGMCommandsOptions.Load(const CommandList : TStringList;var Commands: TStringList);
+function TGMCommandsOptions.Load(const CommandList : TStringList;var Commands: TStringList):Char;
 var
 	Section    : TStringList;
+
+	//----------------------------------------------------------------------
+	//LoadCommandConf                                          SUB PROCEDURE
+	//----------------------------------------------------------------------
+	function LoadCommandConf:Char;
+	begin
+		ReadSectionValues('Command Configs', Section);
+
+		if Section.Values['Command Prefix'] = '' then
+		begin
+			Section.Values['Command Prefix'] := '#';
+
+			WriteString('Command Configs', 'Command Prefix', '#');
+
+			UpdateFile;
+
+			Result := '#';
+		end else
+		begin
+			Result := Section.Values['Command Prefix'][1];
+		end;
+	end;
+	//----------------------------------------------------------------------
+
 
 	//----------------------------------------------------------------------
 	//LoadGMCommandsOptions                                    SUB PROCEDURE
@@ -82,7 +106,7 @@ var
 		Index      : Integer;
 		Splitter   : TStringList;
 		SplitIdx   : Integer;
-		CommandObj : TObject;
+		Command    : TCommand;
 	begin
 		ReadSectionValues('Command Names', Section);
 		Commands.Clear;
@@ -101,17 +125,19 @@ var
 			end;
 			Splitter.DelimitedText := Section.Values[CommandList[Index]];
                         // Get TCommand object
-			CommandObj := CommandList.Objects[Index];
+			Command := CommandList.Objects[Index] as TCommand;
+			// TODO: use result isnt smart =(
+			Command.Syntax := Result + Command.Name + ' ' + Command.Syntax;
 
 			for SplitIdx := Splitter.Count -1 downto 0 do
 			begin
 				if ( Commands.IndexOf(Splitter[SplitIdx]) = -1 ) then
 				begin
-					Commands.AddObject(Splitter[SplitIdx], CommandObj);
+					Commands.AddObject(Splitter[SplitIdx], Command);
 				end else
 				begin
 					// Duplicated!
-					Console.Message('Duplicated GM Command name '''+Splitter[SplitIdx]+'''', 'Config', MS_WARNING);
+					Console.Message('Duplicated GM Command name ''' + Splitter[SplitIdx] + '''', 'Config', MS_WARNING);
 				end;
 			end;
 		end;
@@ -125,6 +151,8 @@ begin
 	Section    := TStringList.Create;
 	Section.QuoteChar := '"';
 	Section.Delimiter := ',';
+
+	Result := LoadCommandConf;
 
 	LoadGMCommandsOptions;
 	LoadCustomGMCommandNames;
