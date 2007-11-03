@@ -14,6 +14,11 @@ Developers & Contributers
 - ChrstphrR (CR)
 
 --------------------------------------------------------------------------------
+
+- Rev 361-
+[2007/11/2] Aeomin - Clean up for Character.pas (I know.. it's crazy and very large file.. my hands are sore...)
+-
+
 - Rev 360 -
 [2007/10/30] RaX - Swapped out TList for TObjectList pas Tsusai's suggestion(good find! =P)
 -

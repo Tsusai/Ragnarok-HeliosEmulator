@@ -107,8 +107,8 @@ protected
 	fCharacterNumber  : Byte;
 	fStatusPts        : Integer;
 	fSkillPts         : Integer;
-	fWeight				    : LongWord;
-	fMaxWeight			  : LongWord;
+	fWeight           : LongWord;
+	fMaxWeight        : LongWord;
 	fKarma            : Word;
 	fManner           : Word;
 	fPartyID          : LongWord;
@@ -147,52 +147,49 @@ protected
 	procedure SetCharaNum(Value : Byte);
 
 	Procedure SetName(
-		const
-			Value : String
-		); override;
+		const Value : String
+	); override;
 
 	procedure SetClass(Value : Word); override;
 	procedure SetBaseLV(Value : Byte); override;
 	procedure SetJobLV(Value : Byte); override;
 	procedure SetBaseEXP(Value : LongWord); override;
 	procedure SetJobEXP(Value : LongWord); override;
-  procedure SetBaseEXPToNextLevel(Value : LongWord);
-  procedure SetJobEXPToNextLevel(Value : LongWord);
+	procedure SetBaseEXPToNextLevel(Value : LongWord);
+	procedure SetJobEXPToNextLevel(Value : LongWord);
 	procedure SetZeny(Value : Integer); override;
 
-	Procedure SetBaseStats(
-		const
-			Index: Byte;
-		const
-			Value: Integer
-		); override;
+	procedure SetBaseStats(
+		const Index: Byte;
+		const Value: Integer
+	); override;
 
 	procedure SetMaxHP(Value : Word); override;
 	procedure SetHP(Value : Word); override;
 	procedure SetMaxSP(Value : Word); override;
 	procedure SetSP(Value : Word); override;
-	Procedure SetOption(Value : Word); override;
+	procedure SetOption(Value : Word); override;
 	procedure SetMap(Value : String); override;
 	procedure SetPosition(Value : TPoint); override;
 
-	Procedure SetKarma(Value : Word);
-	Procedure SetManner(Value : Word);
-	Procedure SetPartyID(Value : LongWord);
-	Procedure SetGuildID(Value : LongWord);
-	Procedure SetPetID(Value : LongWord);
-	Procedure SetHair(Value : Word);
-	Procedure SetHairColor(Value : Word);
-	Procedure SetClothesColor(Value : Word);
-	Procedure SetRightHand(Value : Word);
-	Procedure SetLeftHand(Value : Word);
-	Procedure SetArmor(Value : Word);
-	Procedure SetGarment(Value : Word);
-	Procedure SetShoes(Value : Word);
-	Procedure SetAccessory1(Value : Word);
-	Procedure SetAccessory2(Value : Word);
-	Procedure SetHeadTop(Value : Word);
-	Procedure SetHeadMid(Value : Word);
-	Procedure SetHeadBottom(Value : Word);
+	procedure SetKarma(Value : Word);
+	procedure SetManner(Value : Word);
+	procedure SetPartyID(Value : LongWord);
+	procedure SetGuildID(Value : LongWord);
+	procedure SetPetID(Value : LongWord);
+	procedure SetHair(Value : Word);
+	procedure SetHairColor(Value : Word);
+	procedure SetClothesColor(Value : Word);
+	procedure SetRightHand(Value : Word);
+	procedure SetLeftHand(Value : Word);
+	procedure SetArmor(Value : Word);
+	procedure SetGarment(Value : Word);
+	procedure SetShoes(Value : Word);
+	procedure SetAccessory1(Value : Word);
+	procedure SetAccessory2(Value : Word);
+	procedure SetHeadTop(Value : Word);
+	procedure SetHeadMid(Value : Word);
+	procedure SetHeadBottom(Value : Word);
 	procedure SetStatusPts(Value : Integer);
 	procedure SetSkillPts(Value : Integer);
 	procedure SetSMap(Value : String);
@@ -200,42 +197,39 @@ protected
 	procedure SetPartnerID(Value : LongWord);
 	procedure SetParentID1(Value : LongWord);
 	procedure SetParentID2(Value : LongWord);
-  procedure SetWeight(Value : LongWord);
-  procedure SetMaxWeight(Value : LongWord);
-	Procedure SetBabyID(
-		const
-			Value : LongWord
-		);
+	procedure SetWeight(Value : LongWord);
+	procedure SetMaxWeight(Value : LongWord);
+	procedure SetBabyID(
+		const Value : LongWord
+	);
 
-	Procedure SetOnline(
-		const
-			Value : Byte
-		);
+	procedure SetOnline(
+		const Value : Byte
+	);
 
-	Procedure SetHomunID(
-		const
-			Value : LongWord
-		);
+	procedure SetHomunID(
+		const Value : LongWord
+	);
 
-  procedure BaseLevelUp(Levels : Integer);
-  procedure JobLevelUp(Levels : Integer);
+	procedure BaseLevelUp(Levels : Integer);
+	procedure JobLevelUp(Levels : Integer);
 public
 	CID : LongWord;
 
-	DcAndKeepData	: Boolean;
+	DcAndKeepData		: Boolean;
 
-	LuaInfo				: TLuaInfo; //personal lua "thread"
-	ScriptStatus	: TCharaScriptStatus; //lets us know what is going on with lua,
+	LuaInfo			: TLuaInfo; //personal lua "thread"
+	ScriptStatus		: TCharaScriptStatus; //lets us know what is going on with lua,
 	ZoneStatus		: TCharaZoneStatus; //Is the chara online in the Zone or not?
-	ScriptID			: LongWord;
+	ScriptID		: LongWord;
 
 	ClientInfo		: TIdContext;
 
-	ParamUP				: StatArray;
-  ParamBonus		: StatArray;
+	ParamUP			: StatArray;
+	 ParamBonus		: StatArray;
 
 	//Our Character's inventory
-	Inventory			: TInventory;
+	Inventory		: TInventory;
 
 
 	//Stat Calculations should fill these in
@@ -256,20 +250,17 @@ public
 	procedure CalcSpeed; override;
 	procedure CalcMaxWeight;
 
-	Procedure SendSubStat(
-		const
-			Mode     : Word;
-		const
-			DataType : Word;
-		const
-			Value    : LongWord
-		);
+	procedure SendSubStat(
+		const Mode     : Word;
+		const DataType : Word;
+		const Value    : LongWord
+	);
 
-  Procedure SendParamBaseAndBonus(
-    const Stat : Byte;
-    const Value : LongWord;
-    const Bonus : LongWord
-  );
+	procedure SendParamBaseAndBonus(
+		const Stat : Byte;
+		const Value : LongWord;
+		const Bonus : LongWord
+	);
 
 	procedure SendRequiredStatusPoint(const Stat : Byte;const Value : Byte);
 	procedure SendCharacterStats(UpdateView : boolean = false);
@@ -288,17 +279,17 @@ public
 	//For timed save procedure to activate.
 	property BaseEXP   : LongWord    read fBaseEXP write SetBaseEXP;
 	property JobEXP    : LongWord    read fJobEXP write SetJobEXP;
-  property BaseEXPToNextLevel : LongWord read fBaseEXPToNextLevel write SetBaseEXPToNextLevel;
-  property JobEXPToNextLevel : LongWord read fJobEXPToNextLevel write SetJobEXPToNextLevel;
+	property BaseEXPToNextLevel : LongWord read fBaseEXPToNextLevel write SetBaseEXPToNextLevel;
+	property JobEXPToNextLevel : LongWord read fJobEXPToNextLevel write SetJobEXPToNextLevel;
 	property Zeny      : Integer    read fZeny write SetZeny;
 	property CharaNum  : Byte       read fCharacterNumber write SetCharaNum;
-	property StatusPts : Integer       read fStatusPts write SetStatusPts;
-	property SkillPts  : Integer       read fSkillPts write SetSkillPts;
+	property StatusPts : Integer    read fStatusPts write SetStatusPts;
+	property SkillPts  : Integer    read fSkillPts write SetSkillPts;
 	property Karma     : Word       read fKarma write SetKarma;
 	property Manner    : Word       read fManner write SetManner;
-	property PartyID   : LongWord    read fPartyID write SetPartyID;
-	property GuildID   : LongWord    read fGuildID write SetGuildID;
-	property PetID     : LongWord    read fPetID write SetPetID;
+	property PartyID   : LongWord   read fPartyID write SetPartyID;
+	property GuildID   : LongWord   read fGuildID write SetGuildID;
+	property PetID     : LongWord   read fPetID write SetPetID;
 	property Hair      : Word       read fHair write SetHair;
 	property HairColor : Word       read fHairColor write SetHairColor;
 	property ClothesColor: Word     read fClothesColor write SetClothesColor;
@@ -312,23 +303,18 @@ public
 	property HeadTop   : Word       read fHeadTop write SetHeadTop;
 	property HeadMid   : Word       read fHeadMid write SetHeadMid;
 	property HeadBottom: Word       read fHeadBottom write SetHeadBottom;
-	property SaveMap   : String
-		read  fSaveMap
-		write SetSMap;
+	property SaveMap   : String     read  fSaveMap write SetSMap;
 	property SavePoint : TPoint     read fSaveMapPt write SetSMapPt;
-	property PartnerID : LongWord    read fPartnerID write SetPartnerID;
-	property ParentID1 : LongWord    read fParentID1 write SetParentID1;
-	property ParentID2 : LongWord    read fParentID2 write SetParentID2;
-	property BabyID    : LongWord    read fBabyID write SetBabyID;
+	property PartnerID : LongWord   read fPartnerID write SetPartnerID;
+	property ParentID1 : LongWord   read fParentID1 write SetParentID1;
+	property ParentID2 : LongWord   read fParentID2 write SetParentID2;
+	property BabyID    : LongWord   read fBabyID write SetBabyID;
 	property Online    : Byte       read fOnline write SetOnline;
-	property HomunID   : LongWord    read fHomunID write SetHomunID;
-  property Weight    : LongWord   read fWeight write SetWeight;
-  property MaxWeight : LongWord   read fMaxWeight write SetMaxWeight;
-	Property JobName   : String
-		read  fJobName;
-End;(* TCharacter
-*== CLASS ====================================================================*)
-
+	property HomunID   : LongWord   read fHomunID write SetHomunID;
+	property Weight    : LongWord   read fWeight write SetWeight;
+	property MaxWeight : LongWord   read fMaxWeight write SetMaxWeight;
+	property JobName   : String     read  fJobName;
+end;{TCharacter}
 
 implementation
 
@@ -338,7 +324,7 @@ uses
 	Math,
 	SysUtils,
 	{Project}
-  Main,
+	Main,
 	BufferIO,
 	Globals,
 	PacketTypes,
@@ -349,16 +335,23 @@ uses
 
 
 //------------------------------------------------------------------------------
-//SetSaveTime                                                         PROCEDURE
+//SetSaveTime                                                          PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sets the last time the character was saved to the database.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetSaveTime(Value : Boolean);
+procedure TCharacter.SetSaveTime(
+		Value : Boolean
+	);
 begin
 	if Value and not fDataChanged then
 	begin
@@ -374,32 +367,46 @@ end;{SetSaveTime}
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sets Character State
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		March 12th, 2007 - Aeomin - Created Header
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetCharaState(Value : TCharaState);
+procedure TCharacter.SetCharaState(
+		Value : TCharaState
+	);
 begin
 	//Need to add easy to get to codes (STANCE_MOVE from prometheus)
 	//usually used for packets
 	fCharaState := Value;
-end;
+end;{SetCharaState}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetCharaNum                                                         PROCEDURE
+//SetCharaNum                                                          PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sets the CharaNum to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetCharaNum(Value : byte);
+procedure TCharacter.SetCharaNum(
+		Value : byte
+	);
 begin
 	DataChanged       := TRUE;
 	fCharacterNumber  := Value;
@@ -407,51 +414,52 @@ end;{SetCharaNum}
 //------------------------------------------------------------------------------
 
 
-(*- Procedure -----------------------------------------------------------------*
-TCharacter.SetName
---------------------------------------------------------------------------------
-Overview:
---
-	Sets the Name to Value.
-	Also, lets our object know that data has changed.
-
---
-Pre:
-	TODO
-Post:
-	TODO
-
---
-Revisions:
---
-(Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2006/22/06] RaX - Created Header.
-[2007/04/28] CR - Changed Header, made parameter constant (efficient use of
-	strings).
-*-----------------------------------------------------------------------------*)
-Procedure TCharacter.SetName(
-	const
-		Value : String
+//------------------------------------------------------------------------------
+//SetName                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//	Sets the Name to Value.
+//	Also, lets our object know that data has changed.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2006/22/06] RaX - Created Header.
+//		[2007/04/28] CR - Changed Header, made parameter constant (efficient use of
+//		strings).
+//------------------------------------------------------------------------------
+procedure TCharacter.SetName(
+	const Value : String
 	);
 Begin
 	DataChanged := TRUE;
 	fName := Value;
-End; (* Proc TCharacter.SetName
-*-----------------------------------------------------------------------------*)
+end;{SetName}
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetClass                                                           PROCEDURE
+//SetClass                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sets the Class to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetClass(Value : Word);
+procedure TCharacter.SetClass(
+		Value : Word
+	);
 begin
 	DataChanged := TRUE;
 	fJID := Value;
@@ -544,131 +552,160 @@ end;{SetClass}
 
 
 //------------------------------------------------------------------------------
-//SetBaseLV                                                           PROCEDURE
+//SetBaseLV                                                            PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sets the BaseLV  to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetBaseLV(Value : byte);
+procedure TCharacter.SetBaseLV(
+		Value : byte
+	);
 begin
-  //we do not inherit here for a reason! See BaseLevelUp
+	//we do not inherit here for a reason! See BaseLevelUp
 	DataChanged := TRUE;
-  BaseLevelUp(EnsureRange(Value-fBaseLv, -CHAR_BLEVEL_MAX, CHAR_BLEVEL_MAX));
+	BaseLevelUp(EnsureRange(Value-fBaseLv, -CHAR_BLEVEL_MAX, CHAR_BLEVEL_MAX));
 end;{SetBaseLV}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetJobLV                                                           PROCEDURE
+//SetJobLV                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the JobLV to Value. Also, lets our object know that data has
+//		Sets the JobLV to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //		March 12th, 2007 - Aeomin - Fix Header Typo
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetJobLV(Value : byte);
+procedure TCharacter.SetJobLV(
+		Value : byte
+	);
 begin
 	//we do not inherit here for a reason! See JobLevelUp
 	DataChanged := TRUE;
-  JobLevelUp(EnsureRange(Value-fJobLv, -CHAR_JLEVEL_MAX, CHAR_JLEVEL_MAX));
+	JobLevelUp(EnsureRange(Value-fJobLv, -CHAR_JLEVEL_MAX, CHAR_JLEVEL_MAX));
 end;{SetJobLV}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetBaseEXP                                                          PROCEDURE
+//SetBaseEXP                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the BaseEXP to Value. Also, lets our object know that data has
+//		Sets the BaseEXP to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetBaseEXP(Value : LongWord);
+procedure TCharacter.SetBaseEXP(
+		Value : LongWord
+	);
 var
-  Index : Integer;
-  OldBaseEXPToNextLevel: LongWord;
+	Index : Integer;
+	OldBaseEXPToNextLevel: LongWord;
 begin
 	Inherited;
 	DataChanged := TRUE;
-  For Index := 1 to MainProc.ZoneServer.Options.MaxBaseLevelsPerEXPGain do
-  begin
-    if (BaseEXP > BaseEXPToNextLevel) AND (BaseLv <= MainProc.ZoneServer.Options.MaxBaseLevel) then
-    begin
-      BaseLv := BaseLv+1;
-    end else
-    begin
-      Break;
-    end;
-  end;
+	for Index := 1 to MainProc.ZoneServer.Options.MaxBaseLevelsPerEXPGain do
+	begin
+		if (BaseEXP > BaseEXPToNextLevel) and (BaseLv <= MainProc.ZoneServer.Options.MaxBaseLevel) then
+		begin
+			BaseLv := BaseLv + 1;
+		end else
+		begin
+			Break;
+		end;
+	end;
 
-  if BaseEXP > BaseEXPToNextLevel then
-  begin
-    TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
-    OldBaseEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(JobName, BaseLv-1)
-      DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
-    BaseEXP := (BaseEXPToNextLevel - OldBaseEXPToNextLevel) DIV 2 + OldBaseEXPToNextLevel;
+	if BaseEXP > BaseEXPToNextLevel then
+	begin
+		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 
-    TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-  end;
+		OldBaseEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(JobName, BaseLv-1)
+			div MainProc.ZoneServer.Options.BaseXPMultiplier;
+		BaseEXP := (BaseEXPToNextLevel - OldBaseEXPToNextLevel) DIV 2 + OldBaseEXPToNextLevel;
 
-  SendSubStat(1, $0001, BaseEXP);
+		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+	end;
 
+	SendSubStat(1, $0001, BaseEXP);
 end;{SetBaseEXP}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetJobEXP                                                           PROCEDURE
+//SetJobEXP                                                            PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets JobEXP to Value. Also, lets our object know that data has
+//		Sets JobEXP to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetJobEXP(Value : LongWord);
+procedure TCharacter.SetJobEXP(
+		Value : LongWord
+	);
 var
-  Index : Integer;
-  OldJobEXPToNextLevel : LongWord;
+	Index : Integer;
+	OldJobEXPToNextLevel : LongWord;
 begin
 	Inherited;
 	DataChanged := TRUE;
-  For Index := 1 to MainProc.ZoneServer.Options.MaxJobLevelsPerEXPGain do
-  begin
-    if Value > JobEXPToNextLevel then
-    begin
-      JobLv := JobLv+1;
-    end else
-    begin
-      Break;
-    end;
-  end;
+	for Index := 1 to MainProc.ZoneServer.Options.MaxJobLevelsPerEXPGain do
+	begin
+		if Value > JobEXPToNextLevel then
+		begin
+			JobLv := JobLv + 1;
+		end else
+		begin
+			Break;
+		end;
+	end;
 
-  if (JobEXP > JobEXPToNextLevel) AND (JobLv <= MainProc.ZoneServer.Options.MaxJobLevel) then
-  begin
-    TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
-    OldJobEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, JobLv-1)
-      DIV MainProc.ZoneServer.Options.JobXPMultiplier;
-    JobEXP := (JobEXPToNextLevel - OldJobEXPToNextLevel) DIV 2 + OldJobEXPToNextLevel;
+	if (JobEXP > JobEXPToNextLevel) AND (JobLv <= MainProc.ZoneServer.Options.MaxJobLevel) then
+	begin
+		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 
-    TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-  end;
+		OldJobEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, JobLv-1)
+			div MainProc.ZoneServer.Options.JobXPMultiplier;
+		JobEXP := (JobEXPToNextLevel - OldJobEXPToNextLevel) DIV 2 + OldJobEXPToNextLevel;
 
-  SendSubStat(1, $0002, JobEXP);
+		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+	end;
+
+	SendSubStat(1, $0002, JobEXP);
 end;{SetJobEXP}
 //------------------------------------------------------------------------------
 
@@ -677,231 +714,293 @@ end;{SetJobEXP}
 //SetBaseEXPToNextLevel                                                PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets BaseEXPToNextLevel to Value.
-//
+//		Sets BaseEXPToNextLevel to Value.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		July 27th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetBaseEXPToNextLevel(Value : LongWord);
+procedure TCharacter.SetBaseEXPToNextLevel(
+		Value : LongWord
+	);
 begin
 	fBaseEXPToNextLevel := Value;
-  SendSubStat(1, $0016, BaseEXPToNextLevel);
+	SendSubStat(1, $0016, BaseEXPToNextLevel);
 end;{SetBaseEXPToNextLevel}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetJobEXPToNextLevel                                                PROCEDURE
+//SetJobEXPToNextLevel                                                 PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets JobEXPToNextLevel to Value.
-//
+//		Sets JobEXPToNextLevel to Value.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		July 27th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetJobEXPToNextLevel(Value : LongWord);
+procedure TCharacter.SetJobEXPToNextLevel(
+		Value : LongWord
+	);
 begin
 	fJobEXPToNextLevel := Value;
-  SendSubStat(1, $0017, JobEXPToNextLevel);
+	SendSubStat(1, $0017, JobEXPToNextLevel);
 end;{SetJobEXPToNextLevel}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetZeny                                                             PROCEDURE
+//SetZeny                                                              PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Zeny to Value. Also, lets our object know that data has
+//		Sets the Zeny to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //		[2007/07/22] Tsusai - Added sending of update packet.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetZeny(Value : Integer);
+procedure TCharacter.SetZeny(
+		Value : Integer
+	);
 begin
 	Inherited;
 	DataChanged := TRUE;
-  // Update Zeny
-  SendSubStat(1, $0014, Zeny);
+	// Update Zeny
+	SendSubStat(1, $0014, Zeny);
 end;{SetZeny}
 //------------------------------------------------------------------------------
 
 
-(*- Procedure -----------------------------------------------------------------*
-TCharacter.SetBaseStats
---------------------------------------------------------------------------------
-Overview:
---
-
-	Sets Base Stat at Index to Value.
-
-	Passes off to the ancestor routine which does range checking via Asserts,
-	and then flags DataChanged for saving the Character Data when that event is
-	next triggered.
-
---
-Pre:
-	Index must be between STR..LUK (Checked by the inherited method)
-Post:
-	DataChanged is True
-
---
-Revisions:
---
-(Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2006/12/22] RaX - Created Header.
-[2007/04/28] CR - Altered Comment Header, improved description, noted Pre and
-	Post conditions.  Altered parameters to match TBeing.
-*-----------------------------------------------------------------------------*)
-Procedure TCharacter.SetBaseStats(
-	const
-		Index : Byte;
-	const
-		Value : Integer
+//------------------------------------------------------------------------------
+//SetBaseStats                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Sets Base Stat at Index to Value.
+//
+//		Passes off to the ancestor routine which does range checking via Asserts,
+//		and then flags DataChanged for saving the Character Data when that event is
+//		next triggered.
+// --
+//   Pre:
+//	Index must be between STR..LUK (Checked by the inherited method)
+//   Post:
+//	DataChanged is True
+// --
+//	Changes -
+//	[2006/12/22] RaX - Created Header.
+//	[2007/04/28] CR - Altered Comment Header, improved description, noted Pre and
+//		Post conditions.  Altered parameters to match TBeing.
+//------------------------------------------------------------------------------
+procedure TCharacter.SetBaseStats(
+		const Index : Byte;
+		const Value : Integer
 	);
-Begin
+begin
 	Inherited;
 	SendParamBaseAndBonus(Index, ParamBase[Index], ParamBonus[Index]);
 	ParamUP[Index] := 2 + (Value - 1) DIV 10;
 	SendRequiredStatusPoint(Index, EnsureRange(ParamUP[Index], 0, High(Byte)));
 	DataChanged := TRUE;
-End; (* Proc TCharacter.SetBaseStats
-*-----------------------------------------------------------------------------*)
+end;{SetBaseStats}
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//SetMaxHP                                                            PROCEDURE
+//SetMaxHP                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the MaxHP to Value.
-//
+//		Sets the MaxHP to Value.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetMaxHP(Value : word);
+procedure TCharacter.SetMaxHP(
+		Value : word
+	);
 begin
 	Inherited;
-  SendSubStat(0, $0006, MAXHP);
+	SendSubStat(0, $0006, MAXHP);
 	DataChanged := TRUE;
 end;{SetMaxHP}
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//SetHP                                                               PROCEDURE
+//SetHP                                                                PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the HP to Value. Also, lets our object know that data has
+//		Sets the HP to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetHP(Value : word);
+procedure TCharacter.SetHP(
+		Value : word
+	);
 begin
 	Inherited;
-  SendSubStat(0, $0005, HP);
+	SendSubStat(0, $0005, HP);
 	DataChanged := TRUE;
 end;{SetHP}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetMaxSP                                                            PROCEDURE
+//SetMaxSP                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the MaxSP to Value. Also, lets our object know that data has
+//		Sets the MaxSP to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetMaxSP(Value : word);
+procedure TCharacter.SetMaxSP(
+		Value : word
+	);
 begin
 	Inherited;
-  SendSubStat(0, $0008, MAXSP);
+	SendSubStat(0, $0008, MAXSP);
 	DataChanged := TRUE;
 end;{SetMaxSP}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetName                                                           PROCEDURE
+//SetName                                                              PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the SP to Value. Also, lets our object know that data has
+//		Sets the SP to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetSP(Value : word);
+procedure TCharacter.SetSP(
+		Value : word
+	);
 begin
 	Inherited;
-  SendSubStat(0, $0007, SP);
+	SendSubStat(0, $0007, SP);
 	DataChanged := TRUE;
 end;{SetSP}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetStatusPts                                                        PROCEDURE
+//SetStatusPts                                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the StatusPoints to Value. Also, lets our object know that data has
+//		Sets the StatusPoints to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetStatusPts(Value : Integer);
+procedure TCharacter.SetStatusPts(
+		Value : Integer
+	);
 begin
 	DataChanged := TRUE;
 	fStatusPts  := EnsureRange(Value, 0, CHAR_STATPOINT_MAX);
-  SendSubStat(0,$0009,fStatusPts);
+	SendSubStat(0,$0009,fStatusPts);
 end;{SetStatusPts}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetSkillPts                                                         PROCEDURE
+//SetSkillPts                                                          PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sets the SkillPoints to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetSkillPts(Value : Integer);
+procedure TCharacter.SetSkillPts(
+		Value : Integer
+	);
 begin
 	DataChanged := TRUE;
 	fSkillPts   := EnsureRange(Value, 0, CHAR_SKILLPOINT_MAX);
-  SendSubStat(0,$000c,fSkillPts);
+	SendSubStat(0,$000c,fSkillPts);
 end;{SetSkillPts}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetOption                                                           PROCEDURE
+//SetOption                                                            PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Option to Value. Also, lets our object know that data has
+//		Sets the Option to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetOption(Value : word);
+procedure TCharacter.SetOption(
+		Value : word
+	);
 begin
 	Inherited;
 	DataChanged := TRUE;
@@ -910,17 +1009,24 @@ end;{SetOption}
 
 
 //------------------------------------------------------------------------------
-//SetKarma                                                           PROCEDURE
+//SetKarma                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Karma to Value. Also, lets our object know that data has
+//		Sets the Karma to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetKarma(Value : word);
+procedure TCharacter.SetKarma(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
 	fKarma      := Value;
@@ -929,17 +1035,24 @@ end;{SetName}
 
 
 //------------------------------------------------------------------------------
-//SetManner                                                           PROCEDURE
+//SetManner                                                            PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Manner to Value. Also, lets our object know that data has
+//		Sets the Manner to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetManner(Value : word);
+procedure TCharacter.SetManner(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
 	fManner     := Value;
@@ -948,17 +1061,24 @@ end;{SetManner}
 
 
 //------------------------------------------------------------------------------
-//SetPartyID                                                          PROCEDURE
+//SetPartyID                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the PartyID to Value. Also, lets our object know that data has
+//		Sets the PartyID to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetPartyID(Value : LongWord);
+procedure TCharacter.SetPartyID(
+		Value : LongWord
+	);
 begin
 	DataChanged := TRUE;
 	fPartyID    := Value;
@@ -970,14 +1090,21 @@ end;{SetPartyID}
 //SetGuildID                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the GuildID to Value. Also, lets our object know that data has
+//		Sets the GuildID to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetGuildID(Value : LongWord);
+procedure TCharacter.SetGuildID(
+		Value : LongWord
+	);
 begin
 	DataChanged := TRUE;
 	fGuildID    := Value;
@@ -986,17 +1113,24 @@ end;{SetGuildID}
 
 
 //------------------------------------------------------------------------------
-//SetPetID                                                            PROCEDURE
+//SetPetID                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the PetID to Value. Also, lets our object know that data has
+//		Sets the PetID to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetPetID(Value : LongWord);
+procedure TCharacter.SetPetID(
+		Value : LongWord
+	);
 begin
 	DataChanged := TRUE;
 	fPetID      := Value;
@@ -1005,17 +1139,24 @@ end;{SetPetID}
 
 
 //------------------------------------------------------------------------------
-//SetHair                                                             PROCEDURE
+//SetHair                                                              PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Hair to Value. Also, lets our object know that data has
+//		Sets the Hair to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetHair(Value : word);
+procedure TCharacter.SetHair(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
 	fHair       := Value;
@@ -1024,17 +1165,24 @@ end;{SetHair}
 
 
 //------------------------------------------------------------------------------
-//SetHairColor                                                        PROCEDURE
+//SetHairColor                                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the HairColor to Value. Also, lets our object know that data has
+//		Sets the HairColor to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetHairColor(Value : word);
+procedure TCharacter.SetHairColor(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
 	fHairColor  := Value;
@@ -1043,17 +1191,24 @@ end;{SetHairColor}
 
 
 //------------------------------------------------------------------------------
-//SetClothesColor                                                     PROCEDURE
+//SetClothesColor                                                      PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the ClothesColor to Value. Also, lets our object know that data has
+//		Sets the ClothesColor to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetClothesColor(Value : word);
+procedure TCharacter.SetClothesColor(
+		Value : word
+	);
 begin
 	DataChanged   := TRUE;
 	fClothesColor := Value;
@@ -1062,17 +1217,24 @@ end;{SetClothesColor}
 
 
 //------------------------------------------------------------------------------
-//SetRightHand                                                       PROCEDURE
+//SetRightHand                                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Right Hand to Value. Also, lets our object know that data has
+//		Sets the Right Hand to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetRightHand(Value : word);
+procedure TCharacter.SetRightHand(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
 	fRightHand  := Value;
@@ -1081,17 +1243,24 @@ end;{SetWeapon}
 
 
 //------------------------------------------------------------------------------
-//SetLeftHand                                                       PROCEDURE
+//SetLeftHand                                                          PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Shield to Value. Also, lets our object know that data has
+//		Sets the Shield to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetLeftHand(Value : word);
+procedure TCharacter.SetLeftHand(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
 	fLeftHand   := Value;
@@ -1100,96 +1269,131 @@ end;{SetShield}
 
 
 //------------------------------------------------------------------------------
-//SetArmor                                                         PROCEDURE
+//SetArmor                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Armor to Value. Also, lets our object know that data has
+//		Sets the Armor to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		January 15th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetArmor(Value : word);
+procedure TCharacter.SetArmor(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
-	fArmor   := Value;
+	fArmor      := Value;
 end;{SetArmor}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetGarment                                                        PROCEDURE
+//SetGarment                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Garment to Value. Also, lets our object know that data has
+//		Sets the Garment to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		January 15th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetGarment(Value : word);
+procedure TCharacter.SetGarment(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
-	fGarment   := Value;
+	fGarment    := Value;
 end;{SetGarment}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetShoes                                                         PROCEDURE
+//SetShoes                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Shoes to Value. Also, lets our object know that data has
+//		Sets the Shoes to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		January 15th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetShoes(Value : word);
+procedure TCharacter.SetShoes(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
-	fShoes   := Value;
+	fShoes      := Value;
 end;{SetShoes}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetAccessory1                                                     PROCEDURE
+//SetAccessory1                                                        PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Accessory1 to Value. Also, lets our object know that data has
+//		Sets the Accessory1 to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		January 15th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetAccessory1(Value : word);
+procedure TCharacter.SetAccessory1(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
-	fAccessory1   := Value;
+	fAccessory1 := Value;
 end;{SetAccessory1}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetAccessory2                                                     PROCEDURE
+//SetAccessory2                                                        PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Accessory2 to Value. Also, lets our object know that data has
+//		Sets the Accessory2 to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		January 15th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetAccessory2(Value : word);
+procedure TCharacter.SetAccessory2(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
-	fAccessory2   := Value;
+	fAccessory2 := Value;
 end;{SetAccessory2}
 //------------------------------------------------------------------------------
 
@@ -1200,12 +1404,19 @@ end;{SetAccessory2}
 //	What it does-
 //			Sets the HeadTop to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetHeadTop(Value : word);
+procedure TCharacter.SetHeadTop(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
 	fHeadTop    := Value;
@@ -1214,17 +1425,24 @@ end;{SetHeadTop}
 
 
 //------------------------------------------------------------------------------
-//SetHeadMid                                                          PROCEDURE
+//SetHeadMid                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the HeadMid to Value. Also, lets our object know that data has
+//		Sets the HeadMid to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetHeadMid(Value : word);
+procedure TCharacter.SetHeadMid(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
 	fHeadMid    := Value;
@@ -1233,17 +1451,24 @@ end;{SetHeadMid}
 
 
 //------------------------------------------------------------------------------
-//SetHeadBottom                                                       PROCEDURE
+//SetHeadBottom                                                        PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the HeadBottom to Value. Also, lets our object know that data has
+//		Sets the HeadBottom to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetHeadBottom(Value : word);
+procedure TCharacter.SetHeadBottom(
+		Value : word
+	);
 begin
 	DataChanged := TRUE;
 	fHeadBottom := Value;
@@ -1252,17 +1477,24 @@ end;{SetHeadBottom}
 
 
 //------------------------------------------------------------------------------
-//SetMap                                                              PROCEDURE
+//SetMap                                                               PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Map to Value. Also, lets our object know that data has
+//		Sets the Map to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetMap(Value : string);
+procedure TCharacter.SetMap(
+		Value : string
+	);
 begin
 	Inherited;
 	DataChanged := TRUE;
@@ -1271,17 +1503,24 @@ end;{SetMap}
 
 
 //------------------------------------------------------------------------------
-//SetPosition                                                        PROCEDURE
+//SetPosition                                                          PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the MapPt to Value. Also, lets our object know that data has
+//		Sets the MapPt to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetPosition(Value : TPoint);
+procedure TCharacter.SetPosition(
+		Value : TPoint
+	);
 begin
 	Inherited;
 	DataChanged := TRUE;
@@ -1290,55 +1529,76 @@ end;{SetMapPt}
 
 
 //------------------------------------------------------------------------------
-//SetSMap                                                             PROCEDURE
+//SetSMap                                                              PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the SMap(SaveMap) to Value. Also, lets our object know that data
+//		Sets the SMap(SaveMap) to Value. Also, lets our object know that data
 //    has changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetSMap(Value : string);
+procedure TCharacter.SetSMap(
+		Value : string
+	);
 begin
-	fSaveMap := Value;
+	fSaveMap    := Value;
 	DataChanged := TRUE;
 end;{SetSMap}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetSMapPt                                                           PROCEDURE
+//SetSMapPt                                                            PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the SMapPt to Value. Also, lets our object know that data has
+//		Sets the SMapPt to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetSMapPt(Value : TPoint);
+procedure TCharacter.SetSMapPt(
+		Value : TPoint
+	);
 begin
-	fSaveMapPt := Value;
+	fSaveMapPt  := Value;
 	DataChanged := TRUE;
 end;{SetSMapPt}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetPartnerID                                                        PROCEDURE
+//SetPartnerID                                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the PartnerID to Value. Also, lets our object know that data has
+//		Sets the PartnerID to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetPartnerID(Value : LongWord);
+procedure TCharacter.SetPartnerID(
+		Value : LongWord
+	);
 begin
 	DataChanged := TRUE;
 	fPartnerID  := Value;
@@ -1347,17 +1607,24 @@ end;{SetPartnerID}
 
 
 //------------------------------------------------------------------------------
-//SetParentID                                                         PROCEDURE
+//SetParentID                                                          PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the ParentID to Value. Also, lets our object know that data has
+//		Sets the ParentID to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetParentID1(Value : LongWord);
+procedure TCharacter.SetParentID1(
+		Value : LongWord
+	);
 begin
 	DataChanged := TRUE;
 	fParentID1  := Value;
@@ -1366,17 +1633,24 @@ end;{SetParentID}
 
 
 //------------------------------------------------------------------------------
-//SetParentID2                                                        PROCEDURE
+//SetParentID2                                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the ParentID2 to Value. Also, lets our object know that data has
+//		Sets the ParentID2 to Value. Also, lets our object know that data has
 //    changed.
-//
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetParentID2(Value : LongWord);
+procedure TCharacter.SetParentID2(
+		Value : LongWord
+	);
 begin
 	DataChanged := TRUE;
 	fParentID2  := Value;
@@ -1384,253 +1658,238 @@ end;{SetParentID2}
 //------------------------------------------------------------------------------
 
 
-(*- Procedure -----------------------------------------------------------------*
-TCharacter.SetBabyID
---------------------------------------------------------------------------------
-Overview:
---
-
-	Sets the Online flag to Value, and flags DataChanged, if and only if Value
-differs.
-
---
-Revisions:
---
-(Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2006/12/22] RaX - Created Header.
-[2007/05/06] CR - Altered routine and description, to minimize data saves.
-	Value parameter made constant.
-*-----------------------------------------------------------------------------*)
-Procedure TCharacter.SetBabyID(
-	const
-		Value : LongWord
+//------------------------------------------------------------------------------
+//SetBabyID                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Sets the Online flag to Value, and flags DataChanged, if and only if Value
+//		differs.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2006/12/22] RaX - Created Header.
+//		[2007/05/06] CR - Altered routine and description, to minimize data saves.
+//			Value parameter made constant.
+//------------------------------------------------------------------------------
+procedure TCharacter.SetBabyID(
+		const Value : LongWord
 	);
-Begin
+begin
 	if (Value <> fBabyID) then
 	begin
 		DataChanged := TRUE;
 		fBabyID     := Value;
 	end;
-End; (* Proc TCharacter.SetBabyID
-*-----------------------------------------------------------------------------*)
+end;{SetBabyID}
+//------------------------------------------------------------------------------
 
 
-(*- Procedure -----------------------------------------------------------------*
-TCharacter.SetOnline
---------------------------------------------------------------------------------
-Overview:
---
-
-	Sets the Online flag to Value, and flags DataChanged, if and only if Value
-differs.
-
---
-Revisions:
---
-(Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2006/12/22] RaX - Created Header.
-[2007/05/06] CR - Altered routine and description, to minimize data saves.
-	Value parameter made constant.
-*-----------------------------------------------------------------------------*)
-Procedure TCharacter.SetOnline(
-	const
-		Value : Byte
+//------------------------------------------------------------------------------
+//SetOnline                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Sets the Online flag to Value, and flags DataChanged, if and only if Value
+//		differs.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2006/12/22] RaX - Created Header.
+//		[2007/05/06] CR - Altered routine and description, to minimize data saves.
+//			Value parameter made constant.
+//------------------------------------------------------------------------------
+procedure TCharacter.SetOnline(
+		const Value : Byte
 	);
-Begin
+begin
 	if (Value <> fOnline) then
 	begin
 		DataChanged := TRUE;
 		fOnline     := Value;
 	end;
-End; (* Proc TCharacter.SetOnline
-*-----------------------------------------------------------------------------*)
+end;{SetOnline}
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetWeight                                                           PROCEDURE
+//SetWeight                                                            PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Weight
-//
+//		Sets the Weight
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		August 8th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetWeight(Value : LongWord);
+procedure TCharacter.SetWeight(
+		Value : LongWord
+	);
 begin
 	Inherited;
-  SendSubStat(0, $0018, Weight);
+	SendSubStat(0, $0018, Weight);
 	DataChanged := TRUE;
 end;{SetWeight}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SetMaxWeight                                                           PROCEDURE
+//SetMaxWeight                                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sets the Max Weight
-//
+//		Sets the Max Weight
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		August 8th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetMaxWeight(Value : LongWord);
+procedure TCharacter.SetMaxWeight(
+		Value : LongWord
+	);
 begin
 	Inherited;
-  SendSubStat(0, $0019, MaxWeight);
+	SendSubStat(0, $0019, MaxWeight);
 	DataChanged := TRUE;
 end;{SetMaxWeight}
 //------------------------------------------------------------------------------
 
 
-(*- Procedure -----------------------------------------------------------------*
-TCharacter.SetHomunID
---------------------------------------------------------------------------------
-Overview:
---
-
-	Sets the HomunID to Value and flags DataChanged, if and only if Value is
-different.
-
---
-Revisions:
---
-(Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2006/12/22] RaX - Created Header.
-[2007/05/06] CR - Make Set only change if the Value is different. Altered
-	comment header.
-*-----------------------------------------------------------------------------*)
-Procedure TCharacter.SetHomunID(
-	const
-		Value : LongWord
+//------------------------------------------------------------------------------
+//SetHomunID                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Sets the HomunID to Value and flags DataChanged, if and only if Value is
+//		different.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2006/12/22] RaX - Created Header.
+//		[2007/05/06] CR - Make Set only change if the Value is different. Altered
+//			comment header.
+//------------------------------------------------------------------------------
+procedure TCharacter.SetHomunID(
+		const Value : LongWord
 	);
-Begin
+begin
 	if (Value <> fHomunID) then
 	begin
 		DataChanged := TRUE;
 		fHomunID    := Value;
 	end;
-End; (* Proc TCharacter.SetHomunID
-*-----------------------------------------------------------------------------*)
+end;{SetHomunID}
+//------------------------------------------------------------------------------
 
 
-(*- Procedure -----------------------------------------------------------------*
-TCharacter.CalcMaxHP
---------------------------------------------------------------------------------
-Overview:
---
-
-	Calculates the character's Maximum HP.
-
-	[2007/04/28] CR - This routine appears to be used as an initialization.
-	Repeatedly calling this routine looks like it will be wasteful.  AND...
-	This routine IS repeatedly called.
-
-	Nota Bene:  MaxHP values do not depend on the HP the character currently
-	has AT ALL!
-	However...  MaxHP DOES depend on the following properties:
-	JobName/JID, (via the GetBaseMaxHP call)
-	BaseLV,
-	VIT
-
---
-Pre:
-	TODO
-Post:
-	TODO
-
---
-Revisions:
---
-(Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2006/12/22] RaX - Created Header.
-[2007/04/28] CR - Altered Comment Header, added further description of the
-	routine.  Used an internal variable to simplify/shorten the span where the
-	Database connection is open to retrieve the BaseMaxHP value.  Reindented the
-	formula for initializing MaxHP.  Boy is it clearer to read without that long
-	abomination of a method name to retrieve "GetBaseMaxHP"! :P~~
-*-----------------------------------------------------------------------------*)
-Procedure TCharacter.CalcMaxHP;
-Var
+//------------------------------------------------------------------------------
+//CalcMaxHP                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Calculates the character's Maximum HP.
+//		[2007/04/28] CR - This routine appears to be used as an initialization.
+//		Repeatedly calling this routine looks like it will be wasteful.  AND...
+//		This routine IS repeatedly called.
+//
+//		Nota Bene:  MaxHP values do not depend on the HP the character currently
+//		has AT ALL!
+//		However...  MaxHP DOES depend on the following properties:
+//		JobName/JID, (via the GetBaseMaxHP call)
+//		BaseLV, VIT
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2006/12/22] RaX - Created Header.
+//		[2007/04/28] CR - Altered Comment Header, added further description of the
+//		routine.  Used an internal variable to simplify/shorten the span where the
+//		Database connection is open to retrieve the BaseMaxHP value.  Reindented the
+//		formula for initializing MaxHP.  Boy is it clearer to read without that long
+//		abomination of a method name to retrieve "GetBaseMaxHP"! :P~~
+//------------------------------------------------------------------------------
+procedure TCharacter.CalcMaxHP;
+var
 	BaseMaxHP : Word;
-Begin
+begin
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	try
-		BaseMaxHP :=
-			TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxHP(Self);
+		BaseMaxHP := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxHP(Self);
 	finally
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 	end;
 
 	MaxHP := EnsureRange(
-		(
-			BaseMaxHP * (100 + ParamBase[VIT]) div 100
-		),
-		1,
-		High(fMaxHP)
-	);
+		( BaseMaxHP * (100 + ParamBase[VIT]) div 100 ), 1, High(fMaxHP)
+		);
 
 	if (HP > MaxHP) then
 	begin
 		HP := MaxHP;
 	end;
-
-End; (* Proc TCharacter.CalcMaxHP
-*-----------------------------------------------------------------------------*)
-
-
-(*-----------------------------------------------------------------------------*
-Proc TCharacter.SendSubStat
-
---
-Overview:
---
-Send sub state defined by Mode(speed, Def,MDef etc...),
-send party info, and Recalculate Weight
-
-Parameters:
-Mode: either 0 or 1, since its $00b0 or $00b1 (Its $00b0 + Mode)
-[2007/03/19] CR - Should Mode be a WordBool instead, if it's only 0 or 1?
+end;{CalcMaxHP}
+//------------------------------------------------------------------------------
 
 
---
-Pre:
-	TODO
-Post:
-	TODO
-
---
-Revisions:
---
-(Format: [yyyy/mm/dd] <Author> - <Comment> )
-[2007/03/12] Aeomin - Added Comment Header
-[2007/03/24] CR - Parameters passed are not altered, thus all parameters are
-	now explicitly constant.
-[2007/03/24] CR - Moved first section of this routine into local procedure
-	Send_00b0.  Moved the non-implemented blocks into local routines as well.
-	Made all parameters constant, which self-documents these, and makes calling
-	the routine more efficient.
-*-----------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//SendSubStat                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send sub state defined by Mode(speed, Def,MDef etc...),
+//		send party info, and Recalculate Weight
+//
+///	Parameters-
+//		Mode: either 0 or 1, since its $00b0 or $00b1 (Its $00b0 + Mode)
+//		[2007/03/19] CR - Should Mode be a WordBool instead, if it's only 0 or 1?
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2007/03/12] Aeomin - Added Comment Header
+//		[2007/03/24] CR - Parameters passed are not altered, thus all parameters are
+//		now explicitly constant.
+//		[2007/03/24] CR - Moved first section of this routine into local procedure
+//		Send_00b0.  Moved the non-implemented blocks into local routines as well.
+//		Made all parameters constant, which self-documents these, and makes calling
+//		the routine more efficient.
+//------------------------------------------------------------------------------
 Procedure TCharacter.SendSubStat(
-	const
-		Mode     : Word;
-	const
-		DataType : Word;
-	const
-		Value    : LongWord
+		const Mode     : Word;
+		const DataType : Word;
+		const Value    : LongWord
 	);
 Var
 	OutBuffer : TBuffer;
 
-
-	(*- Local Procedure .................*
-	Send_00b0
-
-	--
-	[2007/03/24] CR - Extracted verbatim
-		from main body.
-	*...................................*)
+	//----------------------------------------------------------------------
+	//Send_00b0                                              LOCAL PROCEDURE
+	//----------------------------------------------------------------------
+	//	[2007/03/24] CR - Extracted verbatim
+	//	from main body.
+	//----------------------------------------------------------------------
 	procedure Send_00b0;
 	begin
 		WriteBufferWord(0, $00b0 + Mode, OutBuffer);
@@ -1645,17 +1904,17 @@ Var
 				GetPacketLength($00b0 + Mode, ClientVersion)
 			);
 		end;
-	end;(* Send_00b0
-	*...................................*)
+	end;{Send_00b0}
+	//----------------------------------------------------------------------
 
-	(*- Local Procedure .................*
-	PartyInfo
-
-	Not yet Implemented.
-	--
-	[2007/03/24] CR - Extracted
-		from main body.
-	*...................................*)
+	//----------------------------------------------------------------------
+	//PartyInfo                                              LOCAL PROCEDURE
+	//----------------------------------------------------------------------
+	//	Not yet Implemented.
+	// --
+	//		[2007/03/24] CR - Extracted
+	//	from main body.
+	//----------------------------------------------------------------------
 	procedure PartyInfo;
 	begin
 		{[2007/03/24] CR -  already disabled, no comment about this routine}
@@ -1671,17 +1930,17 @@ Var
 		end;
 		}
 
-	end;(* PartyInfo
-	*...................................*)
+	end;{PartyInfo}
+	//----------------------------------------------------------------------
 
-	(*- Local Procedure .................*
-	OverweightTest
-
-	Not yet Implemented.
-	--
-	[2007/03/24] CR - Extracted
-		from main body.
-	*...................................*)
+	//----------------------------------------------------------------------
+	//OverweightTest                                         LOCAL PROCEDURE
+	//----------------------------------------------------------------------
+	//	Not yet Implemented.
+	// --
+	//		[2007/03/24] CR - Extracted
+	//	from main body.
+	//----------------------------------------------------------------------
 	procedure OverweightTest;
 	{
 	var
@@ -1701,38 +1960,45 @@ Var
 		end;
 		}
 
-	end;(* OverweightTest
-	*...................................*)
+	end;{OverweightTest}
+	//----------------------------------------------------------------------
 
-Begin
-  If ZoneStatus = IsOnline then
-  begin
-	  Send_00b0;
+begin
+	If ZoneStatus = IsOnline then
+	begin
+		Send_00b0;
 
-	  {[2007/03/24] CR - These are "empty" - not yet implemented. }
-	  PartyInfo;
-	  OverweightTest;
-  end;
-End; (* Proc TCharacter.SendSubStats
-*-----------------------------------------------------------------------------*)
+		{[2007/03/24] CR - These are "empty" - not yet implemented. }
+		PartyInfo;
+		OverweightTest;
+	end;
+end;{SendSubStats}
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
 //SendCharacterStats                                                   PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sends a character's stats to the client.
-//
+//		Sends a character's stats to the client.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		March 12th, 2007 - Aeomin - Created Header
 //		July 24th, 2007 - RaX - updated header
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SendCharacterStats(UpdateView : boolean = false);
-Var
+procedure TCharacter.SendCharacterStats(
+		UpdateView : boolean = false
+	);
+var
 	idx :integer;
 	OutBuffer : TBuffer;
-Begin
+begin
 	//Speed
 	SendSubStat(0, 0, Speed);
 	//HPSP
@@ -1809,48 +2075,53 @@ Begin
 		end;}
 	end;
 
-  //To force showing values higher than 32767, These lines are to update stats
-  //that the above packets don't handle...
-  StatusPts := StatusPts;
-End;
+	//To force showing values higher than 32767, These lines are to update stats
+	//that the above packets don't handle...
+	StatusPts := StatusPts;
+end;{SendCharacterStats}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//SendParamBaseAndBonus                                               PROCEDURE
+//SendParamBaseAndBonus                                                PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Sends a characters ParamBase to the client.
-//
+//		Sends a characters ParamBase to the client.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		August 14th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
 Procedure TCharacter.SendParamBaseAndBonus(
-  const Stat : Byte;
-  const Value : LongWord;
-  const Bonus : LongWord
-);
+		const Stat : Byte;
+		const Value : LongWord;
+		const Bonus : LongWord
+	);
 var
-  OutBuffer : TBuffer;
+	OutBuffer : TBuffer;
 begin
-  if zoneStatus = IsOnline then
-  begin
-    WriteBufferWord(0, $0141, OutBuffer);
-    WriteBufferLongWord(2, $000000d + Stat, OutBuffer);
-    WriteBufferLongWord(6, Value, OutBuffer);
-    WriteBufferLongWord(10, Bonus, OutBuffer);
+	if zoneStatus = IsOnline then
+	begin
+		WriteBufferWord(0, $0141, OutBuffer);
+		WriteBufferLongWord(2, $000000d + Stat, OutBuffer);
+		WriteBufferLongWord(6, Value, OutBuffer);
+		WriteBufferLongWord(10, Bonus, OutBuffer);
 
-    if (Online <> 0) then
-    begin
-      SendBuffer(
-	ClientInfo,
-	OutBuffer,
-	GetPacketLength($0141, ClientVersion)
-      );
-    end;
-  end;
-end;//SendParamBaseAndBonus
+		if (Online <> 0) then
+		begin
+			SendBuffer(
+				ClientInfo,
+				OutBuffer,
+				GetPacketLength($0141, ClientVersion)
+			);
+		end;
+	end;
+end;{SendParamBaseAndBonus}
 //------------------------------------------------------------------------------
 
 
@@ -1858,23 +2129,28 @@ end;//SendParamBaseAndBonus
 //SendRequiredStatusPoint                                              PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Update stat point requirement for client
-//
+//		Update stat point requirement for client
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		[2007/08/20] - Aeomin - Created.
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.SendRequiredStatusPoint(
-			const Stat : Byte;
-			const Value : Byte
-			);
+		const Stat : Byte;
+		const Value : Byte
+	);
 var
 	OutBuffer : TBuffer;
 begin
 	if ZoneStatus = IsOnline then
 	begin
 		WriteBufferWord(0, $00be, OutBuffer);
-		//Gravity's trick -.-
+		//Gravity's trick ^V^
 		WriteBufferWord(2, Stat + $0020, OutBuffer);
 		WriteBufferByte(4, Value, OutBuffer);
 
@@ -1887,16 +2163,21 @@ begin
 			);
 		end;
 	end;
-end;
+end;{SendRequiredStatusPoint}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//CalcMaxSP                                                           PROCEDURE
+//CalcMaxSP                                                            PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Calculates the character's Maximum SP.
-//
+//		Calculates the character's Maximum SP.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		January 17th, 2007 - RaX - Created.
 //		July 24th, 2007 - RaX - Cleaned up super long calculation to make it
@@ -1908,26 +2189,30 @@ begin
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	try
 		MAXSP := EnsureRange(
-      TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxSP(self) *
+		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxSP(self) *
 			(100 + ParamBase[INT]) div 100, 0, High(fMaxSP));
-    if SP > MAXSP then
-    begin
-      SP := MAXSP;
-    end;
-  finally
+		if SP > MAXSP then
+		begin
+			SP := MAXSP;
+		end;
+	finally
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 	end;
-
 end;{CalcMaxSP}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//CalcSpeed                                                           PROCEDURE
+//CalcSpeed                                                            PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Calculates the character's Speed.
-//
+//		Calculates the character's Speed.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		January 17th, 2007 - RaX - Created.
 //		July 24th, 2007 - RaX - Changed to use the inherited calculation first to
@@ -1935,17 +2220,22 @@ end;{CalcMaxSP}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcSpeed;
 begin
-  inherited;
+	inherited;
 end;{CalcSpeed}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//CalcMaxWeight                                                     PROCEDURE
+//CalcMaxWeight                                                        PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Calculates the character's Maximum weight.
-//
+//		Calculates the character's Maximum weight.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		January 24th, 2007 - RaX - Created.
 //		July 24th, 2007 - RaX - Cleaned up super long calculation to make it
@@ -1959,188 +2249,209 @@ begin
 		MaxWeight  := EnsureRange(
 			  LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
 			  TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxWeight(self)
-      , 0, High(fMaxWeight));
-  finally
+				, 0, High(fMaxWeight));
+	finally
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-  end;
+	end;
 end;{CalcMaxWeight}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//BaseLevelUp                                                        PROCEDURE
+//BaseLevelUp                                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Increases the character's level and updates all changed fields.
-//
+//		Increases the character's level and updates all changed fields.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		July 25th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.BaseLevelUp(Levels  : Integer);
+procedure TCharacter.BaseLevelUp(
+		Levels  : Integer
+	);
 var
-  TempEXP               : LongWord;//Temporary BaseEXP.
-  TempLevel             : Word;//Temporary BaseLv
-  TempStatusPts         : Integer;//Temporary StatusPts
-  ParamBaseStatPoints   : Integer;//How many stat points a character's stats are worth.
-  LastLevelStatusPoints : Integer;//The total status points for the last level in
-				  //the database.
+	TempEXP               : LongWord;//Temporary BaseEXP.
+	TempLevel             : Word;//Temporary BaseLv
+	TempStatusPts         : Integer;//Temporary StatusPts
+	ParamBaseStatPoints   : Integer;//How many stat points a character's stats are worth.
+	LastLevelStatusPoints : Integer;//The total status points for the last level in
+					//the database.
 
-//Gets the amount of stat points all a character's stats are worth together.
-function GetParamBaseWorthInStatPoints : Integer;
-var
-	TempResult : Int64;
-	StatIndex : Integer;
-	StatPoints : Integer;
-begin
-	TempResult := 0;
-	For StatIndex := STR to LUK do
+	//----------------------------------------------------------------------
+	//GetParamBaseWorthInStatPoints                          LOCAL PROCEDURE
+	//----------------------------------------------------------------------
+	//	Gets the amount of stat points all a character's stats are worth together.
+	//----------------------------------------------------------------------
+	function GetParamBaseWorthInStatPoints : Integer;
+	var
+		TempResult : Int64;
+		StatIndex : Integer;
+		StatPoints : Integer;
 	begin
-		For StatPoints := 2 to ParamBase[StatIndex] do
+		TempResult := 0;
+		For StatIndex := STR to LUK do
 		begin
-			//Here, we're figuring out how many points each stat is worth based on
-			//how high the stat is. For every 10 points we go up each stat is worth
-			//one extra point.
-			TempResult := TempResult + 2 + (StatPoints DIV 10);
+			For StatPoints := 2 to ParamBase[StatIndex] do
+			begin
+				{Here, we're figuring out how many points each stat is worth based on
+				how high the stat is. For every 10 points we go up each stat is worth
+				one extra point.}
+				TempResult := TempResult + 2 + (StatPoints DIV 10);
+			end;
 		end;
-	end;
-	Result := EnsureRange(TempResult, 0, High(Integer));
-end;
+		Result := EnsureRange(TempResult, 0, High(Integer));
+	end;{GetParamBaseWorthInStatPoints}
+	//----------------------------------------------------------------------
 begin
-  TempLevel := Max(Min(fBaseLv+Levels, MainProc.ZoneServer.Options.MaxBaseLevel), 1);
+	TempLevel := Max(Min(fBaseLv+Levels, MainProc.ZoneServer.Options.MaxBaseLevel), 1);
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	try
-    //Gets the base experience to next level, divides by the multiplier to lower
-    //numbers, prevent overflows, and prevent large integer math. Also, this is
-    //only calculated at level up rather than at each experience gain.
-    TempEXP :=
-      TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(Jobname, TempLevel);
+		{Gets the base experience to next level, divides by the multiplier to lower
+		numbers, prevent overflows, and prevent large integer math. Also, this is
+		only calculated at level up rather than at each experience gain.}
+		TempEXP := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(
+					Jobname, TempLevel
+					);
 
-    //If there is EXP to be gotten for the next level and we aren't leveling to the
-    //same level...
-    if (TempEXP > 0) AND(TempLevel <> BaseLv) then
-    begin
-      //Get stat points from database
-      TempStatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(TempLevel);
-      LastLevelStatusPoints := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(fBaseLv);
+		{If there is EXP to be gotten for the next level and we aren't leveling to the
+		same level...}
+		if (TempEXP > 0) AND(TempLevel <> BaseLv) then
+		begin
+			//Get stat points from database
+			TempStatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(TempLevel);
+			LastLevelStatusPoints := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(fBaseLv);
 
-      //Get stats' worth in points.
-      ParamBaseStatPoints := GetParamBaseWorthInStatPoints;
+			//Get stats' worth in points.
+			ParamBaseStatPoints := GetParamBaseWorthInStatPoints;
 
-      //check if we're going up or down in level
-      if fBaseLv < TempLevel then
-      begin
-        //remove stats from statpoints to get the amount of statuspts free.
-        LastLevelStatusPoints := StatusPts + ParamBaseStatPoints - LastLevelStatusPoints;
+			//check if we're going up or down in level
+			if fBaseLv < TempLevel then
+			begin
+				//remove stats from statpoints to get the amount of statuspts free.
+				LastLevelStatusPoints := StatusPts + ParamBaseStatPoints - LastLevelStatusPoints;
 
-        //raise stat points if we leveled.
-        StatusPts := TempStatusPts - ParamBaseStatPoints + LastLevelStatusPoints;
-      end else
-      begin
-        //remove stats from statpoints to get the amount of statuspts free.
-        LastLevelStatusPoints := StatusPts - LastLevelStatusPoints;//-48
-        StatusPts := TempStatusPts+LastLevelStatusPoints+ParamBaseStatPoints;
+				//raise stat points if we leveled.
+				StatusPts := TempStatusPts - ParamBaseStatPoints + LastLevelStatusPoints;
+			end else
+			begin
+				//remove stats from statpoints to get the amount of statuspts free.
+				LastLevelStatusPoints := StatusPts - LastLevelStatusPoints;//-48
+				StatusPts := TempStatusPts+LastLevelStatusPoints+ParamBaseStatPoints;
 
-        //reset stats since we deleveled.
-	ParamBase[STR] := 1;
-        ParamBase[AGI] := 1;
-        ParamBase[DEX] := 1;
-        ParamBase[VIT] := 1;
-        ParamBase[INT] := 1;
-        ParamBase[LUK] := 1;
-      end;
-      //assign our new level.
-      fBaseLv := TempLevel;
-      //Run stat calculations.
-      BaseEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
-      CalcMaxWeight;
-      CalcMaxHP;
-      CalcMaxSP;
-      CalcSpeed;
+				//reset stats since we deleveled.
+				ParamBase[STR] := 1;
+				ParamBase[AGI] := 1;
+				ParamBase[DEX] := 1;
+				ParamBase[VIT] := 1;
+				ParamBase[INT] := 1;
+				ParamBase[LUK] := 1;
+			end;
 
-      //Set hp and sp to full if enabled in the ini.
-      if MainProc.ZoneServer.Options.FullHPOnLevelUp then
-      begin
-        HP := MAXHP;
-      end;
-      if MainProc.ZoneServer.Options.FullSPOnLevelUp then
-      begin
-        SP := MAXSP;
-      end;
-      //Send Base Level packet
-      SendSubStat(0, $000b, BaseLv);
-    end;
-  finally
-    TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-  end;
+			//assign our new level.
+			fBaseLv := TempLevel;
+			//Run stat calculations.
+			BaseEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
+			CalcMaxWeight;
+			CalcMaxHP;
+			CalcMaxSP;
+			CalcSpeed;
+
+			//Set hp and sp to full if enabled in the ini.
+			if MainProc.ZoneServer.Options.FullHPOnLevelUp then
+			begin
+				HP := MAXHP;
+			end;
+
+			if MainProc.ZoneServer.Options.FullSPOnLevelUp then
+			begin
+				SP := MAXSP;
+			end;
+
+			//Send Base Level packet
+			SendSubStat(0, $000b, BaseLv);
+		end;
+	finally
+		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+	end;
 end;{BaseLevelUp}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//JobLevelUp                                                        PROCEDURE
+//JobLevelUp                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Increases the character's job level and updates all changed fields.
-//
+//		Increases the character's job level and updates all changed fields.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		July 25th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.JobLevelUp(Levels  : Integer);
+procedure TCharacter.JobLevelUp(
+		Levels  : Integer
+	);
 var
-  TempEXP : LongWord;
-  TempLevel : Word;
-  TempStatArray : StatArray;
-  //OldSkillPts : Word;
-  TempSkillPts: Word;
-  Index : Integer;
+	TempEXP : LongWord;
+	TempLevel : Word;
+	TempStatArray : StatArray;
+	TempSkillPts: Word;
+	Index : Integer;
 begin
-  //Make sure fJobLv is in range.
-  TempLevel := Max(Min(fJobLv+Levels, MainProc.ZoneServer.Options.MaxJobLevel), 1);
+	//Make sure fJobLv is in range.
+	TempLevel := Max(Min(fJobLv+Levels, MainProc.ZoneServer.Options.MaxJobLevel), 1);
 	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	try
-    //Update job experience to next level from static database.
-    TempEXP := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, TempLevel);
+		//Update job experience to next level from static database.
+		TempEXP := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, TempLevel);
 
+		if (TempEXP > 0) AND (TempLevel <> JobLv) then
+		begin
+			JobEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.JobXPMultiplier;
+			TempSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.StaticData.GetSkillPoints(JobName,TempLevel);
+			//Will be used once skills are implemented to "remember" added skill points.
+			//OldSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.StaticData.GetSkillPoints(JobName,JobLv);
 
-    if (TempEXP > 0) AND (TempLevel <> JobLv) then
-    begin
-      JobEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.JobXPMultiplier;
-      TempSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.StaticData.GetSkillPoints(JobName,TempLevel);
-      //Will be used once skills are implemented to "remember" added skill points.
-      //OldSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.StaticData.GetSkillPoints(JobName,JobLv);
+			//Will be changed once skills are implemented, extra skill points will be
+			//'remembered' between levels.
+			if TempLevel > fJobLv then
+			begin
+				//if we gain a level set skill points.
+				SkillPts := TempSkillPts;
+			end else
+			begin
+				//If we delevel...
+				//TODO reset skills here
+				SkillPts := TempSkillPts;
+			end;
 
-      //Will be changed once skills are implemented, extra skill points will be
-      //'remembered' between levels.
-      if TempLevel > fJobLv then
-      begin
-        //if we gain a level set skill points.
-        SkillPts := TempSkillPts;
-      end else
-      begin
-        //If we delevel...
-        //TODO reset skills here
-        SkillPts := TempSkillPts;
-      end;
+			//Apply job bonuses
+			TempStatArray := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobBonus(JobName, TempLevel);
+			ParamBonus := TempStatArray;
 
-      //Apply job bonuses
-      TempStatArray := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobBonus(JobName, TempLevel);
-      ParamBonus := TempStatArray;
+			fJobLv := TempLevel;
 
-      fJobLv := TempLevel;
+			SendSubStat(0, $0037, JobLv);
 
-      SendSubStat(0, $0037, JobLv);
+			for Index := STR to DEX do
+			begin
+				SendParamBaseAndBonus(Index,ParamBase[Index],ParamBonus[Index]);
+			end;
 
-      for Index := STR to DEX do
-      begin
-        SendParamBaseAndBonus(Index,ParamBase[Index],ParamBonus[Index]);
-      end;
-
-    end;
-  finally
-    TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-  end;
+		end;
+	finally
+		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+	end;
 end;{JobLevelUp}
 //------------------------------------------------------------------------------
 
@@ -2149,8 +2460,13 @@ end;{JobLevelUp}
 //ResetStats                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Reset character's stats
-//
+//		Reset character's stats
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		[2007/08/20] - Aeomin - Created.
 //
@@ -2171,22 +2487,29 @@ begin
 	ParamBase[VIT] := 1;
 	ParamBase[INT] := 1;
 	ParamBase[LUK] := 1;
-end;
+end;{ResetStats}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//Create				                                                     CONSTRUCTOR
+//Create                                                             CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
-//			Creates our character
-//
+//		Creates our character
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		January 24th, 2007 - RaX - Created.
 //		[2007/05/28] Tsusai - Sets character to standing on create.
 //
 //------------------------------------------------------------------------------
-Constructor TCharacter.Create(AClient : TIdContext);
+Constructor TCharacter.Create(
+		AClient : TIdContext
+	);
 begin
 	inherited Create;
 	ClientInfo := AClient;
@@ -2195,16 +2518,21 @@ begin
 	ScriptStatus := SCRIPT_NOTRUNNING;
 	CharaState := charaStanding;
 	ZoneStatus := isOffline;
-end;
+end;{Create}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//Destroy				                                                     DESTRUCTOR
+//Destroy                                                             DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
-//			Destroys our character
-//
+//		Destroys our character
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
 //	Changes -
 //		January 24th, 2007 - RaX - Created.
 //
@@ -2215,6 +2543,6 @@ begin
 	OnTouchIDs.Free;
 	TerminateLuaThread(LuaInfo);
 	inherited;
-end;
+end;{Destroy}
 //------------------------------------------------------------------------------
-end.
+end{Character}.
