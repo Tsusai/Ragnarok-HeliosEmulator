@@ -171,6 +171,13 @@ begin
 	AddCommand('BroadCastLN',     GMBroadCastLocalNoName, 99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '<Message>');
 	AddCommand('BroadCastLB',     GMBroadCastLocalBlue,   99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '<Message>');
 
+	AddCommand('BroadCastColor',  GMBroadCastColor,       99, TYPE_ALLPLAYERS, GMFLAG_NORMAL,  '<Color>,<Message>');
+	AddCommand('BroadCastR',      GMBroadCastRed,         99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
+	AddCommand('BroadCastP',      GMBroadCastPurple,      99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
+	AddCommand('BroadCastG',      GMBroadCastGreen,       99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
+	AddCommand('BroadCastBLK',    GMBroadCastBlack,       99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
+	AddCommand('BroadCastB',      GMBroadCastBlue,        99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
+	AddCommand('BroadCastW',      GMBroadCastWhite,       99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
 	// Use temperary list!!!
 	fCommandPrefix := CommandOptions.Load(fTmpCommandList, fCommands);
 	CommandOptions.Save(fTmpCommandList);

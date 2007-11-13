@@ -35,6 +35,14 @@ uses
 	procedure GMBroadCastLocal(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastLocalNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastLocalBlue(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+
+	procedure GMBroadCastColor(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMBroadCastRed(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMBroadCastPurple(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMBroadCastGreen(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMBroadCastBlack(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMBroadCastBlue(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMBroadCastWhite(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 implementation
 uses
 	{RTL/VCL}
@@ -765,5 +773,176 @@ begin
 		end;
 	end;
 end;{GMBroadCastLocalBlue}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMBroadCastColor                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Broadcasts a message in a color.
+//
+//	Changes-
+//		[2007/11/12] RabidChocobo - Create.
+//------------------------------------------------------------------------------
+procedure GMBroadCastColor(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+var
+	Color : Integer;
+begin
+	if (Length(Arguments) >= 3) then
+	begin
+		Color := StrToIntDef('$'+ Arguments[0], -1);
+		if (Color < $000000) or (Color > $FFFFFF) then
+		begin
+			Error.Add('Invalid color, must be in between 000000 and FFFFFF.');
+			Error.Add(Arguments[Length(Arguments)-1]);
+		end else
+		begin
+			SendGMAnnounceColor(TargetChar.ClientInfo, Arguments[1], Color);
+		end;
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;{GMBroadCastColor}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMBroadCastRed                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Broadcasts a message in red without a name.
+//
+//	Changes-
+//		[2007/11/12] RabidChocobo - Create.
+//------------------------------------------------------------------------------
+procedure GMBroadCastRed(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		SendGMAnnounceColor(TargetChar.ClientInfo, Arguments[0], $FF3333);
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;{GMBroadCastRed}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMBroadCastPurple                                                    PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Broadcasts a message in purple without a name.
+//
+//	Changes-
+//		[2007/11/12] RabidChocobo - Create.
+//------------------------------------------------------------------------------
+procedure GMBroadCastPurple(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		SendGMAnnounceColor(TargetChar.ClientInfo, Arguments[0], $CC66FF);
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;{GMBroadCastPurple}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMBroadCastGreen                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Broadcasts a message in green without a name.
+//
+//	Changes-
+//		[2007/11/12] RabidChocobo - Create.
+//------------------------------------------------------------------------------
+procedure GMBroadCastGreen(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		SendGMAnnounceColor(TargetChar.ClientInfo, Arguments[0], $66FF66);
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;{GMBroadCastGreen}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMBroadCastBlack                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Broadcasts a message in black without a name.
+//
+//	Changes-
+//		[2007/11/12] RabidChocobo - Create.
+//------------------------------------------------------------------------------
+procedure GMBroadCastBlack(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		SendGMAnnounceColor(TargetChar.ClientInfo, Arguments[0], $202020);
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;{GMBroadCastBlack}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMBroadCastBlue                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Broadcasts a message in blue without a name.
+//
+//	Changes-
+//		[2007/11/12] RabidChocobo - Create.
+//------------------------------------------------------------------------------
+procedure GMBroadCastBlue(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		SendGMAnnounceColor(TargetChar.ClientInfo, Arguments[0], $3399CC);
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;{GMBroadCastBlue}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMBroadCastWhite                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Broadcasts a message in white without a name.
+//
+//	Changes-
+//		[2007/11/12] RabidChocobo - Create.
+//------------------------------------------------------------------------------
+procedure GMBroadCastWhite(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		SendGMAnnounceColor(TargetChar.ClientInfo, Arguments[0], $FFFFFF);
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;{GMBroadCastWhite}
 //------------------------------------------------------------------------------
 end{GMCommandExe}.

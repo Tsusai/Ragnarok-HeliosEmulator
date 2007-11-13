@@ -15,6 +15,14 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 362-
+[2007/11/12] Aeomin - Note: 10 days after last commit =(
+[2007/11/12] Thanks RabidChocobo for the patch/implementation.
+[2007/11/12] Broadcast can be in various colors (purple, white, blue, green, ALIEN[Orly? Nrly])
+[2007/11/12] #BroadCastColor, #BroadCastR[Red], #BroadCastP[Purple], #BroadCastG[Green], #BroadCastBLK[Black]
+[2007/11/12] #BroadCastB[Blue], #BroadCastW[White]
+-
+
 - Rev 361-
 [2007/11/2] Aeomin - Clean up for Character.pas (I know.. it's crazy and very large file.. my hands are sore...)
 -

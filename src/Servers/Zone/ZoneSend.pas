@@ -54,6 +54,11 @@ uses
 		const Announce:String;
 		const Blue:boolean=False
 	);
+	procedure SendGMAnnounceColor(
+		AClient : TIdContext;
+		const Announce:String;
+		Color:Integer
+	);
 	procedure SendQuitGameResponse(
 		const ACharacter : TCharacter
 	);
@@ -370,6 +375,41 @@ begin
 		WriteBufferLongWord(4, $65756c62, OutBuffer);
 	WriteBufferString(Offset, Announce, Size, OutBuffer);
 	SendBuffer(AClient, OutBuffer, Size + Offset);
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendGMAnnounceColor                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Sends a GM announcement in color.
+//      Should probably combine with SendGMAnnounce later.
+//
+//  Changes -
+//	[2007/11/12] RabidChocobo - Created.
+//
+//------------------------------------------------------------------------------
+procedure SendGMAnnounceColor(
+	AClient : TIdContext;
+	const Announce : String;
+	Color : Integer
+);
+var
+	OutBuffer : TBuffer;
+	Size      : Word;
+	OffSet    : Byte;
+begin
+	Size := StrLen(PChar(Announce)) + 1;
+	Offset := 16;
+	WriteBufferWord(0, $01c3, OutBuffer);
+	WriteBufferWord(2, Size + Offset, OutBuffer);
+	WriteBufferLongWord(4, Color, OutBuffer);
+	WriteBufferWord(8, $0190, OutBuffer);
+	WriteBufferWord(10, $000c, OutBuffer);
+	WriteBufferLongWord(12, 0, OutBuffer);
+	WriteBufferString(Offset, Announce, Size, OutBuffer);
+	SendBuffer(AClient, OutBuffer, Offset + Size);
 end;
 //------------------------------------------------------------------------------
 
