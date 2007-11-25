@@ -178,6 +178,8 @@ begin
 	AddCommand('BroadCastBLK',    GMBroadCastBlack,       99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
 	AddCommand('BroadCastB',      GMBroadCastBlue,        99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
 	AddCommand('BroadCastW',      GMBroadCastWhite,       99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
+	// - - - Misc stuffs
+	AddCommand('Effect',          GMEffect,               99, TYPE_RETURNBACK, GMFLAG_NORMAL, '<Effect Id>');
 	// Use temperary list!!!
 	fCommandPrefix := CommandOptions.Load(fTmpCommandList, fCommands);
 	CommandOptions.Save(fTmpCommandList);

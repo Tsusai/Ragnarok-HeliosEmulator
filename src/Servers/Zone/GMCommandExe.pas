@@ -43,6 +43,8 @@ uses
 	procedure GMBroadCastBlack(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastBlue(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastWhite(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+
+	procedure GMEffect(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 implementation
 uses
 	{RTL/VCL}
@@ -944,5 +946,38 @@ begin
 		Error.Add(Arguments[Length(Arguments)-1]);
 	end;
 end;{GMBroadCastWhite}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMEffect                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send effect packet (mostly for debug purpose)
+//
+//	Changes-
+//		[2007/11/24] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure GMEffect(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+var
+	EffectID : Integer;
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		EffectID := StrToIntDef(Arguments[0], -1);
+		if EffectID = -1 then
+		begin
+			Error.Add('Invalid Effect ID.');
+			Error.Add(Arguments[Length(Arguments)-1]);
+		end else
+		begin
+			TargetChar.ShowEffect(EffectID);
+		end;
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;{GMEffect}
 //------------------------------------------------------------------------------
 end{GMCommandExe}.

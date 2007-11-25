@@ -22,7 +22,7 @@ interface
 
 uses
 	{RTL/VCL}
-	//none
+	Classes,
 	{Project}
 	Being
 	{Third Party}
@@ -30,28 +30,29 @@ uses
 	;
 
 	procedure ShowBeingWalk(
-		const
-			ACurrentBeing : TBeing;
-		const
-			ABeing        : TBeing
+		const ACurrentBeing : TBeing;
+		const ABeing        : TBeing;
+		const AParameters   : Cardinal
 		);
 	procedure ShowTeleIn(
-		const
-			ACurrentBeing : TBeing;
-		const
-			ABeing        : TBeing
+		const ACurrentBeing : TBeing;
+		const ABeing        : TBeing;
+		const AParameters   : Cardinal
 		);
 	procedure TeleOut(
-		const
-			ACurrentBeing : TBeing;
-		const
-			ABeing        : TBeing
+		const ACurrentBeing : TBeing;
+		const ABeing        : TBeing;
+		const AParameters   : Cardinal
 		);
 	procedure UpdateDir(
-		const
-			ACurrentBeing : TBeing;
-		const
-			ABeing        : TBeing
+		const ACurrentBeing : TBeing;
+		const ABeing        : TBeing;
+		const AParameters   : Cardinal
+		);
+	procedure Effect(
+		const ACurrentBeing : TBeing;
+		const ABeing        : TBeing;
+		const AParameters   : Cardinal
 		);
 
 implementation
@@ -84,11 +85,10 @@ Revisions:
 [yyyy/mm/dd] <Author> - <Comment>
 *-----------------------------------------------------------------------------*)
 Procedure ShowBeingWalk(
-	const
-		ACurrentBeing : TBeing;
-	const
-		ABeing        : TBeing
-	);
+	const ACurrentBeing : TBeing;
+	const ABeing        : TBeing;
+	const AParameters   : Cardinal
+);
 Begin
 	if ABeing is TCharacter then
 	begin
@@ -121,11 +121,10 @@ Revisions:
 [2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
 Procedure ShowTeleIn(
-	const
-		ACurrentBeing : TBeing;
-	const
-		ABeing        : TBeing
-	);
+	const ACurrentBeing : TBeing;
+	const ABeing        : TBeing;
+	const AParameters   : Cardinal
+);
 Begin
 	if ABeing is TCharacter then
 	begin
@@ -156,11 +155,10 @@ Revisions:
 [2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
 Procedure TeleOut(
-	const
-		ACurrentBeing : TBeing;
-	const
-		ABeing        : TBeing
-	);
+	const ACurrentBeing : TBeing;
+	const ABeing        : TBeing;
+	const AParameters   : Cardinal
+);
 Begin
 	if ABeing is TCharacter then
 	begin
@@ -188,11 +186,10 @@ Revisions:
 [2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
 Procedure UpdateDir(
-	const
-		ACurrentBeing : TBeing;
-	const
-		ABeing        : TBeing
-	);
+	const ACurrentBeing : TBeing;
+	const ABeing        : TBeing;
+	const AParameters   : Cardinal
+);
 Begin
 	if ABeing is TCharacter then
 	begin
@@ -201,4 +198,26 @@ Begin
 End; (* Proc UpdateDir
 *-----------------------------------------------------------------------------*)
 
+
+//------------------------------------------------------------------------------
+//Effect                                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send effect packet
+//
+//	Changes-
+//		[2007/11/24] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure Effect(
+	const ACurrentBeing : TBeing;
+	const ABeing        : TBeing;
+	const AParameters   : Cardinal
+);
+begin
+	if ABeing is TCharacter then
+	begin
+		SendSpecialEffect(ACurrentBeing, TCharacter(Abeing).ClientInfo, AParameters);
+	end;
+end;{Effect}
+//------------------------------------------------------------------------------
 end.

@@ -78,6 +78,11 @@ uses
 		const Code : Byte
 	);
 
+	procedure SendSpecialEffect(
+		const Who:TBeing;
+		AClient : TIdContext;
+		const EffectID : LongWord
+	);
 
 	procedure ZoneDisappearBeing(
 		const Who:TBeing;
@@ -540,6 +545,31 @@ begin
 	WriteBufferByte(2, Code, OutBuffer);
 	SendBuffer(AChara.ClientInfo,OutBuffer,GetPacketLength($0098));
 end;{SendWhisperReply}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendSpecialEffect                                                    PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send effect packet
+//
+//	Changes-
+//		[2007/11/24] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure SendSpecialEffect(
+	const Who:TBeing;
+	AClient : TIdContext;
+	const EffectID : LongWord
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $01f3, OutBuffer);
+	WriteBufferLongWord(2, Who.ID, OutBuffer);
+	WriteBufferLongWord(6, EffectID, OutBuffer);
+	SendBuffer(AClient, OutBuffer, GetPacketLength($01f3));
+end;{SendSpecialEffec}
 //------------------------------------------------------------------------------
 
 

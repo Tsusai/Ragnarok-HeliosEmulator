@@ -47,6 +47,7 @@ interface
 uses
 	{RTL/VCL}
 	Types,
+	Classes,
 	{Project}
 	GameConstants,
 	EventList,
@@ -64,10 +65,9 @@ TBeing = class; //Forward Declaration.
 
 {[2007/03/28] CR - No X,Y parameters needed -- reduced and eliminated. }
 TLoopCall = procedure(
-		const
-			ACurrentBeing : TBeing;
-		const
-			ABeing        : TBeing
+		const ACurrentBeing : TBeing;
+		const ABeing        : TBeing;
+		const AParameters   : Cardinal
 		);
 
 (*= CLASS =====================================================================*
@@ -100,8 +100,8 @@ protected
 	fJobLV            : Byte;
 	fBaseEXP          : LongWord;
 	fJobEXP           : LongWord;
-  fBaseEXPToNextLevel: LongWord;
-  fJobEXPToNextLevel: LongWord;
+	fBaseEXPToNextLevel: LongWord;
+	fJobEXPToNextLevel: LongWord;
 	fZeny             : Integer;
 	fParamBase        : StatArray;
 	fMaxHP            : Word;
@@ -152,7 +152,8 @@ protected
 			ALoopCall           : TLoopCall;
 			AIgnoreCurrentBeing : Boolean = True;
 			IgnoreMob           : Boolean = True;
-			IgnoreNPC           : Boolean = True
+			IgnoreNPC           : Boolean = True;
+			AParameter          : Cardinal = 0
 		);
 
 public
@@ -188,10 +189,10 @@ public
 	property JID       : Word       read fJID     write SetClass;
 	property BaseLV    : Byte       read fBaseLV  write SetBaseLV;
 	property JobLV     : Byte       read fJobLV   write SetJobLV;
-  property BaseEXP   : LongWord   read fBaseEXP write fBaseEXP;
-  property JobEXP    : LongWord   read fJobEXP  write fJobEXP;
-  property BaseEXPToNextLevel : LongWord read fBaseEXPToNextLevel write fBaseEXPToNextLevel;
-  property JobEXPToNextLevel  : LongWord read fJobEXPToNextLevel  write fJobEXPToNextLevel;
+	property BaseEXP   : LongWord   read fBaseEXP write fBaseEXP;
+	property JobEXP    : LongWord   read fJobEXP  write fJobEXP;
+	property BaseEXPToNextLevel : LongWord read fBaseEXPToNextLevel write fBaseEXPToNextLevel;
+	property JobEXPToNextLevel  : LongWord read fJobEXPToNextLevel  write fJobEXPToNextLevel;
 	property ParamBase[const Index : Byte] : Integer
 		read  GetBaseStats
 		write SetBaseStats;
@@ -219,6 +220,7 @@ public
 	procedure ShowTeleportIn;
 	procedure ShowTeleportOut;
 	procedure UpdateDirection;
+	procedure ShowEffect(EffectID:LongWord);
 
 	Constructor Create;
 	Destructor Destroy;override;
@@ -233,7 +235,6 @@ implementation
 uses
 	{RTL/VCL}
 	Math,
-	Classes,
 	{Project}
 	AreaLoopEvents,
 	Character,
@@ -621,9 +622,9 @@ end;
 //      master procedure for Area loop, and call Dynamic Sub Procedure.
 //
 //  Changes -
-//    March 20th, 2007 - Aeomin - Created Header
+//    March 20th, 2007 - Aeomin - Created
 //------------------------------------------------------------------------------
-procedure TBeing.AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True; IgnoreMob:Boolean=True; IgnoreNPC:Boolean=True);
+procedure TBeing.AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True; IgnoreMob:Boolean=True; IgnoreNPC:Boolean=True;AParameter : Cardinal = 0);
 var
 		idxY : integer;
 		idxX : integer;
@@ -644,7 +645,7 @@ begin
 						if (Self = ABeing) and AIgnoreCurrentBeing then Continue;
 						//if (ABeing is TNPC) and IgnoreNPC then Continue;
 						{TODO : support other than TCharacter...}
-						ALoopCall(Self, ABeing);
+						ALoopCall(Self, ABeing, AParameter);
 					end;
 				end;
 			end;
@@ -716,6 +717,22 @@ procedure TBeing.UpdateDirection;
 begin
 	AreaLoop(UpdateDir, True);
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ShowEffect                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send effect packet
+//
+//	Changes-
+//		[2007/11/24] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure TBeing.ShowEffect(EffectID:LongWord);
+begin
+	AreaLoop(Effect, False, True, True, EffectID);
+end;{ShowEffect}
 //------------------------------------------------------------------------------
 
 
