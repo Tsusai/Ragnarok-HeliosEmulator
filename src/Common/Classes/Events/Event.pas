@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//Event																																		UNIT
+//Event                                                                     UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //      The base Event class, provides the shared attributes of the specialized
@@ -28,7 +28,7 @@ type
 implementation
 
 //------------------------------------------------------------------------------
-//Execute																																	UNIT
+//Execute                                                                   UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //      Just a random virtual event so the other child classes know what to

@@ -15,6 +15,15 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 364 -
+[2007/11/25] Aeomin - Temperary fix normal warp stuck problem.
+Cause of problem : Since server is multithread, loop the event list and fire each even is a seperated thread than each player connection.
+Chances are, threads want to delete an entry in EventList AT SAME time, result was AV, on client side, it was stucked.
+Solution : Currently i have no perfect solution yet, might someone help out, but i did put a limit check in eventlist,
+	since currently Helios does not have much of effect, on debug, only event was walk.
+Thread 1 delete walk event(ZoneSend), Meanwhile: Thread 2 Fires walk event (event deleted at this point), thread 2 try to delete an index that does not exists anymore.
+-
+
 - Rev 363 -
 [2007/11/24] Aeomin - Added GM command #effect
 -

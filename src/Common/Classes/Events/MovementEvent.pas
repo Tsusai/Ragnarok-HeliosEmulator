@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//Movement																																UNIT
+//Movement                                                                  UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //      An event which will be instantiated when a character requests to move.
@@ -43,7 +43,7 @@ implementation
 
 
 //------------------------------------------------------------------------------
-//Execute																																	UNIT
+//Execute                                                                   UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //      The real executing code of the event, actually does whatever the event

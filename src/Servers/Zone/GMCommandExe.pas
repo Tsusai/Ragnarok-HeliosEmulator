@@ -965,7 +965,7 @@ begin
 	if (Length(Arguments) >= 2) then
 	begin
 		EffectID := StrToIntDef(Arguments[0], -1);
-		if EffectID = -1 then
+		if EffectID < 0 then
 		begin
 			Error.Add('Invalid Effect ID.');
 			Error.Add(Arguments[Length(Arguments)-1]);

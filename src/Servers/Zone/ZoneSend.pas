@@ -24,6 +24,7 @@ uses
 	{RTL/VCL}
 	Types,
 	Classes,
+	SyncObjs,
 	{Project}
 	Being,
 	Character,
@@ -988,6 +989,7 @@ begin
 						ACharacter.EventList.Delete(Index);
 					end;
 				end;
+
 				RemoveFromList;
 				ACharacter.Map := MapName;
 				ACharacter.Position := Point(X,Y);

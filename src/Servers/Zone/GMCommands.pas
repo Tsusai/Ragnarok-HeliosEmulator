@@ -200,7 +200,13 @@ end;{Create}
 //
 //------------------------------------------------------------------------------
 Destructor TGMCommands.Destroy;
+//var
+//	Index : Cardinal;
 begin
+	{I don't know why, but it gives AV}
+//	for Index := fCommands.Count -1 downto 0 do
+//		fCommands.Objects[Index].Free;
+        fCommands.Clear;
 	fCommands.Free;
 	fTmpCommandList.Free;
 

@@ -12,6 +12,7 @@ unit EventList;
 interface
 uses
 	SyncObjs,
+	SysUtils,
 	Event;
 
 type
@@ -247,30 +248,34 @@ end;{Add}
 //------------------------------------------------------------------------------
 procedure TEventList.Delete(Index : Integer);
 var
-  CurrentItem : PEvent;
-  NextItem    : PEvent;
+	CurrentItem : PEvent;
+	NextItem    : PEvent;
 begin
 	CriticalSection.Enter;
-	//if we own the Event, free it.
-  if OwnsEvents then
-  begin
-    Items[Index].Free;
-  end;
-  
-	if (MaxCount-ALLOCATE_SIZE) = (MsCount) then
+	if (Index >= 0) and (Index < Count) then
 	begin
-		Shrink(ALLOCATE_SIZE);
+		//if we own the Event, free it.
+		if OwnsEvents then
+		begin
+			Items[Index].Free;
+		end;
+  
+		if (MaxCount-ALLOCATE_SIZE) = (MsCount) then
+		begin
+			Shrink(ALLOCATE_SIZE);
+		end;
+		for Index := Index to MsCount - 1 do
+		begin
+			CurrentItem := MemStart;
+			inc(CurrentItem, Index);
+			NextItem := CurrentItem;
+			Inc(NextItem,1);
+			CurrentItem^ := NextItem^;
+		end;
+
+		Dec(MsCount,  1);
+		Dec(NextSlot, 1);
 	end;
-  for Index := Index to MsCount - 1 do
-  begin
-    CurrentItem := MemStart;
-    inc(CurrentItem, Index);
-    NextItem := CurrentItem;
-    Inc(NextItem,1);
-    CurrentItem^ := NextItem^;
-  end;
-  Dec(MsCount,  1);
-	Dec(NextSlot, 1);
 	CriticalSection.Leave;
 end;{Delete}
 //------------------------------------------------------------------------------
