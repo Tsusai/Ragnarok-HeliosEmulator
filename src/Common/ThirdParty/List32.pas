@@ -20,6 +20,7 @@ TList32: based on TList. added IndexOfObject.
 interface
 
 uses
+	SyncObjs,
 	Classes;
 
 const
@@ -48,6 +49,7 @@ Type
     FDuplicates: TDuplicates;
     FOnChange: TNotifyEvent;
     FOnChanging: TNotifyEvent;
+    CriticalSection : TCriticalSection;
     procedure ExchangeItems(Index1, Index2: Integer);
     procedure Grow;
     procedure QuickSort(L, R: Integer; SCompare: TIntListSortCompare);
@@ -66,7 +68,7 @@ Type
     procedure SetCapacity(NewCapacity: Integer);
     procedure SetUpdateState(Updating: Boolean);
   public
-
+    constructor Create;
     destructor Destroy; override;
     function Add(const S: cardinal): Integer;
     function AddObject(const S: cardinal; AObject: TObject): Integer; virtual;
@@ -100,11 +102,20 @@ uses
 	SysUtils;
 
 { TIntList32 }
+constructor TIntList32.Create;
+begin
+	inherited;
+	CriticalSection := TCriticalSection.Create;
+	CriticalSection.Enter;
+end;
+
 
 destructor TIntList32.Destroy;
 begin
   FOnChange := nil;
   FOnChanging := nil;
+	CriticalSection.Leave;
+	CriticalSection.Free;
   inherited destroy;
   FCount := 0;
   SetCapacity(0);

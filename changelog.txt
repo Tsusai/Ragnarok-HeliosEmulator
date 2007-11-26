@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 365 -
+[2007/11/25] Aeomin - Possible fix problems caused by not thread safe list.
+[2007/11/25] Aeomin - Updated packet_db.txt
+-
+
 - Rev 364 -
 [2007/11/25] Aeomin - Temperary fix normal warp stuck problem.
 Cause of problem : Since server is multithread, loop the event list and fire each even is a seperated thread than each player connection.
