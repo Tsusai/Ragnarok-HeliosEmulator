@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 366 -
+[2007/11/26] Aeomin - Added Gm Command #speed (even though it didn't work well).
+-
+
 - Rev 365 -
 [2007/11/25] Aeomin - Possible fix problems caused by not thread safe list.
 [2007/11/25] Aeomin - Updated packet_db.txt

@@ -164,6 +164,7 @@ begin
 	AddCommand('GiveZeny',        GMGiveZeny,             99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
 	AddCommand('GiveStat',        GMGiveStat,             99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Type>,<Amount>');
 	AddCommand('ResetStats',      GMResetStats,           99, TYPE_TARGETCHAR, GMFLAG_NOSPLIT, '<Player Name>');
+	AddCommand('Speed',           GMSpeed,                99, TYPE_RETURNBACK, GMFLAG_NORMAL, '<Speed>');
 	// - - - Broadcast Sets
 	AddCommand('BroadCast',       GMBroadCast,            99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
 	AddCommand('BroadCastN',      GMBroadCastNoName,      99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');

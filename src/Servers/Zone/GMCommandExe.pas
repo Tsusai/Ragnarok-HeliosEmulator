@@ -30,6 +30,8 @@ uses
 	procedure GMGiveZeny(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMGiveStat(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMResetStats(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMSpeed(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+
 	procedure GMBroadCast(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastLocal(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
@@ -614,7 +616,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//GMResetStats                                                          PROCEDURE
+//GMResetStats                                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //		Reset target character's stats
@@ -626,7 +628,34 @@ procedure GMResetStats(const Arguments : array of String;FromChar:String;TargetC
 begin
 	TargetChar.ResetStats;
 	Error.Add('Status reset successful!');
-end;
+end;{GMResetStats}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMSpeed                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Control player's walking speed
+//
+//	Changes-
+//		[2007/11/26] Aeomin - Create.
+//------------------------------------------------------------------------------
+procedure GMSpeed(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+var
+	ToChange : Integer;
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		ToChange := EnsureRange(StrToIntDef(Arguments[0], 150), 25, 1000);
+		TargetChar.Speed := ToChange;
+		Error.Add('Walking speed changed to ' + IntToStr(ToChange));
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;{GMSpeed}
 //------------------------------------------------------------------------------
 
 
