@@ -113,6 +113,7 @@ protected
 	fOption           : Word;
 	fMap              : String;
 	fPosition         : TPoint;
+	fSpeed            : Word;
 
 	procedure SetName(
 		const
@@ -147,6 +148,7 @@ protected
 	Procedure SetOption(Value : word); virtual;
 	procedure SetMap(Value : string); virtual;
 	procedure SetPosition(Value : TPoint); virtual;
+	procedure SetSpeed(Value : Word); virtual;
 
 	procedure AreaLoop(
 			ALoopCall           : TLoopCall;
@@ -158,7 +160,6 @@ protected
 
 public
 	ID					: LongWord;
-	Speed 			: Word;
 	HeadDirection	: Word;
 	Direction 	: Byte;
 
@@ -205,6 +206,7 @@ public
 	property Option    : Word       read fOption write SetOption;
 	property Map       : string     read fMap write SetMap;
 	property Position  : TPoint     read fPosition write SetPosition;
+	property Speed     : Word       read fSpeed write SetSpeed;
 
 	Procedure Walk;
 
@@ -960,6 +962,7 @@ Procedure TBeing.SetAilments(Value : word); begin fAilments := Value; end;
 Procedure TBeing.SetOption(Value : word); begin fOption := Value; end;
 procedure TBeing.SetMap(Value : string); begin fMap := Value; end;
 procedure TBeing.SetPosition(Value : TPoint); begin fPosition := Value; end;
+procedure TBeing.SetSpeed(Value : Word); begin fSpeed := Value; end;
 
 
 (*- Procedure -----------------------------------------------------------------*

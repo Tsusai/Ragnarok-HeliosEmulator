@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 367 -
+[2007/11/26] Aeomin - Fixed #speed due to walking speed change packet did not sent
+-
+
 - Rev 366 -
 [2007/11/26] Aeomin - Added Gm Command #speed (even though it didn't work well).
 -

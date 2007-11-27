@@ -171,6 +171,7 @@ protected
 	procedure SetOption(Value : Word); override;
 	procedure SetMap(Value : String); override;
 	procedure SetPosition(Value : TPoint); override;
+	procedure SetSpeed(Value : Word); override;
 
 	procedure SetKarma(Value : Word);
 	procedure SetManner(Value : Word);
@@ -1525,6 +1526,31 @@ begin
 	Inherited;
 	DataChanged := TRUE;
 end;{SetMapPt}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetSpeed                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Update player's walking speed
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2007/11/26] Aeomin created
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.SetSpeed(
+		Value : Word
+	);
+begin
+	inherited;
+	SendSubStat(0, 0, Value);
+end;{SetSpeed}
 //------------------------------------------------------------------------------
 
 
