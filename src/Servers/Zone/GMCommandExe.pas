@@ -46,6 +46,9 @@ uses
 	procedure GMBroadCastBlue(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastWhite(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 
+	procedure GMKick(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMKickAll(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+
 	procedure GMEffect(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 implementation
 uses
@@ -975,6 +978,46 @@ begin
 		Error.Add(Arguments[Length(Arguments)-1]);
 	end;
 end;{GMBroadCastWhite}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMKick                                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Kick a player
+//
+//	Changes-
+//		[2007/12/5] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure GMKick(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		Kick(TargetChar);
+		Error.Add('Player '''+TargetChar.Name+''' kicked.');
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;{GMKick}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMKickAll                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Kick everyone
+//
+//	Changes-
+//		[2007/12/5] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure GMKickAll(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+begin
+	Kick(TargetChar);
+end;{GMKick}
 //------------------------------------------------------------------------------
 
 

@@ -179,6 +179,9 @@ begin
 	AddCommand('BroadCastBLK',    GMBroadCastBlack,       99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
 	AddCommand('BroadCastB',      GMBroadCastBlue,        99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
 	AddCommand('BroadCastW',      GMBroadCastWhite,       99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
+	// - - - Management
+	AddCommand('Kick',            GMKick,                 99, TYPE_TARGETCHAR, GMFLAG_NOSPLIT, '<Player Name>');
+	AddCommand('KickAll',         GMKickAll,              99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '');
 	// - - - Misc stuffs
 	AddCommand('Effect',          GMEffect,               99, TYPE_RETURNBACK, GMFLAG_NORMAL, '<Effect Id>');
 	// Use temperary list!!!

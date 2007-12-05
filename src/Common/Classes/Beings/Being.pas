@@ -612,7 +612,7 @@ var
 begin
 	ADelayEvent := TDelayDisconnectEvent.Create(ExpireTime,Self);
 	ADelayEvent.ExpiryTime := ExpireTime;
-	Self.EventList.Add(ADelayEvent);
+	EventList.Add(ADelayEvent);
 end;
 //------------------------------------------------------------------------------
 

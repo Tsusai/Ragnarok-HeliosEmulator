@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 368 -
+[2007/12/05] Aeomin - Added GM command #kick and #kickall
+-
+
 - Rev 367 -
 [2007/11/26] Aeomin - Fixed #speed due to walking speed change packet did not sent
 -

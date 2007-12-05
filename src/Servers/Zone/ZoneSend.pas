@@ -215,11 +215,10 @@ procedure Kick(
 var
 	OutBuffer : TBuffer;
 begin
-	FillChar(OutBuffer,GetPacketLength($018B),0);
 	WriteBufferWord(0, $018B, OutBuffer);
 	WriteBufferWord(2, 0, OutBuffer);
 	SendBuffer(Who.ClientInfo,OutBuffer,GetPacketLength($018B));
-	Who.DelayDisconnect(10000);
+	Who.DelayDisconnect(GetTick + 10000);
 end;
 //------------------------------------------------------------------------------
 
@@ -448,7 +447,7 @@ begin
 	WriteBufferWord(0, $018b, OutBuffer);
 	WriteBufferWord(2, 0, OutBuffer);
 	Sendbuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($018b, ACharacter.ClientVersion));
-	ACharacter.DelayDisconnect(10000);
+	ACharacter.DelayDisconnect(GetTick + 10000);
 end;{SendQuitGameResponse}
 //------------------------------------------------------------------------------
 
