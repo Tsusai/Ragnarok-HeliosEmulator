@@ -885,7 +885,7 @@ end;//InterClientOnConnect
 
 
 //------------------------------------------------------------------------------
-//CharaClientRead                                                     PROCEDURE
+//CharaClientRead                                                      PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Executes on receiving information back from an inter server.
@@ -969,6 +969,16 @@ begin
 			Size := BufferReadWord(2,ABuffer);
 			RecvBuffer(AClient,ABuffer[4],Size-4);
 			RecvMapWarpRequest(ABuffer);
+		end;
+	$2216:
+		begin
+			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2216)-2);
+			RecvAddFriendRequest(ABuffer);
+		end;
+	$2217:
+		begin
+			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2217)-2);
+			RecvAddFriendRequestReply(ABuffer);
 		end;
 	end;
 end;{InterClientRead}

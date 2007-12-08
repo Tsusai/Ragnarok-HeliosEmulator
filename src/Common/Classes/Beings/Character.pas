@@ -227,7 +227,7 @@ public
 	ClientInfo		: TIdContext;
 
 	ParamUP			: StatArray;
-	 ParamBonus		: StatArray;
+	ParamBonus		: StatArray;
 
 	//Our Character's inventory
 	Inventory		: TInventory;
@@ -245,6 +245,8 @@ public
 
 	OnTouchIDs : TIntList32;
 
+	// How many friends?
+	Friends : Byte;
 
 	procedure CalcMaxHP; override;
 	procedure CalcMaxSP; override;
@@ -267,6 +269,7 @@ public
 	procedure SendCharacterStats(UpdateView : boolean = false);
 
 	procedure ResetStats;
+	procedure SendFriendList;
 	
 	Constructor Create(AClient : TIdContext);
 	Destructor  Destroy; override;
@@ -329,7 +332,8 @@ uses
 	BufferIO,
 	Globals,
 	PacketTypes,
-	TCPServerRoutines
+	TCPServerRoutines,
+	CharaList
 	{Third Party}
 	//none
 	;
@@ -2514,6 +2518,55 @@ begin
 	ParamBase[INT] := 1;
 	ParamBase[LUK] := 1;
 end;{ResetStats}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendFriendList                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send friend list to character.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2007/12/05] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.SendFriendList;
+var
+	OutBuffer   : TBuffer;
+	FriendList  : TCharacterList;
+	Char        : TCharacter;
+	Index       : Byte;
+begin
+	TThreadLink(ClientInfo.Data).DatabaseLink.GameData.Connect;
+	try
+		FriendList := TThreadLink(ClientInfo.Data).DatabaseLink.GameData.GetFriendList(CID);
+	finally
+		TThreadLink(ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+	end;
+	if FriendList.Count > 0 then
+	begin
+		WriteBufferWord(0, $0201, OutBuffer);
+		WriteBufferWord(2, 4 + ( 32 * FriendList.Count ), OutBuffer);
+		for Index := 0 to FriendList.Count - 1 do
+		begin
+			Char := FriendList.Items[Index];
+
+			WriteBufferLongWord(4 + 32 * Index + 0, Char.ID,   OutBuffer);
+			WriteBufferLongWord(4 + 32 * Index + 4, Char.CID,  OutBuffer);
+			WriteBufferString(4 + 32 * Index + 8,  Char.Name, NAME_LENGTH, OutBuffer);
+		end;
+		SendBuffer(ClientInfo, OutBuffer, 4 + ( 32 * FriendList.Count ));
+	end;
+	Friends := FriendList.Count;
+	FriendList.Clear;
+	FriendList.Free;
+end;{SendFriendList}
 //------------------------------------------------------------------------------
 
 

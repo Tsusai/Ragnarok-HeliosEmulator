@@ -180,6 +180,24 @@ public
 		CharID    : LongWord
 		):String;override;
 
+	function  GetFriendList(
+		const
+			CharID : LongWord
+		) : TCharacterList; override;
+
+	function DeleteFriend(
+		const ReqID     : LongWord;
+		const AccountID : LongWord;
+		const CharID    : LongWord
+		) : Boolean; override;
+
+	procedure AddFriend(
+		const OrigID   : LongWord;
+		const AccID    : LongWord;
+		const CharID   : LongWord;
+		const CharName : String
+		); override;
+
 	function Connect : Boolean; override;
 	procedure Disconnect; override;
 
@@ -1036,6 +1054,139 @@ begin
 		QueryResult.Free;
 	end;
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetFriendList                                                         FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Get list of friends.
+//
+//	Changes -
+//		[2007/12/05] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function  TMySQLGameDatabase.GetFriendList(
+		const
+			CharID : LongWord
+		) : TCharacterList;
+var
+	QueryResult     : TMySQLResult;
+	Success         : Boolean;
+	Index           : Byte;
+	Char            : TCharacter;
+begin
+	Result := TCharacterList.Create(TRUE);
+	QueryResult := SendQuery(
+		Format(
+			'SELECT * FROM friend WHERE char_id = %d LIMIT 0,%d',
+			[CharID,  MAX_FRIENDS]
+			),
+		True,
+		Success
+		);
+	if Success then
+	begin
+		if QueryResult.RowsCount > 0 then
+		begin
+			for Index := 0 to QueryResult.RowsCount - 1 do
+			begin
+				Char      := TCharacter.Create(Parent.ClientInfo);
+				Char.ID   := StrToInt(QueryResult.FieldValue(1));
+				Char.CID  := StrToInt(QueryResult.FieldValue(2));
+				Char.Name := QueryResult.FieldValue(3);
+				Result.Add(Char);
+				if Index < QueryResult.RowsCount then
+				begin
+					QueryResult.Next;
+				end;
+			end;
+		end;
+	end;
+	if Assigned(QueryResult) then QueryResult.Free;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//DeleteFriend                                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Delete a friend, return false is friend not even exists
+//
+//	Changes -
+//		[2007/12/06] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function TMySQLGameDatabase.DeleteFriend(
+		const ReqID     : LongWord;
+		const AccountID : LongWord;
+		const CharID    : LongWord
+		) : Boolean;
+var
+	QueryResult     : TMySQLResult;
+	Success         : Boolean;
+begin
+	Result := False;
+	QueryResult := SendQuery(
+		Format(
+			'SELECT * FROM `friend` WHERE `char_id` = %d AND `id1` = %d AND `id2` = %d',
+			[ReqID, AccountID, CharID]
+			),
+		True,
+		Success
+		);
+
+	if Success then
+	begin
+		if QueryResult.RowsCount > 0 then
+		begin
+			SendQuery(
+			Format(
+				'DELETE FROM `friend` WHERE `char_id` = %d AND `id1` = %d AND `id2` = %d',
+				[ReqID, AccountID, CharID]
+				),
+			True,
+			Success
+			);
+			Result := Success;
+		end;
+	end;
+
+	if Assigned(QueryResult) then QueryResult.Free;
+end;{DeleteFriend}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//AddFriend                                                             FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//		Add a friend, just insert to database
+//
+//	Changes -
+//		[2007/12/07] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure TMySQLGameDatabase.AddFriend(
+	const OrigID   : LongWord;
+	const AccID    : LongWord;
+	const CharID   : LongWord;
+	const CharName : String
+);
+var
+	Success         : Boolean;
+begin
+	SendQuery(
+		Format(
+			'INSERT INTO `friend` (`char_id`,`id1`,`id2`,`name`) VALUE (%d, %d, %d, ''%s'')',
+			[OrigID, AccID, CharID, CharName]
+			),
+		False,
+		Success
+		);
+end;{AddFriend}
 //------------------------------------------------------------------------------
 {END MySQLGameDatabase}
 end.

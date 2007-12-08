@@ -402,14 +402,14 @@ Begin
 				end else if Command = 'createparty2' then begin
 					ExecCommand := CreatParty2;
 				end else if Command = 'snexplosionspirits' then begin
-					ExecCommand := SNExplosionSpirits;
+					ExecCommand := SNExplosionSpirits; }
 				end else if Command = 'friendaddrequest' then begin
 					ExecCommand := RequestToAddFriend;
 				end else if Command = 'frienddeleterequest' then begin
 					ExecCommand := RemoveFriendFromList;
 				end else if Command = 'friendaddreply' then begin
 					ExecCommand := RequestToAddFriendResponse;
-				end;} end;
+				end;
 			end;
 			Inc(PK);//jump to the next packet record
 		end;

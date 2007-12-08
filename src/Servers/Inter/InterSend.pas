@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//InterSend			                                                        UNIT
+//InterSend                                                                 UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //      Contains any routines that involve sending information out from the
@@ -80,6 +80,21 @@ uses
 			X, Y:Word
 		);
 
+	procedure InterSendFriendRequest(
+			AClient : TIdContext;
+			const ReqAID, ReqID  : LongWord;
+			const ReqName  : String;
+			const TargetChar : LongWord
+		);
+
+	procedure InterSendFriendRequestReply(
+			AClient : TIdContext;
+			const OrigID : LongWord;
+			const AccID  : LongWord;
+			const CharID : LongWord;
+			const CharName : String;
+			const Reply  : Byte
+		);
 implementation
 
 
@@ -92,7 +107,9 @@ uses
 	GMCommands,
 	BufferIO,
 	Main,
-	Character
+	Character,
+	TCPServerRoutines,
+	GameConstants
 	{3rd Party}
 	//none
 	;
@@ -504,5 +521,75 @@ begin
 	WriteBufferString(17, MapName, Size, OutBuffer);
 	SendBuffer(AClient, OutBuffer, Size + 17);
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//InterSendFirendRequest                                               PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Send add friend request to target zone
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//    [2007/12/7] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure InterSendFriendRequest(
+	AClient : TIdContext;
+	const ReqAID, ReqID  : LongWord;
+	const ReqName  : String;
+	const TargetChar : LongWord
+);
+var
+	OutBuffer   : TBuffer;
+begin
+	WriteBufferWord(0, $2216, OutBuffer);
+	WriteBufferLongWord(2, ReqAID, OutBuffer);
+	WriteBufferLongWord(6, ReqID, OutBuffer);
+	WriteBufferLongWord(10, TargetChar, OutBuffer);
+	WriteBufferString(14, ReqName, NAME_LENGTH, OutBuffer);
+	SendBuffer(AClient, OutBuffer, GetPacketLength($2216));
+end;{InterSendFirendRequest}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//InterSendFirendRequest                                               PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Send reply to zone
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//    [2007/12/08] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure InterSendFriendRequestReply(
+	AClient : TIdContext;
+	const OrigID : LongWord;
+	const AccID  : LongWord;
+	const CharID : LongWord;
+	const CharName : String;
+	const Reply  : Byte
+);
+var
+	OutBuffer   : TBuffer;
+begin
+	// YEs using same packet...
+	WriteBufferWord(0, $2217, OutBuffer);
+	WriteBufferLongWord(2, OrigID, OutBuffer);
+	WriteBufferLongWord(6, AccID, OutBuffer);
+	WriteBufferLongWord(10, CharID, OutBuffer);
+	WriteBufferByte(14, Reply, OutBuffer);
+	WriteBufferString(15, CharName, NAME_LENGTH, OutBuffer);
+	SendBuffer(AClient, OutBuffer, GetPacketLength($2217));
+end;{InterSendFriendRequestReply}
 //------------------------------------------------------------------------------
 end.

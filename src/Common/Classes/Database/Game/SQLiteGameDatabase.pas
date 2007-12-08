@@ -166,6 +166,24 @@ public
 		CharID    : LongWord
 		):String;override;
 
+	function  GetFriendList(
+		const
+			CharID : LongWord
+		) : TCharacterList; override;
+
+	function DeleteFriend(
+		const ReqID     : LongWord;
+		const AccountID : LongWord;
+		const CharID    : LongWord
+		) : Boolean; override;
+
+	procedure AddFriend(
+		const OrigID   : LongWord;
+		const AccID    : LongWord;
+		const CharID   : LongWord;
+		const CharName : String
+		); override;
+
 	function  Connect : Boolean; override;
 	procedure Disconnect; override;
 
@@ -938,6 +956,120 @@ begin
 	end;
 	if Assigned(QueryResult) then QueryResult.Free;
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetFriendList                                                         FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Get list of friends.
+//
+//	Changes -
+//		[2007/12/05] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function  TSQLiteGameDatabase.GetFriendList(
+		const
+			CharID : LongWord
+		) : TCharacterList;
+var
+	QueryResult     : TSQLiteTable;
+	Index           : Byte;
+	Char            : TCharacter;
+begin
+	Result := TCharacterList.Create(TRUE);
+	QueryResult := SendQuery(
+		Format(
+			'SELECT * FROM friend WHERE char_id = %d LIMIT 0,%d',
+			[CharID,  MAX_FRIENDS]
+			)
+		);
+	if QueryResult.Count > 0 then
+	begin
+		for Index := 0 to QueryResult.Count - 1 do
+		begin
+			Char      := TCharacter.Create(Parent.ClientInfo);
+			Char.ID   := QueryResult.FieldAsInteger(1);
+			Char.CID  := QueryResult.FieldAsInteger(2);
+			Char.Name := QueryResult.Fields[3];
+			Result.Add(Char);
+			if Index < QueryResult.Count then
+			begin
+				QueryResult.Next;
+			end;
+		end;
+	end;
+	if Assigned(QueryResult) then QueryResult.Free;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//DeleteFriend                                                          FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Delete a friend, return false is friend not even exists
+//
+//	Changes -
+//		[2007/12/06] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function TSQLiteGameDatabase.DeleteFriend(
+		const ReqID     : LongWord;
+		const AccountID : LongWord;
+		const CharID    : LongWord
+		) : Boolean;
+var
+	QueryResult     : TSQLiteTable;
+begin
+	Result := False;
+	QueryResult := SendQuery(
+		Format(
+			'SELECT * FROM friend WHERE char_id = %d AND id1 = %d AND id2 = %d',
+			[ReqID, AccountID, CharID]
+			)
+		);
+
+	if QueryResult.Count > 0 then
+	begin
+		SendQuery(
+		Format(
+			'DELETE FROM friend WHERE char_id = %d AND id1 = %d AND id2 = %d',
+			[ReqID, AccountID, CharID]
+			)
+		);
+	end;
+
+	if Assigned(QueryResult) then QueryResult.Free;
+end;{DeleteFriend}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//AddFriend                                                             FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//		Add a friend, just insert to database
+//
+//	Changes -
+//		[2007/12/08] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure TSQLiteGameDatabase.AddFriend(
+	const OrigID   : LongWord;
+	const AccID    : LongWord;
+	const CharID   : LongWord;
+	const CharName : String
+);
+begin
+	SendQuery(
+		Format(
+			'INSERT INTO `friend` (`char_id`,`id1`,`id2`,`name`) VALUE (%d, %d, %d, ''%s'')',
+			[OrigID, AccID, CharID, CharName]
+			)
+		);
+end;{AddFriend}
 //------------------------------------------------------------------------------
 {END SQLiteGameDatabase}
 end.

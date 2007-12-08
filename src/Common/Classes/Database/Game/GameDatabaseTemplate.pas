@@ -165,6 +165,24 @@ public
 			CharID    : LongWord
 		):String; virtual; abstract;
 
+	function  GetFriendList(
+		const
+			CharID : LongWord
+		) : TCharacterList; virtual; abstract;
+
+	function DeleteFriend(
+		const ReqID     : LongWord;
+		const AccountID : LongWord;
+		const CharID    : LongWord
+		) : Boolean; virtual; abstract;
+
+	procedure AddFriend(
+		const OrigID   : LongWord;
+		const AccID    : LongWord;
+		const CharID   : LongWord;
+		const CharName : String
+		); virtual; abstract;
+
 	function  Connect : Boolean; virtual; abstract;
 
 	procedure Disconnect; virtual; abstract;

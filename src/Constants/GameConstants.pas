@@ -200,7 +200,8 @@ const
 
 	HJOB_MAX = 4049;
 
-
+	MAX_FRIENDS = 40;
+	NAME_LENGTH = 24;
 implementation
 
 end.

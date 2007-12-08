@@ -68,6 +68,11 @@ uses
 		const Failed:Boolean;
 		const Amount:Byte
 	);
+	procedure SendDeleteFriend(
+		AClient : TIdContext;
+		const AccID : LongWord;
+		const CharID : LongWord
+	);
 
 
 	procedure SendWhisper(
@@ -134,9 +139,19 @@ uses
 	procedure ZoneUpdateDirection(
 		const Who:TBeing;
 		AClient : TIdContext
-
 	);
-
+	procedure SendAddFriendRequest(
+		AClient : TIdContext;
+		const ReqAID, ReqID  : LongWord;
+		const ReqName        : String
+	);
+	procedure SendAddFriendRequestReply(
+		AClient : TIdContext;
+		const AccID  : LongWord;
+		const CharID : LongWord;
+		const CharName : String;
+		const Reply  : Byte
+	);
 implementation
 
 
@@ -184,7 +199,6 @@ begin
 	if Idx > -1 then
 	begin
 		Chara := MainProc.ZoneServer.CharacterList[Idx] as TCharacter;
-		FillChar(OutBuffer, GetPacketLength($0081), 0);
 		WriteBufferWord(0, $0081, OutBuffer);
 		WriteBufferByte(2, 2, OutBuffer);
 		SendBuffer(Chara.ClientInfo,OutBuffer,GetPacketLength($0081));
@@ -483,6 +497,36 @@ begin
 	WriteBufferByte(3, Amount, OutBuffer);
 	SendBuffer(AChara.ClientInfo,OutBuffer,GetPacketLength($00bc));
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendDeleteFriend                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Tell client to delete a friend from friend list.
+//--
+//   Pre:
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/06] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure SendDeleteFriend(
+	AClient : TIdContext;
+	const AccID : LongWord;
+	const CharID : LongWord
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $020a, OutBuffer);
+	WriteBufferLongWord(2, AccID, OutBuffer);
+	WriteBufferLongWord(6, CharID, OutBuffer);       
+	SendBuffer(AClient, OutBuffer, GetPacketLength($020a));
+end;{SendDeleteFriend}
 //------------------------------------------------------------------------------
 
 
@@ -1084,7 +1128,6 @@ procedure ZoneUpdateDirection(
 var
 	ReplyBuffer : TBuffer;
 begin
-	FillChar(ReplyBuffer,GetPacketLength($009c),0);
 	WriteBufferWord(0, $009c, ReplyBuffer);
 	WriteBufferLongWord(2, Who.ID, ReplyBuffer);
 	WriteBufferWord(6, Who.HeadDirection, ReplyBuffer);
@@ -1093,4 +1136,68 @@ begin
 end;{ZoneUpdateDirection}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ZoneSendAddFriendRequest                                             PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Send client request...
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//    [2007/12/07] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure SendAddFriendRequest(
+	AClient : TIdContext;
+	const ReqAID, ReqID  : LongWord;
+	const ReqName        : String
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $0207, OutBuffer);
+	WriteBufferLongWord(2, ReqAID, OutBuffer);
+	WriteBufferLongWord(6, ReqID, OutBuffer);
+	WriteBufferString(10, ReqName, NAME_LENGTH, OutBuffer);
+	SendBuffer(AClient,OutBuffer,GetPacketLength($0207));
+end;{ZoneSendAddFriendRequest}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendAddFriendRequestReply                                            PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Send reply to client
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//    [2007/12/08] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure SendAddFriendRequestReply(
+	AClient : TIdContext;
+	const AccID  : LongWord;
+	const CharID : LongWord;
+	const CharName : String;
+	const Reply  : Byte
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $0209, OutBuffer);
+	WriteBufferWord(2, Reply, OutBuffer);
+	WriteBufferLongWord(4, AccID, OutBuffer);
+	WriteBufferLongWord(8, CharID, OutBuffer);
+	WriteBufferString(12, CharName, NAME_LENGTH, OutBuffer);
+	SendBuffer(AClient,OutBuffer,GetPacketLength($0209));
+end;{SendAddFriendRequestReply}
+//------------------------------------------------------------------------------
 end{ZoneSend}.

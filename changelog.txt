@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 369 -
+[2007/12/08] Aeomin - Overview: Friendlist support Part 1.
+Yes, it is a big update...
+-
+
 - Rev 368 -
 [2007/12/05] Aeomin - Added GM command #kick and #kickall
 -

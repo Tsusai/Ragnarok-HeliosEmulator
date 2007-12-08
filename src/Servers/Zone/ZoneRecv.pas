@@ -160,6 +160,24 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure RequestToAddFriend(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
+	procedure RemoveFriendFromList(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
+	procedure RequestToAddFriendResponse(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -186,6 +204,14 @@ uses
 	);
 
 	procedure RecvWhisperReply(
+			InBuffer : TBuffer
+	);
+
+	procedure RecvAddFriendRequest(
+			InBuffer : TBuffer
+	);
+
+	procedure RecvAddFriendRequestReply(
 			InBuffer : TBuffer
 	);
 	//----------------------------------------------------------------------
@@ -217,7 +243,8 @@ uses
 	ZoneServer,
 	ZoneCharaCommunication,
 	ZoneInterCommunication,
-	Database
+	Database,
+	AddFriendEvent
 	{3rd Party}
 	//none
 	;
@@ -358,7 +385,6 @@ var
 	Gender      : Byte;
 	AnAccount   : TAccount;
 	ACharacter  : TCharacter;
-	OutBuffer   : Tbuffer; //temp
 begin
 	AccountID      := BufferReadLongWord(ReadPts[0], Buffer);
 	CharacterID    := BufferReadLongWord(ReadPts[1], Buffer);
@@ -407,10 +433,8 @@ begin
 				ZoneSendMapConnectReply(ACharacter);
 				SendZoneCharaIncrease(MainProc.ZoneServer.ToCharaTCPClient,MainProc.ZoneServer);
 
-				//Friendslist placeholder
-				WriteBufferWord(0, $0201, OutBuffer);
-				WriteBufferWord(2, 4, OutBuffer);
-				SendBuffer(ACharacter.ClientInfo, OutBuffer, 4);
+				//Friendslist (No longer placeholder XD)
+				ACharacter.SendFriendList;
 			end;
 
 		end else
@@ -518,6 +542,7 @@ begin
 		WriteBufferWord(0, $013c, OutBuffer);
 		WriteBufferWord(2, 0, OutBuffer);
 		SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($013c,AChara.ClientVersion));
+
 		//Weather updates
 		//Various other tweaks
 		AChara.ShowTeleportIn;
@@ -1122,6 +1147,186 @@ end;{StatUp}
 
 
 //------------------------------------------------------------------------------
+//RequestToAddFriend                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Request add friend.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//    [2007/12/7] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure RequestToAddFriend(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	TargetChar : String;  //The character name want to add to friend list
+	TargetChara : TCharacter;
+	ZoneID      : Integer;
+	AFriendRequestEvent : TFriendRequestEvent;
+begin
+	TargetChar := BufferReadString(ReadPts[0], NAME_LENGTH, InBuffer);
+
+	TargetChara := nil;
+	if TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect then
+	try
+		TargetChara := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.GetChara(TargetChar);
+
+	finally
+		TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+	end;
+
+	if TargetChara <> NIL then
+	begin
+		ZoneID := -1;
+		if TThreadLink(AChara.ClientInfo.Data).DatabaseLink.StaticData.Connect then
+		try
+			ZoneID := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(TargetChara.Map);
+		finally
+			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+		end;
+
+		if ZoneID > -1 then
+		begin
+			if AChara.Friends >= MAX_FRIENDS then
+			begin
+				// Too much friends
+				SendAddFriendRequestReply(
+						AChara.ClientInfo,
+						TargetChara.ID,
+						TargetChara.CID,
+						TargetChara.Name,
+						2
+				);
+
+			end else
+			begin
+				AFriendRequestEvent := TFriendRequestEvent.Create(GetTick + 10000, AChara);
+				AFriendRequestEvent.PendingFriend := TargetChara.CID;
+				AChara.EventList.Add(AFriendRequestEvent);
+				// Just let inter server handle it ^_^
+				ZoneSendAddFriendRequest(
+						MainProc.ZoneServer.ToInterTCPClient,
+						AChara.ID,
+						AChara.CID,
+						AChara.Name,
+						TargetChara.CID,
+						ZoneID
+				);
+			end;
+		end;
+		TargetChara.Free;
+	end;
+end;{RequestToAddFriend}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RemoveFriendFromList                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Delete a friend from friend list.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//    [2007/12/5] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure RemoveFriendFromList(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	AccountID  : LongWord;
+	CharID     : LongWord;
+begin
+	AccountID   := BufferReadLongWord(ReadPts[0], InBuffer);
+	CharID      := BufferReadLongWord(ReadPts[1], InBuffer);
+
+	TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
+	try
+		  if TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.DeleteFriend(AChara.CID, AccountID, CharID) then
+		  begin                 
+			SendDeleteFriend(AChara.ClientInfo, AccountID, CharID);
+			Dec(AChara.Friends);
+		  end;
+	finally
+		  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+	end;
+end;{RemoveFriendFromList}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RequestToAddFriendResponse                                           PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Receive player's reply of add firend request
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//    [2007/12/07] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure RequestToAddFriendResponse(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	AccID  : LongWord;
+	CharID : LongWord;
+	Reply  : Byte;
+begin
+	AccID   := BufferReadLongWord(ReadPts[0], InBuffer);
+	CharID  := BufferReadLongWord(ReadPts[1], InBuffer);
+	Reply   := BufferReadByte(ReadPts[2], InBuffer);
+
+	// Nop... no way...
+	if (AChara.ID <> AccID) and (AChara.CID <> CharID) then
+	begin
+		if Reply = 0 then
+		begin
+			// Denied, just forward..
+			ZoneSendAddFriendReply(
+				MainProc.ZoneServer.ToInterTCPClient,
+				CharID,
+				AChara.ID,
+				AChara.CID,
+				AChara.Name,
+				1
+			);
+		end else
+		begin
+			// Accepted, tell request char to add data in database
+			ZoneSendAddFriendReply(
+				MainProc.ZoneServer.ToInterTCPClient,
+				CharID,
+				AChara.ID,
+				AChara.CID,
+				AChara.Name,
+				0
+			);
+		end;
+	end;
+end;{RequestToAddFriendResponse}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //RecvRedirectWhisper                                                  PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
@@ -1523,4 +1728,154 @@ begin
 end;{RecvMapWarpRequest}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//RecvAddFriendRequest                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Receive add friend request from inter server
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/07] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvAddFriendRequest(
+	InBuffer : TBuffer
+);
+var
+	ReqAID, ReqID  : LongWord;
+	ReqName        : String;
+	TargetChar     : LongWord;
+
+	Index  : Integer;
+	Chara  : TCharacter;
+begin
+	ReqAID      := BufferReadLongWord(2, InBuffer);
+	ReqID       := BufferReadLongWord(6, InBuffer);
+	TargetChar  := BufferReadLongWord(10, InBuffer);
+	ReqName     := BufferReadString(14, NAME_LENGTH, InBuffer);
+
+	Index := MainProc.ZoneServer.CharacterList.IndexOf(TargetChar);
+	if Index > -1 then
+	begin
+		Chara := MainProc.ZoneServer.CharacterList[Index] as TCharacter;
+		if Chara.Friends >= MAX_FRIENDS then
+		begin
+			// to much..
+			ZoneSendAddFriendReply(
+				MainProc.ZoneServer.ToInterTCPClient,
+				ReqID,
+				Chara.ID,
+				Chara.CID,
+				Chara.Name,
+				3
+			);
+		end else
+		begin
+			SendAddFriendRequest(Chara.ClientInfo, ReqAID, ReqID, ReqName);
+		end;
+	end;
+end;{RecvAddFriendRequest}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvAddFriendRequestReply                                            PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Receive reply from inter server
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/08] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvAddFriendRequestReply(
+	InBuffer : TBuffer
+);
+var
+	OrigID    : LongWord;
+	AccID     : LongWord;
+	CharID    : LongWord;
+	CharName  : String;
+	Reply     : Byte;
+
+	Index  : Integer;
+	Chara  : TCharacter;
+	Send : Boolean;
+
+	FriendRequestEvent : TFriendRequestEvent;
+begin
+	OrigID   := BufferReadLongWord(2, InBuffer);
+	AccID    := BufferReadLongWord(6, InBuffer);
+	CharID   := BufferReadLongWord(10, InBuffer);
+	Reply    := BufferReadByte(14, InBuffer);
+	CharName := BufferReadString(15, NAME_LENGTH, InBuffer);
+	Send := True;
+	Index := MainProc.ZoneServer.CharacterList.IndexOf(OrigID);
+	if Index > -1 then
+	begin
+		Chara := MainProc.ZoneServer.CharacterList[Index] as TCharacter;
+		if Reply = 0 then
+		begin
+			if Chara.EventList.Count > 0 then
+			begin
+				for Index := Chara.EventList.Count -1 downto 0 do
+				begin
+					if Chara.EventList.Items[Index] is TFriendRequestEvent then
+					begin
+						FriendRequestEvent := Chara.EventList.Items[Index] as TFriendRequestEvent;
+						if FriendRequestEvent.PendingFriend = CharID then
+						begin
+							Chara.EventList.Delete(Index);
+							//Accept
+							with TThreadLink(Chara.ClientInfo.Data).DatabaseLink.GameData do
+							begin
+								Connect;
+								try
+									//Add target first
+									AddFriend(OrigID, AccID, CharID, CharName);
+									//Add back
+									AddFriend(CharID, Chara.ID, Chara.CID, Chara.Name);
+
+									// Use 255 here!
+									ZoneSendAddFriendReply(
+										MainProc.ZoneServer.ToInterTCPClient,
+										CharID,
+										Chara.ID,
+										Chara.CID,
+										Chara.Name,
+										255
+									);
+									Break;
+								finally
+									Disconnect;
+								end;
+							end;
+						end else
+							Send := False;
+					end else
+						Send := False;
+				end;
+			end else
+				Send := False;
+		end;
+		
+		// Why? to make sure not trigger again -.-
+		if Reply = 255 then
+			Reply := 0;
+		if Reply = 0 then
+			Inc(Chara.Friends);
+		if Send then
+			SendAddFriendRequestReply(Chara.ClientInfo, AccID, CharID, CharName, Reply);
+	end;
+end;{RecvAddFriendRequestReply}
+//------------------------------------------------------------------------------
 end{ZoneRecv}.

@@ -125,6 +125,27 @@ const
 	);
 	//----------------------------------------------------------------------
 
+
+	//----------------------------------------------------------------------
+	// Friend List
+	//----------------------------------------------------------------------
+	procedure ZoneSendAddFriendRequest(
+		AClient : TInterClient;
+		const ReqAID,ReqID : LongWord;
+		const ReqChar      : String;
+		const TargetChar   : LongWord;
+		const ZoneID       : LongWord
+	);
+	procedure ZoneSendAddFriendReply(
+		AClient : TInterClient;
+		const OrigID : LongWord;
+		const AccID  : LongWord;
+		const CharID : LongWord;
+		const CharName : String;
+		const Reply  : Byte
+	);
+	//----------------------------------------------------------------------
+
 implementation
 uses
 	Main,
@@ -132,6 +153,7 @@ uses
 	Globals,
 	PacketTypes,
 	TCPServerRoutines,
+	GameConstants,
 	SysUtils;
 
 //------------------------------------------------------------------------------
@@ -562,7 +584,7 @@ end;{ZoneSendMapWarpRequestToInter}
 //	TODO
 //--
 //  Changes -
-//	[2007/08/13] Aeomin - Creaed.
+//	[2007/08/13] Aeomin - Created.
 //------------------------------------------------------------------------------
 procedure ZoneSendMapWarpResultToInter(
 	AClient : TInterClient;
@@ -587,4 +609,75 @@ begin
 end;{ZoneSendMapWarpResultToInter}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ZoneSendAddFriendRequest                                             PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//	Let inter server to request add friend.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/07] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure ZoneSendAddFriendRequest(
+	AClient : TInterClient;
+	const ReqAID,ReqID : LongWord;
+	const ReqChar      : String;
+	const TargetChar   : LongWord;
+	const ZoneID       : LongWord
+);
+var
+	OutBuffer   : TBuffer;
+begin
+	WriteBufferWord(0, $2215, OutBuffer);
+	WriteBufferLongWord(2, ReqAID, OutBuffer);
+	WriteBufferLongWord(6, ReqID, OutBuffer);
+	WriteBufferLongWord(10, TargetChar, OutBuffer);
+	WriteBufferLongWord(14, ZoneID, OutBuffer);
+	WriteBufferString(18, ReqChar, NAME_LENGTH, OutBuffer);
+	SendBuffer(AClient, OutBuffer, GetPacketLength($2215));
+end;{ZoneSendAddFriendRequest}
+//------------------------------------------------------------------------------
+
+
+
+//------------------------------------------------------------------------------
+//ZoneSendAddFriendReply                                               PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//	We got reply now, let's send back to inter
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/08] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure ZoneSendAddFriendReply(
+	AClient : TInterClient;
+	const OrigID : LongWord;
+	const AccID  : LongWord;
+	const CharID : LongWord;
+	const CharName : String;
+	const Reply  : Byte
+);
+var
+	OutBuffer   : TBuffer;
+begin
+	WriteBufferWord(0, $2217, OutBuffer);
+	WriteBufferLongWord(2, OrigID, OutBuffer);
+	WriteBufferLongWord(6, AccID, OutBuffer);
+	WriteBufferLongWord(10, CharID, OutBuffer);
+	WriteBufferByte(14, Reply, OutBuffer);
+	WriteBufferString(15, CharName, NAME_LENGTH, OutBuffer);
+	SendBuffer(AClient, OutBuffer, GetPacketLength($2217));
+end;{ZoneSendAddFriendReply}
+//------------------------------------------------------------------------------
 end{ZoneInterCommunication}.

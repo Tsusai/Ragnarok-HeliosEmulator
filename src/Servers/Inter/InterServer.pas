@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//InterServer			                                                        UNIT
+//InterServer                                                               UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //      The Inter Server.
@@ -455,6 +455,22 @@ begin
 				Size := BufferReadWord(2,ABuffer);
 				RecvBuffer(AClient,ABuffer[4],Size-4);
 				RecvZoneMapWarpResult(AClient, ABuffer);
+			end;
+		end;
+	$2215:
+		begin
+			if AClient.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2215)-2);
+				RecvZoneRequestFriend(AClient, ABuffer);
+			end;
+		end;
+	$2217:
+		begin
+			if AClient.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2217)-2);
+				RecvZoneRequestFriendReply(AClient, ABuffer);
 			end;
 		end;
 	else

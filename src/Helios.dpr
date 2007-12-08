@@ -135,6 +135,7 @@ compile for linux, at the same time*}
 	MovementEvent in 'Common\Classes\Events\MovementEvent.pas',
 	CharacterEventThread in 'Common\Classes\Events\CharacterEventThread.pas',
 	OnTouchCellEvent in 'Common\Classes\Events\OnTouchCellEvent.pas',
+	AddFriendEvent in 'Common\Classes\Events\AddFriendEvent.pas',
 
 	//Database
 	Database in 'Common\Classes\Database\Database.pas',
@@ -265,6 +266,7 @@ compile for linux, at the same time*}
 	MovementEvent in 'Common/Classes/Events/MovementEvent.pas',
 	CharacterEventThread in 'Common/Classes/Events/CharacterEventThread.pas',
 	OnTouchCellEvent in 'Common/Classes/Events/OnTouchCellEvent.pas',
+	AddFriendEvent in 'Common/Classes/Events/AddFriendEvent.pas',
 
 	//Database
 	Database in 'Common/Classes/Database/Database.pas',
