@@ -1170,26 +1170,35 @@ var
 	TargetChara : TCharacter;
 	ZoneID      : Integer;
 	AFriendRequestEvent : TFriendRequestEvent;
+	AlreadyFriend : Boolean;
 begin
 	TargetChar := BufferReadString(ReadPts[0], NAME_LENGTH, InBuffer);
 
 	TargetChara := nil;
-	if TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect then
-	try
-		TargetChara := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.GetChara(TargetChar);
-
-	finally
-		TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+	AlreadyFriend := True;
+	with TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData do
+	begin
+		if Connect then
+		try
+			TargetChara := GetChara(TargetChar);
+			if (TargetChara <> NIL) then
+				AlreadyFriend := IsFriend(AChara.CID, TargetChara.ID, TargetChara.CID);
+		finally
+			Disconnect;
+		end;
 	end;
 
-	if TargetChara <> NIL then
+	if (TargetChara <> NIL) and not AlreadyFriend then
 	begin
 		ZoneID := -1;
-		if TThreadLink(AChara.ClientInfo.Data).DatabaseLink.StaticData.Connect then
-		try
-			ZoneID := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(TargetChara.Map);
-		finally
-			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
+		with TThreadLink(AChara.ClientInfo.Data).DatabaseLink.StaticData do
+		begin
+			if Connect then
+			try
+				ZoneID := GetMapZoneID(TargetChara.Map);
+			finally
+				Disconnect;
+			end;
 		end;
 
 		if ZoneID > -1 then
@@ -1841,9 +1850,11 @@ begin
 								Connect;
 								try
 									//Add target first
-									AddFriend(OrigID, AccID, CharID, CharName);
+									if not IsFriend(OrigID, AccID, CharID) then
+										AddFriend(OrigID, AccID, CharID, CharName);
 									//Add back
-									AddFriend(CharID, Chara.ID, Chara.CID, Chara.Name);
+									if not IsFriend(CharID, Chara.ID, Chara.CID) then
+										AddFriend(CharID, Chara.ID, Chara.CID, Chara.Name);
 
 									// Use 255 here!
 									ZoneSendAddFriendReply(

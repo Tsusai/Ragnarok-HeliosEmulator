@@ -183,6 +183,11 @@ public
 		const CharName : String
 		); virtual; abstract;
 
+	function IsFriend(
+		const CharID   : LongWord;
+		const TargetAID: LongWord;
+		const TargetID : LongWord
+		):Boolean; virtual; abstract;
 	function  Connect : Boolean; virtual; abstract;
 
 	procedure Disconnect; virtual; abstract;
