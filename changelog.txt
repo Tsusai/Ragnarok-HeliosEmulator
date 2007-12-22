@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 371 -
+[2007/12/22] RaX - Fixed warnings and copied/converted IsFriend from MySQL to SQLite
+ GameDatabase.
+-
+
 - Rev 370 -
 [2007/12/08] Aeomin - Overview: Friendlist support Part 2.
 -

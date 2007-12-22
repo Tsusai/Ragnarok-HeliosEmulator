@@ -171,7 +171,7 @@ Begin
 
 	MYSQL://2
 		begin
-			GameData := TMySQLGameDatabase.Create(Self);
+			GameData := TMySQLGameDatabase.Create(self);
 		end;
 
 	else

@@ -184,6 +184,12 @@ public
 		const CharName : String
 		); override;
 
+  function IsFriend(
+		const CharID   : LongWord;
+		const TargetAID: LongWord;
+		const TargetID : LongWord
+		):Boolean; override;
+
 	function  Connect : Boolean; override;
 	procedure Disconnect; override;
 
@@ -1070,6 +1076,42 @@ begin
 			)
 		);
 end;{AddFriend}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//IsFriend                                                              FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//		Check if TargetID is friend of CharID
+//
+//	Changes -
+//		[2007/12/08] Aeomin - Created.
+//		[2007/12/22] RaX - Copied to SQLite.
+//------------------------------------------------------------------------------
+function TSQLiteGameDatabase.IsFriend(
+	const CharID   : LongWord;
+	const TargetAID: LongWord;
+	const TargetID : LongWord
+):Boolean;
+var
+	QueryResult     : TSQLiteTable;
+begin
+	Result := False;
+
+	QueryResult := SendQuery(
+		Format(
+			'SELECT * FROM `friend` WHERE `char_id` = %d AND `id1` = %d AND `id2` = %d',
+			[CharID, TargetAID, TargetID]
+			)
+		);
+
+  if QueryResult.RowCount > 0 then
+  begin
+    Result := True;
+  end;
+
+	if Assigned(QueryResult) then QueryResult.Free;
+end;{IsFriend}
 //------------------------------------------------------------------------------
 {END SQLiteGameDatabase}
 end.

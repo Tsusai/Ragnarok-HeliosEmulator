@@ -20,8 +20,7 @@ type
 	public
 		Port    : Word;
 		Connection: TIdContext;
-
-	published
+    
 		property WAN       : String   read fWAN write SetWANLongWord;
 		property LAN       : String   read fLAN write SetLANLongWord;
 

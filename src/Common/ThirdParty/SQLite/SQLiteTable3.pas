@@ -68,7 +68,6 @@ type
 		function GetLastInsertRowID: int64;
 		procedure SetTimeout(Value: integer);
 		function version: string;
-	published
 		property isTransactionOpen: boolean read fInTrans;
 	end;
 
