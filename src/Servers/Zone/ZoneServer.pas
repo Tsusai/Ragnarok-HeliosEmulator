@@ -982,14 +982,6 @@ begin
 			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2217)-2);
 			RecvAddFriendRequestReply(ABuffer);
 		end;
-	$2218:
-		begin
-			RecvBuffer(AClient,ABuffer[2],2);
-			Size := BufferReadWord(2,ABuffer);
-			RecvBuffer(AClient,ABuffer[4],Size-4);
-			RecvSystemToClientMsg(ABuffer);
-		end;
-
 	end;
 end;{InterClientRead}
 //------------------------------------------------------------------------------

@@ -15,7 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
-- Rev 375 -
+- Rev 376 -
+[2007/12/23] RaX - Left part of a patch from Tsusai in, removed. Updated version.pas too.
+-
+
+- Rev 375 - BROKEN BUILD
 [2007/12/23] RaX - Thanks to both myself and Aeomin, the InterClient now auto-reconnects
  on disconnection! I took his partial code and modified like 3 lines to get it working.
  CommClient now has a TReconnector, a thread which is fired on disconnect and
