@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 372 -
+[2007/12/23] RaX - Added more range checks. Zeny is now checked to be between 0
+ and high(longword). Also, changed types of base and job levels to word and ensured
+ their ranges as well.
+-
+
 - Rev 371 -
 [2007/12/22] RaX - Fixed warnings and copied/converted IsFriend from MySQL to SQLite
  GameDatabase.

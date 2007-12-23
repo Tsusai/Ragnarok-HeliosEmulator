@@ -151,8 +151,8 @@ protected
 	); override;
 
 	procedure SetClass(Value : Word); override;
-	procedure SetBaseLV(Value : Byte); override;
-	procedure SetJobLV(Value : Byte); override;
+	procedure SetBaseLV(Value : Word); override;
+	procedure SetJobLV(Value : Word); override;
 	procedure SetBaseEXP(Value : LongWord); override;
 	procedure SetJobEXP(Value : LongWord); override;
 	procedure SetBaseEXPToNextLevel(Value : LongWord);
@@ -573,7 +573,7 @@ end;{SetClass}
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.SetBaseLV(
-		Value : byte
+		Value : Word
 	);
 begin
 	//we do not inherit here for a reason! See BaseLevelUp
@@ -601,7 +601,7 @@ end;{SetBaseLV}
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.SetJobLV(
-		Value : byte
+		Value : Word
 	);
 begin
 	//we do not inherit here for a reason! See JobLevelUp

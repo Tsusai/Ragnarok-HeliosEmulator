@@ -96,8 +96,8 @@ TBeing = class(TObject)
 protected
 	fName             : String;
 	fJID              : Word;
-	fBaseLV           : Byte;
-	fJobLV            : Byte;
+	fBaseLV           : Word;
+	fJobLV            : Word;
 	fBaseEXP          : LongWord;
 	fJobEXP           : LongWord;
 	fBaseEXPToNextLevel: LongWord;
@@ -121,8 +121,8 @@ protected
 		); virtual;
 
 	procedure SetClass(Value : word); virtual;
-	procedure SetBaseLV(Value : byte); virtual;
-	procedure SetJobLV(Value : byte); virtual;
+	procedure SetBaseLV(Value : word); virtual;
+	procedure SetJobLV(Value : word); virtual;
 	procedure SetBaseEXP(Value : LongWord); virtual;
 	procedure SetJobEXP(Value : LongWord); virtual;
 	procedure SetZeny(Value : Integer); virtual;
@@ -188,8 +188,8 @@ public
 
 	property Name      : string     read fName    write SetName;
 	property JID       : Word       read fJID     write SetClass;
-	property BaseLV    : Byte       read fBaseLV  write SetBaseLV;
-	property JobLV     : Byte       read fJobLV   write SetJobLV;
+	property BaseLV    : Word       read fBaseLV  write SetBaseLV;
+	property JobLV     : Word       read fJobLV   write SetJobLV;
 	property BaseEXP   : LongWord   read fBaseEXP write fBaseEXP;
 	property JobEXP    : LongWord   read fJobEXP  write fJobEXP;
 	property BaseEXPToNextLevel : LongWord read fBaseEXPToNextLevel write fBaseEXPToNextLevel;
@@ -838,42 +838,42 @@ procedure TBeing.SetClass(
 		Value : Word
 	);
 begin
-	fJID := Value;
+	fJID := EnsureRange(Value, 0, High(Word));
 end;
 
 procedure TBeing.SetBaseLV(
-		Value : Byte
+		Value : Word
 	);
 begin
-	fBaseLV := Value;
+	fBaseLV := EnsureRange(Value, 0, High(Word));
 end;
 
 procedure TBeing.SetJobLV(
-		Value : Byte
+		Value : Word
 	);
 begin
-	fJobLV := Value;
+	fJobLV := EnsureRange(Value, 0, High(Word));
 end;
 
 procedure TBeing.SetBaseEXP(
 		Value : LongWord
 	);
 begin
-	fBaseEXP := Value;
+	fBaseEXP := EnsureRange(Value, 0, High(LongWord));
 end;
 
 procedure TBeing.SetJobEXP(
 		Value : LongWord
 	);
 begin
-	fJobEXP := Value;
+	fJobEXP := EnsureRange(Value, 0, High(LongWord));
 end;
 
 procedure TBeing.SetZeny(
 		Value : Integer
 	);
 begin
-	fZeny := Value;
+	fZeny := EnsureRange(Value, 0, High(Integer));
 end;
 
 
