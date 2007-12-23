@@ -396,6 +396,7 @@ Var
 	ZoneID        : Integer;
 	ZServerInfo   : TZoneServerInfo;
 	ReturnIPCard  : LongWord;
+	Zidx : integer;
 Begin
 	CharacterID := BufferReadLongWord(4, ABuffer);
 	X						:= BufferReadWord(8, ABuffer);
@@ -413,10 +414,12 @@ Begin
 		Disconnect;
 	end;
 
+	ZIdx := MainProc.InterServer.ZoneServerList.IndexOf(ZoneID);
+
 	//Why warp to a unknown zone..or reply to it.  Kill it here. They can walk fine
-	if (ZoneID <> -1) then
+	if Zidx > -1 then
 	begin
-		ZServerInfo		:= MainProc.InterServer.ZoneServerInfo[MainProc.InterServer.fZoneServerList.IndexOf(ZoneID)];
+		ZServerInfo		:= MainProc.InterServer.ZoneServerInfo[Zidx];
 		ReturnIPCard	:= ZServerInfo.Address(ClientIP);
 		InterSendWarpReplyToZone(
 			AClient,
@@ -468,7 +471,7 @@ begin
 	MapNameLen := BufferReadByte(16, ABuffer);
 	MapName    := BufferReadString(17, MapNameLen, ABuffer);
 
-	Index      := MainProc.InterServer.fZoneServerList.IndexOf(ZoneID);
+	Index      := MainProc.InterServer.ZoneServerList.IndexOf(ZoneID);
 	if Index > -1 then
 	begin
 		ZServerInfo := MainProc.InterServer.ZoneServerInfo[Index];
@@ -516,7 +519,7 @@ begin
 	MapNameLen := BufferReadByte(16, ABuffer);
 	MapName    := BufferReadString(17, MapNameLen, ABuffer);
 
-	Index      := MainProc.InterServer.fZoneServerList.IndexOf(ZoneID);
+	Index      := MainProc.InterServer.ZoneServerList.IndexOf(ZoneID);
 	if Index > -1 then
 	begin
 		ZServerInfo := MainProc.InterServer.ZoneServerInfo[Index];

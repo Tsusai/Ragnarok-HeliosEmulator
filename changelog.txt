@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 373 -
+[2007/12/23] Tsusai - Modified warping between zones to disallow warping to a
+ missing/invalid zone server.
+-
+
 - Rev 372 -
 [2007/12/23] RaX - Added more range checks. Zeny is now checked to be between 0
  and high(longword). Also, changed types of base and job levels to word and ensured

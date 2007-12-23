@@ -1023,16 +1023,17 @@ begin
 			Result := False;
 		end else
 		begin
+
+			for Index := ACharacter.EventList.Count -1 downto 0 do
+			begin
+				if ACharacter.EventList.Items[Index] is TMovementEvent then
+				begin
+					ACharacter.EventList.Delete(Index);
+				end;
+			end;
+
 			if Cardinal(MapZoneID) = MainProc.ZoneServer.Options.ID then
 			begin
-				for Index := ACharacter.EventList.Count -1 downto 0 do
-				begin
-					if ACharacter.EventList.Items[Index] is TMovementEvent then
-					begin
-						ACharacter.EventList.Delete(Index);
-					end;
-				end;
-
 				RemoveFromList;
 				ACharacter.Map := MapName;
 				ACharacter.Position := Point(X,Y);

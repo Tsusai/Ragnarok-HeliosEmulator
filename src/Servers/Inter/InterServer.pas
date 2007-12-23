@@ -63,6 +63,7 @@ Revisions:
 	protected
 		fIP              : String;
 		fPort            : Word;
+		fZoneServerList	 : TIntList32;
 
 		TCPServer        : TIdTCPServer;
 
@@ -109,7 +110,6 @@ Revisions:
 	public
 		IPLongWord     : LongWord;
 		ServerName    : String;
-		fZoneServerList	 : TIntList32;
 		Commands				 : TGMCommands;
 		fClientList			 : TList;
 		Options : TInterOptions;
@@ -119,7 +119,7 @@ Revisions:
 		Procedure   Start;
 		Procedure   Stop;
 
-
+		property ZoneServerList : TIntList32 read fZoneServerList;
 		property IP   : String
 			read  fIP
 			write SetIPLongWord;
