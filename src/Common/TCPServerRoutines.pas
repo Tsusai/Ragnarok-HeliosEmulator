@@ -138,7 +138,7 @@ function ActivateClient(var AClient : TInterClient) : boolean;
 begin
 	if not Assigned(AClient) then
 	begin
-		AClient := TInterClient.Create('Unknown','Unknown');
+		AClient := TInterClient.Create('Unknown','Unknown', MainProc.Options.ReconnectDelay);
 	end;
 	AClient.Active := true;
 	Result := true;

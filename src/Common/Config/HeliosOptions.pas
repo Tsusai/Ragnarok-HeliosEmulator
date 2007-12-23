@@ -33,6 +33,8 @@ interface
 			fInterEnabled				: Boolean;
 			fZoneEnabled				: Boolean;
 
+      fReconnectDelay     : LongWord;
+
 		public
 			property MapDirectory				: String read fMapDirectory;
 			property DatabaseDirectory	: String read fDatabaseDirectory;
@@ -43,6 +45,8 @@ interface
 			property CharaEnabled	: Boolean read fCharaEnabled;
 			property InterEnabled	: Boolean read fInterEnabled;
 			property ZoneEnabled	: Boolean read fZoneEnabled;
+
+      property ReconnectDelay : LongWord read fReconnectDelay;
 
 			//Public methods
 			procedure Load;
@@ -149,6 +153,15 @@ implementation
 		end;{Subroutine LoadZone}
     //--------------------------------------------------------------------------
 
+		//--------------------------------------------------------------------------
+    //LoadGeneral                                               SUB PROCEDURE
+    //--------------------------------------------------------------------------
+		procedure LoadGeneral;
+		begin
+			ReadSectionValues('General', Section);
+      fReconnectDelay := StrToIntDef(Section.Values['Reconnect Delay'] , 3000);
+		end;{Subroutine LoadZone}
+    //--------------------------------------------------------------------------
 
 	begin
 		Section    := TStringList.Create;
@@ -162,6 +175,7 @@ implementation
     LoadChara;
     LoadInter;
     LoadZone;
+    LoadGeneral;
 
 		Section.Free;
 
@@ -198,6 +212,9 @@ implementation
 
     //Zone
 		WriteString('Zone','Enabled',BoolToStr(ZoneEnabled));
+
+    //General
+    WriteString('General', 'Reconnect Delay', IntToStr(ReconnectDelay));
 
 		UpdateFile;
 	end;{Save}

@@ -149,7 +149,7 @@ begin
 	TCPServer.OnException  := OnException;
 	TCPServer.OnDisconnect := OnDisconnect;
 
-	CharaToLoginClient := TInterClient.Create('Character','Login');
+	CharaToLoginClient := TInterClient.Create('Character','Login', MainProc.Options.ReconnectDelay);
 
 	CharaToLoginClient.OnConnected := LoginClientOnConnect;
 	CharaToLoginClient.OnRecieve := LoginClientRead;
