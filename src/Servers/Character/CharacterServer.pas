@@ -216,18 +216,18 @@ end;{OnException}
 //------------------------------------------------------------------------------
 Procedure TCharacterServer.Start();
 begin
-  if NOT Started then
+	if NOT Started then
 	begin
-    LoadOptions;
+		LoadOptions;
 
-	ServerName := Options.ServerName;
-	WANPort := Options.Port;
+		ServerName := Options.ServerName;
+		WANPort := Options.Port;
 
-	  ActivateServer('Character',TCPServer, Options.IndySchedulerType, Options.IndyThreadPoolSize);
-	  WANIP := Options.WANIP;
-	  LANIP := Options.LANIP;
-  end else
-  begin
+		ActivateServer('Character',TCPServer, Options.IndySchedulerType, Options.IndyThreadPoolSize);
+		WANIP := Options.WANIP;
+		LANIP := Options.LANIP;
+	end else
+	begin
 		Console.Message('Cannot Start():: Character Server is already running!', 'Character Server', MS_ALERT);
 	end;
 end;{Start}
@@ -248,10 +248,10 @@ Procedure TCharacterServer.Stop();
 var
 	Index : Integer;
 begin
-  if Started then
-  begin
-	  DeActivateServer('Character',TCPServer);
-	  DeActivateClient(CharaToLoginClient);
+	if Started then
+	begin
+		DeActivateServer('Character',TCPServer);
+		DeActivateClient(CharaToLoginClient);
 
 		//Free up our existing server info objects
 		for Index := fZoneServerList.Count - 1 downto 0 do
@@ -260,12 +260,12 @@ begin
 			fZoneServerList.Delete(Index);
 		end;
 
-    Options.Save;
-    Options.Free;
-  end else
+		Options.Save;
+		Options.Free;
+	end else
 	begin
 		Console.Message('Cannot Stop():: Character Server is not running', 'Character Server', MS_ALERT);
-  end;
+	end;
 end;{Start}
 //------------------------------------------------------------------------------
 

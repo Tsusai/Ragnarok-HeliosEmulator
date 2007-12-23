@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//Commands				                                                         UNIT
+//Commands                                                                  UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //			This Unit was built to house the routines dealing with processing
@@ -21,7 +21,7 @@ uses
 
 type
 //------------------------------------------------------------------------------
-//TCommands                                                               CLASS
+//TCommands                                                                CLASS
 //------------------------------------------------------------------------------
 	TCommands = class
 	public
@@ -49,7 +49,7 @@ implementation
 		Globals;
 
 //------------------------------------------------------------------------------
-//Parse()				                                           PROCEDURE
+//Parse()                                                              PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Parses InputText for commands. Sets MainProc.Run which determines
@@ -134,7 +134,7 @@ end;{TCommands.Parse}
 
 
 //------------------------------------------------------------------------------
-//Credits()				                                             				FUNCTION
+//Credits()                                                             FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Displays third party credits for Helios.
@@ -163,7 +163,7 @@ end;//Credits
 
 
 //------------------------------------------------------------------------------
-//Help()				                                             FUNCTION
+//Help()                                                                FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Writes a list of commands to the console.
@@ -189,7 +189,7 @@ end;{Help}
 
 
 //------------------------------------------------------------------------------
-//Reload()				                                          FUNCTION
+//Reload()                                                              FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Will(in the future) free up and reload the Databases.
@@ -206,7 +206,7 @@ end;{Reload}
 
 
 //------------------------------------------------------------------------------
-//Restart() 		                                             FUNCTION
+//Restart()                                                             FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Restarts all enabled servers.
@@ -225,7 +225,7 @@ end;{Restart}
 
 
 //------------------------------------------------------------------------------
-//Start() 		                                             FUNCTION
+//Start()                                                               FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Starts a server.
@@ -242,23 +242,38 @@ begin
 		Values[0] := LowerCase(Values[0]);
 		if Values[0] = 'login' then
 		begin
-			MainProc.LoginServer := TLoginServer.Create;
-			MainProc.LoginServer.Start;
+			if not Assigned(MainProc.LoginServer) then
+			begin
+				MainProc.LoginServer := TLoginServer.Create;
+				MainProc.LoginServer.Start;
+			end;
 		end else
 		if Values[0] = 'character' then
 		begin
-			MainProc.CharacterServer := TCharacterServer.Create;
-			MainProc.CharacterServer.Start;
+			if not Assigned(MainProc.CharacterServer) then
+			begin
+				MainProc.CharacterServer := TCharacterServer.Create;
+				MainProc.CharacterServer.Start;
+				MainProc.CharacterServer.ConnectToLogin;
+			end;
 		end else
 		if Values[0] = 'inter' then
 		begin
-			MainProc.InterServer := TInterServer.Create;
-			MainProc.InterServer.Start;
+			if not Assigned(MainProc.InterServer) then
+			begin
+				MainProc.InterServer := TInterServer.Create;
+				MainProc.InterServer.Start;
+			end;
 		end else
 		if Values[0] = 'zone' then
 		begin
-			MainProc.ZoneServer := TZoneServer.Create;
-			MainProc.ZoneServer.Start;
+			if not Assigned(MainProc.ZoneServer) then
+			begin
+				MainProc.ZoneServer := TZoneServer.Create;
+				MainProc.ZoneServer.Start;
+				MainProc.ZoneServer.ConnectToCharacter;
+				MainProc.ZoneServer.ConnectToInter;
+			end;
 		end else
 		begin
 			Result := Values[0] + ' is not a valid server';
@@ -276,7 +291,7 @@ end;{Start}
 
 
 //------------------------------------------------------------------------------
-//Stop() 		                                                 FUNCTION
+//Stop()                                                                FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Stops a server.
@@ -293,23 +308,37 @@ begin
 		Values[0] := LowerCase(Values[0]);
 		if Values[0] = 'login' then
 		begin
-			MainProc.LoginServer.Stop;
-			MainProc.LoginServer.Free;
+			if Assigned(MainProc.LoginServer) then
+			begin
+				MainProc.LoginServer.Stop;
+				system.Writeln('#1');
+				FreeAndNil(MainProc.LoginServer);
+				system.Writeln('#2');
+			end;
 		end else
 		if Values[0] = 'character' then
 		begin
-			MainProc.CharacterServer.Stop;
-			MainProc.CharacterServer.Free;
+			if Assigned(MainProc.CharacterServer) then
+			begin
+				MainProc.CharacterServer.Stop;
+				FreeAndNil(MainProc.CharacterServer);
+			end;
 		end else
 		if Values[0] = 'inter' then
 		begin
-			MainProc.InterServer.Stop;
-			MainProc.InterServer.Free;
+			if Assigned(MainProc.InterServer) then
+			begin
+				MainProc.InterServer.Stop;
+				FreeAndNil(MainProc.InterServer);
+			end;
 		end else
 		if Values[0] = 'zone' then
 		begin
-			MainProc.ZoneServer.Stop;
-			MainProc.ZoneServer.Free;
+			if Assigned(MainProc.ZoneServer) then
+			begin
+				MainProc.ZoneServer.Stop;
+				FreeAndNil(MainProc.ZoneServer);
+			end;
 		end else
 		begin
 			Result := Values[0] + ' is not a valid server';
@@ -324,4 +353,4 @@ begin
 
 end;{Stop}
 //------------------------------------------------------------------------------
-end.
+end{Commands}.

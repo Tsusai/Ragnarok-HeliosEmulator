@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 374 -
+[2007/12/23] Aeomin - Not much, some tab clean ups and console command fixes made
+ during the attempt of failure reconnect routine.
+-
+
 - Rev 373 -
 [2007/12/23] Tsusai - Modified warping between zones to disallow warping to a
  missing/invalid zone server.

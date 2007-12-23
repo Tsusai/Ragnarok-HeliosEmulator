@@ -157,6 +157,8 @@ uses
 //------------------------------------------------------------------------------
 Constructor TZoneServer.Create;
 begin
+	OnlineUsers := 0;
+
 	Commands := TGMCommands.Create;
 
 	MapList := TMapList.Create(TRUE);
@@ -407,7 +409,7 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TZoneServer.Stop();
 begin
-  if Started then
+	if Started then
 	begin
 		if Options.KickOnShutdown then
 		begin
@@ -417,13 +419,13 @@ begin
 		while NOT CharacterEventThread.Terminated do
 		begin
 			Sleep(1);
-    end;
+		end;
 		
 
-    //deactivate server and clients.
-	  DeActivateServer('Zone', TCPServer);
-	  DeActivateClient(ToCharaTCPClient);
-	  DeActivateClient(ToInterTCPClient);
+		//deactivate server and clients.
+		DeActivateServer('Zone', TCPServer);
+		DeActivateClient(ToCharaTCPClient);
+		DeActivateClient(ToInterTCPClient);
 
 		//Clear Lists
 		CharacterList.Clear;
@@ -432,16 +434,16 @@ begin
 		//Kill ALL LUAS by killing the root lua.
 		TerminateLua(NPCLua);
 
-    ZoneLocalDatabase.Free;
+		ZoneLocalDatabase.Free;
 
-    //Save and free options, options must be free'd here to force a reload after
-    //start.
-    Options.Save;
+		//Save and free options, options must be free'd here to force a reload after
+		//start.
+		Options.Save;
 		Options.Free;
-  end else
-  begin
+	end else
+	begin
 		Console.Message('Cannot Stop():: Zone Server is not running!', 'Zone Server', MS_ALERT);
-  end;
+	end;
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -556,7 +558,7 @@ Var
 	Lth             : Integer;
 	AChara          : ^TCharacter;
 	ClientBaseIndex : Word; //Index of the packet in the packet(allowed client)
-													//database (client-base).
+				//database (client-base).
 	PacketID        : Word; //The ID of a packet in said database.
 	PacketIndex     : Integer;
 	Found           : Boolean;

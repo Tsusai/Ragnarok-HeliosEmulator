@@ -207,15 +207,16 @@ begin
 		//Free up our existing server info objects
 		for Index := fCharaServerList.Count - 1 downto 0 do
 		begin
+			fCharaServerList.Objects[Index].Free;
 			fCharaServerList.Delete(Index);
 		end;
 
 		Options.Save;
-    Options.Free;
-  end else
-  begin
+		Options.Free;
+	end else
+	begin
 		Console.Message('Cannot Stop():: Login server is not running.', 'Login Server', MS_ALERT);
-  end;
+	end;
 end;{Start}
 //------------------------------------------------------------------------------
 
