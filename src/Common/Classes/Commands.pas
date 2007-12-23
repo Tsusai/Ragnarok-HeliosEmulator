@@ -311,9 +311,7 @@ begin
 			if Assigned(MainProc.LoginServer) then
 			begin
 				MainProc.LoginServer.Stop;
-				system.Writeln('#1');
 				FreeAndNil(MainProc.LoginServer);
-				system.Writeln('#2');
 			end;
 		end else
 		if Values[0] = 'character' then
