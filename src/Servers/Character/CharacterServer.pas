@@ -1115,7 +1115,10 @@ begin
 				begin
 					RecvBuffer(AClient,ABuffer[2],GetPacketLength($2104)-2);
 					TZoneServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
-					SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
+          if CharaToLoginClient.Connected then
+          begin
+						SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
+          end;
 					UpdateOnlineCountToZone;
 					Console.Message('Received updated Zone Server Online Users.', 'Character Server', MS_DEBUG);
 				end;

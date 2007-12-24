@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 385 -
+[2007/12/24] RaX - Fixed bug where the character server would try to send the
+ online users count even if the login server was disconnected, causing an access 
+ violation. Modified CharacterServer.pas.
+-
+
 - Rev 384 -
 [2007/12/23] Tsusai - Fixed compiling problem, when I changed a reserverd word
  that was used as a var to a new var name.
