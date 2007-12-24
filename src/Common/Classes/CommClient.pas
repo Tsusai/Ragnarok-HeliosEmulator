@@ -107,7 +107,7 @@ uses
 				FClient.DoRecieveEvent;
 			end;
 		except
-      Console.Message('Connection to '+FClient.DestinationName+' Server lost.', fClient.SourceName, MS_ALERT);
+      Console.Message('Connection to '+FClient.DestinationName+' Server lost.', fClient.SourceName + ' Server', MS_ALERT);
 			FClient.ReConnect;
 		end;
 	end;{Run}
@@ -145,7 +145,7 @@ end;
 procedure TReconnector.Execute;
 begin
 	Sleep(FClient.ReconnectDelay);
-  Console.Message('Attempting to reconnect...', FClient.SourceName, MS_ALERT);
+  Console.Message('Attempting to reconnect...', FClient.SourceName + ' Server', MS_ALERT);
 	if Assigned(FClient.fReadThread) then
 	begin
 		while not FClient.fReadThread.Terminated do
@@ -196,11 +196,11 @@ end;
 			try
 				fReadThread := TClientThread.Create(Self);
 			except
-				Disconnect(False);
+        Disconnect(false);
         Reconnect;
 			end;
 		except
-      Disconnect(False);
+      Disconnect(false);
 			Reconnect;
 		end;
 	end;
@@ -317,18 +317,14 @@ procedure TInterClient.ReConnect;
 begin
 	if not ShutDown then
 	begin
-		if not Connected then
-		begin
-			Reconnector := TReconnector.Create(Self);
-			if Assigned(fReadThread) then
-			begin
-//				fReadThread.WaitFor;
-				if not fReadThread.Terminated then
-				begin
-					fReadThread.Terminate;
-				end;
-			end;
-		end;
+    Reconnector := TReconnector.Create(Self);
+    if Assigned(fReadThread) then
+    begin
+      if not fReadThread.Terminated then
+      begin
+        fReadThread.Terminate;
+      end;
+    end;
 	end;
 end;
 end.
