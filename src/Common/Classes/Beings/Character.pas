@@ -333,7 +333,8 @@ uses
 	Globals,
 	PacketTypes,
 	TCPServerRoutines,
-	CharaList
+	CharaList,
+	ZoneSend
 	{Third Party}
 	//none
 	;
@@ -388,7 +389,21 @@ procedure TCharacter.SetCharaState(
 begin
 	//Need to add easy to get to codes (STANCE_MOVE from prometheus)
 	//usually used for packets
+
+	if ZoneStatus = isOnline then
+	begin
+		if (Value = charaSitting) AND (fCharaState = charaStanding) then
+		begin
+			DoAction(ClientInfo, ID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
+		end else
+		if (Value = charaStanding) AND (fCharaState = charaSitting) then
+		begin
+			DoAction(ClientInfo, ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
+    end;
+	end;
+
 	fCharaState := Value;
+	//Send character state update packet.
 end;{SetCharaState}
 //------------------------------------------------------------------------------
 

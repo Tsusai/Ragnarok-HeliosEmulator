@@ -29,6 +29,7 @@ uses
 	Being,
 	Character,
 	PacketTypes,
+	GameConstants,
 	{Third Party}
 	IdContext
 	;
@@ -152,6 +153,19 @@ uses
 		const CharName : String;
 		const Reply  : Byte
 	);
+
+	procedure DoAction(
+		AClient			: TIdContext;
+		SourceID		: LongWord;
+		TargetID		: LongWord;
+		SourceSpeed	: LongWord;
+		TargetSpeed	: LongWord;
+		ActionType	: Byte;
+		Parameter1	: Word;
+		Parameter2	: Word;
+		Parameter3	: Word
+	);
+
 implementation
 
 
@@ -161,7 +175,6 @@ uses
 	SysUtils,
 	{Project}
 	BufferIO,
-	GameConstants,
 	Main,
 	TCPServerRoutines,
 	WinLinux,
@@ -1200,5 +1213,50 @@ begin
 	WriteBufferString(12, CharName, NAME_LENGTH, OutBuffer);
 	SendBuffer(AClient,OutBuffer,GetPacketLength($0209));
 end;{SendAddFriendRequestReply}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//DoAction								                                            PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      tells a client to show an action made by another entity or itself.
+//		SEE TACTIONTYPE FOR A LIST OF ACTIONS.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//    [2007/12/24] RaX - Created.
+//------------------------------------------------------------------------------
+procedure DoAction(
+	AClient			: TIdContext;
+	SourceID		: LongWord;
+	TargetID		: LongWord;
+	SourceSpeed	: LongWord;
+	TargetSpeed	: LongWord;
+	ActionType	: Byte;
+	Parameter1	: Word;
+	Parameter2	: Word;
+	Parameter3	: Word
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $008a, OutBuffer);
+	WriteBufferLongWord(2, SourceID, OutBuffer);
+	WriteBufferLongWord(6, TargetID, OutBuffer);
+	WriteBufferLongWord(10, GetTick(), OutBuffer);
+	WriteBufferLongWord(14, SourceSpeed, OutBuffer);
+	WriteBufferLongWord(18, TargetSpeed, OutBuffer);
+	WriteBufferWord(22, Parameter1, OutBuffer);
+	WriteBufferWord(24, Parameter2, OutBuffer);
+	WriteBufferByte(26, ActionType, OutBuffer);
+	WriteBufferWord(27, Parameter3, OutBuffer);
+
+	SendBuffer(AClient,OutBuffer,GetPacketLength($008a));
+end;{DoAction}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

@@ -173,9 +173,9 @@ Begin
 				end else if Command = 'ticksend' then begin
 					ExecCommand := RecvTick;
 				end else if Command = 'walktoxy' then begin
-					ExecCommand := CharacterWalkRequest;{
+					ExecCommand := CharacterWalkRequest;
 				end else if Command = 'actionrequest' then begin
-					ExecCommand := ActionRequest;}
+					ExecCommand := ActionRequest;
 				end else if Command = 'globalmessage' then begin
 					ExecCommand := AreaChat;
 				end else if Command = 'npcclicked' then begin
@@ -284,9 +284,9 @@ Begin
 					if Length(ReadPoints) = 5 then
 					begin
 						ExecCommand := UseSkillOnXYExtra;
-					end;
+					end;}
 				end else if Command = 'stopattack' then begin
-					ExecCommand := CancelAttack;
+					ExecCommand := CancelAttack;{
 				end else if Command = 'useskillmap' then begin
 					ExecCommand := UseSkillOnMap;
 				end else if Command = 'requestmemo' then begin

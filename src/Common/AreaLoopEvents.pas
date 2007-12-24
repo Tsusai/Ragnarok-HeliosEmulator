@@ -54,6 +54,11 @@ uses
 		const ABeing        : TBeing;
 		const AParameters   : Cardinal
 		);
+	procedure ShowAction(
+		const ACurrentBeing : TBeing;
+		const ABeing        : TBeing;
+		const AParameters   : Cardinal
+	);
 
 implementation
 
@@ -62,7 +67,8 @@ uses
 	//none
 	{Project}
 	Character,
-	ZoneSend
+	ZoneSend,
+	GameConstants
 	{Third Party}
 	//none
 	;
@@ -217,6 +223,33 @@ begin
 	if ABeing is TCharacter then
 	begin
 		SendSpecialEffect(ACurrentBeing, TCharacter(Abeing).ClientInfo, AParameters);
+	end;
+end;{Effect}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ShowAction                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Show Action to surrounding characters.
+//
+//	Changes-
+//		[2007/11/24] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure ShowAction(
+	const ACurrentBeing : TBeing;
+	const ABeing        : TBeing;
+	const AParameters   : Cardinal
+);
+begin
+	if ABeing is TCharacter then
+	begin
+		case TCharacter(TBeing).CharaState of
+			charaSitting : DoAction(TCharacter(ACurrentBeing).ClientInfo, ABeing.ID, ACurrentBeing.ID, 0, 0, ACTION_SIT, 0, 0, 0);
+			charaStanding : DoAction(TCharacter(ACurrentBeing).ClientInfo, ABeing.ID, ACurrentBeing.ID, 0, 0, ACTION_STAND, 0, 0, 0);
+
+		end;
 	end;
 end;{Effect}
 //------------------------------------------------------------------------------

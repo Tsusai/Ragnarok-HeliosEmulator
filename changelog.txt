@@ -15,6 +15,18 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 386 -
+[2007/12/24] RaX - Implemented sitting and standing! Packet for Attacking is 
+ fleshed out as well.
+[2007/12/24] RaX - Implemented DoAction in ZoneSend, sends the actionrequest packet.
+[2007/12/24] RaX - Implemented DoAction in TCharacter.setCharaState to handle
+ sitting and standing.
+[2007/12/24] RaX - Added AreaLoopEvent ShowAction to show various actions
+ (in the future attacking as well as sitting and standing)
+[2007/12/24] RaX - Implemented arealoopevent in tcharacter.setcharastate to
+ show sitting/standing to other characters.
+-
+
 - Rev 385 -
 [2007/12/24] RaX - Fixed bug where the character server would try to send the
  online users count even if the login server was disconnected, causing an access 

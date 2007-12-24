@@ -150,14 +150,6 @@ protected
 	procedure SetPosition(Value : TPoint); virtual;
 	procedure SetSpeed(Value : Word); virtual;
 
-	procedure AreaLoop(
-			ALoopCall           : TLoopCall;
-			AIgnoreCurrentBeing : Boolean = True;
-			IgnoreMob           : Boolean = True;
-			IgnoreNPC           : Boolean = True;
-			AParameter          : Cardinal = 0
-		);
-
 public
 	ID					: LongWord;
 	HeadDirection	: Word;
@@ -223,7 +215,14 @@ public
 	procedure ShowTeleportOut;
 	procedure UpdateDirection;
 	procedure ShowEffect(EffectID:LongWord);
-
+	
+	procedure AreaLoop(
+			ALoopCall           : TLoopCall;
+			AIgnoreCurrentBeing : Boolean = True;
+			IgnoreMob           : Boolean = True;
+			IgnoreNPC           : Boolean = True;
+			AParameter          : Cardinal = 0
+		);
 	Constructor Create;
 	Destructor Destroy;override;
 

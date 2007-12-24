@@ -119,6 +119,18 @@ uses
 		const ReadPts : TReadPts
 	);
 
+	procedure ActionRequest(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
+	procedure CancelAttack(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
 	procedure CharacterWalkRequest(
 		var AChara  : TCharacter;
 		const InBuffer : TBuffer;
@@ -244,7 +256,8 @@ uses
 	ZoneCharaCommunication,
 	ZoneInterCommunication,
 	Database,
-	AddFriendEvent
+	AddFriendEvent,
+	AreaLoopEvents
 	{3rd Party}
 	//none
 	;
@@ -803,6 +816,85 @@ begin
 end;{CharaRotation}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ActionRequest                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      This sends a client an action command, actions can be anything from
+//			sitting to critical hits. SEE GAMECONSTANTS.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//    December 24th, 2007 - RaX - Created.
+//------------------------------------------------------------------------------
+procedure ActionRequest(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	AnID				: LongWord;
+	ActionType	: Byte;
+begin
+	AnID := BufferReadLongWord(ReadPts[0], InBuffer);
+	ActionType := BufferReadByte(ReadPts[1], InBuffer);
+
+	case ActionType of
+
+		0	://Hit target one time
+			begin
+
+			end;
+
+		2	://Sit
+			begin
+				//TODO -- basic skill checks here
+				AChara.CharaState := charaSitting;
+				AChara.AreaLoop(ShowAction);
+			end;
+
+		3	://Stand
+			begin
+				AChara.CharaState := charaStanding;
+			end;
+
+		7	://Hit Target continuously
+			begin
+
+			end;
+	end;
+end;{ActionRequest}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CancelAttack                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      ?
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//    December 24th, 2007 - RaX - Created.
+//------------------------------------------------------------------------------
+procedure CancelAttack(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+begin
+
+end;{CancelAttack}
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //CharaWalkRequest                                                    PROCEDURE
