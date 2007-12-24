@@ -27,9 +27,9 @@ interface
 			fEnabled      : boolean;
 			fWANIP      	: String;
 			fLANIP 	      : String;
-      fKey          : String;
-      fIndySchedulerType  : Byte;
-      fIndyThreadPoolSize : Word;
+			fKey          : String;
+			fIndySchedulerType  : Byte;
+			fIndyThreadPoolSize : Word;
 
 //Gets/Sets
 			procedure SetPort(Value : Word);
@@ -37,22 +37,22 @@ interface
 			procedure SetLANIP(Value : String);
 
 		public
-      //Server
-      property Enabled : boolean read fEnabled;
+			//Server
+			property Enabled : boolean read fEnabled;
 
 			//Communication
-      property Port    : Word read fPort write SetPort;
+			property Port    : Word read fPort write SetPort;
 			property WANIP : String read fWANIP write SetWANIP;
 			property LANIP : String read fLANIP write SetLANIP;
 
-      //Security
-      property Key     : String read fKey;
+			//Security
+			property Key     : String read fKey;
 
-      //Options
+			//Options
 
-      //Performance
-      property IndySchedulerType : Byte read fIndySchedulerType;
-      property IndyThreadPoolSize : Word read fIndyThreadPoolSize;
+			//Performance
+			property IndySchedulerType : Byte read fIndySchedulerType;
+			property IndyThreadPoolSize : Word read fIndyThreadPoolSize;
 
 			//Public methods
 			procedure Load;
@@ -84,20 +84,20 @@ implementation
 	var
 		Section    : TStringList;
 
-    //--------------------------------------------------------------------------
-    //LoadServer                                               SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadServer                                               SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadServer;
 		begin
 			ReadSectionValues('Server', Section);
 			fEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
 		end;{Subroutine LoadServer}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadCommunication                                          SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadCommunication                                          SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadCommunication;
 		begin
 			ReadSectionValues('Communication', Section);
@@ -115,41 +115,41 @@ implementation
 			end;
 			fLANIP			:= Section.Values['LANIP'];
 		end;{Subroutine LoadCommunication}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadSecurity                                              SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadSecurity                                              SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadSecurity;
 		begin
 			ReadSectionValues('Security', Section);
-      fKey    := Section.Values['Key'];
+			fKey    := Section.Values['Key'];
 		end;{Subroutine LoadSecurity}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadOptions                                               SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadOptions                                               SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadOptions;
 		begin
 			ReadSectionValues('Options', Section);
 
 		end;{Subroutine LoadOptions}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadPerformance                                             SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadPerformance                                             SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadPerformance;
 		begin
 			ReadSectionValues('Performance', Section);
-      fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 1);
-      fIndyThreadPoolSize := EnsureRange(StrToIntDef(Section.Values['Indy Thread Pool Size'], 1), 1, High(Word));
+			fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 1);
+			fIndyThreadPoolSize := EnsureRange(StrToIntDef(Section.Values['Indy Thread Pool Size'], 1), 1, High(Word));
 		end;{Subroutine LoadPerformance}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 	begin
 		Section    := TStringList.Create;
@@ -158,10 +158,10 @@ implementation
 		Section.Delimiter := ',';
 
 		LoadServer;
-    LoadCommunication;
-    LoadSecurity;
-    LoadOptions;
-    LoadPerformance;
+		LoadCommunication;
+		LoadSecurity;
+		LoadOptions;
+		LoadPerformance;
 
 		Section.Free;
 
@@ -181,22 +181,22 @@ implementation
 //------------------------------------------------------------------------------
 	procedure TInterOptions.Save;
 	begin
-    //Server
+		//Server
 		WriteString('Server','Enabled',BoolToStr(Enabled));
 
-    //Communication
+		//Communication
 		WriteString('Communication','WANIP',WANIP);
 		WriteString('Communication','LANIP',LANIP);
 		WriteString('Communication','Port', IntToStr(Port));
 
-    //Security
-    WriteString('Security','Key',Key);
+		//Security
+		WriteString('Security','Key',Key);
 
-    //Options
+		//Options
 
-    //Performance
-    WriteString('Performance','Indy Scheduler Type',IntToStr(IndySchedulerType));
-    WriteString('Performance','Indy Thread Pool Size',IntToStr(IndyThreadPoolSize));
+		//Performance
+		WriteString('Performance','Indy Scheduler Type',IntToStr(IndySchedulerType));
+		WriteString('Performance','Indy Thread Pool Size',IntToStr(IndyThreadPoolSize));
 
 		UpdateFile;
 	end;{Save}

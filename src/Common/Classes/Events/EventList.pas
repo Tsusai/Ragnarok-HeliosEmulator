@@ -134,21 +134,21 @@ begin
 	GetMem(NewMemoryStart, (MaxCount + Size) * SizeOf(TRootEvent));
 	if(Assigned(MemStart)) then
 	begin
-	  // Copy the data from the old memory here
-	  OldPointer := MemStart;
-	  NewPointer := NewMemoryStart;
-	  for Index := 1 to MaxCount do
-	  begin
-		  // Copy one Event at a time
-		  NewPointer^ := OldPointer^;
-		  Inc(OldPointer);
-		  Inc(NewPointer);
-	  end;
-    // Free the old memory
-    FreeMem(MemStart);
-  end;
+		// Copy the data from the old memory here
+		OldPointer := MemStart;
+		NewPointer := NewMemoryStart;
+		for Index := 1 to MaxCount do
+		begin
+			// Copy one Event at a time
+			NewPointer^ := OldPointer^;
+			Inc(OldPointer);
+			Inc(NewPointer);
+		end;
+		// Free the old memory
+		FreeMem(MemStart);
+	end;
 
-  // And now refer to the new memory
+	// And now refer to the new memory
 	MemStart := NewMemoryStart;
 	NextSlot := MemStart;
 	Inc(NextSlot, MaxCount);
@@ -250,7 +250,7 @@ begin
 		begin
 			Items[Index].Free;
 		end;
-  
+
 		if (MaxCount-ALLOCATE_SIZE) = (MsCount) then
 		begin
 			Shrink(ALLOCATE_SIZE);

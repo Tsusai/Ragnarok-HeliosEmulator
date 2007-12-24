@@ -27,7 +27,7 @@ type
 		InGame : Boolean;
 		//Transfering back to char server select?
 		Transfering : Boolean;
-                //The socket of client
+								//The socket of client
 		ClientInfo : TIdContext;
 		Constructor Create(AID : LongWord);
 	end;
@@ -41,4 +41,5 @@ begin
 	Ingame := False;
 	Transfering := False;
 end;
+
 end.

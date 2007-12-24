@@ -1,8 +1,10 @@
 unit CRT;
-
+//This unit is a wrapper of sorts for the linux and windows api overrides for
+//console coloring and such.
 interface
 
 const
+	//The color codes are different per OS, "abstracted"
 	CRTBlack        = 0;
 	CRTBlue         = {$IFDEF MSWINDOWS}01{$ENDIF}{$IFDEF LINUX}04{$ENDIF};
 	CRTGreen        = {$IFDEF MSWINDOWS}02{$ENDIF}{$IFDEF LINUX}03{$ENDIF};
@@ -22,6 +24,7 @@ const
 	CRTWhite        = 15;
 	CRTBlink        = 128;
 
+	//Intitialization and Termination of API overrides
 	procedure SetupCRT;
 	procedure EndCRT;
 
@@ -48,14 +51,16 @@ uses
 
 	procedure SetupCRT;
 	begin
+		//Windows does not have init routines, ignored.
 		{$IFDEF LINUX}
 		LinCRT.InitLinCRT;
-    LinCRT.SetScrollWnd(true);
+		LinCRT.SetScrollWnd(true);
 		{$ENDIF}
 	end;
 
 	procedure EndCRT;
 	begin
+		//Windows does not have API closing routines, ignored.
 		{$IFDEF LINUX}
 		LinCRT.DoneLinCRT;
 		{$ENDIF}

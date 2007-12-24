@@ -1,3 +1,5 @@
+//This event type is for NPC's "OnTouch" property.  When a character walks into
+//the walking field, this executes.
 unit OnTouchCellEvent;
 
 interface
@@ -14,6 +16,7 @@ type
 			Constructor Create(AScriptNPC : TScriptNPC);
 			Procedure Execute(ACharacter : TCharacter);
 	end;
+
 implementation
 
 	Constructor TOnTouchCellEvent.Create(AScriptNPC : TScriptNPC);

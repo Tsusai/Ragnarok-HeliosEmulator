@@ -33,7 +33,7 @@ interface
 			fInterEnabled				: Boolean;
 			fZoneEnabled				: Boolean;
 
-      fReconnectDelay     : LongWord;
+			fReconnectDelay     : LongWord;
 
 		public
 			property MapDirectory				: String read fMapDirectory;
@@ -46,7 +46,7 @@ interface
 			property InterEnabled	: Boolean read fInterEnabled;
 			property ZoneEnabled	: Boolean read fZoneEnabled;
 
-      property ReconnectDelay : LongWord read fReconnectDelay;
+			property ReconnectDelay : LongWord read fReconnectDelay;
 
 			//Public methods
 			procedure Load;
@@ -59,7 +59,7 @@ implementation
 		Classes,
 		SysUtils,
 		WinLinux,
-    Math;
+		Math;
 
 //------------------------------------------------------------------------------
 //Load()                                               PROCEDURE
@@ -81,7 +81,7 @@ implementation
 
 		//--------------------------------------------------------------------------
 		//LoadFolderStructure                                      SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 		procedure LoadFolderStructure;
 		begin
 			ReadSectionValues('Folder Structure', Section);
@@ -101,13 +101,13 @@ implementation
 			begin
 				Section.Values['Script']	 := './Scripts';
 			end;
-			
+
 			fMapDirectory				:= Section.Values['Maps'];
 			fDatabaseDirectory	:= Section.Values['Database'];
 			fConfigDirectory		:= Section.Values['Configuration'];
-      fScriptDirectory		:= Section.Values['Script'];
+			fScriptDirectory		:= Section.Values['Script'];
 		end;{Subroutine LoadZone}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
 		//--------------------------------------------------------------------------
@@ -121,47 +121,47 @@ implementation
 		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadChara                                          SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadChara                                          SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadChara;
 		begin
 			ReadSectionValues('Character', Section);
 			fCharaEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
 		end;{Subroutine LoadChara}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadInter                                                 SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadInter                                                 SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadInter;
 		begin
 			ReadSectionValues('Inter', Section);
-      fInterEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
+			fInterEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
 		end;{Subroutine LoadInter}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
 		//--------------------------------------------------------------------------
-    //LoadZone                                               SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//LoadZone                                               SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadZone;
 		begin
 			ReadSectionValues('Zone', Section);
-      fZoneEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
+			fZoneEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
 		end;{Subroutine LoadZone}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 		//--------------------------------------------------------------------------
-    //LoadGeneral                                               SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//LoadGeneral                                               SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadGeneral;
 		begin
 			ReadSectionValues('General', Section);
-      fReconnectDelay := StrToIntDef(Section.Values['Reconnect Delay'] , 3000);
+			fReconnectDelay := StrToIntDef(Section.Values['Reconnect Delay'] , 3000);
 		end;{Subroutine LoadZone}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 	begin
 		Section    := TStringList.Create;
@@ -172,10 +172,10 @@ implementation
 		LoadFolderStructure;
 
 		LoadLogin;
-    LoadChara;
-    LoadInter;
-    LoadZone;
-    LoadGeneral;
+		LoadChara;
+		LoadInter;
+		LoadZone;
+		LoadGeneral;
 
 		Section.Free;
 
@@ -204,17 +204,17 @@ implementation
 		//Login
 		WriteString('Login','Enabled',BoolToStr(LoginEnabled));
 
-    //Chara
+		//Chara
 		WriteString('Character','Enabled',BoolToStr(CharaEnabled));
 
-    //Inter
-    WriteString('Inter','Enabled',BoolToStr(InterEnabled));
+		//Inter
+		WriteString('Inter','Enabled',BoolToStr(InterEnabled));
 
-    //Zone
+		//Zone
 		WriteString('Zone','Enabled',BoolToStr(ZoneEnabled));
 
-    //General
-    WriteString('General', 'Reconnect Delay', IntToStr(ReconnectDelay));
+		//General
+		WriteString('General', 'Reconnect Delay', IntToStr(ReconnectDelay));
 
 		UpdateFile;
 	end;{Save}

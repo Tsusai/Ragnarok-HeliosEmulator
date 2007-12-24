@@ -24,27 +24,27 @@ interface
 		private
 //private variables
 			fPort		      : Word;
-      fKey          : String;
+			fKey          : String;
 			fEnableMF			: Boolean;
-      fIndySchedulerType  : Byte;
-      fIndyThreadPoolSize : Word;
+			fIndySchedulerType  : Byte;
+			fIndyThreadPoolSize : Word;
 //Gets/Sets
 			procedure SetPort(Value : Word);
 			procedure SetEnableMF(Value : Boolean);
 
 		public
 			//Communication
-      property Port    : Word read fPort write SetPort;
+			property Port    : Word read fPort write SetPort;
 
-      //Security
-      property Key     : String read fKey;
+			//Security
+			property Key     : String read fKey;
 
-      //Options
-      property EnableMF     : boolean read fEnableMF write SetEnableMF;
+			//Options
+			property EnableMF     : boolean read fEnableMF write SetEnableMF;
 
-      //Performance
-      property IndySchedulerType : Byte read fIndySchedulerType;
-      property IndyThreadPoolSize : Word read fIndyThreadPoolSize;
+			//Performance
+			property IndySchedulerType : Byte read fIndySchedulerType;
+			property IndyThreadPoolSize : Word read fIndyThreadPoolSize;
 
 			//Public methods
 			procedure Load;
@@ -76,49 +76,49 @@ implementation
 	var
 		Section    : TStringList;
 
-    //--------------------------------------------------------------------------
-    //LoadCommunication                                          SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadCommunication                                          SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadCommunication;
 		begin
 			ReadSectionValues('Communication', Section);
 			fPort   := EnsureRange(StrToIntDef(Section.Values['Port'], 6900), 1, MAX_PORT);
 		end;{Subroutine LoadCommunication}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadSecurity                                              SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadSecurity                                              SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadSecurity;
 		begin
 			ReadSectionValues('Security', Section);
-      fKey    := Section.Values['Key'];
+			fKey    := Section.Values['Key'];
 		end;{Subroutine LoadSecurity}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadOptions                                               SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadOptions                                               SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadOptions;
 		begin
 			ReadSectionValues('Options', Section);
-      fEnableMF    := StrToBoolDef(Section.Values['EnableMF'] ,false);
+			fEnableMF    := StrToBoolDef(Section.Values['EnableMF'] ,false);
 		end;{Subroutine LoadOptions}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadPerformance                                             SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadPerformance                                             SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadPerformance;
 		begin
 			ReadSectionValues('Performance', Section);
-      fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 1);
-      fIndyThreadPoolSize := EnsureRange(StrToIntDef(Section.Values['Indy Thread Pool Size'], 1), 1, High(Word));
+			fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 1);
+			fIndyThreadPoolSize := EnsureRange(StrToIntDef(Section.Values['Indy Thread Pool Size'], 1), 1, High(Word));
 		end;{Subroutine LoadPerformance}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 	begin
 		Section    := TStringList.Create;
@@ -126,10 +126,10 @@ implementation
 		Section.QuoteChar := '"';
 		Section.Delimiter := ',';
 
-    LoadCommunication;
-    LoadSecurity;
-    LoadOptions;
-    LoadPerformance;
+		LoadCommunication;
+		LoadSecurity;
+		LoadOptions;
+		LoadPerformance;
 
 		Section.Free;
 
@@ -149,18 +149,18 @@ implementation
 //------------------------------------------------------------------------------
 	procedure TLoginOptions.Save;
 	begin
-    //Communication
+		//Communication
 		WriteString('Communication','Port',IntToStr(fPort));
 
-    //Security
-    WriteString('Security','Key',fKey);
+		//Security
+		WriteString('Security','Key',fKey);
 
-    //Options
+		//Options
 		WriteString('Options','EnableMF',BoolToStr(EnableMF));
 
-    //Performance
-    WriteString('Performance','Indy Scheduler Type',IntToStr(IndySchedulerType));
-    WriteString('Performance','Indy Thread Pool Size',IntToStr(IndyThreadPoolSize));
+		//Performance
+		WriteString('Performance','Indy Scheduler Type',IntToStr(IndySchedulerType));
+		WriteString('Performance','Indy Thread Pool Size',IntToStr(IndyThreadPoolSize));
 
 		UpdateFile;
 	end;{Save}

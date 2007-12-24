@@ -298,11 +298,11 @@ begin
 		ACharacter := TClientLink(AConnection.Data).CharacterLink;
 
 		TThreadLink(AConnection.Data).DatabaseLink.GameData.Connect;
-    try
-		  TThreadLink(AConnection.Data).DatabaseLink.GameData.SaveChara(ACharacter);
-    finally
-		  TThreadLink(AConnection.Data).DatabaseLink.GameData.Disconnect;
-    end;
+		try
+			TThreadLink(AConnection.Data).DatabaseLink.GameData.SaveChara(ACharacter);
+		finally
+			TThreadLink(AConnection.Data).DatabaseLink.GameData.Disconnect;
+		end;
 
 		SendZoneCharaLogOut(ToCharaTCPClient, ACharacter, Byte(ACharacter.DcAndKeepData));
 		if Started and (ACharacter.MapInfo <> nil) then
@@ -364,7 +364,7 @@ end;{OnException}
 //------------------------------------------------------------------------------
 Procedure TZoneServer.Start(Reload : Boolean = FALSE);
 begin
-  if NOT Started then
+	if NOT Started then
 	begin
 		//Load our Zone.ini
 		LoadOptions;
@@ -390,7 +390,7 @@ begin
 
 		CharacterEventThread.Start;
 	end else
-  begin
+	begin
 		Console.Message('Cannot Start():: Zone Server already running!', 'Zone Server', MS_ALERT);
 	end;
 end;{Start}
@@ -420,7 +420,7 @@ begin
 		begin
 			Sleep(1);
 		end;
-		
+
 
 		//deactivate server and clients.
 		DeActivateServer('Zone', TCPServer);

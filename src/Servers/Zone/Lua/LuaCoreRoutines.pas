@@ -1,3 +1,5 @@
+//Wrapper to keep lua from using all the lua units in various units.  This way,
+//lua is only required in the zone.
 unit LuaCoreRoutines;
 
 interface

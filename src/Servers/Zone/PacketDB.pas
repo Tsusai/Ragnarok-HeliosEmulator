@@ -1,3 +1,5 @@
+//This unit controls loading the packet_db.txt into memory, and setting up
+//procedures for executing packets.
 unit PacketDB;
 
 interface

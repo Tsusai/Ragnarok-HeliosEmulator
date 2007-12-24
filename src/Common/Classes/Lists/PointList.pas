@@ -126,21 +126,21 @@ begin
 	GetMem(NewMemoryStart, (MaxCount + Size) * SizeOf(TPoint));
 	if(Assigned(MemStart)) then
 	begin
-	  // Copy the data from the old memory here
-	  OldPointer := MemStart;
-	  NewPointer := NewMemoryStart;
-	  for Index := 1 to MaxCount do
-	  begin
-		  // Copy one Point at a time
-		  NewPointer^ := OldPointer^;
-		  Inc(OldPointer);
-		  Inc(NewPointer);
-	  end;
-    // Free the old memory
-    FreeMem(MemStart);
-  end;
+		// Copy the data from the old memory here
+		OldPointer := MemStart;
+		NewPointer := NewMemoryStart;
+		for Index := 1 to MaxCount do
+		begin
+			// Copy one Point at a time
+			NewPointer^ := OldPointer^;
+			Inc(OldPointer);
+			Inc(NewPointer);
+		end;
+		// Free the old memory
+		FreeMem(MemStart);
+	end;
 
-  // And now refer to the new memory
+	// And now refer to the new memory
 	MemStart := NewMemoryStart;
 	NextSlot := MemStart;
 	Inc(NextSlot, MaxCount);
@@ -166,30 +166,30 @@ var
 	Index : Integer;
 begin
 	CriticalSection.Enter;
-  if MaxCount > Size then
-  begin
-    //first allocate a new, smaller memory space
-    GetMem(NewMemoryStart, (MaxCount - Size) * SizeOf(TPoint));
-    if(Assigned(MemStart)) then
-	  begin
-	    // Copy the data from the old memory here
-	    OldPointer := MemStart;
-	    NewPointer := NewMemoryStart;
-	    for Index := 1 to MaxCount do
-	    begin
-		    // Copy one Point at a time
-		    NewPointer^ := OldPointer^;
-		    Inc(OldPointer);
-		    Inc(NewPointer);
-	    end;
-      // Free the old memory
-      FreeMem(MemStart);
-    end;
+	if MaxCount > Size then
+	begin
+		//first allocate a new, smaller memory space
+		GetMem(NewMemoryStart, (MaxCount - Size) * SizeOf(TPoint));
+		if(Assigned(MemStart)) then
+		begin
+			// Copy the data from the old memory here
+			OldPointer := MemStart;
+			NewPointer := NewMemoryStart;
+			for Index := 1 to MaxCount do
+			begin
+				// Copy one Point at a time
+				NewPointer^ := OldPointer^;
+				Inc(OldPointer);
+				Inc(NewPointer);
+			end;
+			// Free the old memory
+			FreeMem(MemStart);
+		end;
 
-    // And now refer to the new memory
-	  MemStart := NewMemoryStart;
-	  NextSlot := MemStart;
-	  Inc(NextSlot, MaxCount);
+		// And now refer to the new memory
+		MemStart := NewMemoryStart;
+		NextSlot := MemStart;
+		Inc(NextSlot, MaxCount);
 		Inc(MaxCount, Size);
 	end;
 	CriticalSection.Leave;
@@ -259,24 +259,24 @@ end;{Assign}
 //------------------------------------------------------------------------------
 procedure TPointList.Delete(Index : Integer);
 var
-  CurrentItem : PPoint;
-  NextItem    : PPoint;
+	CurrentItem : PPoint;
+	NextItem    : PPoint;
 begin
 	CriticalSection.Enter;
-  
+
 	if (MaxCount-ALLOCATE_SIZE) = (MsCount) then
 	begin
 		Shrink(ALLOCATE_SIZE);
 	end;
-  for Index := Index to MsCount - 1 do
-  begin
-    CurrentItem := MemStart;
-    inc(CurrentItem, Index);
-    NextItem := CurrentItem;
-    Inc(NextItem,1);
-    CurrentItem^ := NextItem^;
-  end;
-  Dec(MsCount,  1);
+	for Index := Index to MsCount - 1 do
+	begin
+		CurrentItem := MemStart;
+		inc(CurrentItem, Index);
+		NextItem := CurrentItem;
+		Inc(NextItem,1);
+		CurrentItem^ := NextItem^;
+	end;
+	Dec(MsCount,  1);
 	Dec(NextSlot, 1);
 	CriticalSection.Leave;
 end;{Delete}
@@ -296,13 +296,13 @@ procedure TPointList.Clear;
 begin
 	CriticalSection.Enter;
 
-  // Free the allocated memory
-  if Assigned(MemStart) then
-  begin
-    FreeMem(MemStart);
-    MsCount  := 0;  // No Points in the list yet
+	// Free the allocated memory
+	if Assigned(MemStart) then
+	begin
+		FreeMem(MemStart);
+		MsCount  := 0;  // No Points in the list yet
 		MaxCount := 0;  //no max size
-    MemStart := NIL;//no memory yet
+		MemStart := NIL;//no memory yet
 	end;
 	CriticalSection.Leave;
 end;{Clear}

@@ -30,9 +30,9 @@ uses
 	Classes,
 	Globals,
 	PacketDB,
-  Main,
-  IdSchedulerOfThreadDefault,
-  IdSchedulerOfThreadPool;
+	Main,
+	IdSchedulerOfThreadDefault,
+	IdSchedulerOfThreadPool;
 
 //------------------------------------------------------------------------------
 //ActivateServer                                                       FUNCTION
@@ -58,22 +58,22 @@ begin
 		AServer := TIdTCPServer.Create;
 	end;
 
-  //Set up the thread scheduler
-  AServer.Scheduler.Free;
-  case SchedulerType of
-    0 :
-        begin
-          //Create thread scheduler
-          AServer.Scheduler := TIdSchedulerOfThreadDefault.Create(AServer);
-        end;
-    1 :
-        begin
-          //create thread pool scheduler.
-          AServer.Scheduler := TIdSchedulerOfThreadPool.Create(AServer);
-          TIdSchedulerOfThreadPool(AServer.Scheduler).PoolSize :=
-            ThreadPoolSize;
-        end;
-  end;
+	//Set up the thread scheduler
+	AServer.Scheduler.Free;
+	case SchedulerType of
+		0 :
+				begin
+					//Create thread scheduler
+					AServer.Scheduler := TIdSchedulerOfThreadDefault.Create(AServer);
+				end;
+		1 :
+				begin
+					//create thread pool scheduler.
+					AServer.Scheduler := TIdSchedulerOfThreadPool.Create(AServer);
+					TIdSchedulerOfThreadPool(AServer.Scheduler).PoolSize :=
+						ThreadPoolSize;
+				end;
+	end;
 	Result := true;
 	Console.WriteLn(Format(LOADING, [Name]));
 	try
@@ -178,7 +178,7 @@ end;{DeActivateClient}
 //------------------------------------------------------------------------------
 Function GetPacketLength(ID : Word; Version : Word = 0) : LongWord;
 var
-  Index           : Integer;
+	Index           : Integer;
 	CodebaseLength  : Integer;
 	Found : boolean;
 begin

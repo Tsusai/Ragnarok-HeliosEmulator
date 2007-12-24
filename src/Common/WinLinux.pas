@@ -46,6 +46,9 @@ uses
 	Version,
 	Globals;
 
+	//This is used for our tick counting.  Linux doesn't have a "uptime" counter
+	//So we store the linux time we started the application, and then take a
+	//difference later on.
 	{$IFDEF LINUX}
 	var StartTime : timeb;
 	{$ENDIF}
@@ -146,7 +149,9 @@ uses
 		SetConsoleTitle(PChar(HeliosVersion));
 		{$ENDIF}
 		{$IFDEF LINUX}
+		//Set our Starttime for our uptime calculations.
 		ftime(StartTime);
+		//These control ctrl c and stuff for linux
 		Signal(SIGINT,@TerminateApplication);
 		Signal(SIGTERM,@TerminateApplication);
 		Signal(SIGKILL,@TerminateApplication);
@@ -191,12 +196,14 @@ uses
 	var
 		NowTime : timeb;
 	begin
+		//Takes our "start time" and subtracts it from the current time to get an
+		//"uptime"
 		ftime(NowTime);
 		Result := (NowTime.time - StartTime.time) * 1000;
 		Result := Result + (NowTime.millitm - StartTime.millitm);
 	end;
 	{$ENDIF}
-
+	//timegettime() gets Window's "How long has the PC been on for?" counter
 	{$IFDEF MSWINDOWS}
 	begin
 		Result := timegettime();

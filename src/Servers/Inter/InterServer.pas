@@ -293,16 +293,16 @@ end;{OnException}
 //------------------------------------------------------------------------------
 Procedure TInterServer.Start();
 begin
-  if NOT Started then
-  begin
-    LoadOptions;
+	if NOT Started then
+	begin
+		LoadOptions;
 
-    Port := Options.Port;
-    ActivateServer('Inter',TCPServer, Options.IndySchedulerType, Options.IndyThreadPoolSize);
-  end else
-  begin
+		Port := Options.Port;
+		ActivateServer('Inter',TCPServer, Options.IndySchedulerType, Options.IndyThreadPoolSize);
+	end else
+	begin
 		Console.Message('Cannot Start():: Inter Server already running!', 'Inter Server', MS_ALERT);
-  end;
+	end;
 end;{Start}
 //------------------------------------------------------------------------------
 
@@ -319,15 +319,15 @@ end;{Start}
 //------------------------------------------------------------------------------
 Procedure TInterServer.Stop();
 begin
-  if Started then
-  begin
-    DeActivateServer('Inter',TCPServer);
-    Options.Save;
-    Options.Free;
-  end else
-  begin
-    Console.Message('Cannot Start():: Inter Server not running.', 'Inter Server', MS_ALERT);
-  end;
+	if Started then
+	begin
+		DeActivateServer('Inter',TCPServer);
+		Options.Save;
+		Options.Free;
+	end else
+	begin
+		Console.Message('Cannot Start():: Inter Server not running.', 'Inter Server', MS_ALERT);
+	end;
 end;{Start}
 //------------------------------------------------------------------------------
 

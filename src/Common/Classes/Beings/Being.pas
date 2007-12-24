@@ -340,44 +340,44 @@ Var
 		//within our Y visual range. Last check is that they left our visual range
 		//on the X factor
 
-    //Check to make sure that we're inside the map edges by one to prevent
-    //looking outside of the map bounds.
-    if (IdxX < Mapinfo.Size.X-1) AND (IdxX > 0) AND
-       (IdxY < MapInfo.Size.Y-1) AND (IdxY > 0) then
-    begin
-		  if {X axis}((Directions[Direction].X <> 0) and
+		//Check to make sure that we're inside the map edges by one to prevent
+		//looking outside of the map bounds.
+		if (IdxX < Mapinfo.Size.X-1) AND (IdxX > 0) AND
+			 (IdxY < MapInfo.Size.Y-1) AND (IdxY > 0) then
+		begin
+			if {X axis}((Directions[Direction].X <> 0) and
 				(abs(OldPt.Y - idxY) < Radius) and
 				(OldPt.X = idxX + Directions[Direction].X * (Radius - 1 )))
-		  OR {Y axis}((Directions[Direction].Y <> 0) and
+			OR {Y axis}((Directions[Direction].Y <> 0) and
 				(abs(OldPt.X - idxX) < Radius) and
 				(OldPt.Y = idxY + Directions[Direction].Y * (Radius - 1))) then
-		  begin
-			  for BeingIdx := MapInfo.Cell[idxX,idxY].Beings.Count -1  downto 0 do
-			  begin
-				  if MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] is TBeing then
-				  begin
-					  ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
-					  if ABeing = Self then Continue;
+			begin
+				for BeingIdx := MapInfo.Cell[idxX,idxY].Beings.Count -1  downto 0 do
+				begin
+					if MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] is TBeing then
+					begin
+						ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
+						if ABeing = Self then Continue;
 
-					  //Packets for base being if its a character
-					  if Self is TCharacter then
-					  begin
-						  //if the target is also a TCharacter, they need OUR info
-						  if ABeing is TCharacter then
-						  begin
-							  ZoneDisappearBeing(Self,   TCharacter(ABeing).ClientInfo);
-							  ZoneDisappearBeing(ABeing, TCharacter(Self).ClientInfo);
-							  //Send First Being disapearing to ABeing
-						  end else  //Npc/Mob/Pet/Homunculus/Mercenary
-						  begin
-							  {Todo: events for NPC}
-							  ZoneDisappearBeing(ABeing,TCharacter(Self).ClientInfo);
-						  end;
-					  end;
-				  end;
-			  end;
-		  end;
-    end;
+						//Packets for base being if its a character
+						if Self is TCharacter then
+						begin
+							//if the target is also a TCharacter, they need OUR info
+							if ABeing is TCharacter then
+							begin
+								ZoneDisappearBeing(Self,   TCharacter(ABeing).ClientInfo);
+								ZoneDisappearBeing(ABeing, TCharacter(Self).ClientInfo);
+								//Send First Being disapearing to ABeing
+							end else  //Npc/Mob/Pet/Homunculus/Mercenary
+							begin
+								{Todo: events for NPC}
+								ZoneDisappearBeing(ABeing,TCharacter(Self).ClientInfo);
+							end;
+						end;
+					end;
+				end;
+			end;
+		end;
 	end;
 
 	procedure ShowBeings;
@@ -385,45 +385,45 @@ Var
 		ABeing : TBeing;
 		BeingIdx : Integer;
 	begin
-    //Check to make sure that we're inside the map edges by one to prevent
-    //looking outside of the map bounds.
-    if (IdxX < Mapinfo.Size.X-1) AND (IdxX > 0) AND
-       (IdxY < MapInfo.Size.Y-1) AND (IdxY > 0) then
-    begin
-      //This is the opposite of the above.  We check to see if we are making the apropriate change, and seeing if a tbeing will be in the visual range if we made the step forward
-		  if {X axis}((Directions[Direction].X <> 0) and
-			  (abs(Position.Y - idxY) < Radius) and
-			  (Position.X = idxX - Directions[Direction].X * (Radius - 1)))
-		  OR {Y axis}((Directions[Direction].Y <> 0) and
-			  (abs(Position.X - idxX) < Radius) and
-			  (Position.Y = idxY - Directions[Direction].Y * (Radius - 1))) then
-		  begin
-			  for BeingIdx := MapInfo.Cell[idxX,idxY].Beings.Count -1  downto 0 do
-			  begin
-				  if MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] is TBeing then
-				  begin
-					  ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
-					  if ABeing = Self then Continue;
+		//Check to make sure that we're inside the map edges by one to prevent
+		//looking outside of the map bounds.
+		if (IdxX < Mapinfo.Size.X-1) AND (IdxX > 0) AND
+			 (IdxY < MapInfo.Size.Y-1) AND (IdxY > 0) then
+		begin
+			//This is the opposite of the above.  We check to see if we are making the apropriate change, and seeing if a tbeing will be in the visual range if we made the step forward
+			if {X axis}((Directions[Direction].X <> 0) and
+				(abs(Position.Y - idxY) < Radius) and
+				(Position.X = idxX - Directions[Direction].X * (Radius - 1)))
+			OR {Y axis}((Directions[Direction].Y <> 0) and
+				(abs(Position.X - idxX) < Radius) and
+				(Position.Y = idxY - Directions[Direction].Y * (Radius - 1))) then
+			begin
+				for BeingIdx := MapInfo.Cell[idxX,idxY].Beings.Count -1  downto 0 do
+				begin
+					if MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] is TBeing then
+					begin
+						ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
+						if ABeing = Self then Continue;
 
-					  //If we are a tcharacter, we need packets!
-					  if Self is TCharacter then
-					  begin
-						  //If the target TBeing is also a character, they need info on us.
-						  if ABeing is TCharacter then
-						  begin
-							  ZoneSendBeing(Self, TCharacter(ABeing).ClientInfo);
-							  ZoneSendBeing(ABeing, TCharacter(Self).ClientInfo);
-							  ZoneWalkingBeing(Self,Path[Path.count-1],Position,TCharacter(ABeing).ClientInfo);
-						  end else  //Npc/Mob/Pet/Homunculus/Mercenary packets to the client
-						  begin
-							  {Todo: events for NPC}
-							  ZoneSendBeing(ABeing,TCharacter(Self).ClientInfo);
-						  end;
-					  end;
-				  end;
-			  end;
-		  end;
-    end;
+						//If we are a tcharacter, we need packets!
+						if Self is TCharacter then
+						begin
+							//If the target TBeing is also a character, they need info on us.
+							if ABeing is TCharacter then
+							begin
+								ZoneSendBeing(Self, TCharacter(ABeing).ClientInfo);
+								ZoneSendBeing(ABeing, TCharacter(Self).ClientInfo);
+								ZoneWalkingBeing(Self,Path[Path.count-1],Position,TCharacter(ABeing).ClientInfo);
+							end else  //Npc/Mob/Pet/Homunculus/Mercenary packets to the client
+							begin
+								{Todo: events for NPC}
+								ZoneSendBeing(ABeing,TCharacter(Self).ClientInfo);
+							end;
+						end;
+					end;
+				end;
+			end;
+		end;
 	end;
 
 Begin

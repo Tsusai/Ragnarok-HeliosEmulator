@@ -37,8 +37,8 @@ type
 		Property Count : Integer read GetCount;
 
 		Procedure Add(const ACharacter : TCharacter);
-    Procedure Insert(const ACharacter : TCharacter; Index : Integer);
-    Procedure Delete(Index : Integer);
+		Procedure Insert(const ACharacter : TCharacter; Index : Integer);
+		Procedure Delete(Index : Integer);
 		Procedure Clear();
 
 		Function IndexOf(const CID : LongWord) : Integer;
@@ -143,19 +143,19 @@ end;{Delete}
 //------------------------------------------------------------------------------
 function TCharacterList.IndexOf(const CID: LongWord): Integer;
 var
-  Index : Integer;
+	Index : Integer;
 begin
 	Index := fList.Count-1;
 	Result := -1;
 	while (Index >= 0) do
-  begin
-    if CID = Items[Index].CID then
+	begin
+		if CID = Items[Index].CID then
 		begin
 			Result := Index;
-      Exit;
-    end;
-    dec(Index,  1);
-  end;
+			Exit;
+		end;
+		dec(Index,  1);
+	end;
 end;{IndexOf}
 //------------------------------------------------------------------------------
 
@@ -171,19 +171,19 @@ end;{IndexOf}
 //------------------------------------------------------------------------------
 function TCharacterList.IndexOfAID(const AID: LongWord): Integer;
 var
-  Index : Integer;
+	Index : Integer;
 begin
 	Index := fList.Count-1;
-  Result := -1;
-  while (Index >= 0) do
-  begin
+	Result := -1;
+	while (Index >= 0) do
+	begin
 		if AID = Items[Index].ID then
-    begin
-      Result := Index;
-      Exit;
-    end;
-    dec(Index,  1);
-  end;
+		begin
+			Result := Index;
+			Exit;
+		end;
+		dec(Index,  1);
+	end;
 end;{IndexOfAID}
 //------------------------------------------------------------------------------
 

@@ -30,23 +30,23 @@ interface
 			fCommonUser 	: string;
 			fCommonPass 	: string;
 
-      fGameType     : Integer;
+			fGameType     : Integer;
 			fGameHost 		: string;
 			fGamePort 		: integer;
 			fGameDB   		: string;
 			fGameUser 		: string;
 			fGamePass 		: string;
 
-      fStaticType   : Integer;
-      fStaticHost 	: string;
+			fStaticType   : Integer;
+			fStaticHost 	: string;
 			fStaticPort 	: integer;
 			fStaticDB   	: string;
 			fStaticUser 	: string;
 			fStaticPass 	: string;
 
 		public
-      //CommonDB
-      property CommonType : Integer read fCommonType write fCommonType;
+			//CommonDB
+			property CommonType : Integer read fCommonType write fCommonType;
 			property CommonHost : string Read fCommonHost;
 			property CommonPort : integer read fCommonPort;
 			property CommonDB   : string Read fCommonDB;
@@ -54,7 +54,7 @@ interface
 			property CommonPass : string Read fCommonPass;
 
 			//GameDB
-      property GameType : Integer read fGameType write fGameType;
+			property GameType : Integer read fGameType write fGameType;
 			property GameHost : string Read fGameHost;
 			property GamePort : integer read fGamePort;
 			property GameDB   : string Read fGameDB;
@@ -62,15 +62,15 @@ interface
 			property GamePass : string Read fGamePass;
 
 			//StaticDB
-      property StaticType : Integer read fStaticType write fStaticType;
+			property StaticType : Integer read fStaticType write fStaticType;
 			property StaticHost : string Read fStaticHost;
 			property StaticPort : integer read fStaticPort;
 			property StaticDB   : string Read fStaticDB;
 			property StaticUser : string Read fStaticUser;
 			property StaticPass : string Read fStaticPass;
 
-      Procedure Load;
-      Procedure Save;
+			Procedure Load;
+			Procedure Save;
 		end;
 //------------------------------------------------------------------------------
 
@@ -99,9 +99,9 @@ implementation
 	var
 		Section    : TStringList;
 
-    //--------------------------------------------------------------------------
-    //LoadCommon                                                  SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadCommon                                                  SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadCommon;
 		begin
 			ReadSectionValues('Common', Section);
@@ -124,15 +124,15 @@ implementation
 			fCommonUser := Section.Values['Username'];
 			fCommonPass := Section.Values['Password'];
 		end;{Subroutine LoadCommon}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadGame                                                    SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadGame                                                    SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadGame;
 		begin
-      ReadSectionValues('Game', Section);
+			ReadSectionValues('Game', Section);
 			fGameType := EnsureRange(StrToIntDef(Section.Values['Type'], 1), 1, MAX_DBTYPE);
 
 			if Section.Values['Host'] = '' then
@@ -155,14 +155,14 @@ implementation
 			fGameUser := Section.Values['Username'];
 			fGamePass := Section.Values['Password'];
 		end;{Subroutine LoadGame}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
-    //--------------------------------------------------------------------------
-    //LoadStatic                                                  SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadStatic                                                  SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadStatic;
 		begin
-      ReadSectionValues('Static', Section);
+			ReadSectionValues('Static', Section);
 			fStaticType := EnsureRange(StrToIntDef(Section.Values['Type'], 1), 1, MAX_DBTYPE);
 
 			if Section.Values['Host'] = '' then begin
@@ -180,16 +180,16 @@ implementation
 			fStaticUser := Section.Values['Username'];
 			fStaticPass := Section.Values['Password'];
 		end;{Subroutine LoadStatic}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 	begin
 		Section    := TStringList.Create;
 
 		Section.QuoteChar := '"';
 		Section.Delimiter := ',';
 
-    LoadCommon;
-    LoadGame;
-    LoadStatic;
+		LoadCommon;
+		LoadGame;
+		LoadStatic;
 
 		Section.Free;
 
@@ -210,30 +210,30 @@ implementation
 //------------------------------------------------------------------------------
 	procedure TDatabaseOptions.Save;
 	begin
-    //Common
-    WriteString('Common','Type', IntToStr(CommonType));
+		//Common
+		WriteString('Common','Type', IntToStr(CommonType));
 		WriteString('Common','Host', CommonHost);
 		WriteString('Common','Port', IntToStr(CommonPort));
 		WriteString('Common','DBName', CommonDB);
 		WriteString('Common','Username', CommonUser);
 		WriteString('Common','Password', CommonPass);
 
-    //Game
-    WriteString('Game','Type', IntToStr(GameType));
+		//Game
+		WriteString('Game','Type', IntToStr(GameType));
 		WriteString('Game','Host', GameHost);
 		WriteString('Game','Port', IntToStr(GamePort));
 		WriteString('Game','DBName', GameDB);
 		WriteString('Game','Username', GameUser);
 		WriteString('Game','Password', GamePass);
 
-    //Static
-    WriteString('Static','Type', IntToStr(StaticType));
+		//Static
+		WriteString('Static','Type', IntToStr(StaticType));
 		WriteString('Static','Host', StaticHost);
 		WriteString('Static','Port', IntToStr(StaticPort));
 		WriteString('Static','DBName', StaticDB);
 		WriteString('Static','Username', StaticUser);
 		WriteString('Static','Password', StaticPass);
-    
+
 		UpdateFile;
 	end;{Save}
 //------------------------------------------------------------------------------

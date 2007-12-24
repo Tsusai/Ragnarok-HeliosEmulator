@@ -93,7 +93,7 @@ public
 	Property OnDisarm : String Read fOnDisarm Write fOnDisarm;
 	Property OnAttack : String Read fOnAttack Write fOnAttack;
 	Property OnDefend : String Read fOnDefend Write fOnDefend;
-	
+
 	Constructor Create;
 	Destructor Destroy;override;
 

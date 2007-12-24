@@ -128,11 +128,11 @@ end;
 //------------------------------------------------------------------------------
 Destructor TMap.Destroy();
 begin
-  if State = LOADED then
-  begin
+	if State = LOADED then
+	begin
 		Unload;
-  end;
-  EventList.Free;
+	end;
+	EventList.Free;
 	inherited;
 end;
 //------------------------------------------------------------------------------

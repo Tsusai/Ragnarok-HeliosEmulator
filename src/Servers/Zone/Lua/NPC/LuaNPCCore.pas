@@ -1,3 +1,8 @@
+//Core routine for setting up the lua system.  All scripts are loaded, but
+//multiple runtime environments are setup per character and removed after
+//completion.  Each of these individual runtime environments reads global vars
+//which are script related, but have their own pointer as as a global variable,
+//so each command can access the character runing it.
 unit LuaNPCCore;
 
 interface
@@ -47,7 +52,7 @@ procedure RunLuaNPCScript(
 	const LuaFunc : string
 );
 begin
-	//Set the player's lua thread
+	//Set the player's lua thread, setting up its own unique runtime enviro.
 	MakeLuaThread(MainProc.ZoneServer.NPCLua,AChara.LuaInfo);
 	//Set the character pointer to the global list
 	SetCharaToLua(AChara);

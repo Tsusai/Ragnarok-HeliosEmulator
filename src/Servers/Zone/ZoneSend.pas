@@ -524,7 +524,7 @@ var
 begin
 	WriteBufferWord(0, $020a, OutBuffer);
 	WriteBufferLongWord(2, AccID, OutBuffer);
-	WriteBufferLongWord(6, CharID, OutBuffer);       
+	WriteBufferLongWord(6, CharID, OutBuffer);
 	SendBuffer(AClient, OutBuffer, GetPacketLength($020a));
 end;{SendDeleteFriend}
 //------------------------------------------------------------------------------

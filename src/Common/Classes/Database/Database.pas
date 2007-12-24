@@ -37,7 +37,7 @@ type
 //------------------------------------------------------------------------------
 	TDatabase = class(TObject)
 	public
-    CommonData    : TCommonDatabaseTemplate;
+		CommonData    : TCommonDatabaseTemplate;
 		GameData      : TGameDatabaseTemplate;
 		StaticData    : TStaticDatabaseTemplate;
 
@@ -98,7 +98,7 @@ Revisions:
 --------------------------------------------------------------------------------
 (Format: [yyyy/mm/dd] <Author> - <Comment>)
 [2006/09/30] RaX - Created.
-[2007/01/20] Tsusai - Added feedback boolean variable, in order to know if any 
+[2007/01/20] Tsusai - Added feedback boolean variable, in order to know if any
 	of the databases failed to connect.
 [2007/03/28] CR - Removed hints about unused local variables.  Reindented code,
 	wrapping comments and long lines.
@@ -221,7 +221,7 @@ End; (* Cons TDatabase.Create
 Destructor TDatabase.Destroy();
 begin
 	CommonData.Free;
-  GameData.Free;
+	GameData.Free;
 	StaticData.Free;
 	Inherited;
 end;

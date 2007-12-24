@@ -150,9 +150,9 @@ Begin
 	//TODO, list needs to own items, I sense a custom list coming on...
 	for Index := 0 to fItemList.Count - 1 do
 	begin
-    TItem(fItemList.Items[Index]).Free;
-  end;
-		
+		TItem(fItemList.Items[Index]).Free;
+	end;
+
 	fItemList.Free;
 	//--
 
@@ -195,7 +195,7 @@ begin
 		end else
 		begin
 			UpdateItemQuantity(ItemIndex, fItemList.Items[ItemIndex].Quantity - Quantity);
-    end;
+		end;
 	end;
 end;
 

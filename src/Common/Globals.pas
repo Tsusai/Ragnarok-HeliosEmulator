@@ -148,8 +148,11 @@ procedure TerminateApplication;
 begin
 	if MainProc.Loaded then
 	begin
+		//Kill the overrides for our visualizations
 		EndCRT;
+		//remove the hooks for Ctrl-C, etc
 		KillTerminationCapturing;
+		//Start shutting down the server
 		MainProc.Shutdown;
 		FreeAndNil(MainProc);
 		//Free up console handler.
@@ -159,7 +162,7 @@ begin
 	end else
 	begin
 		Console.Message('Please wait to shutdown helios until after it has finished starting/stopping', 'System', MS_ALERT);
-  end;
+	end;
 end;{TerminateApplication}
 //------------------------------------------------------------------------------
 
@@ -255,7 +258,7 @@ end;{IncSecond}
 function IncMinute(const AValue: TDateTime;
 	const ANumberOfMinutes: Int64): TDateTime;
 begin
-  Result := ((AValue * MinsPerDay) + ANumberOfMinutes) / MinsPerDay;
+	Result := ((AValue * MinsPerDay) + ANumberOfMinutes) / MinsPerDay;
 end;{IncMinute}
 //------------------------------------------------------------------------------
 

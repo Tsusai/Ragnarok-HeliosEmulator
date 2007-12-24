@@ -1,3 +1,7 @@
+//This unit is a information class.  This class shouldn't be used by itself,
+//but rather by descending classes such as TZoneServerInfo.  This is designed
+//to store a connected server's information, such as WAN AND LAN IPs and their
+//cardinal forms, which are used by the client
 unit ServerInfo;
 
 interface
@@ -48,10 +52,12 @@ begin
 	fLANIPCard  := GetLongWordFromIPString(ReturnedIPs.Full);
 end;
 
+//This routine takes a client's IP, and determines which IP, WAN or LAN in
+//integer form.
 function TServerInfo.Address(const ClientIP : string) : LongWord;
 begin
 	if AnsiStartsText('127.0.0.', ClientIP) then
-  begin
+	begin
 		Result := GetLongWordFromIPString('127.0.0.1');
 	end else
 	if AnsiStartsText(fLANPartial, ClientIP) then

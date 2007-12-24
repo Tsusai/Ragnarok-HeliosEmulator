@@ -15,10 +15,10 @@ interface
 
 uses
 	Classes,
-  LoginServer,
+	LoginServer,
 	CharacterServer,
 	InterServer,
-  ZoneServer,
+	ZoneServer,
 	HeliosOptions,
 	DatabaseOptions;
 
@@ -43,8 +43,8 @@ type
 		Options         : THeliosOptions;
 
 		DatabaseOptions : TDatabaseOptions;
-		
-    procedure LoadOptions;
+
+		procedure LoadOptions;
 		procedure LoadDatabaseOptions;
 		procedure Startup;
 		procedure Shutdown;
@@ -190,7 +190,7 @@ begin
 			ZoneServer.ConnectToCharacter;
 			ZoneServer.ConnectToInter;
 		end;
-		
+
 	end else
 	begin
 		Console.EnableCommands := FALSE;//disable console commands.
@@ -214,7 +214,7 @@ end;{TMainProc.Startup}
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
 //		January 20th, 2007 - Tsusai - Reversed shutdown order so server clients
-//			aren't disconnected and attempt to reconnect (cleaner shutdown 
+//			aren't disconnected and attempt to reconnect (cleaner shutdown
 //			messages)
 //		[2007/06/21] Tsusai - Stops created servers.
 //

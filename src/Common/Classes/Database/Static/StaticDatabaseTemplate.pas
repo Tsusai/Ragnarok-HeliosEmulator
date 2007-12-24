@@ -42,7 +42,7 @@ uses
 	{RTL/VCL}
 	Classes,
 	{Project}
-  Being,
+	Being,
 	Character,
 	MapTypes
 	{Third Party}
@@ -115,32 +115,32 @@ public
 			ZoneID : LongWord
 		) : TStringList; virtual; abstract;
 
-  Function  GetBaseEXPToNextLevel(
+	Function  GetBaseEXPToNextLevel(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord; virtual; abstract;
 
-  Function  GetJobEXPToNextLevel(
+	Function  GetJobEXPToNextLevel(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord; virtual; abstract;
 
-  Function GetStatPoints(
+	Function GetStatPoints(
 		const
 			Level : Word
 		) : LongWord; virtual; abstract;
 
-  Function GetSkillPoints(
+	Function GetSkillPoints(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord; virtual; abstract;
 
-  Function GetJobBonus(
+	Function GetJobBonus(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : StatArray; virtual; abstract;
 

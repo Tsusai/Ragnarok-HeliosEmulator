@@ -194,7 +194,7 @@ uses
 	procedure RecvMapWarpRequest(
 			InBuffer : TBuffer
 	);
-	
+
 	procedure RecvRedirectWhisper(
 			InBuffer : TBuffer
 	);
@@ -393,17 +393,17 @@ begin
 	Gender         := BufferReadByte    (ReadPts[4], Buffer);
 	TThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
 	try
-		  AnAccount  := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
+			AnAccount  := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
 	finally
-		  TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
+			TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
 	end;
 
 	//use client local game database
 	TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
 	try
-		  ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID);
+			ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID);
 	finally
-		  TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
+			TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
 	end;
 
 	if Assigned(AnAccount) and Assigned(ACharacter) then
@@ -1264,13 +1264,13 @@ begin
 
 	TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
 	try
-		  if TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.DeleteFriend(AChara.CID, AccountID, CharID) then
-		  begin                 
+			if TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.DeleteFriend(AChara.CID, AccountID, CharID) then
+			begin
 			SendDeleteFriend(AChara.ClientInfo, AccountID, CharID);
 			Dec(AChara.Friends);
-		  end;
+			end;
 	finally
-		  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
 	end;
 end;{RemoveFriendFromList}
 //------------------------------------------------------------------------------
@@ -1616,7 +1616,7 @@ begin
 	begin
 		ZoneSendGMCommandResultToInter(GMID, CharacterID, ZoneID, Error);
 	end;
-	
+
 	Error.Free;
 end;{RecvGMCommandFromInter}
 //------------------------------------------------------------------------------
@@ -1882,7 +1882,7 @@ begin
 			end else
 				Send := False;
 		end;
-		
+
 		// Why? to make sure not trigger again -.-
 		if Reply = 255 then
 			Reply := 0;

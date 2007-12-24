@@ -1,3 +1,4 @@
+//Contains all script commands used by the lua system
 unit LuaNPCCommands;
 
 interface
@@ -51,6 +52,7 @@ const
 
 const
 	//"Function name in lua" , Delphi function name
+	//This assigns our procedures here, with the lua system
 	NPCCommandList : array [1..NPCCommandCount] of lual_reg = (
 		//TNPC adding
 		(name:'npc';func:addnpc),
@@ -454,9 +456,9 @@ begin
 			Value := lua_tointeger(ALua, 2);
 			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
 			try
-			  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.SetCharaVariable(AChara,Key,Value);
+				TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.SetCharaVariable(AChara,Key,Value);
 			finally
-			  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+				TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
 			end;
 		end;
 	end else

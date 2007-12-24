@@ -124,7 +124,7 @@ var
 				WriteString('Command Names', CommandList[Index], CommandList[Index]);
 			end;
 			Splitter.DelimitedText := Section.Values[CommandList[Index]];
-                        // Get TCommand object
+												// Get TCommand object
 			Command := CommandList.Objects[Index] as TCommand;
 			// TODO: use result isnt smart =(
 			Command.Syntax := Result + Command.Name + ' ' + Command.Syntax;

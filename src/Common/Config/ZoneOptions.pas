@@ -23,19 +23,19 @@ interface
 		TZoneOptions = class(TMemIniFile)
 		private
 //private variables
-      fID           : LongWord;
+			fID           : LongWord;
 			fPort		      : Word;
 			fEnabled      : boolean;
 			fWANIP      	: String;
 			fLANIP 	      : String;
 
-      fCharaIP      : String;
-      fCharaPort    : Word;
-      fCharaKey     : String;
+			fCharaIP      : String;
+			fCharaPort    : Word;
+			fCharaKey     : String;
 
-      fInterIP      : String;
-      fInterPort    : Word;
-      fInterKey     : String;
+			fInterIP      : String;
+			fInterPort    : Word;
+			fInterKey     : String;
 
 			fZoneTick			: Word;//The amount of time in milliseconds to sleep
 															// between packet processes.
@@ -44,25 +44,25 @@ interface
 			fCharClickArea: Word;//The number of cells away from a character that
 															//They can click to move to.
 			fCharShowArea	: Word;//The distance in cells away from a character that
-                            	//other entities appear in.
+															//other entities appear in.
 
-      fIndySchedulerType  : Byte;
-      fIndyThreadPoolSize : Word;
+			fIndySchedulerType  : Byte;
+			fIndyThreadPoolSize : Word;
 
-      fBaseXPMultiplier: LongWord;
-      fJobXPMultiplier: LongWord;
+			fBaseXPMultiplier: LongWord;
+			fJobXPMultiplier: LongWord;
 
-      fMaxBaseLevel : Word;
-      fMaxJobLevel  : Word;
-      fMaxBaseLevelsPerEXPGain : Word;
-      fMaxJobLevelsPerEXPGain : Word;
+			fMaxBaseLevel : Word;
+			fMaxJobLevel  : Word;
+			fMaxBaseLevelsPerEXPGain : Word;
+			fMaxJobLevelsPerEXPGain : Word;
 
-      fFullHPOnLevelUP : Boolean;
-      fFullSPOnLevelUP : Boolean;
+			fFullHPOnLevelUP : Boolean;
+			fFullSPOnLevelUP : Boolean;
 
 			fKickOnShutdown : Boolean;
 
-      fMaxStats : Integer;
+			fMaxStats : Integer;
 
 //Gets/Sets
 			procedure SetPort(Value : Word);
@@ -72,12 +72,12 @@ interface
 			procedure SetCharaPort(Value : Word);
 
 		public
-      //Server
-      property Enabled : boolean read fEnabled;
+			//Server
+			property Enabled : boolean read fEnabled;
 			property ID      : LongWord read fID;
 
 			//Communication
-      property Port    : Word read fPort write SetPort;
+			property Port    : Word read fPort write SetPort;
 			property WANIP : String read fWANIP write SetWANIP;
 			property LANIP : String read fLANIP write SetLANIP;
 
@@ -91,31 +91,31 @@ interface
 
 			//Security
 
-      //Options
+			//Options
 
 			//Performance
 			property ZoneTick			: Word read fZoneTick;
 			property EventTick		: Word read fEventTick;
 			property CharClickArea: Word read fCharClickArea;
 			property CharShowArea	: Word read fCharShowArea;
-      property IndySchedulerType : Byte read fIndySchedulerType;
-      property IndyThreadPoolSize : Word read fIndyThreadPoolSize;
+			property IndySchedulerType : Byte read fIndySchedulerType;
+			property IndyThreadPoolSize : Word read fIndyThreadPoolSize;
 
 			//Game
 			property KickOnShutdown : Boolean read fKickOnShutdown;
 
-      property BaseXPMultiplier: LongWord read fBaseXPMultiplier;
-      property JobXPMultiplier: LongWord read fJobXPMultiplier;
+			property BaseXPMultiplier: LongWord read fBaseXPMultiplier;
+			property JobXPMultiplier: LongWord read fJobXPMultiplier;
 
-      property MaxBaseLevel : Word read fMaxBaseLevel;
-      property MaxJobLevel  : Word read fMaxJobLevel;
-      property MaxBaseLevelsPerEXPGain : Word read fMaxBaseLevelsPerEXPGain;
-      property MaxJobLevelsPerEXPGain : Word read fMaxJobLevelsPerEXPGain;
+			property MaxBaseLevel : Word read fMaxBaseLevel;
+			property MaxJobLevel  : Word read fMaxJobLevel;
+			property MaxBaseLevelsPerEXPGain : Word read fMaxBaseLevelsPerEXPGain;
+			property MaxJobLevelsPerEXPGain : Word read fMaxJobLevelsPerEXPGain;
 
-      property FullHPOnLevelUp : Boolean read fFullHPOnLevelUp;
-      property FullSPOnLevelUp : Boolean read fFullSPOnLevelUp;
+			property FullHPOnLevelUp : Boolean read fFullHPOnLevelUp;
+			property FullSPOnLevelUp : Boolean read fFullSPOnLevelUp;
 
-      property MaxCharacterStats : Integer read fMaxStats;
+			property MaxCharacterStats : Integer read fMaxStats;
 
 			//Public methods
 			procedure Load;
@@ -147,20 +147,20 @@ implementation
 	var
 		Section    : TStringList;
 
-    //--------------------------------------------------------------------------
-    //LoadServer                                               SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadServer                                               SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadServer;
 		begin
 			ReadSectionValues('Server', Section);
 			fEnabled := StrToBoolDef(Section.Values['Enabled'] ,true);
 			fID := EnsureRange(StrToIntDef(Section.Values['ID'] ,1), Low(LongWord), High(LongWord));
 		end;{Subroutine LoadServer}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadCommunication                                          SUB PROCEDURE
+		//--------------------------------------------------------------------------
+		//LoadCommunication                                          SUB PROCEDURE
 		//--------------------------------------------------------------------------
 		procedure LoadCommunication;
 		begin
@@ -179,36 +179,36 @@ implementation
 			end;
 			fLANIP			:= Section.Values['LANIP'];
 
-      if Section.Values['CharaIP'] = '' then
+			if Section.Values['CharaIP'] = '' then
 			begin
 				Section.Values['CharaIP']			:= '127.0.0.1';
 			end;
 			fCharaIP			:= Section.Values['CharaIP'];
 
 			fCharaPort		:= EnsureRange(StrToIntDef(Section.Values['CharaPort'], 6121), 1, MAX_PORT);
-      fCharaKey    := Section.Values['CharaKey'];
+			fCharaKey    := Section.Values['CharaKey'];
 
-      if Section.Values['InterIP'] = '' then
+			if Section.Values['InterIP'] = '' then
 			begin
 				Section.Values['InterIP']			:= '127.0.0.1';
 			end;
 			fInterIP			:= Section.Values['InterIP'];
 
 			fInterPort		:= EnsureRange(StrToIntDef(Section.Values['InterPort'], 4000), 1, MAX_PORT);
-      fInterKey    := Section.Values['InterKey'];
+			fInterKey    := Section.Values['InterKey'];
 		end;{Subroutine LoadCommunication}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadSecurity                                              SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadSecurity                                              SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadSecurity;
 		begin
 			ReadSectionValues('Security', Section);
 
 		end;{Subroutine LoadSecurity}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------
 	//LoadPerformance                                              SUB PROCEDURE
@@ -220,8 +220,8 @@ implementation
 			fEventTick		:= EnsureRange(StrToIntDef(Section.Values['Event Tick'], 10), Low(Word), High(Word));
 			fCharClickArea:= EnsureRange(StrToIntDef(Section.Values['Click Area'], 16), Low(Word), High(Word));
 			fCharShowArea	:= EnsureRange(StrToIntDef(Section.Values['Show Area'], 16), Low(Word), High(Word));
-      fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 1);
-      fIndyThreadPoolSize := EnsureRange(StrToIntDef(Section.Values['Indy Thread Pool Size'], 1), 1, High(Word));
+			fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 1);
+			fIndyThreadPoolSize := EnsureRange(StrToIntDef(Section.Values['Indy Thread Pool Size'], 1), 1, High(Word));
 		end;{Subroutine LoadPerformance}
 	//--------------------------------------------------------------------------
 
@@ -234,28 +234,28 @@ implementation
 			ReadSectionValues('Game', Section);
 			fKickOnShutdown := StrToBoolDef(Section.Values['Kick On Shutdown'] ,False);
 
-      fBaseXPMultiplier  := Min(StrToIntDef(Section.Values['Base EXP Multiplier'], 1), High(LongWord));
-      fJobXPMultiplier  := Min(StrToIntDef(Section.Values['Job EXP Multiplier'], 1), High(LongWord));
+			fBaseXPMultiplier  := Min(StrToIntDef(Section.Values['Base EXP Multiplier'], 1), High(LongWord));
+			fJobXPMultiplier  := Min(StrToIntDef(Section.Values['Job EXP Multiplier'], 1), High(LongWord));
 
-      fMaxBaseLevel   := Min(StrToIntDef(Section.Values['Max. Base Level'], 99), High(Word));
-      fMaxJobLevel    := Min(StrToIntDef(Section.Values['Max. Job Level'], 99), High(Word));
-      fMaxBaseLevelsPerEXPGain := Min(StrToIntDef(Section.Values['Max. Base Levels Allowed Per EXP Gain'], 1), High(Word));
-      fMaxJobLevelsPerEXPGain := Min(StrToIntDef(Section.Values['Max. Job Levels Allowed Per EXP Gain'], 1), High(Word));
-      fFullHPOnLevelUp := StrToBoolDef(Section.Values['Full HP on Level up?'], TRUE);
-      fFullSPOnLevelUp := StrToBoolDef(Section.Values['Full SP on Level up?'], TRUE);
-      fMaxStats := StrToIntDef(Section.Values['Max. Character Stats'], 99);
+			fMaxBaseLevel   := Min(StrToIntDef(Section.Values['Max. Base Level'], 99), High(Word));
+			fMaxJobLevel    := Min(StrToIntDef(Section.Values['Max. Job Level'], 99), High(Word));
+			fMaxBaseLevelsPerEXPGain := Min(StrToIntDef(Section.Values['Max. Base Levels Allowed Per EXP Gain'], 1), High(Word));
+			fMaxJobLevelsPerEXPGain := Min(StrToIntDef(Section.Values['Max. Job Levels Allowed Per EXP Gain'], 1), High(Word));
+			fFullHPOnLevelUp := StrToBoolDef(Section.Values['Full HP on Level up?'], TRUE);
+			fFullSPOnLevelUp := StrToBoolDef(Section.Values['Full SP on Level up?'], TRUE);
+			fMaxStats := StrToIntDef(Section.Values['Max. Character Stats'], 99);
 		end;{Subroutine LoadPerformance}
 	//--------------------------------------------------------------------------
 
-    //--------------------------------------------------------------------------
-    //LoadOptions                                               SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadOptions                                               SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadOptions;
 		begin
 			ReadSectionValues('Options', Section);
 
 		end;{Subroutine LoadOptions}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 	begin
 		Section    := TStringList.Create;
@@ -264,11 +264,11 @@ implementation
 		Section.Delimiter := ',';
 
 		LoadServer;
-    LoadCommunication;
+		LoadCommunication;
 		LoadSecurity;
 		LoadPerformance;
 		LoadGame;
-    LoadOptions;
+		LoadOptions;
 
 		Section.Free;
 
@@ -288,48 +288,48 @@ implementation
 //------------------------------------------------------------------------------
 	procedure TZoneOptions.Save;
 	begin
-    //Server
+		//Server
 		WriteString('Server','Enabled',BoolToStr(Enabled));
-    WriteString('Server','ID',IntToStr(ID));
+		WriteString('Server','ID',IntToStr(ID));
 
-    //Communication
+		//Communication
 		WriteString('Communication','WANIP',WANIP);
 		WriteString('Communication','LANIP',LANIP);
 		WriteString('Communication','Port', IntToStr(Port));
 
 		WriteString('Communication','CharaIP',fCharaIP);
 		WriteString('Communication','CharaPort',IntToStr(fCharaPort));
-    WriteString('Communication','CharaKey',fCharaKey);
+		WriteString('Communication','CharaKey',fCharaKey);
 
-    WriteString('Communication','InterIP',fInterIP);
+		WriteString('Communication','InterIP',fInterIP);
 		WriteString('Communication','InterPort',IntToStr(fInterPort));
 		WriteString('Communication','InterKey',fInterKey);
 
-    //Security
+		//Security
 
 		//Performance
 		WriteString('Performance','Zone Tick',IntToStr(fZoneTick));
 		WriteString('Performance','Event Tick',IntToStr(fEventTick));
 		WriteString('Performance','Click Area',IntToStr(fCharClickArea));
 		WriteString('Performance','ShowArea',IntToStr(fCharShowArea));
-    WriteString('Performance','Indy Scheduler Type',IntToStr(IndySchedulerType));
-    WriteString('Performance','Indy Thread Pool Size',IntToStr(IndyThreadPoolSize));
+		WriteString('Performance','Indy Scheduler Type',IntToStr(IndySchedulerType));
+		WriteString('Performance','Indy Thread Pool Size',IntToStr(IndyThreadPoolSize));
 
 
 		//Game
 		WriteString('Game','Kick On Shutdown',BoolToStr(fKickOnShutdown));
-    WriteString('Game','Base EXP Multiplier',IntToStr(fBaseXPMultiplier));
-    WriteString('Game','Job EXP Multiplier',IntToStr(fJobXPMultiplier));
+		WriteString('Game','Base EXP Multiplier',IntToStr(fBaseXPMultiplier));
+		WriteString('Game','Job EXP Multiplier',IntToStr(fJobXPMultiplier));
 
-    WriteString('Game','Max. Base Level',IntToStr(fMaxBaseLevel));
-    WriteString('Game','Max. Job Level',IntToStr(fMaxJobLevel));
-    WriteString('Game','Max. Base Levels Allowed Per EXP Gain',IntToStr(fMaxBaseLevelsPerEXPGain));
-    WriteString('Game','Max. Job Levels Allowed Per EXP Gain',IntToStr(fMaxJobLevelsPerEXPGain));
+		WriteString('Game','Max. Base Level',IntToStr(fMaxBaseLevel));
+		WriteString('Game','Max. Job Level',IntToStr(fMaxJobLevel));
+		WriteString('Game','Max. Base Levels Allowed Per EXP Gain',IntToStr(fMaxBaseLevelsPerEXPGain));
+		WriteString('Game','Max. Job Levels Allowed Per EXP Gain',IntToStr(fMaxJobLevelsPerEXPGain));
 
-    WriteString('Game','Full HP On Level Up?',BoolToStr(fFullHPOnLevelUp));
-    WriteString('Game','Full SP On Level Up?',BoolToStr(fFullSPOnLevelUp));
+		WriteString('Game','Full HP On Level Up?',BoolToStr(fFullHPOnLevelUp));
+		WriteString('Game','Full SP On Level Up?',BoolToStr(fFullSPOnLevelUp));
 
-    WriteString('Game','Max. Character Stats',IntToStr(fMaxStats));
+		WriteString('Game','Max. Character Stats',IntToStr(fMaxStats));
 		//Options
 
 		UpdateFile;

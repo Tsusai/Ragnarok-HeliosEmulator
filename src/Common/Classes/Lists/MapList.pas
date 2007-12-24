@@ -28,14 +28,14 @@ type
 		Procedure SetValue(Index : Integer; Value : TMap);
 		Function GetCount : Integer;
 	Public
-    Constructor Create(OwnsMaps : Boolean);
+		Constructor Create(OwnsMaps : Boolean);
 		Destructor Destroy; override;
 		Property Items[Index : Integer] : TMap
 		read GetValue write SetValue;default;
 
 
 		Procedure Add(const AMap : TMap);
-    Procedure Insert(const AMap : TMap; Index : Integer);
+		Procedure Insert(const AMap : TMap; Index : Integer);
 		Procedure Delete(Index : Integer);
 		Procedure Clear();
 		Function IndexOf(const MapName : String) : Integer;
@@ -142,19 +142,19 @@ end;{Delete}
 //------------------------------------------------------------------------------
 function TMapList.IndexOf(const MapName : String): Integer;
 var
-  Index : Integer;
+	Index : Integer;
 begin
 	Index := fList.Count-1;
-  Result := -1;
-  while (Index >= 0) do
-  begin
+	Result := -1;
+	while (Index >= 0) do
+	begin
 		if MapName = Items[Index].Name then
 		begin
-      Result := Index;
-      Exit;
-    end;
-    dec(Index,  1);
-  end;
+			Result := Index;
+			Exit;
+		end;
+		dec(Index,  1);
+	end;
 end;{IndexOf}
 //------------------------------------------------------------------------------
 

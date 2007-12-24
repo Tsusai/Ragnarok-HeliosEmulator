@@ -54,7 +54,7 @@ Overview:
 *------------------------------------------------------------------------------*
 
 	Common class for Items, TEquipmentItem, TMiscItem and TUseableItem will be
-   descendants.
+	 descendants.
 
 *------------------------------------------------------------------------------*
 Revisions:
@@ -70,7 +70,7 @@ protected
 	fWeight : LongWord;
 	fPrice	: LongWord; //The price of the item in a standard shop
 	fSell		: LongWord; //The selling price of an item to a shop
-	
+
 public
 	Property Name		: String Read fName Write fName;
 	Property ID			: LongWord Read fID Write fID;

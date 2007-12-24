@@ -571,11 +571,11 @@ begin
 			'clothes_color=%d, ' +
 			'righthand=%d, ' +
 			'lefthand=%d, ' +
-      'armor=%d, ' +
-      'garment=%d, ' +
-      'shoes=%d, ' +
-      'accessory1=%d, ' +
-      'accessory2=%d, ' +
+			'armor=%d, ' +
+			'garment=%d, ' +
+			'shoes=%d, ' +
+			'accessory1=%d, ' +
+			'accessory2=%d, ' +
 			'head_top=%d, ' +
 			'head_mid=%d, ' +
 			'head_bottom=%d, ' +
@@ -624,11 +624,11 @@ begin
 			ClothesColor,
 			RightHand,
 			LeftHand,
-      Armor,
-      Garment,
-      Shoes,
-      Accessory1,
-      Accessory2,
+			Armor,
+			Garment,
+			Shoes,
+			Accessory1,
+			Accessory2,
 			HeadTop,
 			HeadMid,
 			HeadBottom,
@@ -981,7 +981,7 @@ end;//GetCharaVariable
 //
 //------------------------------------------------------------------------------
 procedure TMySQLGameDatabase.SetCharaVariable(
-	const AChara : TCharacter; 
+	const AChara : TCharacter;
 	const Key : string;
 	const Value : integer
 );

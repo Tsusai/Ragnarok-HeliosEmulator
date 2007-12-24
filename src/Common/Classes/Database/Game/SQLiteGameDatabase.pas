@@ -144,20 +144,20 @@ public
 		const
 			AChara : TCharacter
 		); override;
-	
+
 	function GetCharaVariable(
-		const 
-			AChara : TCharacter; 
-		const 
+		const
+			AChara : TCharacter;
+		const
 			Key : string
 		) : integer; override;
-		
+
 	procedure SetCharaVariable(
-		const 
-			AChara : TCharacter; 
-		const 
+		const
+			AChara : TCharacter;
+		const
 			Key : string;
-		const 
+		const
 			Value : integer
 		); override;
 
@@ -184,7 +184,7 @@ public
 		const CharName : String
 		); override;
 
-  function IsFriend(
+	function IsFriend(
 		const CharID   : LongWord;
 		const TargetAID: LongWord;
 		const TargetID : LongWord
@@ -644,7 +644,7 @@ begin
 		ACharacter := GetChara(QueryResult.FieldAsInteger(0));
 		Result := Assigned(ACharacter);
 	end;
-	
+
 	if Assigned(QueryResult) then QueryResult.Free;
 end;//CreateChara
 //------------------------------------------------------------------------------
@@ -876,7 +876,7 @@ var
 	QueryResult : TSQLiteTable;
 begin
 	Result := 0;
-	QueryResult := 
+	QueryResult :=
 		SendQuery(
 			Format('Select value FROM character_vars WHERE char_id = %d and key = ''%s''',[AChara.CID,SQLEscapeString(Key)])
 		);
@@ -1106,10 +1106,10 @@ begin
 			)
 		);
 
-  if QueryResult.RowCount > 0 then
-  begin
-    Result := True;
-  end;
+	if QueryResult.RowCount > 0 then
+	begin
+		Result := True;
+	end;
 
 	if Assigned(QueryResult) then QueryResult.Free;
 end;{IsFriend}

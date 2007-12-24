@@ -69,8 +69,8 @@ uses
 	DateUtils;
 
 const
-  // Sets UnixStartDate to TDateTime of 01/01/1970
-  UnixStartDate: TDateTime = 25569.0;
+	// Sets UnixStartDate to TDateTime of 01/01/1970
+	UnixStartDate: TDateTime = 25569.0;
 //------------------------------------------------------------------------------
 //SetGender                                                           PROCEDURE
 //------------------------------------------------------------------------------
@@ -130,11 +130,11 @@ procedure TAccount.SetBannedTime(TimeString : string);
 begin
 	Self.Bantime := ConvertMySQLTime(TimeString);
 	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Connect;
-  try
-	  TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
-  finally
-	  TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Disconnect;
-  end;
+	try
+		TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
+	finally
+		TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Disconnect;
+	end;
 end;{SetBannedTime}
 //------------------------------------------------------------------------------
 
@@ -153,11 +153,11 @@ procedure TAccount.TemperaryBan(Seconds:Integer);
 begin
 	Self.Bantime := UnixToDateTime(DateTimeToUnix(Now) + Seconds);
 	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Connect;
-  try
-	  TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
-  finally
-	  TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Disconnect;
-  end;
+	try
+		TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
+	finally
+		TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Disconnect;
+	end;
 end;{SetBannedTime}
 //------------------------------------------------------------------------------
 
@@ -194,11 +194,11 @@ procedure TAccount.SetConnectUntilTime(TimeString : string);
 begin
 	Self.ConnectUntil := ConvertMySQLTime(TimeString);
 	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Connect;
-  try
-  	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
-  finally
-	  TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Disconnect;
-  end;
+	try
+		TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
+	finally
+		TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.Disconnect;
+	end;
 end;{SetConnectUntilTime}
 //------------------------------------------------------------------------------
 
@@ -215,22 +215,24 @@ end;{SetConnectUntilTime}
 //------------------------------------------------------------------------------
 function TAccount.GetBanUntilTimeString:String;
 var
-Years		:Word;
-Months		:Word;
-Days		:Word;
-Hours		:Word;
-Minutes		:Word;
-Seconds		:Word;
-MillionSeconds   :Word;
-Glue		:String;
-//Add "s" to end if Count > 1
-function Plural(Const Count:Word; Const Name:String):String;
-begin
-	if Count > 1 then
-		Result := Name +'s'
-	else
-		Result := Name
-end;
+	Years		:Word;
+	Months		:Word;
+	Days		:Word;
+	Hours		:Word;
+	Minutes		:Word;
+	Seconds		:Word;
+	MillionSeconds   :Word;
+	Glue		:String;
+	//Add "s" to end if Count > 1
+
+	function Plural(Const Count:Word; Const Name:String):String;
+	begin
+		if Count > 1 then
+			Result := Name +'s'
+		else
+			Result := Name
+	end;
+
 begin
 	//Decode the remaining time to Years,Months,Days,Hours,Minutes,Seconds, and MillionSeconds
 	DecodeDateTime(UnixToDateTime(DateTimeToUnix(BanTime)-DateTimeToUnix(Now)), Years, Months, Days, Hours, Minutes, Seconds, MillionSeconds);
@@ -304,8 +306,8 @@ end;
 //------------------------------------------------------------------------------
 function TAccount.DateTimeToUnix(ConvDate: TDateTime): Longint;
 begin
-  //example: DateTimeToUnix(now);
-  Result := Round((ConvDate - UnixStartDate) * 86400);
+	//example: DateTimeToUnix(now);
+	Result := Round((ConvDate - UnixStartDate) * 86400);
 end;
 //------------------------------------------------------------------------------
 
@@ -322,8 +324,8 @@ end;
 //------------------------------------------------------------------------------
 function TAccount.UnixToDateTime(USec: Longint): TDateTime;
 begin
-  //Example: UnixToDateTime(1003187418);
-  Result := (Usec / 86400) + UnixStartDate;
+	//Example: UnixToDateTime(1003187418);
+	Result := (Usec / 86400) + UnixStartDate;
 end;
 //------------------------------------------------------------------------------
 

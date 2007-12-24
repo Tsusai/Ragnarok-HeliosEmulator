@@ -155,6 +155,8 @@ Revisions:
 [2007/05/19] CR - Altered header, indent and style changes.  Use of new
 	ClientList and ZoneServerLink property and a with clause to make code cleaner
 	to read.
+[2007/12/23] Tsusai - Variable "Error" changed to "Errors", since there is a
+	TIntList32.Error.
 *-----------------------------------------------------------------------------*)
 Procedure RecvGMCommandReply(
 		AClient : TIdContext;
@@ -170,7 +172,7 @@ Var
 	ErrCount    : Word;
 	BufferIndex : Integer;
 	ErrLen      : Word;
-	Error       : TStringList;
+	Errors       : TStringList;
 Begin
 	with MainProc.InterServer do
 	begin
@@ -186,7 +188,7 @@ Begin
 			begin
 				ErrLen := BufferReadWord(BufferIndex, InBuffer);
 				inc(BufferIndex, 2);
-				Error.Add(BufferReadString(BufferIndex,ErrLen,InBuffer));
+				Errors.Add(BufferReadString(BufferIndex,ErrLen,InBuffer));
 				inc(BufferIndex, ErrLen);
 			end;
 
@@ -203,7 +205,7 @@ Begin
 				end;
 			end;//for
 
-			Error.Free;
+			Errors.Free;
 		end;
 	end;
 End; (* Func TInterServer.RecvGMCommandReply
@@ -438,7 +440,7 @@ Begin
 			'System',
 			Format('The map %s is currently unavailable, please try again later.',[MapName])
 		);
-  end;
+	end;
 End; (* Proc TInterServer.RecvZoneWarpRequest
 *-----------------------------------------------------------------------------*)
 
@@ -569,14 +571,14 @@ var
 	ZoneID     : LongWord;
 	ZoneLink   : TZoneServerLink;
 begin
-        // Get packet data.
+				// Get packet data.
 	ReqAID    := BufferReadLongWord(2, ABuffer);
 	ReqID     := BufferReadLongWord(6, ABuffer);
 	TargetChar:= BufferReadLongWord(10, ABuffer);
 	ZoneID    := BufferReadLongWord(14, ABuffer);
 	ReqChar   := BufferReadString(18, NAME_LENGTH, ABuffer);
 
-        with MainProc.InterServer do
+				with MainProc.InterServer do
 	begin
 		Index := -1;
 		for LoopIndex := 0 to (fClientList.Count - 1) do

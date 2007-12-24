@@ -82,8 +82,8 @@ implementation
 uses
 	SysUtils,
 	WinLinux,
-  Globals;
- 
+	Globals;
+
 //------------------------------------------------------------------------------
 //Run                                                                  PROCEDURE
 //------------------------------------------------------------------------------
@@ -96,25 +96,25 @@ uses
 //		January 20th, 2007 - Tsusai - Now TIdThread.Run, removed while statement
 //
 //------------------------------------------------------------------------------
- 
+
 	procedure TClientThread.Run;
 	begin
 		try
-      FClient.FIOHandler.CheckForDisconnect(TRUE);
+			FClient.FIOHandler.CheckForDisconnect(TRUE);
 			FClient.IOHandler.CheckForDataOnSource(10);
 			if not FClient.IOHandler.InputBufferIsEmpty then
 			begin
 				FClient.DoRecieveEvent;
 			end;
 		except
-      Console.Message('Connection to '+FClient.DestinationName+' Server lost.', fClient.SourceName + ' Server', MS_ALERT);
+			Console.Message('Connection to '+FClient.DestinationName+' Server lost.', fClient.SourceName + ' Server', MS_ALERT);
 			FClient.ReConnect;
 		end;
 	end;{Run}
- 
+
 //------------------------------------------------------------------------------
- 
- 
+
+
 //------------------------------------------------------------------------------
 //Create                                                             CONSTRUCTOR
 //------------------------------------------------------------------------------
@@ -134,18 +134,18 @@ uses
 		Start;
 	end;{Create}
 //------------------------------------------------------------------------------
- 
+
 constructor TReconnector.Create(AClient: TInterClient);
 begin
 	FClient := AClient;
 	FreeOnTerminate:=True;
 	inherited Create(false);
 end;
- 
+
 procedure TReconnector.Execute;
 begin
 	Sleep(FClient.ReconnectDelay);
-  Console.Message('Attempting to reconnect...', FClient.SourceName + ' Server', MS_ALERT);
+	Console.Message('Attempting to reconnect...', FClient.SourceName + ' Server', MS_ALERT);
 	if Assigned(FClient.fReadThread) then
 	begin
 		while not FClient.fReadThread.Terminated do
@@ -156,7 +156,7 @@ begin
 	end;
 	FClient.Connect;
 end;
- 
+
 //------------------------------------------------------------------------------
 //Create                                                             CONSTRUCTOR
 //------------------------------------------------------------------------------
@@ -173,12 +173,12 @@ end;
 	begin
 		inherited Create;
 		SourceName := Source;
-    self.ReconnectDelay := ReconnectDelay;
+		self.ReconnectDelay := ReconnectDelay;
 		DestinationName := Destination;
 	end;{Create}
 //------------------------------------------------------------------------------
- 
- 
+
+
 //------------------------------------------------------------------------------
 //Connect                                                              PROCEDURE
 //------------------------------------------------------------------------------
@@ -196,17 +196,17 @@ end;
 			try
 				fReadThread := TClientThread.Create(Self);
 			except
-        Disconnect(false);
-        Reconnect;
+				Disconnect(false);
+				Reconnect;
 			end;
 		except
-      Disconnect(false);
+			Disconnect(false);
 			Reconnect;
 		end;
 	end;
 //------------------------------------------------------------------------------
- 
- 
+
+
 //------------------------------------------------------------------------------
 //Disconnect                                                           PROCEDURE
 //------------------------------------------------------------------------------
@@ -231,8 +231,8 @@ end;
 		end;
 	end;
 //------------------------------------------------------------------------------
- 
- 
+
+
 //------------------------------------------------------------------------------
 //Destroy                                                             DESTRUCTOR
 //------------------------------------------------------------------------------
@@ -258,12 +258,12 @@ end;
 			fReadThread.Stop;
 			fReadThread.Destroy;
 		end;
- 
+
 		inherited Destroy;
 	end;{Destroy}
 //------------------------------------------------------------------------------
- 
- 
+
+
 //------------------------------------------------------------------------------
 //SetActive                                                            PROCEDURE
 //------------------------------------------------------------------------------
@@ -292,8 +292,8 @@ end;
 		end;
 	end;{SetActive}
 //------------------------------------------------------------------------------
- 
- 
+
+
 //------------------------------------------------------------------------------
 //DoReceiveEvent                                                       PROCEDURE
 //------------------------------------------------------------------------------
@@ -317,14 +317,14 @@ procedure TInterClient.ReConnect;
 begin
 	if not ShutDown then
 	begin
-    Reconnector := TReconnector.Create(Self);
-    if Assigned(fReadThread) then
-    begin
-      if not fReadThread.Terminated then
-      begin
-        fReadThread.Terminate;
-      end;
-    end;
+		Reconnector := TReconnector.Create(Self);
+		if Assigned(fReadThread) then
+		begin
+			if not fReadThread.Terminated then
+			begin
+				fReadThread.Terminate;
+			end;
+		end;
 	end;
 end;
 end.

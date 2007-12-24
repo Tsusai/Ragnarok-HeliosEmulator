@@ -14,7 +14,7 @@ unit CharaOptions;
 interface
 	uses
 		IniFiles,
-    Types;
+		Types;
 
 	type
 
@@ -28,11 +28,11 @@ interface
 			fPort		      : Word;
 			fWANIP		    : String;
 			fLANIP		    : String;
-      fKey          : String;
+			fKey          : String;
 
 			fLoginIP	    : String;
 			fLoginPort    : Word;
-      fLoginKey     : String;
+			fLoginKey     : String;
 
 			fServerName		: String;
 			fUse108LengthForReply : boolean;
@@ -52,8 +52,8 @@ interface
 			fDefaultAccessory1: Word;
 			fDefaultAccessory2: Word;
 
-      fIndySchedulerType  : Byte;
-      fIndyThreadPoolSize : Word;
+			fIndySchedulerType  : Byte;
+			fIndyThreadPoolSize : Word;
 
 //Gets/Sets
 			procedure SetPort(Value : Word);
@@ -65,7 +65,7 @@ interface
 
 		public
 
-      //Communication
+			//Communication
 			property ID      : LongWord read fID;
 			property Port : Word read fPort write SetPort;
 			property WANIP : String read fWANIP write SetWANIP;
@@ -96,11 +96,11 @@ interface
 			property DefaultGarment: Word read fDefaultGarment write fDefaultGarment;
 			property DefaultShoes: Word read fDefaultShoes write fDefaultShoes;
 			property DefaultAccessory1: Word read fDefaultAccessory1 write fDefaultAccessory1;
-      property DefaultAccessory2: Word read fDefaultAccessory2 write fDefaultAccessory2;
+			property DefaultAccessory2: Word read fDefaultAccessory2 write fDefaultAccessory2;
 
-      //Performance
-      property IndySchedulerType : Byte read fIndySchedulerType;
-      property IndyThreadPoolSize : Word read fIndyThreadPoolSize;
+			//Performance
+			property IndySchedulerType : Byte read fIndySchedulerType;
+			property IndyThreadPoolSize : Word read fIndyThreadPoolSize;
 
 			//Public methods
 			procedure Load;
@@ -141,9 +141,9 @@ implementation
 		end;{Subroutine LoadServer}
 	//--------------------------------------------------------------------------
 
-    //--------------------------------------------------------------------------
-    //LoadCommunication                                          SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadCommunication                                          SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadCommunication;
 		begin
 			ReadSectionValues('Communication', Section);
@@ -178,14 +178,14 @@ implementation
 		procedure LoadSecurity;
 		begin
 			ReadSectionValues('Security', Section);
-      fKey    := Section.Values['Key'];
+			fKey    := Section.Values['Key'];
 		end;{Subroutine LoadSecurity}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadOptions                                               SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadOptions                                               SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadOptions;
 		begin
 			ReadSectionValues('Options', Section);
@@ -204,15 +204,15 @@ implementation
 			 attempt duplicate login, else wil send "Someone has already logged in with this ID"*}
 			ShowFriendlyMessageOnDupLogin := StrToBoolDef(Section.Values['Show_FriendlyMessage_On_DuplicateLogin'] ,false);
 		end;{Subroutine LoadOptions}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadCharacterDefaults                                       SUB PROCEDURE
-    //--------------------------------------------------------------------------
-    procedure LoadCharacterDefaults;
-    begin
-      ReadSectionValues('CharacterDefaults', Section);
+		//--------------------------------------------------------------------------
+		//LoadCharacterDefaults                                       SUB PROCEDURE
+		//--------------------------------------------------------------------------
+		procedure LoadCharacterDefaults;
+		begin
+			ReadSectionValues('CharacterDefaults', Section);
 			DefaultZeny       := EnsureRange(StrToIntDef(Section.Values['Zeny'], 0), Low(LongWord), High(LongWord));
 			if Section.Values['Map'] = '' then begin
 				Section.Values['Map'] := 'new_1-1';
@@ -230,20 +230,20 @@ implementation
 			DefaultGarment    := EnsureRange(StrToIntDef(Section.Values['Garment'], 0), Low(Word), High(Word));
 			DefaultAccessory1 := EnsureRange(StrToIntDef(Section.Values['Accessory1'], 0), Low(Word), High(Word));
 			DefaultAccessory2 := EnsureRange(StrToIntDef(Section.Values['Accessory2'], 0), Low(Word), High(Word));
-    end;{LoadCharacterDefaults}
-    //--------------------------------------------------------------------------
+		end;{LoadCharacterDefaults}
+		//--------------------------------------------------------------------------
 
 
-    //--------------------------------------------------------------------------
-    //LoadPerformance                                             SUB PROCEDURE
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
+		//LoadPerformance                                             SUB PROCEDURE
+		//--------------------------------------------------------------------------
 		procedure LoadPerformance;
 		begin
 			ReadSectionValues('Performance', Section);
-      fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 1);
-      fIndyThreadPoolSize := EnsureRange(StrToIntDef(Section.Values['Indy Thread Pool Size'], 1), 1, High(Word));
+			fIndySchedulerType := EnsureRange(StrToIntDef(Section.Values['Indy Scheduler Type'], 0), 0, 1);
+			fIndyThreadPoolSize := EnsureRange(StrToIntDef(Section.Values['Indy Thread Pool Size'], 1), 1, High(Word));
 		end;{Subroutine LoadPerformance}
-    //--------------------------------------------------------------------------
+		//--------------------------------------------------------------------------
 
 	begin
 		Section    := TStringList.Create;
@@ -251,12 +251,12 @@ implementation
 		Section.QuoteChar := '"';
 		Section.Delimiter := ',';
 
-	LoadServer;    
-	LoadCommunication;
-	LoadSecurity;
-	LoadOptions;
-	LoadCharacterDefaults;
-  LoadPerformance;
+		LoadServer;
+		LoadCommunication;
+		LoadSecurity;
+		LoadOptions;
+		LoadCharacterDefaults;
+		LoadPerformance;
 
 		Section.Free;
 
@@ -278,16 +278,16 @@ implementation
 	begin
 		//Server
 		WriteString('Server','ID',IntToStr(ID));
-    //Communication
+		//Communication
 		WriteString('Communication','WANIP',WANIP);
 		WriteString('Communication','LANIP',LANIP);
 		WriteString('Communication','Port', IntToStr(Port));
 		WriteString('Communication','LoginIP',LoginIP);
 		WriteString('Communication','LoginPort',IntToStr(LoginPort));
-    WriteString('Communication','LoginKey',LoginKey);
+		WriteString('Communication','LoginKey',LoginKey);
 
 		//Security
-    WriteString('Security','Key',Key);
+		WriteString('Security','Key',Key);
 
 		//Options
 		WriteString('Options','ServerName',ServerName);
@@ -300,19 +300,19 @@ implementation
 		WriteString('CharacterDefaults','Point.X',IntToStr(fDefaultPoint.X));
 		WriteString('CharacterDefaults','Point.Y',IntToStr(DefaultPoint.Y));
 		WriteString('CharacterDefaults','HeadTop',IntToStr(DefaultHeadTop));
-    WriteString('CharacterDefaults','HeadMid',IntToStr(DefaultHeadMid));
-    WriteString('CharacterDefaults','HeadLow',IntToStr(DefaultHeadLow));
-    WriteString('CharacterDefaults','RightHand',IntToStr(DefaultRightHand));
-    WriteString('CharacterDefaults','LeftHand',IntToStr(DefaultLeftHand));
-    WriteString('CharacterDefaults','Armor',IntToStr(DefaultArmor));
-    WriteString('CharacterDefaults','Shoes',IntToStr(DefaultShoes));
-    WriteString('CharacterDefaults','Garment',IntToStr(DefaultGarment));
-    WriteString('CharacterDefaults','Accessory1',IntToStr(DefaultAccessory1));
-    WriteString('CharacterDefaults','Accessory2',IntToStr(DefaultAccessory2));
+		WriteString('CharacterDefaults','HeadMid',IntToStr(DefaultHeadMid));
+		WriteString('CharacterDefaults','HeadLow',IntToStr(DefaultHeadLow));
+		WriteString('CharacterDefaults','RightHand',IntToStr(DefaultRightHand));
+		WriteString('CharacterDefaults','LeftHand',IntToStr(DefaultLeftHand));
+		WriteString('CharacterDefaults','Armor',IntToStr(DefaultArmor));
+		WriteString('CharacterDefaults','Shoes',IntToStr(DefaultShoes));
+		WriteString('CharacterDefaults','Garment',IntToStr(DefaultGarment));
+		WriteString('CharacterDefaults','Accessory1',IntToStr(DefaultAccessory1));
+		WriteString('CharacterDefaults','Accessory2',IntToStr(DefaultAccessory2));
 
-    //Performance
-    WriteString('Performance','Indy Scheduler Type',IntToStr(IndySchedulerType));
-    WriteString('Performance','Indy Thread Pool Size',IntToStr(IndyThreadPoolSize));
+		//Performance
+		WriteString('Performance','Indy Scheduler Type',IntToStr(IndySchedulerType));
+		WriteString('Performance','Indy Thread Pool Size',IntToStr(IndyThreadPoolSize));
 
 		UpdateFile;
 	end;{Save}

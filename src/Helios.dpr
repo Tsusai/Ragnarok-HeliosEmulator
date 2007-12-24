@@ -102,7 +102,7 @@ compile for linux, at the same time*}
 	GameConstants in 'Constants\GameConstants.pas',
 	DatabaseConstants in 'Constants\DatabaseConstants.pas',
 	NetworkConstants in 'Constants\NetworkConstants.pas',
-	
+
 	//Game Objects
 	Account in 'Common\Classes\Account.pas',
 	Character in 'Common\Classes\Beings\Character.pas',
@@ -187,7 +187,7 @@ compile for linux, at the same time*}
 	madLinkDisAsm,
 	PacketTypes in 'Common\PacketTypes.pas',
 	ServerInfo in 'Common\Classes\ServerInfo.pas',
-  SQLExtendedRoutines in 'Common\SQLExtendedRoutines.pas',
+	SQLExtendedRoutines in 'Common\SQLExtendedRoutines.pas',
 	TCPServerRoutines in 'Common\TCPServerRoutines.pas',
 	Version in 'Common\Version.pas',
 	WinLinux in 'Common\WinLinux.pas',
@@ -234,7 +234,7 @@ compile for linux, at the same time*}
 	GameConstants in 'Constants/GameConstants.pas',
 	DatabaseConstants in 'Constants/DatabaseConstants.pas',
 	NetworkConstants in 'Constants/NetworkConstants.pas',
-	
+
 	//Game Objects
 	Account in 'Common/Classes/Account.pas',
 	Character in 'Common/Classes/Beings/Character.pas',
@@ -317,7 +317,7 @@ compile for linux, at the same time*}
 	Globals in 'Common/Globals.pas',
 	PacketTypes in 'Common/PacketTypes.pas',
 	ServerInfo in 'Common/Classes/ServerInfo.pas',
-  SQLExtendedRoutines in 'Common/SQLExtendedRoutines.pas',
+	SQLExtendedRoutines in 'Common/SQLExtendedRoutines.pas',
 	TCPServerRoutines in 'Common/TCPServerRoutines.pas',
 	Version in 'Common/Version.pas',
 	WinLinux in 'Common/WinLinux.pas',

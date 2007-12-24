@@ -19,7 +19,7 @@ uses
 	{RTL/VCL}
 	Classes,
 	{Project}
-  Being,
+	Being,
 	Character,
 	Database,
 	MapTypes,
@@ -103,32 +103,32 @@ public
 			ID : LongWord
 		) : TStringList; override;
 
-  Function  GetBaseEXPToNextLevel(
+	Function  GetBaseEXPToNextLevel(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord; override;
 
-  Function  GetJobEXPToNextLevel(
+	Function  GetJobEXPToNextLevel(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord; override;
 
-  Function GetStatPoints(
+	Function GetStatPoints(
 		const
 			Level : Word
 		) : LongWord;override;
 
-  Function GetSkillPoints(
+	Function GetSkillPoints(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord; override;
 
-  Function GetJobBonus(
+	Function GetJobBonus(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : StatArray;override;
 
@@ -535,7 +535,7 @@ end;//GetMapsForZone
 //------------------------------------------------------------------------------
 Function TSQLiteStaticDatabase.GetBaseEXPToNextLevel(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord;
 var
@@ -566,7 +566,7 @@ end;//GetBaseEXPToNextLevel
 //------------------------------------------------------------------------------
 Function TSQLiteStaticDatabase.GetJobEXPToNextLevel(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord;
 var
@@ -627,7 +627,7 @@ end;//GetStatPoints
 //------------------------------------------------------------------------------
 Function TSQLiteStaticDatabase.GetSkillPoints(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord;
 var
@@ -658,12 +658,12 @@ end;//GetSkillPoints
 //------------------------------------------------------------------------------
 Function TSQLiteStaticDatabase.GetJobBonus(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : StatArray;
 var
 	QueryResult : TSQLiteTable;
-  AStringList : TStringList;
+	AStringList : TStringList;
 begin
 	QueryResult :=
 		SendQuery(
@@ -671,43 +671,43 @@ begin
 			[JobName, Level]));
 	if (QueryResult.RowCount = 1) then
 	begin
-    AStringList := TStringList.Create;
-    try
-      AStringList.Delimiter := ',';
-      AStringList.QuoteChar := '"';
-      AStringList.DelimitedText := QueryResult.FieldAsString(0);
-      if AStringList.Count = 6 then
-      begin
-        Result[0] := StrToIntDef(AStringList.Strings[0], 0);
-        Result[1] := StrToIntDef(AStringList.Strings[1], 0);
-        Result[2] := StrToIntDef(AStringList.Strings[2], 0);
-        Result[3] := StrToIntDef(AStringList.Strings[3], 0);
-        Result[4] := StrToIntDef(AStringList.Strings[4], 0);
-        Result[5] := StrToIntDef(AStringList.Strings[5], 0);
-      end else
-      begin
-        Console.WriteLn('jobbonus Database Error. Count of parameters should be 6, actual value : '
-          +IntToStr(AStringList.Count)+ ' for job '+JobName
-          +' at level '+IntToStr(level)+'. Please fix this and try again.');
-        Result[0] := 0;
-        Result[1] := 0;
-        Result[2] := 0;
-        Result[3] := 0;
-        Result[4] := 0;
-        Result[5] := 0;
-      end;
-    finally
-      AStringList.Free;
-    end;
+		AStringList := TStringList.Create;
+		try
+			AStringList.Delimiter := ',';
+			AStringList.QuoteChar := '"';
+			AStringList.DelimitedText := QueryResult.FieldAsString(0);
+			if AStringList.Count = 6 then
+			begin
+				Result[0] := StrToIntDef(AStringList.Strings[0], 0);
+				Result[1] := StrToIntDef(AStringList.Strings[1], 0);
+				Result[2] := StrToIntDef(AStringList.Strings[2], 0);
+				Result[3] := StrToIntDef(AStringList.Strings[3], 0);
+				Result[4] := StrToIntDef(AStringList.Strings[4], 0);
+				Result[5] := StrToIntDef(AStringList.Strings[5], 0);
+			end else
+			begin
+				Console.WriteLn('jobbonus Database Error. Count of parameters should be 6, actual value : '
+					+IntToStr(AStringList.Count)+ ' for job '+JobName
+					+' at level '+IntToStr(level)+'. Please fix this and try again.');
+				Result[0] := 0;
+				Result[1] := 0;
+				Result[2] := 0;
+				Result[3] := 0;
+				Result[4] := 0;
+				Result[5] := 0;
+			end;
+		finally
+			AStringList.Free;
+		end;
 	end else
-  begin
-    Result[0] := 0;
-    Result[1] := 0;
-    Result[2] := 0;
-    Result[3] := 0;
-    Result[4] := 0;
-    Result[5] := 0;
-  end;
+	begin
+		Result[0] := 0;
+		Result[1] := 0;
+		Result[2] := 0;
+		Result[3] := 0;
+		Result[4] := 0;
+		Result[5] := 0;
+	end;
 	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetJobBonus
 //------------------------------------------------------------------------------

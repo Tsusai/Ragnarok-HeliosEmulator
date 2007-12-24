@@ -44,7 +44,7 @@ uses
 	{RTL/VCL}
 	Classes,
 	{Project}
-  Being,
+	Being,
 	Character,
 	Database,
 	MapTypes,
@@ -137,32 +137,32 @@ public
 			ID : LongWord
 		) : TStringList; override;
 
-  Function  GetBaseEXPToNextLevel(
+	Function  GetBaseEXPToNextLevel(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord; override;
 
-  Function  GetJobEXPToNextLevel(
+	Function  GetJobEXPToNextLevel(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord; override;
 
-  Function GetStatPoints(
+	Function GetStatPoints(
 		const
 			Level : Word
 		) : LongWord; override;
 
 Function GetSkillPoints(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord; override;
 
 Function GetJobBonus(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : StatArray;override;
 
@@ -493,51 +493,51 @@ Function TMySQLStaticDatabase.GetMapFlags(
 	) : TFlags;
 var
 	QueryResult : TMySQLResult;
-  Weather : Integer;
-  Success			: Boolean;
+	Weather : Integer;
+	Success			: Boolean;
 begin
 	QueryResult := SendQuery(
 		Format('SELECT memo, noreturnondc, teleport, itemdrop, exploss, pvp, pvpnightmare, guildpvp, items, skill, deadbranches, flywings, butterflywings, turbotrack, noparty, noguild, weather FROM maps WHERE mapname = ''%s''',
 			[MapName]),TRUE,Success);
-  if (QueryResult.RowsCount = 1) then
-  begin
-    Result.Memo           := StrToBool(QueryResult.FieldValue(0));
-    Result.NoReturnOnDC   := StrToBool(QueryResult.FieldValue(1));
-    Result.Teleport       := StrToBool(QueryResult.FieldValue(2));
-    Result.ItemDrop       := StrToBool(QueryResult.FieldValue(3));
-    Result.ExpLoss        := StrToBool(QueryResult.FieldValue(4));
-    Result.PvP            := StrToBool(QueryResult.FieldValue(5));
-    Result.PvPNightmare   := StrToBool(QueryResult.FieldValue(6));
-    Result.GuildPvP       := StrToBool(QueryResult.FieldValue(7));
-    Result.Items          := StrToBool(QueryResult.FieldValue(8));
-    Result.Skill          := StrToBool(QueryResult.FieldValue(9));
-    Result.DeadBranches   := StrToBool(QueryResult.FieldValue(10));
-    Result.FlyWings       := StrToBool(QueryResult.FieldValue(11));
-    Result.ButterflyWings := StrToBool(QueryResult.FieldValue(12));
-    Result.TurboTrack     := StrToBool(QueryResult.FieldValue(13));
-    Result.NoParty        := StrToBool(QueryResult.FieldValue(14));
-    Result.NoGuild        := StrToBool(QueryResult.FieldValue(15));
+	if (QueryResult.RowsCount = 1) then
+	begin
+		Result.Memo           := StrToBool(QueryResult.FieldValue(0));
+		Result.NoReturnOnDC   := StrToBool(QueryResult.FieldValue(1));
+		Result.Teleport       := StrToBool(QueryResult.FieldValue(2));
+		Result.ItemDrop       := StrToBool(QueryResult.FieldValue(3));
+		Result.ExpLoss        := StrToBool(QueryResult.FieldValue(4));
+		Result.PvP            := StrToBool(QueryResult.FieldValue(5));
+		Result.PvPNightmare   := StrToBool(QueryResult.FieldValue(6));
+		Result.GuildPvP       := StrToBool(QueryResult.FieldValue(7));
+		Result.Items          := StrToBool(QueryResult.FieldValue(8));
+		Result.Skill          := StrToBool(QueryResult.FieldValue(9));
+		Result.DeadBranches   := StrToBool(QueryResult.FieldValue(10));
+		Result.FlyWings       := StrToBool(QueryResult.FieldValue(11));
+		Result.ButterflyWings := StrToBool(QueryResult.FieldValue(12));
+		Result.TurboTrack     := StrToBool(QueryResult.FieldValue(13));
+		Result.NoParty        := StrToBool(QueryResult.FieldValue(14));
+		Result.NoGuild        := StrToBool(QueryResult.FieldValue(15));
 
-    //initialize weather
-    Result.Rain   := FALSE;
-    Result.Snow   := FALSE;
-    Result.Sakura := FALSE;
-    Result.Fog    := FALSE;
-    Result.Leaves := FALSE;
-    Result.Smog   := FALSE;
+		//initialize weather
+		Result.Rain   := FALSE;
+		Result.Snow   := FALSE;
+		Result.Sakura := FALSE;
+		Result.Fog    := FALSE;
+		Result.Leaves := FALSE;
+		Result.Smog   := FALSE;
 
-    //Figure out weather.
-    Weather := StrToInt(QueryResult.FieldValue(16));
-    case Weather of
-      1 : Result.Rain     := TRUE;
-      2 : Result.Snow     := TRUE;
-      3 : Result.Sakura   := TRUE;
-      4 : Result.Fog      := TRUE;
-      5 : Result.Leaves   := TRUE;
-      6 : Result.Smog     := TRUE;
-    end;
-  end;
-  QueryResult.Free;
+		//Figure out weather.
+		Weather := StrToInt(QueryResult.FieldValue(16));
+		case Weather of
+			1 : Result.Rain     := TRUE;
+			2 : Result.Snow     := TRUE;
+			3 : Result.Sakura   := TRUE;
+			4 : Result.Fog      := TRUE;
+			5 : Result.Leaves   := TRUE;
+			6 : Result.Smog     := TRUE;
+		end;
+	end;
+	QueryResult.Free;
 end;//GetMapZoneID
 //------------------------------------------------------------------------------
 
@@ -558,22 +558,22 @@ Function TMySQLStaticDatabase.GetMapsForZone(
 	) : TStringList;
 var
 	QueryResult : TMySQLResult;
-  Index       : Integer;
-  Success			: Boolean;
+	Index       : Integer;
+	Success			: Boolean;
 begin
-  Result := TStringList.Create;
+	Result := TStringList.Create;
 	QueryResult := SendQuery(
 		Format('SELECT mapname FROM maps WHERE zoneid = %d',
 			[ID]),TRUE,Success);
-  if (QueryResult.RowsCount > 0) then
-  begin
-    for Index := 0 to QueryResult.RowsCount - 1 do
-    begin
-      Result.Add(QueryResult.FieldValue(0));
-      QueryResult.Next;
-    end;
-  end;
-  QueryResult.Free;
+	if (QueryResult.RowsCount > 0) then
+	begin
+		for Index := 0 to QueryResult.RowsCount - 1 do
+		begin
+			Result.Add(QueryResult.FieldValue(0));
+			QueryResult.Next;
+		end;
+	end;
+	QueryResult.Free;
 end;//GetMapsForZone
 //------------------------------------------------------------------------------
 
@@ -590,7 +590,7 @@ end;//GetMapsForZone
 //------------------------------------------------------------------------------
 Function TMySQLStaticDatabase.GetBaseEXPToNextLevel(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord;
 var
@@ -623,7 +623,7 @@ end;//GetBaseEXPToNextLevel
 //------------------------------------------------------------------------------
 Function TMySQLStaticDatabase.GetJobEXPToNextLevel(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord;
 var
@@ -688,7 +688,7 @@ end;//GetStatPoints
 //------------------------------------------------------------------------------
 Function TMySQLStaticDatabase.GetSkillPoints(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : LongWord;
 var
@@ -721,13 +721,13 @@ end;//GetSkillPoints
 //------------------------------------------------------------------------------
 Function TMySQLStaticDatabase.GetJobBonus(
 		const
-      JobName : String;
+			JobName : String;
 			Level : Word
 		) : StatArray;
 var
 	Success     : Boolean;
 	QueryResult : TMySQLResult;
-  AStringList : TStringList;
+	AStringList : TStringList;
 begin
 	QueryResult :=
 		SendQuery(
@@ -736,43 +736,43 @@ begin
 		,TRUE,Success);
 	if (QueryResult.RowsCount = 1) then
 	begin
-    AStringList := TStringList.Create;
-    try
-      AStringList.Delimiter := ',';
-      AStringList.QuoteChar := '"';
-      AStringList.DelimitedText := QueryResult.FieldValue(0);
-      if AStringList.Count = 6 then
-      begin
-        Result[0] := StrToIntDef(AStringList.Strings[0], 0);
-        Result[1] := StrToIntDef(AStringList.Strings[1], 0);
-        Result[2] := StrToIntDef(AStringList.Strings[2], 0);
-        Result[3] := StrToIntDef(AStringList.Strings[3], 0);
-        Result[4] := StrToIntDef(AStringList.Strings[4], 0);
-        Result[5] := StrToIntDef(AStringList.Strings[5], 0);
-      end else
-      begin
-        Console.WriteLn('jobbonus Database Error. Count of parameters should be 6, actual value : '
-          +IntToStr(AStringList.Count)+ ' for job '+JobName
-          +' at level '+IntToStr(level)+'. Please fix this and try again.');
-        Result[0] := 0;
-        Result[1] := 0;
-        Result[2] := 0;
-        Result[3] := 0;
-        Result[4] := 0;
-        Result[5] := 0;
-      end;
-    finally
-      AStringList.Free;
-    end;
+		AStringList := TStringList.Create;
+		try
+			AStringList.Delimiter := ',';
+			AStringList.QuoteChar := '"';
+			AStringList.DelimitedText := QueryResult.FieldValue(0);
+			if AStringList.Count = 6 then
+			begin
+				Result[0] := StrToIntDef(AStringList.Strings[0], 0);
+				Result[1] := StrToIntDef(AStringList.Strings[1], 0);
+				Result[2] := StrToIntDef(AStringList.Strings[2], 0);
+				Result[3] := StrToIntDef(AStringList.Strings[3], 0);
+				Result[4] := StrToIntDef(AStringList.Strings[4], 0);
+				Result[5] := StrToIntDef(AStringList.Strings[5], 0);
+			end else
+			begin
+				Console.WriteLn('jobbonus Database Error. Count of parameters should be 6, actual value : '
+					+IntToStr(AStringList.Count)+ ' for job '+JobName
+					+' at level '+IntToStr(level)+'. Please fix this and try again.');
+				Result[0] := 0;
+				Result[1] := 0;
+				Result[2] := 0;
+				Result[3] := 0;
+				Result[4] := 0;
+				Result[5] := 0;
+			end;
+		finally
+			AStringList.Free;
+		end;
 	end else
-  begin
-    Result[0] := 0;
-    Result[1] := 0;
-    Result[2] := 0;
-    Result[3] := 0;
-    Result[4] := 0;
-    Result[5] := 0;
-  end;
+	begin
+		Result[0] := 0;
+		Result[1] := 0;
+		Result[2] := 0;
+		Result[3] := 0;
+		Result[4] := 0;
+		Result[5] := 0;
+	end;
 	if Assigned(QueryResult) then QueryResult.Free;
 end;//GetJobBonus
 //------------------------------------------------------------------------------

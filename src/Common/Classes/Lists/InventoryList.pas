@@ -88,7 +88,7 @@ end;{Create}
 //------------------------------------------------------------------------------
 destructor TInventoryList.Destroy;
 var
-  Index : Integer;
+	Index : Integer;
 begin
 	//if we own the items, free all of them in the list.
 
@@ -179,19 +179,19 @@ end;{Delete}
 //------------------------------------------------------------------------------
 function TInventoryList.IndexOf(const ID: LongWord): Integer;
 var
-  Index : Integer;
+	Index : Integer;
 begin
 	Index := fList.Count-1;
 	Result := -1;
 	while (Index >= 0) do
-  begin
+	begin
 		if ID = Items[Index].Item.ID then
 		begin
 			Result := Index;
-      Exit;
-    end;
-    dec(Index,  1);
-  end;
+			Exit;
+		end;
+		dec(Index,  1);
+	end;
 end;{IndexOf}
 //------------------------------------------------------------------------------
 
@@ -207,7 +207,7 @@ end;{IndexOf}
 //------------------------------------------------------------------------------
 procedure TInventoryList.Clear;
 var
-  Index : Integer;
+	Index : Integer;
 begin
 
 	//if we own the characters, the free them.
