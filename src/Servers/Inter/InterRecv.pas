@@ -183,7 +183,7 @@ Begin
 
 			BufferIndex := 18;
 
-			Error := TStringList.Create;
+			Errors := TStringList.Create;
 			for Index := 0 to ErrCount - 1 do
 			begin
 				ErrLen := BufferReadWord(BufferIndex, InBuffer);
@@ -200,7 +200,7 @@ Begin
 					(ZoneLink.Info.ZoneID = ZoneID) then
 				begin
 					ListClient := ClientList[Index];
-					InterSendGMCommandReplyToZone(ListClient, CharacterID, Error);
+					InterSendGMCommandReplyToZone(ListClient, CharacterID, Errors);
 					Break;
 				end;
 			end;//for

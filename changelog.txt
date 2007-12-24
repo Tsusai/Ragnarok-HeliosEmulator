@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 384 -
+[2007/12/23] Tsusai - Fixed compiling problem, when I changed a reserverd word
+ that was used as a var to a new var name.
+-
+
 - Rev 383 -
 [2007/12/23] Tsusai - Commented and reindented many units.
 -
