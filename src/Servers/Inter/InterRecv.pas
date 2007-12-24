@@ -430,7 +430,15 @@ Begin
 			X,
 			Y
 		);
-	end;
+	end else
+	begin
+		RedirectWhisperToZone(
+			AClient,
+			0,0,CharacterID,
+			'System',
+			Format('The map %s is currently unavailable, please try again later.',[MapName])
+		);
+  end;
 End; (* Proc TInterServer.RecvZoneWarpRequest
 *-----------------------------------------------------------------------------*)
 

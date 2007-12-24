@@ -131,7 +131,7 @@ uses
 		const ReadPts : TReadPts
 	);
 
-        procedure NPCMenu(
+	procedure NPCMenu(
 		var AChara  : TCharacter;
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
@@ -1373,7 +1373,11 @@ begin
 	begin
 		Chara := MainProc.ZoneServer.CharacterList.Items[idx];
 		SendWhisper(FromName, Whisper, Chara.ClientInfo);
-		SendWhisperReplyToInter(MainProc.ZoneServer.ToInterTCPClient, ZoneID, FromID, WHISPER_SUCCESS);
+
+		if not ((ZoneID = 0) and (FromID = 0)) then
+		begin
+			SendWhisperReplyToInter(MainProc.ZoneServer.ToInterTCPClient, ZoneID, FromID, WHISPER_SUCCESS);
+		end;
 		{TODO: Check if ignored}
 	end else
 	begin

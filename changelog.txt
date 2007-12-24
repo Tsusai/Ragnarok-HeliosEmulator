@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 380 -
+[2007/12/23] Tsusai - Added system whisper message when target zone is offline.
+-
+
 - Rev 379 -
 [2007/12/23] RaX - ok, THIS TIME I Fixed a leftover bug from how the inter client 
 used to work, it caused the server to av if the connection was forcibly broken.
