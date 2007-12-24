@@ -635,36 +635,38 @@ begin
 		  //get the zone info from that
 
 		  idx := fZoneServerList.IndexOf(ZoneID);
-		  TThreadLink(AClient.Data).DatabaseLink.GameData.SaveChara(ACharacter);
+      if idx > -1 then
+      begin
+		    TThreadLink(AClient.Data).DatabaseLink.GameData.SaveChara(ACharacter);
+
+      
+		    TClientLink(AClient.Data).AccountInfo.CharacterID := ACharacter.CID;
+		    TClientLink(AClient.Data).Transfering := True;
+		    ZServerInfo := TZoneServerInfo(fZoneServerList.Objects[idx]);
+
+		    WriteBufferWord(0, $0071, OutBuffer);
+		    WriteBufferLongWord(2, ACharacter.CID, OutBuffer);
+		    WriteBufferString(6, ACharacter.Map + '.rsw', 16, OutBuffer);
+		    WriteBufferLongWord(22,
+			    ZServerInfo.Address(AClient.Binding.PeerIP
+			    ),
+			    OutBuffer
+		    );
+		    WriteBufferWord(26, ZServerInfo.Port, OutBuffer);
+	  	  SendBuffer(AClient, OutBuffer, GetPacketLength($0071));
+		  end else
+		  begin
+			  //Server offline error goes here
+			  WriteBufferWord(0, $0081, Outbuffer);
+			  WriteBufferByte(2, 01, OutBuffer);
+			  SendBuffer(AClient, OutBuffer, GetPacketLength($0081));
+		  end;
+		ACharacter.Free;
 		finally
 		  TThreadLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
 		  TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
     end;
-
-		TClientLink(AClient.Data).AccountInfo.CharacterID := ACharacter.CID;
-		TClientLink(AClient.Data).Transfering := True;
-		ZServerInfo := TZoneServerInfo(fZoneServerList.Objects[idx]);
-
-		WriteBufferWord(0, $0071, OutBuffer);
-		WriteBufferLongWord(2, ACharacter.CID, OutBuffer);
-		WriteBufferString(6, ACharacter.Map + '.rsw', 16, OutBuffer);
-		WriteBufferLongWord(22,
-			ZServerInfo.Address(AClient.Binding.PeerIP
-			),
-			OutBuffer
-		);
-		WriteBufferWord(26, ZServerInfo.Port, OutBuffer);
-		SendBuffer(AClient, OutBuffer, GetPacketLength($0071));
-		{end else
-		begin
-			//Server offline error goes here
-			WriteBufferWord(0, $0081, Outbuffer);
-			WriteBufferByte(2, 01, OutBuffer);
-			SendBuffer(AClient, OutBuffer, GetPacketLength($0081));
-		end; }
-		ACharacter.Free;
 	end;
-
 end;{SendCharaToMap}
 //------------------------------------------------------------------------------
 

@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 381 -
+[2007/12/23] RaX - characterServer -> Added check to make sure zone server with map is
+ connected before sending a character to it, sends server connection closed error
+ message on fail.
+-
+
 - Rev 380 -
 [2007/12/23] Tsusai - Added system whisper message when target zone is offline.
 -
