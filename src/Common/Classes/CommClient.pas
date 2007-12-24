@@ -197,9 +197,10 @@ end;
 				fReadThread := TClientThread.Create(Self);
 			except
 				Disconnect(False);
-			raise;
+        Reconnect;
 			end;
 		except
+      Disconnect(False);
 			Reconnect;
 		end;
 	end;

@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 378 -
+[2007/12/23] RaX - Fixed a leftover bug from how the inter client used to work,
+ it cause the server to av if the connection was forcibly broken.
+-
+
 - Rev 377 -
 [2007/12/23] Aeomin - Removed messages used to debug...
 -
