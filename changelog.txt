@@ -15,6 +15,14 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 382 -
+[2007/12/23] RaX - Added SQLExtendedRoutines to /Common, will contain extra sql
+ related routines.
+[2007/12/23] RaX - added SQLEscapeString to SQLExtendedRoutines
+[2007/12/23] RaX - Changed all database files to escape player editeable string
+ variables using the above routine.
+-
+
 - Rev 381 -
 [2007/12/23] RaX - characterServer -> Added check to make sure zone server with map is
  connected before sending a character to it, sends server connection closed error

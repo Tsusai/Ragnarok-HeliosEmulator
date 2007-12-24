@@ -150,7 +150,8 @@ uses
 	SysUtils,
 	{Project}
 	Globals,
-	Main
+	Main,
+  SQLExtendedRoutines
 	{3rd Party}
 	//none
 	;
@@ -366,7 +367,7 @@ var
 	AnAccount   : TAccount;
 	QueryResult : TSQLiteTable;
 begin
-	QueryResult := SendQuery(Format('SELECT * FROM accounts WHERE userid = "%s"', [Name]));
+	QueryResult := SendQuery(Format('SELECT * FROM accounts WHERE userid = "%s"', [SQLEscapeString(Name)]));
 	if QueryResult.Count = 1 then
 	begin
 		SetAccount(AnAccount,QueryResult);
@@ -399,7 +400,7 @@ var
 begin
 	QueryResult :=
 		SendQuery(
-			Format('SELECT userid FROM accounts WHERE userid = ''%s''',[UserName]));
+			Format('SELECT userid FROM accounts WHERE userid = ''%s''',[SQLEscapeString(UserName)]));
 	Result := (QueryResult.Count > 0);
 	if Assigned(QueryResult) then QueryResult.Free;
 end;//AccountExists
@@ -443,8 +444,8 @@ var
 begin
 	QueryString :=
 		Format(BaseString,
-			[AnAccount.Username,
-			 AnAccount.Password,
+			[SQLEscapeString(AnAccount.Username),
+			 SQLEscapeString(AnAccount.Password),
 			 FormatDateTime('yyyy-mm-dd hh:mm:ss',AnAccount.LastLoginTime),
 			 AnAccount.Gender,
 			 AnAccount.LoginCount,
@@ -484,7 +485,7 @@ var
 begin
 	QueryResult := SendQuery(
 		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(''%s'', ''%s'', ''%s'')',
-		[Username,Password,GenderChar]));
+		[SQLEscapeString(Username),SQLEscapeString(Password),GenderChar]));
 	if Assigned(QueryResult) then QueryResult.Free;
 end;//CreateAccount
 //------------------------------------------------------------------------------

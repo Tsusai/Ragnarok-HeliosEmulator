@@ -161,7 +161,8 @@ uses
 	SysUtils,
 	{Project}
 	Globals,
-	Main
+	Main,
+  SQLExtendedRoutines
 	{Third Party}
 	//none
 	;
@@ -399,7 +400,10 @@ var
 	QueryResult : TMySQLResult;
 
 begin
-	QueryResult := SendQuery('SELECT * FROM accounts WHERE userid = '''+Name+'''',true,Success);
+	QueryResult := SendQuery(
+    Format('SELECT * FROM accounts WHERE userid = ''%s''', [SQLEscapeString(Name)])
+    ,true,Success
+  );
 	if Success and (QueryResult.RowsCount = 1) then begin
 		SetAccount(AnAccount,QueryResult);
 		Result := AnAccount;
@@ -433,7 +437,7 @@ begin
 	Result := false;
 	QueryResult :=
 		SendQuery(
-			Format('SELECT userid FROM accounts WHERE userid = ''%s''',[UserName]),true,Success);
+			Format('SELECT userid FROM accounts WHERE userid = ''%s''',[SQLEscapeString(UserName)]),true,Success);
 	if Success then
 	begin
 		Result := (QueryResult.RowsCount > 0);
@@ -482,8 +486,8 @@ var
 begin
 	QueryString :=
 		Format(BaseString,
-			[AnAccount.Username,
-			 AnAccount.Password,
+			[SQLEscapeString(AnAccount.Username),
+			 SQLEscapeString(AnAccount.Password),
 			 FormatDateTime('yyyymmddhhmmss',AnAccount.LastLoginTime),
 			 AnAccount.Gender,
 			 AnAccount.LoginCount,
@@ -520,7 +524,7 @@ var
 begin
 	SendQuery(
 		Format('INSERT INTO accounts (userid, user_pass, sex) VALUES(''%s'', ''%s'', ''%s'')',
-		[Username,Password,GenderChar])
+		[SQLEscapeString(Username),SQLEscapeString(Password),GenderChar])
 	,TRUE,Success);
 
 end;//CreateAccount

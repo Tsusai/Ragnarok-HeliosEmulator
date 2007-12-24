@@ -93,7 +93,7 @@ public
 		const
 			AID        : LongWord;
 		const
-			NName      : String;
+			Name      : String;
 		const
 			CharaNum   : Integer
 		) : Boolean; override;
@@ -213,7 +213,8 @@ uses
 	{Project}
 	GameConstants,
 	Globals,
-	Main
+	Main,
+  SQLExtendedRoutines
 	{3rd Party}
 	//none
 	;
@@ -457,7 +458,7 @@ var
 begin
 	QueryResult :=
 			SendQuery(
-			Format('SELECT char_id FROM characters WHERE name = ''%s''',[Name]));
+			Format('SELECT char_id FROM characters WHERE name = ''%s''',[SQLEscapeString(Name)]));
 	Result := (QueryResult.Count > 0);
 	if Assigned(QueryResult) then QueryResult.Free;
 end;
@@ -540,7 +541,7 @@ begin
 			'WHERE char_id=%d',
 			[
 			CharaNum,
-			Name,
+			SQLEscapeString(Name),
 			JID,
 			BaseLV,
 			JobLV,
@@ -615,7 +616,7 @@ function TSQLiteGameDatabase.CreateChara(
 	const
 		AID : LongWord;
 	const
-		NName : string;
+		Name : string;
 	const
 		CharaNum : Integer
 	) : Boolean;
@@ -626,14 +627,14 @@ begin
 	SendQuery(
 		Format(
 			'INSERT INTO characters (account_id, char_num, name) VALUES(%d, %d, ''%s'')',
-			[AID, CharaNum, NName]
+			[AID, CharaNum, SQLEscapeString(Name)]
 			)
 		);
 
 	QueryResult := SendQuery(
 		Format(
 			'SELECT char_id FROM characters WHERE account_id = %d AND name = ''%s''',
-			[AID,NName]
+			[AID,SQLEscapeString(Name)]
 			)
 		);
 
@@ -763,7 +764,7 @@ begin
 	QueryResult :=
 		SendQuery(
 		Format('SELECT * FROM characters WHERE name = ''%s''',
-			[CharaName]));
+			[SQLEscapeString(CharaName)]));
 	if (QueryResult.Count = 1) then
 	begin
 		with Result do
@@ -877,7 +878,7 @@ begin
 	Result := 0;
 	QueryResult := 
 		SendQuery(
-			Format('Select value FROM character_vars WHERE char_id = %d and key = ''%s''',[AChara.CID,Key])
+			Format('Select value FROM character_vars WHERE char_id = %d and key = ''%s''',[AChara.CID,SQLEscapeString(Key)])
 		);
 	if QueryResult.Count = 1 then
 	begin
@@ -916,14 +917,14 @@ begin
 			//Update
 			QueryResult :=
 				SendQuery(
-					Format('INSERT OR REPLACE INTO character_vars (char_id, key, value) VALUES (%d,''%s'',%d)',[AChara.CID,Key,Value])
+					Format('INSERT OR REPLACE INTO character_vars (char_id, key, value) VALUES (%d,''%s'',%d)',[AChara.CID,SQLEscapeString(Key),Value])
 				);
 		end else
 		begin
 			//Delete the key.  Value is 0
 			QueryResult :=
 				SendQuery(
-					Format('DELETE FROM character_vars WHERE char_id = %d and key = ''%s''',[AChara.CID,Key])
+					Format('DELETE FROM character_vars WHERE char_id = %d and key = ''%s''',[AChara.CID,SQLEscapeString(Key)])
 				);
 		end;
 		if Assigned(QueryResult) then QueryResult.Free;
@@ -1072,7 +1073,7 @@ begin
 	SendQuery(
 		Format(
 			'INSERT INTO `friend` (`char_id`,`id1`,`id2`,`name`) VALUE (%d, %d, %d, ''%s'')',
-			[OrigID, AccID, CharID, CharName]
+			[OrigID, AccID, CharID, SQLEscapeString(CharName)]
 			)
 		);
 end;{AddFriend}

@@ -107,7 +107,7 @@ public
 		const
 			AID        : LongWord;
 		const
-			NName      : String;
+			Name      : String;
 		const
 			CharaNum   : Integer
 		) : Boolean; override;
@@ -225,7 +225,8 @@ uses
 	{Project}
 	GameConstants,
 	Globals,
-	Main
+	Main,
+  SQLExtendedRoutines
 	{Third Party}
 	//none
 	;
@@ -506,7 +507,7 @@ begin
 	Result := false;
 	QueryResult :=
 			SendQuery(
-			Format('SELECT char_id FROM characters WHERE name = ''%s''',[Name]),true,Success);
+			Format('SELECT char_id FROM characters WHERE name = ''%s''',[SQLEscapeString(Name)]),true,Success);
 	if Success then
 	begin
 		Result := (QueryResult.RowsCount > 0);
@@ -593,7 +594,7 @@ begin
 			'WHERE char_id=%d;',
 			[
 			CharaNum,
-			Name,
+			SQLEscapeString(Name),
 			JID,
 			BaseLV,
 			JobLV,
@@ -667,7 +668,7 @@ function TMySQLGameDatabase.CreateChara(
 	const
 		AID        : LongWord;
 	const
-		NName      : String;
+		Name      : String;
 	const
 		CharaNum   : Integer
 	) : Boolean;
@@ -678,14 +679,14 @@ begin
 	Result := FALSE;
 	SendQuery(
 		Format('INSERT INTO characters (account_id, char_num, name) VALUES(%d, %d, ''%s'')',
-		[AID,CharaNum, NName])
+		[AID,CharaNum, SQLEscapeString(Name)])
 	,TRUE,Success);
 	if Success then
 	begin
 		QueryResult :=
 				SendQuery(
 				Format('SELECT char_id FROM characters WHERE account_id = %d AND name = ''%s''',
-				[AID,NName])
+				[AID,SQLEscapeString(Name)])
 			,TRUE,Success);
 		if (QueryResult.RowsCount = 1) then
 		begin
@@ -829,7 +830,7 @@ begin
 	QueryResult := SendQuery(
 		Format(
 			'SELECT * FROM characters WHERE name = ''%s'';',
-			[CharaName]
+			[SQLEscapeString(CharaName)]
 			),
 		TRUE,
 		Success
@@ -1003,7 +1004,7 @@ http://dev.mysql.com/doc/refman/5.0/en/insert-on-duplicate.html
 			//Update
 			QueryResult :=
 				SendQuery(
-					Format('INSERT INTO `character_vars` (`char_id`, `key`, `value`) VALUES (%d,''%s'',%d) ON DUPLICATE KEY UPDATE `value` = %d',[AChara.CID,Key,Value,Value]),
+					Format('INSERT INTO `character_vars` (`char_id`, `key`, `value`) VALUES (%d,''%s'',%d) ON DUPLICATE KEY UPDATE `value` = %d',[AChara.CID,SQLEscapeString(Key),Value,Value]),
 					False,Success
 				);
 		end else
@@ -1011,7 +1012,7 @@ http://dev.mysql.com/doc/refman/5.0/en/insert-on-duplicate.html
 			//Delete the key.
 			QueryResult :=
 				SendQuery(
-					Format('DELETE FROM `character_vars` WHERE `char_id` = %d and `key` = ''%s''',[AChara.CID,Key]),
+					Format('DELETE FROM `character_vars` WHERE `char_id` = %d and `key` = ''%s''',[AChara.CID,SQLEscapeString(Key)]),
 					False,Success
 				);
 		end;
@@ -1187,7 +1188,7 @@ begin
 	SendQuery(
 		Format(
 			'INSERT INTO `friend` (`char_id`,`id1`,`id2`,`name`) VALUE (%d, %d, %d, ''%s'')',
-			[OrigID, AccID, CharID, CharName]
+			[OrigID, AccID, CharID, SQLEscapeString(CharName)]
 			),
 		False,
 		Success
