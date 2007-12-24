@@ -60,6 +60,11 @@ uses
 		const AParameters   : Cardinal
 	);
 
+	procedure ShowInitialAction(
+	const ACurrentBeing : TBeing;
+	const ABeing        : TBeing;
+	const AParameters   : Cardinal
+);
 implementation
 
 uses
@@ -235,22 +240,71 @@ end;{Effect}
 //		Show Action to surrounding characters.
 //
 //	Changes-
-//		[2007/11/24] Aeomin - Created.
+//		[2007/12/24] RaX - Created.
 //------------------------------------------------------------------------------
 procedure ShowAction(
 	const ACurrentBeing : TBeing;
 	const ABeing        : TBeing;
 	const AParameters   : Cardinal
 );
+var
+	ACurrentCharacter : TCharacter;
+	ACharacter : TCharacter;
 begin
-	if ABeing is TCharacter then
+	if (ACurrentBeing is TCharacter) AND (ABeing is TCharacter) then
 	begin
-		case TCharacter(TBeing).CharaState of
-			charaSitting : DoAction(TCharacter(ACurrentBeing).ClientInfo, ABeing.ID, ACurrentBeing.ID, 0, 0, ACTION_SIT, 0, 0, 0);
-			charaStanding : DoAction(TCharacter(ACurrentBeing).ClientInfo, ABeing.ID, ACurrentBeing.ID, 0, 0, ACTION_STAND, 0, 0, 0);
+		ACharacter := TCharacter(ABeing);
+		ACurrentCharacter := TCharacter(ACurrentBeing);
+		case ACurrentCharacter.CharaState of
+			charaSitting :
+				begin
+					DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
+				end;
 
+			charaStanding :
+				begin
+					DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
+				end;
 		end;
 	end;
-end;{Effect}
+end;{ShowAction}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ShowAction                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Show Actions of surrounding characters on connecting to map.
+//
+//	Changes-
+//		[2007/12/24] RaX - Created.
+//------------------------------------------------------------------------------
+procedure ShowInitialAction(
+	const ACurrentBeing : TBeing;
+	const ABeing        : TBeing;
+	const AParameters   : Cardinal
+);
+var
+	ACurrentCharacter : TCharacter;
+	ACharacter : TCharacter;
+begin
+	if (ACurrentBeing is TCharacter) AND (ABeing is TCharacter) then
+	begin
+		ACharacter := TCharacter(ABeing);
+		ACurrentCharacter := TCharacter(ACurrentBeing);
+		case ACharacter.CharaState of
+			charaSitting :
+				begin
+					DoAction(ACurrentCharacter.ClientInfo, ACharacter.ID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
+				end;
+
+			charaStanding :
+				begin
+					DoAction(ACurrentCharacter.ClientInfo, ACharacter.ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
+				end;
+		end;
+	end;
+end;{ShowAction}
 //------------------------------------------------------------------------------
 end.

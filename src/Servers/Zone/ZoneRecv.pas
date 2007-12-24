@@ -559,6 +559,7 @@ begin
 		//Weather updates
 		//Various other tweaks
 		AChara.ShowTeleportIn;
+		AChara.AreaLoop(ShowInitialAction);
 
 		//Quick change to prevent characters from being added in bad places.
 		if (AChara.Position.X < AMap.Size.X) AND
@@ -838,10 +839,10 @@ procedure ActionRequest(
 	const ReadPts : TReadPts
 );
 var
-	AnID				: LongWord;
+	//AnID				: LongWord;
 	ActionType	: Byte;
 begin
-	AnID := BufferReadLongWord(ReadPts[0], InBuffer);
+	//AnID := BufferReadLongWord(ReadPts[0], InBuffer);
 	ActionType := BufferReadByte(ReadPts[1], InBuffer);
 
 	case ActionType of
@@ -855,7 +856,6 @@ begin
 			begin
 				//TODO -- basic skill checks here
 				AChara.CharaState := charaSitting;
-				AChara.AreaLoop(ShowAction);
 			end;
 
 		3	://Stand

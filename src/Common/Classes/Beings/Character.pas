@@ -334,7 +334,8 @@ uses
 	PacketTypes,
 	TCPServerRoutines,
 	CharaList,
-	ZoneSend
+	ZoneSend,
+	AreaLoopEvents
 	{Third Party}
 	//none
 	;
@@ -386,23 +387,27 @@ end;{SetSaveTime}
 procedure TCharacter.SetCharaState(
 		Value : TCharaState
 	);
+	var
+		OldState : TCharaState;
 begin
 	//Need to add easy to get to codes (STANCE_MOVE from prometheus)
 	//usually used for packets
+	OldState := fCharaState;
+	fCharaState := Value;
 
 	if ZoneStatus = isOnline then
 	begin
-		if (Value = charaSitting) AND (fCharaState = charaStanding) then
+		if (fCharaState = charaSitting) AND (OldState = charaStanding) then
 		begin
-			DoAction(ClientInfo, ID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
+			AreaLoop(ShowAction, FALSE);
 		end else
-		if (Value = charaStanding) AND (fCharaState = charaSitting) then
+		if (fCharaState = charaStanding) AND (OldState = charaSitting) then
 		begin
-			DoAction(ClientInfo, ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
+			AreaLoop(ShowAction, FALSE);
     end;
 	end;
 
-	fCharaState := Value;
+
 	//Send character state update packet.
 end;{SetCharaState}
 //------------------------------------------------------------------------------

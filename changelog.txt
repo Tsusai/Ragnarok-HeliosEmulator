@@ -15,6 +15,15 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 387 -
+[2007/12/24] RaX - Fixed Showing sitting/standing to other characters and made sure
+ that sitting and standing were shown on login too.
+ Changed files - 
+	zonercv, added arealoop to showmap to show characters sitting/standing on
+		login
+	arealoopevents, added ShowInitialAction, changed showaction to fix abeing reverse
+-
+
 - Rev 386 -
 [2007/12/24] RaX - Implemented sitting and standing! Packet for Attacking is 
  fleshed out as well.
