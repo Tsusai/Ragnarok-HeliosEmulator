@@ -15,7 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
-- Rev 387 -
+- Rev 388 -
+[2007/12/24] RaX - Removed GameTypes.pas from .dpr, my bad guys.
+-
+
+- Rev 387 - BROKEN BUILD
 [2007/12/24] RaX - Fixed Showing sitting/standing to other characters and made sure
  that sitting and standing were shown on login too.
  Changed files - 
@@ -24,7 +28,7 @@ Developers & Contributers
 	arealoopevents, added ShowInitialAction, changed showaction to fix abeing reverse
 -
 
-- Rev 386 -
+- Rev 386 - BROKEN BUILD
 [2007/12/24] RaX - Implemented sitting and standing! Packet for Attacking is 
  fleshed out as well.
 [2007/12/24] RaX - Implemented DoAction in ZoneSend, sends the actionrequest packet.
