@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 390 -
+[2007/12/24] Aeomin - Changed packet size search so that it won't stuck
+   on oldest packet, if not found then search from latest version [TCPServerRoutines.pas]
+[2007/12/24] Aeomin - Added support of new login packets [LoginServer.pas]
+-
+
 - Rev 389 -
 [2007/12/24] RaX - Implemented single attacking. Always misses =)
 -

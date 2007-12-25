@@ -179,7 +179,9 @@ end;{DeActivateClient}
 Function GetPacketLength(ID : Word; Version : Word = 0) : LongWord;
 var
 	Index           : Integer;
+	BaseIndex       : Integer;
 	CodebaseLength  : Integer;
+	MainLength      : Integer;
 	Found : boolean;
 begin
 	Result := 0;
@@ -194,16 +196,24 @@ begin
 			break;
 		end;
 	end;
-	if not Found and not (Version = 0) then
+	// Try fetch latest packet
+	if not Found then
 	begin
-		CodebaseLength := Length(Codebase[0].Packet);
-		for Index := 0 to CodebaseLength - 1 do
+		MainLength     := Length(Codebase);
+		for BaseIndex := MainLength - 1 downto 0 do
 		begin
-			if Codebase[0].Packet[Index].ID = ID then
+			CodebaseLength := Length(Codebase[BaseIndex].Packet);
+			for Index := CodebaseLength - 1 downto 0 do
 			begin
-				Result := Codebase[0].Packet[Index].PLength;
-				break;
+				if Codebase[BaseIndex].Packet[Index].ID = ID then
+				begin
+					Result := Codebase[BaseIndex].Packet[Index].PLength;
+					Found := true;
+					break;
+				end;
 			end;
+			if Found then
+				break;
 		end;
 	end;
 end;{GetPacketLength}

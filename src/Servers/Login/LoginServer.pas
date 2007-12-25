@@ -765,6 +765,29 @@ end;
 				Password := BufferReadMD5(30,Buffer);
 				ValidateLogin(AClient,Buffer,Username,Password);
 			end;
+		$0277:// New login packet (kRO 2006-04-24aSakexe langtype 0)
+			begin
+				RecvBuffer(AClient,Buffer[2],GetPacketLength($0277)-2);
+				UserName := BufferReadString(6,24,Buffer);
+				Password := BufferReadString(30,24,Buffer);
+				ValidateLogin(AClient,Buffer,Username,Password);
+			end;
+		$02b0:// New login packet (kRO 2007-05-14aSakexe langtype 0)
+			begin
+				RecvBuffer(AClient,Buffer[2],GetPacketLength($02b0)-2);
+				UserName := BufferReadString(6,24,Buffer);
+				Password := BufferReadString(30,24,Buffer);
+				ValidateLogin(AClient,Buffer,Username,Password);
+			end;
+		$0200:  //Account name?
+			begin
+				RecvBuffer(AClient,Buffer[2],GetPacketLength($0200)-2);
+			end;
+		$0204://Receive MD5 of client...
+			begin
+				// Do nothing...
+				RecvBuffer(AClient,Buffer[2],GetPacketLength($0204)-2);
+			end;
 		$2000:
 			begin
 				RecvBuffer(AClient,Buffer[2],GetPacketLength($2000)-2);
