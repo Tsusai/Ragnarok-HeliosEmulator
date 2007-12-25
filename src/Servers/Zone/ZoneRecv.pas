@@ -839,17 +839,22 @@ procedure ActionRequest(
 	const ReadPts : TReadPts
 );
 var
-	//AnID				: LongWord;
 	ActionType	: Byte;
+	TargetID		: LongWord;
 begin
-	//AnID := BufferReadLongWord(ReadPts[0], InBuffer);
+	TargetID := BufferReadLongWord(ReadPts[0], InBuffer);
 	ActionType := BufferReadByte(ReadPts[1], InBuffer);
 
 	case ActionType of
 
-		0	://Hit target one time
+		0,7	://Hit target one time (0) and hit continuous (7)
 			begin
-
+				//Temporary
+				AChara.CharaState := charaAttacking;
+				AChara.TargetID := TargetID;
+				AChara.AreaLoop(ShowAction, FALSE, TRUE, TRUE, ACTION_DO_ATTACK);
+				AChara.CharaState := charaStanding;
+				AChara.TargetID := 0;
 			end;
 
 		2	://Sit
@@ -861,11 +866,6 @@ begin
 		3	://Stand
 			begin
 				AChara.CharaState := charaStanding;
-			end;
-
-		7	://Hit Target continuously
-			begin
-
 			end;
 	end;
 end;{ActionRequest}

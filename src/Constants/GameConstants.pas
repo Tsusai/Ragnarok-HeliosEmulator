@@ -212,7 +212,13 @@ const
 	ACTION_ENDUREATTACK = $09;
 	ACTION_CRITICAL_ATTACK = $0a;
 	ACTION_LUCKY_DODGE = $0b;
-	
+
+	//Action constants - for AreaLoop event ShowAction
+	ACTION_DO_ATTACK = 1;
+	ACTION_DO_SIT = 2;
+	ACTION_DO_STAND = 3;
+	ACTION_DO_ATTACK_CONTINUOUS = 4;
+
 implementation
 
 end.

@@ -65,7 +65,8 @@ TCharaState = (
 		charaPlayDead,
 		charaSitting,
 		charaStanding,
-		charaWalking
+		charaWalking,
+		charaAttacking
 	);
 
 TCharaZoneStatus = (

@@ -265,6 +265,10 @@ begin
 				begin
 					DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
 				end;
+			charaAttacking :
+				begin
+					DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, ACurrentCharacter.TargetID, 0, 0, ACTION_ATTACK, 0, 0, 0);
+				end;
 		end;
 	end;
 end;{ShowAction}
@@ -302,6 +306,11 @@ begin
 			charaStanding :
 				begin
 					DoAction(ACurrentCharacter.ClientInfo, ACharacter.ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
+				end;
+
+			charaAttacking :
+				begin
+					DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, ACurrentCharacter.TargetID, 0, 0, ACTION_ATTACK, 0, 0, 0);
 				end;
 		end;
 	end;

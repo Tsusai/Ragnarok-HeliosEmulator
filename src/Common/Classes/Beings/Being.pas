@@ -178,6 +178,8 @@ public
 	PathIndex		: Word;
 	MoveTick		: LongWord;
 
+	TargetID		: LongWord;
+
 	property Name      : string     read fName    write SetName;
 	property JID       : Word       read fJID     write SetClass;
 	property BaseLV    : Word       read fBaseLV  write SetBaseLV;

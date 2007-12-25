@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 389 -
+[2007/12/24] RaX - Implemented single attacking. Always misses =)
+-
+
 - Rev 388 -
 [2007/12/24] RaX - Removed GameTypes.pas from .dpr, my bad guys.
 -
