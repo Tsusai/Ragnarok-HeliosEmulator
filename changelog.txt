@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 392 -
+[2007/12/26] Aeomin - Fixed a typo when sending md5 key to client =(
+-
+
 - Rev 391 -
 [2007/12/26] Aeomin - Fixed thread crash when client use MD5 crypt login,
 however, due to indy's fault, still cant login...(keep telling incorrect password).

@@ -749,8 +749,8 @@ end;
 			end;
 		$01DB: //Client connected asking for md5 key to send a secure password
 			begin
-				MD5Len       := Length(TLoginThreadLink(AClient.Data).MD5Key);
 				TLoginThreadLink(AClient.Data).MD5Key := MakeRNDString( Random(10)+1 );
+				MD5Len       := Length(TLoginThreadLink(AClient.Data).MD5Key);
 				WriteBufferWord(0,$01DC,Buffer);
 				WriteBufferWord(2,MD5Len+4,Buffer);
 				WriteBufferString(4,
