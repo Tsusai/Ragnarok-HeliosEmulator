@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 391 -
+[2007/12/26] Aeomin - Fixed thread crash when client use MD5 crypt login,
+however, due to indy's fault, still cant login...(keep telling incorrect password).
+-
+
 - Rev 390 -
 [2007/12/24] Aeomin - Changed packet size search so that it won't stuck
    on oldest packet, if not found then search from latest version [TCPServerRoutines.pas]

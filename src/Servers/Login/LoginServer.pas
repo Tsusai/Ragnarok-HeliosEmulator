@@ -234,7 +234,8 @@ end;{Start}
 //------------------------------------------------------------------------------
 procedure TLoginServer.OnConnect(AConnection: TIdContext);
 begin
-	AConnection.Data := TThreadLink.Create(AConnection);
+	AConnection.Data := TLoginThreadLink.Create(AConnection);
+	TLoginThreadLink(AConnection.Data).MD5Key := '';
 	//Console.Message('Connection from ' + AConnection.Connection.Socket.Binding.PeerIP. 'Login Server', MS_INFO);
 end;{LoginServerConnect}
 //------------------------------------------------------------------------------
@@ -416,17 +417,17 @@ end;{OnException}
 			//Trim the MF off because people forget to take it off.
 			Username := AnsiLeftStr(Username,Length(Username)-2);
 			//Check to see if the account already exists.
-			TThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
+			TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
 			try
 				if NOT TThreadLink(AClient.Data).DatabaseLink.CommonData.AccountExists(Username) then
 				begin
 					//Create the account.
-					TThreadLink(AClient.Data).DatabaseLink.CommonData.CreateAccount(
+					TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.CreateAccount(
 						Username,Password,GenderStr[2]
 					);
 				end;
 			finally
-				TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
+				TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
 			end;
 		end;
 	end;{ParseMF}
@@ -456,6 +457,7 @@ end;{OnException}
 	var
 		AnAccount : TAccount;
 		AccountPassword : string;
+		SecondPassword  : String;
 		MD5Key    : string;
 		Idx : Integer;
 		CharSrvIdx: Integer;
@@ -467,10 +469,7 @@ end;{OnException}
 		);
 		MD5Key := '';
 
-		if (AClient.Data is TMD5String) then
-		begin
-			MD5Key := TMD5String(AClient.Data).Key;
-		end;
+		MD5Key := TLoginThreadLink(AClient.Data).MD5Key;
 
 		//If MF enabled, and NO MD5KEY LOGIN, parse _M/_F
 		if Options.EnableMF and
@@ -479,18 +478,20 @@ end;{OnException}
 			ParseMF(AClient, Username, Password);
 		end;
 
-		TThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
+		TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
 		try
-			AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(UserName);
-			if Assigned(AnAccount) then begin
+			AnAccount := TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(UserName);
+			if Assigned(AnAccount) then
+			begin
 				AccountPassword := AnAccount.Password;
 				if not(MD5Key = '') then
 				begin
+					SecondPassword  := GetMD5(AccountPassword + MD5Key);
 					AccountPassword := GetMD5(MD5Key + AccountPassword);
 				end;
-				if AccountPassword = Password then
+
+				if (AccountPassword = Password) or ((SecondPassword <> '') AND (SecondPassword = Password)) then
 				begin
-//				if not AnAccount.IsBanned then
 					if AnAccount.State = 0 then
 					begin
 						if AnAccount.Bantime <= Now then
@@ -531,7 +532,7 @@ end;{OnException}
 									AnAccount.LastIP := AClient.Binding.PeerIP;
 									AnAccount.LastLoginTime := Now;
 									Inc(AnAccount.LoginCount);
-									TThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
+									TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
 
 									AccountInfo := TLoginAccountInfo.Create(AnAccount.ID);
 									AccountInfo.OnCharSrvList := True;
@@ -561,7 +562,7 @@ end;{OnException}
 			end;
 			AnAccount.Free;
 		finally
-			TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
+			TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
 		end;
 	end;//ValidateLogin
 //------------------------------------------------------------------------------
@@ -697,12 +698,12 @@ begin
 	begin
 		TCharaServerLink(AClient.Data).DatabaseLink.CommonData.Connect;
 		try
-			AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
+			AnAccount := TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
 			if Assigned(AnAccount) then begin
 				{AnAccount.LoginKey[1] := 0;
 				AnAccount.LoginKey[2] := 0;}
 				fAccountList.Delete(Idx);
-				TThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
+				TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
 			end;
 		finally
 			TCharaServerLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
@@ -732,7 +733,6 @@ end;
 		Password  : String;
 		ID        : Word;
 		MD5Len    : Integer;
-		MD5Key    : TMD5String;
 		Size      : Word;
 	begin
 		//Get ID
@@ -749,13 +749,13 @@ end;
 			end;
 		$01DB: //Client connected asking for md5 key to send a secure password
 			begin
-				MD5Key       := TMD5String.Create;
-				MD5Key.Key   := MakeRNDString( Random(10)+1 );
-				MD5Len       := Length(MD5Key.Key);
-				AClient.Data := MD5Key;
+				MD5Len       := Length(TLoginThreadLink(AClient.Data).MD5Key);
+				TLoginThreadLink(AClient.Data).MD5Key := MakeRNDString( Random(10)+1 );
 				WriteBufferWord(0,$01DC,Buffer);
 				WriteBufferWord(2,MD5Len+4,Buffer);
-				WriteBufferString(4,MD5Key.Key,MD5Len,Buffer);
+				WriteBufferString(4,
+					TLoginThreadLink(AClient.Data).MD5Key,
+					MD5Len,Buffer);
 				SendBuffer(AClient,Buffer,MD5Len+4);
 			end;
 		$01DD: //Recieve secure login details

@@ -40,11 +40,15 @@ type
 	TReadPts = array of TBufSize;
 
 	TThreadLink = class
-		Parent				: TIdContext;
-		DatabaseLink	: TDatabase;
+		Parent          : TIdContext;
+		DatabaseLink    : TDatabase;
 		Constructor Create(AClient : TIdContext);
 		Destructor Destroy();override;
-  end;
+	end;
+
+	TLoginThreadLink = class (TThreadLink)
+		MD5Key          : String;
+	end;
 
 	TClientLink = class(TThreadLink)
 		AccountLink		: TAccount;
@@ -62,10 +66,6 @@ type
 	TZoneServerLink = class(TThreadLink)
 		Info : TZoneServerInfo;
 		Destructor Destroy();override;
-	end;
-
-	TMD5String = class
-		Key : string;
 	end;
 
 	Function ReadPoints(
