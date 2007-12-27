@@ -981,11 +981,12 @@ end;{ZoneSendWalkReply}
 
 
 //------------------------------------------------------------------------------
-//ZoneSendWarpRequest                                                  PROCEDURE
+//ZoneSendWarp                                                  PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
 //      Sends a request to the inter server that asks if it's ok for a character
-//		to warp to the specified zone.
+//		to warp to the specified zone, or warp them within
+//		the current zone.
 //--
 //   Pre:
 //	TODO

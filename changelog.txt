@@ -15,6 +15,14 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 393 -
+[2007/12/26] Tsusai - Fixed connections for RO clients using the MD5 method.
+ What happenned was that the key was being stored in the connection details, but
+ those details were conflicting with an earlier change, that stored database
+ links there. [LoginServer.pas].  Removed TMD5String from [PacketTypes.pas], and
+ corrected a typo in [ZoneSend.pas]
+-
+
 - Rev 392 -
 [2007/12/26] Aeomin - Fixed a typo when sending md5 key to client =(
 -

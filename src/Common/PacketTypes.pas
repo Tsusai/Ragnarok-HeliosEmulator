@@ -11,6 +11,7 @@ TThreadLink : Used for linking accounts or characters to the client socket
 Revisions:
 --------------------------------------------------------------------------------
 [2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
+//		December 26th, 2007 - Tsusai - Removed TMD5String class.
 ------------------------------------------------------------------------------*)
 unit PacketTypes;
 
@@ -44,10 +45,6 @@ type
 		DatabaseLink    : TDatabase;
 		Constructor Create(AClient : TIdContext);
 		Destructor Destroy();override;
-	end;
-
-	TLoginThreadLink = class (TThreadLink)
-		MD5Key          : String;
 	end;
 
 	TClientLink = class(TThreadLink)

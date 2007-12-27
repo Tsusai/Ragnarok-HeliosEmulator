@@ -102,6 +102,12 @@ uses
 	TCPServerRoutines
 	;
 
+	//Subclasses the TThreadlink, designed to store a MD5 Key to for use
+	//with MD5 client connections
+	type TLoginThreadLink = class(TThreadLink)
+		MD5Key : string;
+	end;
+
 const
 //ERROR REPLY CONSTANTS
 	LOGIN_UNREGISTERED    = 0;
@@ -230,12 +236,14 @@ end;{Start}
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
+//		December 26th, 2007 - Tsusai - Resets the MD5 key on TLoginThreadLink just
+//			incase
 //
 //------------------------------------------------------------------------------
 procedure TLoginServer.OnConnect(AConnection: TIdContext);
 begin
 	AConnection.Data := TLoginThreadLink.Create(AConnection);
-	TLoginThreadLink(AConnection.Data).MD5Key := '';
+	TLoginThreadLink(AConnection.Data).MD5Key := ''; //blank just incase.
 	//Console.Message('Connection from ' + AConnection.Connection.Socket.Binding.PeerIP. 'Login Server', MS_INFO);
 end;{LoginServerConnect}
 //------------------------------------------------------------------------------
@@ -419,7 +427,7 @@ end;{OnException}
 			//Check to see if the account already exists.
 			TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
 			try
-				if NOT TThreadLink(AClient.Data).DatabaseLink.CommonData.AccountExists(Username) then
+				if NOT TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.AccountExists(Username) then
 				begin
 					//Create the account.
 					TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.CreateAccount(
@@ -446,6 +454,7 @@ end;{OnException}
 //		January 3rd, 2007 - Tsusai - Added console messages.
 //		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
 //			IdContext.Binding shortcut
+//		December 26th, 2007 - Tsusai - Fixed up MD5 client checking.
 //
 //------------------------------------------------------------------------------
 	procedure TLoginServer.ValidateLogin(
@@ -457,7 +466,6 @@ end;{OnException}
 	var
 		AnAccount : TAccount;
 		AccountPassword : string;
-		SecondPassword  : String;
 		MD5Key    : string;
 		Idx : Integer;
 		CharSrvIdx: Integer;
@@ -469,7 +477,10 @@ end;{OnException}
 		);
 		MD5Key := '';
 
-		MD5Key := TLoginThreadLink(AClient.Data).MD5Key;
+		if (TLoginThreadLink(AClient.Data).MD5Key <> '') then
+		begin
+			MD5Key := TLoginThreadLink(AClient.Data).MD5Key;
+		end;
 
 		//If MF enabled, and NO MD5KEY LOGIN, parse _M/_F
 		if Options.EnableMF and
@@ -481,17 +492,16 @@ end;{OnException}
 		TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
 		try
 			AnAccount := TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(UserName);
-			if Assigned(AnAccount) then
-			begin
+			if Assigned(AnAccount) then begin
 				AccountPassword := AnAccount.Password;
-				if not(MD5Key = '') then
+				if	( not (MD5Key = '') and //If key isn't blank AND if one of the combinations
+							( (Password = GetMD5(MD5Key + AccountPassword)) or
+								(Password = GetMD5(AccountPassword+ MD5Key))
+							)
+						) or //or plain text to text compare
+						(AccountPassword = Password) then
 				begin
-					SecondPassword  := GetMD5(AccountPassword + MD5Key);
-					AccountPassword := GetMD5(MD5Key + AccountPassword);
-				end;
-
-				if (AccountPassword = Password) or ((SecondPassword <> '') AND (SecondPassword = Password)) then
-				begin
+//				if not AnAccount.IsBanned then
 					if AnAccount.State = 0 then
 					begin
 						if AnAccount.Bantime <= Now then
@@ -724,6 +734,7 @@ end;
 //		December 17th, 2006 - RaX - Created Header.
 //		January 3rd, 2007 - Tsusai - Added console messages.
 //		April 10th, 2007 - Aeomin - Changed index from 2 to 6 to support Char server ID.
+//		December 26th, 2007 - Tsusai - Fixed up MD5 client preping.
 //
 //------------------------------------------------------------------------------
 	procedure TLoginServer.ParseLogin(AClient: TIdContext);
@@ -733,6 +744,7 @@ end;
 		Password  : String;
 		ID        : Word;
 		MD5Len    : Integer;
+		MD5Key    : String;
 		Size      : Word;
 	begin
 		//Get ID
@@ -749,13 +761,12 @@ end;
 			end;
 		$01DB: //Client connected asking for md5 key to send a secure password
 			begin
-				TLoginThreadLink(AClient.Data).MD5Key := MakeRNDString( Random(10)+1 );
-				MD5Len       := Length(TLoginThreadLink(AClient.Data).MD5Key);
+				MD5Key   := MakeRNDString( Random(10)+1 );
+				MD5Len   := Length(MD5Key);
+				TLoginThreadLink(AClient.Data).MD5Key := MD5Key;
 				WriteBufferWord(0,$01DC,Buffer);
 				WriteBufferWord(2,MD5Len+4,Buffer);
-				WriteBufferString(4,
-					TLoginThreadLink(AClient.Data).MD5Key,
-					MD5Len,Buffer);
+				WriteBufferString(4,MD5Key,MD5Len,Buffer);
 				SendBuffer(AClient,Buffer,MD5Len+4);
 			end;
 		$01DD: //Recieve secure login details
