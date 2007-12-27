@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 394 -
+[2007/12/26] RaX - Continuous attacking now works using attackevents...
+ Still have more work to do with it though, cleanup, and making sure that when
+ a target moves that we follow it...
+-
+
 - Rev 393 -
 [2007/12/26] Tsusai - Fixed connections for RO clients using the MD5 method.
  What happenned was that the key was being stored in the connection details, but

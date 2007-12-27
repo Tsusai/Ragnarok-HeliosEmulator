@@ -257,7 +257,8 @@ uses
 	ZoneInterCommunication,
 	Database,
 	AddFriendEvent,
-	AreaLoopEvents
+	AreaLoopEvents,
+	AttackEvent
 	{3rd Party}
 	//none
 	;
@@ -847,14 +848,11 @@ begin
 
 	case ActionType of
 
-		0,7	://Hit target one time (0) and hit continuous (7)
+		0 ://Hit target one time
 			begin
 				//Temporary
 				AChara.CharaState := charaAttacking;
-				AChara.TargetID := TargetID;
-				AChara.AreaLoop(ShowAction, FALSE, TRUE, TRUE, ACTION_DO_ATTACK);
-				AChara.CharaState := charaStanding;
-				AChara.TargetID := 0;
+				AChara.Attack(TargetID, FALSE);
 			end;
 
 		2	://Sit
@@ -867,6 +865,12 @@ begin
 			begin
 				AChara.CharaState := charaStanding;
 			end;
+
+		7 : //Hit target continuously
+			begin
+				AChara.CharaState := charaAttacking;
+				AChara.Attack(TargetID, TRUE);
+      end;
 	end;
 end;{ActionRequest}
 //------------------------------------------------------------------------------
@@ -891,8 +895,16 @@ procedure CancelAttack(
 	const InBuffer : TBuffer;
 	const ReadPts : TReadPts
 );
+var
+	Index : Integer;
 begin
-
+	for Index := AChara.EventList.Count-1 to 0 do
+	begin
+		if AChara.EventList[Index] is TAttackEvent then
+		begin
+			AChara.EventList.Delete(Index);
+    end;
+	end;
 end;{CancelAttack}
 //------------------------------------------------------------------------------
 
@@ -925,7 +937,7 @@ var
 begin
 	DestPoint := BufferReadOnePoint(ReadPts[0], InBuffer);
 	if (AChara.ScriptStatus = SCRIPT_NOTRUNNING) and
-	((AChara.CharaState = charaStanding) or (AChara.CharaState = charaWalking)) then
+	(AChara.CharaState <> charaSitting) then
 	begin
 
 		if AChara.MapInfo.GetPath(AChara.Position, DestPoint, AChara.Path) then

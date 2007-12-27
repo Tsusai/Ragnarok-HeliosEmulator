@@ -178,8 +178,6 @@ public
 	PathIndex		: Word;
 	MoveTick		: LongWord;
 
-	TargetID		: LongWord;
-
 	property Name      : string     read fName    write SetName;
 	property JID       : Word       read fJID     write SetClass;
 	property BaseLV    : Word       read fBaseLV  write SetBaseLV;
@@ -217,7 +215,8 @@ public
 	procedure ShowTeleportOut;
 	procedure UpdateDirection;
 	procedure ShowEffect(EffectID:LongWord);
-	
+	procedure Attack(ATargetID : LongWord; AttackContinuous : Boolean = false);virtual;
+
 	procedure AreaLoop(
 			ALoopCall           : TLoopCall;
 			AIgnoreCurrentBeing : Boolean = True;
@@ -719,6 +718,22 @@ end;
 procedure TBeing.UpdateDirection;
 begin
 	AreaLoop(UpdateDir, True);
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Attack			                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+// 	Shows an attack and calculates damage.
+//
+//  Changes -
+//	December 26th, 2007 - RaX - Created Header
+//------------------------------------------------------------------------------
+procedure TBeing.Attack(ATargetID : LongWord; AttackContinuous : Boolean = false);
+begin
+
 end;
 //------------------------------------------------------------------------------
 

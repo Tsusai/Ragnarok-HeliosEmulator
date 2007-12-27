@@ -54,7 +54,7 @@ uses
 		const ABeing        : TBeing;
 		const AParameters   : Cardinal
 		);
-	procedure ShowAction(
+	procedure ShowSitStand(
 		const ACurrentBeing : TBeing;
 		const ABeing        : TBeing;
 		const AParameters   : Cardinal
@@ -237,12 +237,12 @@ end;{Effect}
 //ShowAction                                                          PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//		Show Action to surrounding characters.
+//		Show sitting/standing to surrounding characters.
 //
 //	Changes-
 //		[2007/12/24] RaX - Created.
 //------------------------------------------------------------------------------
-procedure ShowAction(
+procedure ShowSitStand(
 	const ACurrentBeing : TBeing;
 	const ABeing        : TBeing;
 	const AParameters   : Cardinal
@@ -264,10 +264,6 @@ begin
 			charaStanding :
 				begin
 					DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
-				end;
-			charaAttacking :
-				begin
-					DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, ACurrentCharacter.TargetID, 0, 0, ACTION_ATTACK, 0, 0, 0);
 				end;
 		end;
 	end;

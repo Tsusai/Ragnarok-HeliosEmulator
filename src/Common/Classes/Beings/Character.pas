@@ -233,6 +233,7 @@ public
 	//Our Character's inventory
 	Inventory		: TInventory;
 
+	TargetID		: LongWord;
 
 	//Stat Calculations should fill these in
 	//Maybe a record type for this crap for shared info between mobs and chars
@@ -253,6 +254,8 @@ public
 	procedure CalcMaxSP; override;
 	procedure CalcSpeed; override;
 	procedure CalcMaxWeight;
+
+	procedure Attack(ATargetID : LongWord; AttackContinuous : Boolean = false);override;
 
 	procedure SendSubStat(
 		const Mode     : Word;
@@ -336,7 +339,9 @@ uses
 	TCPServerRoutines,
 	CharaList,
 	ZoneSend,
-	AreaLoopEvents
+	AreaLoopEvents,
+	AttackEvent,
+	WinLinux
 	{Third Party}
 	//none
 	;
@@ -400,12 +405,12 @@ begin
 	begin
 		if (fCharaState = charaSitting) AND (OldState = charaStanding) then
 		begin
-			AreaLoop(ShowAction, FALSE);
+			AreaLoop(ShowSitStand, FALSE);
 		end else
 		if (fCharaState = charaStanding) AND (OldState = charaSitting) then
 		begin
-			AreaLoop(ShowAction, FALSE);
-    end;
+			AreaLoop(ShowSitStand, FALSE);
+		end;
 	end;
 
 
@@ -1899,6 +1904,58 @@ begin
 		HP := MaxHP;
 	end;
 end;{CalcMaxHP}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Attack			                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+// 	Shows an attack and calculates damage.
+//
+//  Changes -
+//	December 26th, 2007 - RaX - Created Header
+//------------------------------------------------------------------------------
+procedure TCharacter.Attack(ATargetID : LongWord; AttackContinuous : Boolean = false);
+var
+	AnAttackEvent : TAttackEvent;
+	idxY : integer;
+	idxX : integer;
+	BeingIdx : integer;
+	ABeing : TBeing;
+begin
+	if CharaState = charaAttacking then
+	begin
+		TargetID := ATargetID;
+
+		for idxY := Max(0,Position.Y-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.Y+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.Y-1) do
+		begin
+			for idxX := Max(0,Position.X-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.X+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.X-1) do
+			begin
+				for BeingIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
+				begin
+					if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
+					begin
+						if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
+						begin
+							ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
+							if ABeing is TCharacter then
+							begin
+								DoAction(TCharacter(ABeing).ClientInfo, ID, TargetID, ASpeed, 0, ACTION_ATTACK, 0, 0, 0);
+							end;
+						end;
+					end;
+				end;
+			end;
+		end;
+
+		if AttackContinuous = true then
+		begin
+			AnAttackEvent := TAttackEvent.Create(GetTick+500, self, TargetID);
+			EventList.Add(AnAttackEvent);
+		end;
+	end;
+end;
 //------------------------------------------------------------------------------
 
 
