@@ -983,7 +983,6 @@ function  TSQLiteGameDatabase.GetFriendList(
 var
 	QueryResult     : TSQLiteTable;
 	Index           : Byte;
-	Char            : TCharacter;
 begin
 	Result := TCharacterList.Create(TRUE);
 	QueryResult := SendQuery(
@@ -996,11 +995,7 @@ begin
 	begin
 		for Index := 0 to QueryResult.Count - 1 do
 		begin
-			Char      := TCharacter.Create(Parent.ClientInfo);
-			Char.ID   := QueryResult.FieldAsInteger(1);
-			Char.CID  := QueryResult.FieldAsInteger(2);
-			Char.Name := QueryResult.Fields[3];
-			Result.Add(Char);
+			Result.Add(LoadChara(StrToInt(QueryResult.Fields[2])));
 			if Index < QueryResult.Count then
 			begin
 				QueryResult.Next;

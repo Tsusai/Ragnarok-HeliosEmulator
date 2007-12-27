@@ -153,7 +153,12 @@ uses
 		const CharName : String;
 		const Reply  : Byte
 	);
-
+	procedure SendFirendOnlineStatus(
+		AClient       : TIdContext;
+		const AID     : LongWord;
+		const CID     : LongWord;
+		const Offline : Byte
+	);
 	procedure DoAction(
 		AClient			: TIdContext;
 		SourceID		: LongWord;
@@ -1218,7 +1223,39 @@ end;{SendAddFriendRequestReply}
 
 
 //------------------------------------------------------------------------------
-//DoAction								                                            PROCEDURE
+//SendFirendOnlineStatus                                               PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//    Send online status of a friend to client.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/??] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendFirendOnlineStatus(
+	AClient       : TIdContext;
+	const AID     : LongWord;
+	const CID     : LongWord;
+	const Offline : Byte
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $0206, OutBuffer);
+	WriteBufferLongWord(2, AID, OutBuffer);
+	WriteBufferLongWord(6, CID, OutBuffer);
+	WriteBufferByte(10, Offline, OutBuffer);
+	SendBuffer(AClient,OutBuffer,GetPacketLength($0206));
+end;{SendFirendOnlineStatus}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//DoAction                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
 //      tells a client to show an action made by another entity or itself.

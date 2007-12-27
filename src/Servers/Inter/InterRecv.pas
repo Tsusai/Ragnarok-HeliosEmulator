@@ -71,6 +71,15 @@ procedure RecvZoneRequestFriendReply(
 	ABuffer : TBuffer
 );
 
+procedure RecvZonePlayerOnlineStatus(
+	AClient : TIdContext;
+	ABuffer : TBuffer
+);
+
+procedure RecvZonePlayerOnlineReply(
+	AClient : TIdContext;
+	ABuffer : TBuffer
+);
 implementation
 
 
@@ -87,7 +96,8 @@ uses
 	InterSend,
 	GMCommands,
 	Account,
-	GameConstants
+	GameConstants,
+	CharaList
 	{3rd Party}
 	//none
 	;
@@ -247,9 +257,7 @@ Var
 	Chara      : TCharacter;
 	ZoneID     : LongWord;
 	Index      : Integer;
-	LoopIndex  : Integer;
 	SentWhisper : Boolean;
-	ZoneLink    : TZoneServerLink;
 Begin
 	Size       := BufferReadWord(2, InBuffer);
 	FromID     := BufferReadLongWord(4, InBuffer);
@@ -273,17 +281,7 @@ Begin
 				ZoneID := GetMapZoneID(Chara.Map);
 				Disconnect;
 			end;
-			Index := -1;
-			for LoopIndex := 0 to (fClientList.Count - 1) do
-			begin
-				ZoneLink := ZoneServerLink[LoopIndex];
-				if (ZoneLink <> NIL) AND
-					(ZoneLink.Info.ZoneID = ZoneID) then
-				begin
-					Index := LoopIndex;
-					Break;
-				end;
-			end;
+			Index := ZoneServerList.IndexOf(ZoneID);
 
 			SentWhisper := False;
 
@@ -293,7 +291,7 @@ Begin
 					(ZoneServerLink[Index].Info.ZoneID = ZoneID) then
 				begin
 					RedirectWhisperToZone(
-						ClientList[Index],
+						ZoneServerInfo[Index].Connection,
 						TZoneServerLink(AClient.Data).Info.ZoneID,
 						FromID,
 						Chara.CID,
@@ -567,30 +565,18 @@ var
 	TargetChar : LongWord;
 
 	Index      : Integer;
-	LoopIndex  : Integer;
 	ZoneID     : LongWord;
-	ZoneLink   : TZoneServerLink;
 begin
-				// Get packet data.
+	// Get packet data.
 	ReqAID    := BufferReadLongWord(2, ABuffer);
 	ReqID     := BufferReadLongWord(6, ABuffer);
 	TargetChar:= BufferReadLongWord(10, ABuffer);
 	ZoneID    := BufferReadLongWord(14, ABuffer);
 	ReqChar   := BufferReadString(18, NAME_LENGTH, ABuffer);
 
-				with MainProc.InterServer do
+	with MainProc.InterServer do
 	begin
-		Index := -1;
-		for LoopIndex := 0 to (fClientList.Count - 1) do
-		begin
-			ZoneLink := ZoneServerLink[LoopIndex];
-			if (ZoneLink <> NIL) AND
-				(ZoneLink.Info.ZoneID = ZoneID) then
-			begin
-				Index := LoopIndex;
-				Break;
-			end;
-		end;
+		Index := ZoneServerList.IndexOf(ZoneID);
 
 
 		if (Index > -1) then
@@ -599,7 +585,7 @@ begin
 			(ZoneServerLink[Index].Info.ZoneID = ZoneID) then
 			begin
 				InterSendFriendRequest(
-					ClientList[Index],
+					ZoneServerInfo[Index].Connection,
 					ReqAID,
 					ReqID,
 					ReqChar,
@@ -639,9 +625,7 @@ var
 
 	Chara     : TCharacter;
 	Index     : Integer;
-	LoopIndex : Integer;
 	ZoneID    : LongWord;
-	ZoneLink  : TZoneServerLink;
 begin
 	OrigID   := BufferReadLongWord(2, ABuffer);
 	AccID    := BufferReadLongWord(6, ABuffer);
@@ -673,18 +657,7 @@ begin
 					Disconnect;
 				end;
 			end;
-			Index := -1;
-			for LoopIndex := 0 to (fClientList.Count - 1) do
-			begin
-				ZoneLink := ZoneServerLink[LoopIndex];
-				if (ZoneLink <> NIL) AND
-					(ZoneLink.Info.ZoneID = ZoneID) then
-				begin
-					Index := LoopIndex;
-					Break;
-				end;
-			end;
-
+			Index := ZoneServerList.IndexOf(ZoneID);
 
 			if (Index > -1) then
 			begin
@@ -692,7 +665,7 @@ begin
 					(ZoneServerLink[Index].Info.ZoneID = ZoneID) then
 				begin
 					InterSendFriendRequestReply(
-						ClientList[Index],
+						ZoneServerInfo[Index].Connection,
 						OrigID,
 						AccID,
 						CharID,
@@ -705,5 +678,140 @@ begin
 		end;
 	end;
 end;{RecvZoneRequestFriendReply}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvZonePlayerOnlineStatus                                           PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      A player is online/offline, now inter server need announce to friends,
+// party member, guild member or whatever is that [Universal procedure]
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/??] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvZonePlayerOnlineStatus(
+	AClient : TIdContext;
+	ABuffer : TBuffer
+);
+var
+	AID		: LongWord;
+	CID		: LongWord;
+	Offline		: Byte;
+	FriendList	: TCharacterList;
+	Char		: TCharacter;
+	Index		: Byte;
+	ZoneID		: Integer;
+	ZoneIndex	: Integer;
+begin
+	AID	:= BufferReadLongWord(2, ABuffer);
+	CID	:= BufferReadLongWord(6, ABuffer);
+	Offline	:= BufferReadByte(10, ABuffer);
+
+	with TZoneServerLink(AClient.Data).DatabaseLink.GameData do
+	begin
+		try
+			Connect;
+			FriendList := GetFriendList(CID);
+		finally
+			Disconnect;
+		end;
+	end;
+	with MainProc.InterServer do
+	if Assigned(FriendList) then
+	begin
+		if FriendList.Count > 0 then
+		begin
+			for Index := 0 to FriendList.Count - 1 do
+			begin
+				Char := FriendList.Items[Index];
+
+				// OK, we got all chars.
+				// let's SPAM 'EM
+				with TZoneServerLink(AClient.Data).DatabaseLink.StaticData do
+				begin
+					try
+						Connect;
+						ZoneID := GetMapZoneID(Char.Map);
+					finally
+						Disconnect;
+					end;
+				end;
+				ZoneIndex := ZoneServerList.IndexOf(ZoneID);
+				if ZoneIndex > -1 then
+				begin
+					InterSendFriendOnlineStatus(
+						ZoneServerInfo[ZoneIndex].Connection,
+						AID,
+						CID,
+						Char.ID,
+						Char.CID,
+						TZoneServerLink(AClient.Data).Info.ZoneID,
+						Offline
+					);
+				end;
+			end;
+		end;
+		FriendList.Clear;
+		FriendList.Free;
+	end;
+end;{RecvZonePlayerOnlineStatus}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvZonePlayerOnlineReply                                            PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//     Target zone replied something, time to send back to origin zone!
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/??] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvZonePlayerOnlineReply(
+	AClient : TIdContext;
+	ABuffer : TBuffer
+);
+var
+	AID     : LongWord;
+	CID     : LongWord;
+	TargetID: LongWord;
+	Offline : Byte;
+	ZoneID  : LongWord;
+	Index   : Integer;
+begin
+	AID      := BufferReadLongWord(2, ABuffer);
+	CID      := BufferReadLongWord(6, ABuffer);
+	TargetID := BufferReadLongWord(10, ABuffer);
+	OffLine  := BufferReadByte(14, ABuffer);
+	ZoneID   := BufferReadLongWord(15, ABuffer);
+
+	with MainProc.InterServer do
+	begin
+		Index := ZoneServerList.IndexOf(ZoneID);
+
+		if (Index > -1) then
+		begin
+			InterSendFriendStatusReply(
+				ZoneServerInfo[Index].Connection,
+				AID,
+				CID,
+				TargetID,
+				Offline
+			);
+		end;
+	end;
+end;{RecvZonePlayerOnlineReply}
 //------------------------------------------------------------------------------
 end.

@@ -226,6 +226,13 @@ uses
 	procedure RecvAddFriendRequestReply(
 			InBuffer : TBuffer
 	);
+
+	procedure RecvFriendOnlineStatus(
+			InBuffer : TBuffer
+	);
+	procedure RecvFriendStatus(
+			InBuffer : TBuffer
+	);
 	//----------------------------------------------------------------------
 
 implementation
@@ -449,6 +456,13 @@ begin
 
 				//Friendslist (No longer placeholder XD)
 				ACharacter.SendFriendList;
+
+				ZoneSendPlayerOnlineStatus(
+					MainProc.ZoneServer.ToInterTCPClient,
+					ACharacter.ID,
+					ACharacter.CID,
+					0 //0 = online; 1=offline
+				);
 			end;
 
 		end else
@@ -499,19 +513,24 @@ begin
 		if MainProc.ZoneServer.MapList[MapIndex].State = UNLOADED then
 		begin
 			MainProc.ZoneServer.MapList[MapIndex].Load;
-		end;
-		AMap := MainProc.ZoneServer.MapList[MapIndex];
-		AChara.MapInfo := AMap;
-		//Enable all npcs on this map.
-		for NPCIndex := 0 to MainProc.ZoneServer.NPCList.Count -1 do
-		begin
-			AnNPC := TNPC(MainProc.ZoneServer.NPCList.Objects[NPCIndex]);
-			if AnNPC.Map = MainProc.ZoneServer.MapList[MapIndex].Name then
+
+			AMap := MainProc.ZoneServer.MapList[MapIndex];
+			AChara.MapInfo := AMap;
+			//Enable all npcs on this map.
+			for NPCIndex := 0 to MainProc.ZoneServer.NPCList.Count -1 do
 			begin
-				AnNPC.MapInfo := MainProc.ZoneServer.MapList[MapIndex];
-				MainProc.ZoneServer.MapList[MapIndex].Cell[AnNPC.Position.X][AnNPC.Position.Y].Beings.AddObject(AnNPC.ID, AnNPC);
-				AnNPC.Enabled := true;
+				AnNPC := TNPC(MainProc.ZoneServer.NPCList.Objects[NPCIndex]);
+				if AnNPC.Map = MainProc.ZoneServer.MapList[MapIndex].Name then
+				begin
+					AnNPC.MapInfo := MainProc.ZoneServer.MapList[MapIndex];
+					MainProc.ZoneServer.MapList[MapIndex].Cell[AnNPC.Position.X][AnNPC.Position.Y].Beings.AddObject(AnNPC.ID, AnNPC);
+					AnNPC.Enabled := true;
+				end;
 			end;
+		end else
+		begin
+			AMap := MainProc.ZoneServer.MapList[MapIndex];
+			AChara.MapInfo := AMap;
 		end;
 
 		AChara.OnTouchIDs.Clear;
@@ -1996,5 +2015,120 @@ begin
 			SendAddFriendRequestReply(Chara.ClientInfo, AccID, CharID, CharName, Reply);
 	end;
 end;{RecvAddFriendRequestReply}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvFriendOnlineStatus                                               PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Receive friend status check from inter server. if target character is
+// online then send to both players (send back via inter server)
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/??] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvFriendOnlineStatus(
+	InBuffer : TBuffer
+);
+var
+	AID		: LongWord;
+	CID		: LongWord;
+//	TargetAID	: LongWord;
+	TargetCID	: LongWord;
+	ZoneID		: LongWord;
+	Offline		: Byte;
+
+	Index		: Integer;
+	Chara		: TCharacter;
+begin
+	AID		:= BufferReadLongWord(2, InBuffer);
+	CID		:= BufferReadLongWord(6, InBuffer);
+//	TargetAID	:= BufferReadLongWord(10, InBuffer);
+	TargetCID	:= BufferReadLongWord(14, InBuffer);
+	ZoneID		:= BufferReadLongWord(18, InBuffer);
+	Offline		:= BufferReadByte(22, InBuffer);
+
+	Index := MainProc.ZoneServer.CharacterList.IndexOf(TargetCID);
+
+	if (Index > -1) then
+	begin
+		Chara := MainProc.ZoneServer.CharacterList.Items[Index];
+
+		if Offline = 0 then
+		begin
+			ZoneSendPlayerOnlineReply(
+				MainProc.ZoneServer.ToInterTCPClient,
+				Chara.ID,
+				Chara.CID,
+				CID,
+				Offline,
+				ZoneID
+			);
+		end;
+
+		SendFirendOnlineStatus(
+			Chara.ClientInfo,
+			AID,
+			CID,
+			Offline
+		);
+	end;
+	// We don't send if is online..
+end;{RecvFriendOnlineStatus}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvFriendStatus                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      After everything else, the last step would find origin character and
+// tell status about starget one
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/??] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvFriendStatus(
+	InBuffer : TBuffer
+);
+var
+	AID       : LongWord;
+	CID       : LongWord;
+	TargetID  : LongWord;
+	Offline   : Byte;
+
+	Index     : Integer;
+	Chara     : TCharacter;
+begin
+	AID        := BufferReadLongWord(2, InBuffer);
+	CID        := BufferReadLongWord(6, InBuffer);
+	TargetID   := BufferReadLongWord(10, InBuffer);
+	Offline    := BufferReadByte(14, InBuffer);
+
+	Index := MainProc.ZoneServer.CharacterList.IndexOf(TargetID);
+
+	if (Index > -1) then
+	begin
+		Chara := MainProc.ZoneServer.CharacterList.Items[Index];
+
+		SendFirendOnlineStatus(
+			Chara.ClientInfo,
+			AID,
+			CID,
+			Offline
+		);
+	end;
+end;{RecvFriendStatus}
 //------------------------------------------------------------------------------
 end{ZoneRecv}.

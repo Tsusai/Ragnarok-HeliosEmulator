@@ -297,6 +297,13 @@ begin
 	begin
 		ACharacter := TClientLink(AConnection.Data).CharacterLink;
 
+		ZoneSendPlayerOnlineStatus(
+					ToInterTCPClient,
+					ACharacter.ID,
+					ACharacter.CID,
+					1 //0 = online; 1=offline
+				);
+
 		TThreadLink(AConnection.Data).DatabaseLink.GameData.Connect;
 		try
 			TThreadLink(AConnection.Data).DatabaseLink.GameData.SaveChara(ACharacter);
@@ -981,6 +988,16 @@ begin
 		begin
 			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2217)-2);
 			RecvAddFriendRequestReply(ABuffer);
+		end;
+	$2219:
+		begin
+			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2219)-2);
+			RecvFriendOnlineStatus(ABuffer);
+		end;
+	$2221:
+		begin
+			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2221)-2);
+			RecvFriendStatus(ABuffer);
 		end;
 	end;
 end;{InterClientRead}

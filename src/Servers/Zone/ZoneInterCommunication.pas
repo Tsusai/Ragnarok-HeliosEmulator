@@ -144,6 +144,20 @@ const
 		const CharName : String;
 		const Reply  : Byte
 	);
+	procedure ZoneSendPlayerOnlineStatus(
+		AClient : TInterClient;
+		const AID : LongWord;
+		const CID : LongWord;
+		const Offline : Byte
+	);
+	procedure ZoneSendPlayerOnlineReply(
+		AClient : TInterClient;
+		const AID      : LongWord;
+		const CID      : LongWord;
+		const TargetID : LongWord;
+		const Offline  : Byte;
+		const ZoneID   : LongWord
+	);
 	//----------------------------------------------------------------------
 
 implementation
@@ -679,5 +693,73 @@ begin
 	WriteBufferString(15, CharName, NAME_LENGTH, OutBuffer);
 	SendBuffer(AClient, OutBuffer, GetPacketLength($2217));
 end;{ZoneSendAddFriendReply}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ZoneSendPlayerOnlineStatus                                           PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      This player is online/offline tell inter server do something about it
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/??] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ZoneSendPlayerOnlineStatus(
+	AClient : TInterClient;
+	const AID : LongWord;
+	const CID : LongWord;
+	const Offline : Byte
+);
+var
+	OutBuffer   : TBuffer;
+begin
+	WriteBufferWord(0, $2218, OutBuffer);
+	WriteBufferLongWord(2, AID, OutBuffer);
+	WriteBufferLongWord(6, CID, OutBuffer);
+	WriteBufferByte(10, Offline, OutBuffer);
+	SendBuffer(AClient, OutBuffer, GetPacketLength($2218));
+end;{ZoneSendPlayerOnlineStatus}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ZoneSendPlayerOnlineReply                                            PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Tell origin players about target char's status via inter server
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/??] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ZoneSendPlayerOnlineReply(
+	AClient : TInterClient;
+	const AID      : LongWord;
+	const CID      : LongWord;
+	const TargetID : LongWord;
+	const Offline  : Byte;
+	const ZoneID   : LongWord
+);
+var
+	OutBuffer   : TBuffer;
+begin
+	WriteBufferWord(0, $2220, OutBuffer);
+	WriteBufferLongWord(2, AID, OutBuffer);
+	WriteBufferLongWord(6, CID, OutBuffer);
+	WriteBufferLongWord(10, TargetID, OutBuffer);
+	WriteBufferByte(14, Offline, OutBuffer);
+	WriteBufferLongWord(15, ZoneID, OutBuffer);
+	SendBuffer(AClient, OutBuffer, GetPacketLength($2220));
+end;{ZoneSendPlayerOnlineReply}
 //------------------------------------------------------------------------------
 end{ZoneInterCommunication}.

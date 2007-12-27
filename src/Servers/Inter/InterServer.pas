@@ -473,6 +473,22 @@ begin
 				RecvZoneRequestFriendReply(AClient, ABuffer);
 			end;
 		end;
+	$2218:
+		begin
+			if AClient.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2218)-2);
+				RecvZonePlayerOnlineStatus(AClient, ABuffer);
+			end;
+		end;
+	$2220:
+		begin
+			if AClient.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2220)-2);
+				RecvZonePlayerOnlineReply(AClient, ABuffer);
+			end;
+		end;
 	else
 		begin
 			Console.Message('Unknown Inter Server Packet : ' + IntToHex(PacketID,4), 'Inter Server', MS_WARNING);

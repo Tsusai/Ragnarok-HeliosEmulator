@@ -95,6 +95,24 @@ uses
 			const CharName : String;
 			const Reply  : Byte
 		);
+
+	procedure InterSendFriendOnlineStatus(
+			AClient : TIdContext;
+			const AID : LongWord;
+			const CID : LongWord;
+			const TargetAID : LongWord;
+			const TargetCID : LongWord;
+			const ZoneID    : LongWord;
+			const Offline	: Byte
+		);
+
+	procedure InterSendFriendStatusReply(
+			AClient : TIdContext;
+			const AID : LongWord;
+			const CID : LongWord;
+			const TargetID : LongWord;
+			const Offline : Byte
+		);
 implementation
 
 
@@ -591,5 +609,77 @@ begin
 	WriteBufferString(15, CharName, NAME_LENGTH, OutBuffer);
 	SendBuffer(AClient, OutBuffer, GetPacketLength($2217));
 end;{InterSendFriendRequestReply}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//InterSendFriendOnlineStatus                                          PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//     Send status update to target zone.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/??] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure InterSendFriendOnlineStatus(
+	AClient : TIdContext;
+	const AID : LongWord;
+	const CID : LongWord;
+	const TargetAID : LongWord;
+	const TargetCID : LongWord;
+	const ZoneID    : LongWord;
+	const Offline	: Byte
+);
+var
+	OutBuffer   : TBuffer;
+begin
+	WriteBufferWord(0, $2219, OutBuffer);
+	WriteBufferLongWord(2,  AID, OutBuffer);
+	WriteBufferLongWord(6,  CID, OutBuffer);
+	WriteBufferLongWord(10, TargetAID, OutBuffer);
+	WriteBufferLongWord(14, TargetCID, OutBuffer);
+	WriteBufferLongWord(18, ZoneID, OutBuffer);
+	WriteBufferByte(22, Offline, OutBuffer);
+	SendBuffer(AClient, OutBuffer, GetPacketLength($2219));
+end;{InterSendFriendOnlineStatus}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//InterSendFriendStatusReply                                           PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//     Send status back to origin zone.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2007/12/??] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure InterSendFriendStatusReply(
+	AClient : TIdContext;
+	const AID : LongWord;
+	const CID : LongWord;
+	const TargetID : LongWord;
+	const Offline : Byte
+);
+var
+	OutBuffer   : TBuffer;
+begin
+	WriteBufferWord(0, $2221, OutBuffer);
+	WriteBufferLongWord(2,  AID, OutBuffer);
+	WriteBufferLongWord(6,  CID, OutBuffer);
+	WriteBufferLongWord(10,  TargetID, OutBuffer);
+	WriteBufferByte(14, Offline, OutBuffer);
+	SendBuffer(AClient, OutBuffer, GetPacketLength($2221));
+end;{InterSendFriendStatusReply}
 //------------------------------------------------------------------------------
 end.

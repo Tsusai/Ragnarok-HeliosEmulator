@@ -43,6 +43,11 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x2215,42
 0x2216,38
 0x2217,39
+//Friend online status
+0x2218,11
+0x2219,23
+0x2220,19
+0x2221,15
 
 //GM Command from zone to inter
 0x2205,-1

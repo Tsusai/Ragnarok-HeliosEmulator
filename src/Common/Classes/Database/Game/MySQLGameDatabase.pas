@@ -1082,7 +1082,6 @@ var
 	QueryResult     : TMySQLResult;
 	Success         : Boolean;
 	Index           : Byte;
-	Char            : TCharacter;
 begin
 	Result := TCharacterList.Create(TRUE);
 	QueryResult := SendQuery(
@@ -1099,11 +1098,7 @@ begin
 		begin
 			for Index := 0 to QueryResult.RowsCount - 1 do
 			begin
-				Char      := TCharacter.Create(Parent.ClientInfo);
-				Char.ID   := StrToInt(QueryResult.FieldValue(1));
-				Char.CID  := StrToInt(QueryResult.FieldValue(2));
-				Char.Name := QueryResult.FieldValue(3);
-				Result.Add(Char);
+				Result.Add(LoadChara(StrToInt(QueryResult.FieldValue(2))));
 				if Index < QueryResult.RowsCount then
 				begin
 					QueryResult.Next;
