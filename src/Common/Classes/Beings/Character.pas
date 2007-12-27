@@ -1951,7 +1951,7 @@ begin
 
 		if AttackContinuous = true then
 		begin
-			AnAttackEvent := TAttackEvent.Create(GetTick+500, self, TargetID);
+			AnAttackEvent := TAttackEvent.Create(GetTick+1000, self, TargetID);
 			EventList.Add(AnAttackEvent);
 		end;
 	end;

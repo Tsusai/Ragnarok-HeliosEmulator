@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 396 -
+[2007/12/27] RaX - Update to walking and attacking, now you cannot move to a square
+ with another being in it. Also, increased our statis(for now) attack speed to make
+ the sprite look beter for demo purposes =)
+-
+
 - Rev 395 -
 [2007/12/27] Aeomin - OK ok, i don't know when i start to code this..
 Now online/offline status works.. [a lot files is modified..] 
