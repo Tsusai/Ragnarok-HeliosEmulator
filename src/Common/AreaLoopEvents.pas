@@ -343,7 +343,6 @@ begin
 	if (ACurrentBeing is TCharacter) AND (ABeing is TCharacter) then
 	begin
 		ZoneDisappearBeing(ACurrentBeing, TCharacter(Abeing).ClientInfo, 1);
-		SendSpecialEffect(ACurrentBeing, TCharacter(Abeing).ClientInfo, 372);
 	end;
 end;{ShowDeath}
 //------------------------------------------------------------------------------

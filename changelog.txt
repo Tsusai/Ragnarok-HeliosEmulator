@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 399 -
+[2007/12/28] Aeomin - Removed special effect of death, since client handle 'em
+-
+
 - Rev 398 -
 [2007/12/28] Aeomin - *cough* Rax commited it fast.. added headers & modifed bit.
 -
