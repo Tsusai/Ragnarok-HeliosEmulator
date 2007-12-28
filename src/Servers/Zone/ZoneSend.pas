@@ -659,7 +659,6 @@ procedure ZoneDisappearBeing(
 var
 	ReplyBuffer : TBuffer;
 begin
-	FillChar(ReplyBuffer,GetPacketLength($0080),0);
 	WriteBufferWord(0, $0080, ReplyBuffer);
 	WriteBufferLongWord(2, Who.ID, ReplyBuffer);
 	WriteBufferByte(6, Effect, ReplyBuffer);
@@ -1018,6 +1017,8 @@ var
 	Index  : Integer;
 
 procedure RemoveFromList;
+var
+	Index : Integer;
 begin
 	with ACharacter do
 	begin
@@ -1027,8 +1028,11 @@ begin
 			 (Position.X >= 0) AND
 			 (Position.X >= 0) then
 		begin
-			MapInfo.Cell[Position.X, Position.Y].Beings.Delete(
-			MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(ACharacter));
+			Index := MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(ACharacter);
+			if Index <> -1 then
+			begin
+				MapInfo.Cell[Position.X, Position.Y].Beings.Delete(Index);
+			end;
 		end;
 	end;
 end;

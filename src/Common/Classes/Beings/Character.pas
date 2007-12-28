@@ -274,7 +274,9 @@ public
 
 	procedure ResetStats;
 	procedure SendFriendList;
-	
+
+	procedure Death; override;
+
 	Constructor Create(AClient : TIdContext);
 	Destructor  Destroy; override;
 
@@ -410,6 +412,10 @@ begin
 		if (fCharaState = charaStanding) AND (OldState = charaSitting) then
 		begin
 			AreaLoop(ShowSitStand, FALSE);
+		end else
+		if (fCharaState = charaDead) then
+		begin
+			AreaLoop(ShowDeath, FALSE, TRUE, TRUE);
 		end;
 	end;
 
@@ -901,6 +907,10 @@ begin
 	Inherited;
 	SendSubStat(0, $0005, HP);
 	DataChanged := TRUE;
+	if HP <= 0 then
+	begin
+		Death;
+	end;
 end;{SetHP}
 //------------------------------------------------------------------------------
 
@@ -2647,6 +2657,13 @@ begin
 end;{SendFriendList}
 //------------------------------------------------------------------------------
 
+procedure TCharacter.Death;
+begin
+	inherited;
+	if HP > 0 then
+		fHP := 0;
+	CharaState := charaDead;
+end;
 
 //------------------------------------------------------------------------------
 //Create                                                             CONSTRUCTOR

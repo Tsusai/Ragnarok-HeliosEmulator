@@ -61,10 +61,16 @@ uses
 	);
 
 	procedure ShowInitialAction(
-	const ACurrentBeing : TBeing;
-	const ABeing        : TBeing;
-	const AParameters   : Cardinal
-);
+		const ACurrentBeing : TBeing;
+		const ABeing        : TBeing;
+		const AParameters   : Cardinal
+	);
+
+	procedure ShowDeath(
+		const ACurrentBeing : TBeing;
+		const ABeing        : TBeing;
+		const AParameters   : Cardinal
+	);
 implementation
 
 uses
@@ -308,8 +314,27 @@ begin
 				begin
 					DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, ACurrentCharacter.TargetID, 0, 0, ACTION_ATTACK, 0, 0, 0);
 				end;
+
+			charaDead :
+				begin
+					ZoneDisappearBeing(ABeing, TCharacter(ACurrentBeing).ClientInfo, 1);
+				end;
 		end;
 	end;
 end;{ShowAction}
 //------------------------------------------------------------------------------
+
+
+procedure ShowDeath(
+	const ACurrentBeing : TBeing;
+	const ABeing        : TBeing;
+	const AParameters   : Cardinal
+);
+begin
+	if (ACurrentBeing is TCharacter) AND (ABeing is TCharacter) then
+	begin
+		ZoneDisappearBeing(ACurrentBeing, TCharacter(Abeing).ClientInfo, 1);
+		SendSpecialEffect(ACurrentBeing, TCharacter(Abeing).ClientInfo, 372);
+	end;
+end;
 end.

@@ -297,6 +297,12 @@ begin
 	begin
 		ACharacter := TClientLink(AConnection.Data).CharacterLink;
 
+		if ACharacter.CharaState = charaDead then
+		begin
+			ACharacter.Map := ACharacter.SaveMap;
+			ACharacter.Position := ACharacter.SavePoint;
+		end;
+
 		ZoneSendPlayerOnlineStatus(
 					ToInterTCPClient,
 					ACharacter.ID,

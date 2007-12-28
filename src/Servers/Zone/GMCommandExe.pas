@@ -31,6 +31,7 @@ uses
 	procedure GMGiveStat(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMResetStats(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMSpeed(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMDie(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 
 	procedure GMBroadCast(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 	procedure GMBroadCastNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
@@ -660,6 +661,13 @@ begin
 	end;
 end;{GMSpeed}
 //------------------------------------------------------------------------------
+
+
+procedure GMDie(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+begin
+	TargetChar.HP := 0;
+end;
+
 
 
 //------------------------------------------------------------------------------

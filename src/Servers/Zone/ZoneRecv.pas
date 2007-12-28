@@ -576,6 +576,8 @@ begin
 		WriteBufferWord(2, 0, OutBuffer);
 		SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($013c,AChara.ClientVersion));
 
+		AChara.CharaState := charaStanding;
+
 		//Weather updates
 		//Various other tweaks
 		AChara.ShowTeleportIn;
@@ -956,7 +958,7 @@ var
 begin
 	DestPoint := BufferReadOnePoint(ReadPts[0], InBuffer);
 	if (AChara.ScriptStatus = SCRIPT_NOTRUNNING) and
-	(AChara.CharaState <> charaSitting) then
+	(AChara.CharaState in [charaStanding,charaAttacking,charaWalking]) then
 	begin
 
 		if AChara.MapInfo.GetPath(AChara.Position, DestPoint, AChara.Path) then
@@ -1170,14 +1172,18 @@ begin
 	case ActionByte of
 	0:
 		begin
-			if AChara.CharaState <> charaDead then
-				Exit;
-			//Send Leave with '0' as byte modifier
-			//Only runs when dead.
-			//Return to save point, and load map
-			AChara.Map := AChara.SaveMap;
-			AChara.Position := AChara.SavePoint;
-			//send map change packet stuff
+			if AChara.CharaState = charaDead then
+			begin
+				//Send Leave with '0' as byte modifier
+				//Only runs when dead.
+				//Return to save point, and load map
+				ZoneSendWarp(
+					AChara,
+					AChara.SaveMap,
+					AChara.SavePoint.X,
+					AChara.SavePoint.Y
+				);
+			end;
 		end;
 	1:
 		begin

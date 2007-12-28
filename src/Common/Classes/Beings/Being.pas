@@ -224,6 +224,9 @@ public
 			IgnoreNPC           : Boolean = True;
 			AParameter          : Cardinal = 0
 		);
+
+	procedure Death; virtual;
+
 	Constructor Create;
 	Destructor Destroy;override;
 
@@ -752,6 +755,12 @@ begin
 	AreaLoop(Effect, False, True, True, EffectID);
 end;{ShowEffect}
 //------------------------------------------------------------------------------
+
+procedure TBeing.Death;
+begin
+//	HP := 0;
+//	SP := 0;
+end;
 
 
 (*- Cons ----------------------------------------------------------------------*

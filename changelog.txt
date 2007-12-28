@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 397 -
+[2007/12/27] Aeomin - Added #die, and character death.
+-
+
 - Rev 396 -
 [2007/12/27] RaX - Update to walking and attacking, now you cannot move to a square
  with another being in it. Also, increased our statis(for now) attack speed to make

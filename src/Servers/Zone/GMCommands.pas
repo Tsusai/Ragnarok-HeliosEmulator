@@ -154,7 +154,7 @@ begin
 	AddCommand('Warp',            GMWarp,                 99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '<Map Name>,<X>,<Y>');
 	AddCommand('WarpDev',         GMWarpDev,              99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '<Map Name>,<X>,<Y>');
 	AddCommand('Jump',            GMJump,                 99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '[X],[Y]');
-        // - - - Player Control
+	// - - - Player Control
 	AddCommand('GiveBaseExp',     GMGiveBaseExperience,   99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
 	AddCommand('GiveJobExp',      GMGiveJobExperience,    99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
 	AddCommand('BaseLevelUp',     GMBaseLevelUp,          99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
@@ -165,6 +165,7 @@ begin
 	AddCommand('GiveStat',        GMGiveStat,             99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Type>,<Amount>');
 	AddCommand('ResetStats',      GMResetStats,           99, TYPE_TARGETCHAR, GMFLAG_NOSPLIT, '<Player Name>');
 	AddCommand('Speed',           GMSpeed,                99, TYPE_RETURNBACK, GMFLAG_NORMAL, '<Speed>');
+	AddCommand('Die',             GMDie,                  99, TYPE_RETURNBACK, GMFLAG_NORMAL, '');
 	// - - - Broadcast Sets
 	AddCommand('BroadCast',       GMBroadCast,            99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
 	AddCommand('BroadCastN',      GMBroadCastNoName,      99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
