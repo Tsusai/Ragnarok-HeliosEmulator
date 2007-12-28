@@ -1177,12 +1177,15 @@ begin
 				//Send Leave with '0' as byte modifier
 				//Only runs when dead.
 				//Return to save point, and load map
+				AChara.CharaState := charaStanding;
 				ZoneSendWarp(
 					AChara,
 					AChara.SaveMap,
 					AChara.SavePoint.X,
 					AChara.SavePoint.Y
 				);
+				AChara.Map := AChara.SaveMap;
+				AChara.Position := AChara.SavePoint;
 			end;
 		end;
 	1:

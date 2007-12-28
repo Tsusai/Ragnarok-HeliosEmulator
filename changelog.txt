@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 398 -
+[2007/12/28] Aeomin - *cough* Rax commited it fast.. added headers & modifed bit.
+-
+
 - Rev 397 -
 [2007/12/27] Aeomin - Added #die, and character death.
 -

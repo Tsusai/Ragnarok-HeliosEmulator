@@ -278,7 +278,7 @@ end;{ShowAction}
 
 
 //------------------------------------------------------------------------------
-//ShowAction                                                          PROCEDURE
+//ShowAction                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //		Show Actions of surrounding characters on connecting to map.
@@ -325,6 +325,15 @@ end;{ShowAction}
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//ShowDeath                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Show death to all players arround
+//
+//	Changes-
+//		[2007/12/28] RaX - Created.
+//------------------------------------------------------------------------------
 procedure ShowDeath(
 	const ACurrentBeing : TBeing;
 	const ABeing        : TBeing;
@@ -336,5 +345,6 @@ begin
 		ZoneDisappearBeing(ACurrentBeing, TCharacter(Abeing).ClientInfo, 1);
 		SendSpecialEffect(ACurrentBeing, TCharacter(Abeing).ClientInfo, 372);
 	end;
-end;
+end;{ShowDeath}
+//------------------------------------------------------------------------------
 end.

@@ -1015,7 +1015,6 @@ var
 	ClientIPSize : Word;
 	MapZoneID	: SmallInt;
 	Index  : Integer;
-
 procedure RemoveFromList;
 var
 	Index : Integer;
