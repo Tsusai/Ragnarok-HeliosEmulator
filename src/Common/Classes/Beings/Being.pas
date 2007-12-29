@@ -52,7 +52,8 @@ uses
 	GameConstants,
 	EventList,
 	Map,
-	PointList
+	PointList,
+	SysUtils
 	{Third Party}
 	//none
 	;
@@ -240,6 +241,7 @@ implementation
 uses
 	{RTL/VCL}
 	Math,
+	SyncObjs,
 	{Project}
 	AreaLoopEvents,
 	Character,
@@ -248,7 +250,8 @@ uses
 	MovementEvent,
 	DelayDisconnectEvent,
 	ZoneSend,
-	OnTouchCellEvent
+	OnTouchCellEvent,
+	Globals
 	{Third Party}
 	//none
 	;
@@ -430,25 +433,27 @@ Var
 	end;
 
 Begin
-	//Setup visual radius
-	Radius := MainProc.ZoneServer.Options.CharShowArea + 1;
-	OnTouchCellFound := false;
-
-	if Self is TCharacter then
+	if PathIndex < Path.Count then
 	begin
-		TCharacter(Self).CharaState := charaWalking;
-	end;
+		//Setup visual radius
+		Radius := MainProc.ZoneServer.Options.CharShowArea + 1;
+		OnTouchCellFound := false;
 
-	Index := MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(Self);
-	if Index > -1 then
-		MapInfo.Cell[Position.X, Position.Y].Beings.Delete(Index);
+		if Self is TCharacter then
+		begin
+			TCharacter(Self).CharaState := charaWalking;
+		end;
 
-	OldPt     := Position;
-	Position	:= Path[PathIndex];
-	Direction := GetDirection(OldPt, Position);
+		OldPt     := Position;
 
-	MapInfo.Cell[Position.X, Position.Y].Beings.AddObject(Self.ID, Self);
+		Index := MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(Self);
+		if Index > -1 then
+			MapInfo.Cell[Position.X, Position.Y].Beings.Delete(Index);
 
+		Position	:= Path[PathIndex];
+		Direction := GetDirection(OldPt, Position);
+
+		MapInfo.Cell[Position.X, Position.Y].Beings.AddObject(Self.ID, Self);
 	//-Tsusai
 	//17 (Radius) covers the old 16x16 grid, no matter which dir we go I think
 	//This is some complicated mathematics here, so I hope I do explain this right.
@@ -470,115 +475,81 @@ Begin
 	XXXXXXXXXX
 	*)
 
-	//Go up the entire vertical axis
-	for idxY := Max(OldPt.Y - Radius,0) to
-		Min(OldPt.Y + Radius,MapInfo.Size.Y-1) do
-	begin
-		//if we are on the top 2 or bottom 2 rows, go across
-		if (idxY = OldPt.Y - Radius) or
-			(idxY = (OldPt.Y - Radius) + 1) or
-			(idxY = OldPt.Y + Radius) or
-			(idxY = (OldPt.Y + Radius) - 1) then
+		//Go up the entire vertical axis
+		for idxY := Max(OldPt.Y - Radius,0) to
+			Min(OldPt.Y + Radius,MapInfo.Size.Y-1) do
 		begin
-			//Go across the entire row
-			for idxX := Max(OldPt.X - Radius,0) to
-				Min(OldPt.X + Radius,MapInfo.Size.X-1) do
+			//if we are on the top 2 or bottom 2 rows, go across
+			if (idxY = OldPt.Y - Radius) or
+				(idxY = (OldPt.Y - Radius) + 1) or
+				(idxY = OldPt.Y + Radius) or
+				(idxY = (OldPt.Y + Radius) - 1) then
 			begin
+				//Go across the entire row
+				for idxX := Max(OldPt.X - Radius,0) to
+					Min(OldPt.X + Radius,MapInfo.Size.X-1) do
+				begin
+					HideBeings;
+					ShowBeings;
+				end;
+			end else
+			begin
+				//Left most side
+				idxX := Max(OldPt.X - Radius,0);
 				HideBeings;
 				ShowBeings;
+				//Left 2nd column
+				idxX := Max((OldPt.X - Radius) + 1,0);
+				HideBeings;
+				ShowBeings;
+				//Right most side
+				idxX := Min(OldPt.X + Radius,MapInfo.Size.X);
+				HideBeings;
+				ShowBeings;
+				//2nd from right
+				idxX := Min((OldPt.X + Radius) -1 ,MapInfo.Size.X);
+				HideBeings;
+				ShowBeings;
+
 			end;
-		end else
-		begin
-			//Left most side
-			idxX := Max(OldPt.X - Radius,0);
-			HideBeings;
-			ShowBeings;
-			//Left 2nd column
-			idxX := Max((OldPt.X - Radius) + 1,0);
-			HideBeings;
-			ShowBeings;
-			//Right most side
-			idxX := Min(OldPt.X + Radius,MapInfo.Size.X);
-			HideBeings;
-			ShowBeings;
-			//2nd from right
-			idxX := Min((OldPt.X + Radius) -1 ,MapInfo.Size.X);
-			HideBeings;
-			ShowBeings;
-
-		end;
-	end;
-
-	if Self is TCharacter then
-	begin
-		if NOT (TCharacter(Self).CharaState = charaWalking) then
-		begin
-			PathIndex := Path.Count -1;
 		end;
 
-		//Check for ontouch events.
-		for Index := MapInfo.Cell[Position.X][Position.Y].Beings.Count-1 downto 0 do
+		if Self is TCharacter then
 		begin
-			if MapInfo.Cell[Position.X][Position.Y].Beings.Objects[Index] is TOnTouchCellEvent then
+			if NOT (TCharacter(Self).CharaState = charaWalking) then
 			begin
-				if Self IS TCharacter then
+				PathIndex := Path.Count;
+			end;
+
+			//Check for ontouch events.
+			for Index := MapInfo.Cell[Position.X][Position.Y].Beings.Count-1 downto 0 do
+			begin
+				if MapInfo.Cell[Position.X][Position.Y].Beings.Objects[Index] is TOnTouchCellEvent then
 				begin
-					OnTouchCellFound := true;
-					OnTouchCell := TOnTouchCellEvent(MapInfo.Cell[Position.X][Position.Y].Beings.Objects[Index]);
-					if TCharacter(Self).OnTouchIDs.IndexOf(OnTouchCell.ScriptNPC.ID) = -1 then
+					if Self IS TCharacter then
 					begin
-						TCharacter(Self).OnTouchIDs.Add(OnTouchCell.ScriptNPC.ID);
-						TCharacter(Self).CharaState := charaStanding;
-						OnTouchCell.Execute(TCharacter(Self));
+						OnTouchCellFound := true;
+						OnTouchCell := TOnTouchCellEvent(MapInfo.Cell[Position.X][Position.Y].Beings.Objects[Index]);
+						if TCharacter(Self).OnTouchIDs.IndexOf(OnTouchCell.ScriptNPC.ID) = -1 then
+						begin
+							TCharacter(Self).OnTouchIDs.Add(OnTouchCell.ScriptNPC.ID);
+							TCharacter(Self).CharaState := charaStanding;
+							OnTouchCell.Execute(TCharacter(Self));
+						end;
 					end;
 				end;
 			end;
-		end;
 
-		if (not OnTouchCellFound) and (Self is TCharacter) then
-		begin
-			if TCharacter(Self).OnTouchIDs.Count > 0 then
+			if (not OnTouchCellFound) and (Self is TCharacter) then
 			begin
-				TCharacter(Self).OnTouchIDs.Clear;
+				if TCharacter(Self).OnTouchIDs.Count > 0 then
+				begin
+					TCharacter(Self).OnTouchIDs.Clear;
+				end;
 			end;
+
 		end;
 
-	end;
-
-	if (PathIndex = Path.Count - 1) then
-	begin
-		if Self IS TCharacter then
-		begin
-			TCharacter(Self).CharaState := charaStanding;
-		end;
-
-		{ TODO : Need to call this so we can interupt as if a trap sprung. }
-		{if GameState = charaStand then
-		begin
-			//UpdateLocation
-			//So we can make as if we just steped on a trap or were frozen, etc, stop where
-			//we are and update location.
-		end;}
-
-		//GameState := charaStand;
-
-		{if (AChara.Skill[144].Lv = 0) then
-		begin
-			HPTick := Tick;
-		end;
-
-		HPRTick := Tick - 500;
-		SPRTick := Tick;
-		PathIndex := 0;}
-	end else
-	begin
-		if Self IS TCharacter then
-		begin
-			if TCharacter(Self).CharaState = charaStanding then
-			begin
-				exit;
-			end;
-		end;
 		//Move to the next element in the path list.
 		Inc(PathIndex);
 
@@ -594,8 +565,16 @@ Begin
 		AMoveEvent := TMovementEvent.Create(MoveTick, Self);
 		AMoveEvent.ExpiryTime := MoveTick;
 		Self.EventList.Add(AMoveEvent);
-	end;
+	end else
+	begin
+		PathIndex := 0;
 
+		if Self IS TCharacter then
+		begin
+			TCharacter(Self).CharaState := charaStanding;
+		end;
+
+  end;
 End; (* Proc TBeing.Walk
 *-----------------------------------------------------------------------------*)
 

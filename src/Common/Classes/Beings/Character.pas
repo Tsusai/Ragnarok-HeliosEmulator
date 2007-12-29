@@ -343,6 +343,7 @@ uses
 	ZoneSend,
 	AreaLoopEvents,
 	AttackEvent,
+	MovementEvent,
 	WinLinux
 	{Third Party}
 	//none
@@ -1931,40 +1932,109 @@ var
 	AnAttackEvent : TAttackEvent;
 	idxY : integer;
 	idxX : integer;
+	Index : Integer;
 	BeingIdx : integer;
 	ABeing : TBeing;
-begin
-	if CharaState = charaAttacking then
-	begin
-		TargetID := ATargetID;
+	ATarget : TBeing;
 
-		for idxY := Max(0,Position.Y-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.Y+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.Y-1) do
+	Function GetTargetIfInRange(ID : LongWord; Distance : Word) : TBeing;
+	var
+		idxX, idxY, BeingIdx : Integer;
+	begin
+		Result := NIL;
+		for idxY := Max(0,Position.Y-Distance) to Min(Position.Y+Distance, MapInfo.Size.Y-1) do
 		begin
-			for idxX := Max(0,Position.X-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.X+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.X-1) do
+			for idxX := Max(0,Position.X-Distance) to Min(Position.X+Distance, MapInfo.Size.X-1) do
 			begin
 				for BeingIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
 				begin
-					if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
+					if TBeing(MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx]).ID = ATargetID then
+					begin
+						Result := TBeing(MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx]);
+						Exit;
+          end;
+        end;
+			end;
+		end;
+	end;
+
+begin
+		ATarget := GetTargetIfInRange(ATargetID, 1);
+		if Assigned(ATarget) then
+		begin
+			TargetID := ATargetID;
+
+			for Index := 0 to EventList.Count-1 do
+			begin
+				if EventList[Index] is TMovementEvent then
+				begin
+					EventList.Delete(Index);
+				end;
+			end;
+			
+			//show character attack motion
+			for idxY := Max(0,Position.Y-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.Y+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.Y-1) do
+			begin
+				for idxX := Max(0,Position.X-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.X+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.X-1) do
+				begin
+					for BeingIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
 					begin
 						if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
 						begin
-							ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
-							if ABeing is TCharacter then
+							if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
 							begin
-								DoAction(TCharacter(ABeing).ClientInfo, ID, TargetID, ASpeed, 0, ACTION_ATTACK, 0, 0, 0);
+								ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
+								if ABeing is TCharacter then
+								begin
+									DoAction(TCharacter(ABeing).ClientInfo, ID, TargetID, ASpeed, 0, ACTION_ATTACK, 0, 0, 0);
+								end;
+							end;
+						end;
+					end;
+				end;
+			end;
+			//if we're continually attacking then att an attack event
+			if AttackContinuous = true then
+			begin
+				AnAttackEvent := TAttackEvent.Create(GetTick+1000, self, ATarget);
+				EventList.Add(AnAttackEvent);
+			end;
+		end else
+		begin
+			//More temporary code, gotta figure out a better way to do this stuff...
+			for idxY := Max(0,Position.Y-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.Y+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.Y-1) do
+			begin
+				for idxX := Max(0,Position.X-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.X+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.X-1) do
+				begin
+					for BeingIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
+					begin
+						if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
+						begin
+							if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
+							begin
+								ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
+								if ABeing.ID = ATargetID then
+								begin
+									TargetID := ATargetID;
+									PathIndex := 0;
+									if MapInfo.GetPath(Position, ABeing.Position, Path) = true then
+									begin
+										EventList.Add(TMovementEvent.Create(GetTick+Speed, self));
+										ZoneSendWalkReply(self, Path[Path.Count-1]);
+										ShowBeingWalking;
+										ATarget := ABeing;
+
+										AnAttackEvent := TAttackEvent.Create(GetTick+250, self, ATarget);
+										EventList.Add(AnAttackEvent);
+									end;
+									Exit;
+								end;
 							end;
 						end;
 					end;
 				end;
 			end;
 		end;
-
-		if AttackContinuous = true then
-		begin
-			AnAttackEvent := TAttackEvent.Create(GetTick+1000, self, TargetID);
-			EventList.Add(AnAttackEvent);
-		end;
-	end;
 end;
 //------------------------------------------------------------------------------
 

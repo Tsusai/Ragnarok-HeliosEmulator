@@ -287,14 +287,19 @@ begin
 								//We've found it!
 								Result	:= TRUE;
 								APath.Clear;
+
+								//if the destination point has beings in it, remove it from the list
+								//this is for attacking and other functions who move to the mob's
+								//position, it's our responsibility to prevent us from standing on
+								//them =P
+								if Cell[NewFloodItem.Path[0].X][NewFloodItem.Path[0].Y].Beings.Count > 0 then
+								begin
+									NewFloodItem.Path.Delete(0);
+								end;
+
 								for WriteIndex := NewFloodItem.Path.Count -1 downto 0 do
 								begin
 									APath.Add(NewFloodItem.Path[WriteIndex]);
-								end;
-                //make sure there are no characters in the destination point.
-								if Cell[APath[APath.Count-1].X][APath[APath.Count-1].Y].Beings.Count > 0 then
-								begin
-									APath.Delete(APath.Count-1);
 								end;
 
 								(*Tsusai Mar 16 2007: The Assign does copy..but the problem is

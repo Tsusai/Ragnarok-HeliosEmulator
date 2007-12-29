@@ -265,7 +265,8 @@ uses
 	Database,
 	AddFriendEvent,
 	AreaLoopEvents,
-	AttackEvent
+	AttackEvent,
+	Globals
 	{3rd Party}
 	//none
 	;
@@ -919,10 +920,11 @@ procedure CancelAttack(
 var
 	Index : Integer;
 begin
-	for Index := AChara.EventList.Count-1 to 0 do
+	for Index := AChara.EventList.Count-1 downto 0 do
 	begin
 		if AChara.EventList[Index] is TAttackEvent then
 		begin
+    	Console.Message('EventDeleted');
 			AChara.EventList.Delete(Index);
     end;
 	end;
@@ -960,23 +962,31 @@ begin
 	if (AChara.ScriptStatus = SCRIPT_NOTRUNNING) and
 	(AChara.CharaState in [charaStanding,charaAttacking,charaWalking]) then
 	begin
-
 		if AChara.MapInfo.GetPath(AChara.Position, DestPoint, AChara.Path) then
 		begin
 			with AChara do
 			begin
 
-				//Remove previous movement events from the event list
-				for Index := AChara.EventList.Count -1 downto 0 do
+				//Remove previous attack events from the event list
+				for Index := 0 to AChara.EventList.Count -1 do
 				begin
-					if AChara.EventList.Items[Index] is TMovementEvent then
+					if EventList.Items[Index] is TAttackEvent then
 					begin
-						AChara.EventList.Delete(Index);
+						EventList.Delete(Index);
 					end;
 				end;
 
-				AChara.CharaState := charaStanding;
-				AChara.PathIndex := 0;
+				//Remove previous movement events from the event list
+				for Index := 0 to AChara.EventList.Count -1 do
+				begin
+					if EventList.Items[Index] is TMovementEvent then
+					begin
+						EventList.Delete(Index);
+					end;
+				end;
+
+				CharaState := charaStanding;
+				PathIndex := 0;
 
 				//Setup first speed
 				//Check to see if we're moving diagonally, if we are, we adjust the speed
@@ -988,11 +998,11 @@ begin
 					spd := Speed;
 				end;
 
-				AChara.MoveTick := GetTick + spd DIV 2;//changed to div2 to offset
+				MoveTick := GetTick + spd DIV 2;//changed to div2 to offset
 				//annoying difference between server and client.
 
 				MoveEvent := TMovementEvent.Create(MoveTick,AChara);
-				AChara.EventList.Add(MoveEvent);
+				EventList.Add(MoveEvent);
 
 				ZoneSendWalkReply(AChara,DestPoint);
 				ShowBeingWalking;

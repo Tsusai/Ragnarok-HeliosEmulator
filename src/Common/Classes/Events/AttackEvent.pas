@@ -19,6 +19,7 @@ uses
 	//none
 	{Project}
 	Character,
+	Being,
 	Event
 	{3rd Party}
 	//none
@@ -33,9 +34,9 @@ type
 	private
 		Character : TCharacter;
 	public
-		TargetID : LongWord;
+		TargetBeing : TBeing;
 		Procedure Execute; override;
-		constructor Create(SetExpiryTime : LongWord; ACharacter : TCharacter; ATargetID : LongWord);
+		constructor Create(SetExpiryTime : LongWord; ACharacter : TCharacter; ATargetBeing : TBeing);
 	end;
 //------------------------------------------------------------------------------
 
@@ -55,15 +56,15 @@ implementation
 //------------------------------------------------------------------------------
 Procedure TAttackEvent.Execute;
 begin
-	Character.Attack(TargetID, true);
+	Character.Attack(TargetBeing.ID, true);
 end;//Execute
 //------------------------------------------------------------------------------
 
-constructor TAttackEvent.Create(SetExpiryTime : LongWord; ACharacter : TCharacter; ATargetID : LongWord);
+constructor TAttackEvent.Create(SetExpiryTime : LongWord; ACharacter : TCharacter; ATargetBeing : TBeing);
 begin
 	inherited Create(SetExpiryTime);
 	Character := ACharacter;
-	TargetID := ATargetID;
+	TargetBeing := ATargetBeing;
 end;
 
 end.

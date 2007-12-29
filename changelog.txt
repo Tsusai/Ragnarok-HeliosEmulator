@@ -15,6 +15,19 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 400 -
+[2007/12/28] RaX - The big 400 and lots of big changes to go with it. Attacking
+ and following after continuous attack has been implemented. Walking is smoother
+ as well due to these changes.
+[2007/12/27] RaX - Modified TCharacter.Attack to handle adding movement events if
+ the enemy wasn't in range.
+[2007/12/28] RaX - changed TBeing.walk around to handle new attacking changes.
+[2007/12/27] RaX - Changed ZoneRecv.CharacterWalkRequest to handle states other
+ than charaStanding.
+[2007/12/27] RaX - Changed AMap.GetPath to prevent people from ending moving
+ where another being is.
+-
+
 - Rev 399 -
 [2007/12/28] Aeomin - Removed special effect of death, since client handle 'em
 -
