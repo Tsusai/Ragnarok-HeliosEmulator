@@ -284,8 +284,6 @@ begin
 							//check to see if we've found the end point.
 							if PointsEqual(NewFloodItem.Position, EndPointMod) then
 							begin
-								//We've found it!
-								Result	:= TRUE;
 								APath.Clear;
 
 								//if the destination point has beings in it, remove it from the list
@@ -297,9 +295,14 @@ begin
 									NewFloodItem.Path.Delete(0);
 								end;
 
-								for WriteIndex := NewFloodItem.Path.Count -1 downto 0 do
+								if NewFloodItem.Path.Count > 0 then
 								begin
-									APath.Add(NewFloodItem.Path[WriteIndex]);
+									//We've found it!
+									Result	:= TRUE;
+									for WriteIndex := NewFloodItem.Path.Count -1 downto 0 do
+									begin
+										APath.Add(NewFloodItem.Path[WriteIndex]);
+									end;
 								end;
 
 								(*Tsusai Mar 16 2007: The Assign does copy..but the problem is

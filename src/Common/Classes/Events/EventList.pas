@@ -49,6 +49,9 @@ type
 		Procedure Delete(Index : Integer);
 		Procedure Clear();
 
+		Procedure DeleteMovementEvents;
+		Procedure DeleteAttackEvents;
+
 		Property Count : Integer
 		read MsCount;
 	end;
@@ -56,7 +59,10 @@ type
 
 
 implementation
-
+uses
+	MovementEvent,
+	AttackEvent;
+	
 const
 	ALLOCATE_SIZE = 20; // How many Events to store in each incremental memory block
 
@@ -353,5 +359,53 @@ begin
 	end;
 
 end;{SetValue}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//DeleteMovementEvents                                                PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Deletes all events that are TMovementEvents
+//
+//  Changes -
+//    December 22nd, 2006 - RaX - Created.
+//------------------------------------------------------------------------------
+procedure TEventList.DeleteMovementEvents;
+var
+	Index : Integer;
+begin
+	for Index := 0 to Count - 1 do
+	begin
+		if Items[Index] IS TMovementEvent then
+		begin
+			Delete(Index);
+		end;
+	end;
+end;{DeleteMovementEvents}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//DeleteAttacktEvents                                                PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Deletes all events that are TMovementEvents
+//
+//  Changes -
+//    December 22nd, 2006 - RaX - Created.
+//------------------------------------------------------------------------------
+procedure TEventList.DeleteAttackEvents;
+var
+	Index : Integer;
+begin
+	for Index := 0 to Count - 1 do
+	begin
+		if Items[Index] IS TAttackEvent then
+		begin
+			Delete(Index);
+		end;
+	end;
+end;{DeleteAttackEvents}
 //------------------------------------------------------------------------------
 end.

@@ -917,17 +917,8 @@ procedure CancelAttack(
 	const InBuffer : TBuffer;
 	const ReadPts : TReadPts
 );
-var
-	Index : Integer;
 begin
-	for Index := AChara.EventList.Count-1 downto 0 do
-	begin
-		if AChara.EventList[Index] is TAttackEvent then
-		begin
-    	Console.Message('EventDeleted');
-			AChara.EventList.Delete(Index);
-    end;
-	end;
+	AChara.EventList.DeleteAttackEvents;
 end;{CancelAttack}
 //------------------------------------------------------------------------------
 
@@ -956,7 +947,7 @@ var
 	MoveEvent : TMovementEvent;
 	DestPoint : TPoint;
 	spd       : LongWord;
-	Index     : Integer;
+
 begin
 	DestPoint := BufferReadOnePoint(ReadPts[0], InBuffer);
 	if (AChara.ScriptStatus = SCRIPT_NOTRUNNING) and
@@ -968,22 +959,10 @@ begin
 			begin
 
 				//Remove previous attack events from the event list
-				for Index := 0 to AChara.EventList.Count -1 do
-				begin
-					if EventList.Items[Index] is TAttackEvent then
-					begin
-						EventList.Delete(Index);
-					end;
-				end;
+				EventList.DeleteAttackEvents;
 
 				//Remove previous movement events from the event list
-				for Index := 0 to AChara.EventList.Count -1 do
-				begin
-					if EventList.Items[Index] is TMovementEvent then
-					begin
-						EventList.Delete(Index);
-					end;
-				end;
+				EventList.DeleteMovementEvents;
 
 				CharaState := charaStanding;
 				PathIndex := 0;

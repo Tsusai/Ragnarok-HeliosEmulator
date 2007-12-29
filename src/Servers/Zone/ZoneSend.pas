@@ -1014,7 +1014,7 @@ var
 	MapNameSize : Word;
 	ClientIPSize : Word;
 	MapZoneID	: SmallInt;
-	Index  : Integer;
+
 procedure RemoveFromList;
 var
 	Index : Integer;
@@ -1046,13 +1046,7 @@ begin
 		end else
 		begin
 
-			for Index := ACharacter.EventList.Count -1 downto 0 do
-			begin
-				if ACharacter.EventList.Items[Index] is TMovementEvent then
-				begin
-					ACharacter.EventList.Delete(Index);
-				end;
-			end;
+			ACharacter.EventList.DeleteMovementEvents;
 
 			if Cardinal(MapZoneID) = MainProc.ZoneServer.Options.ID then
 			begin

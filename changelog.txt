@@ -15,6 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 401 -
+[2007/12/28] RaX - Cleaned up attacking.
+[2007/12/29] RaX - Added DeleteMovementEvents and DeleteAttackEvents to Eventlist.
+[2007/12/29] RaX - moved Character.Attack pieces into subroutines, pending further
+ cleanup.
+-
+
 - Rev 400 -
 [2007/12/28] RaX - The big 400 and lots of big changes to go with it. Attacking
  and following after continuous attack has been implemented. Walking is smoother

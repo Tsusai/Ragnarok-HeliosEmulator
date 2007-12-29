@@ -1932,11 +1932,10 @@ var
 	AnAttackEvent : TAttackEvent;
 	idxY : integer;
 	idxX : integer;
-	Index : Integer;
 	BeingIdx : integer;
 	ABeing : TBeing;
 	ATarget : TBeing;
-
+	//check to see if a target is in range
 	Function GetTargetIfInRange(ID : LongWord; Distance : Word) : TBeing;
 	var
 		idxX, idxY, BeingIdx : Integer;
@@ -1957,6 +1956,32 @@ var
 			end;
 		end;
 	end;
+  //show the attack motion and damage
+	Procedure ShowAttack;
+	var
+		idxX, idxY, BeingIdx : Integer;
+	begin
+		for idxY := Max(0,Position.Y-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.Y+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.Y-1) do
+		begin
+			for idxX := Max(0,Position.X-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.X+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.X-1) do
+			begin
+				for BeingIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
+				begin
+					if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
+					begin
+						if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
+						begin
+							ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
+							if ABeing is TCharacter then
+							begin
+								DoAction(TCharacter(ABeing).ClientInfo, ID, TargetID, ASpeed, 0, ACTION_ATTACK, 0, 0, 0);
+							end;
+						end;
+					end;
+				end;
+			end;
+		end;
+	end;
 
 begin
 		ATarget := GetTargetIfInRange(ATargetID, 1);
@@ -1964,35 +1989,11 @@ begin
 		begin
 			TargetID := ATargetID;
 
-			for Index := 0 to EventList.Count-1 do
-			begin
-				if EventList[Index] is TMovementEvent then
-				begin
-					EventList.Delete(Index);
-				end;
-			end;
+			EventList.DeleteMovementEvents;
 			
 			//show character attack motion
-			for idxY := Max(0,Position.Y-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.Y+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.Y-1) do
-			begin
-				for idxX := Max(0,Position.X-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.X+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.X-1) do
-				begin
-					for BeingIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
-					begin
-						if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
-						begin
-							if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
-							begin
-								ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
-								if ABeing is TCharacter then
-								begin
-									DoAction(TCharacter(ABeing).ClientInfo, ID, TargetID, ASpeed, 0, ACTION_ATTACK, 0, 0, 0);
-								end;
-							end;
-						end;
-					end;
-				end;
-			end;
+			ShowAttack;
+
 			//if we're continually attacking then att an attack event
 			if AttackContinuous = true then
 			begin
@@ -2002,6 +2003,9 @@ begin
 		end else
 		begin
 			//More temporary code, gotta figure out a better way to do this stuff...
+			//all this nasty loop code does is find a target that has moved out of range
+			//so we can walk to it and attempt to attack it again.
+			//it then creates a new attack event.
 			for idxY := Max(0,Position.Y-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.Y+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.Y-1) do
 			begin
 				for idxX := Max(0,Position.X-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.X+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.X-1) do
@@ -2024,7 +2028,7 @@ begin
 										ShowBeingWalking;
 										ATarget := ABeing;
 
-										AnAttackEvent := TAttackEvent.Create(GetTick+250, self, ATarget);
+										AnAttackEvent := TAttackEvent.Create(GetTick+Word(Path.Count)*Speed, self, ATarget);
 										EventList.Add(AnAttackEvent);
 									end;
 									Exit;
