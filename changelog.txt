@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 410 -
+[2007/12/31] Aeomin - Made VAR_ISMARRIED return 0 & 1 instead FALSE & TRUE
+-
+
 - Rev 409 -
 [2007/12/31] Aeomin - Ok, this is requested. Implemented Spre's VAR_ISMARRIED with cleanups
 -
