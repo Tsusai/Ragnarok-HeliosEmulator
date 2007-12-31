@@ -1935,6 +1935,7 @@ var
 	BeingIdx : integer;
 	ABeing : TBeing;
 	ATarget : TBeing;
+	Pass : Boolean;
 	//check to see if a target is in range
 	Function GetTargetIfInRange(ID : LongWord; Distance : Word) : TBeing;
 	var
@@ -1987,19 +1988,31 @@ begin
 		ATarget := GetTargetIfInRange(ATargetID, 1);
 		if Assigned(ATarget) then
 		begin
-			TargetID := ATargetID;
+			Pass := TRUE;
+			if ATarget is TCharacter then
+			begin
+				if (TCharacter(ATarget).CharaState = charaDead) OR
+					 (TCharacter(ATarget).CharaState = charaPlayDead)then
+				begin
+					Pass := FALSE;
+				end;
+			end;
 
 			EventList.DeleteMovementEvents;
-			
-			//show character attack motion
-			ShowAttack;
 
-			//if we're continually attacking then att an attack event
-			if AttackContinuous = true then
+			if Pass = true then
 			begin
-				AnAttackEvent := TAttackEvent.Create(GetTick+1000, self, ATarget);
-				EventList.Add(AnAttackEvent);
+				//show character attack motion
+				ShowAttack;
+
+			//if we're continually attacking then add an attack event
+				if AttackContinuous = true then
+				begin
+					AnAttackEvent := TAttackEvent.Create(GetTick+1000, self, ATarget);
+					EventList.Add(AnAttackEvent);
+				end;
 			end;
+
 		end else
 		begin
 			//More temporary code, gotta figure out a better way to do this stuff...

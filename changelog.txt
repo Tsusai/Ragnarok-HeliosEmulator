@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 403 -
+[2007/12/30] RaX - Added check for charastate before attacking...we don't want to
+ be able to attack dead people...
+-
+
 - Rev 402 -
 [2007/12/30] RaX - Fixed same zone teleports not showing teleport out and leaving
  trash characters behind =P.
