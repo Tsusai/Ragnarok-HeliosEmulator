@@ -15,14 +15,26 @@ interface
 const
 
 // 0 is reserved for default string based getvar.
-VAR_CURXPOS  = 1;
-VAR_CURYPOS  = 2;
-VAR_CLEVEL   = 3;
-VAR_JOB      = 4;
-VAR_JOBLEVEL = 5;
-VAR_MONEY    = 6;
-VAR_SEX      = 7;
-VAR_SPPOINT  = 8;
+VAR_ASPD	= 1;
+VAR_CURXPOS	= 2;
+VAR_CURYPOS	= 3;
+VAR_CLEVEL	= 4;
+VAR_EXP		= 5;
+VAR_HAIRCOLOR	= 6;
+VAR_HP		= 7;
+VAR_JOB		= 8;
+VAR_JOBEXP	= 9;
+VAR_JOBLEVEL	= 10;
+VAR_MAXHP	= 11;
+VAR_MAXSP	= 12;
+VAR_MAXWEIGHT	= 13;
+VAR_MONEY	= 14;
+VAR_POINT	= 15;
+VAR_SEX		= 16;
+VAR_SP		= 17;
+VAR_SPEED	= 18;
+VAR_SPPOINT	= 19;
+VAR_WEIGHT	= 20;
 
 implementation
 

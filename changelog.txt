@@ -15,9 +15,14 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 405 -
+[2007/12/30] Aeomin - Again, need update script =)
+[2007/12/30] Aeomin - Yet, added 12 more of character constants (Total 20 now)
+-
+
 - Rev 404 -
 [2007/12/30] Aeomin - Note: This update requires update in script to order to work.
-[2007/12/30] Aeomin - Added 8 character constant for getvar.
+[2007/12/30] Aeomin - Added 8 character constants for getvar.
    [VAR_CURXPOS,VAR_CURYPOS,VAR_CLEVEL,VAR_JOB,
     VAR_JOBLEVEL,VAR_MONEY,VAR_SEX,VAR_SPPOINT]
 -

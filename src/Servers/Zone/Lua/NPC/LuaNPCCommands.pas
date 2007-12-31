@@ -433,6 +433,10 @@ begin
 					end;
 				end;
 
+				VAR_ASPD: begin
+					lua_pushinteger(ALua, AChara.ASpeed);
+				end;
+
 				VAR_CURXPOS: begin
 					lua_pushinteger(ALua, AChara.Position.X);
 				end;
@@ -445,24 +449,68 @@ begin
 					lua_pushinteger(ALua, AChara.BaseLV);
 				end;
 
+				VAR_EXP: begin
+					lua_pushinteger(ALua, AChara.BaseEXP);
+				end;
+
+				VAR_HAIRCOLOR: begin
+					lua_pushinteger(ALua, AChara.HairColor);
+				end;
+
+				VAR_HP: begin
+					lua_pushinteger(ALua, AChara.HP);
+				end;
+
 				VAR_JOB: begin
 					lua_pushinteger(ALua, AChara.JID);
+				end;
+
+				VAR_JOBEXP: begin
+					lua_pushinteger(ALua, AChara.JobEXP);
 				end;
 
 				VAR_JOBLEVEL: begin
 					lua_pushinteger(ALua, AChara.JobLV);
 				end;
 
+				VAR_MAXHP: begin
+					lua_pushinteger(ALua, AChara.MaxHP);
+				end;
+
+				VAR_MAXSP: begin
+					lua_pushinteger(ALua, AChara.MaxSP);
+				end;
+
+				VAR_MAXWEIGHT: begin
+					lua_pushinteger(ALua, AChara.MaxWeight);
+				end;
+
 				VAR_MONEY : begin
 					lua_pushinteger(ALua, AChara.Zeny);
+				end;
+
+				VAR_POINT: begin
+					lua_pushinteger(ALua, AChara.StatusPts);
 				end;
 
 				VAR_SEX : begin
 					lua_pushinteger(ALua, TClientLink(AChara.ClientInfo.Data).AccountLink.GenderNum);
 				end;
 
+				VAR_SP: begin
+					lua_pushinteger(ALua, AChara.SP);
+				end;
+
+				VAR_SPEED: begin
+					lua_pushinteger(ALua, AChara.Speed);
+				end;
+
 				VAR_SPPOINT: begin
 					lua_pushinteger(ALua, AChara.SkillPts);
+				end;
+
+				VAR_WEIGHT: begin
+					lua_pushinteger(ALua, AChara.Weight);
 				end;
 			end;
 		end;
