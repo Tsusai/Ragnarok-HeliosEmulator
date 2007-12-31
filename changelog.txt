@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 412 -
+[2007/12/31] Aeomin - Cleanup unneeded warp routine used in GM command.
+-
+
 - Rev 411 -
 [2007/12/31] Aeomin - Added script function spdrain & hpdrain
 -

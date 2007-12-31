@@ -437,26 +437,6 @@ begin
 				RecvWhisperReply(AClient, ABuffer);
 			end;
 		end;
-	$2213:
-		begin
-			if AClient.Data is TZoneServerLink then
-			begin
-				RecvBuffer(AClient,ABuffer[2],2);
-				Size := BufferReadWord(2,ABuffer);
-				RecvBuffer(AClient,ABuffer[4],Size-4);
-				RecvZoneMapWarpRequest(AClient, ABuffer);
-			end;
-		end;
-	$2214:
-		begin
-			if AClient.Data is TZoneServerLink then
-			begin
-				RecvBuffer(AClient,ABuffer[2],2);
-				Size := BufferReadWord(2,ABuffer);
-				RecvBuffer(AClient,ABuffer[4],Size-4);
-				RecvZoneMapWarpResult(AClient, ABuffer);
-			end;
-		end;
 	$2215:
 		begin
 			if AClient.Data is TZoneServerLink then

@@ -109,24 +109,6 @@ const
 
 
 	//----------------------------------------------------------------------
-	// Map Warp request
-	//----------------------------------------------------------------------
-	procedure ZoneSendMapWarpRequestToInter(
-		AClient : TInterClient;
-		const CharID, ZoneID : LongWord;
-		const MapName: String;
-		const APoint:TPoint
-	);
-	procedure ZoneSendMapWarpResultToInter(
-		AClient : TInterClient;
-		const CharID, ZoneID : LongWord;
-		const MapName: String;
-		const APoint:TPoint
-	);
-	//----------------------------------------------------------------------
-
-
-	//----------------------------------------------------------------------
 	// Friend List
 	//----------------------------------------------------------------------
 	procedure ZoneSendAddFriendRequest(
@@ -544,83 +526,6 @@ begin
 	WriteBufferWord(2, BufferIndex + 1, ReplyBuffer);
 	SendBuffer(MainProc.ZoneServer.ToInterTCPClient,ReplyBuffer,BufferIndex + 1);
 end;{ZoneSendGMCommandResultToInter}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//ZoneSendMapWarpRequestToInter                                        PROCEDURE
-//------------------------------------------------------------------------------
-//  What it does -
-//	Send a warp request
-//--
-//   Pre:
-//	TODO
-//   Post:
-//	TODO
-//--
-//  Changes -
-//	[2007/08/13] Aeomin - Creaed.
-//------------------------------------------------------------------------------
-procedure ZoneSendMapWarpRequestToInter(
-	AClient : TInterClient;
-	const CharID, ZoneID : LongWord;
-	const MapName: String;
-	const APoint:TPoint
-	);
-var
-	OutBuffer   : TBuffer;
-	Size        : Byte;
-begin
-	Size := Length(MapName);
-	WriteBufferWord(0, $2213, OutBuffer);
-	WriteBufferWord(2, Size + 17, OutBuffer);
-	WriteBufferLongWord(4, CharID, OutBuffer);
-	WriteBufferLongWord(8, ZoneID, OutBuffer);
-	WriteBufferWord(12, APoint.X, OutBuffer);               //X, Y is before map name XD
-	WriteBufferWord(14, APoint.Y, OutBuffer);
-	WriteBufferByte(16, Size, OutBuffer);
-	WriteBufferString(17, MapName, Size, OutBuffer);
-	SendBuffer(AClient, OutBuffer, Size + 17);
-end;{ZoneSendMapWarpRequestToInter}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//ZoneSendMapWarpResultToInter                                         PROCEDURE
-//------------------------------------------------------------------------------
-//  What it does -
-//	Send warp request result back to inter then used to "convert" to command
-//	Packet structure is same as request -.-
-//--
-//   Pre:
-//	TODO
-//   Post:
-//	TODO
-//--
-//  Changes -
-//	[2007/08/13] Aeomin - Created.
-//------------------------------------------------------------------------------
-procedure ZoneSendMapWarpResultToInter(
-	AClient : TInterClient;
-	const CharID, ZoneID : LongWord;
-	const MapName: String;
-	const APoint:TPoint
-	);
-var
-	OutBuffer   : TBuffer;
-	Size        : Byte;
-begin
-	Size := Length(MapName);
-	WriteBufferWord(0, $2214, OutBuffer);
-	WriteBufferWord(2, Size + 17, OutBuffer);
-	WriteBufferLongWord(4, CharID, OutBuffer);
-	WriteBufferLongWord(8, ZoneID, OutBuffer);
-	WriteBufferWord(12, APoint.X, OutBuffer);
-	WriteBufferWord(14, APoint.Y, OutBuffer);
-	WriteBufferByte(16, Size, OutBuffer);
-	WriteBufferString(17, MapName, Size, OutBuffer);
-	SendBuffer(AClient, OutBuffer, Size + 17);
-end;{ZoneSendMapWarpResultToInter}
 //------------------------------------------------------------------------------
 
 

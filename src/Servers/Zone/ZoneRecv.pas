@@ -203,10 +203,6 @@ uses
 		const InBuffer : TBuffer
 	);
 
-	procedure RecvMapWarpRequest(
-			InBuffer : TBuffer
-	);
-
 	procedure RecvRedirectWhisper(
 			InBuffer : TBuffer
 	);
@@ -513,6 +509,7 @@ begin
 	begin
 		if MainProc.ZoneServer.MapList[MapIndex].State = UNLOADED then
 		begin
+			system.Writeln(AChara.Map);
 			MainProc.ZoneServer.MapList[MapIndex].Load;
 
 			AMap := MainProc.ZoneServer.MapList[MapIndex];
@@ -1806,60 +1803,6 @@ begin
 		Error.Free;
 	end;
 end;{RecvGMCommandFromInter}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//RecvMapWarpRequest                                                   PROCEDURE
-//------------------------------------------------------------------------------
-//  What it does -
-//      Receive Map warp request from Inter server.
-//--
-//   Pre:
-//	TODO
-//   Post:
-//	TODO
-//--
-//  Changes -
-//	[2007/08/13] - Aeomin - Created
-//------------------------------------------------------------------------------
-procedure RecvMapWarpRequest(
-	InBuffer : TBuffer
-);
-var
-	CharID        : LongWord;
-	ZoneID        : LongWord;
-	MapNameLen    : Byte;
-	MapName       : String;
-	Map           : TMap;
-	Index         : Integer;
-	APoint        : TPoint;
-begin
-	CharID     := BufferReadLongWord(4, InBuffer);
-	ZoneID     := BufferReadLongWord(8, InBuffer);
-	APoint.X   := BufferReadWord(12, InBuffer);
-	APoint.Y   := BufferReadWord(14, InBuffer);
-	MapNameLen := BufferReadByte(16, InBuffer);
-	MapName    := BufferReadString(17, MapNameLen, InBuffer);
-
-	Index := MainProc.ZoneServer.MapList.IndexOf(MapName);
-	if Index > -1 then
-	begin
-		Map := MainProc.ZoneServer.MapList.Items[Index];
-
-		if Map.SafeLoad then
-		begin
-
-			if (APoint.X > Map.Size.X -1) or (APoint.Y > Map.Size.Y -1)
-			or (APoint.X < 0) or (APoint.Y < 0) or Map.IsBlocked(APoint) then
-			begin
-				APoint := Map.RandomCell;
-			end;
-
-			ZoneSendMapWarpResultToInter(MainProc.ZoneServer.ToInterTCPClient, CharID, ZoneID, MapName, APoint);
-		end;
-	end;
-end;{RecvMapWarpRequest}
 //------------------------------------------------------------------------------
 
 

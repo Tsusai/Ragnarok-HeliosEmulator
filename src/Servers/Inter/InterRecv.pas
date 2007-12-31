@@ -51,16 +51,6 @@ Procedure RecvZoneWarpRequest(
 		ABuffer : TBuffer
 	);
 
-procedure RecvZoneMapWarpRequest(
-		AClient : TIdContext;
-		ABuffer : TBuffer
-	);
-
-procedure RecvZoneMapWarpResult(
-		AClient : TIdContext;
-		ABuffer : TBuffer
-	);
-
 procedure RecvZoneRequestFriend(
 		AClient : TIdContext;
 		ABuffer : TBuffer
@@ -440,104 +430,6 @@ Begin
 		);
 	end;
 End; (* Proc TInterServer.RecvZoneWarpRequest
-*-----------------------------------------------------------------------------*)
-
-
-(*- Procedure -----------------------------------------------------------------*
-TInterServer.RecvZoneMapWarpRequest
---------------------------------------------------------------------------------
-Overview:
---
-	This is used for #Warp GM command, send request to target zone.
-	(Shouldn't confuse with the RecvZoneWarpRequest)
-
-
---
-Revisions:
---
-(Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2007/08/13] Aeomin - Created.
-*-----------------------------------------------------------------------------*)
-procedure RecvZoneMapWarpRequest(
-		AClient : TIdContext;
-		ABuffer : TBuffer
-	);
-var
-	CharID        : LongWord;
-	ZoneID        : LongWord;
-	MapNameLen    : Byte;
-	MapName       : String;
-	X             : Word;
-	Y             : Word;
-	Index         : Integer;
-	ZServerInfo   : TZoneServerInfo;
-begin
-	CharID     := BufferReadLongWord(4, ABuffer);
-	ZoneID     := BufferReadLongWord(8, ABuffer);
-	X          := BufferReadWord(12, ABuffer);
-	Y          := BufferReadWord(14, ABuffer);
-	MapNameLen := BufferReadByte(16, ABuffer);
-	MapName    := BufferReadString(17, MapNameLen, ABuffer);
-
-	Index      := MainProc.InterServer.ZoneServerList.IndexOf(ZoneID);
-	if Index > -1 then
-	begin
-		ZServerInfo := MainProc.InterServer.ZoneServerInfo[Index];
-
-		InterSendMapWarpRequest(ZServerInfo.Connection, CharID, TZoneServerLink(AClient.Data).Info.ZoneID, MapName, X, Y);
-	end;
-
-end;(* Proc TInterServer.RecvZoneMapWarpRequest
-*-----------------------------------------------------------------------------*)
-
-
-(*- Procedure -----------------------------------------------------------------*
-TInterServer.RecvZoneMapWarpResult
---------------------------------------------------------------------------------
-Overview:
---
-	Receive result and convert
-
-
---
-Revisions:
---
-(Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2007/08/13] Aeomin - Created.
-*-----------------------------------------------------------------------------*)
-procedure RecvZoneMapWarpResult(
-		AClient : TIdContext;
-		ABuffer : TBuffer
-	);
-var
-	CharID        : LongWord;
-	ZoneID        : LongWord;
-	MapNameLen    : Byte;
-	MapName       : String;
-	X             : Word;
-	Y             : Word;
-	Index         : Integer;
-	ZServerInfo   : TZoneServerInfo;
-	Command       : String;
-begin
-	CharID     := BufferReadLongWord(4, ABuffer);
-	ZoneID     := BufferReadLongWord(8, ABuffer);
-	X          := BufferReadWord(12, ABuffer);
-	Y          := BufferReadWord(14, ABuffer);
-	MapNameLen := BufferReadByte(16, ABuffer);
-	MapName    := BufferReadString(17, MapNameLen, ABuffer);
-
-	Index      := MainProc.InterServer.ZoneServerList.IndexOf(ZoneID);
-	if Index > -1 then
-	begin
-		ZServerInfo := MainProc.InterServer.ZoneServerInfo[Index];
-
-		Command := '#WarpDev "' + MapName + '",' + IntToStr(X) +',' + IntToStr(Y);
-		//We do not know GMID, and no needed
-		InterParseGMCommand(ZServerInfo.Connection, 0, CharID, TZoneServerLink(AClient.Data).Info.ZoneID, Command);
-	end;
-
-end;(* Proc TInterServer.RecvZoneMapWarpResult
 *-----------------------------------------------------------------------------*)
 
 

@@ -70,16 +70,6 @@ uses
 			CommandString    : String
 	);
 
-	procedure InterSendMapWarpRequest(
-			AClient : TIdContext;
-		const
-			CharID, ZoneID : LongWord;
-		const
-			MapName: String;
-		const
-			X, Y:Word
-		);
-
 	procedure InterSendFriendRequest(
 			AClient : TIdContext;
 			const ReqAID, ReqID  : LongWord;
@@ -502,42 +492,6 @@ begin
 		CommandSeparator.Free;
 		Error.Free;
 	end;
-end;
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//InterSendMapWarpRequest                                              PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//		Redirect request to target zone, ZoneID here is the zone of orignal one
-//
-//	Changes -
-//		[2007/08/13] Aeomin - Create
-//------------------------------------------------------------------------------
-procedure InterSendMapWarpRequest(
-			AClient : TIdContext;
-		const
-			CharID, ZoneID : LongWord;
-		const
-			MapName: String;
-		const
-			X, Y:Word
-		);
-var
-	OutBuffer   : TBuffer;
-	Size        : Byte;
-begin
-	Size := Length(MapName);
-	WriteBufferWord(0, $2213, OutBuffer);
-	WriteBufferWord(2, Size + 17, OutBuffer);
-	WriteBufferLongWord(4, CharID, OutBuffer);
-	WriteBufferLongWord(8, ZoneID, OutBuffer);
-	WriteBufferWord(12, X, OutBuffer);
-	WriteBufferWord(14, Y, OutBuffer);
-	WriteBufferByte(16, Size, OutBuffer);
-	WriteBufferString(17, MapName, Size, OutBuffer);
-	SendBuffer(AClient, OutBuffer, Size + 17);
 end;
 //------------------------------------------------------------------------------
 

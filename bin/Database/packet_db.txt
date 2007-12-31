@@ -37,8 +37,6 @@ Changes : Removed duplicate 0x0187 (WILL CAUSE PROBLEMS)
 0x2210,-1
 0x2211,11
 0x2212,7
-0x2213,-1
-0x2214,-1
 //Request add friend
 0x2215,42
 0x2216,38

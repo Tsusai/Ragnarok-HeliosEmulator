@@ -171,7 +171,12 @@ begin
 				if APoint.Y < 0 then
 					APoint.Y := Random(High(Word));
 				//The map is not in same zone..~
-				ZoneSendMapWarpRequestToInter(MainProc.ZoneServer.ToInterTCPClient, TargetChar.CID, Cardinal(MapZoneID), Arguments[0], APoint);
+				ZoneSendWarp(
+					TargetChar,
+					Arguments[0],
+					APoint.X,
+					APoint.Y
+					)
 			end;
 		end;
 	end else
