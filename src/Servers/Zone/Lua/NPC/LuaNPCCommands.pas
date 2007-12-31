@@ -587,6 +587,14 @@ begin
 				VAR_CHARACTERNAME: begin
 					lua_pushstring(ALua, PChar(AChara.Name));
 				end;
+
+				VAR_HEADPALETTE: begin
+					lua_pushinteger(ALua, AChara.HairColor);
+				end;
+
+				VAR_BODYPALETTE: begin
+					lua_pushinteger(ALua, AChara.ClothesColor);
+				end;
 			end;
 		end;
 	end else
