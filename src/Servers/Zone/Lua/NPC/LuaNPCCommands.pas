@@ -44,12 +44,14 @@ function script_getgold(ALua : TLua) : integer; cdecl; forward;
 function script_getexp(ALua : TLua) : integer; cdecl; forward;
 function script_getJexp(ALua : TLua) : integer; cdecl; forward;
 function script_ResetStat(ALua : TLua) : integer; cdecl; forward;
+function script_HpDrain(ALua : TLua) : integer; cdecl; forward;
+function script_SpDrain(ALua : TLua) : integer; cdecl; forward;
 //Special Commands
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 17;
+	NPCCommandCount = 19;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -72,6 +74,8 @@ const
 		(name:'getexp';func:script_getexp),
 		(name:'getJexp';func:script_getJexp),
 		(name:'ResetStat';func:script_ResetStat),
+		(name:'hpdrain';func:script_HpDrain),
+		(name:'spdrain';func:script_SpDrain),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -721,6 +725,35 @@ begin
 	end;
 end;
 
+// Lose some hp for player
+function script_HpDrain(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	Percentage : Byte;
+begin
+	Result := 0;
+	if GetCharaFromLua(ALua,AChara) then
+	begin
+		Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
+		if AChara.HP > 0 then
+			AChara.HPPercent := AChara.HPPercent - Percentage;
+	end;
+end;
+
+// Lose some sp for player
+function script_SpDrain(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	Percentage : Byte;
+begin
+	Result := 0;
+	if GetCharaFromLua(ALua,AChara) then
+	begin
+		Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
+		if AChara.SP > 0 then
+			AChara.SPPercent := AChara.SPPercent - Percentage;
+	end;
+end;
 
 //Special commands here
 function script_get_charaname(ALua : TLua) : integer; cdecl;

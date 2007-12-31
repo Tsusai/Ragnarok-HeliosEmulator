@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 411 -
+[2007/12/31] Aeomin - Added script function spdrain & hpdrain
+-
+
 - Rev 410 -
 [2007/12/31] Aeomin - Made VAR_ISMARRIED return 0 & 1 instead FALSE & TRUE
 -

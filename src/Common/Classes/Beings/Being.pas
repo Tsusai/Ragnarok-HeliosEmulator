@@ -151,6 +151,10 @@ protected
 	procedure SetPosition(Value : TPoint); virtual;
 	procedure SetSpeed(Value : Word); virtual;
 
+	function GetHpPercent: Byte;
+	procedure SetHPPercent(Value : Byte);
+	function GetSpPercent: Byte;
+	procedure SetSPPercent(Value : Byte);
 public
 	ID					: LongWord;
 	HeadDirection	: Word;
@@ -192,6 +196,8 @@ public
 		write SetBaseStats;
 	property MaxHP     : Word       read fMaxHP write SetMaxHP;
 	property HP        : Word       read fHP write SetHP;
+	property HPPercent : Byte       read GetHpPercent write SetHPPercent;
+	property SPPercent : Byte       read GetSpPercent write SetSPPercent;
 	property MaxSP     : Word       read fMaxSP write SetMaxSP;
 	property SP        : Word       read fSP write SetSP;
 	property Status    : Word       read fStatus write SetStatus;
@@ -1001,4 +1007,92 @@ End; (* Proc TBeing.CalcSpeed
 *-----------------------------------------------------------------------------*)
 
 
+//------------------------------------------------------------------------------
+//GetHpPercent                                                          FUNCTION
+//------------------------------------------------------------------------------
+//  What it does-
+//	Get current HP percentage
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2007/12/31] Aeomin - Added
+//
+//------------------------------------------------------------------------------
+function TBeing.GetHpPercent: Byte;
+begin
+	Result := Trunc(HP/MaxHP*100);
+end;{GetHpPercent}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetHpPercent                                                          FUNCTION
+//------------------------------------------------------------------------------
+//  What it does-
+//	Set current HP percentage
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2007/12/31] Aeomin - Added
+//
+//------------------------------------------------------------------------------
+procedure TBeing.SetHPPercent(Value : Byte);
+begin
+	Value := EnsureRange(Value,0,100);
+	HP    := Trunc(Value/100*MaxHP);
+end;{SetHPPercent}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetSpPercent                                                          FUNCTION
+//------------------------------------------------------------------------------
+//  What it does-
+//	Get current SP percentage
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2007/12/31] Aeomin - Added
+//
+//------------------------------------------------------------------------------
+function TBeing.GetSpPercent: Byte;
+begin
+	Result := Trunc(SP/MaxSP*100);
+end;{GetHpPercent}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetSpPercent                                                          FUNCTION
+//------------------------------------------------------------------------------
+//  What it does-
+//	Set current SP percentage
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2007/12/31] Aeomin - Added
+//
+//------------------------------------------------------------------------------
+procedure TBeing.SetSPPercent(Value : Byte);
+begin
+	Value := EnsureRange(Value,0,100);
+	SP    := Trunc(Value/100*MaxSP);
+end;{SetHPPercent}
+//------------------------------------------------------------------------------
 end.
