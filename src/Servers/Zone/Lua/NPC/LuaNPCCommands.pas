@@ -514,6 +514,13 @@ begin
 					lua_pushinteger(ALua, AChara.Weight);
 				end;
 
+				//Ismarried Variable
+				//Implemented by Spre 2007/12/31
+				//Comment Here Incase changes need to be made, easily Identifiable
+				VAR_ISMARRIED: begin
+					lua_pushboolean(ALua, AChara.IsMarried);
+				end;
+
 				VAR_STR: begin
 					lua_pushinteger(ALua, AChara.ParamBase[STR] + AChara.ParamBonus[STR]);
 				end;

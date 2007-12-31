@@ -108,6 +108,7 @@ protected
 	fCharacterNumber  : Byte;
 	fStatusPts        : Integer;
 	fSkillPts         : Integer;
+	fIsMarried        : Boolean;  // Spre
 	fWeight           : LongWord;
 	fMaxWeight        : LongWord;
 	fKarma            : Word;
@@ -193,6 +194,7 @@ protected
 	procedure SetHeadMid(Value : Word);
 	procedure SetHeadBottom(Value : Word);
 	procedure SetStatusPts(Value : Integer);
+	function  GetMarried:boolean;      // Spre
 	procedure SetSkillPts(Value : Integer);
 	procedure SetSMap(Value : String);
 	procedure SetSMapPt(Value : TPoint);
@@ -295,6 +297,7 @@ public
 	property CharaNum  : Byte       read fCharacterNumber write SetCharaNum;
 	property StatusPts : Integer    read fStatusPts write SetStatusPts;
 	property SkillPts  : Integer    read fSkillPts write SetSkillPts;
+	property IsMarried : Boolean    read GetMarried; //IsMarried Var [Spre]
 	property Karma     : Word       read fKarma write SetKarma;
 	property Manner    : Word       read fManner write SetManner;
 	property PartyID   : LongWord   read fPartyID write SetPartyID;
@@ -1021,6 +1024,27 @@ begin
 	fSkillPts   := EnsureRange(Value, 0, CHAR_SKILLPOINT_MAX);
 	SendSubStat(0,$000c,fSkillPts);
 end;{SetSkillPts}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//GetMarried                                                            FUNCTION
+//------------------------------------------------------------------------------
+//  What it does-
+//     Checks if a Character is married or not. Used in LuaNPCCommands.pas
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		December 31nd, 2007 - Spre - Added cde t check IsMarried
+//
+//------------------------------------------------------------------------------
+function TCharacter.GetMarried : Boolean;
+begin
+	Result := (PartnerID > 0);
+end;{GetMarried}
 //------------------------------------------------------------------------------
 
 

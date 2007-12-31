@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 409 -
+[2007/12/31] Aeomin - Ok, this is requested. Implemented Spre's VAR_ISMARRIED with cleanups
+-
+
 - Rev 408 -
 [2007/12/31] Aeomin - last one.. (rly) added another 2 more.
 -
