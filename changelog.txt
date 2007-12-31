@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 413 -
+[2007/12/31] Aeomin - Fixed npc not loaded when use #warp
+[2007/12/31] Aeomin - Since #warp may need random cell index, and it must load map.
+Moved load npc code to Map.pas
+-
+
 - Rev 412 -
 [2007/12/31] Aeomin - Cleanup unneeded warp routine used in GM command.
 -

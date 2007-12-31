@@ -499,8 +499,6 @@ var
 	OutBuffer   : TBuffer;
 	AMap        : TMap;
 	MapIndex    : Integer;
-	NPCIndex    : Integer;
-	AnNPC       : TNPC;
 begin
 	AChara.EventList.Clear;
 	//Load map cells if they are not already loaded
@@ -509,22 +507,10 @@ begin
 	begin
 		if MainProc.ZoneServer.MapList[MapIndex].State = UNLOADED then
 		begin
-			system.Writeln(AChara.Map);
-			MainProc.ZoneServer.MapList[MapIndex].Load;
+			MainProc.ZoneServer.MapList[MapIndex].SafeLoad;
 
 			AMap := MainProc.ZoneServer.MapList[MapIndex];
 			AChara.MapInfo := AMap;
-			//Enable all npcs on this map.
-			for NPCIndex := 0 to MainProc.ZoneServer.NPCList.Count -1 do
-			begin
-				AnNPC := TNPC(MainProc.ZoneServer.NPCList.Objects[NPCIndex]);
-				if AnNPC.Map = MainProc.ZoneServer.MapList[MapIndex].Name then
-				begin
-					AnNPC.MapInfo := MainProc.ZoneServer.MapList[MapIndex];
-					MainProc.ZoneServer.MapList[MapIndex].Cell[AnNPC.Position.X][AnNPC.Position.Y].Beings.AddObject(AnNPC.ID, AnNPC);
-					AnNPC.Enabled := true;
-				end;
-			end;
 		end else
 		begin
 			AMap := MainProc.ZoneServer.MapList[MapIndex];

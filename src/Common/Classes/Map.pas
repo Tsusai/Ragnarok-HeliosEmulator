@@ -93,6 +93,7 @@ uses
 	GameConstants,
 	Globals,
 	Main,
+	Npc,
 	{3rd Party}
 	List32
 	;
@@ -606,6 +607,8 @@ end;
 function TMap.SafeLoad: Boolean;
 var
 	LoopTries : Byte;
+	NPCIndex    : Integer;
+	AnNPC       : TNPC;
 begin
 	Result := False;
 	case State of
@@ -613,7 +616,20 @@ begin
 			// Just load it
 			Load;
 			if State = LOADED then
+			begin
 				Result := True;
+				//Enable all npcs on this map.
+				for NPCIndex := 0 to MainProc.ZoneServer.NPCList.Count -1 do
+				begin
+					AnNPC := TNPC(MainProc.ZoneServer.NPCList.Objects[NPCIndex]);
+					if AnNPC.Map = Name then
+					begin
+						AnNPC.MapInfo := Self;
+						Cell[AnNPC.Position.X][AnNPC.Position.Y].Beings.AddObject(AnNPC.ID, AnNPC);
+						AnNPC.Enabled := True;
+					end;
+				end;
+			end;
 		end;
 		LOADING: begin
 			//We can't do anything but wait...
