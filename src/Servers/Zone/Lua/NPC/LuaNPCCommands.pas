@@ -409,7 +409,8 @@ end;
 function script_getcharavar(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
-	Value : integer;
+	Value : Integer;
+	StrValue : String;
 	Key : string;
 	KeyConst : Integer;
 begin
@@ -559,6 +560,32 @@ begin
 
 				VAR_STANDARD_LUK: begin
 					lua_pushinteger(ALua, AChara.ParamBase[LUK]);
+				end;
+
+				VAR_CURDIR: begin
+					lua_pushinteger(ALua, AChara.Direction);
+				end;
+
+				VAR_CHARACTERID: begin
+					lua_pushinteger(ALua, AChara.CID);
+				end;
+
+				VAR_ACCOUNTID: begin
+					lua_pushinteger(ALua, AChara.ID);
+				end;
+
+				VAR_MAPNAME: begin
+					lua_pushstring(ALua, PChar(AChara.Map));
+				end;
+
+				VAR_ACCOUNTNAME: begin
+					// sigh.. i'm not sure why but it doesnt work directly.
+					StrValue := TClientLink(AChara.ClientInfo.Data).AccountLink.Username;
+					lua_pushstring(ALua, PChar(StrValue));
+				end;
+
+				VAR_CHARACTERNAME: begin
+					lua_pushstring(ALua, PChar(AChara.Name));
 				end;
 			end;
 		end;
