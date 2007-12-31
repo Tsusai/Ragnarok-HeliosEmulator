@@ -512,6 +512,54 @@ begin
 				VAR_WEIGHT: begin
 					lua_pushinteger(ALua, AChara.Weight);
 				end;
+
+				VAR_STR: begin
+					lua_pushinteger(ALua, AChara.ParamBase[STR] + AChara.ParamBonus[STR]);
+				end;
+
+				VAR_AGI: begin
+					lua_pushinteger(ALua, AChara.ParamBase[AGI] + AChara.ParamBonus[AGI]);
+				end;
+
+				VAR_VIT: begin
+					lua_pushinteger(ALua, AChara.ParamBase[VIT] + AChara.ParamBonus[VIT]);
+				end;
+
+				VAR_INT: begin
+					lua_pushinteger(ALua, AChara.ParamBase[INT] + AChara.ParamBonus[INT]);
+				end;
+
+				VAR_DEX: begin
+					lua_pushinteger(ALua, AChara.ParamBase[DEX] + AChara.ParamBonus[DEX]);
+				end;
+
+				VAR_LUK: begin
+					lua_pushinteger(ALua, AChara.ParamBase[LUK] + AChara.ParamBonus[LUK]);
+				end;
+
+				VAR_STANDARD_STR: begin
+					lua_pushinteger(ALua, AChara.ParamBase[STR]);
+				end;
+
+				VAR_STANDARD_AGI: begin
+					lua_pushinteger(ALua, AChara.ParamBase[AGI]);
+				end;
+
+				VAR_STANDARD_VIT: begin
+					lua_pushinteger(ALua, AChara.ParamBase[VIT]);
+				end;
+
+				VAR_STANDARD_INT: begin
+					lua_pushinteger(ALua, AChara.ParamBase[INT]);
+				end;
+
+				VAR_STANDARD_DEX: begin
+					lua_pushinteger(ALua, AChara.ParamBase[DEX]);
+				end;
+
+				VAR_STANDARD_LUK: begin
+					lua_pushinteger(ALua, AChara.ParamBase[LUK]);
+				end;
 			end;
 		end;
 	end else
