@@ -23,7 +23,8 @@ uses
 	Math,
 	NPC,
 	PacketTypes,
-	ZoneSend
+	ZoneSend,
+	LuaVarConstants
 	;
 
 //Forward declarations of delphi procedures that are added to the lua engine.
@@ -410,6 +411,7 @@ var
 	AChara : TCharacter;
 	Value : integer;
 	Key : string;
+	KeyConst : Integer;
 begin
 	//Returns 1 result
 	Result := 1;
@@ -419,16 +421,50 @@ begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
 			Key := lua_tostring(ALua, 1);
-			//if key = 'VAR_JLEVEL' stuff here
-			//else begin
-				TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
-				try
-					Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.GetCharaVariable(AChara,Key);
-					lua_pushinteger(ALua, Value);
-				finally
-					TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+			KeyConst := lua_tointeger(ALua, 1);
+			case KeyConst of
+				0: begin
+					TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
+					try
+						Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.GetCharaVariable(AChara,Key);
+						lua_pushinteger(ALua, Value);
+					finally
+						TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+					end;
 				end;
-			//end
+
+				VAR_CURXPOS: begin
+					lua_pushinteger(ALua, AChara.Position.X);
+				end;
+
+				VAR_CURYPOS: begin
+					lua_pushinteger(ALua, AChara.Position.Y);
+				end;
+
+				VAR_CLEVEL: begin
+					lua_pushinteger(ALua, AChara.BaseLV);
+				end;
+
+				VAR_JOB: begin
+					lua_pushinteger(ALua, AChara.JID);
+				end;
+
+				VAR_JOBLEVEL: begin
+					lua_pushinteger(ALua, AChara.JobLV);
+				end;
+
+				VAR_MONEY : begin
+					lua_pushinteger(ALua, AChara.Zeny);
+				end;
+
+				VAR_SEX : begin
+					lua_pushinteger(ALua, TClientLink(AChara.ClientInfo.Data).AccountLink.GenderNum);
+				end;
+
+				VAR_SPPOINT: begin
+					lua_pushinteger(ALua, AChara.SkillPts);
+				end;
+			end;
 		end;
 	end else
 	begin
