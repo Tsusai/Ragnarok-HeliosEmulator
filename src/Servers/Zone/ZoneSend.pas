@@ -1050,6 +1050,7 @@ begin
 
 			if Cardinal(MapZoneID) = MainProc.ZoneServer.Options.ID then
 			begin
+				ACharacter.ShowTeleportOut;
 				RemoveFromList;
 				ACharacter.Map := MapName;
 				ACharacter.Position := Point(X,Y);

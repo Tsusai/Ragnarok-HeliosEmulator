@@ -15,6 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 402 -
+[2007/12/30] RaX - Fixed same zone teleports not showing teleport out and leaving
+ trash characters behind =P.
+[2007/12/30] RaX - Added ACharacter.ShowTeleportOut to ZoneSendWarp under the 
+ same zone transfer section.
+-
+
 - Rev 401 -
 [2007/12/28] RaX - Cleaned up attacking.
 [2007/12/29] RaX - Added DeleteMovementEvents and DeleteAttackEvents to Eventlist.
