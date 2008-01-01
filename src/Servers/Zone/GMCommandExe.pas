@@ -51,6 +51,7 @@ uses
 	procedure GMKickAll(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 
 	procedure GMEffect(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMWhere(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
 implementation
 uses
 	{RTL/VCL}
@@ -1073,5 +1074,22 @@ begin
 		Error.Add(Arguments[Length(Arguments)-1]);
 	end;
 end;{GMEffect}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMWhere                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Get character current map name & coordinate
+//
+//	Changes-
+//		[2008/01/01] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure GMWhere(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+begin
+	Error.Add('Map : '+TargetChar.Map);
+	Error.Add('At  : ('+IntToStr(TargetChar.Position.X)+','+IntToStr(TargetChar.Position.Y)+')');
+end;{GMWhere}
 //------------------------------------------------------------------------------
 end{GMCommandExe}.

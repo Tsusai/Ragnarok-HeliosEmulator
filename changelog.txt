@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 417 -
+[2008/01/01] Aeomin - Added command #where for debug.
+-
+
 - Rev 416 -
 [2008/01/01] RaX - The first commit of the new year! Fixed leaking beings when
 warping to save point. ZoneServer.pas Disconnect.

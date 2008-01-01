@@ -184,7 +184,9 @@ begin
 	AddCommand('Kick',            GMKick,                 99, TYPE_TARGETCHAR, GMFLAG_NOSPLIT, '<Player Name>');
 	AddCommand('KickAll',         GMKickAll,              99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '');
 	// - - - Misc stuffs
+	// - - - Debug
 	AddCommand('Effect',          GMEffect,               99, TYPE_RETURNBACK, GMFLAG_NORMAL, '<Effect Id>');
+	AddCommand('Where',           GMWhere,               99, TYPE_RETURNBACK, GMFLAG_NORMAL, '');
 	// Use temperary list!!!
 	fCommandPrefix := CommandOptions.Load(fTmpCommandList, fCommands);
 	CommandOptions.Save(fTmpCommandList);
