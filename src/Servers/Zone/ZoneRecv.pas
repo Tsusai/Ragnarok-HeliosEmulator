@@ -1138,6 +1138,7 @@ procedure ReturnToCharacterSelect(
 var
 	ActionByte : Byte;
 	OutBuffer  : TBuffer;
+
 begin
 	FillChar(OutBuffer,3,0);
 	ActionByte := BufferReadByte(ReadPts[0], InBuffer);
@@ -1156,8 +1157,6 @@ begin
 					AChara.SavePoint.X,
 					AChara.SavePoint.Y
 				);
-				AChara.Map := AChara.SaveMap;
-				AChara.Position := AChara.SavePoint;
 			end;
 		end;
 	1:

@@ -297,12 +297,6 @@ begin
 	begin
 		ACharacter := TClientLink(AConnection.Data).CharacterLink;
 
-		if ACharacter.CharaState = charaDead then
-		begin
-			ACharacter.Map := ACharacter.SaveMap;
-			ACharacter.Position := ACharacter.SavePoint;
-		end;
-
 		ZoneSendPlayerOnlineStatus(
 					ToInterTCPClient,
 					ACharacter.ID,
@@ -318,6 +312,7 @@ begin
 		end;
 
 		SendZoneCharaLogOut(ToCharaTCPClient, ACharacter, Byte(ACharacter.DcAndKeepData));
+
 		if Started and (ACharacter.MapInfo <> nil) then
 		begin
 			AMap := ACharacter.MapInfo;
@@ -328,6 +323,13 @@ begin
 				ACharacter.ShowTeleportOut;
 			end;
 		end;
+
+		if ACharacter.CharaState = charaDead then
+		begin
+			ACharacter.Map := ACharacter.SaveMap;
+			ACharacter.Position := ACharacter.SavePoint;
+		end;
+
 		ACharacter.ZoneStatus := isOffline;
 		CharacterIndex := CharacterList.IndexOf(ACharacter.CID);
 		if CharacterIndex > -1 then
