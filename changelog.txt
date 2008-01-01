@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 415 -
+[2007/12/31] Aeomin - Added script function "showimage".
+XD
+-
+
 - Rev 414 -
 [2007/12/31] Aeomin - Added script function "compass".
  It is needed for Guide npcs

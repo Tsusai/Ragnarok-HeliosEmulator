@@ -179,6 +179,11 @@ uses
 		const PointType : LongWord;
 		const Color     : LongWord
 	);
+	procedure SendCutin(
+		AClient		: TIdContext;
+		const Image	: String;
+		const ImageType : Byte
+	);
 implementation
 
 
@@ -1340,5 +1345,35 @@ begin
 	WriteBufferLongWord(19, Color, OutBuffer);
 	SendBuffer(AClient,OutBuffer,GetPacketLength($0144));
 end;{SendCompass}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendCutin                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//	Send cutin thingy to client.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//    [2007/12/31] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure SendCutin(
+	AClient		: TIdContext;
+	const Image	: String;
+	const ImageType : Byte
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $01b3, OutBuffer);
+	WriteBufferString(2, Image, 64, OutBuffer);
+	WriteBufferByte(66, ImageType, OutBuffer);
+	SendBuffer(AClient,OutBuffer,GetPacketLength($01b3));
+end;{SendCutin}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

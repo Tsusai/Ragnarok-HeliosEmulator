@@ -47,12 +47,13 @@ function script_ResetStat(ALua : TLua) : integer; cdecl; forward;
 function script_HpDrain(ALua : TLua) : integer; cdecl; forward;
 function script_SpDrain(ALua : TLua) : integer; cdecl; forward;
 function script_Compass(ALua : TLua) : integer; cdecl; forward;
+function script_ShowImage(ALua : TLua) : integer; cdecl; forward;
 //Special Commands
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 20;
+	NPCCommandCount = 21;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -78,6 +79,7 @@ const
 		(name:'hpdrain';func:script_HpDrain),
 		(name:'spdrain';func:script_SpDrain),
 		(name:'compass';func:script_Compass),
+		(name:'showimage';func:script_ShowImage),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -800,6 +802,30 @@ begin
 		end;
 	end;
 end;
+
+//Show cutin thingy
+function script_ShowImage(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+begin
+	Result := 0;
+	if lua_gettop(ALua) = 2 then
+	begin
+		if lua_isString(ALua, 1) AND
+		lua_isNumber(ALua, 2) then
+		begin
+			if GetCharaFromLua(ALua,AChara) then
+			begin
+				SendCutin(
+					AChara.ClientInfo,
+					lua_toString(ALua, 1),
+					EnsureRange(lua_toInteger(ALua, 2),0,255)
+				);
+			end;
+		end;
+	end;
+end;
+
 
 //Special commands here
 function script_get_charaname(ALua : TLua) : integer; cdecl;
