@@ -170,7 +170,15 @@ uses
 		Parameter2	: Word;
 		Parameter3	: Word
 	);
-
+	procedure SendCompass(
+		AClient		: TIdContext;
+		const NPCID	: LongWord;
+		const PointID	: Byte;
+		const X		: LongWord;
+		const Y		: LongWord;
+		const PointType : LongWord;
+		const Color     : LongWord
+	);
 implementation
 
 
@@ -1294,5 +1302,43 @@ begin
 
 	SendBuffer(AClient,OutBuffer,GetPacketLength($008a));
 end;{DoAction}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendCompass                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//      Add/Remove "+" mark in mini map
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//    [2007/12/31] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure SendCompass(
+	AClient		: TIdContext;
+	const NPCID	: LongWord;
+	const PointID	: Byte;
+	const X		: LongWord;
+	const Y		: LongWord;
+	const PointType : LongWord;
+	const Color     : LongWord
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $0144, OutBuffer);
+	WriteBufferLongWord(2, NPCID, OutBuffer);
+	WriteBufferLongWord(6, PointType, OutBuffer);
+	WriteBufferLongWord(10, X, OutBuffer);
+	WriteBufferLongWord(14, Y, OutBuffer);
+	WriteBufferByte(18, PointID, OutBuffer);
+	WriteBufferLongWord(19, Color, OutBuffer);
+	SendBuffer(AClient,OutBuffer,GetPacketLength($0144));
+end;{SendCompass}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

@@ -46,12 +46,13 @@ function script_getJexp(ALua : TLua) : integer; cdecl; forward;
 function script_ResetStat(ALua : TLua) : integer; cdecl; forward;
 function script_HpDrain(ALua : TLua) : integer; cdecl; forward;
 function script_SpDrain(ALua : TLua) : integer; cdecl; forward;
+function script_Compass(ALua : TLua) : integer; cdecl; forward;
 //Special Commands
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 19;
+	NPCCommandCount = 20;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -76,6 +77,7 @@ const
 		(name:'ResetStat';func:script_ResetStat),
 		(name:'hpdrain';func:script_HpDrain),
 		(name:'spdrain';func:script_SpDrain),
+		(name:'compass';func:script_Compass),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -426,185 +428,187 @@ begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
 			Key := lua_tostring(ALua, 1);
-			KeyConst := lua_tointeger(ALua, 1);
-			case KeyConst of
-				0: begin
-					TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
-					try
-						Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.GetCharaVariable(AChara,Key);
-						lua_pushinteger(ALua, Value);
-					finally
-						TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
+			if lua_isNumber(ALua, 1) then
+			begin
+				KeyConst := lua_toInteger(ALua, 1);
+				case KeyConst of
+					VAR_ASPD: begin
+						lua_pushinteger(ALua, AChara.ASpeed);
+					end;
+
+					VAR_CURXPOS: begin
+						lua_pushinteger(ALua, AChara.Position.X);
+					end;
+
+					VAR_CURYPOS: begin
+						lua_pushinteger(ALua, AChara.Position.Y);
+					end;
+
+					VAR_CLEVEL: begin
+						lua_pushinteger(ALua, AChara.BaseLV);
+					end;
+
+					VAR_EXP: begin
+						lua_pushinteger(ALua, AChara.BaseEXP);
+					end;
+
+					VAR_HAIRCOLOR: begin
+						lua_pushinteger(ALua, AChara.HairColor);
+					end;
+
+					VAR_HP: begin
+						lua_pushinteger(ALua, AChara.HP);
+					end;
+
+					VAR_JOB: begin
+						lua_pushinteger(ALua, AChara.JID);
+					end;
+
+					VAR_JOBEXP: begin
+						lua_pushinteger(ALua, AChara.JobEXP);
+					end;
+
+					VAR_JOBLEVEL: begin
+						lua_pushinteger(ALua, AChara.JobLV);
+					end;
+
+					VAR_MAXHP: begin
+						lua_pushinteger(ALua, AChara.MaxHP);
+					end;
+
+					VAR_MAXSP: begin
+						lua_pushinteger(ALua, AChara.MaxSP);
+					end;
+
+					VAR_MAXWEIGHT: begin
+						lua_pushinteger(ALua, AChara.MaxWeight);
+					end;
+
+					VAR_MONEY : begin
+						lua_pushinteger(ALua, AChara.Zeny);
+					end;
+
+					VAR_POINT: begin
+						lua_pushinteger(ALua, AChara.StatusPts);
+					end;
+
+					VAR_SEX : begin
+						lua_pushinteger(ALua, TClientLink(AChara.ClientInfo.Data).AccountLink.GenderNum);
+					end;
+
+					VAR_SP: begin
+						lua_pushinteger(ALua, AChara.SP);
+					end;
+
+					VAR_SPEED: begin
+						lua_pushinteger(ALua, AChara.Speed);
+					end;
+
+					VAR_SPPOINT: begin
+						lua_pushinteger(ALua, AChara.SkillPts);
+					end;
+
+					VAR_WEIGHT: begin
+						lua_pushinteger(ALua, AChara.Weight);
+					end;
+
+					//Ismarried Variable
+					//Implemented by Spre 2007/12/31
+					//Comment Here Incase changes need to be made, easily Identifiable
+					VAR_ISMARRIED: begin
+						lua_pushinteger(ALua, Byte(AChara.IsMarried));
+					end;
+
+					VAR_STR: begin
+						lua_pushinteger(ALua, AChara.ParamBase[STR] + AChara.ParamBonus[STR]);
+					end;
+
+					VAR_AGI: begin
+						lua_pushinteger(ALua, AChara.ParamBase[AGI] + AChara.ParamBonus[AGI]);
+					end;
+
+					VAR_VIT: begin
+						lua_pushinteger(ALua, AChara.ParamBase[VIT] + AChara.ParamBonus[VIT]);
+					end;
+
+					VAR_INT: begin
+						lua_pushinteger(ALua, AChara.ParamBase[INT] + AChara.ParamBonus[INT]);
+					end;
+
+					VAR_DEX: begin
+						lua_pushinteger(ALua, AChara.ParamBase[DEX] + AChara.ParamBonus[DEX]);
+					end;
+
+					VAR_LUK: begin
+						lua_pushinteger(ALua, AChara.ParamBase[LUK] + AChara.ParamBonus[LUK]);
+					end;
+
+					VAR_STANDARD_STR: begin
+						lua_pushinteger(ALua, AChara.ParamBase[STR]);
+					end;
+
+					VAR_STANDARD_AGI: begin
+						lua_pushinteger(ALua, AChara.ParamBase[AGI]);
+					end;
+
+					VAR_STANDARD_VIT: begin
+						lua_pushinteger(ALua, AChara.ParamBase[VIT]);
+					end;
+
+					VAR_STANDARD_INT: begin
+						lua_pushinteger(ALua, AChara.ParamBase[INT]);
+					end;
+
+					VAR_STANDARD_DEX: begin
+						lua_pushinteger(ALua, AChara.ParamBase[DEX]);
+					end;
+
+					VAR_STANDARD_LUK: begin
+						lua_pushinteger(ALua, AChara.ParamBase[LUK]);
+					end;
+
+					VAR_CURDIR: begin
+						lua_pushinteger(ALua, AChara.Direction);
+					end;
+
+					VAR_CHARACTERID: begin
+						lua_pushinteger(ALua, AChara.CID);
+					end;
+
+					VAR_ACCOUNTID: begin
+						lua_pushinteger(ALua, AChara.ID);
+					end;
+
+					VAR_MAPNAME: begin
+						lua_pushstring(ALua, PChar(AChara.Map));
+					end;
+
+					VAR_ACCOUNTNAME: begin
+						// sigh.. i'm not sure why but it doesnt work directly.
+						StrValue := TClientLink(AChara.ClientInfo.Data).AccountLink.Username;
+						lua_pushstring(ALua, PChar(StrValue));
+					end;
+
+					VAR_CHARACTERNAME: begin
+						lua_pushstring(ALua, PChar(AChara.Name));
+					end;
+
+					VAR_HEADPALETTE: begin
+						lua_pushinteger(ALua, AChara.HairColor);
+					end;
+
+					VAR_BODYPALETTE: begin
+						lua_pushinteger(ALua, AChara.ClothesColor);
 					end;
 				end;
-
-				VAR_ASPD: begin
-					lua_pushinteger(ALua, AChara.ASpeed);
-				end;
-
-				VAR_CURXPOS: begin
-					lua_pushinteger(ALua, AChara.Position.X);
-				end;
-
-				VAR_CURYPOS: begin
-					lua_pushinteger(ALua, AChara.Position.Y);
-				end;
-
-				VAR_CLEVEL: begin
-					lua_pushinteger(ALua, AChara.BaseLV);
-				end;
-
-				VAR_EXP: begin
-					lua_pushinteger(ALua, AChara.BaseEXP);
-				end;
-
-				VAR_HAIRCOLOR: begin
-					lua_pushinteger(ALua, AChara.HairColor);
-				end;
-
-				VAR_HP: begin
-					lua_pushinteger(ALua, AChara.HP);
-				end;
-
-				VAR_JOB: begin
-					lua_pushinteger(ALua, AChara.JID);
-				end;
-
-				VAR_JOBEXP: begin
-					lua_pushinteger(ALua, AChara.JobEXP);
-				end;
-
-				VAR_JOBLEVEL: begin
-					lua_pushinteger(ALua, AChara.JobLV);
-				end;
-
-				VAR_MAXHP: begin
-					lua_pushinteger(ALua, AChara.MaxHP);
-				end;
-
-				VAR_MAXSP: begin
-					lua_pushinteger(ALua, AChara.MaxSP);
-				end;
-
-				VAR_MAXWEIGHT: begin
-					lua_pushinteger(ALua, AChara.MaxWeight);
-				end;
-
-				VAR_MONEY : begin
-					lua_pushinteger(ALua, AChara.Zeny);
-				end;
-
-				VAR_POINT: begin
-					lua_pushinteger(ALua, AChara.StatusPts);
-				end;
-
-				VAR_SEX : begin
-					lua_pushinteger(ALua, TClientLink(AChara.ClientInfo.Data).AccountLink.GenderNum);
-				end;
-
-				VAR_SP: begin
-					lua_pushinteger(ALua, AChara.SP);
-				end;
-
-				VAR_SPEED: begin
-					lua_pushinteger(ALua, AChara.Speed);
-				end;
-
-				VAR_SPPOINT: begin
-					lua_pushinteger(ALua, AChara.SkillPts);
-				end;
-
-				VAR_WEIGHT: begin
-					lua_pushinteger(ALua, AChara.Weight);
-				end;
-
-				//Ismarried Variable
-				//Implemented by Spre 2007/12/31
-				//Comment Here Incase changes need to be made, easily Identifiable
-				VAR_ISMARRIED: begin
-					lua_pushinteger(ALua, Byte(AChara.IsMarried));
-				end;
-
-				VAR_STR: begin
-					lua_pushinteger(ALua, AChara.ParamBase[STR] + AChara.ParamBonus[STR]);
-				end;
-
-				VAR_AGI: begin
-					lua_pushinteger(ALua, AChara.ParamBase[AGI] + AChara.ParamBonus[AGI]);
-				end;
-
-				VAR_VIT: begin
-					lua_pushinteger(ALua, AChara.ParamBase[VIT] + AChara.ParamBonus[VIT]);
-				end;
-
-				VAR_INT: begin
-					lua_pushinteger(ALua, AChara.ParamBase[INT] + AChara.ParamBonus[INT]);
-				end;
-
-				VAR_DEX: begin
-					lua_pushinteger(ALua, AChara.ParamBase[DEX] + AChara.ParamBonus[DEX]);
-				end;
-
-				VAR_LUK: begin
-					lua_pushinteger(ALua, AChara.ParamBase[LUK] + AChara.ParamBonus[LUK]);
-				end;
-
-				VAR_STANDARD_STR: begin
-					lua_pushinteger(ALua, AChara.ParamBase[STR]);
-				end;
-
-				VAR_STANDARD_AGI: begin
-					lua_pushinteger(ALua, AChara.ParamBase[AGI]);
-				end;
-
-				VAR_STANDARD_VIT: begin
-					lua_pushinteger(ALua, AChara.ParamBase[VIT]);
-				end;
-
-				VAR_STANDARD_INT: begin
-					lua_pushinteger(ALua, AChara.ParamBase[INT]);
-				end;
-
-				VAR_STANDARD_DEX: begin
-					lua_pushinteger(ALua, AChara.ParamBase[DEX]);
-				end;
-
-				VAR_STANDARD_LUK: begin
-					lua_pushinteger(ALua, AChara.ParamBase[LUK]);
-				end;
-
-				VAR_CURDIR: begin
-					lua_pushinteger(ALua, AChara.Direction);
-				end;
-
-				VAR_CHARACTERID: begin
-					lua_pushinteger(ALua, AChara.CID);
-				end;
-
-				VAR_ACCOUNTID: begin
-					lua_pushinteger(ALua, AChara.ID);
-				end;
-
-				VAR_MAPNAME: begin
-					lua_pushstring(ALua, PChar(AChara.Map));
-				end;
-
-				VAR_ACCOUNTNAME: begin
-					// sigh.. i'm not sure why but it doesnt work directly.
-					StrValue := TClientLink(AChara.ClientInfo.Data).AccountLink.Username;
-					lua_pushstring(ALua, PChar(StrValue));
-				end;
-
-				VAR_CHARACTERNAME: begin
-					lua_pushstring(ALua, PChar(AChara.Name));
-				end;
-
-				VAR_HEADPALETTE: begin
-					lua_pushinteger(ALua, AChara.HairColor);
-				end;
-
-				VAR_BODYPALETTE: begin
-					lua_pushinteger(ALua, AChara.ClothesColor);
+			end else
+			begin
+				TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
+				try
+					Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.GetCharaVariable(AChara,Key);
+					lua_pushinteger(ALua, Value);
+				finally
+					TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
 				end;
 			end;
 		end;
@@ -732,11 +736,14 @@ var
 	Percentage : Byte;
 begin
 	Result := 0;
-	if GetCharaFromLua(ALua,AChara) then
+	if lua_gettop(ALua) = 1 then
 	begin
-		Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
-		if AChara.HP > 0 then
-			AChara.HPPercent := AChara.HPPercent - Percentage;
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
+			if AChara.HP > 0 then
+				AChara.HPPercent := AChara.HPPercent - Percentage;
+		end;
 	end;
 end;
 
@@ -747,11 +754,50 @@ var
 	Percentage : Byte;
 begin
 	Result := 0;
-	if GetCharaFromLua(ALua,AChara) then
+	if lua_gettop(ALua) = 1 then
 	begin
-		Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
-		if AChara.SP > 0 then
-			AChara.SPPercent := AChara.SPPercent - Percentage;
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
+			if AChara.SP > 0 then
+				AChara.SPPercent := AChara.SPPercent - Percentage;
+		end;
+	end;
+end;
+
+//Compass - mark on mini map
+function script_Compass(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	PointType : Byte;
+	Color  : String;
+begin
+	Result := 0;
+	if lua_gettop(ALua) = 5 then
+	begin
+		if lua_isnumber(ALua, 1) AND
+		lua_isnumber(ALua, 2) AND
+		lua_isnumber(ALua, 3) AND
+		lua_isnumber(ALua, 4) then
+		begin
+			if GetCharaFromLua(ALua,AChara) then
+			begin
+				PointType := EnsureRange(lua_tointeger(ALua, 4),0,255);
+				if PointType = 0 then
+					PointType := 2;
+				Color := lua_tostring(ALua, 5);
+				Delete(Color, 1, 2);
+				SendCompass(
+					AChara.ClientInfo,
+					AChara.ScriptID,
+					lua_tointeger(ALua, 1),
+					lua_tointeger(ALua, 2),
+					lua_tointeger(ALua, 3),
+					PointType,
+					LongWord(StrToInt('$' + Color))
+				);
+			end;
+		end;
 	end;
 end;
 

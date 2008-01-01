@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 414 -
+[2007/12/31] Aeomin - Added script function "compass".
+ It is needed for Guide npcs
+-
+
 - Rev 413 -
 [2007/12/31] Aeomin - Fixed npc not loaded when use #warp
 [2007/12/31] Aeomin - Since #warp may need random cell index, and it must load map.
