@@ -48,12 +48,13 @@ function script_HpDrain(ALua : TLua) : integer; cdecl; forward;
 function script_SpDrain(ALua : TLua) : integer; cdecl; forward;
 function script_Compass(ALua : TLua) : integer; cdecl; forward;
 function script_ShowImage(ALua : TLua) : integer; cdecl; forward;
+function script_CompassCheck(ALua : TLua) : integer; cdecl; forward;
 //Special Commands
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 21;
+	NPCCommandCount = 22;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -80,6 +81,7 @@ const
 		(name:'spdrain';func:script_SpDrain),
 		(name:'compass';func:script_Compass),
 		(name:'showimage';func:script_ShowImage),
+		(name:'compass_check';func:script_CompassCheck),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -823,6 +825,16 @@ begin
 				);
 			end;
 		end;
+	end;
+end;
+
+//Compass Check - I have no idea what it does..
+function script_CompassCheck(ALua : TLua) : integer; cdecl;
+begin
+	Result := 0;
+	if lua_gettop(ALua) = 2 then
+	begin
+		// Do nothing...
 	end;
 end;
 

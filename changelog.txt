@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 419 -
+[2008/01/02] Aeomin - Added function compass_check useless but keeps from freeze.. 
+-
+
 - Rev 418 -
 [2008/01/02] RaX - Made TBeing.SetPosition move the being from cell to cell internally.
 [2008/01/02] RaX - Added TBeing.AddToMap and RemoveFromMap for initial/final adds/
