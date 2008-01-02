@@ -443,7 +443,6 @@ begin
 				ACharacter.Online  := 1;
 				MainProc.ZoneServer.CharacterList.Add(ACharacter);
 
-				ACharacter.ZoneStatus := isOnline;
 				SendZoneCharaLogon(MainProc.ZoneServer.ToCharaTCPClient, ACharacter);
 
 				SendPadding(ACharacter.ClientInfo);
@@ -564,17 +563,10 @@ begin
 
 		//Weather updates
 		//Various other tweaks
+		AChara.AddToMap;
+		AChara.ZoneStatus := isOnline;
 		AChara.ShowTeleportIn;
 		AChara.AreaLoop(ShowInitialAction);
-
-		//Quick change to prevent characters from being added in bad places.
-		if (AChara.Position.X < AMap.Size.X) AND
-			 (AChara.Position.Y < AMap.Size.Y) AND
-			 (AChara.Position.X >= 0) AND
-			 (AChara.Position.X >= 0) then
-		begin
-			AMap.Cell[AChara.Position.X][AChara.Position.Y].Beings.AddObject(AChara.ID,AChara);
-		end;
 	end;
 end;{ShowMap}
 //------------------------------------------------------------------------------
@@ -1527,11 +1519,7 @@ begin
 	MapNameLength := BufferReadWord(18, InBuffer);
 	MapName				:= BufferReadString(20, MapNameLength, InBuffer);
 	ACharacter		:= MainProc.ZoneServer.CharacterList.Items[MainProc.ZoneServer.CharacterList.IndexOf(CharacterID)];
-	with ACharacter do
-	begin
-		MapInfo.Cell[ACharacter.Position.X, Position.Y].Beings.Delete(
-		MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(ACharacter));
-	end;
+
 	ACharacter.Map := MapName;
 	ACharacter.Position := Point(X,Y);
 

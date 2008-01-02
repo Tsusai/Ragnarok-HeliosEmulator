@@ -73,6 +73,8 @@ TMap = class(TObject)
 				APath      : TPointList
 		) : Boolean;
 
+		Function PointInRange(const APoint : TPoint) : Boolean;
+
 		function RandomCell: TPoint;
 		function SafeLoad: Boolean;
 
@@ -94,6 +96,7 @@ uses
 	Globals,
 	Main,
 	Npc,
+	Being,
 	{3rd Party}
 	List32
 	;
@@ -187,6 +190,8 @@ var
 
 	Done							: Boolean;
 	EndPointMod				: TPoint;
+
+	BeingIndex				: Integer;
 
 begin
 	//Initialize data
@@ -291,10 +296,19 @@ begin
 								//this is for attacking and other functions who move to the mob's
 								//position, it's our responsibility to prevent us from standing on
 								//them =P
-								if Cell[NewFloodItem.Path[0].X][NewFloodItem.Path[0].Y].Beings.Count > 0 then
+								for BeingIndex := 0 to Cell[NewFloodItem.Path[0].X][NewFloodItem.Path[0].Y].Beings.Count - 1 do
+								begin
+									if Cell[NewFloodItem.Path[0].X][NewFloodItem.Path[0].Y].Beings.Objects[BeingIndex] is TBeing then
+                  begin
+										NewFloodItem.Path.Delete(0);
+										break;
+                  end;
+								end;
+
+								{if Cell[NewFloodItem.Path[0].X][NewFloodItem.Path[0].Y].Beings.Count > 0 then
 								begin
 									NewFloodItem.Path.Delete(0);
-								end;
+								end;}
 
 								if NewFloodItem.Path.Count > 0 then
 								begin
@@ -648,6 +662,31 @@ begin
 			//Simple!
 			Result := True;
 		end;
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//PointInRange                                                        FUNCTION
+//------------------------------------------------------------------------------
+//  What it does -
+//      Checks to see if a point is inside the range of the map.
+//
+//  Changes -
+//	[2008/01/02] RaX - Created
+//------------------------------------------------------------------------------
+Function TMap.PointInRange(const APoint : TPoint) : Boolean;
+begin
+	if (APoint.X < Size.X) AND
+		 (APoint.Y < Size.Y) AND
+		 (APoint.X > -1) AND
+		 (APoint.Y > -1) then
+  begin
+		Result := TRUE;
+	end else
+	begin
+		Result := FALSE;
 	end;
 end;
 //------------------------------------------------------------------------------

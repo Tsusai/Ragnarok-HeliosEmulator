@@ -62,6 +62,11 @@ type
 
 StatArray = array [STR..LUK] of Integer;
 
+TBeingZoneStatus = (
+		isOffline,
+		isOnline
+	);
+
 TBeing = class; //Forward Declaration.
 
 {[2007/03/28] CR - No X,Y parameters needed -- reduced and eliminated. }
@@ -182,7 +187,8 @@ public
 	Path				: TPointList;
 	PathIndex		: Word;
 	MoveTick		: LongWord;
-
+	ZoneStatus		: TBeingZoneStatus; //Is the being online in the Zone or not?
+	
 	property Name      : string     read fName    write SetName;
 	property JID       : Word       read fJID     write SetClass;
 	property BaseLV    : Word       read fBaseLV  write SetBaseLV;
@@ -234,6 +240,8 @@ public
 
 	procedure Death; virtual;
 
+	procedure RemoveFromMap;
+  procedure AddToMap;
 	Constructor Create;
 	Destructor Destroy;override;
 
@@ -452,14 +460,9 @@ Begin
 
 		OldPt     := Position;
 
-		Index := MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(Self);
-		if Index > -1 then
-			MapInfo.Cell[Position.X, Position.Y].Beings.Delete(Index);
-
 		Position	:= Path[PathIndex];
 		Direction := GetDirection(OldPt, Position);
 
-		MapInfo.Cell[Position.X, Position.Y].Beings.AddObject(Self.ID, Self);
 	//-Tsusai
 	//17 (Radius) covers the old 16x16 grid, no matter which dir we go I think
 	//This is some complicated mathematics here, so I hope I do explain this right.
@@ -982,9 +985,36 @@ Procedure TBeing.SetStatus(Value : word); begin fStatus := Value; end;
 Procedure TBeing.SetAilments(Value : word); begin fAilments := Value; end;
 Procedure TBeing.SetOption(Value : word); begin fOption := Value; end;
 procedure TBeing.SetMap(Value : string); begin fMap := Value; end;
-procedure TBeing.SetPosition(Value : TPoint); begin fPosition := Value; end;
+
 procedure TBeing.SetSpeed(Value : Word); begin fSpeed := Value; end;
 
+procedure TBeing.SetPosition(Value : TPoint);
+var
+	OldPt : TPoint;
+
+begin
+	OldPt := Position;
+	fPosition := Value;
+	//check if we're online before we add/remove ourselves from the map...
+	if ZoneStatus = isOnline then
+	begin
+		//Position is initialized to -1, -1 on create, so if we're not on the map
+		//yet, don't remove us!
+		if MapInfo.PointInRange(OldPt) then
+		begin
+			MapInfo.Cell[OldPt.X][OldPt.Y].Beings.Delete(
+				MapInfo.Cell[OldPt.X][OldPt.Y].Beings.IndexOf(ID)
+			);
+		end;
+
+		//same as above, if we've set position to -1, -1, then don't add us to a
+		//non-existant cell!
+		if MapInfo.PointInRange(Position) then
+		begin
+			MapInfo.Cell[Position.X][Position.Y].Beings.AddObject(ID, self);
+		end;
+	end;
+end;
 
 (*- Procedure -----------------------------------------------------------------*
 TBeing.CalcSpeed
@@ -1094,5 +1124,57 @@ begin
 	Value := EnsureRange(Value,0,100);
 	SP    := Trunc(Value/100*MaxSP);
 end;{SetHPPercent}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RemoveFromMap                                                       Procedure
+//------------------------------------------------------------------------------
+//  What it does-
+//	Removes this being from the map
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2008/01/02] RaX - Created
+//
+//------------------------------------------------------------------------------
+procedure TBeing.RemoveFromMap;
+var
+	Index : Integer;
+begin
+	Index := MapInfo.Cell[Position.X][Position.Y].Beings.IndexOf(ID);
+	if Index <> -1 then
+	begin
+		MapInfo.Cell[Position.X][Position.Y].Beings.Delete(
+			Index
+		);
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//AddToMap                                                       Procedure
+//------------------------------------------------------------------------------
+//  What it does-
+//	Adds this being to the map
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2008/01/02] RaX - Created
+//
+//------------------------------------------------------------------------------
+procedure TBeing.AddToMap;
+begin
+	MapInfo.Cell[Position.X][Position.Y].Beings.AddObject(ID, self);
+end;
 //------------------------------------------------------------------------------
 end.

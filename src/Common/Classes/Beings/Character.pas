@@ -69,11 +69,6 @@ TCharaState = (
 		charaAttacking
 	);
 
-TCharaZoneStatus = (
-		isOffline,
-		isOnline
-	);
-
 
 (*= CLASS =====================================================================*
 TCharacter
@@ -224,7 +219,6 @@ public
 
 	LuaInfo			: TLuaInfo; //personal lua "thread"
 	ScriptStatus		: TCharaScriptStatus; //lets us know what is going on with lua,
-	ZoneStatus		: TCharaZoneStatus; //Is the chara online in the Zone or not?
 	ScriptID		: LongWord;
 
 	ClientInfo		: TIdContext;
@@ -336,6 +330,7 @@ uses
 	{RTL/VCL}
 	Math,
 	SysUtils,
+	Classes,
 	{Project}
 	Main,
 	BufferIO,
@@ -402,8 +397,6 @@ procedure TCharacter.SetCharaState(
 	var
 		OldState : TCharaState;
 begin
-	//Need to add easy to get to codes (STANCE_MOVE from prometheus)
-	//usually used for packets
 	OldState := fCharaState;
 	fCharaState := Value;
 
@@ -423,8 +416,6 @@ begin
 		end;
 	end;
 
-
-	//Send character state update packet.
 end;{SetCharaState}
 //------------------------------------------------------------------------------
 
@@ -1563,6 +1554,11 @@ procedure TCharacter.SetMap(
 	);
 begin
 	Inherited;
+	if ZoneStatus = isOnline then
+	begin
+		RemoveFromMap;
+	end;
+
 	DataChanged := TRUE;
 end;{SetMap}
 //------------------------------------------------------------------------------
@@ -1573,7 +1569,7 @@ end;{SetMap}
 //------------------------------------------------------------------------------
 //	What it does-
 //		Sets the MapPt to Value. Also, lets our object know that data has
-//    changed.
+//    changed. Moves the character from the old position to the new in the map.
 // --
 //   Pre:
 //	TODO
@@ -1976,7 +1972,7 @@ var
 					begin
 						Result := TBeing(MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx]);
 						Exit;
-          end;
+					end;
         end;
 			end;
 		end;
@@ -2814,6 +2810,7 @@ Constructor TCharacter.Create(
 begin
 	inherited Create;
 	ClientInfo := AClient;
+	fPosition := Point(-1, -1);
 	OnTouchIDs := TIntList32.Create;
 	Inventory := TInventory.Create(self);
 	ScriptStatus := SCRIPT_NOTRUNNING;

@@ -1028,27 +1028,6 @@ var
 	ClientIPSize : Word;
 	MapZoneID	: SmallInt;
 
-procedure RemoveFromList;
-var
-	Index : Integer;
-begin
-	with ACharacter do
-	begin
-		//Quick change to prevent characters from being added in bad places.
-		if (Position.X < MapInfo.Size.X) AND
-			 (Position.Y < MapInfo.Size.Y) AND
-			 (Position.X >= 0) AND
-			 (Position.X >= 0) then
-		begin
-			Index := MapInfo.Cell[Position.X, Position.Y].Beings.IndexOfObject(ACharacter);
-			if Index <> -1 then
-			begin
-				MapInfo.Cell[Position.X, Position.Y].Beings.Delete(Index);
-			end;
-		end;
-	end;
-end;
-
 begin
 	TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.Connect;
 	try
@@ -1063,8 +1042,9 @@ begin
 
 			if Cardinal(MapZoneID) = MainProc.ZoneServer.Options.ID then
 			begin
+				ACharacter.RemoveFromMap;
 				ACharacter.ShowTeleportOut;
-				RemoveFromList;
+				ACharacter.ZoneStatus := isOffline;
 				ACharacter.Map := MapName;
 				ACharacter.Position := Point(X,Y);
 				WriteBufferWord(0, $0091, OutBuffer);

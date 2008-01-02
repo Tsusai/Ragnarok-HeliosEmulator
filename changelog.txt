@@ -15,6 +15,21 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 418 -
+[2008/01/02] RaX - Made TBeing.SetPosition move the being from cell to cell internally.
+[2008/01/02] RaX - Added TBeing.AddToMap and RemoveFromMap for initial/final adds/
+ removes.
+[2008/01/02] RaX - moved zonestatus to tbeing, it now tells us whether the being is
+ on the map, not just on the zone. Update packets are never sent between maps, so
+ this seems to work well.
+[2008/01/02] RaX - Chaged TMap.GetPath to check for beings in the cells list instead
+ of just checking the count, I had forgotten that OnTouchevents were also stored
+ in the being list on each cell.
+[2008/01/02] RaX - Added TMap.PointInRange(APoint) to make sure that a point is in
+ the range of the map.
+[2008/01/02] RaX - Fixed changelog so it will show on the website correctly.
+-
+
 - Rev 417 -
 [2008/01/01] Aeomin - Added command #where for debug.
 -
@@ -300,11 +315,15 @@ Yes, it is a big update...
 
 - Rev 364 -
 [2007/11/25] Aeomin - Temperary fix normal warp stuck problem.
-Cause of problem : Since server is multithread, loop the event list and fire each even is a seperated thread than each player connection.
-Chances are, threads want to delete an entry in EventList AT SAME time, result was AV, on client side, it was stucked.
-Solution : Currently i have no perfect solution yet, might someone help out, but i did put a limit check in eventlist,
-	since currently Helios does not have much of effect, on debug, only event was walk.
-Thread 1 delete walk event(ZoneSend), Meanwhile: Thread 2 Fires walk event (event deleted at this point), thread 2 try to delete an index that does not exists anymore.
+Cause of problem : Since server is multithread, loop the event list and fire each 
+even is a seperated thread than each player connection. Chances are, threads want 
+to delete an entry in EventList AT SAME time, result was AV, on client side, it was 
+stucked.
+Solution : Currently i have no perfect solution yet, might someone help out, but i did 
+put a limit check in eventlist, since currently Helios does not have much of effect,
+on debug, only event was walk. Thread 1 delete walk event(ZoneSend), Meanwhile: Thread 2 
+Fires walk event (event deleted at this point), thread 2 try to delete an index that 
+does not exists anymore.
 -
 
 - Rev 363 -
@@ -314,13 +333,16 @@ Thread 1 delete walk event(ZoneSend), Meanwhile: Thread 2 Fires walk event (even
 - Rev 362-
 [2007/11/12] Aeomin - Note: 10 days after last commit =(
 [2007/11/12] Thanks RabidChocobo for the patch/implementation.
-[2007/11/12] Broadcast can be in various colors (purple, white, blue, green, ALIEN[Orly? Nrly])
-[2007/11/12] #BroadCastColor, #BroadCastR[Red], #BroadCastP[Purple], #BroadCastG[Green], #BroadCastBLK[Black]
+[2007/11/12] Broadcast can be in various colors (purple, white, blue, green, 
+ALIEN[Orly? Nrly])
+[2007/11/12] #BroadCastColor, #BroadCastR[Red], #BroadCastP[Purple], #BroadCastG[Green], 
+#BroadCastBLK[Black]
 [2007/11/12] #BroadCastB[Blue], #BroadCastW[White]
 -
 
 - Rev 361 -
-[2007/11/2] Aeomin - Clean up for Character.pas (I know.. it's crazy and very large file.. my hands are sore...)
+[2007/11/2] Aeomin - Clean up for Character.pas (I know.. it's crazy and very large 
+file.. my hands are sore...)
 -
 
 - Rev 360 -
@@ -347,8 +369,9 @@ Thread 1 delete walk event(ZoneSend), Meanwhile: Thread 2 Fires walk event (even
 -
 
 - Rev 356 - BROKEN
-[2007/10/29] Aeomin - Well well, tired of # ? Now you can customize it, change to say.. i dunno.. Changes done in GMCommands.ini
-Limitaion on purpose: ONE CHAR ONLY! so, #~!@$#$^&*()_+ is NOT going to be work (automatically pick first one!)
+[2007/10/29] Aeomin - Well well, tired of # ? Now you can customize it, change to say.. 
+i dunno.. Changes done in GMCommands.ini Limitaion on purpose: ONE CHAR ONLY! so, 
+#~!@$#$^&*()_+ is NOT going to be work (automatically pick first one!)
 -
 
 - Rev 355 - BROKEN
@@ -371,7 +394,8 @@ Limitaion on purpose: ONE CHAR ONLY! so, #~!@$#$^&*()_+ is NOT going to be work 
 
 - Rev 351 -
 [2007/10/25] Aeomin - [Major Clean Up] for ZoneSend.pas(#1) & ZoneInterCommunication.pas(#1)
-[2007/10/25] Aeomin - Clean up included: Move misplaced procedure; reorganize procedures by group or alphabet;
+[2007/10/25] Aeomin - Clean up included: Move misplaced procedure; reorganize procedures 
+by group or alphabet;
 [2007/10/25] Aeomin - Revert new header style to old with Pre/Post;Tabs clean up
 -
 
@@ -391,11 +415,13 @@ tomorrow and continue implementation.
 -
 
 - Rev 347 -
-[2007/09/28] Note: So yeh, Helios halted for one month. Everyone is busy on job/school (sucks, i know).
+[2007/09/28] Note: So yeh, Helios halted for one month. Everyone is busy on job/school 
+ (sucks, i know).
              Now able to customize Gm Command name (with alias support!)
              To do so, edit GMCommandNames.ini, aliases should seperated by comma or space.
 [2007/09/08] Aeomin - added CustomGMCommandNameOptions.pas (Yes, long name)
-[2007/09/08] Aeomin - Edited bunch files to fix some header typo or so... (I'm very tired.. can't remember)
+[2007/09/08] Aeomin - Edited bunch files to fix some header typo or so... 
+(I'm very tired.. can't remember)
 -
 
 - Rev 346 -
@@ -488,7 +514,8 @@ tomorrow and continue implementation.
 -
 
 - Rev 330 -
-[2007/08/14] Aeomin - Changed Zeny type from LongWord -> Integer, really pointless, since client treat as integer [Character.pas, Being.pas]
+[2007/08/14] Aeomin - Changed Zeny type from LongWord -> Integer, really pointless, since client 
+treat as integer [Character.pas, Being.pas]
 [2007/08/14] Aeomin - Added GM command #GiveZeny
 -
 
@@ -511,21 +538,25 @@ tomorrow and continue implementation.
 -
 
 - Rev 325 -
-[2007/08/14] Aeomin - Delete few lines of code used for Whisper (really.. i have no idea why i put those before)
+[2007/08/14] Aeomin - Delete few lines of code used for Whisper (really.. i have no idea why 
+i put those before)
 [2007/08/14] Aeomin - Add #Jump command
 -
 
 - Rev 324 -
 [2007/08/14] Aeomin - Completion of #Warp
-[2007/08/13] Aeomin - Apparently someone forgot assign ZServerInfo.Connection, took ages for me find out my code DIDNT WORK (because it's always nil) [InterServer.pas]
+[2007/08/13] Aeomin - Apparently someone forgot assign ZServerInfo.Connection, took ages for 
+me find out my code DIDNT WORK (because it's always nil) [InterServer.pas]
 [2007/08/13] Aeomin - Fixed Inter server does not broadcast GM command to all zones
-[2007/08/13] Aeomin - Added procedure RecvMapWarpRequest to receive warp request from Inter [ZoneRecv.pas]
+[2007/08/13] Aeomin - Added procedure RecvMapWarpRequest to receive warp request from Inter 
+[ZoneRecv.pas]
 [2007/08/13] Aeomin - Added procedure InterSendMapWarpRequest to redirect request [InterSend.pas]
 [2007/08/13] Aeomin - Added procedure RecvZoneMapWarpRequest for receive [InterRecv.pas]
 [2007/08/13] Aeomin - Added procedure ZoneSendMapRandomRequestToInter [ZoneInterCommunication.pas]
 [2007/08/13] Aeomin - Added packet 0x2213 to get a walkable location
 [2007/08/13] Aeomin - Added function RandomCell to generate a location that is walkable [Map.pas]
-[2007/08/13] Aeomin - Moved code from RecvGMCommand to a new procedure InterParseGMCommand [InterRecv.pas, InterSend.pas]
+[2007/08/13] Aeomin - Moved code from RecvGMCommand to a new procedure InterParseGMCommand 
+[InterRecv.pas, InterSend.pas]
 [2007/08/13] Aeomin - Renamed #Warp -> #WarpDev
 -
 
@@ -548,27 +579,33 @@ tomorrow and continue implementation.
 -
 
 - Rev 319 -
-[2007/08/11] Aeomin - Added GM Command #BroadCastL, #BroadCastLN, #BroadCastLB (All local broadcast, LN = w/o name, LB = blue)
-[2007/08/11] Aeomin - Add check to prevent empty command result send back to inter server [ZoneRecv.pas (RecvGMCommandFromInter)]
-[2007/08/11] Aeomin - Changed typed GM Commands functions to procedure (really, return of boolean is useless) [GMCommands.pas, GMCommandExe.pas]
+[2007/08/11] Aeomin - Added GM Command #BroadCastL, #BroadCastLN, #BroadCastLB (All local broadcast,
+ LN = w/o name, LB = blue)
+[2007/08/11] Aeomin - Add check to prevent empty command result send back to inter server 
+[ZoneRecv.pas (RecvGMCommandFromInter)]
+[2007/08/11] Aeomin - Changed typed GM Commands functions to procedure (really, return of boolean 
+is useless) [GMCommands.pas, GMCommandExe.pas]
 [2007/08/11] Aeomin - Fixed crash when area chat at edge of map [ZoneSend.pas]
                       (*cough* yet another one of +1 -1 problem)
 -
 
 - Rev 318 -
-[2007/08/12] RaX - Adjustment to allow deleveling of characters via baselevelup with a negative levels value.
+[2007/08/12] RaX - Adjustment to allow deleveling of characters via baselevelup with a 
+negative levels value.
 [2007/08/12] RaX - Changed Levels parameter in Job and BaseLevelUp routines(TCharacter)
  from word to integer to allow a negative levels value.
 -
 
 - Rev 317 -
 [2007/08/11] Aeomin - Add #GiveBaseLevel & #GiveJobLevel (Request by RaX)
-[2007/08/11] Aeomin - Set amount limit for #GiveBaseExp and #GiveBaseExp (1-2147483647) [GMCommandExe.pas]
+[2007/08/11] Aeomin - Set amount limit for #GiveBaseExp and #GiveBaseExp (1-2147483647) 
+[GMCommandExe.pas]
 [2007/08/10] Aeomin - Changed Min to EnsureRange in GMCommandsOptions.pas (OPS)
 -
 
 - Rev 316 -
-[2007/08/11] RaX - Implemented Skill and Status Points adding and subtracting on base/job level up.
+[2007/08/11] RaX - Implemented Skill and Status Points adding and subtracting on base/job 
+level up.
 [2007/08/11] RaX - Added new GetStatPoints db functions in static database.
 [2007/08/11] RaX - Added SendSubStat packets to set routines in TCharacter.
 -
@@ -598,12 +635,15 @@ tomorrow and continue implementation.
 -
 
 - Rev 311 -
-[2007/08/10] Aeomin - Add a simple Syntax help, show when theres no argument passed through (Request by RaX)
-                                                                                                  YAR!
+[2007/08/10] Aeomin - Add a simple Syntax help, show when theres no argument passed through 
+(Request by RaX)
+                                       YAR!
 -
 
 - Rev 310 -
-[2007/08/10] Aeomin - Changed Error type from String to TStringList, now can send more than 1 line of GM Command result! [GMCommands.pas, GMCommandExe.pas, ZoneRecv.pas, ZoneSend.pas, InterRecv.pas, InterSend.pas]
+[2007/08/10] Aeomin - Changed Error type from String to TStringList, now can send more than 1 
+line of GM Command result! [GMCommands.pas, GMCommandExe.pas, ZoneRecv.pas, ZoneSend.pas, 
+InterRecv.pas, InterSend.pas]
 [2007/08/10] Aeomin - Added GM Command #GiveJobExp (Request by RaX)
 [2007/08/10] Note : There's no need to edit GMCommandsOptions.pas when add/delete/edit a command.
 [2007/08/10] Aeomin - Added GMCommandsOptions.pas to load/save command level config!
@@ -660,12 +700,16 @@ tomorrow and continue implementation.
 
 - Rev 302 -
 [2007/08/09] Overview : "Upgrade" GM commands.
-[2007/08/09] Aeomin - Split RecvGMCommandReply into a new procedure InterSendGMCommandReplyToZone, so that inter can directly send error message [InterRecv.pas, InterSend.pas]
+[2007/08/09] Aeomin - Split RecvGMCommandReply into a new procedure InterSendGMCommandReplyToZone, 
+so that inter can directly send error message [InterRecv.pas, InterSend.pas]
 [2007/08/08] Aeomin - Add GM Command GiveBaseExperience (Requested by RaX).
-[2007/08/08] Aeomin - As ChrstphrR stated, "Shouldn't this be a descriptive constant?", added const WHISPER_SUCCESS, WHISPER_FAILED, WHISPER_BLOCKED(block not supported yet) [ZoneInterCommunication.pas]
-[2007/08/08] Aeomin - Fixed a careless bug in whisper (and no one found it out -.-") [InterServer.pas(RecvWhisper)]
+[2007/08/08] Aeomin - As ChrstphrR stated, "Shouldn't this be a descriptive constant?", added const 
+WHISPER_SUCCESS, WHISPER_FAILED, WHISPER_BLOCKED(block not supported yet) [ZoneInterCommunication.pas]
+[2007/08/08] Aeomin - Fixed a careless bug in whisper (and no one found it out -.-") 
+[InterServer.pas(RecvWhisper)]
 [2007/08/08] Aeomin - Added GMWarp to handle #warp command [GMCommandExe.pas]
-[2007/08/08] Aeomin - Renamed InterSendGMCommandToZones => InterSendGMCommandToZone (removed "s") [InterSend.pas]
+[2007/08/08] Aeomin - Renamed InterSendGMCommandToZones => InterSendGMCommandToZone (removed "s") 
+[InterSend.pas]
 [2007/08/08] Aeomin - Added fTypes let Inter knows where to send (Return back? broadcast?) [GMCommands.pas]
 [2007/07/23] Aeomin - Moved ZoneSendGMCommandtoInter procedure from ZoneSend.pas to ZoneInterCommunication
 [2007/07/23] Aeomin - Fixed a typo in SQLite Satic DB, GameHost => StaticHost [SQLiteStaticDatabase.pas(Connect)]
@@ -1181,14 +1225,20 @@ Release 1
 - Rev 251 -
 [2007/05/03] - Aeomin - Overview: Implement Whisper.
 [2007/05/03] - Aeomin - Added RecvWhisperReply & RecvRedirectWhisper procedure [ZoneRecv.pas]
-[2007/05/03] - Aeomin - Added RedirectWhisperToZone & SendWhisperReplyToInter procedure [ZoneInterCommunication.pas]
-[2007/05/03] - Aeomin - Fixed type in Game database, lost '' in query [MySQLGameDatabase.pas(LoadChara)]
-[2007/04/27] - Aeomin - Fixed typo header in Static database of JanSql [JanSQLStaticDatabase.pas(GetMapZoneID)]
-[2007/04/27] - Aeomin - Added SendWhisperReply procedure to tell client about result of whisper [ZoneSend.pas]
-[2007/04/27] - Aeomin - Added SendWhisperReplyToZone procedure to parse the whisper reply code from Inter [ZoneInterCommunication.pas]
+[2007/05/03] - Aeomin - Added RedirectWhisperToZone & SendWhisperReplyToInter procedure 
+[ZoneInterCommunication.pas]
+[2007/05/03] - Aeomin - Fixed type in Game database, lost '' in query 
+[MySQLGameDatabase.pas(LoadChara)]
+[2007/04/27] - Aeomin - Fixed typo header in Static database of JanSql 
+[JanSQLStaticDatabase.pas(GetMapZoneID)]
+[2007/04/27] - Aeomin - Added SendWhisperReply procedure to tell client about result of whisper 
+[ZoneSend.pas]
+[2007/04/27] - Aeomin - Added SendWhisperReplyToZone procedure to parse the whisper reply code 
+from Inter [ZoneInterCommunication.pas]
 [2007/04/27] - Aeomin - Added RecvWhisper procedure to parse the request from zone [InterServer.pas]
 [2007/04/27] - Aeomin - Added Whisper procedure to parse Whisper packet [ZoneRecv.pas]
-[2007/04/27] - Aeomin - Added SendWhisperToInter procedure to send whisper request from zone to inter [ZoneInterCommunication.pas]
+[2007/04/27] - Aeomin - Added SendWhisperToInter procedure to send whisper request from zone to 
+inter [ZoneInterCommunication.pas]
 [2007/04/27] - Aeomin - Added 0x2210-0x2212 packet in packet_db.txt
 -
 
@@ -1464,27 +1514,42 @@ Release 1
 
 - Rev 227 -
 [2007/04/12] Notes/Overview: Implement Duplicate Login Session Check.
-[2007/04/12] Aeomin - Added Show_FriendlyMessage_On_DuplicateLogin option for Char server, if set to TRUE, char server will show
-	"Someone has already logged in with this ID" instead just DC when duplicate login [CharaOptions.pas, CharacterServer.pas(LoginClientKickAccount)]
-[2007/04/11] Aeomin - Added DuplicateSessionKick procedure to search & kick the character [ZoneSend.pas]
-[2007/04/11] Aeomin - Added SendKickAccountToZone procedure to send kick packet to Zone server [ZoneCharaCommunication.pas]
-[2007/04/11] Aeomin - Added LoginClientKickAccount procedure to check if account is online and kick [CharacterServer.pas]
-[2007/04/11] Aeomin - Added SendDCError procedure to send connect error packet 0x0081 [LoginServer.pas]
+[2007/04/12] Aeomin - Added Show_FriendlyMessage_On_DuplicateLogin option for Char server, if set to 
+TRUE, char server will show
+	"Someone has already logged in with this ID" instead just DC when duplicate login 
+[CharaOptions.pas, CharacterServer.pas(LoginClientKickAccount)]
+[2007/04/11] Aeomin - Added DuplicateSessionKick procedure to search & kick the character 
+[ZoneSend.pas]
+[2007/04/11] Aeomin - Added SendKickAccountToZone procedure to send kick packet to Zone server 
+[ZoneCharaCommunication.pas]
+[2007/04/11] Aeomin - Added LoginClientKickAccount procedure to check if account is online and kick 
+[CharacterServer.pas]
+[2007/04/11] Aeomin - Added SendDCError procedure to send connect error packet 0x0081 
+[LoginServer.pas]
 [2007/04/11] Aeomin - Added Packet 0x2007 and 0x2110 for request force kick [packet_db.txt]
-[2007/04/10] Aeomin - Added TemperaryBan in TAccount to ban account temperary (in seconds) [Account.pas]
-[2007/04/10] Aeomin - Added GetBanUntilTimeString to TAccount for get remaining time when temperary ban [Account.pas]
-[2007/04/10] Aeomin - Changed "if not AnAccount.IsBanned then" to "if not AnAccount.State > 0 then" for extension [LoginServer.pad(ValidateLogin)]
-[2007/04/10] Aeomin - Added support 0x2005 and 0x2006 in Login Server which doing similar function as Char Server [LoginServer.pas]
-[2007/04/10] Aeomin - Added Transfering (Boolean) to TClientLink for keep the data when client selected a Character [PacketTypes]
-[2007/04/10] Aeomin - Added DcAndKeepData (Boolean) In TCharacter for keeping data while client is disconnected [Character.pas]
-[2007/04/10] Aeomin - Added SendAccountLogon/SendAccountLogOut procedure to update account in Account server's accountlist from Char server [CharaLoginCommunication.pas]
+[2007/04/10] Aeomin - Added TemperaryBan in TAccount to ban account temperary (in seconds) 
+[Account.pas]
+[2007/04/10] Aeomin - Added GetBanUntilTimeString to TAccount for get remaining time when temperary ban 
+[Account.pas]
+[2007/04/10] Aeomin - Changed "if not AnAccount.IsBanned then" to "if not AnAccount.State > 0 then" for 
+extension [LoginServer.pad(ValidateLogin)]
+[2007/04/10] Aeomin - Added support 0x2005 and 0x2006 in Login Server which doing similar function as
+ Char Server [LoginServer.pas]
+[2007/04/10] Aeomin - Added Transfering (Boolean) to TClientLink for keep the data when client selected
+ a Character [PacketTypes]
+[2007/04/10] Aeomin - Added DcAndKeepData (Boolean) In TCharacter for keeping data while client is
+ disconnected [Character.pas]
+[2007/04/10] Aeomin - Added SendAccountLogon/SendAccountLogOut procedure to update account in Account
+ server's accountlist from Char server [CharaLoginCommunication.pas]
 [2007/04/10] Aeomin - Updated LoginClientRead to support Character Server ID [CharacterServer.pas]
-[2007/04/10] Aeomin - Changed Validated from Boolean to Byte [CharaLoginCommunication.pas (SendValidateFlagToChara)]
+[2007/04/10] Aeomin - Changed Validated from Boolean to Byte [CharaLoginCommunication.pas
+ (SendValidateFlagToChara)]
 [2007/04/10] Aeomin - Added ServerID in TCharaServerInfo [CharacterServerInfo.pas]
 [2007/04/10] Aeomin - Changed fCharaServerList From TStringList to TIntList32 [LoginServer.pas]
 [2007/04/10] Aeomin - Changed size of 0x2000 from 44 to 48 to support ID [packet_db.txt]
 [2007/04/10] Aeomin - Added config option ID for char server.[CharaOptions.pas]
-[2007/04/10] Aeomin - Added delaydc in SendCharacterSelectResponse and SendQuitGameResponse [ZoneSend.pas]
+[2007/04/10] Aeomin - Added delaydc in SendCharacterSelectResponse and SendQuitGameResponse
+ [ZoneSend.pas]
 [2007/04/10] Aeomin - Added UpdateToAccountList and RemoveFromAccountList [CharacterServer.pas]
 [2007/04/10] Aeomin - Added SendZoneCharaLogon and SendZoneCharaLogOut [ZoneCharaCommunication.pas]
 [2007/04/10] Aeomin - Added Packet 0x2108 and 0x2109. [packet_db.txt]
@@ -1688,8 +1753,10 @@ Release 1
 -
 
 - Rev 209 -
-[2007/03/28] Aeomin - Fixed Access Violation during shutdown, which just an extra check [ZoneServer.pas:OnDisconnect]
-[2007/03/28] Aeomin - Added a Zone Option which allows kick all players before shutdown, instead just Disconnect.
+[2007/03/28] Aeomin - Fixed Access Violation during shutdown, which just an extra check 
+[ZoneServer.pas:OnDisconnect]
+[2007/03/28] Aeomin - Added a Zone Option which allows kick all players before shutdown, 
+instead just Disconnect.
                       [Only works with proper shutdown (CTRL+C), close button will force close program]
 [2007/03/28] Aeomin - Added Kick, KickAll procedure [ZoneSend.pad]
 

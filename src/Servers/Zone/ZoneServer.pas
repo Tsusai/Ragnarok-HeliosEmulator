@@ -290,12 +290,13 @@ procedure TZoneServer.OnDisconnect(AConnection: TIdContext);
 var
 	CharacterIndex : Integer;
 	ACharacter : TCharacter;
-	AMap : TMap;
 
 begin
 	if AConnection.Data is TClientLink then
 	begin
 		ACharacter := TClientLink(AConnection.Data).CharacterLink;
+
+		ACharacter.ZoneStatus := isOffline;
 
 		ZoneSendPlayerOnlineStatus(
 					ToInterTCPClient,
@@ -315,13 +316,8 @@ begin
 
 		if Started and (ACharacter.MapInfo <> nil) then
 		begin
-			AMap := ACharacter.MapInfo;
-			CharacterIndex := AMap.Cell[ACharacter.Position.X][ACharacter.Position.Y].Beings.IndexOfObject(ACharacter);
-			if CharacterIndex > -1 then
-			begin
-				AMap.Cell[ACharacter.Position.X][ACharacter.Position.Y].Beings.Delete(CharacterIndex);
-				ACharacter.ShowTeleportOut;
-			end;
+			ACharacter.RemoveFromMap;
+			ACharacter.ShowTeleportOut;
 		end;
 
 		if ACharacter.CharaState = charaDead then
@@ -330,7 +326,6 @@ begin
 			ACharacter.Position := ACharacter.SavePoint;
 		end;
 
-		ACharacter.ZoneStatus := isOffline;
 		CharacterIndex := CharacterList.IndexOf(ACharacter.CID);
 		if CharacterIndex > -1 then
 		begin
