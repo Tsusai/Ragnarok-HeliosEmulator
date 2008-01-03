@@ -22,6 +22,11 @@ uses
 		Index : word
 	) : boolean;
 
+	function Lua_toLongWord(
+		var ALua : TLua; 
+		Index : byte
+	) : LongWord;
+
 	procedure MakeLuaThread(
 		var SourceLua : TLua;
 		var DestLua   : TLuaInfo
@@ -46,6 +51,8 @@ uses
 
 
 implementation
+uses
+	Math;
 
 //Since 23235 is a valid number and string to lua, this routine checks for
 //non pure number string checking
@@ -60,6 +67,21 @@ begin
 	Result := (Boolean(lua_isstring(ALua,Index)) and
 	not Boolean(lua_isnumber(ALua,Index)));
 end;
+
+
+// Convert to LongWord
+function Lua_toLongWord(
+	var ALua : TLua; 
+	Index : byte
+) : LongWord;
+begin
+	Result := 
+	EnsureRange(
+		Round(lua_tonumber(ALua, Index)),
+		Low(LongWord), High(LongWord)
+	);
+end;
+
 
 //Takes an existing lua, and makes a new execution thread for a
 //descendant.  Also stores the parent's info so that it can

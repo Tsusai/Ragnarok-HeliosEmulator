@@ -774,7 +774,6 @@ function script_Compass(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
 	PointType : Byte;
-	Color  : String;
 begin
 	Result := 0;
 	if lua_gettop(ALua) = 5 then
@@ -789,8 +788,6 @@ begin
 				PointType := EnsureRange(lua_tointeger(ALua, 4),0,255);
 				if PointType = 0 then
 					PointType := 2;
-				Color := lua_tostring(ALua, 5);
-				Delete(Color, 1, 2);
 				SendCompass(
 					AChara.ClientInfo,
 					AChara.ScriptID,
@@ -798,7 +795,7 @@ begin
 					lua_tointeger(ALua, 2),
 					lua_tointeger(ALua, 3),
 					PointType,
-					LongWord(StrToInt('$' + Color))
+					Lua_toLongWord(ALua, 5)
 				);
 			end;
 		end;

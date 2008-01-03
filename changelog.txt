@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 420 -
+[2008/01/03] Aeomin - Added Tsusai's Lua_toLongWord to LuaCoreRoutines.
+[2008/01/03] Aeomin - Modified Compass to use Lua_toLongWord instead crappy long way..
+-
+
 - Rev 419 -
 [2008/01/02] Aeomin - Added function compass_check useless but keeps from freeze.. 
 -
