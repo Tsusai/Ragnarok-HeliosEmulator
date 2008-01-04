@@ -20,7 +20,7 @@ const
 	SQLiteDLL = 'sqlite3.dll';
 	{$ENDIF}
 	{$IFDEF LINUX}
-	SQLiteDLL = 'libsqlite3.dll';
+	SQLiteDLL = 'libsqlite3.so';
 	{$ENDIF}
 
 // Return values for sqlite3_exec() and sqlite3_step()

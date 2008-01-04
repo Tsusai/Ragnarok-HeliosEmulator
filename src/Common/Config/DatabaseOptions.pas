@@ -144,7 +144,7 @@ implementation
 
 			if Section.Values['DBName'] = '' then
 			begin
-				Section.Values['DBName'] := 'heliosGame';
+				Section.Values['DBName'] := 'heliosgame';
 			end;
 			fGameDB := Section.Values['DBName'];
 
@@ -171,7 +171,7 @@ implementation
 			fStaticHost := Section.Values['Host'];
 			fStaticPort := EnsureRange(StrToIntDef(Section.Values['Port'], 3306), 1, MAX_PORT);
 			if Section.Values['DBName'] = '' then begin
-				Section.Values['DBName'] := 'HeliosStatic';
+				Section.Values['DBName'] := 'heliosstatic';
 			end;
 			fStaticDB := Section.Values['DBName'];
 			if Section.Values['Username'] = '' then begin

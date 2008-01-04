@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 422 -
+[2008/01/04] Tsusai - Various case sensitive changes committed for linux compiling.
+-
+
 - Rev 421 -
 [2008/01/03] Aeomin - Updated VARS for getvar
 -

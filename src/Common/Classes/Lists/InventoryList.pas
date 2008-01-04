@@ -12,7 +12,7 @@ unit InventoryList;
 interface
 uses
 	Item,
-	ContNrs;
+	Contnrs;
 
 type
 
