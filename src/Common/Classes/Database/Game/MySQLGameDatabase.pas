@@ -789,6 +789,7 @@ begin
 			CalcMaxSP;
 			CalcMaxWeight;
 			CalcSpeed;
+			CalcASpeed;
 
 			//Do not start the save timer caused by modifying everything else.
 			DataChanged := false;
@@ -898,6 +899,7 @@ begin
 			CalcMaxSP;
 			CalcMaxWeight;
 			CalcSpeed;
+			CalcASpeed;
 
 			//Do not start the save timer caused by modifying everything else.
 			DataChanged := false;

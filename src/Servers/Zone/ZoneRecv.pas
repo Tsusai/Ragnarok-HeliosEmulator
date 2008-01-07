@@ -952,8 +952,7 @@ begin
 					spd := Speed;
 				end;
 
-				MoveTick := GetTick + spd DIV 2;//changed to div2 to offset
-				//annoying difference between server and client.
+				MoveTick := GetTick + spd DIV 2;
 
 				MoveEvent := TMovementEvent.Create(MoveTick,AChara);
 				EventList.Add(MoveEvent);
@@ -1227,7 +1226,11 @@ begin
 
 		//How many stats added?
 		Def := AChara.ParamBase[LocalType] - OldAmount;
-
+		if LocalType in [AGI, DEX] then
+		begin
+			AChara.CalcASpeed;
+		end;
+		
 		if Def = 0 then
 		begin
 			//Nothing has changed, assume failed

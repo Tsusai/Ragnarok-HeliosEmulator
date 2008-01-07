@@ -169,6 +169,7 @@ protected
 	procedure SetMap(Value : String); override;
 	procedure SetPosition(Value : TPoint); override;
 	procedure SetSpeed(Value : Word); override;
+	procedure SetASpeed(Value : Word);override;
 
 	procedure SetKarma(Value : Word);
 	procedure SetManner(Value : Word);
@@ -1956,6 +1957,8 @@ var
 	ABeing : TBeing;
 	ATarget : TBeing;
 	Pass : Boolean;
+	Damage : LongWord;
+
 	//check to see if a target is in range
 	Function GetTargetIfInRange(ID : LongWord; Distance : Word) : TBeing;
 	var
@@ -1978,7 +1981,7 @@ var
 		end;
 	end;
   //show the attack motion and damage
-	Procedure ShowAttack;
+	Procedure ShowAttack(Damage : LongWord);
 	var
 		idxX, idxY, BeingIdx : Integer;
 	begin
@@ -1995,7 +1998,7 @@ var
 							ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
 							if ABeing is TCharacter then
 							begin
-								DoAction(TCharacter(ABeing).ClientInfo, ID, TargetID, ASpeed, 0, ACTION_ATTACK, 0, 0, 0);
+								DoAction(TCharacter(ABeing).ClientInfo, ID, TargetID, AttackDelay DIV 2, 0, ACTION_ATTACK, EnsureRange(Damage, 0, High(Word)), 1, 0);
 							end;
 						end;
 					end;
@@ -2023,12 +2026,13 @@ begin
 			if Pass = true then
 			begin
 				//show character attack motion
-				ShowAttack;
+				Damage := 0;
+				ShowAttack(Damage);
 
 			//if we're continually attacking then add an attack event
 				if AttackContinuous = true then
 				begin
-					AnAttackEvent := TAttackEvent.Create(GetTick+1000, self, ATarget);
+					AnAttackEvent := TAttackEvent.Create(GetTick+AttackDelay, self, ATarget);
 					EventList.Add(AnAttackEvent);
 				end;
 			end;
@@ -2253,7 +2257,7 @@ begin
 	WriteBufferWord(34, FLEE1, OutBuffer);
 	WriteBufferWord(36, Lucky, OutBuffer);
 	WriteBufferWord(38, Critical, OutBuffer);
-	WriteBufferWord(40, ASpeed, OutBuffer);
+	WriteBufferWord(40, AttackDelay DIV 2, OutBuffer);
 	WriteBufferWord(42, 0, OutBuffer);
 	SendBuffer(ClientInfo, OutBuffer, GetPacketLength($00bd,ClientVersion));
 
@@ -2586,6 +2590,7 @@ begin
 			CalcMaxHP;
 			CalcMaxSP;
 			CalcSpeed;
+			CalcASpeed;
 
 			//Set hp and sp to full if enabled in the ini.
 			if MainProc.ZoneServer.Options.FullHPOnLevelUp then
@@ -2787,6 +2792,18 @@ begin
 end;{Death}
 //------------------------------------------------------------------------------
 
+
+procedure TCharacter.SetASpeed(Value : Word);
+begin
+	if ASpeed <> Value then
+	begin
+		inherited;
+		if ZoneStatus = isOnline then
+		begin
+			SendsubStat(0, ASPD, AttackDelay DIV 2);
+		end;
+	end;
+end;
 
 //------------------------------------------------------------------------------
 //Create                                                             CONSTRUCTOR

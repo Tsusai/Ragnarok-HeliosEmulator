@@ -67,7 +67,7 @@ const
 	LUK = 5; {Luck - Increases Critical hits and perfect dodge rate, and brings
 			about lots of luck. }
 
-
+  ASPD = $0035;
 //------------------------------------------------------------------------------
 //                             Movement Constants
 //------------------------------------------------------------------------------
@@ -219,6 +219,9 @@ const
 	ACTION_DO_STAND = 3;
 	ACTION_DO_ATTACK_CONTINUOUS = 4;
 
+
+	//Max Attack speed
+	ASPEED_MAX = 199;
 implementation
 
 end.

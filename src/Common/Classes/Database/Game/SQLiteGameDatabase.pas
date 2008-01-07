@@ -736,6 +736,7 @@ begin
 			CalcMaxHP;
 			CalcMaxSP;
 			CalcSpeed;
+			CalcASpeed;
 		end;
 	end else Result := nil;
 	if Assigned(QueryResult) then QueryResult.Free;
@@ -829,6 +830,7 @@ begin
 			CalcMaxHP;
 			CalcMaxSP;
 			CalcSpeed;
+			CalcASpeed;
 		end;
 	end else Result := nil;
 	if Assigned(QueryResult) then QueryResult.Free;

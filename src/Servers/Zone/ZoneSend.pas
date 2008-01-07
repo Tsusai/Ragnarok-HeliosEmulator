@@ -290,8 +290,11 @@ var
 begin
 	for Idx := MainProc.ZoneServer.CharacterList.Count-1 downto 0 do
 	begin
-		Chara := MainProc.ZoneServer.CharacterList[Idx] as TCharacter;
-		Kick(Chara);
+		if MainProc.ZoneServer.CharacterList.Count > Idx then
+		begin
+			Chara := MainProc.ZoneServer.CharacterList[Idx] as TCharacter;
+			Kick(Chara);
+		end;
 	end;
 end;
 //------------------------------------------------------------------------------

@@ -120,6 +120,9 @@ protected
 	fMap              : String;
 	fPosition         : TPoint;
 	fSpeed            : Word;
+	fASpeed						: Word;
+
+	AttackDelay				: LongWord;
 
 	procedure SetName(
 		const
@@ -155,7 +158,7 @@ protected
 	procedure SetMap(Value : string); virtual;
 	procedure SetPosition(Value : TPoint); virtual;
 	procedure SetSpeed(Value : Word); virtual;
-
+	procedure SetASpeed(Value : Word); virtual;
 	function GetHpPercent: Byte;
 	procedure SetHPPercent(Value : Byte);
 	function GetSpPercent: Byte;
@@ -180,7 +183,6 @@ public
 	FLEE1				: Word;
 	Lucky				: Word;
 	Critical		: Word;
-	ASpeed			: Word;
 
 	MapInfo			: TMap;
 	EventList		: TEventList;
@@ -212,7 +214,7 @@ public
 	property Map       : string     read fMap write SetMap;
 	property Position  : TPoint     read fPosition write SetPosition;
 	property Speed     : Word       read fSpeed write SetSpeed;
-
+	property ASpeed		 : Word				read fASpeed write SetASpeed;
 	Procedure Walk;
 
 	Procedure CalcMaxHP; virtual; abstract;
@@ -220,7 +222,7 @@ public
 	Procedure CalcMaxSP; virtual; abstract;
 
 	Procedure CalcSpeed; virtual;
-
+	procedure CalcASpeed; virtual;
 	procedure DelayDisconnect(ExpireTime:Integer);
 
 	procedure ShowBeingWalking;
@@ -988,6 +990,11 @@ procedure TBeing.SetMap(Value : string); begin fMap := Value; end;
 
 procedure TBeing.SetSpeed(Value : Word); begin fSpeed := Value; end;
 
+procedure TBeing.SetASpeed(Value : Word);
+begin
+	fASpeed := Value;
+end;
+
 procedure TBeing.SetPosition(Value : TPoint);
 var
 	OldPt : TPoint;
@@ -1175,6 +1182,31 @@ end;
 procedure TBeing.AddToMap;
 begin
 	MapInfo.Cell[Position.X][Position.Y].Beings.AddObject(ID, self);
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CalcASpeed                                                      Procedure
+//------------------------------------------------------------------------------
+//  What it does-
+//	Attack speed calculation
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2008/01/06] RaX - Created
+//
+//------------------------------------------------------------------------------
+procedure TBeing.CalcASpeed;
+begin
+	ASpeed := EnsureRange(
+		200-(Round((250-ParamBase[AGI]-(ParamBase[DEX]/4))*(200{-ASPD Base}-150)/250)) {* DelayDecrease}
+	, 0, ASPEED_MAX);
+	AttackDelay := 20*(200-ASpeed);
 end;
 //------------------------------------------------------------------------------
 end.

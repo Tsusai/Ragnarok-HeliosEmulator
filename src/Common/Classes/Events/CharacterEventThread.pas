@@ -48,7 +48,9 @@ uses
 	SysUtils,
 	WinLinux,
 	{Project}
-	Main
+	Main,
+	Character,
+	Event
 	{3rd Party}
 	//none
 	;
@@ -106,7 +108,8 @@ var
 	CharacterIndex	: Integer;
 	EventIndex			: Integer;
 	CurrentTime			: LongWord;
-
+	ACharacter			: TCharacter;
+	AnEvent					: TRootEvent;
 begin
 	//Get the current "Tick" or time.
 	CurrentTime := GetTick;
@@ -114,19 +117,27 @@ begin
 	//Loop through the character list
 	for CharacterIndex := CharacterList.Count - 1 downto 0 do
 	begin
-		//Loop through each character's eventlist.
-		for EventIndex := CharacterList[CharacterIndex].EventList.Count - 1 downto 0 do
+		if CharacterIndex < CharacterList.Count then
 		begin
-			//Check to see if the event needs to be fired.
-			if CurrentTime >= CharacterList[CharacterIndex].EventList[EventIndex].ExpiryTime then
+			ACharacter := CharacterList[CharacterIndex];
+			//Loop through each character's eventlist.
+			for EventIndex := ACharacter.EventList.Count - 1 downto 0 do
 			begin
-				//Enter a critical section to avoid access violations.
-				CriticalSection.Enter;
-				//If it does, execute the event, then delete it from the list.
-				//(The list "owns" the events, so this does not leak)   {not right now though}
-				CharacterList[CharacterIndex].EventList[EventIndex].Execute;
-				CharacterList[CharacterIndex].EventList.Delete(EventIndex);
-				CriticalSection.Leave;
+				if EventIndex < ACharacter.EventList.Count then
+				begin
+					AnEvent := ACharacter.EventList[EventIndex];
+					//Check to see if the event needs to be fired.
+					if CurrentTime >= AnEvent.ExpiryTime then
+					begin
+						//Enter a critical section to avoid access violations.
+						CriticalSection.Enter;
+						//If it does, execute the event, then delete it from the list.
+						//(The list "owns" the events, so this does not leak)   {not right now though}
+						AnEvent.Execute;
+						ACharacter.EventList.Delete(EventIndex);
+						CriticalSection.Leave;
+					end;
+				end;
 			end;
 		end;
 	end;
