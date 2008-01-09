@@ -15,6 +15,15 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 424 -
+[2008/01/09] RaX - Overview :Whew, finally FIXED the eventlist for good.
+[2008/01/09] RaX - Moved GetPath from TMap to TBeing.
+[2008/01/09] RaX - Changed TEventList from being a handwritten list to descending
+ from a tthreadlist.
+[2008/01/09] RaX - Modified code in Zone Recv, charactereventthread, to use the
+ LockList/UnlockList functions to access eventlist elements.
+-
+
 - Rev 423 -
 [2008/01/06] RaX - Added Attack speed calculations. Also fixed bug in eventthread
  that caused a crash dealing with eventlist index, now checks index and gets a pointer

@@ -29,8 +29,6 @@ type
 		MemStart : Pointer; // Start of the memory holding the list
 		NextSlot : PPoint; // Points to the next free slot in memory
 
-		CriticalSection : TCriticalSection;
-
 		Function GetValue(Index : Integer) : TPoint;
     Procedure SetValue(Index : Integer; Value : TPoint);
 		Procedure Expand(const Size : Integer);
@@ -71,13 +69,10 @@ const
 //------------------------------------------------------------------------------
 constructor TPointList.Create();
 begin
-	CriticalSection := TCriticalSection.Create;
-	CriticalSection.Enter;
 	inherited Create;
 	MsCount  := 0; // No Points in the list yet
   MaxCount := 0; //no mem yet!
 	MemStart := NIL;//no memory yet
-	CriticalSection.Leave;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -93,14 +88,8 @@ end;{Create}
 //------------------------------------------------------------------------------
 destructor TPointList.Destroy;
 begin
-	CriticalSection.Enter;
-
 	// Free the allocated memory
 	FreeMem(MemStart);
-
-	// Call TObject destructor
-	CriticalSection.Leave;
-	CriticalSection.Free;
 	inherited;
 end;{Destroy}
 //------------------------------------------------------------------------------
@@ -121,7 +110,6 @@ var
 	OldPointer, NewPointer : PPoint;
 	Index : Integer;
 begin
-	CriticalSection.Enter;
 	// First allocate a new, bigger memory space
 	GetMem(NewMemoryStart, (MaxCount + Size) * SizeOf(TPoint));
 	if(Assigned(MemStart)) then
@@ -145,7 +133,6 @@ begin
 	NextSlot := MemStart;
 	Inc(NextSlot, MaxCount);
 	Inc(MaxCount, Size);
-	CriticalSection.Leave;
 end;{Expand}
 //------------------------------------------------------------------------------
 
@@ -165,7 +152,6 @@ var
 	OldPointer, NewPointer : PPoint;
 	Index : Integer;
 begin
-	CriticalSection.Enter;
 	if MaxCount > Size then
 	begin
 		//first allocate a new, smaller memory space
@@ -192,7 +178,6 @@ begin
 		Inc(NextSlot, MaxCount);
 		Inc(MaxCount, Size);
 	end;
-	CriticalSection.Leave;
 end;{Shrink}
 //------------------------------------------------------------------------------
 
@@ -208,7 +193,6 @@ end;{Shrink}
 //------------------------------------------------------------------------------
 procedure TPointList.Add(const APoint : TPoint);
 begin
-	CriticalSection.Enter;
 	// If we do not have enough space to add the Point, then get more space!
 	if MsCount = MaxCount then
 	begin
@@ -221,7 +205,6 @@ begin
 	// And update things to suit
 	Inc(MsCount);
 	Inc(NextSlot);
-	CriticalSection.Leave;
 end;{Add}
 //------------------------------------------------------------------------------
 
@@ -262,7 +245,6 @@ var
 	CurrentItem : PPoint;
 	NextItem    : PPoint;
 begin
-	CriticalSection.Enter;
 
 	if (MaxCount-ALLOCATE_SIZE) = (MsCount) then
 	begin
@@ -278,7 +260,6 @@ begin
 	end;
 	Dec(MsCount,  1);
 	Dec(NextSlot, 1);
-	CriticalSection.Leave;
 end;{Delete}
 //------------------------------------------------------------------------------
 
@@ -294,7 +275,6 @@ end;{Delete}
 //------------------------------------------------------------------------------
 procedure TPointList.Clear;
 begin
-	CriticalSection.Enter;
 
 	// Free the allocated memory
 	if Assigned(MemStart) then
@@ -304,7 +284,6 @@ begin
 		MaxCount := 0;  //no max size
 		MemStart := NIL;//no memory yet
 	end;
-	CriticalSection.Leave;
 end;{Clear}
 //------------------------------------------------------------------------------
 
@@ -344,12 +323,10 @@ procedure TPointList.SetValue(Index : Integer; Value : TPoint);
 var
 	PointPtr : PPoint;
 begin
-	CriticalSection.Enter;
 	// Simply set the value at the given TPoint index position
 	PointPtr := MemStart;
 	Inc(PointPtr, Index); // Point to the index'th TPoint in storage
 	PointPtr^ := Value;
-	CriticalSection.Leave;
 end;{SetValue}
 //------------------------------------------------------------------------------
 end.

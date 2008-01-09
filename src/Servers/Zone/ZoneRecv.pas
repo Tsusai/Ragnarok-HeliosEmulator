@@ -928,7 +928,7 @@ begin
 	if (AChara.ScriptStatus = SCRIPT_NOTRUNNING) and
 	(AChara.CharaState in [charaStanding,charaAttacking,charaWalking]) then
 	begin
-		if AChara.MapInfo.GetPath(AChara.Position, DestPoint, AChara.Path) then
+		if AChara.GetPath(AChara.Position, DestPoint, AChara.Path) then
 		begin
 			with AChara do
 			begin
@@ -1865,6 +1865,8 @@ var
 	Send : Boolean;
 
 	FriendRequestEvent : TFriendRequestEvent;
+
+	EventList : TList;
 begin
 	OrigID   := BufferReadLongWord(2, InBuffer);
 	AccID    := BufferReadLongWord(6, InBuffer);
@@ -1878,16 +1880,16 @@ begin
 		Chara := MainProc.ZoneServer.CharacterList[Index] as TCharacter;
 		if Reply = 0 then
 		begin
-			if Chara.EventList.Count > 0 then
-			begin
-				for Index := Chara.EventList.Count -1 downto 0 do
+			EventList := Chara.EventList.LockList;
+			try
+				for Index := 0 to EventList.Count -1 do
 				begin
-					if Chara.EventList.Items[Index] is TFriendRequestEvent then
+					if TObject(EventList.Items[Index]) is TFriendRequestEvent then
 					begin
-						FriendRequestEvent := Chara.EventList.Items[Index] as TFriendRequestEvent;
+						FriendRequestEvent := TObject(EventList.Items[Index]) as TFriendRequestEvent;
 						if FriendRequestEvent.PendingFriend = CharID then
 						begin
-							Chara.EventList.Delete(Index);
+							EventList.Delete(Index);
 							//Accept
 							with TThreadLink(Chara.ClientInfo.Data).DatabaseLink.GameData do
 							begin
@@ -1919,8 +1921,9 @@ begin
 					end else
 						Send := False;
 				end;
-			end else
-				Send := False;
+			finally
+				Chara.EventList.UnlockList;
+			end;
 		end;
 
 		// Why? to make sure not trigger again -.-

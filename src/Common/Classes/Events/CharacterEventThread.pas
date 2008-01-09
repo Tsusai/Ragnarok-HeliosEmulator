@@ -29,9 +29,6 @@ type
 //TCharacterEventThread
 //------------------------------------------------------------------------------
 	TCharacterEventThread = class(TIdThread)
-	private
-		CriticalSection : TCriticalSection;
-
 	public
 		CharacterList : TCharacterList;
 		Constructor Create(ACharacterList : TCharacterList);reintroduce;
@@ -46,12 +43,13 @@ implementation
 uses
 	{RTL/VCL}
 	SysUtils,
-	WinLinux,
+	Classes,
 	{Project}
 	Main,
 	Character,
-	Event
+	Event,
 	{3rd Party}
+	WinLinux
 	//none
 	;
 
@@ -70,7 +68,6 @@ Constructor TCharacterEventThread.Create(ACharacterList : TCharacterList);
 begin
 	inherited Create(TRUE, TRUE, 'CharacterEventThread');
 	CharacterList := ACharacterList;
-	CriticalSection := TCriticalSection.Create;
 end;//Create
 //------------------------------------------------------------------------------
 
@@ -87,7 +84,6 @@ end;//Create
 //------------------------------------------------------------------------------
 Destructor TCharacterEventThread.Destroy;
 begin
-	CriticalSection.Free;
 	inherited;
 end;//Destroy
 //------------------------------------------------------------------------------
@@ -108,8 +104,8 @@ var
 	CharacterIndex	: Integer;
 	EventIndex			: Integer;
 	CurrentTime			: LongWord;
-	ACharacter			: TCharacter;
 	AnEvent					: TRootEvent;
+	AnEventList			: TList;
 begin
 	//Get the current "Tick" or time.
 	CurrentTime := GetTick;
@@ -119,26 +115,24 @@ begin
 	begin
 		if CharacterIndex < CharacterList.Count then
 		begin
-			ACharacter := CharacterList[CharacterIndex];
-			//Loop through each character's eventlist.
-			for EventIndex := ACharacter.EventList.Count - 1 downto 0 do
-			begin
-				if EventIndex < ACharacter.EventList.Count then
+			AnEventList := CharacterList[CharacterIndex].EventList.LockList;
+			try
+				//Loop through each character's eventlist.
+				for EventIndex := 0 to AnEventList.Count - 1 do
 				begin
-					AnEvent := ACharacter.EventList[EventIndex];
+					AnEvent := AnEventList[EventIndex];
 					//Check to see if the event needs to be fired.
 					if CurrentTime >= AnEvent.ExpiryTime then
 					begin
-						//Enter a critical section to avoid access violations.
-						CriticalSection.Enter;
 						//If it does, execute the event, then delete it from the list.
 						//(The list "owns" the events, so this does not leak)   {not right now though}
 						AnEvent.Execute;
-						ACharacter.EventList.Delete(EventIndex);
-						CriticalSection.Leave;
+						AnEventList.Delete(EventIndex);
 					end;
 				end;
-			end;
+      finally
+				CharacterList[CharacterIndex].EventList.UnlockList;
+      end;
 		end;
 	end;
 	//Free up the processor

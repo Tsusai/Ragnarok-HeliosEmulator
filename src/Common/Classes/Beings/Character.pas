@@ -2058,7 +2058,7 @@ begin
 								begin
 									TargetID := ATargetID;
 									PathIndex := 0;
-									if MapInfo.GetPath(Position, ABeing.Position, Path) = true then
+									if GetPath(Position, ABeing.Position, Path) = true then
 									begin
 										EventList.Add(TMovementEvent.Create(GetTick+Speed, self));
 										ZoneSendWalkReply(self, Path[Path.Count-1]);
