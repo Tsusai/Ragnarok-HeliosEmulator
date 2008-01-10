@@ -230,7 +230,7 @@ public
 	procedure ShowTeleportOut;
 	procedure UpdateDirection;
 	procedure ShowEffect(EffectID:LongWord);
-	procedure Attack(ATargetID : LongWord; AttackContinuous : Boolean = false);virtual;
+	procedure Attack(ATargetID : LongWord; AttackContinuous : Boolean; JustAttacked : Boolean);virtual;
 
 	procedure AreaLoop(
 			ALoopCall           : TLoopCall;
@@ -733,7 +733,7 @@ end;
 //  Changes -
 //	December 26th, 2007 - RaX - Created Header
 //------------------------------------------------------------------------------
-procedure TBeing.Attack(ATargetID : LongWord; AttackContinuous : Boolean = false);
+procedure TBeing.Attack(ATargetID : LongWord; AttackContinuous : Boolean; JustAttacked : Boolean);
 begin
 
 end;

@@ -849,7 +849,7 @@ begin
 			begin
 				//Temporary
 				AChara.CharaState := charaAttacking;
-				AChara.Attack(TargetID, FALSE);
+				AChara.Attack(TargetID, FALSE, FALSE);
 			end;
 
 		2	://Sit
@@ -866,7 +866,7 @@ begin
 		7 : //Hit target continuously
 			begin
 				AChara.CharaState := charaAttacking;
-				AChara.Attack(TargetID, TRUE);
+				AChara.Attack(TargetID, TRUE, FALSE);
       end;
 	end;
 end;{ActionRequest}

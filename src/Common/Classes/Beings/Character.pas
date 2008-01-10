@@ -252,7 +252,7 @@ public
 	procedure CalcSpeed; override;
 	procedure CalcMaxWeight;
 
-	procedure Attack(ATargetID : LongWord; AttackContinuous : Boolean = false);override;
+	procedure Attack(ATargetID : LongWord; AttackContinuous : Boolean; JustAttacked : Boolean);override;
 
 	procedure SendSubStat(
 		const Mode     : Word;
@@ -1948,9 +1948,8 @@ end;{CalcMaxHP}
 //  Changes -
 //	December 26th, 2007 - RaX - Created Header
 //------------------------------------------------------------------------------
-procedure TCharacter.Attack(ATargetID : LongWord; AttackContinuous : Boolean = false);
+procedure TCharacter.Attack(ATargetID : LongWord; AttackContinuous : Boolean; JustAttacked : Boolean);
 var
-	AnAttackEvent : TAttackEvent;
 	idxY : integer;
 	idxX : integer;
 	BeingIdx : integer;
@@ -1958,6 +1957,8 @@ var
 	ATarget : TBeing;
 	Pass : Boolean;
 	Damage : LongWord;
+	AMoveDelay : LongWord;
+	AnAttackDelay : LongWord;
 
 	//check to see if a target is in range
 	Function GetTargetIfInRange(ID : LongWord; Distance : Word) : TBeing;
@@ -2032,8 +2033,9 @@ begin
 			//if we're continually attacking then add an attack event
 				if AttackContinuous = true then
 				begin
-					AnAttackEvent := TAttackEvent.Create(GetTick+AttackDelay, self, ATarget);
-					EventList.Add(AnAttackEvent);
+					EventList.Add(
+						TAttackEvent.Create(GetTick+AttackDelay, self, ATarget, TRUE)
+					);
 				end;
 			end;
 
@@ -2056,17 +2058,32 @@ begin
 								ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
 								if ABeing.ID = ATargetID then
 								begin
+									EventList.DeleteMovementEvents;
 									TargetID := ATargetID;
+									ATarget := ABeing;
 									PathIndex := 0;
 									if GetPath(Position, ABeing.Position, Path) = true then
 									begin
-										EventList.Add(TMovementEvent.Create(GetTick+Speed, self));
 										ZoneSendWalkReply(self, Path[Path.Count-1]);
 										ShowBeingWalking;
-										ATarget := ABeing;
 
-										AnAttackEvent := TAttackEvent.Create(GetTick+Word(Path.Count)*Speed, self, ATarget);
-										EventList.Add(AnAttackEvent);
+										//If we just attacked, add events with a bit more delay
+										if (JustAttacked) then
+										begin
+											AMoveDelay := GetTick + AttackDelay + Speed;
+											AnAttackDelay := GetTick + AttackDelay + Speed * Word(Max(Path.Count,0));
+										end else
+										begin
+											AMoveDelay := GetTick + Speed;
+											AnAttackDelay := GetTick + Speed * Word(Max(Path.Count,0));
+										end;
+										EventList.Add(
+											TMovementEvent.Create(AMoveDelay, self)
+										);
+
+										EventList.Add(
+											TAttackEvent.Create(AnAttackDelay, self, ATarget, FALSE)
+										);
 									end;
 									Exit;
 								end;
@@ -2858,6 +2875,6 @@ begin
 	OnTouchIDs.Free;
 	TerminateLuaThread(LuaInfo);
 	inherited;
-end;{Destroy}
+	end;{Destroy}
 //------------------------------------------------------------------------------
 end{Character}.

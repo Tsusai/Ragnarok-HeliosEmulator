@@ -34,9 +34,10 @@ type
 	private
 		Character : TCharacter;
 	public
+		JustAttacked : Boolean;
 		TargetBeing : TBeing;
 		Procedure Execute; override;
-		constructor Create(SetExpiryTime : LongWord; ACharacter : TCharacter; ATargetBeing : TBeing);
+		constructor Create(SetExpiryTime : LongWord; ACharacter : TCharacter; ATargetBeing : TBeing; AJustAttacked : Boolean);
 	end;
 //------------------------------------------------------------------------------
 
@@ -56,14 +57,15 @@ implementation
 //------------------------------------------------------------------------------
 Procedure TAttackEvent.Execute;
 begin
-	Character.Attack(TargetBeing.ID, true);
+	Character.Attack(TargetBeing.ID, true, JustAttacked);
 end;//Execute
 //------------------------------------------------------------------------------
 
-constructor TAttackEvent.Create(SetExpiryTime : LongWord; ACharacter : TCharacter; ATargetBeing : TBeing);
+constructor TAttackEvent.Create(SetExpiryTime : LongWord; ACharacter : TCharacter; ATargetBeing : TBeing; AJustAttacked : Boolean);
 begin
 	inherited Create(SetExpiryTime);
 	Character := ACharacter;
+	JustAttacked := AJustAttacked;
 	TargetBeing := ATargetBeing;
 end;
 

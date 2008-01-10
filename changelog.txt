@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 425 -
+[2008/01/10] RaX - Fixed following and attacking, modified both TCharacter and TAttackEvent.
+-
+
 - Rev 424 -
 [2008/01/09] RaX - Overview :Whew, finally FIXED the eventlist for good.
 [2008/01/09] RaX - Moved GetPath from TMap to TBeing.
