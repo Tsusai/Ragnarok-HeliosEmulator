@@ -22,29 +22,26 @@ uses
 	List32,
 	SysUtils,
 	Account,
+	Server,
 	LoginOptions;
 
 type
 //------------------------------------------------------------------------------
 //TLoginServer                                                            CLASS
 //------------------------------------------------------------------------------
-	TLoginServer = class
+	TLoginServer = class(TServer)
 	protected
-	//
-	private
-		fPort         : Word;
-		TCPServer     : TIdTCPServer;
 		fCharaServerList : TIntList32;
 		fAccountList  : TIntList32;
 
-		Procedure OnConnect(AConnection: TIdContext);
-		Procedure OnDisconnect(AConnection: TIdContext);
+		Procedure OnConnect(AConnection: TIdContext);override;
+		Procedure OnDisconnect(AConnection: TIdContext); override;
+		Procedure OnExecute(AConnection: TIdContext);override;
 		Procedure OnException(AConnection: TIdContext;
-			AException: Exception);
+			AException: Exception);override;
 
 		Procedure LoadOptions;
 
-		Procedure ParseLogin(AClient: TIdContext);
 		Procedure SendLoginError(var AClient: TIdContext; const Error : byte; const Error_Message : String='');
 		procedure SendDCError(var AClient: TIdContext; const Error : byte);
 		Procedure SendCharacterServers(AnAccount : TAccount; AClient: TIdContext);
@@ -71,19 +68,14 @@ type
 			AClient : TIdContext;
 			InBuffer : TBuffer
 		);
-		Procedure SetPort(Value : Word);
-		Function GetStarted() : Boolean;
 
 	public
 		Options : TLoginOptions;
 
-		Property Port : Word read fPort write SetPort;
-		property Started : Boolean read GetStarted;
-
 		Constructor Create();
 		Destructor  Destroy();override;
-		Procedure   Start();
-		Procedure   Stop();
+		Procedure   Start();override;
+		Procedure   Stop();override;
 	end;
 //------------------------------------------------------------------------------
 
@@ -132,13 +124,6 @@ Constructor TLoginServer.Create();
 begin
 	Inherited;
 
-	TCPServer := TIdTCPServer.Create;
-
-	TCPServer.OnExecute   := ParseLogin;
-	TCPServer.OnConnect   := OnConnect;
-	TCPServer.OnDisconnect:= OnDisconnect;
-	TCPServer.OnException := OnException;
-
 	fCharaServerList      := TIntList32.Create;
 	fAccountList          := TIntList32.Create;
 end;{Create}
@@ -157,7 +142,6 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TLoginServer.Destroy();
 begin
-	TCPServer.Free;
 	fCharaServerList.Free;
 	fAccountList.Free;
 	Inherited;
@@ -243,6 +227,7 @@ end;{Start}
 procedure TLoginServer.OnConnect(AConnection: TIdContext);
 begin
 	AConnection.Data := TLoginThreadLink.Create(AConnection);
+	TLoginThreadLink(AConnection.Data).DatabaseLink := Database;
 	TLoginThreadLink(AConnection.Data).MD5Key := ''; //blank just incase.
 	//Console.Message('Connection from ' + AConnection.Connection.Socket.Binding.PeerIP. 'Login Server', MS_INFO);
 end;{LoginServerConnect}
@@ -425,8 +410,6 @@ end;{OnException}
 			//Trim the MF off because people forget to take it off.
 			Username := AnsiLeftStr(Username,Length(Username)-2);
 			//Check to see if the account already exists.
-			TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
-			try
 				if NOT TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.AccountExists(Username) then
 				begin
 					//Create the account.
@@ -434,9 +417,6 @@ end;{OnException}
 						Username,Password,GenderStr[2]
 					);
 				end;
-			finally
-				TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
-			end;
 		end;
 	end;{ParseMF}
 //----------------------------------------------------------------------------
@@ -489,9 +469,7 @@ end;{OnException}
 			ParseMF(AClient, Username, Password);
 		end;
 
-		TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
-		try
-			AnAccount := TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(UserName);
+			AnAccount := TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AClient, UserName);
 			if Assigned(AnAccount) then begin
 				AccountPassword := AnAccount.Password;
 				if	( not (MD5Key = '') and //If key isn't blank AND if one of the combinations
@@ -571,9 +549,6 @@ end;{OnException}
 				SendLoginError(AClient,LOGIN_UNREGISTERED);
 			end;
 			AnAccount.Free;
-		finally
-			TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
-		end;
 	end;//ValidateLogin
 //------------------------------------------------------------------------------
 
@@ -638,6 +613,7 @@ end;{OnException}
 			CServerInfo.Port := Port;
 			CServerInfo.Connection := AClient;
 			AClient.Data := TCharaServerLink.Create(AClient);
+			TCharaServerLink(AClient.Data).DatabaseLink := Database;
 			TCharaServerLink(AClient.Data).Info := CServerInfo;
 			fCharaServerList.AddObject(ID, CServerInfo);
 		end;
@@ -706,18 +682,13 @@ begin
 	Idx := fAccountList.IndexOf(AccountID);
 	if Idx > -1 then
 	begin
-		TCharaServerLink(AClient.Data).DatabaseLink.CommonData.Connect;
-		try
-			AnAccount := TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
+			AnAccount := TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AClient, AccountID);
 			if Assigned(AnAccount) then begin
 				{AnAccount.LoginKey[1] := 0;
 				AnAccount.LoginKey[2] := 0;}
 				fAccountList.Delete(Idx);
 				TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
 			end;
-		finally
-			TCharaServerLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
-		end;
 	end;
 end;
 //------------------------------------------------------------------------------
@@ -737,7 +708,7 @@ end;
 //		December 26th, 2007 - Tsusai - Fixed up MD5 client preping.
 //
 //------------------------------------------------------------------------------
-	procedure TLoginServer.ParseLogin(AClient: TIdContext);
+	procedure TLoginServer.OnExecute(AConnection: TIdContext);
 	var
 		Buffer    : TBuffer;
 		UserName  : String;
@@ -748,108 +719,108 @@ end;
 		Size      : Word;
 	begin
 		//Get ID
-		RecvBuffer(AClient,Buffer,2);
+		RecvBuffer(AConnection,Buffer,2);
 		ID := BufferReadWord(0,Buffer);
 		Case ID of
 		$0064: //Basic login
 			begin
 				//Read the rest of the packet
-				RecvBuffer(AClient,Buffer[2],GetPacketLength($0064)-2);
+				RecvBuffer(AConnection,Buffer[2],GetPacketLength($0064)-2);
 				UserName := BufferReadString(6,24,Buffer);
 				Password := BufferReadString(30,24,Buffer);
-				ValidateLogin(AClient,Buffer,Username,Password);
+				ValidateLogin(AConnection,Buffer,Username,Password);
 			end;
 		$01DB: //Client connected asking for md5 key to send a secure password
 			begin
 				MD5Key   := MakeRNDString( Random(10)+1 );
 				MD5Len   := Length(MD5Key);
-				TLoginThreadLink(AClient.Data).MD5Key := MD5Key;
+				TLoginThreadLink(AConnection.Data).MD5Key := MD5Key;
 				WriteBufferWord(0,$01DC,Buffer);
 				WriteBufferWord(2,MD5Len+4,Buffer);
 				WriteBufferString(4,MD5Key,MD5Len,Buffer);
-				SendBuffer(AClient,Buffer,MD5Len+4);
+				SendBuffer(AConnection,Buffer,MD5Len+4);
 			end;
 		$01DD: //Recieve secure login details
 			begin
-				RecvBuffer(AClient,Buffer[2],GetPacketLength($01DD)-2);
+				RecvBuffer(AConnection,Buffer[2],GetPacketLength($01DD)-2);
 				UserName := BufferReadString(6,24,Buffer);
 				Password := BufferReadMD5(30,Buffer);
-				ValidateLogin(AClient,Buffer,Username,Password);
+				ValidateLogin(AConnection,Buffer,Username,Password);
 			end;
 		$0277:// New login packet (kRO 2006-04-24aSakexe langtype 0)
 			begin
-				RecvBuffer(AClient,Buffer[2],GetPacketLength($0277)-2);
+				RecvBuffer(AConnection,Buffer[2],GetPacketLength($0277)-2);
 				UserName := BufferReadString(6,24,Buffer);
 				Password := BufferReadString(30,24,Buffer);
-				ValidateLogin(AClient,Buffer,Username,Password);
+				ValidateLogin(AConnection,Buffer,Username,Password);
 			end;
 		$02b0:// New login packet (kRO 2007-05-14aSakexe langtype 0)
 			begin
-				RecvBuffer(AClient,Buffer[2],GetPacketLength($02b0)-2);
+				RecvBuffer(AConnection,Buffer[2],GetPacketLength($02b0)-2);
 				UserName := BufferReadString(6,24,Buffer);
 				Password := BufferReadString(30,24,Buffer);
-				ValidateLogin(AClient,Buffer,Username,Password);
+				ValidateLogin(AConnection,Buffer,Username,Password);
 			end;
 		$0200:  //Account name?
 			begin
-				RecvBuffer(AClient,Buffer[2],GetPacketLength($0200)-2);
+				RecvBuffer(AConnection,Buffer[2],GetPacketLength($0200)-2);
 			end;
 		$0204://Receive MD5 of client...
 			begin
 				// Do nothing...
-				RecvBuffer(AClient,Buffer[2],GetPacketLength($0204)-2);
+				RecvBuffer(AConnection,Buffer[2],GetPacketLength($0204)-2);
 			end;
 		$2000:
 			begin
-				RecvBuffer(AClient,Buffer[2],GetPacketLength($2000)-2);
+				RecvBuffer(AConnection,Buffer[2],GetPacketLength($2000)-2);
 				Password := BufferReadMD5(6,Buffer);
-				VerifyCharaServer(AClient,Buffer,Password);
+				VerifyCharaServer(AConnection,Buffer,Password);
 			end;
 		$2002:
 			begin
-				if AClient.Data is TCharaServerLink then
+				if AConnection.Data is TCharaServerLink then
 				begin
-					RecvBuffer(AClient,Buffer[2],2);
+					RecvBuffer(AConnection,Buffer[2],2);
 					Size := BufferReadWord(2,Buffer);
-					RecvBuffer(AClient,Buffer[4],Size-4);
-					TCharaServerLink(AClient.Data).Info.WAN := BufferReadString(4,Size-4,Buffer);
+					RecvBuffer(AConnection,Buffer[4],Size-4);
+					TCharaServerLink(AConnection.Data).Info.WAN := BufferReadString(4,Size-4,Buffer);
 					Console.Message('Received updated Character Server WANIP.', 'Login Server', MS_NOTICE);
 				end;
 			end;
 		$2003:
 			begin
-				if AClient.Data is TCharaServerLink then
+				if AConnection.Data is TCharaServerLink then
 				begin
-					RecvBuffer(AClient,Buffer[2],2);
+					RecvBuffer(AConnection,Buffer[2],2);
 					Size := BufferReadWord(2,Buffer);
-					RecvBuffer(AClient,Buffer[4],Size-4);
-					TCharaServerLink(AClient.Data).Info.LAN := BufferReadString(4,Size-4,Buffer);
+					RecvBuffer(AConnection,Buffer[4],Size-4);
+					TCharaServerLink(AConnection.Data).Info.LAN := BufferReadString(4,Size-4,Buffer);
 					Console.Message('Received updated Character Server LANIP.', 'Login Server', MS_NOTICE);
 				end;
 			end;
 		$2004:
 			begin
-				if AClient.Data is TCharaServerLink then
+				if AConnection.Data is TCharaServerLink then
 				begin
-					RecvBuffer(AClient,Buffer[2],GetPacketLength($2004)-2);
-					TCharaServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,Buffer);
+					RecvBuffer(AConnection,Buffer[2],GetPacketLength($2004)-2);
+					TCharaServerLink(AConnection.Data).Info.OnlineUsers := BufferReadWord(2,Buffer);
 					Console.Message('Received updated Character Server Online Users.', 'Login Server', MS_DEBUG);
 				end;
 			end;
 		$2005:
 			begin
-				if AClient.Data is TCharaServerLink then
+				if AConnection.Data is TCharaServerLink then
 				begin
-					RecvBuffer(AClient,Buffer[2],GetPacketLength($2005)-2);
-					UpdateToAccountList(AClient,Buffer);
+					RecvBuffer(AConnection,Buffer[2],GetPacketLength($2005)-2);
+					UpdateToAccountList(AConnection,Buffer);
 				end;
 			end;
 		$2006:
 			begin
-				if AClient.Data is TCharaServerLink then
+				if AConnection.Data is TCharaServerLink then
 				begin
-					RecvBuffer(AClient,Buffer[2],GetPacketLength($2006)-2);
-					RemoveFromAccountList(AClient,Buffer);
+					RecvBuffer(AConnection,Buffer[2],GetPacketLength($2006)-2);
+					RemoveFromAccountList(AConnection,Buffer);
 				end;
 			end;
 		else
@@ -879,40 +850,4 @@ begin
 end;{LoadOptions}
 //------------------------------------------------------------------------------
 
-
-//------------------------------------------------------------------------------
-//SetPort                                                          PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Sets the internal fPort variable to the value specified. Also sets the
-//    TCPServer's port.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-Procedure TLoginServer.SetPort(Value : Word);
-begin
-	fPort := Value;
-	TCPServer.DefaultPort := Value;
-end;//SetPort
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//GetStarted                                                          FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//			Checks to see if the internal TCP server is active, if it is it returns
-//    true.
-//
-//	Changes -
-//		January 4th, 2007 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-Function TLoginServer.GetStarted() : Boolean;
-begin
-	Result := TCPServer.Active;
-end;{SetPort}
-//------------------------------------------------------------------------------
 end.

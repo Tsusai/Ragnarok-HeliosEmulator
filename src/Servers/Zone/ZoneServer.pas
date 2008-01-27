@@ -30,6 +30,7 @@ uses
 	LuaCoreRoutines,
 	MapList,
 	PacketTypes,
+	Server,
 	ZoneOptions,
 	{3rd Party}
 	IdTCPServer,
@@ -39,20 +40,14 @@ uses
 
 
 type
-	TZoneServer = class
+	TZoneServer = class(TServer)
 	protected
-	//
-	private
 
-		fPort            : Word;
-
-		TCPServer        : TIdTCPServer;
-
-		Procedure OnExecute(AConnection: TIdContext);
-		Procedure OnConnect(AConnection: TIdContext);
-		Procedure OnDisconnect(AConnection: TIdContext);
+		Procedure OnExecute(AConnection: TIdContext);override;
+		Procedure OnConnect(AConnection: TIdContext);override;
+		Procedure OnDisconnect(AConnection: TIdContext);override;
 		Procedure OnException(AConnection: TIdContext;
-			AException: Exception);
+			AException: Exception);override;
 
 		Procedure CharaClientOnConnect(Sender : TObject);
 		Procedure CharaClientRead(AClient : TInterClient);
@@ -74,16 +69,10 @@ type
 				Packet   : Word
 			) : Boolean;
 
-		Procedure SetPort(Value : Word);
-		Function GetStarted : Boolean;
-
 		Procedure LoadOptions;
 		Procedure LoadMaps;
 
 	public
-		WANIP : string;
-		LANIP : string;
-
 		ToCharaTCPClient : TInterClient;
 		ToInterTCPClient : TInterClient;
 
@@ -100,18 +89,13 @@ type
 
 		CharacterEventThread : TCharacterEventThread;
 
-		ZoneLocalDatabase : TDatabase;
-
 		NPCLua : TLua;
-
-		property Started : Boolean read GetStarted;
-		property Port : Word read fPort write SetPort;
 
 		Constructor Create;
 		Destructor  Destroy;Override;
 
-		Procedure   Start(Reload : Boolean = FALSE);
-		Procedure   Stop;
+		Procedure   Start();override;
+		Procedure   Stop;override;
 
 		Procedure   ConnectToCharacter;
 		Procedure   ConnectToInter;
@@ -157,6 +141,7 @@ uses
 //------------------------------------------------------------------------------
 Constructor TZoneServer.Create;
 begin
+	inherited;
 	OnlineUsers := 0;
 
 	Commands := TGMCommands.Create;
@@ -165,7 +150,6 @@ begin
 	CharacterList := TCharacterList.Create(TRUE);
 	NPCList := TIntList32.Create;
 
-	TCPServer := TIdTCPServer.Create;
 	ToCharaTCPClient := TInterClient.Create('Zone','Character', MainProc.Options.ReconnectDelay);
 	ToInterTCPClient := TInterClient.Create('Zone','Inter', MainProc.Options.ReconnectDelay);
 
@@ -174,11 +158,6 @@ begin
 
 	ToInterTCPClient.OnConnected := InterClientOnConnect;
 	ToInterTCPClient.OnRecieve   := InterClientRead;
-
-	TCPServer.OnConnect   := OnConnect;
-	TCPServer.OnDisconnect:= OnDisconnect;
-	TCPServer.OnExecute   := OnExecute;
-	TCPServer.OnException := OnException;
 
 	CharacterEventThread := TCharacterEventThread.Create(CharacterList);
 end;{Create}
@@ -227,13 +206,13 @@ Begin
 	objects properly... }
 	CharacterEventThread.Free;
 
-	TCPServer.Free;
 	ToCharaTCPClient.Free;
 	ToInterTCPClient.Free;
 	//--
 
 	{[2007/06/02] CR - Safe. }
 	Commands.Free;
+	inherited;
 End; (* Dest TZoneServer.Destroy
 *-----------------------------------------------------------------------------*)
 
@@ -269,6 +248,7 @@ end;{TMainProc.ZoneServerExecute}
 procedure TZoneServer.OnConnect(AConnection: TIdContext);
 begin
 	AConnection.Data := TClientLink.Create(AConnection);
+	TClientLink(AConnection.Data).DatabaseLink := Database;
 end;{OnConnect}
 //------------------------------------------------------------------------------
 
@@ -305,12 +285,7 @@ begin
 					1 //0 = online; 1=offline
 				);
 
-		TThreadLink(AConnection.Data).DatabaseLink.GameData.Connect;
-		try
 			TThreadLink(AConnection.Data).DatabaseLink.GameData.SaveChara(ACharacter);
-		finally
-			TThreadLink(AConnection.Data).DatabaseLink.GameData.Disconnect;
-		end;
 
 		SendZoneCharaLogOut(ToCharaTCPClient, ACharacter, Byte(ACharacter.DcAndKeepData));
 
@@ -372,7 +347,7 @@ end;{OnException}
 //		January 14th, 2007 - Tsusai - Chara client settings in place
 //
 //------------------------------------------------------------------------------
-Procedure TZoneServer.Start(Reload : Boolean = FALSE);
+Procedure TZoneServer.Start();
 begin
 	if NOT Started then
 	begin
@@ -383,8 +358,6 @@ begin
 		WANIP := Options.WANIP;
 		LANIP := Options.LANIP;
 		Port := Options.Port;
-
-		ZoneLocalDatabase := TDatabase.Create(NIL);
 
 		//Activate server and clients.
 		ActivateServer('Zone',TCPServer, Options.IndySchedulerType, Options.IndyThreadPoolSize);
@@ -443,8 +416,6 @@ begin
 
 		//Kill ALL LUAS by killing the root lua.
 		TerminateLua(NPCLua);
-
-		ZoneLocalDatabase.Free;
 
 		//Save and free options, options must be free'd here to force a reload after
 		//start.
@@ -708,7 +679,7 @@ Begin
 	Console.WriteLn('      - Loading Maps...');
 
 	{[2007/06/01] CR - Get List of Map Names from DB. }
-	with ZoneLocalDatabase.StaticData do
+	with Database.StaticData do
 	begin
 		Connect;
 		MapNames := GetMapsForZone(Options.ID);
@@ -742,43 +713,6 @@ Begin
 	Console.WriteLn('      - Maps Loaded!');
 End; (* Proc TZoneServer.LoadMaps
 *-----------------------------------------------------------------------------*)
-
-
-//------------------------------------------------------------------------------
-//SetPort                                                          PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Sets the internal fPort variable to the value specified. Also sets the
-//    TCPServer's port.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-Procedure TZoneServer.SetPort(Value : Word);
-begin
-	fPort := Value;
-	TCPServer.DefaultPort := Value;
-end;//SetPort
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//GetStarted                                                          FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//			Checks to see if the internal TCP server is active, if it is it returns
-//    true.
-//
-//	Changes -
-//		January 4th, 2007 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-Function TZoneServer.GetStarted() : Boolean;
-begin
-	Result := TCPServer.Active;
-end;{SetPort}
-//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------

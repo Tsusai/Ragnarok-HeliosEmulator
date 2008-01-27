@@ -409,20 +409,10 @@ begin
 	ValidateID1    := BufferReadLongWord(ReadPts[2], Buffer);
 	{ClientTick     := }BufferReadLongWord(ReadPts[3], Buffer);
 	Gender         := BufferReadByte    (ReadPts[4], Buffer);
-	TThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
-	try
-			AnAccount  := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
-	finally
-			TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
-	end;
+	AnAccount  := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AClient, AccountID);
 
-	//use client local game database
-	TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
-	try
-			ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID);
-	finally
-			TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
-	end;
+	ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(AClient, CharacterID);
+
 
 	if Assigned(AnAccount) and Assigned(ACharacter) then
 	begin
@@ -1278,7 +1268,7 @@ begin
 	begin
 		if Connect then
 		try
-			TargetChara := GetChara(TargetChar);
+			TargetChara := GetChara(AChara.ClientInfo, TargetChar);
 			if (TargetChara <> NIL) then
 				AlreadyFriend := IsFriend(AChara.CID, TargetChara.ID, TargetChara.CID);
 		finally
@@ -1360,16 +1350,11 @@ begin
 	AccountID   := BufferReadLongWord(ReadPts[0], InBuffer);
 	CharID      := BufferReadLongWord(ReadPts[1], InBuffer);
 
-	TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
-	try
 			if TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.DeleteFriend(AChara.CID, AccountID, CharID) then
 			begin
 			SendDeleteFriend(AChara.ClientInfo, AccountID, CharID);
 			Dec(AChara.Friends);
 			end;
-	finally
-			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
-	end;
 end;{RemoveFriendFromList}
 //------------------------------------------------------------------------------
 
@@ -1629,9 +1614,7 @@ begin
 	//Since array is 0 based, this would be perfect index
 	Arguments[ArgCount] := MainProc.ZoneServer.Commands.GetSyntax(CommandID);
 
-	MainProc.ZoneServer.ZoneLocalDatabase.GameData.Connect;
-	FromChar := MainProc.ZoneServer.ZoneLocalDatabase.GameData.GetCharaName(CharacterID);
-	MainProc.ZoneServer.ZoneLocalDatabase.GameData.Disconnect;
+	FromChar := MainProc.ZoneServer.Database.GameData.GetCharaName(CharacterID);
 
 	Error := TStringList.Create;
 

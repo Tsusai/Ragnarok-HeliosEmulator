@@ -50,9 +50,9 @@ uses
 	{RTL/VCL}
 	//none
 	{Project}
-	Account
+	Account,
 	{Third Party}
-	//none
+	IdContext
 	;
 
 
@@ -107,11 +107,13 @@ public
 	procedure Disconnect; virtual; abstract;
 
 	function  GetAccount(
+		AClient : TIdContext;
 		const
 			ID    : LongWord
 		) : TAccount; overload; virtual; abstract;
 
 	function  GetAccount(
+		AClient : TIdContext;
 		const
 			Name  : String
 		) : TAccount; overload; virtual; abstract;

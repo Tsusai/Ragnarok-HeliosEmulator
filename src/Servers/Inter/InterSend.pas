@@ -388,7 +388,7 @@ begin
 			TYPE_BROADCAST: begin
 				//after getting the command information, we get ready to send it to the
 				//other zones.
-				for Index := (MainProc.InterServer.fClientList.Count - 1) downto 0 do
+				for Index := (MainProc.InterServer.ClientList.Count - 1) downto 0 do
 				begin
 					if Assigned(MainProc.InterServer.ZoneServerLink[Index]) then
 					begin
@@ -410,15 +410,12 @@ begin
 					//At least 2 parameters required
 					if CommandSeparator.Count >= 2 then
 					begin
-						GameData.Connect;
-						ACharacter := GameData.LoadChara(CommandSeparator[1]);
-						GameData.Disconnect;
+						ACharacter := GameData.LoadChara(AClient, CommandSeparator[1]);
 						if ACharacter <> nil then
 						begin
-							StaticData.Connect;
 							ZoneID := StaticData.GetMapZoneID(ACharacter.Map);
 							Index := -1;
-							for LoopIndex := (MainProc.InterServer.fClientList.Count - 1) downto 0 do
+							for LoopIndex := (MainProc.InterServer.ClientList.Count - 1) downto 0 do
 							begin
 								ZoneLink := MainProc.InterServer.ZoneServerLink[LoopIndex];
 								if (ZoneLink <> NIL) AND
@@ -428,7 +425,6 @@ begin
 									Break;
 								end;
 							end;
-							StaticData.Disconnect;
 							if Index > -1 then
 							begin
 								//Same thing, but extra 2 parameter to store target character
@@ -454,12 +450,11 @@ begin
 				begin
 					if CommandSeparator.Count >= 2 then
 					begin
-						StaticData.Connect;
 						ZoneID := StaticData.GetMapZoneID(CommandSeparator[1]);
 						if ZoneID > -1 then
 						begin
 							Index := -1;
-							for LoopIndex := 0 to (MainProc.InterServer.fClientList.Count - 1) do
+							for LoopIndex := 0 to (MainProc.InterServer.ClientList.Count - 1) do
 							begin
 								ZoneLink := MainProc.InterServer.ZoneServerLink[LoopIndex];
 								if (ZoneLink <> NIL) AND
@@ -469,7 +464,6 @@ begin
 									Break;
 								end;
 							end;
-							StaticData.Disconnect;
 							if Index > -1 then
 							begin
 								InterSendGMCommandToZone(MainProc.InterServer.ClientList[Index], GMID, CharaID, AZoneID, CommandSeparator);

@@ -27,8 +27,8 @@ uses
 	ZoneServerInfo,
 	{3rd Party}
 	IdContext,
-	IdTCPServer,
-	List32
+	List32,
+	Server
 	;
 
 
@@ -59,33 +59,14 @@ Revisions:
 	dirty work to shield it from other TInterServer routines.  Lends clarity to
 	code that used to do the casting work in-situ.
 *=============================================================================*)
-	TInterServer = class(TObject)
+	TInterServer = class(TServer)
 	protected
-		fIP              : String;
-		fPort            : Word;
 		fZoneServerList	 : TIntList32;
-
-		TCPServer        : TIdTCPServer;
-
-		Procedure OnDisconnect(AConnection: TIdContext);
+		Procedure OnDisconnect(AConnection: TIdContext);override;
+		Procedure OnExecute(AConnection: TIdContext);override;
 		Procedure OnException(AConnection: TIdContext;
-			AException: Exception);
-		procedure OnConnect(AConnection: TIdContext);
-		//procedure ProcessInterPacket(AClient : TIdContext);
-
-		Procedure SetIPLongWord(Value : string);
-
-		Procedure SetPort(
-			const
-				Value : Word
-			);
-
-		Function  GetClientList(
-			const
-				Index : Integer
-			) : TIdContext;
-
-		Function  GetStarted : Boolean;
+			AException: Exception);override;
+		procedure OnConnect(AConnection: TIdContext);override;
 
 		Function  GetZoneServerInfo(
 			const
@@ -105,34 +86,17 @@ Revisions:
 			InBuffer	: TBuffer
 		);
 
-		procedure ParseInterServ(AClient : TIdContext);
-
 	public
-		IPLongWord     : LongWord;
 		ServerName    : String;
 		Commands				 : TGMCommands;
-		fClientList			 : TList;
 		Options : TInterOptions;
-
+		ClientList			 : TList;
 		Constructor Create;
 		Destructor  Destroy;Override;
-		Procedure   Start;
-		Procedure   Stop;
+		Procedure   Start;override;
+		Procedure   Stop;override;
 
 		property ZoneServerList : TIntList32 read fZoneServerList;
-		property IP   : String
-			read  fIP
-			write SetIPLongWord;
-
-		property ClientList[const Index : Integer] : TIdContext
-			read  GetClientList;
-
-		property Port : Word
-			read  fPort
-			write SetPort;
-
-		property Started : Boolean
-			read  GetStarted;
 
 		property ZoneServerInfo[const Index : Integer] : TZoneServerInfo
 			read  GetZoneServerInfo;
@@ -179,14 +143,9 @@ Constructor TInterServer.Create;
 begin
 	Inherited;
 	Commands := TGMCommands.Create;
-	TCPServer := TIdTCPServer.Create;
-	TCPServer.OnExecute   := ParseInterServ;
-	TCPServer.OnConnect		:= OnConnect;
-	TCPServer.OnException := OnException;
-	TCPServer.OnDisconnect:= OnDisconnect;
 
 	fZoneServerList := TIntList32.Create;
-	fClientList := TList.Create;
+	ClientList := TList.Create;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -203,9 +162,8 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TInterServer.Destroy;
 begin
-	TCPServer.Free;
 	fZoneServerList.Free;
-	fClientList.Free;
+	ClientList.Free;
 	Commands.Free;
 	Inherited;
 end;{Destroy}
@@ -224,7 +182,7 @@ end;{Destroy}
 //------------------------------------------------------------------------------
 procedure TInterServer.OnConnect(AConnection: TIdContext);
 begin
-	fClientList.Add(AConnection);
+	ClientList.Add(AConnection);
 end;{OnDisconnect}
 //------------------------------------------------------------------------------
 
@@ -253,7 +211,7 @@ begin
 			fZoneServerList.Delete(idx);
 		end;
 	end;
-	fClientList.Delete(fClientList.IndexOf(AConnection));
+	ClientList.Delete(ClientList.IndexOf(AConnection));
 end;{OnDisconnect}
 //------------------------------------------------------------------------------
 
@@ -343,130 +301,130 @@ end;{Start}
 //			April 26th, 2007 - Aeomin - added packet 0x2208 support
 //
 //------------------------------------------------------------------------------
-procedure TInterServer.ParseInterServ(AClient : TIdContext);
+procedure TInterServer.OnExecute(AConnection : TIdContext);
 var
 	ABuffer       : TBuffer;
 	PacketID      : Word;
 	Size          : Word;
 begin
-	RecvBuffer(AClient,ABuffer,2);
+	RecvBuffer(AConnection,ABuffer,2);
 	PacketID := BufferReadWord(0, ABuffer);
 
 	case PacketID of
 	$2200: // Zone Server Connection request
 		begin
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2200)-2);
-			VerifyZoneServer(AClient,ABuffer);
+			RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2200)-2);
+			VerifyZoneServer(AConnection,ABuffer);
 		end;
 	$2202: // Zone Server sending new WAN location details
 		begin
-			if AClient.Data is TZoneServerLink then
+			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AClient,ABuffer[2],2);
+				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
-				RecvBuffer(AClient,ABuffer[4],Size-4);
-				TZoneServerLink(AClient.Data).Info.WAN := BufferReadString(4,Size-4,ABuffer);
+				RecvBuffer(AConnection,ABuffer[4],Size-4);
+				TZoneServerLink(AConnection.Data).Info.WAN := BufferReadString(4,Size-4,ABuffer);
 				Console.Message('Received updated Zone Server WANIP.', 'Inter Server', MS_NOTICE);
 			end;
 		end;
 	$2203: // Zone Server sending new LAN location details
 		begin
-			if AClient.Data is TZoneServerLink then
+			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AClient,ABuffer[2],2);
+				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
-				RecvBuffer(AClient,ABuffer[4],Size-4);
-				TZoneServerLink(AClient.Data).Info.LAN := BufferReadString(4,Size-4,ABuffer);
+				RecvBuffer(AConnection,ABuffer[4],Size-4);
+				TZoneServerLink(AConnection.Data).Info.LAN := BufferReadString(4,Size-4,ABuffer);
 				Console.Message('Received updated Zone Server LANIP.', 'Inter Server', MS_NOTICE);
 			end;
 		end;
 	$2204: // Zone Server sending new Online User count
 		begin
-			if AClient.Data is TZoneServerLink then
+			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2204)-2);
+				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2204)-2);
 				//TZoneServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
 				Console.Message('Received updated Zone Server Online Users.', 'Inter Server', MS_NOTICE);
 			end;
 		end;
 	$2205: // Zone server sending GM command to be sent to other servers + self
 		begin
-			if AClient.Data is TZoneServerLink then
+			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AClient,ABuffer[2],2);
+				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
-				RecvBuffer(AClient,ABuffer[4],Size-4);
-				RecvGMCommand(AClient, ABuffer);
+				RecvBuffer(AConnection,ABuffer[4],Size-4);
+				RecvGMCommand(AConnection, ABuffer);
 			end;
 		end;
 	$2207: // Zone server sending GM command result
 		begin
-			if AClient.Data is TZoneServerLink then
+			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AClient,ABuffer[2],2);
+				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
-				RecvBuffer(AClient,ABuffer[4],Size-4);
-				RecvGMCommandReply(AClient, ABuffer);
+				RecvBuffer(AConnection,ABuffer[4],Size-4);
+				RecvGMCommandReply(AConnection, ABuffer);
 			end;
 		end;
 	$2208: // Zone server sending Warp Request
 		begin
-			if AClient.Data is TZoneServerLink then
+			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AClient,ABuffer[2],2);
+				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
-				RecvBuffer(AClient,ABuffer[4],Size-4);
-				RecvZoneWarpRequest(AClient, ABuffer);
+				RecvBuffer(AConnection,ABuffer[4],Size-4);
+				RecvZoneWarpRequest(AConnection, ABuffer);
 			end;
 		end;
 	$2210: //Zone Server send Private Message
 		begin
-			if AClient.Data is TZoneServerLink then
+			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AClient,ABuffer[2],2);
+				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
-				RecvBuffer(AClient,ABuffer[4],Size-4);
-				RecvWhisper(AClient, ABuffer);
+				RecvBuffer(AConnection,ABuffer[4],Size-4);
+				RecvWhisper(AConnection, ABuffer);
 			end;
 		end;
 	$2211:
 		begin
-			if AClient.Data is TZoneServerLink then
+			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2211)-2);
-				RecvWhisperReply(AClient, ABuffer);
+				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2211)-2);
+				RecvWhisperReply(AConnection, ABuffer);
 			end;
 		end;
 	$2215:
 		begin
-			if AClient.Data is TZoneServerLink then
+			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2215)-2);
-				RecvZoneRequestFriend(AClient, ABuffer);
+				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2215)-2);
+				RecvZoneRequestFriend(AConnection, ABuffer);
 			end;
 		end;
 	$2217:
 		begin
-			if AClient.Data is TZoneServerLink then
+			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2217)-2);
-				RecvZoneRequestFriendReply(AClient, ABuffer);
+				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2217)-2);
+				RecvZoneRequestFriendReply(AConnection, ABuffer);
 			end;
 		end;
 	$2218:
 		begin
-			if AClient.Data is TZoneServerLink then
+			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2218)-2);
-				RecvZonePlayerOnlineStatus(AClient, ABuffer);
+				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2218)-2);
+				RecvZonePlayerOnlineStatus(AConnection, ABuffer);
 			end;
 		end;
 	$2220:
 		begin
-			if AClient.Data is TZoneServerLink then
+			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2220)-2);
-				RecvZonePlayerOnlineReply(AClient, ABuffer);
+				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2220)-2);
+				RecvZonePlayerOnlineReply(AConnection, ABuffer);
 			end;
 		end;
 	else
@@ -549,122 +507,13 @@ begin
 		ZServerInfo.ZoneID := ID;
 		ZServerInfo.Port := BufferReadWord(6,InBuffer);
 		AClient.Data := TZoneServerLink.Create(AClient);
+		TZoneServerLink(AClient.Data).DatabaseLink := Database;
 		TZoneServerLink(AClient.Data).Info := ZServerInfo;
 		fZoneServerList.AddObject(ZServerInfo.ZoneID,ZServerInfo);
 	end;
 	SendValidateFlagToZone(AClient,Validated);
 end;
 //------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//SetIPLongWord   			                                             PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//      The Ragnarok client does not connect to a server using the plain x.x.x.x
-//    IP string format.  It uses a LongWord form.  Making the IP a property, we
-//    are able to call a function to go ahead and set the LongWord form at any
-//    time.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-procedure TInterServer.SetIPLongWord(Value : string);
-begin
-	//fIP         := GetIPStringFromHostname(Value);
-	//IPLongWord  := GetLongWordFromIPString(fIP);
-end; //proc SetIPLongWord
-//------------------------------------------------------------------------------
-
-
-(*- Procedure -----------------------------------------------------------------*
-TInterServer.SetPort
---------------------------------------------------------------------------------
-Overview:
---
-
-	Sets the internal fPort variable to the value specified. Also sets the
-TCPServer's port.
-
---
-Revisions:
---
-(Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2007/12/17] RaX - Created Header.
-[2007/05/19] CR - Altered Comment Header.  Changed behavior so that fPort and
-	TCPServer.DefaultPort are only altered IFF Value is different from fPort.
-	Value parameter made constant.
-*-----------------------------------------------------------------------------*)
-Procedure TInterServer.SetPort(
-	const
-		Value : Word
-	);
-Begin
-	if (Value <> fPort) then
-	begin
-		fPort := Value;
-		TCPServer.DefaultPort := Value;
-	end;
-End; (* Proc TInterServer.SetPort
-*-----------------------------------------------------------------------------*)
-
-
-(*- Function ------------------------------------------------------------------*
-TInterServer.GetClientList
---------------------------------------------------------------------------------
-Overview:
---
-	Does the dirty work casting the TList entry to TIdContext.
-
-	Returns the given TIdContext stored at Index in fClientList
-
---
-Pre:
-	Index must be within range 0..Count-1
-Post:
-	TODO
-
---
-Revisions:
---
-(Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2007/05/19] CR - Created routine.  Property read handler for ClientList.
-*-----------------------------------------------------------------------------*)
-Function TInterServer.GetClientList(
-	const
-		Index : Integer
-	): TIdContext;
-Begin
-	//Pre
-	Assert(
-		(Index >= 0) AND (Index < fClientList.Count),
-		'Index is out of bounds.'
-	);
-	//--
-
-	Result := TIdContext(fClientList[Index]);
-End;(* Func TInterServer.GetClientList
-*-----------------------------------------------------------------------------*)
-
-
-//------------------------------------------------------------------------------
-//GetStarted                                                          FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//			Checks to see if the internal TCP server is active, if it is it returns
-//    true.
-//
-//	Changes -
-//		January 4th, 2007 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-Function TInterServer.GetStarted : Boolean;
-Begin
-	Result := TCPServer.Active;
-End;{SetPort}
-//------------------------------------------------------------------------------
-
 
 (*- Function ------------------------------------------------------------------*
 TInterServer.GetZoneServerInfo
@@ -732,12 +581,12 @@ Function TInterServer.GetZoneServerLink(
 Begin
 	//Pre
 	Assert(
-		(Index >= 0) AND (Index < fClientList.Count),
+		(Index >= 0) AND (Index < ClientList.Count),
 		'ClientList Index out of bounds.'
 	);
 	//--
 
-	Result := TZoneServerLink(TIdContext(fClientList[Index]).Data);
+	Result := TZoneServerLink(TIdContext(ClientList[Index]).Data);
 End; (* Func TInterServer.GetZoneServerLink
 *-----------------------------------------------------------------------------*)
 

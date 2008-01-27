@@ -193,7 +193,7 @@ Begin
 			end;
 
 			ZoneID := BufferReadLongWord(12, InBuffer);
-			for Index := 0 to (fClientList.Count - 1) do
+			for Index := 0 to (ClientList.Count - 1) do
 			begin
 				ZoneLink := ZoneServerLink[Index];
 				if (ZoneLink <> NIL) AND
@@ -258,7 +258,7 @@ Begin
 	with TZoneServerLink(AClient.Data).DatabaseLink.GameData do
 	begin
 		Connect;
-		Chara := GetChara(TargetName);
+		Chara := GetChara(AClient, TargetName);
 		Disconnect;
 	end;
 	with MainProc.InterServer do
@@ -340,7 +340,7 @@ Begin
 	Flag   := BufferReadByte(10, InBuffer);
 	with MainProc.InterServer do
 	begin
-		for Index := (fClientList.Count - 1) downto 0 do
+		for Index := (ClientList.Count - 1) downto 0 do
 		begin
 			if Assigned(ZoneServerLink[Index]) AND
 				(ZoneServerLink[Index].Info.ZoneID = ZoneID) then
@@ -530,7 +530,7 @@ begin
 	begin
 		try
 			Connect;
-			Chara := GetChara(OrigID);
+			Chara := GetChara(AClient, OrigID);
 		finally
 			Disconnect;
 		end;
@@ -610,7 +610,7 @@ begin
 	begin
 		try
 			Connect;
-			FriendList := GetFriendList(CID);
+			FriendList := GetFriendList(AClient, CID);
 		finally
 			Disconnect;
 		end;

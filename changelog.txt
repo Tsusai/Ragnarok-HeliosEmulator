@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 427 -
+[2008/01/26] RaX - HUGE change. All Servers now descend from TServer(Server.pas).
+ Database connections are now server local(one connection per server). Connections
+ are permanent.
+-
+
 - Rev 426 -
 [2008/01/14] RaX - Moved Attack from TCharacter to TBeing.
 -

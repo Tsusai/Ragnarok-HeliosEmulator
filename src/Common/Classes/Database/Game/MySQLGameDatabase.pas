@@ -49,7 +49,8 @@ uses
 	CharaList,
 	Database,
 	{Third Party}
-	uMysqlClient
+	uMysqlClient,
+	IdContext
 	;
 
 
@@ -102,6 +103,7 @@ public
 	Destructor Destroy; override;
 
 	function CreateChara(
+		AClient : TIdContext;
 		var
 			ACharacter : TCharacter;
 		const
@@ -113,26 +115,31 @@ public
 		) : Boolean; override;
 
 	function GetAccountCharas(
+		AClient : TIdContext;
 		const
 			AccountID : LongWord
 		) : TCharacterList; override;
 
 	function LoadChara(
+		AClient : TIdContext;
 		const
 			CharaID : LongWord
 		) : TCharacter; overload; override;
 
 	function LoadChara(
+		AClient : TIdContext;
 		const
 			CharaName : String
 		) : TCharacter; overload; override;
 
 	function GetChara(
+		AClient : TIdContext;
 		const
 			CharaID : LongWord
 		) : TCharacter; overload; override;
 
 	function GetChara(
+  	AClient : TIdContext;
 		const
 			CharaName : String
 		) : TCharacter; overload; override;
@@ -181,6 +188,7 @@ public
 		):String;override;
 
 	function  GetFriendList(
+		AClient : TIdContext;
 		const
 			CharID : LongWord
 		) : TCharacterList; override;
@@ -226,9 +234,8 @@ uses
 	GameConstants,
 	Globals,
 	Main,
-  SQLExtendedRoutines
+	SQLExtendedRoutines
 	{Third Party}
-	//none
 	;
 
 
@@ -368,11 +375,12 @@ end;
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.GetChara(
+	AClient : TIdContext;
 	const
 		CharaID : LongWord
 	) : TCharacter;
 begin
-	Result := LoadChara(CharaID);
+	Result := LoadChara(AClient, CharaID);
 end;
 //------------------------------------------------------------------------------
 
@@ -388,11 +396,12 @@ end;
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.GetChara(
+	AClient : TIdContext;
 	const
 		CharaName : String
 	) : TCharacter;
 begin
-	Result := LoadChara(CharaName);
+	Result := LoadChara(AClient, CharaName);
 end;
 //------------------------------------------------------------------------------
 
@@ -411,6 +420,7 @@ end;
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.GetAccountCharas(
+	AClient : TIdContext;
 	const
 		AccountID : LongWord
 	) : TCharacterList;
@@ -434,7 +444,7 @@ begin
 		begin
 			for Index := 0 to QueryResult.RowsCount - 1 do
 			begin
-				Result.Add(GetChara(StrToInt(QueryResult.FieldValue(0))));
+				Result.Add(GetChara(AClient, StrToInt(QueryResult.FieldValue(0))));
 				if Index < QueryResult.RowsCount then
 				begin
 					QueryResult.Next;
@@ -663,6 +673,7 @@ end;
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.CreateChara(
+	AClient : TIdContext;
 	var
 		ACharacter : TCharacter;
 	const
@@ -690,7 +701,7 @@ begin
 			,TRUE,Success);
 		if (QueryResult.RowsCount = 1) then
 		begin
-			ACharacter := GetChara(StrToInt(QueryResult.FieldValue(0)));
+			ACharacter := GetChara(AClient, StrToInt(QueryResult.FieldValue(0)));
 			Result := Assigned(ACharacter);
 		end;
 		if Assigned(QueryResult) then QueryResult.Free;
@@ -710,6 +721,7 @@ end;
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.LoadChara(
+	AClient : TIdContext;
 	const
 		CharaID : LongWord
 	) : TCharacter;
@@ -730,7 +742,7 @@ begin
 	begin
 		with Result do
 		begin
-			Result           := TCharacter.Create(Parent.ClientInfo);
+			Result           := TCharacter.Create(AClient);
 			CID              := StrToInt(QueryResult.FieldValue(0));
 			ID               := StrToInt(QueryResult.FieldValue(1));
 			CharaNum         := StrToInt(QueryResult.FieldValue(2));
@@ -820,6 +832,7 @@ end;
 //
 //------------------------------------------------------------------------------
 function TMySQLGameDatabase.LoadChara(
+	AClient : TIdContext;
 	const
 		CharaName : String
 	) : TCharacter;
@@ -840,7 +853,7 @@ begin
 	begin
 		with Result do
 		begin
-			Result           := TCharacter.Create(Parent.ClientInfo);
+			Result           := TCharacter.Create(AClient);
 			CID              := StrToInt(QueryResult.FieldValue(0));
 			ID               := StrToInt(QueryResult.FieldValue(1));
 			CharaNum         := StrToInt(QueryResult.FieldValue(2));
@@ -1077,6 +1090,7 @@ end;
 //
 //------------------------------------------------------------------------------
 function  TMySQLGameDatabase.GetFriendList(
+		AClient : TIdContext;
 		const
 			CharID : LongWord
 		) : TCharacterList;
@@ -1100,7 +1114,7 @@ begin
 		begin
 			for Index := 0 to QueryResult.RowsCount - 1 do
 			begin
-				Result.Add(LoadChara(StrToInt(QueryResult.FieldValue(2))));
+				Result.Add(LoadChara(AClient, StrToInt(QueryResult.FieldValue(2))));
 				if Index < QueryResult.RowsCount then
 				begin
 					QueryResult.Next;

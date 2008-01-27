@@ -47,9 +47,9 @@ uses
 	//none
 	{Project}
 	Character,
-	CharaList
+	CharaList,
 	{Third Party}
-	//none
+	IdContext
 	;
 
 
@@ -99,6 +99,7 @@ public
 		) : Boolean; overload; virtual; abstract;
 
 	function  CreateChara(
+		AClient : TIdContext;
 		var
 			ACharacter : TCharacter;
 		const
@@ -115,26 +116,31 @@ public
 		) : Boolean; virtual; abstract;
 
 	function  GetAccountCharas(
+		AClient : TIdContext;
 		const
 			AccountID : LongWord
 		) : TCharacterList; virtual; abstract;
 
 	function  GetChara(
+		AClient : TIdContext;
 		const
 			CharaID : LongWord
 		) : TCharacter; overload; virtual; abstract;
 
 	function  GetChara(
+		AClient : TIdContext;
 		const
 			CharaName : String
 		) : TCharacter; overload; virtual; abstract;
 
 	function  LoadChara(
+		AClient : TIdContext;
 		const
 			CharaID : LongWord
 		) : TCharacter; overload; virtual; abstract;
 
 	function  LoadChara(
+		AClient : TIdContext;
 		const
 			CharaName : String
 		) : TCharacter; overload; virtual; abstract;
@@ -166,6 +172,7 @@ public
 		):String; virtual; abstract;
 
 	function  GetFriendList(
+  	AClient : TIdContext;
 		const
 			CharID : LongWord
 		) : TCharacterList; virtual; abstract;

@@ -1032,8 +1032,6 @@ var
 	MapZoneID	: SmallInt;
 
 begin
-	TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.Connect;
-	try
 		MapZoneID := TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(MapName);
 		if MapZoneID < 0 then
 		begin
@@ -1079,9 +1077,6 @@ begin
 			end;
 			Result := True;
 		end;
-	finally
-		TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-	end;
 end;{ZoneSendWarp}
 //------------------------------------------------------------------------------
 

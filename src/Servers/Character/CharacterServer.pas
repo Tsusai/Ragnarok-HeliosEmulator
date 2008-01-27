@@ -23,27 +23,24 @@ uses
 	List32,
 	SysUtils,
 	PacketTypes,
-	CharaOptions;
+	CharaOptions,
+	Server;
 
 type
 //------------------------------------------------------------------------------
 //TCharacterServer                                                        CLASS
 //------------------------------------------------------------------------------
-	TCharacterServer = class
+	TCharacterServer = class(TServer)
 	protected
-	//
-	private
-		fWANPort           : Word;
-
 		fZoneServerList : TIntList32;
 		fAccountList    : TIntList32;
 
-		TCPServer       : TIdTCPServer;
 		CharaToLoginClient : TInterClient;
-
-		Procedure OnDisconnect(AConnection: TIdContext);
+		Procedure OnConnect(AConnection: TIdContext);override;
+		Procedure OnExecute(AConnection: TIdContext);override;
+		Procedure OnDisconnect(AConnection: TIdContext);override;
 		Procedure OnException(AConnection: TIdContext;
-			AException: Exception);
+			AException: Exception);override;
 
 		procedure LoginClientOnConnect(Sender : TObject);
 		procedure LoginClientKickAccount(
@@ -51,8 +48,6 @@ type
 		var InBuffer : TBuffer
 		);
 		procedure LoginClientRead(AClient : TInterClient);
-
-		procedure ParseCharaServ(AClient : TIdContext);
 
 		procedure VerifyZoneServer(
 			AClient : TIdContext;
@@ -80,24 +75,17 @@ type
 		procedure CreateChara(AClient : TIdContext; var ABuffer : TBuffer);
 		procedure DeleteChara(AClient : TIdContext; var ABuffer : Tbuffer);
 
-		Procedure SetPort(Value : Word);
-		Function GetStarted() : Boolean;
 		Procedure LoadOptions;
 
 	public
 		ServerName    : String;
 
-		WANIP : string;
-		LANIP : string;
-
 		Options : TCharaOptions;
 
-		property WANPort : Word read fWANPort write SetPort;
-		property Started : Boolean read GetStarted;
 		Constructor Create();
 		Destructor  Destroy();Override;
-		Procedure   Start();
-		Procedure   Stop();
+		Procedure   Start();override;
+		Procedure   Stop();override;
 		Procedure ConnectToLogin();
 		function GetOnlineUserCount : Word;
 		procedure UpdateOnlineCountToZone;
@@ -144,10 +132,7 @@ const
 //------------------------------------------------------------------------------
 Constructor TCharacterServer.Create;
 begin
-	TCPServer := TIdTCPServer.Create;
-	TCPServer.OnExecute    := ParseCharaServ;
-	TCPServer.OnException  := OnException;
-	TCPServer.OnDisconnect := OnDisconnect;
+	inherited;
 
 	CharaToLoginClient := TInterClient.Create('Character','Login', MainProc.Options.ReconnectDelay);
 
@@ -173,11 +158,11 @@ end;{Create}
 //------------------------------------------------------------------------------
 Destructor TCharacterServer.Destroy;
 begin
-	TCPServer.Free;
 	CharaToLoginClient.Free;
 
 	fZoneServerList.Free;
 	fAccountList.Free;
+	inherited;
 end;{Destroy}
 //------------------------------------------------------------------------------
 
@@ -221,7 +206,7 @@ begin
 		LoadOptions;
 
 		ServerName := Options.ServerName;
-		WANPort := Options.Port;
+		Port := Options.Port;
 
 		ActivateServer('Character',TCPServer, Options.IndySchedulerType, Options.IndyThreadPoolSize);
 		WANIP := Options.WANIP;
@@ -391,6 +376,22 @@ end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+//OnConnect											                                          EVENT
+//------------------------------------------------------------------------------
+//	What it does-
+//			Nothing
+//
+//	Changes -
+//
+//------------------------------------------------------------------------------
+procedure TCharacterServer.OnConnect(AConnection: TIdContext);
+begin
+
+end;{LoginServerExecute}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //LoginClientRead()                                                   PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
@@ -490,12 +491,7 @@ begin
 	end;
 
 	AccountID := BufferReadLongWord(2, ABuffer);
-	TThreadLink(AClient.Data).DatabaseLink.CommonData.Connect;
-	try
-		AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AccountID);
-	finally
-		TThreadLink(AClient.Data).DatabaseLink.CommonData.Disconnect;
-	end;
+	AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AClient, AccountID);
 
 	if Assigned(AnAccount) then
 	begin
@@ -508,12 +504,7 @@ begin
 				TClientLink(AClient.Data).AccountLink := AnAccount;
 				SendPadding(AClient); //Legacy padding
 
-				TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
-				try
-					ACharaList := TThreadLink(AClient.Data).DatabaseLink.GameData.GetAccountCharas(AccountID);
-				finally
-					TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
-				end;
+				ACharaList := TThreadLink(AClient.Data).DatabaseLink.GameData.GetAccountCharas(AClient, AccountID);
 
 				Idx := fAccountList.IndexOf(AnAccount.ID);
 				if Idx > -1 then
@@ -618,11 +609,8 @@ begin
 	CharaIdx := BufferReadByte(2, ABuffer);
 	if AnAccount.CharaID[CharaIdx] <> 0 then
 	begin
-		TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
-		TThreadLink(AClient.Data).DatabaseLink.StaticData.Connect;
-		try
-			ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(AnAccount.CharaID[CharaIdx]);
-		//ACharacter.ClientVersion := -1; //Need to either save, or make sure its cleared
+			ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(AClient, AnAccount.CharaID[CharaIdx]);
+			//ACharacter.ClientVersion := -1; //Need to either save, or make sure its cleared
 																			//later on
 			if TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapCannotSave(ACharacter.Map) then
 			begin
@@ -662,10 +650,6 @@ begin
 				SendBuffer(AClient, OutBuffer, GetPacketLength($0081));
 			end;
 		ACharacter.Free;
-		finally
-			TThreadLink(AClient.Data).DatabaseLink.StaticData.Disconnect;
-			TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
-		end;
 	end;
 end;{SendCharaToMap}
 //------------------------------------------------------------------------------
@@ -722,9 +706,6 @@ begin
 	HairStyle   := BufferReadByte(35,ABuffer);
 
 	TotalStatPt := 0;
-
-	TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
-	try
 		//Name Check.
 		if NOT TThreadLink(AClient.Data).DatabaseLink.GameData.CharaExists(CharaName) then
 		begin
@@ -759,7 +740,7 @@ begin
 			begin
 				//Validated...Procede with creation
 				//Set a record in Database for our new character
-				if TThreadLink(AClient.Data).DatabaseLink.GameData.CreateChara(
+				if TThreadLink(AClient.Data).DatabaseLink.GameData.CreateChara(AClient,
 					ACharacter,Account.ID,CharaName,SlotNum) then
 				begin
 					//All other info is already saved
@@ -826,9 +807,6 @@ begin
 		begin
 			CreateCharaError(INVALIDNAME);
 		end;
-	finally
-		TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
-	end;
 end;{CreateChara}
 //------------------------------------------------------------------------------
 
@@ -865,9 +843,7 @@ begin
 	CharacterID := BufferReadLongWord(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TClientLink(AClient.Data).AccountLink;
-	TThreadLink(AClient.Data).DatabaseLink.GameData.Connect;
-	try
-		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(CharacterID);
+		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(AClient, CharacterID);
 		if Assigned(ACharacter) then
 		begin
 			if AnAccount.EMail = EmailOrID then
@@ -880,9 +856,6 @@ begin
 			end else DeleteCharaError(DELETEBADEMAIL);
 		end else DeleteCharaError(DELETEBADCHAR);
 		ACharacter.Free;
-	finally
-		TThreadLink(AClient.Data).DatabaseLink.GameData.Disconnect;
-	end;
 end;{DeleteChara}
 //------------------------------------------------------------------------------
 
@@ -939,6 +912,7 @@ begin
 		ZServerInfo.Port := BufferReadWord(6,InBuffer);
 		ZServerInfo.Connection := AClient;
 		AClient.Data := TZoneServerLink.Create(AClient);
+		TZoneServerLink(AClient.Data).DatabaseLink := Database;
 		TZoneServerLink(AClient.Data).Info := ZServerInfo;
 		fZoneServerList.AddObject(ZServerInfo.ZoneID,ZServerInfo);
 	end;
@@ -1029,7 +1003,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//ParseCharaServ                                                      PROCEDURE
+//OnExecute                                                      PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //        Root procedure to handling client connections to the Character Server.
@@ -1044,32 +1018,32 @@ end;
 //		March 30th, 2007 - Aeomin - Change from TThreadLink to TClientLink
 //
 //------------------------------------------------------------------------------
-procedure TCharacterServer.ParseCharaServ(AClient : TIdContext);
+procedure TCharacterServer.OnExecute(AConnection : TIdContext);
 var
 	ABuffer       : TBuffer;
 	PacketID      : Word;
 	Size          : Word;
 begin
-	RecvBuffer(AClient,ABuffer,2);
+	RecvBuffer(AConnection,ABuffer,2);
 	PacketID := BufferReadWord(0, ABuffer);
 	//Check to see if it is an already connected Client
-	if (AClient.Data is TClientLink) then
+	if (AConnection.Data is TClientLink) then
 	begin
 		case PacketID of
 		$0066: // Character Selected -- Refer Client to Map Server
 			begin
-				RecvBuffer(AClient,ABuffer[2],GetPacketLength($0066)-2);
-				SendCharaToMap(AClient,ABuffer);
+				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0066)-2);
+				SendCharaToMap(AConnection,ABuffer);
 			end;
 		$0067: // Create New Character
 			begin
-				RecvBuffer(AClient,ABuffer[2],GetPacketLength($0067)-2);
-				CreateChara(AClient,ABuffer);
+				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0067)-2);
+				CreateChara(AConnection,ABuffer);
 			end;
 		$0068: // Request to Delete Character
 			begin
-				RecvBuffer(AClient,ABuffer[2],GetPacketLength($0068)-2);
-				DeleteChara(AClient,ABuffer);
+				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0068)-2);
+				DeleteChara(AConnection,ABuffer);
 			end;
 		end;
 	end else
@@ -1078,44 +1052,45 @@ begin
 		$0065: // RO Client request to connect and get characters
 			begin
 				//Thread Data should have a TThreadLink object...if not, make one
-				AClient.Data := TClientlink.Create(AClient);
+				AConnection.Data := TClientlink.Create(AConnection);
+				TClientLink(AConnection.Data).DatabaseLink := Database;
 				//Verify login and send characters
-				RecvBuffer(AClient,ABuffer[2],GetPacketLength($0065)-2);
-				SendCharas(AClient,ABuffer);
+				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0065)-2);
+				SendCharas(AConnection,ABuffer);
 			end;
 		$2100: // Zone Server Connection request
 			begin
-				RecvBuffer(AClient,ABuffer[2],GetPacketLength($2100)-2);
-				VerifyZoneServer(AClient,ABuffer);
+				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2100)-2);
+				VerifyZoneServer(AConnection,ABuffer);
 			end;
 		$2102: // Zone Server sending new WAN location details
 			begin
-				if AClient.Data is TZoneServerLink then
+				if AConnection.Data is TZoneServerLink then
 				begin
-					RecvBuffer(AClient,ABuffer[2],2);
+					RecvBuffer(AConnection,ABuffer[2],2);
 					Size := BufferReadWord(2,ABuffer);
-					RecvBuffer(AClient,ABuffer[4],Size-4);
-					TZoneServerLink(AClient.Data).Info.WAN := BufferReadString(4,Size-4,ABuffer);
+					RecvBuffer(AConnection,ABuffer[4],Size-4);
+					TZoneServerLink(AConnection.Data).Info.WAN := BufferReadString(4,Size-4,ABuffer);
 					Console.Message('Received updated Zone Server WANIP.', 'Character Server', MS_NOTICE);
 				end;
 			end;
 		$2103: // Zone Server sending new LAN location details
 			begin
-				if AClient.Data is TZoneServerLink then
+				if AConnection.Data is TZoneServerLink then
 				begin
-					RecvBuffer(AClient,ABuffer[2],2);
+					RecvBuffer(AConnection,ABuffer[2],2);
 					Size := BufferReadWord(2,ABuffer);
-					RecvBuffer(AClient,ABuffer[4],Size-4);
-					TZoneServerLink(AClient.Data).Info.LAN := BufferReadString(4,Size-4,ABuffer);
+					RecvBuffer(AConnection,ABuffer[4],Size-4);
+					TZoneServerLink(AConnection.Data).Info.LAN := BufferReadString(4,Size-4,ABuffer);
 					Console.Message('Received updated Zone Server LANIP.', 'Character Server', MS_NOTICE);
 				end;
 			end;
 		$2104: // Zone Server sending new Online User count (relink while running)
 			begin
-				if AClient.Data is TZoneServerLink then
+				if AConnection.Data is TZoneServerLink then
 				begin
-					RecvBuffer(AClient,ABuffer[2],GetPacketLength($2104)-2);
-					TZoneServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
+					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2104)-2);
+					TZoneServerLink(AConnection.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
           if CharaToLoginClient.Connected then
           begin
 						SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
@@ -1126,10 +1101,10 @@ begin
 			end;
 		$2105: // Zone Server sending decrease of online users by 1
 			begin
-				if AClient.Data is TZoneServerLink then
+				if AConnection.Data is TZoneServerLink then
 				begin
-					TZoneServerLink(AClient.Data).Info.OnlineUsers :=
-					Min(TZoneServerLink(AClient.Data).Info.OnlineUsers +1, High(Word));
+					TZoneServerLink(AConnection.Data).Info.OnlineUsers :=
+					Min(TZoneServerLink(AConnection.Data).Info.OnlineUsers +1, High(Word));
 					SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
 					UpdateOnlineCountToZone;
 					Console.Message('Received updated Zone Server Online Users (+1).', 'Character Server', MS_DEBUG);
@@ -1137,10 +1112,10 @@ begin
 			end;
 		$2106: // Zone Server sending decrease of online users by 1
 			begin
-				if AClient.Data is TZoneServerLink then
+				if AConnection.Data is TZoneServerLink then
 				begin
-					TZoneServerLink(AClient.Data).Info.OnlineUsers :=
-					Max(TZoneServerLink(AClient.Data).Info.OnlineUsers -1, 0);
+					TZoneServerLink(AConnection.Data).Info.OnlineUsers :=
+					Max(TZoneServerLink(AConnection.Data).Info.OnlineUsers -1, 0);
 					SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
 					UpdateOnlineCountToZone;
 					Console.Message('Received updated Zone Server Online Users (-1).', 'Character Server', MS_DEBUG);
@@ -1148,18 +1123,18 @@ begin
 			end;
 		$2108: //Zone send update an account in fAccountList
 			begin
-				if AClient.Data is TZoneServerLink then
+				if AConnection.Data is TZoneServerLink then
 				begin
-					RecvBuffer(AClient,ABuffer[2],GetPacketLength($2108)-2);
-					UpdateToAccountList(AClient,ABuffer);
+					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2108)-2);
+					UpdateToAccountList(AConnection,ABuffer);
 				end;
 		end;
 		$2109: //Zone send remove an account in fAccountList
 			begin
-				if AClient.Data is TZoneServerLink then
+				if AConnection.Data is TZoneServerLink then
 				begin
-					RecvBuffer(AClient,ABuffer[2],GetPacketLength($2109)-2);
-					RemoveFromAccountList(AClient,ABuffer);
+					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2109)-2);
+					RemoveFromAccountList(AConnection,ABuffer);
 				end;
 		end;
 		else
@@ -1207,43 +1182,6 @@ begin
 
 	Options.Load;
 end;{LoadOptions}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//SetPort                                                          PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Sets the internal fPort variable to the value specified. Also sets the
-//    TCPServer's port.
-//
-//	Changes -
-//		December 17th, 2006 - RaX - Created Header.
-//
-//------------------------------------------------------------------------------
-Procedure TCharacterServer.SetPort(Value : Word);
-begin
-	fWANPort := Value;
-	TCPServer.DefaultPort := Value;
-end;{SetPort}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//GetStarted                                                          FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//			Checks to see if the internal TCP server is active, if it is it returns
-//    true.
-//
-//	Changes -
-//		January 4th, 2007 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-Function TCharacterServer.GetStarted() : Boolean;
-begin
-	Result := TCPServer.Active;
-end;{SetPort}
 //------------------------------------------------------------------------------
 
 

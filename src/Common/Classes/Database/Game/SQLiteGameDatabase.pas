@@ -46,7 +46,8 @@ uses
 	Database,
 	GameDatabaseTemplate,
 	{3rd Party}
-	SQLiteTable3
+	SQLiteTable3,
+	IdContext
 	;
 
 
@@ -88,6 +89,7 @@ public
 	Destructor Destroy; override;
 
 	function  CreateChara(
+		AClient : TIdContext;
 		var
 			ACharacter : TCharacter;
 		const
@@ -99,26 +101,31 @@ public
 		) : Boolean; override;
 
 	function  GetAccountCharas(
+		AClient : TIdContext;
 		const
 			AccountID : LongWord
 		) : TCharacterList; override;
 
 	function  LoadChara(
+		AClient : TIdContext;
 		const
 			CharaID : LongWord
 		) : TCharacter; overload; override;
 
 	function  LoadChara(
+		AClient : TIdContext;
 		const
 			CharaName : String
 		) : TCharacter; overload; override;
 
 	function  GetChara(
+		AClient : TIdContext;
 		const
 				CharaID          : LongWord
 		) : TCharacter; overload; override;
 
 	function  GetChara(
+		AClient : TIdContext;
 		const
 				CharaName          : String
 		) : TCharacter; overload; override;
@@ -167,6 +174,7 @@ public
 		):String;override;
 
 	function  GetFriendList(
+		AClient : TIdContext;
 		const
 			CharID : LongWord
 		) : TCharacterList; override;
@@ -347,11 +355,12 @@ end;//SendQuery
 //
 //------------------------------------------------------------------------------
 function TSQLiteGameDatabase.GetChara(
+	AClient : TIdContext;
 	const
 		CharaID          : LongWord
 	) : TCharacter;
 begin
-	Result := LoadChara(CharaID);
+	Result := LoadChara(AClient, CharaID);
 end;
 //------------------------------------------------------------------------------
 
@@ -367,11 +376,12 @@ end;
 //
 //------------------------------------------------------------------------------
 function TSQLiteGameDatabase.GetChara(
+	AClient : TIdContext;
 	const
 		CharaName          : String
 	) : TCharacter;
 begin
-	Result := LoadChara(CharaName);
+	Result := LoadChara(AClient, CharaName);
 end;
 //------------------------------------------------------------------------------
 
@@ -387,6 +397,7 @@ end;
 //
 //------------------------------------------------------------------------------
 function TSQLiteGameDatabase.GetAccountCharas(
+	AClient : TIdContext;
 	const
 		AccountID : LongWord
 	) : TCharacterList;
@@ -402,7 +413,7 @@ begin
 	begin
 		for Index := 0 to QueryResult.RowCount - 1 do
 		begin
-			Result.Add(GetChara(QueryResult.FieldAsInteger(0)));
+			Result.Add(GetChara(AClient, QueryResult.FieldAsInteger(0)));
 			QueryResult.Next;
 		end;
 	end;
@@ -611,6 +622,7 @@ end;//SaveChara
 //
 //------------------------------------------------------------------------------
 function TSQLiteGameDatabase.CreateChara(
+	AClient : TIdContext;
 	var
 		ACharacter : TCharacter;
 	const
@@ -641,7 +653,7 @@ begin
 	if (QueryResult.Count = 1) then
 	begin
 		//Call GetChara
-		ACharacter := GetChara(QueryResult.FieldAsInteger(0));
+		ACharacter := GetChara(AClient, QueryResult.FieldAsInteger(0));
 		Result := Assigned(ACharacter);
 	end;
 
@@ -661,6 +673,7 @@ end;//CreateChara
 //
 //------------------------------------------------------------------------------
 function TSQLiteGameDatabase.LoadChara(
+	AClient : TIdContext;
 	const
 		CharaID : LongWord
 	) : TCharacter;
@@ -676,7 +689,7 @@ begin
 	begin
 		with Result do
 		begin
-			Result           := TCharacter.Create(Parent.ClientInfo);
+			Result           := TCharacter.Create(AClient);
 			CID              := QueryResult.FieldAsInteger(0);
 			ID               := QueryResult.FieldAsInteger(1);
 			CharaNum         := QueryResult.FieldAsInteger(2);
@@ -755,6 +768,7 @@ end;//LoadChara
 //
 //------------------------------------------------------------------------------
 function TSQLiteGameDatabase.LoadChara(
+	AClient : TIdContext;
 	const
 		CharaName : String
 	) : TCharacter;
@@ -770,7 +784,7 @@ begin
 	begin
 		with Result do
 		begin
-			Result          := TCharacter.Create(Parent.ClientInfo);
+			Result          := TCharacter.Create(AClient);
 			CID             := QueryResult.FieldAsInteger(0);
 			ID              := QueryResult.FieldAsInteger(1);
 			CharaNum        := QueryResult.FieldAsInteger(2);
@@ -979,6 +993,7 @@ end;
 //
 //------------------------------------------------------------------------------
 function  TSQLiteGameDatabase.GetFriendList(
+	AClient : TIdContext;
 		const
 			CharID : LongWord
 		) : TCharacterList;
@@ -997,7 +1012,7 @@ begin
 	begin
 		for Index := 0 to QueryResult.Count - 1 do
 		begin
-			Result.Add(LoadChara(StrToInt(QueryResult.Fields[2])));
+			Result.Add(LoadChara(AClient, StrToInt(QueryResult.Fields[2])));
 			if Index < QueryResult.Count then
 			begin
 				QueryResult.Next;

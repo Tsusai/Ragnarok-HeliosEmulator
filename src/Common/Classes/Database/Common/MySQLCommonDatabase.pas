@@ -48,7 +48,8 @@ uses
 	CommonDatabaseTemplate,
 	Database,
 	{Third Party}
-	uMysqlClient
+	uMysqlClient,
+	IdContext
 	;
 
 
@@ -85,6 +86,7 @@ protected
 	fParent     : TDatabase;
 
 	procedure SetAccount(
+		AClient : TIdContext;
 		out
 			AnAccount   : TAccount;
 		const
@@ -109,11 +111,13 @@ public
 	Destructor Destroy; override;
 
 	function  GetAccount(
+		AClient : TIdContext;
 		const
 			ID : LongWord
 		) : TAccount; overload; override;
 
 	function  GetAccount(
+		AClient : TIdContext;
 		const
 			Name : string
 		) : TAccount; overload; override;
@@ -314,13 +318,14 @@ end;//Disconnect
 //
 //------------------------------------------------------------------------------
 procedure TMySQLCommonDatabase.SetAccount(
+	AClient : TIdContext;
 	out
 		AnAccount : TAccount;
 	const
 		QueryResult : TMySQLResult
 	);
 begin
-	AnAccount := TAccount.Create(Parent.ClientInfo);
+	AnAccount := TAccount.Create(AClient);
 	AnAccount.ID          := StrToInt(QueryResult.FieldValue(0));
 	AnAccount.Username    := QueryResult.FieldValue(1);
 	AnAccount.Password    := QueryResult.FieldValue(2);
@@ -355,6 +360,7 @@ end;//SetAccount
 //
 //------------------------------------------------------------------------------
 function TMySQLCommonDatabase.GetAccount(
+	AClient : TIdContext;
 	const
 		ID: LongWord
 	) : TAccount;
@@ -365,7 +371,7 @@ var
 begin
 	QueryResult := SendQuery('SELECT * FROM accounts WHERE account_id = '''+IntToStr(ID)+'''',true,Success);
 	if Success and (QueryResult.RowsCount = 1) then begin
-		SetAccount(AnAccount,QueryResult);
+		SetAccount(AClient, AnAccount,QueryResult);
 		Result := AnAccount;
 	end else
 	begin
@@ -391,6 +397,7 @@ end;//GetAccount
 //
 //------------------------------------------------------------------------------
 function TMySQLCommonDatabase.GetAccount(
+	AClient : TIdContext;
 	const
 		Name : String
 	) : TAccount;
@@ -405,7 +412,7 @@ begin
     ,true,Success
   );
 	if Success and (QueryResult.RowsCount = 1) then begin
-		SetAccount(AnAccount,QueryResult);
+		SetAccount(AClient, AnAccount,QueryResult);
 		Result := AnAccount;
 	end else
 	begin

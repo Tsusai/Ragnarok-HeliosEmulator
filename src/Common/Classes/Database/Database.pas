@@ -41,10 +41,7 @@ type
 		GameData      : TGameDatabaseTemplate;
 		StaticData    : TStaticDatabaseTemplate;
 
-		ClientInfo		: TIdContext;
-
 		Constructor Create(
-									AClient								: TIdContext;
 									CommonDatabaseType    : Integer = -1;
 									GameDatabaseType      : Integer = -1;
 									StaticDatabaseType    : Integer = -1
@@ -104,7 +101,6 @@ Revisions:
 	wrapping comments and long lines.
 *-----------------------------------------------------------------------------*)
 Constructor TDatabase.Create(
-		AClient               : TIdContext;
 		CommonDatabaseType    : Integer = -1;
 		GameDatabaseType      : Integer = -1;
 		StaticDatabaseType    : Integer = -1
@@ -117,8 +113,6 @@ Var
 }
 Begin
 	Inherited Create;
-
-	ClientInfo := AClient;
 
 	//Checks to see if the DatabaseType variable has been specified, if not we...
 	//Common

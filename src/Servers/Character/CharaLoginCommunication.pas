@@ -66,7 +66,7 @@ uses
 		WriteBufferLongWord(2, CharacterServer.Options.ID, OutBuffer);
 		WriteBufferMD5String(6, GetMD5(CharacterServer.Options.LoginKey), OutBuffer);
 		WriteBufferString(22, CharacterServer.Servername, 24, OutBuffer);
-		WriteBufferWord(46, CharacterServer.WANPort, OutBuffer);
+		WriteBufferWord(46, CharacterServer.Port, OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2000));
 	end;
 //------------------------------------------------------------------------------

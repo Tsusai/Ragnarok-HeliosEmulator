@@ -46,7 +46,8 @@ uses
 	CommonDatabaseTemplate,
 	Database,
 	{3rd Party}
-	SQLiteTable3
+	SQLiteTable3 ,
+	IdContext
 	;
 
 
@@ -75,6 +76,7 @@ protected
 	fParent   : TDatabase;
 
 	procedure SetAccount(
+  	AClient : TIdContext;
 		out
 			AnAccount   : TAccount;
 		const
@@ -96,11 +98,13 @@ public
 	Destructor Destroy; override;
 
 	function GetAccount(
+		AClient : TIdContext;
 		const
 			ID    : LongWord
 		) : TAccount; overload; override;
 
 	function GetAccount(
+		AClient : TIdContext;
 		const
 			Name  : String
 		) : TAccount; overload; override;
@@ -192,8 +196,8 @@ end;//Create
 //------------------------------------------------------------------------------
 Destructor TSQLiteCommonDatabase.Destroy;
 begin
-	Database.Free;
 	Disconnect;
+	Database.Free;
 
 	inherited;
 end;//Destroy
@@ -289,13 +293,14 @@ end;//SendQuery
 //
 //------------------------------------------------------------------------------
 procedure TSQLiteCommonDatabase.SetAccount(
+	AClient : TIdContext;
 	out
 		AnAccount : TAccount;
 	const
 		QueryResult : TSQLiteTable
 	);
 begin
-	AnAccount := TAccount.Create(Parent.ClientInfo);
+	AnAccount := TAccount.Create(AClient);
 	AnAccount.ID           := QueryResult.FieldAsInteger(0);
 	AnAccount.Username     := QueryResult.Fields[1];
 	AnAccount.Password     := QueryResult.Fields[2];
@@ -327,6 +332,7 @@ end;//SetAccount
 //
 //------------------------------------------------------------------------------
 function TSQLiteCommonDatabase.GetAccount(
+	AClient : TIdContext;
 	const
 		ID: LongWord
 	) : TAccount;
@@ -337,7 +343,7 @@ begin
 	QueryResult := SendQuery(Format('SELECT * FROM accounts WHERE account_id = %d', [ID]));
 	if (QueryResult.Count = 1) then
 	begin
-		SetAccount(AnAccount,QueryResult);
+		SetAccount(AClient, AnAccount,QueryResult);
 		Result := AnAccount;
 	end else
 	begin
@@ -360,6 +366,7 @@ end;//GetAccount
 //
 //------------------------------------------------------------------------------
 function TSQLiteCommonDatabase.GetAccount(
+	AClient : TIdContext;
 	const
 		Name : String
 	) : TAccount;
@@ -370,7 +377,7 @@ begin
 	QueryResult := SendQuery(Format('SELECT * FROM accounts WHERE userid = "%s"', [SQLEscapeString(Name)]));
 	if QueryResult.Count = 1 then
 	begin
-		SetAccount(AnAccount,QueryResult);
+		SetAccount(AClient, AnAccount,QueryResult);
 		Result := AnAccount;
 	end else
 	begin

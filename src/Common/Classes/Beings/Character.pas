@@ -673,13 +673,10 @@ begin
 
 	if BaseEXP > BaseEXPToNextLevel then
 	begin
-		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 
 		OldBaseEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(JobName, BaseLv-1)
 			div MainProc.ZoneServer.Options.BaseXPMultiplier;
 		BaseEXP := (BaseEXPToNextLevel - OldBaseEXPToNextLevel) DIV 2 + OldBaseEXPToNextLevel;
-
-		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 	end;
 
 	SendSubStat(1, $0001, BaseEXP);
@@ -725,13 +722,10 @@ begin
 
 	if (JobEXP > JobEXPToNextLevel) AND (JobLv <= MainProc.ZoneServer.Options.MaxJobLevel) then
 	begin
-		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
 
 		OldJobEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, JobLv-1)
 			div MainProc.ZoneServer.Options.JobXPMultiplier;
 		JobEXP := (JobEXPToNextLevel - OldJobEXPToNextLevel) DIV 2 + OldJobEXPToNextLevel;
-
-		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
 	end;
 
 	SendSubStat(1, $0002, JobEXP);
@@ -1916,12 +1910,7 @@ procedure TCharacter.CalcMaxHP;
 var
 	BaseMaxHP : Word;
 begin
-	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
-	try
-		BaseMaxHP := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxHP(Self);
-	finally
-		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-	end;
+	BaseMaxHP := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxHP(Self);
 
 	MaxHP := EnsureRange(
 		( BaseMaxHP * (100 + ParamBase[VIT]) div 100 ), 1, High(fMaxHP)
@@ -2270,8 +2259,6 @@ end;{SendRequiredStatusPoint}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxSP;
 begin
-	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
-	try
 		MAXSP := EnsureRange(
 		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxSP(self) *
 			(100 + ParamBase[INT]) div 100, 0, High(fMaxSP));
@@ -2279,9 +2266,6 @@ begin
 		begin
 			SP := MAXSP;
 		end;
-	finally
-		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-	end;
 end;{CalcMaxSP}
 //------------------------------------------------------------------------------
 
@@ -2328,15 +2312,10 @@ end;{CalcSpeed}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxWeight;
 begin
-	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
-	try
 		MaxWeight  := EnsureRange(
 			  LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
 			  TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxWeight(self)
 				, 0, High(fMaxWeight));
-	finally
-		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-	end;
 end;{CalcMaxWeight}
 //------------------------------------------------------------------------------
 
@@ -2394,8 +2373,6 @@ var
 	//----------------------------------------------------------------------
 begin
 	TempLevel := Max(Min(fBaseLv+Levels, MainProc.ZoneServer.Options.MaxBaseLevel), 1);
-	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
-	try
 		{Gets the base experience to next level, divides by the multiplier to lower
 		numbers, prevent overflows, and prevent large integer math. Also, this is
 		only calculated at level up rather than at each experience gain.}
@@ -2461,9 +2438,6 @@ begin
 			//Send Base Level packet
 			SendSubStat(0, $000b, BaseLv);
 		end;
-	finally
-		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-	end;
 end;{BaseLevelUp}
 //------------------------------------------------------------------------------
 
@@ -2495,8 +2469,6 @@ var
 begin
 	//Make sure fJobLv is in range.
 	TempLevel := Max(Min(fJobLv+Levels, MainProc.ZoneServer.Options.MaxJobLevel), 1);
-	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
-	try
 		//Update job experience to next level from static database.
 		TempEXP := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, TempLevel);
 
@@ -2534,9 +2506,6 @@ begin
 			end;
 
 		end;
-	finally
-		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-	end;
 end;{JobLevelUp}
 //------------------------------------------------------------------------------
 
@@ -2558,13 +2527,8 @@ end;{JobLevelUp}
 //------------------------------------------------------------------------------
 procedure TCharacter.ResetStats;
 begin
-	TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Connect;
-	try
-		StatusPts := 0;
-		StatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(BaseLV);
-	finally
-		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.Disconnect;
-	end;
+	StatusPts := 0;
+	StatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(BaseLV);
 
 	ParamBase[STR] := 1;
 	ParamBase[AGI] := 1;
@@ -2598,12 +2562,7 @@ var
 	Char        : TCharacter;
 	Index       : Byte;
 begin
-	TThreadLink(ClientInfo.Data).DatabaseLink.GameData.Connect;
-	try
-		FriendList := TThreadLink(ClientInfo.Data).DatabaseLink.GameData.GetFriendList(CID);
-	finally
-		TThreadLink(ClientInfo.Data).DatabaseLink.GameData.Disconnect;
-	end;
+	FriendList := TThreadLink(ClientInfo.Data).DatabaseLink.GameData.GetFriendList(ClientInfo, CID);
 	if FriendList.Count > 0 then
 	begin
 		WriteBufferWord(0, $0201, OutBuffer);

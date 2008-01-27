@@ -607,13 +607,8 @@ begin
 				end;
 			end else
 			begin
-				TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
-				try
 					Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.GetCharaVariable(AChara,Key);
 					lua_pushinteger(ALua, Value);
-				finally
-					TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
-				end;
 			end;
 		end;
 	end else
@@ -640,12 +635,7 @@ begin
 		begin
 			Key := lua_tostring(ALua, 1);
 			Value := lua_tointeger(ALua, 2);
-			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Connect;
-			try
-				TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.SetCharaVariable(AChara,Key,Value);
-			finally
-				TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.Disconnect;
-			end;
+			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.SetCharaVariable(AChara,Key,Value);
 		end;
 	end else
 	begin

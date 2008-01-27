@@ -188,6 +188,7 @@ compile for linux, at the same time*}
 	madExcept,
 	madLinkDisAsm,
 	PacketTypes in 'Common\PacketTypes.pas',
+	Server in 'Servers\Server.pas',
 	ServerInfo in 'Common\Classes\ServerInfo.pas',
 	SQLExtendedRoutines in 'Common\SQLExtendedRoutines.pas',
 	TCPServerRoutines in 'Common\TCPServerRoutines.pas',
@@ -320,6 +321,7 @@ compile for linux, at the same time*}
 	CommClient in 'Common/Classes/CommClient.pas',
 	Globals in 'Common/Globals.pas',
 	PacketTypes in 'Common/PacketTypes.pas',
+	Server in 'Servers/Server.pas',
 	ServerInfo in 'Common/Classes/ServerInfo.pas',
 	SQLExtendedRoutines in 'Common/SQLExtendedRoutines.pas',
 	TCPServerRoutines in 'Common/TCPServerRoutines.pas',
@@ -356,37 +358,39 @@ compile for linux, at the same time*}
 var
 	AnInput   : string;
 begin
-	//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
-	Randomize;
-	//Setup our CRT controller
-	SetupCRT;
-	//Allow Helios to capture termination messages
-	SetupTerminationCapturing;
-	//setup our paths before anything else is done.
-	AppPath		:= ExtractFilePath(ParamStr(0));
-	ExeName		:= ExtractFileNameMod(ParamStr(0));
+	try
+		//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
+		Randomize;
+		//Setup our CRT controller
+		SetupCRT;
+		//Allow Helios to capture termination messages
+		SetupTerminationCapturing;
+		//setup our paths before anything else is done.
+		AppPath		:= ExtractFilePath(ParamStr(0));
+		ExeName		:= ExtractFileNameMod(ParamStr(0));
 
-	//Create our main process.
-	MainProc := TMainProc.Create(nil); //Form replacement
+		//Create our main process.
+		MainProc := TMainProc.Create(nil); //Form replacement
 
-	//Setup console interface and command parser.
-	//This has to be set up here because It relies on the options in MainProc.
-	Console := TConsole.Create;
+		//Setup console interface and command parser.
+		//This has to be set up here because It relies on the options in MainProc.
+		Console := TConsole.Create;
 
-	//Show our header ONCE
-	MainProc.DisplayHeader;
+		//Show our header ONCE
+		MainProc.DisplayHeader;
 
-	//Initialize our Main Process
-	MainProc.Startup; //Form Create replacement
+		//Initialize our Main Process
+		MainProc.Startup; //Form Create replacement
 
-	{Begin Main Loop}
-	{Must keep application alive!}
-	while MainProc.Run do
-	begin
-		Console.ReadLn(AnInput);
+		{Begin Main Loop}
+		{Must keep application alive!}
+		while MainProc.Run do
+		begin
+			Console.ReadLn(AnInput);
+		end;
+		{End Main Loop}
+	finally
+		//Terminate the process cleanly.
+		TerminateApplication;
 	end;
-	{End Main Loop}
-
-	//Terminate the process cleanly.
-	TerminateApplication;
 end{Helios}.
