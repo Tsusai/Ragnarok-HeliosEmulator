@@ -12,6 +12,10 @@
 //------------------------------------------------------------------------------
 unit CharacterEventThread;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses

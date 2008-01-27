@@ -9,6 +9,10 @@
 //------------------------------------------------------------------------------
 unit CharaList;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	Character,

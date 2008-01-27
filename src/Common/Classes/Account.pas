@@ -10,6 +10,10 @@
 //------------------------------------------------------------------------------
 unit Account;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	IdContext;

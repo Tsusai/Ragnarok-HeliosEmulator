@@ -2,6 +2,10 @@
 //procedures for executing packets.
 unit PacketDB;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	Character,

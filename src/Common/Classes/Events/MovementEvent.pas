@@ -11,6 +11,10 @@
 //------------------------------------------------------------------------------
 unit MovementEvent;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 
 interface
 

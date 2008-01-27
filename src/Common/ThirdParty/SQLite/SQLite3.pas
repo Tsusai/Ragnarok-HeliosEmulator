@@ -1,5 +1,9 @@
 unit SQLite3;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 {
 	Helios Changes
 	*All library calls are now dynamic.  Uses loadlibrary to assign

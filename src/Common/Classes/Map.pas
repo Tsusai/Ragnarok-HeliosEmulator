@@ -13,6 +13,10 @@
 //------------------------------------------------------------------------------
 unit Map;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 
 interface
 
@@ -86,7 +90,7 @@ uses
 	GameConstants,
 	Globals,
 	Main,
-	Npc,
+	NPC,
 	Being,
 	{3rd Party}
 	List32

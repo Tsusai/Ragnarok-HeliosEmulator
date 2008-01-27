@@ -10,6 +10,10 @@
 //------------------------------------------------------------------------------
 unit Globals;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 
@@ -88,10 +92,16 @@ Const
 //------------------------------------------------------------------------------
 function GetMD5(const Input : string) : String;
 var
-	MD5Hash : TIdHashMessageDigest5;
+	Hash : TIdHashMessageDigest5;
 begin
-	MD5Hash := TIdHashMessageDigest5.Create;
-	Result := MD5Hash.AsHex(MD5Hash.HashValue(Input));
+	Hash := TIdHashMessageDigest5.Create;
+        {$IFDEF FPC}
+        Result := Hash.HashStringAsHex(Input);
+        {$ELSE}
+        Result := Hash.AsHex(Hash.HashValue(Input));
+        {$ENDIF}
+ 
+        Hash.Free;
 end;{GetMD5}
 //------------------------------------------------------------------------------
 

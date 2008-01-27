@@ -31,6 +31,10 @@ Revisions:
 *@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*)
 unit MiscItem;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 
 interface
 

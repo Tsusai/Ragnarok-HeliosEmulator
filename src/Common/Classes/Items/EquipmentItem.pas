@@ -31,6 +31,10 @@ Revisions:
 *@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*)
 unit EquipmentItem;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 
 interface
 

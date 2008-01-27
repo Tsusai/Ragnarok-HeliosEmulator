@@ -11,6 +11,10 @@
 //------------------------------------------------------------------------------
 unit ConsoleOptions;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 	uses
 		IniFiles;

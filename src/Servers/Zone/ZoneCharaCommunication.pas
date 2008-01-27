@@ -10,6 +10,10 @@
 //------------------------------------------------------------------------------
 unit ZoneCharaCommunication;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	ZoneServer,

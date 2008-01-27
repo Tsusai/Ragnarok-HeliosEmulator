@@ -9,6 +9,10 @@
 //------------------------------------------------------------------------------
 unit MapList;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	Map,

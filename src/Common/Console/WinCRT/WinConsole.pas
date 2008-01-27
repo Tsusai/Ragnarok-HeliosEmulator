@@ -13,6 +13,10 @@
 
 unit WinConsole;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 {$IFDEF CONDITIONALEXPRESSIONS}
   {$IF CompilerVersion >= 17.0}
     {$DEFINE INLINES}
@@ -24,7 +28,9 @@ unit WinConsole;
 
 interface
 
-uses Windows;
+uses
+    Windows,
+    SysUtils;
 
 const
   // Background and foreground colors
@@ -515,7 +521,11 @@ begin
   Rect.Bottom := Bottom;
   NewPos.X := Left;
   NewPos.Y := Top + Distance;
+  {$IFDEF FPC}
+  ScrollConsoleScreenBuffer(StdOut, Rect, Rect, NewPos, Fill);
+  {$ELSE}
   ScrollConsoleScreenBuffer(StdOut, Rect, @Rect, NewPos, Fill);
+  {$ENDIF}
 end;
 
 procedure InsLine;
@@ -607,7 +617,7 @@ var
 begin
   SetLength(Line, BufferSize.X); // Line only contains one line of windowed text.
   WritePtr := PChar(Line);
-  ReadPtr := T.BufPtr;
+  ReadPtr := PChar(T.BufPtr);
   DistanceToEdge := TextWindow.Right - GetCursorX + 1;
   while T.BufPos > 0 do
   begin
@@ -880,7 +890,7 @@ begin
 {$ENDIF}
   if not GetConsoleScreenBufferInfo(StdOut, BufferInfo) then
   begin
-    SetInOutRes(GetLastError);
+    //SetInOutRes(GetLastError);
     Exit;
   end;
   TextWindow.Left := 0;

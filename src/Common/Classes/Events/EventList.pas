@@ -9,6 +9,10 @@
 //------------------------------------------------------------------------------
 unit EventList;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	Classes,

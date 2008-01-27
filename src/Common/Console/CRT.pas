@@ -1,4 +1,9 @@
 unit CRT;
+
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 //This unit is a wrapper of sorts for the linux and windows api overrides for
 //console coloring and such.
 interface

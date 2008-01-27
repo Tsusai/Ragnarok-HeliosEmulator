@@ -10,6 +10,10 @@
 //------------------------------------------------------------------------------
 unit CharAccountInfo;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	IdContext;

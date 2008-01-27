@@ -40,6 +40,10 @@ Revisions:
 *@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*)
 unit Being;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 
 interface
 

@@ -11,10 +11,15 @@
 //
 //------------------------------------------------------------------------------
 unit Version;
+
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 var
-	HeliosVersion : String = 'Helios Ragnarok Server Version 0.0.2.427';
+	HeliosVersion : String = 'Helios Ragnarok Server Version 0.0.2.428';
 
 implementation
 end.

@@ -1,4 +1,9 @@
 unit List32;
+
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 { U_IntList
 Copyright 2001, Gary Darby, Intellitech Systems Inc., www.DelphiForFun.org
 

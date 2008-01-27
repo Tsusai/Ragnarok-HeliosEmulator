@@ -11,6 +11,10 @@
 //------------------------------------------------------------------------------
 unit DatabaseConstants;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 const

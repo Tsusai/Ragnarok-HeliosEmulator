@@ -11,6 +11,10 @@
 
 unit MapTypes;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 
 interface
 

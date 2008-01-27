@@ -9,6 +9,10 @@
 //------------------------------------------------------------------------------
 unit PointList;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	SyncObjs,

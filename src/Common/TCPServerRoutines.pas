@@ -10,6 +10,10 @@
 //------------------------------------------------------------------------------
 unit TCPServerRoutines;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	IdTCPServer,

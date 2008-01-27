@@ -10,6 +10,10 @@
 //------------------------------------------------------------------------------
 unit GMCommandExe;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	Classes,

@@ -11,6 +11,10 @@
 //------------------------------------------------------------------------------
 unit HeliosOptions;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 	uses
 		IniFiles;

@@ -12,6 +12,10 @@
 //------------------------------------------------------------------------------
 unit CharaLoginCommunication;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	CharacterServer,

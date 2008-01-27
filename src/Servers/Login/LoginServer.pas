@@ -14,6 +14,10 @@
 //------------------------------------------------------------------------------
 unit LoginServer;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	IdTCPServer,

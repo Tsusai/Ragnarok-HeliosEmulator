@@ -38,6 +38,10 @@ Revisions:
 
 unit GameDatabaseTemplate;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 
 interface
 

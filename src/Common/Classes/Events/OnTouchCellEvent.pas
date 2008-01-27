@@ -2,6 +2,10 @@
 //the walking field, this executes.
 unit OnTouchCellEvent;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	NPC,

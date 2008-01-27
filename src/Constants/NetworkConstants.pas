@@ -10,6 +10,10 @@
 //------------------------------------------------------------------------------
 unit NetworkConstants;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 const

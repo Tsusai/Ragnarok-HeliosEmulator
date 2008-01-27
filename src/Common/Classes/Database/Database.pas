@@ -14,6 +14,10 @@
 //------------------------------------------------------------------------------
 unit Database;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 
 interface
 
@@ -64,9 +68,6 @@ uses
 	DatabaseConstants,
 	Globals,
 	Main,
-	MySQLCommonDatabase,
-	MySQLGameDatabase,
-	MySQLStaticDatabase,
 	SQLiteCommonDatabase,
 	SQLiteGameDatabase,
 	SQLiteStaticDatabase
@@ -141,11 +142,6 @@ Begin
 			CommonData := TSQLiteCommonDatabase.Create(self);
 		end;
 
-	MYSQL://2
-		begin
-			CommonData  := TMySQLCommonDatabase.Create(self);
-		end;
-
 	else
 		begin //anything else
 			Console.WriteLn(
@@ -163,11 +159,6 @@ Begin
 			GameData := TSQLiteGameDatabase.Create(self);
 		end;
 
-	MYSQL://2
-		begin
-			GameData := TMySQLGameDatabase.Create(self);
-		end;
-
 	else
 		begin //anything else
 			Console.WriteLn(
@@ -183,11 +174,6 @@ Begin
 	SQLITE://1
 		begin
 			StaticData := TSQLiteStaticDatabase.Create(self);
-		end;
-
-	MYSQL://2
-		begin
-			StaticData := TMySQLStaticDatabase.Create(Self);
 		end;
 
 	else

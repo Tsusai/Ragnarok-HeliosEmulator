@@ -14,6 +14,10 @@
 //------------------------------------------------------------------------------
 unit CharacterServer;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	Character,

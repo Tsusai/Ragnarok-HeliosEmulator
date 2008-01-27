@@ -1,6 +1,10 @@
 //This unit contains "common" routines mainly used in SQL queries.
 unit SQLExtendedRoutines;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 	function SQLEscapeString(const AString	: String): String;
 

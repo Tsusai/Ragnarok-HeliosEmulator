@@ -15,6 +15,10 @@
 //------------------------------------------------------------------------------
 unit Commands;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	Classes;

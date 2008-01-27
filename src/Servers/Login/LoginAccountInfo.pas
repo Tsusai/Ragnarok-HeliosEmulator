@@ -10,6 +10,10 @@
 //------------------------------------------------------------------------------
 unit LoginAccountInfo;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 type

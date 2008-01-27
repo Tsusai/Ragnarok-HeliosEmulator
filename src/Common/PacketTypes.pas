@@ -15,6 +15,10 @@ Revisions:
 ------------------------------------------------------------------------------*)
 unit PacketTypes;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 
 interface
 

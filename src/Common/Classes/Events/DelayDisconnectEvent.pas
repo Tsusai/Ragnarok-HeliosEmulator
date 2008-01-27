@@ -10,6 +10,10 @@
 //------------------------------------------------------------------------------
 unit DelayDisconnectEvent;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 
 interface
 

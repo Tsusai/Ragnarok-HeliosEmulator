@@ -34,6 +34,10 @@ Revisions:
 
 unit SQLiteCommonDatabase;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 
 interface
 

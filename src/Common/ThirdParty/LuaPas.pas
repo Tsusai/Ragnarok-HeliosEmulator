@@ -1,5 +1,9 @@
 unit LuaPas;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 (*
  * A complete Pascal wrapper for Lua 5.1 DLL module.
  *

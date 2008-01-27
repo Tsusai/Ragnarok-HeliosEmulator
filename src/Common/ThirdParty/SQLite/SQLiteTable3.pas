@@ -1,5 +1,9 @@
 unit SQLiteTable3;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 {
 	Helios Changes
 	*Removed a bunch of SELF. that were unneeded.

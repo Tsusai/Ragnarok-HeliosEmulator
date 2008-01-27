@@ -15,6 +15,22 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 428 -
+[2008/01/26] RaX - Helios is now officially lazarus compatible. Removed MySQL
+ due to our client library's crappiness. MySQL reimplementation pending move to
+ ZeOSLib, which will replace our databasing system as it stands right now.
+ Modified every project file adding ifdefs for fpc and setting the compiler MODE
+ to Delphi. 
+
+	TODO:: Reimplement List32.pas(IntList32) due to it's inline assembler.
+	       Swap out databasing components for ZeosLib.
+
+You will need a specially modified version of indy10 to compile Helios for lazarus
+because md5 is broken natively in the lazarus distribution. Contact me to get ahold
+of it.
+-
+
+
 - Rev 427 -
 [2008/01/26] RaX - HUGE change. All Servers now descend from TServer(Server.pas).
  Database connections are now server local(one connection per server). Connections

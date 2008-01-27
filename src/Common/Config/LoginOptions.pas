@@ -11,6 +11,10 @@
 //------------------------------------------------------------------------------
 unit LoginOptions;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 	uses
 		IniFiles;

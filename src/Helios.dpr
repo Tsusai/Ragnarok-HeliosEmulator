@@ -56,6 +56,9 @@
 //		[2007/03/24] CR - Partially updated Contributors, minor indent changes.
 //------------------------------------------------------------------------------
 program Helios;
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
 
 {$APPTYPE CONSOLE}
 uses
@@ -145,26 +148,13 @@ compile for linux, at the same time*}
 	GameDatabaseTemplate in 'Common\Classes\Database\Game\GameDatabaseTemplate.pas',
 	StaticDatabaseTemplate in 'Common\Classes\Database\Static\StaticDatabaseTemplate.pas',
 	SQLiteCommonDatabase in 'Common\Classes\Database\Common\SQLiteCommonDatabase.pas',
-	MySQLCommonDatabase in 'Common\Classes\Database\Common\MySQLCommonDatabase.pas',
-	MySQLGameDatabase in 'Common\Classes\Database\Game\MySQLGameDatabase.pas',
 	SQLiteGameDatabase in 'Common\Classes\Database\Game\SQLiteGameDatabase.pas',
-	MySQLStaticDatabase in 'Common\Classes\Database\Static\MySQLStaticDatabase.pas',
 	SQLiteStaticDatabase in 'Common\Classes\Database\Static\SQLiteStaticDatabase.pas',
 
 	//Database Clients
 	//SQLite
 	SQLite3 in 'Common\ThirdParty\SQLite\SQLite3.pas',
 	SQLiteTable3 in 'Common\ThirdParty\SQLite\SQLiteTable3.pas',
-	//mysql
-	uMysqlClient in 'Common\ThirdParty\MySQL\uMysqlClient.pas',
-	uMysqlCT in 'Common\ThirdParty\MySQL\uMysqlCT.pas',
-	uMysqlErrors in 'Common\ThirdParty\MySQL\uMysqlErrors.pas',
-	uMysqlNet in 'Common\ThirdParty\MySQL\uMysqlNet.pas',
-	uMysqlNewPassword in 'Common\ThirdParty\MySQL\uMysqlNewPassword.pas',
-	umysqlsha1 in 'Common\ThirdParty\MySQL\umysqlsha1.pas',
-	uMysqlVio in 'Common\ThirdParty\MySQL\uMysqlVio.pas',
-	//mssql
-	MSSQLClient in 'Common\ThirdParty\MSSQL\MSSQLClient.pas',
 
 	//Configuration
 	HeliosOptions in 'Common\Config\HeliosOptions.pas',
@@ -185,8 +175,11 @@ compile for linux, at the same time*}
 	Commands in 'Common\Classes\Commands.pas',
 	CommClient in 'Common\Classes\CommClient.pas',
 	Globals in 'Common\Globals.pas',
-	madExcept,
+	{$IFDEF FPC}
+        {$ELSE}
+        madExcept,
 	madLinkDisAsm,
+        {$ENDIF}
 	PacketTypes in 'Common\PacketTypes.pas',
 	Server in 'Servers\Server.pas',
 	ServerInfo in 'Common\Classes\ServerInfo.pas',
@@ -280,26 +273,13 @@ compile for linux, at the same time*}
 	GameDatabaseTemplate in 'Common/Classes/Database/Game/GameDatabaseTemplate.pas',
 	StaticDatabaseTemplate in 'Common/Classes/Database/Static/StaticDatabaseTemplate.pas',
 	SQLiteCommonDatabase in 'Common/Classes/Database/Common/SQLiteCommonDatabase.pas',
-	MySQLCommonDatabase in 'Common/Classes/Database/Common/MySQLCommonDatabase.pas',
-	MySQLGameDatabase in 'Common/Classes/Database/Game/MySQLGameDatabase.pas',
 	SQLiteGameDatabase in 'Common/Classes/Database/Game/SQLiteGameDatabase.pas',
-	MySQLStaticDatabase in 'Common/Classes/Database/Static/MySQLStaticDatabase.pas',
 	SQLiteStaticDatabase in 'Common/Classes/Database/Static/SQLiteStaticDatabase.pas',
 
 	//Database Clients
 	//SQLite
 	SQLite3 in 'Common/ThirdParty/SQLite/SQLite3.pas',
 	SQLiteTable3 in 'Common/ThirdParty/SQLite/SQLiteTable3.pas',
-	//mysql
-	uMysqlClient in 'Common/ThirdParty/MySQL/uMysqlClient.pas',
-	uMysqlCT in 'Common/ThirdParty/MySQL/uMysqlCT.pas',
-	uMysqlErrors in 'Common/ThirdParty/MySQL/uMysqlErrors.pas',
-	uMysqlNet in 'Common/ThirdParty/MySQL/uMysqlNet.pas',
-	uMysqlNewPassword in 'Common/ThirdParty/MySQL/uMysqlNewPassword.pas',
-	umysqlsha1 in 'Common/ThirdParty/MySQL/umysqlsha1.pas',
-	uMysqlVio in 'Common/ThirdParty/MySQL/uMysqlVio.pas',
-	//mssql
-	MSSQLClient in 'Common/ThirdParty/MSSQL/MSSQLClient.pas',
 
 	//Configuration
 	HeliosOptions in 'Common/Config/HeliosOptions.pas',

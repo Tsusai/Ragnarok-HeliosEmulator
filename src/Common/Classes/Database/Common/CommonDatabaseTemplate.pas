@@ -42,6 +42,10 @@ Revisions:
 
 unit CommonDatabaseTemplate;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 
 interface
 

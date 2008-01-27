@@ -5,6 +5,10 @@
 //so each command can access the character runing it.
 unit LuaNPCCore;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses

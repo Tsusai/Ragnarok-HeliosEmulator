@@ -10,6 +10,10 @@
 //------------------------------------------------------------------------------
 unit LuaVarConstants;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 const

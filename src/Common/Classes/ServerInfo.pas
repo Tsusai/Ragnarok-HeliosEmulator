@@ -4,6 +4,10 @@
 //cardinal forms, which are used by the client
 unit ServerInfo;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	IdContext;

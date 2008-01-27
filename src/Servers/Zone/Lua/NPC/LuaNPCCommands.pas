@@ -1,6 +1,10 @@
 //Contains all script commands used by the lua system
 unit LuaNPCCommands;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses

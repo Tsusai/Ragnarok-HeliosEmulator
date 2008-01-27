@@ -9,6 +9,10 @@
 //------------------------------------------------------------------------------
 unit InventoryList;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	Item,

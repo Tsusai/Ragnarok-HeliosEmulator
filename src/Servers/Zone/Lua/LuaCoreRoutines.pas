@@ -2,6 +2,10 @@
 //lua is only required in the zone.
 unit LuaCoreRoutines;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 uses
 	LuaPas;

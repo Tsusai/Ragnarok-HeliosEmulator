@@ -12,6 +12,10 @@
 //------------------------------------------------------------------------------
 unit GMCommandsOptions;
 
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
