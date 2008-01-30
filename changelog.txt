@@ -15,6 +15,14 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 430 -
+[2008/01/29] RaX - More random cleanup, commented, renamed, and organized stuff
+ relating to the Commclient. Added an event (OnReconnect) which fires when the
+ client loses it's connection and starts to reconnect. This client is almost
+ ready to be distributed by itself, as in you can easily use it in other applications
+ outside helios.
+- 
+
 - Rev 429 -
 [2008/01/29] RaX - Random Cleanup, uses, some potential warnings removed, etc.
 -

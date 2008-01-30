@@ -152,14 +152,14 @@ begin
 	CharacterList := TCharacterList.Create(TRUE);
 	NPCList := TIntList32.Create;
 
-	ToCharaTCPClient := TInterClient.Create('Zone','Character', MainProc.Options.ReconnectDelay);
-	ToInterTCPClient := TInterClient.Create('Zone','Inter', MainProc.Options.ReconnectDelay);
+	ToCharaTCPClient := TInterClient.Create('Zone','Character', true, MainProc.Options.ReconnectDelay);
+	ToInterTCPClient := TInterClient.Create('Zone','Inter', true, MainProc.Options.ReconnectDelay);
 
 	ToCharaTCPClient.OnConnected := CharaClientOnConnect;
-	ToCharaTCPClient.OnRecieve   := CharaClientRead;
+	ToCharaTCPClient.OnReceive   := CharaClientRead;
 
 	ToInterTCPClient.OnConnected := InterClientOnConnect;
-	ToInterTCPClient.OnRecieve   := InterClientRead;
+	ToInterTCPClient.OnReceive   := InterClientRead;
 
 	CharacterEventThread := TCharacterEventThread.Create(CharacterList);
 end;{Create}

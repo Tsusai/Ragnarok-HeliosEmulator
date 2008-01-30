@@ -137,10 +137,10 @@ Constructor TCharacterServer.Create;
 begin
 	inherited;
 
-	CharaToLoginClient := TInterClient.Create('Character','Login', MainProc.Options.ReconnectDelay);
+	CharaToLoginClient := TInterClient.Create('Character','Login', true, MainProc.Options.ReconnectDelay);
 
 	CharaToLoginClient.OnConnected := LoginClientOnConnect;
-	CharaToLoginClient.OnRecieve := LoginClientRead;
+	CharaToLoginClient.OnReceive := LoginClientRead;
 
 	fZoneServerList := TIntList32.Create;
 	fAccountList := TIntList32.Create;

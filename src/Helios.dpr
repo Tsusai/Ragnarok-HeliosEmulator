@@ -57,7 +57,7 @@
 //------------------------------------------------------------------------------
 program Helios;
 {$IFDEF FPC}
-{$MODE Delphi}
+	{$MODE Delphi}
 {$ENDIF}
 
 {$APPTYPE CONSOLE}
@@ -176,10 +176,10 @@ compile for linux, at the same time*}
 	CommClient in 'Common\Classes\CommClient.pas',
 	Globals in 'Common\Globals.pas',
 	{$IFDEF FPC}
-        {$ELSE}
-        madExcept,
-	madLinkDisAsm,
-        {$ENDIF}
+	{$ELSE}
+		madExcept,
+		madLinkDisAsm,
+	{$ENDIF}
 	PacketTypes in 'Common\PacketTypes.pas',
 	Server in 'Servers\Server.pas',
 	ServerInfo in 'Common\Classes\ServerInfo.pas',
@@ -337,14 +337,18 @@ compile for linux, at the same time*}
 //------------------------------------------------------------------------------
 var
 	AnInput   : string;
+
 begin
 	try
 		//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 		Randomize;
+
 		//Setup our CRT controller
 		SetupCRT;
+
 		//Allow Helios to capture termination messages
 		SetupTerminationCapturing;
+
 		//setup our paths before anything else is done.
 		AppPath		:= ExtractFilePath(ParamStr(0));
 		ExeName		:= ExtractFileNameMod(ParamStr(0));
@@ -368,6 +372,7 @@ begin
 		begin
 			Console.ReadLn(AnInput);
 		end;
+
 		{End Main Loop}
 	finally
 		//Terminate the process cleanly.
