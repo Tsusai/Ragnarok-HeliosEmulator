@@ -26,9 +26,8 @@ interface
 
 uses
 	{RTL/VCL}
-	Types,
 	Classes,
-	SyncObjs,
+	Types,
 	{Project}
 	Being,
 	Character,
@@ -199,8 +198,7 @@ uses
 	BufferIO,
 	Main,
 	TCPServerRoutines,
-	WinLinux,
-	MovementEvent
+	WinLinux
 	{3rd Party}
 	//none
 	;

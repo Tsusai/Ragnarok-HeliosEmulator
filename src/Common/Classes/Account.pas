@@ -231,6 +231,7 @@ begin
 	Dec(Days);
 	//Glue up between 2 time
 	Glue := ' ';
+        Result := '';
 		//Onlys shows Years, because months is 0
 		if (Years > 0) and (Months = 0) then
 		begin

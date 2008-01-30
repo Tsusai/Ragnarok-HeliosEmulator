@@ -47,9 +47,6 @@ implementation
 uses
 	MovementEvent,
 	AttackEvent;
-	
-const
-	ALLOCATE_SIZE = 20; // How many Events to store in each incremental memory block
 
 //------------------------------------------------------------------------------
 //Create                                                            CONSTRUCTOR

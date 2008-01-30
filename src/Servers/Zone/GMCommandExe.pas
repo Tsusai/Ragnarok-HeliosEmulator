@@ -68,11 +68,8 @@ uses
 	PacketTypes,
 	BufferIO,
 	Map,
-	MapTypes,
-	ZoneInterCommunication,
-	GameConstants,
+	GameConstants
 	{Third Party}
-	IdContext
 	;
 
 //------------------------------------------------------------------------------

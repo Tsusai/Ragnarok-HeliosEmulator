@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 429 -
+[2008/01/29] RaX - Random Cleanup, uses, some potential warnings removed, etc.
+-
+
 - Rev 428 -
 [2008/01/26] RaX - Helios is now officially lazarus compatible. Removed MySQL
  due to our client library's crappiness. MySQL reimplementation pending move to

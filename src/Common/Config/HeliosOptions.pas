@@ -62,8 +62,7 @@ implementation
 	uses
 		Classes,
 		SysUtils,
-		WinLinux,
-		Math;
+		WinLinux;
 
 //------------------------------------------------------------------------------
 //Load()                                               PROCEDURE

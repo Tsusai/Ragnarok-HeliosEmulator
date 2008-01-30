@@ -131,7 +131,6 @@ uses
 implementation
 uses
 	//RTL
-	Types,
 	//Project
 	LuaNPCCore,
 	Main,

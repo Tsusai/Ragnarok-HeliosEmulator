@@ -41,7 +41,6 @@ interface
 
 uses
 	{RTL/VCL}
-	Types,
 	{Project}
 	Item
 	{Third Party}

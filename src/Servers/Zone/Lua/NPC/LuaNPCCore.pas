@@ -13,8 +13,7 @@ interface
 
 uses
 	Character,
-	LuaCoreRoutines,
-	NPC;
+	LuaCoreRoutines;
 
   procedure RunLuaNPCScript(
 		var AChara : TCharacter;

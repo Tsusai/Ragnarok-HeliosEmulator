@@ -339,11 +339,7 @@ uses
 	PacketTypes,
 	TCPServerRoutines,
 	CharaList,
-	ZoneSend,
-	AreaLoopEvents,
-	AttackEvent,
-	MovementEvent,
-	WinLinux
+	AreaLoopEvents
 	{Third Party}
 	//none
 	;

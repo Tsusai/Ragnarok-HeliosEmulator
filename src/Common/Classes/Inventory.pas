@@ -42,7 +42,6 @@ interface
 
 uses
 	{RTL/VCL}
-	Types,
 	Classes,
 	{Project}
 	Item,

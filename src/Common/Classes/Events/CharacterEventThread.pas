@@ -20,7 +20,6 @@ interface
 
 uses
 	{RTL/VCL}
-	SyncObjs,
 	{Project}
 	CharaList,
 	{Third Party}
@@ -50,7 +49,6 @@ uses
 	Classes,
 	{Project}
 	Main,
-	Character,
 	Event,
 	{3rd Party}
 	WinLinux

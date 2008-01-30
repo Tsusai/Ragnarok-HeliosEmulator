@@ -15,7 +15,6 @@ unit PointList;
 
 interface
 uses
-	SyncObjs,
 	Types,
 	Classes;
 

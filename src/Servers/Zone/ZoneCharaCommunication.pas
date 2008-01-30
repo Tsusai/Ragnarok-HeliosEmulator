@@ -17,9 +17,9 @@ unit ZoneCharaCommunication;
 interface
 uses
 	ZoneServer,
-	CommClient,
 	Character,
-	IdContext;
+	IdContext,
+	CommClient;
 
 	procedure ValidateWithCharaServer(
 		AClient : TInterClient;

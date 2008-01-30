@@ -240,11 +240,10 @@ implementation
 
 uses
 	{RTL/VCL}
-	Types,
 	WinLinux,
 	Classes,
 	SysUtils,
-	Math,
+	Types,
 	{Project}
 	Account,
 	Being,
@@ -259,14 +258,10 @@ uses
 	NPC,
 	TCPServerRoutines,
 	ZoneSend,
-	ZoneServer,
 	ZoneCharaCommunication,
 	ZoneInterCommunication,
-	Database,
 	AddFriendEvent,
-	AreaLoopEvents,
-	AttackEvent,
-	Globals
+	AreaLoopEvents
 	{3rd Party}
 	//none
 	;

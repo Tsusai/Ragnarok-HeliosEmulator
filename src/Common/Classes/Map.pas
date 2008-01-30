@@ -26,8 +26,7 @@ uses
 	Types,
 	{Project}
 	EventList,
-	MapTypes,
-	PointList
+	MapTypes
 	{3rd Party}
 	//none
 	;
@@ -87,11 +86,9 @@ uses
 	Math,
 	WinLinux,
 	{Project}
-	GameConstants,
 	Globals,
 	Main,
 	NPC,
-	Being,
 	{3rd Party}
 	List32
 	;

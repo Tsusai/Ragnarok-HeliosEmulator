@@ -271,18 +271,15 @@ implementation
 uses
 	{RTL/VCL}
 	Math,
-	SyncObjs,
 	WinLinux,
 	{Project}
 	AreaLoopEvents,
 	Character,
-	Event,
 	Main,
 	MovementEvent,
 	DelayDisconnectEvent,
 	ZoneSend,
 	OnTouchCellEvent,
-	Globals,
 	MapTypes,
 	AttackEvent
 	{Third Party}

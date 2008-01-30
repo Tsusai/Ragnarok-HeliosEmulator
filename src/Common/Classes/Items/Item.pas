@@ -40,13 +40,12 @@ unit Item;
 interface
 
 
-uses
+//uses
 	{RTL/VCL}
-	Types
 	{Project}
 	{Third Party}
 	//none
-	;
+
 
 type
 

@@ -20,7 +20,6 @@ unit LoginServer;
 
 interface
 uses
-	IdTCPServer,
 	IdContext,
 	PacketTypes,
 	List32,

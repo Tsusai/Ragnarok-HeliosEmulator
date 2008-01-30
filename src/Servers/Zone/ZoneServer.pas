@@ -29,7 +29,6 @@ uses
 	Character,
 	CharacterEventThread,
 	CharaList,
-	Database,
 	GMCommands,
 	LuaCoreRoutines,
 	MapList,
@@ -37,7 +36,6 @@ uses
 	Server,
 	ZoneOptions,
 	{3rd Party}
-	IdTCPServer,
 	IdContext,
 	List32
 	;

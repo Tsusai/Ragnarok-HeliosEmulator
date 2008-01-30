@@ -219,7 +219,6 @@ implementation
 
 uses
 	{RTL/VCL}
-	Math,
 	SysUtils,
 	Types,
 	{Project}

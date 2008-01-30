@@ -21,7 +21,6 @@ unit CharacterServer;
 interface
 uses
 	Character,
-	IdTCPServer,
 	IdContext,
 	CommClient,
 	List32,

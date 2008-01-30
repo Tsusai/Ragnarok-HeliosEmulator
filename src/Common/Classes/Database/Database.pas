@@ -28,9 +28,8 @@ uses
 	{Project}
 	CommonDatabaseTemplate,
 	GameDatabaseTemplate,
-	StaticDatabaseTemplate,
+	StaticDatabaseTemplate
 	{3rd Party}
-	IdContext
 	;
 
 
@@ -64,7 +63,6 @@ uses
 	{RTL/VCL}
 	//none
 	{Project}
-	DatabaseOptions,
 	DatabaseConstants,
 	Globals,
 	Main,

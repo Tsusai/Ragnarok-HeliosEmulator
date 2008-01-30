@@ -19,11 +19,10 @@ unit ZoneInterCommunication;
 interface
 uses
 	Classes,
-	Types,
 	ZoneServer,
-	CommClient,
 	IdContext,
-	Character;
+	Character,
+	CommClient;
 
 const
 	WHISPER_SUCCESS  = 0;

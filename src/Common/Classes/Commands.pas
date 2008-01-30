@@ -152,6 +152,7 @@ var
 	ThirdParty  : TStringList;
 	LineIndex   : Integer;
 begin
+        Result := '';
 	if FileExists(AppPath + '3rdParty.txt') then
 	begin
 		ThirdParty := TStringList.Create;

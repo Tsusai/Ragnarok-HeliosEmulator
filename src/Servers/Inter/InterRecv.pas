@@ -88,8 +88,6 @@ uses
 	ZoneServerInfo,
 	ZoneInterCommunication,
 	InterSend,
-	GMCommands,
-	Account,
 	GameConstants,
 	CharaList
 	{3rd Party}
