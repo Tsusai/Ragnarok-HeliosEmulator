@@ -19,9 +19,9 @@
 unit CommClient;
 
 {$IFDEF FPC}
-{$MODE Delphi}
+	{$MODE Delphi}
 {$ENDIF}
- 
+
 interface
 
 uses
@@ -88,8 +88,8 @@ type
 	TInterClient = class(TIdTCPClient)
 
 	protected
-		fReadThread								: TClientThread;
-		fReconnectThread						: TReconnectThread;
+		fReadThread								 : TClientThread;
+		fReconnectThread					 : TReconnectThread;
 
 
 		fOnReceive								: TDataAvailableEvent;
@@ -97,12 +97,12 @@ type
 
 		fActive										: Boolean;
 
-		procedure DoReceiveEvent;
-		procedure DoReconnectEvent;
-
 		procedure SetActive(
 			Value : Boolean
 		);
+		
+		procedure DoReceiveEvent;
+		procedure DoReconnectEvent;
 
 
 	public
@@ -156,7 +156,6 @@ implementation
 
 uses
 	SysUtils,
-	WinLinux,
 	Globals;
 
 
@@ -208,9 +207,8 @@ uses
 		AClient : TInterClient
 	);
 	begin
-		inherited Create(True,True,AClient.SourceName + ' Client');
+		inherited Create(True, True, AClient.SourceName + ' Client');
 		fClient := AClient;
-		LowerPriority(Self);
 		Start;
 	end;{Create}
 //------------------------------------------------------------------------------
@@ -231,10 +229,7 @@ constructor TReconnectThread.Create(
 );
 begin
 	inherited Create(false);
-
 	fClient									:= AClient;
-	FreeOnTerminate					:=True;
-
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -259,16 +254,16 @@ begin
 
 	if Assigned(fClient.fReadThread) then
 	begin
-
-		while not fClient.fReadThread.Terminated do
-		begin
-			Sleep(10);
-		end;
-
+		fClient.fReadThread.Terminate;
+		fClient.fReadThread.WaitFor;
 		FreeAndNil(fClient.fReadThread);
 	end;
 
 	fClient.Connect;
+
+	//Apparently indy threads' FreeOnTerminate does NOT work, this was added to 
+	//force it.
+	Terminate;
 end;{Execute}
 //------------------------------------------------------------------------------
 
@@ -317,20 +312,16 @@ end;{Execute}
 
 	);
 	begin
+	
 		try
 			inherited Connect;
-
-			try
-				fReadThread := TClientThread.Create(Self);
-			except
-				Disconnect(false);
-				Reconnect;
-			end;
+			fReadThread := TClientThread.Create(Self);
 
 		except
 			Disconnect(false);
 			Reconnect;
 		end;
+		
 	end;
 //------------------------------------------------------------------------------
 
@@ -357,6 +348,7 @@ end;{Execute}
 
 		try
 			inherited Disconnect(ANotifyPeer);
+
 		finally
 
 			if Assigned(fReadThread) then
@@ -395,13 +387,13 @@ end;{Execute}
 				fReconnectThread.Terminate;
 			end;
 
-			fReconnectThread := nil;
 		end;
 
 		if Assigned(fReadThread) then
 		begin
-			fReadThread.Stop;
-			fReadThread.Destroy;
+			fReadThread.Terminate;
+			fReadThread.WaitFor;
+			fReadThread.Free;
 		end;
 
 		inherited Destroy;
