@@ -12,7 +12,7 @@ Copyright 2001, Gary Darby, Intellitech Systems Inc., www.DelphiForFun.org
  All other rights are reserved
  }
 { List32
-Modified by Cardinal.
+Modified by LongWord.
 TIntList32: based on TIntList. changed int64 to cardinal, added IndexOfObject.
 TList32: based on TList. added IndexOfObject.
 
@@ -20,6 +20,7 @@ TList32: based on TList. added IndexOfObject.
 	generating code in this library we use for the Prometheus Project.
 [2006/11/27] Tsusai - Cleaned up Uses usage.
 [2007/01/14] Tsusai - Made IndexOfObject what it should be.
+[2008/02/01] Aeomin - Changed cardinal to LongWord;
 }
 
 interface
@@ -36,7 +37,7 @@ Type
 
 	PIntItem = ^TIntItem;
   TIntItem = record
-    FInt: cardinal;
+    FInt: LongWord;
     FObject: TObject;
   end;
 
@@ -58,33 +59,33 @@ Type
     procedure ExchangeItems(Index1, Index2: Integer);
     procedure Grow;
     procedure QuickSort(L, R: Integer; SCompare: TIntListSortCompare);
-    procedure InsertItem(Index: Integer; const S: cardinal);
+    procedure InsertItem(Index: Integer; const S: LongWord);
     procedure SetSorted(Value: Boolean);
   protected
     procedure Error(const Msg: string; Data: Integer);
     procedure Changed; virtual;
     procedure Changing; virtual;
-    function Get(Index: Integer): cardinal;
+    function Get(Index: Integer): LongWord;
     function GetCapacity: Integer;
     function GetCount: Integer;
     function GetObject(Index: Integer): TObject;
-    procedure Put(Index: Integer; const S: cardinal);
+    procedure Put(Index: Integer; const S: LongWord);
     procedure PutObject(Index: Integer; AObject: TObject);
     procedure SetCapacity(NewCapacity: Integer);
     procedure SetUpdateState(Updating: Boolean);
   public
     constructor Create;
     destructor Destroy; override;
-    function Add(const S: cardinal): Integer;
-    function AddObject(const S: cardinal; AObject: TObject): Integer; virtual;
+    function Add(const S: LongWord): Integer;
+    function AddObject(const S: LongWord; AObject: TObject): Integer; virtual;
     procedure Clear;
     procedure Delete(Index: Integer);
     procedure Exchange(Index1, Index2: Integer);
-    function Find(const S: cardinal; var Index: Integer): Boolean; virtual;
-    function IndexOf(const S: cardinal): Integer;
+    function Find(const S: LongWord; var Index: Integer): Boolean; virtual;
+    function IndexOf(const S: LongWord): Integer;
 
 		function IndexOfObject(AObject: TObject): Integer;
-		procedure Insert(Index: Integer; const S: cardinal);
+		procedure Insert(Index: Integer; const S: LongWord);
     procedure Sort; virtual;
     procedure CustomSort(Compare: TIntListSortCompare); virtual;
 
@@ -97,7 +98,7 @@ Type
     property Sorted: Boolean read FSorted write SetSorted;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
     property OnChanging: TNotifyEvent read FOnChanging write FOnChanging;
-    property Integers [Index: Integer]: cardinal read Get write Put; default;
+    property Integers [Index: Integer]: LongWord read Get write Put; default;
     property Count: Integer read GetCount;
     property Objects[Index: Integer]: TObject read GetObject write PutObject;
   end;
@@ -129,16 +130,8 @@ end;
 
 
 procedure TIntList32.Error(const Msg: string; Data: Integer);
-{[2005/12/10] CR - Suppressing warning about the Pointer return type, and
-ASM directive. }
-{$WARNINGS OFF}
-  function ReturnAddr: Pointer;
-  asm
-{$WARNINGS ON}
-          MOV     EAX,[EBP+4]
-  end;
 begin
-  raise EStringListError.CreateFmt(Msg, [Data]) at ReturnAddr;
+	raise EStringListError.CreateFmt(Msg, [Data]);
 end;
 
 
@@ -147,7 +140,7 @@ const
   sListIndexError='List index Error';
   SSortedListError='Cannont insert to sorted list';
 
-function TIntList32.Add(const S: cardinal): Integer;
+function TIntList32.Add(const S: LongWord): Integer;
 begin
   if not Sorted then
     Result := FCount
@@ -160,7 +153,7 @@ begin
   InsertItem(Result, S);
 end;
 
-function TIntList32.AddObject(const S: cardinal; AObject: TObject): Integer;
+function TIntList32.AddObject(const S: LongWord; AObject: TObject): Integer;
 begin
   Result := Add(S);
   PutObject(Result, AObject);
@@ -209,7 +202,7 @@ end;
 
 procedure TIntList32.ExchangeItems(Index1, Index2: Integer);
 var
-  Temp: cardinal;
+  Temp: LongWord;
   Item1, Item2: PIntItem;
 begin
   {[2005/12/10] CR - Warnings for @ operators here are unnecessary - this is
@@ -232,7 +225,7 @@ begin
   {$WARNINGS ON}
 end;
 
-function TIntList32.Find(const S: cardinal; var Index: Integer): Boolean;
+function TIntList32.Find(const S: LongWord; var Index: Integer): Boolean;
 var
   L, H, I: Integer;
 begin
@@ -255,7 +248,7 @@ begin
   Index := L;
 end;
 
-function TIntList32.Get(Index: Integer): cardinal;
+function TIntList32.Get(Index: Integer): LongWord;
 begin
   if (Index < 0) or (Index >= FCount) then Error(SListIndexError, Index);
   Result := FList^[Index].FInt;
@@ -287,7 +280,7 @@ begin
   SetCapacity(FCapacity + Delta);
 end;
 
-function TIntList32.IndexOf(const S: cardinal): Integer;
+function TIntList32.IndexOf(const S: LongWord): Integer;
 begin
 	if not Sorted then
 	begin
@@ -305,14 +298,14 @@ begin
 	Result := -1;
 end;
 
-procedure TIntList32.Insert(Index: Integer; const S: cardinal);
+procedure TIntList32.Insert(Index: Integer; const S: LongWord);
 begin
   if Sorted then Error(SSortedListError, 0);
   if (Index < 0) or (Index > FCount) then Error(SListIndexError, Index);
   InsertItem(Index, S);
 end;
 
-procedure TIntList32.InsertItem(Index: Integer; const S: cardinal);
+procedure TIntList32.InsertItem(Index: Integer; const S: LongWord);
 begin
   Changing;
   if FCount = FCapacity then Grow;
@@ -328,7 +321,7 @@ begin
   Changed;
 end;
 
-procedure TIntList32.Put(Index: Integer; const S: cardinal);
+procedure TIntList32.Put(Index: Integer; const S: LongWord);
 begin
 	if Sorted then Error(SSortedListError, 0);
   if (Index < 0) or (Index >= FCount) then Error(SListIndexError, Index);
@@ -427,7 +420,7 @@ procedure TIntList32.SaveToStream(Stream: TStream);
 var
   i: integer;
   N:integer;
-  Val:cardinal;
+  Val:LongWord;
 begin
   N:=count;
   Stream.WriteBuffer(N, sizeof(N));
@@ -455,7 +448,7 @@ end;
 var
   Size: Integer;
   i:integer;
-	N:cardinal;
+	N:LongWord;
 begin
   {BeginUpdate;  }
   try
@@ -484,24 +477,3 @@ begin
 end;
 
 end.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

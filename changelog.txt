@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 432 -
+[2008/02/01] Aeomin - Tweak on TIntList32, changed Cardinal to LongWord and removed ASM that will break on x64.
+-
+
 - Rev 431 -
 [2008/01/30] RaX - Fixed bug in last commit, changing TThread to TIdThread was
  trickier than I thought. Apparently IdThread's freeonterminate doesn't work.
