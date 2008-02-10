@@ -731,6 +731,9 @@ begin
       SoundState := ssPending;
     end
     else
+    begin
+    {$IFNDEF FPC}
+    //Ignoring inline ASM for FPC
     asm
           MOV     AL,$B6
           OUT     $43,AL
@@ -743,6 +746,8 @@ begin
           OUT     $42,AL
           MOV     AL,3
           OUT     $61,AL
+    end;
+    {$ENDIF}
     end;
   end;
 end;
@@ -786,9 +791,14 @@ begin
     SoundState := ssFreed;
   end
   else
+  begin
+  {$IFNDEF FPC}
+  //Ignoring inline ASM for FPC
   asm
         MOV     AL,0
         OUT     $61,AL
+  end;
+  {$ENDIF}
   end;
 end;
 

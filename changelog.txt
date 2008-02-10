@@ -15,6 +15,24 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 433 -
+[2008/02/09] Tsusai - Notes/Changes: Update for Windows x64 Complication.  Helios
+ can now be compiled using Lazarus Win64 on a Windows x64 environment.
+[2008/02/09] Tsusai - Bin Folder: Added 64bit compiles of lua and sqlite3 dlls 
+ into  a Libraries folder.  Moved existing 32bit compiles into a 32bit folder for
+ consistency.
+[2008/02/09] Tsusai - CRT: Changed to CRTWrapper.pas to avoid conflict with
+ the FPC RTL unit "CRT".
+[2008/02/09] Tsusai - CRTWrapper: Cleaned up.  Linux visual mods removed.
+[2008/02/09] Tsusai - WinConsole: FPC will now ignore the Inline Assembly until
+ someone knows how to use it proper.
+[2008/02/09] Tsusai - List32.ExchangeItems: Ignoring some typecasting.  FPC can't
+ figure out wtf is going on, and I don't know how to fix it for FPC.
+[2008/02/09] Tsusai - Helios64.res: Added. Contains manifest so lua can link to
+ a .NET framework item to operate.
+[2008/02/09] Tsusai - Globals/Terminal: Updated for CRT->CRTWrapper rename.
+-
+
 - Rev 432 -
 [2008/02/01] Aeomin - Tweak on TIntList32, changed Cardinal to LongWord and removed ASM that will break on x64.
 -

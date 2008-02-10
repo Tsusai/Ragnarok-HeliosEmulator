@@ -1,7 +1,7 @@
-unit CRT;
+unit CRTWrapper;
 
 {$IFDEF FPC}
-{$MODE Delphi}
+        {$MODE Delphi}
 {$ENDIF}
 
 //This unit is a wrapper of sorts for the linux and windows api overrides for
@@ -47,19 +47,18 @@ const
 
 implementation
 uses
-	{$IFDEF MSWINDOWS}
-	WinConsole;
-	{$ENDIF}
-	{$IFDEF LINUX}
-	LinCRT;
+        {$IFDEF MSWINDOWS}
+        WinConsole;
+        {$ELSE}
+        //
 	{$ENDIF}
 
 	procedure SetupCRT;
 	begin
 		//Windows does not have init routines, ignored.
 		{$IFDEF LINUX}
-		LinCRT.InitLinCRT;
-		LinCRT.SetScrollWnd(true);
+		//LinCRT.InitLinCRT;
+		//LinCRT.SetScrollWnd(true);
 		{$ENDIF}
 	end;
 
@@ -67,40 +66,37 @@ uses
 	begin
 		//Windows does not have API closing routines, ignored.
 		{$IFDEF LINUX}
-		LinCRT.DoneLinCRT;
+		//LinCRT.DoneLinCRT;
 		{$ENDIF}
 	end;
 
 	// Sets text foreground color.
 	procedure TextColor(Color: Byte);
 	begin
-		{$IFDEF MSWINDOWS}
-		WinConsole.TextColor(Color);
-		{$ENDIF}
-		{$IFDEF LINUX}
-		LinCRT.TextColor(Color);
+                {$IFDEF LINUX}
+                //
+		{$ELSE}
+                WinConsole.TextColor(Color);
 		{$ENDIF}
 	end;
 
 	// Gets text forground color.
 	function TextColor: Byte;
 	begin
-		{$IFDEF MSWINDOWS}
-		Result := WinConsole.TextColor;
-		{$ENDIF}
-		{$IFDEF LINUX}
-		Result := (LinCRT.TextAttr and $F8);
+                {$IFDEF LINUX}
+                //
+                {$ELSE}
+                Result := WinConsole.TextColor;
 		{$ENDIF}
 	end;
 
 	// Sets text background color.
 	procedure TextBackground(Color: Byte);
 	begin
-		{$IFDEF MSWINDOWS}
-		WinConsole.TextBackground(Color);
-		{$ENDIF}
 		{$IFDEF LINUX}
-		LinCRT.TextBackground(Color);
+                //
+		{$ELSE}
+                WinConsole.TextBackground(Color);
 		{$ENDIF}
 		ClrScr;
 	end;
@@ -108,11 +104,10 @@ uses
 	// Gets text background color.
 	function TextBackground: Byte;
 	begin
-		{$IFDEF MSWINDOWS}
-		Result := WinConsole.TextBackground;
-		{$ENDIF}
-		{$IFDEF LINUX}
-		Result := (LinCRT.TextAttr and $F8) shr 4;
+                {$IFDEF LINUX}
+                //
+                {$ELSE}
+                Result := WinConsole.TextColor;
 		{$ENDIF}
 	end;
 

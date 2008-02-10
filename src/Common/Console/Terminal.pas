@@ -38,7 +38,7 @@ unit Terminal;
 interface
 
 uses
-	CRT,
+	CRTWrapper,
 	ConsoleOptions,
 	Commands;
 
@@ -105,7 +105,7 @@ begin
 	Options.Load;
 	
 	LineColor := FALSE;
-	CRT.TextBackground(CRTBlack);
+	CRTWrapper.TextBackground(CRTBlack);
 	
 	CriticalSection := TCriticalSection.Create;
 end;//Create
@@ -150,7 +150,7 @@ procedure TConsole.WriteLn(
 begin
 	CriticalSection.Enter;
 
-	CRT.TextColor(TextColor);
+	CRTWrapper.TextColor(TextColor);
 	System.Writeln(AString);
 
 	CriticalSection.Leave;
@@ -287,15 +287,15 @@ begin
 		CriticalSection.Enter;
 
 		//Set our random characters color
-		CRT.TextColor(CRTWhite);
+		CRTWrapper.TextColor(CRTWhite);
 		System.Write('[');
 
 		//Set our From color, the server/routine this message is being sent from.
-		CRT.TextColor(FromColor);
+		CRTWrapper.TextColor(FromColor);
 		System.Write(From);
 
 		//Set our Random character color, again.
-		CRT.TextColor(CRTWhite);
+		CRTWrapper.TextColor(CRTWhite);
 		System.Write(']');
 
 		//Match up the messages no matter how long the from string is by adding spaces
@@ -317,9 +317,9 @@ begin
 		end;
 
 		//write the body of the message
-		CRT.TextColor(Color);
+		CRTWrapper.TextColor(Color);
 		System.Writeln(AString);
-		CRT.TextColor(CRTWhite);//reset the color to default
+		CRTWrapper.TextColor(CRTWhite);//reset the color to default
 		
 		//Write our log entry if applicable
 		if Options.LogsEnabled then

@@ -220,8 +220,11 @@ begin
   and is thus SAFE. }
   {$WARNINGS OFF}
   Temp := Integer(Item1^.FObject);
+  {$IFNDEF FPC}
+  //No clue to get this to work in FPC at this time.  Ignoring
   Integer(Item1^.FObject) := Integer(Item2^.FObject);
   Integer(Item2^.FObject) := Temp;
+  {$ENDIF}
   {$WARNINGS ON}
 end;
 

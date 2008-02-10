@@ -69,11 +69,15 @@ compile for linux, at the same time*}
 //------------------------------------------------------------------------------
 	{$IFDEF MSWINDOWS}
 	{$R *.res}
-
-	//Console Related Units
-	Terminal in 'Common\Console\Terminal.pas',
-	CRT in 'Common\Console\CRT.pas',
-	WinConsole in 'Common\Console\WinCRT\WinConsole.pas',
+        //Link special resource file for x64
+        {$IFDEF WIN64}
+	   {$R Helios64.res}
+        {$ENDIF}
+        
+        //Console Related Units
+        CRTWrapper in 'Common\Console\CRTWrapper.pas',
+        WinConsole in 'Common\Console\WinCRT\WinConsole.pas',
+        Terminal in 'Common\Console\Terminal.pas',
 
 	//Login Server
 	LoginServer in 'Servers\Login\LoginServer.pas',
@@ -193,7 +197,10 @@ compile for linux, at the same time*}
 //                            Linux Definitions
 //------------------------------------------------------------------------------
 	{$IFDEF LINUX}
-
+        {$IFDEF FPC}
+        //Special Threads Unit.
+        cthreads,
+        {$ENDIF}
 	//Console Related Units
 	Terminal in 'Common/Console/Terminal.pas',
 	CRT in 'Common/Console/CRT.pas',
