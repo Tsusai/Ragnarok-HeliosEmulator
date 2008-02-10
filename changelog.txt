@@ -15,6 +15,21 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 434 -
+[2008/02/10] Tsusai - Notes/Overview: Updates for Linux Lazarus to compile.
+ Kylix will no longer work. Why compile w/ an old kernel than a new one?
+[2008/02/10] Tsusai - Helios Project File: Disabled Linux "CRT" related fields.
+ These fuck up the display...badly.
+[2008/02/10] Tsusai - CRTWrapper: Removed Linux Code for now.
+[2008/02/10] Tsusai - Globals: Removed CRT Termination.
+[2008/02/10] Tsusai - LuaPas: Updated linux library name.  If it still doesn't
+ work or compile, make a symbolic link to fix this.
+[2008/02/10] Tsusai - SQLite3: Added a unit so LoadLibrary & family work in
+ Lazarus.
+[2008/02/10] Tsusai - WinLinux: Modified the elapsed time code to use datetime
+ differences provided by Lazarus.
+-
+
 - Rev 433 -
 [2008/02/09] Tsusai - Notes/Changes: Update for Windows x64 Complication.  Helios
  can now be compiled using Lazarus Win64 on a Windows x64 environment.

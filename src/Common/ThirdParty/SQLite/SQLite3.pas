@@ -144,6 +144,8 @@ implementation
 uses
 	{$IFDEF MSWINDOWS}
 	Windows,
+	{$ELSE}
+	DynLibs,
 	{$ENDIF}
 	SysUtils;
 
@@ -286,4 +288,5 @@ end;
 
 
 end.
+
 

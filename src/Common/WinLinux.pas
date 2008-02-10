@@ -43,7 +43,7 @@ uses
 	Winsock,
 	{$ENDIF}
 	{$IFDEF LINUX}
-	Libc,
+	Libc,//For Socket stuff.  Hopefully temporarily.
 	{$ENDIF}
 	SysUtils,
 	DateUtils,
@@ -54,7 +54,7 @@ uses
 	//So we store the linux time we started the application, and then take a
 	//difference later on.
 	{$IFDEF LINUX}
-	var StartTime : timeb;
+	var StartTime : TDateTime;
 	{$ENDIF}
 
 //------------------------------------------------------------------------------
@@ -154,7 +154,7 @@ uses
 		{$ENDIF}
 		{$IFDEF LINUX}
 		//Set our Starttime for our uptime calculations.
-		ftime(StartTime);
+		StartTime := Now;
 		//These control ctrl c and stuff for linux
 		Signal(SIGINT,@TerminateApplication);
 		Signal(SIGTERM,@TerminateApplication);
@@ -196,23 +196,16 @@ uses
 //
 //------------------------------------------------------------------------------
 	function GetTick : Cardinal;
-	{$IFDEF LINUX}
-	var
-		NowTime : timeb;
-	begin
-		//Takes our "start time" and subtracts it from the current time to get an
-		//"uptime"
-		ftime(NowTime);
-		Result := (NowTime.time - StartTime.time) * 1000;
-		Result := Result + (NowTime.millitm - StartTime.millitm);
-	end;
+        begin
+        {$IFDEF LINUX}
+                Result := MilliSecondsBetween( Now() , StartTime );
 	{$ENDIF}
 	//timegettime() gets Window's "How long has the PC been on for?" counter
 	{$IFDEF MSWINDOWS}
-	begin
 		Result := timegettime();
+        {$ENDIF}
 	end;
-	{$ENDIF}{GetTick}
+	{GetTick}
 //----------------------------------------------------------------------------
 
 

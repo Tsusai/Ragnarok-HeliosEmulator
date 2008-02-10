@@ -69,15 +69,16 @@ compile for linux, at the same time*}
 //------------------------------------------------------------------------------
 	{$IFDEF MSWINDOWS}
 	{$R *.res}
-        //Link special resource file for x64
-        {$IFDEF WIN64}
-	   {$R Helios64.res}
-        {$ENDIF}
-        
-        //Console Related Units
-        CRTWrapper in 'Common\Console\CRTWrapper.pas',
-        WinConsole in 'Common\Console\WinCRT\WinConsole.pas',
-        Terminal in 'Common\Console\Terminal.pas',
+
+	//Link special resource file for x64
+	{$IFDEF WIN64}
+		{$R Helios64.res}
+	{$ENDIF}
+
+				//Console Related Units
+	CRTWrapper in 'Common\Console\CRTWrapper.pas',
+	WinConsole in 'Common\Console\WinCRT\WinConsole.pas',
+	Terminal in 'Common\Console\Terminal.pas',
 
 	//Login Server
 	LoginServer in 'Servers\Login\LoginServer.pas',
@@ -197,15 +198,15 @@ compile for linux, at the same time*}
 //                            Linux Definitions
 //------------------------------------------------------------------------------
 	{$IFDEF LINUX}
-        {$IFDEF FPC}
-        //Special Threads Unit.
-        cthreads,
-        {$ENDIF}
+	{$IFDEF FPC}
+	//Special Threads Unit.
+	cthreads,
+	{$ENDIF}
 	//Console Related Units
 	Terminal in 'Common/Console/Terminal.pas',
-	CRT in 'Common/Console/CRT.pas',
-	LinCRT in 'Common/Console/LinCRT/LinCRT.pas',
-	NCurses in 'Common/Console/LinCRT/NCurses.pas',
+	CRTWrapper in 'Common/Console/CRTWrapper.pas',
+	//LinCRT in 'Common/Console/LinCRT/LinCRT.pas',
+	//NCurses in 'Common/Console/LinCRT/NCurses.pas',
 
 	//Login Server
 	LoginServer in 'Servers/Login/LoginServer.pas',
@@ -349,9 +350,6 @@ begin
 	try
 		//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
 		Randomize;
-
-		//Setup our CRT controller
-		SetupCRT;
 
 		//Allow Helios to capture termination messages
 		SetupTerminationCapturing;

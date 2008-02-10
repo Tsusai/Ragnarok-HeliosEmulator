@@ -158,8 +158,6 @@ procedure TerminateApplication;
 begin
 	if MainProc.Loaded then
 	begin
-		//Kill the overrides for our visualizations
-		EndCRT;
 		//remove the hooks for Ctrl-C, etc
 		KillTerminationCapturing;
 		//Start shutting down the server
