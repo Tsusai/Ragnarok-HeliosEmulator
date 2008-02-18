@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 437 -
+[2008/02/18] RaX - Fixed query problems that prevented hp/sp from showing correctly.
+-
+
 - Rev 436 -
 [2008/02/17] RaX - Little bit of cleanup associated with the database changes.
  Added YML files to bin folder.

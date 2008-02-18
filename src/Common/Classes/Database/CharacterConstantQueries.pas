@@ -114,23 +114,17 @@ function TCharacterConstantQueries.GetMaxHP(
 	const ACharacter: TCharacter
 ) : LongWord;
 
-const
-	AQuery =
-		'SELECT :JobName FROM hp WHERE level=:Level;';
-
 var
 	ADataSet		: TZQuery;
 	AParam			: TParam;
+	AQuery			: String;
 begin
+
+	AQuery :=
+		'SELECT '+ACharacter.JobName+' FROM hp WHERE level=:Level;';
 	Result := 0;
 	ADataSet			:= TZQuery.Create(nil);
 	try
-		//JobName
-		AParam := ADataset.Params.CreateParam(ftString, 'JobName', ptInput);
-		AParam.AsString := ACharacter.JobName;
-		ADataSet.Params.AddParam(
-			AParam
-		);
 		//Level
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Level', ptInput);
 		AParam.AsInteger := ACharacter.BaseLV;
@@ -166,14 +160,14 @@ function TCharacterConstantQueries.GetMaxSP(
 	const ACharacter: TCharacter
 ) : LongWord;
 
-const
-	AQuery =
-		'SELECT :JobName FROM sp WHERE level=:Level;';
-
 var
 	ADataSet		: TZQuery;
 	AParam			: TParam;
+	AQuery			: String;
 begin
+
+	AQuery :=
+		'SELECT '+ACharacter.JobName+' FROM sp WHERE level=:Level;';
 	Result := 0;
 	ADataSet			:= TZQuery.Create(nil);
 	try
@@ -218,23 +212,17 @@ function TCharacterConstantQueries.GetMaxWeight(
 	const ACharacter: TCharacter
 ) : LongWord;
 
-const
-	AQuery =
-		'SELECT :JobName FROM weight WHERE level=:Level;';
-
 var
 	ADataSet		: TZQuery;
 	AParam			: TParam;
+	AQuery			: String;
 begin
+
+	AQuery :=
+		'SELECT '+ACharacter.JobName+' FROM weight WHERE level=:Level;';
 	Result := 0;
 	ADataSet			:= TZQuery.Create(nil);
 	try
-		//JobName
-		AParam := ADataset.Params.CreateParam(ftString, 'JobName', ptInput);
-		AParam.AsString := ACharacter.JobName;
-		ADataSet.Params.AddParam(
-			AParam
-		);
 		//Level
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Level', ptInput);
 		AParam.AsInteger := ACharacter.BaseLV;
@@ -271,23 +259,17 @@ function TCharacterConstantQueries.GetBaseEXPToNextLevel(
 	Level								: LongWord
 ) : LongWord;
 
-const
-	AQuery =
-		'SELECT :JobName FROM baseexperience WHERE level=:Level;';
-
 var
 	ADataSet		: TZQuery;
 	AParam			: TParam;
+	AQuery			: String;
 begin
+
+	AQuery :=
+		'SELECT '+ACharacter.JobName+' FROM baseexperience WHERE level=:Level;';
 	Result := 0;
 	ADataSet			:= TZQuery.Create(nil);
 	try
-		//JobName
-		AParam := ADataset.Params.CreateParam(ftString, 'JobName', ptInput);
-		AParam.AsString := ACharacter.JobName;
-		ADataSet.Params.AddParam(
-			AParam
-		);
 		//Level
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Level', ptInput);
 		AParam.AsInteger := Level;
@@ -324,23 +306,17 @@ function TCharacterConstantQueries.GetJobEXPToNextLevel(
 	Level								: LongWord
 ) : LongWord;
 
-const
-	AQuery =
-		'SELECT :JobName FROM jobexperience WHERE level=:Level;';
-
 var
 	ADataSet		: TZQuery;
 	AParam			: TParam;
+	AQuery			: String;
 begin
+
+	AQuery :=
+		'SELECT '+ACharacter.JobName+' FROM jobexperience WHERE level=:Level;';
 	Result := 0;
 	ADataSet			:= TZQuery.Create(nil);
 	try
-		//JobName
-		AParam := ADataset.Params.CreateParam(ftString, 'JobName', ptInput);
-		AParam.AsString := ACharacter.JobName;
-		ADataSet.Params.AddParam(
-			AParam
-		);
 		//Level
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Level', ptInput);
 		AParam.AsInteger := Level;
@@ -423,23 +399,17 @@ function TCharacterConstantQueries.GetSkillPoints(
 	Level								: LongWord
 ) : LongWord;
 
-const
-	AQuery =
-		'SELECT :JobName FROM skillpoints WHERE level=:Level;';
-
 var
 	ADataSet		: TZQuery;
 	AParam			: TParam;
+	AQuery			: String;
 begin
+
+	AQuery :=
+		'SELECT '+ACharacter.JobName+' FROM skillpoints WHERE level=:Level;';
 	Result := 0;
 	ADataSet			:= TZQuery.Create(nil);
 	try
-		//JobName
-		AParam := ADataset.Params.CreateParam(ftString, 'JobName', ptInput);
-		AParam.AsString := ACharacter.JobName;
-		ADataSet.Params.AddParam(
-			AParam
-		);
 		//Level
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Level', ptInput);
 		AParam.AsInteger := Level;
@@ -476,23 +446,16 @@ function TCharacterConstantQueries.GetJobBonus(
 	Level								: LongWord
 ) : StatArray;
 
-const
-	AQuery =
-		'SELECT :JobName FROM jobbonus WHERE level=:Level;';
-
 var
 	ADataSet		: TZQuery;
 	AParam			: TParam;
 	AStringList : TStringList;
+	AQuery			: String;
 begin
+	AQuery :=
+		'SELECT '+ACharacter.JobName+' FROM jobbonus WHERE level=:Level;';
 	ADataSet			:= TZQuery.Create(nil);
 	try
-		//JobName
-		AParam := ADataset.Params.CreateParam(ftString, 'JobName', ptInput);
-		AParam.AsString := ACharacter.JobName;
-		ADataSet.Params.AddParam(
-			AParam
-		);
 		//Level
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Level', ptInput);
 		AParam.AsInteger := Level;
