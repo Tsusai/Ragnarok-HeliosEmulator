@@ -9,25 +9,10 @@ Internet Direct Version 10 - www.IndyProject.org
  easier in older versions of Delphi with their
  installers.
 
-uMySQLClient, by Cristian Nicola - GNU Licensed, 
- we are using it under part 10 of the License
- which states...
- "10. If you wish to incorporate parts of the
-  Program into other free programs whose
-  distribution conditions are different, write to
-  the author to ask for permission."
- -We have written, have permission to use his
-  MySQL client libraries, and we also thank him
-  for providing us with a great, free, cross-
-  compatible alternative Borland's integrated
-  products (DBExpress).
- -Also MySQL allows us to use derivatives of 
-  their software (uMySQLClient) under the use
-  of their FLOSS Exceptions
-
-MSSQL Client Library routine loading, By Ed Lyk.
-  Ed Lyk 1997-08-27
-  elyk@sprynet.com
+ZeosLib - zeos.firmos.at
+ An open source database solution.
+ Under license of GNU General Public License (GPL),
+ GNU Library or Lesser General Public License (LGPL).
 
 List32, Copyright 2001, Gary Darby, Intellitech
  Systems Inc., www.DelphiForFun.org
