@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 436 -
+[2008/02/17] RaX - Little bit of cleanup associated with the database changes.
+ Added YML files to bin folder.
+-
+
 - Rev 435 -
 [2008/02/17] RaX - Swapped out database...largest commit ever. Everything has
  changed. We're now using ZeosLib as our database component. Thanks to them 

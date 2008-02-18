@@ -1,0 +1,1 @@
+These files are for use with symfony/propel. They allow you to generate databases in near any format.
