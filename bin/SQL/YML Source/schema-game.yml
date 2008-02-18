@@ -3,53 +3,53 @@ propel:
         id:
         account_id: integer
         name: varchar(24)
-        slot: { type: integer, required: true, default: 0 }
-        job_id: { type: integer, required: true, default: 0 }
-        base_level: { type: integer, required: true, default: 1 }
-        job_level: { type: integer, required: true, default: 1 }
-        base_exp: { type: integer, required: true, default: 0 }
-        job_exp: { type: integer, required: true, default: 0 }
-        zeny: { type: integer, required: true, default: 0 }
-        str: { type: integer, required: true, default: 1 }
-        agi: { type: integer, required: true, default: 1 }
-        vit: { type: integer, required: true, default: 1 }
-        int: { type: integer, required: true, default: 1 }
-        dex: { type: integer, required: true, default: 1 }
-        luk: { type: integer, required: true, default: 1 }
-        status_points: { type: integer, required: true, default: 0 }
-        skill_points: { type: integer, required: true, default: 0 }
-        max_hp: { type: integer, required: true, default: 0 }
-        max_sp: { type: integer, required: true, default: 0 }
-        current_hp: { type: integer, required: true, default: 0 }
-        current_sp: { type: integer, required: true, default: 0 }
-        hair_style: { type: integer, required: true, default: 0 }
-        hair_color: { type: integer, required: true, default: 0 }
-        clothes_color: { type: integer, required: true, default: 0 }
-        option: { type: integer, required: true, default: 0 }
-        inventory_id: { required: true, type: integer, foreignTable: Inventory, foreignReference: id, default: 0 }
-        storage_id: { required: true, type: integer, foreignTable: Inventory, foreignReference: id, default: 0 }
-        cart_inventory_id: { required: true, type: integer, foreignTable: Inventory, foreignReference: id, default: 0 }
-        righthand_item: { required: true, type: integer, foreignTable: Items, foreignReference: id, default: 0 }
-        lefthand_item: { required: true, type: integer, foreignTable: Items, foreignReference: id, default: 0 }
-        armor_item: { required: true, type: integer, foreignTable: Items, foreignReference: id, default: 0 }
-        garment_item: { required: true, type: integer, foreignTable: Items, foreignReference: id, default: 0 }
-        shoes_item: { required: true, type: integer, foreignTable: Items, foreignReference: id, default: 0 }
-        accessory1_item: { required: true, type: integer, foreignTable: Items, foreignReference: id, default: 0 }
-        accessory2_item: { required: true, type: integer, foreignTable: Items, foreignReference: id, default: 0 }
-        head_top_item: { required: true, type: integer, foreignTable: Items, foreignReference: id, default: 0 }
-        head_middle_item: { required: true, type: integer, foreignTable: Items, foreignReference: id, default: 0 }
-        head_bottom_item: { required: true, type: integer, foreignTable: Items, foreignReference: id, default: 0 }
-        last_map: { required: true, type: varchar, size=255, foreignTable: Maps, foreignReference: name }
+        slot: { required: true, type: integer, default: 0 }
+        job_id: { required: true, type: integer, default: 0 }
+        base_level: { required: true, type: integer, default: 0 }
+        job_level: { required: true, type: integer, default: 0 }
+        base_exp: { required: true, type: integer, default: 0 }
+        job_exp: { required: true, type: integer, default: 0 }
+        zeny: { required: true, type: integer, default: 0 }
+        str: { required: true, type: integer, default: 1 }
+        agi: { required: true, type: integer, default: 1 }
+        vit: { required: true, type: integer, default: 1 }
+        int: { required: true, type: integer, default: 1 }
+        dex: { required: true, type: integer, default: 1 }
+        luk: { required: true, type: integer, default: 1 }
+        status_points: { required: true, type: integer, default: 0 }
+        skill_points: { required: true, type: integer, default: 0 }
+        max_hp: { required: true, type: integer, default: 0 }
+        max_sp: { required: true, type: integer, default: 0 }
+        current_hp: { required: true, type: integer, default: 0 }
+        current_sp: { required: true, type: integer, default: 0 }
+        hair_style: { required: true, type: integer, default: 0 }
+        hair_color: { required: true, type: integer, default: 0 }
+        clothes_color: { required: true, type: integer, default: 0 }
+        option: { required: true, type: integer, default: 0 }
+        inventory_id: { required: true, type: integer, foreignTable: Inventory, foreignReference: id }
+        storage_id: { required: true, type: integer, foreignTable: Inventory, foreignReference: id }
+        cart_inventory_id: { required: true, type: integer, foreignTable: Inventory, foreignReference: id }
+        righthand_item: { required: true, type: integer, foreignTable: Items, foreignReference: id }
+        lefthand_item: { required: true, type: integer, foreignTable: Items, foreignReference: id }
+        armor_item: { required: true, type: integer, foreignTable: Items, foreignReference: id }
+        garment_item: { required: true, type: integer, foreignTable: Items, foreignReference: id }
+        shoes_item: { required: true, type: integer, foreignTable: Items, foreignReference: id }
+        accessory1_item: { required: true, type: integer, foreignTable: Items, foreignReference: id }
+        accessory2_item: { required: true, type: integer, foreignTable: Items, foreignReference: id }
+        head_top_item: { required: true, type: integer, foreignTable: Items, foreignReference: id }
+        head_middle_item: { required: true, type: integer, foreignTable: Items, foreignReference: id }
+        head_bottom_item: { required: true, type: integer, foreignTable: Items, foreignReference: id }
+        last_map: { required: true, type: varchar, size: 11 }
         last_map_x: { required: true, type: integer }
         last_map_y: { required: true, type: integer }
-        save_map: { required: true, type: varchar, size=255, foreignTable: Maps, foreignReference: name }
+        save_map: { required: true, type: varchar, size: 11 }
         save_map_x: { required: true, type: integer }
         save_map_y: { required: true, type: integer }
-        partner_id: { required: true, type: integer, foreignTable: Characters, foreignReference: id, default: 0 }
-        parent1_id: { required: true, type: integer, foreignTable: Characters, foreignReference: id, default: 0 }
-        parent2_id: { required: true, type: integer, foreignTable: Characters, foreignReference: id, default: 0 }
-        party_id: { required: false, type: integer, foreignTable: Parties, foreignReference: id, default: 0 }
-        guild_id: { required: false, type: integer, foreignTable: Guilds, foreignReference: id, default: 0 }
+        partner_id: { required: true, type: integer, foreignTable: Characters, foreignReference: id }
+        parent1_id: { required: true, type: integer, foreignTable: Characters, foreignReference: id }
+        parent2_id: { required: true, type: integer, foreignTable: Characters, foreignReference: id }
+        party_id: { required: false, type: integer, foreignTable: Parties, foreignReference: id }
+        guild_id: { required: false, type: integer, foreignTable: Guilds, foreignReference: id }
         is_online: { type: boolean, required: true, default: 0 }
 
     #Table to hold friendship information ( ingame: Friendlist )
