@@ -350,7 +350,7 @@ begin
 				begin
 					WriteBufferWord(0, $008d, OutBuffer);
 					WriteBufferWord(2, Length+9, OutBuffer);
-					WriteBufferLongWord(4, ACharacter.ID, OutBuffer);
+					WriteBufferLongWord(4, ACharacter.AccountID, OutBuffer);
 					WriteBufferString(8, Chat+#0, Length+1, OutBuffer);
 					Sendbuffer(APerson.ClientInfo, OutBuffer, Length+9);
 				end;
@@ -1034,7 +1034,7 @@ var
 	MapZoneID	: SmallInt;
 
 begin
-		MapZoneID := TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(MapName);
+		MapZoneID := TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.Map.GetZoneID(MapName);
 		if MapZoneID < 0 then
 		begin
 			Result := False;
@@ -1063,7 +1063,7 @@ begin
 				//<id>,<size>,<cid>,<mapnamesize>,<mapname>,<clientipsize>,<clientip>
 				WriteBufferWord(0, $2208, OutBuffer);
 				WriteBufferWord(2, Size, OutBuffer);
-				WriteBufferLongWord(4, ACharacter.CID, OutBuffer);
+				WriteBufferLongWord(4, ACharacter.ID, OutBuffer);
 				WriteBufferWord(8, X, OutBuffer);
 				WriteBufferWord(10, Y, OutBuffer);
 				WriteBufferWord(12, MapNameSize, OutBuffer);

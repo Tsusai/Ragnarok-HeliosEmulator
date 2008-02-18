@@ -2,20 +2,17 @@
 //Database			                                                           UNIT
 //------------------------------------------------------------------------------
 //	What it does-
-//			This class decides what database interface we use in Create. AnInterface
-//    refers to whatever database interface we use, whether it be MySQL, TEXT,
-//    MSSQL, whatever. Also, may, in the future, contain generic database
-//    routines as well. Such as simple string search routines, etc.
+//			This is the base database class, which all other database implementations
+//		are derived.
 //
 //	Changes -
-//		September 30th, 2006 - RaX - Created.
-//		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
+//		February 1st, 2008
 //
 //------------------------------------------------------------------------------
 unit Database;
 
 {$IFDEF FPC}
-{$MODE Delphi}
+	{$MODE Delphi}
 {$ENDIF}
 
 
@@ -24,12 +21,17 @@ interface
 
 uses
 	{RTL/VCL}
-	//none
 	{Project}
-	CommonDatabaseTemplate,
-	GameDatabaseTemplate,
-	StaticDatabaseTemplate
+	DatabaseOptions,
+	AccountQueries,
+	CharacterQueries,
+	FriendQueries,
+	MapQueries,
+	CharacterConstantQueries,
 	{3rd Party}
+	IdThread,
+	ZConnection,
+	ZSQLUpdate
 	;
 
 
@@ -39,19 +41,41 @@ type
 //TDatabase			                                                          CLASS
 //------------------------------------------------------------------------------
 	TDatabase = class(TObject)
+
+	protected
+		AccountConnection			: TZConnection;
+		GameConnection				: TZConnection;
+
 	public
-		CommonData    : TCommonDatabaseTemplate;
-		GameData      : TGameDatabaseTemplate;
-		StaticData    : TStaticDatabaseTemplate;
+		Options : TDatabaseOptions;
+
+		Account			: TAccountQueries;
+		Character		: TCharacterQueries;
+		Friend			: TFriendQueries;
+		Map					: TMapQueries;
+		CharacterConstant: TCharacterConstantQueries;
 
 		Constructor Create(
-									CommonDatabaseType    : Integer = -1;
-									GameDatabaseType      : Integer = -1;
-									StaticDatabaseType    : Integer = -1
+			ConnectOnCreate : Boolean = true
 		);
-		Destructor  Destroy();override;
+
+		Destructor  Destroy
+		(
+
+		);override;
 
 
+		Procedure Connect(
+
+		);
+
+		Procedure Disconnect(
+
+		);
+
+		Procedure LoadOptions(
+
+		);
 	end;
 //------------------------------------------------------------------------------
 
@@ -61,148 +85,179 @@ implementation
 
 uses
 	{RTL/VCL}
-	//none
+	SysUtils,
 	{Project}
-	DatabaseConstants,
-	Globals,
 	Main,
-	SQLiteCommonDatabase,
-	SQLiteGameDatabase,
-	SQLiteStaticDatabase
+	Globals
 	{3rd Party}
 	//none
 	;
 
 
-(*- Constructor ---------------------------------------------------------------*
-TDatabase.Create
---------------------------------------------------------------------------------
-Overview:
---
-	Figures out which database interface we're using.
-
-[2007/03/28] CR - TODO: Better description needed here!
-
---
-Pre:
-	TODO
-Post:
-	TODO
-
---
-Revisions:
---------------------------------------------------------------------------------
-(Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2006/09/30] RaX - Created.
-[2007/01/20] Tsusai - Added feedback boolean variable, in order to know if any
-	of the databases failed to connect.
-[2007/03/28] CR - Removed hints about unused local variables.  Reindented code,
-	wrapping comments and long lines.
-*-----------------------------------------------------------------------------*)
+//------------------------------------------------------------------------------
+//Create			                                                     CONSTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does-
+//			Builds our object.
+//
+//	Changes -
+//		February 1st, 2008 - RaX - Created
+//
+//------------------------------------------------------------------------------
 Constructor TDatabase.Create(
-		CommonDatabaseType    : Integer = -1;
-		GameDatabaseType      : Integer = -1;
-		StaticDatabaseType    : Integer = -1
-	);
-{[2007/03/28] CR - Unused variable declarations - commented out rev 206
-Var
-	CommonOK : Boolean;
-	GameOK   : Boolean;
-	StaticOK : Boolean;
-}
+	ConnectOnCreate : Boolean = true
+);
 Begin
 	Inherited Create;
+	LoadOptions;
+	AccountConnection						:= TZConnection.Create(nil);
+	AccountConnection.Protocol	:= Options.AccountConfig.Protocol;
+	AccountConnection.HostName	:= Options.AccountConfig.Host;
+	AccountConnection.Port			:= Options.AccountConfig.Port;
+	AccountConnection.Database	:= Options.AccountConfig.Database;
+	AccountConnection.User			:= Options.AccountConfig.User;
+	AccountConnection.Password	:= Options.AccountConfig.Pass;
 
-	//Checks to see if the DatabaseType variable has been specified, if not we...
-	//Common
-	if (CommonDatabaseType = -1) then
-	begin//set it to the value of our config.
-		CommonDatabaseType := MainProc.DatabaseOptions.CommonType;
-	end;
-	//Game
-	if (GameDatabaseType = -1) then
-	begin//set it to the value of our config.
-		GameDatabaseType := MainProc.DatabaseOptions.GameType;
-	end;
-	//Static
-	if (StaticDatabaseType = -1) then
-	begin//set it to the value of our config.
-		StaticDatabaseType := MainProc.DatabaseOptions.StaticType;
-	end;
+	GameConnection							:= TZConnection.Create(nil);
+	GameConnection.Protocol			:= Options.GameConfig.Protocol;
+	GameConnection.HostName			:= Options.GameConfig.Host;
+	GameConnection.Port					:= Options.GameConfig.Port;
+	GameConnection.Database			:= Options.GameConfig.Database;
+	GameConnection.User					:= Options.GameConfig.User;
+	GameConnection.Password			:= Options.GameConfig.Pass;
 
-	//Here's where we figure out which database interfaces we want to use.
-
-	//Common
-	case CommonDatabaseType of
-
-	SQLITE ://1    Helios Text Database
-		begin
-			CommonData := TSQLiteCommonDatabase.Create(self);
-		end;
-
-	else
-		begin //anything else
-			Console.WriteLn(
-				'COMMON DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!'
-			);
-			Console.WriteLn('     See ServerOptions.ini for configuration options.');
-		end;
-	end;
-
-	//Game
-	case GameDatabaseType of
-
-	SQLITE://1
-		begin
-			GameData := TSQLiteGameDatabase.Create(self);
-		end;
-
-	else
-		begin //anything else
-			Console.WriteLn(
-				'GAME DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!'
-			);
-			Console.WriteLn('     See ServerOptions.ini for configuration options.');
-		end;
-	end;
-
-	//Static
-	case StaticDatabaseType of
-
-	SQLITE://1
-		begin
-			StaticData := TSQLiteStaticDatabase.Create(self);
-		end;
-
-	else
-		begin //anything else
-			Console.WriteLn(
-				'STATIC DATABASE NOT CORRECTLY CONFIGURED, HELIOS WILL NOT FUNCTION!!!'
-			);
-			Console.WriteLn('     See ServerOptions.ini for configuration options.');
-		end;
-	end;//case StaticDatabaseType
-
-End; (* Cons TDatabase.Create
-*-----------------------------------------------------------------------------*)
+	Account			:= TAccountQueries.Create(AccountConnection);
+	Character		:= TCharacterQueries.Create(GameConnection);
+	Friend			:= TFriendQueries.Create(GameConnection);
+	Map					:= TMapQueries.Create(GameConnection);
+	CharacterConstant := TCharacterConstantQueries.Create(GameConnection);
+	if ConnectOnCreate then
+	begin
+		Connect();
+  end;
+End;{Create}
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//TDatabase.Destroy()			                                               DESTRUCTOR
+//Destroy							                                               DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Frees up our custom properties.
 //
 //	Changes -
-//		September 30th, 2006 - RaX - Created.
+//		February 1st, 2008 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Destructor TDatabase.Destroy();
+Destructor TDatabase.Destroy(
+
+);
 begin
-	CommonData.Free;
-	GameData.Free;
-	StaticData.Free;
+
+	Disconnect();
+
+	Account.Free;
+	Character.Free;
+	Friend.Free;
+	Map.Free;
+	CharacterConstant.Free;
+	
+	AccountConnection.Free;
+	GameConnection.Free;
+
+	Options.Save;
+	Options.Free;
+
 	Inherited;
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Connect							                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Connects to the database.
+//
+//	Changes -
+//		February 1st, 2008 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Procedure TDatabase.Connect(
+
+);
+begin
+	try
+		if NOT AccountConnection.Connected then
+		begin
+			AccountConnection.Connect();
+		end;
+	except
+		Console.Message('Could not connect to '+AccountConnection.Protocol+
+			' database "'+AccountConnection.Database+'" on server at "'+
+			AccountConnection.HostName+':'+IntToStr(AccountConnection.Port)+'".',
+			'Database', MS_ERROR);
+		AccountConnection.Disconnect;
+	end;
+
+	try
+		if NOT GameConnection.Connected then
+		begin
+			GameConnection.Connect();
+		end;
+	except
+		Console.Message('Could not connect to '+AccountConnection.Protocol+
+			' database "'+AccountConnection.Database+'" on server at "'+
+			AccountConnection.HostName+':'+IntToStr(AccountConnection.Port)+'".',
+			'Database', MS_ERROR);
+		GameConnection.Disconnect;
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Disconnect					                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Disconnects from the database.
+//
+//	Changes -
+//		February 1st, 2008 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Procedure TDatabase.Disconnect(
+
+);
+begin
+	if AccountConnection.Connected then
+	begin
+		AccountConnection.Disconnect();
+	end;
+
+	if GameConnection.Connected then
+	begin
+		GameConnection.Disconnect();
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//LoadDatabaseOptions                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Creates and Loads the inifile.
+//
+//	Changes -
+//		March 27th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+Procedure TDatabase.LoadOptions;
+begin
+	Options    := TDatabaseOptions.Create(MainProc.Options.ConfigDirectory+'/Database.ini');
+
+	Options.Load;
+end;{LoadDatabaseOptions}
 //------------------------------------------------------------------------------
 
 end.

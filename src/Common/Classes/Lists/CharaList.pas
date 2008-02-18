@@ -45,7 +45,7 @@ type
 		Procedure Delete(Index : Integer);
 		Procedure Clear();
 
-		Function IndexOf(const CID : LongWord) : Integer;
+		Function IndexOf(const ID : LongWord) : Integer;
 		Function IndexOfAID(const AID : LongWord) : Integer;
 	end;
 //------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ end;{Delete}
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-function TCharacterList.IndexOf(const CID: LongWord): Integer;
+function TCharacterList.IndexOf(const ID: LongWord): Integer;
 var
 	Index : Integer;
 begin
@@ -153,7 +153,7 @@ begin
 	Result := -1;
 	while (Index >= 0) do
 	begin
-		if CID = Items[Index].CID then
+		if ID = Items[Index].ID then
 		begin
 			Result := Index;
 			Exit;

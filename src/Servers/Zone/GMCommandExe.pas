@@ -108,7 +108,7 @@ begin
 	if (Length(Arguments) >= 2) then
 	begin
 
-		MapZoneID := TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.StaticData.GetMapZoneID(Arguments[0]);
+		MapZoneID := TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Map.GetZoneID(Arguments[0]);
 
 		//Map not found
 		if MapZoneID < 0 then

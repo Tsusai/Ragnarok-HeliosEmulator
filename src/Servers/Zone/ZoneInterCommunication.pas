@@ -333,7 +333,7 @@ begin
 	Size := StrLen(PChar(Whisper));
 	WriteBufferWord(0,$2210,OutBuffer);
 	WriteBufferWord(2,Size + 56,OutBuffer);
-	WriteBufferLongWord(4,AChara.CID,OutBuffer);
+	WriteBufferLongWord(4,AChara.ID,OutBuffer);
 	WriteBufferString(8,AChara.Name, 24, OutBuffer);
 	WriteBufferString(32,TargetName, 24, OutBuffer);
 	WriteBufferString(56,Whisper,Size,OutBuffer);

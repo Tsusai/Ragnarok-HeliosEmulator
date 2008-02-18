@@ -454,6 +454,7 @@ Procedure TInterServer.LoadOptions;
 begin
 	Options    := TInterOptions.Create(MainProc.Options.ConfigDirectory+'/Inter.ini');
 	Options.Load;
+	Options.Save;
 end;{LoadOptions}
 //------------------------------------------------------------------------------
 

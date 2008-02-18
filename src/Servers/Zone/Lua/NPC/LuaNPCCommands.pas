@@ -423,7 +423,7 @@ end;
 function script_getcharavar(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
-	Value : Integer;
+	Value : String;
 	StrValue : String;
 	Key : string;
 	KeyConst : Integer;
@@ -580,11 +580,11 @@ begin
 					end;
 
 					VAR_CHARACTERID: begin
-						lua_pushinteger(ALua, AChara.CID);
+						lua_pushinteger(ALua, AChara.ID);
 					end;
 
 					VAR_ACCOUNTID: begin
-						lua_pushinteger(ALua, AChara.ID);
+						lua_pushinteger(ALua, AChara.AccountID);
 					end;
 
 					VAR_MAPNAME: begin
@@ -593,7 +593,7 @@ begin
 
 					VAR_ACCOUNTNAME: begin
 						// sigh.. i'm not sure why but it doesnt work directly.
-						StrValue := TClientLink(AChara.ClientInfo.Data).AccountLink.Username;
+						StrValue := TClientLink(AChara.ClientInfo.Data).AccountLink.Name;
 						lua_pushstring(ALua, PChar(StrValue));
 					end;
 
@@ -611,8 +611,8 @@ begin
 				end;
 			end else
 			begin
-					Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.GetCharaVariable(AChara,Key);
-					lua_pushinteger(ALua, Value);
+					Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.GetVariable(AChara,Key);
+					lua_pushstring(ALua, PChar(Value));
 			end;
 		end;
 	end else
@@ -626,7 +626,7 @@ end;
 function script_setcharavar(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
-	Value : integer;
+	Value : String;
 	Key : string;
 begin
 	//Returns 0 results
@@ -638,8 +638,8 @@ begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
 			Key := lua_tostring(ALua, 1);
-			Value := lua_tointeger(ALua, 2);
-			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.SetCharaVariable(AChara,Key,Value);
+			Value := lua_tostring(ALua, 2);
+			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.SetVariable(AChara,Key,Value);
 		end;
 	end else
 	begin

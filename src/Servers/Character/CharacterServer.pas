@@ -281,7 +281,7 @@ begin
 		WriteBufferByte(Offset + 106, 0,ReplyBuffer);
 	end;
 	with ACharacter do begin
-		WriteBufferLongWord(Offset +  0, CID,ReplyBuffer);
+		WriteBufferLongWord(Offset +  0, ID,ReplyBuffer);
 		WriteBufferLongWord(Offset +  4, BaseEXP,ReplyBuffer);
 		WriteBufferLongWord(Offset +  8, Zeny,ReplyBuffer);
 		WriteBufferLongWord(Offset + 12, JobEXP,ReplyBuffer);
@@ -390,7 +390,7 @@ end;
 procedure TCharacterServer.OnConnect(AConnection: TIdContext);
 begin
 
-end;{LoginServerExecute}
+end;{OnConnect}
 //------------------------------------------------------------------------------
 
 
@@ -494,82 +494,80 @@ begin
 	end;
 
 	AccountID := BufferReadLongWord(2, ABuffer);
-	AnAccount := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AClient, AccountID);
+	AnAccount := TAccount.Create(AClient);
+	AnAccount.ID := AccountID;
+	TThreadLink(AClient.Data).DatabaseLink.Account.Load(AnAccount);
 
-	if Assigned(AnAccount) then
+	if AnAccount.ID = AccountID then
 	begin
-		if AnAccount.ID = AccountID then
+		if  (AnAccount.LoginKey[1] = BufferReadLongWord(6,  ABuffer)) and (AnAccount.LoginKey[1] > 0) and
+			(AnAccount.LoginKey[2] = BufferReadLongWord(10, ABuffer)) and (AnAccount.LoginKey[2] > 0) then
 		begin
-			if  (AnAccount.LoginKey[1] = BufferReadLongWord(6,  ABuffer)) and (AnAccount.LoginKey[1] > 0) and
-				(AnAccount.LoginKey[2] = BufferReadLongWord(10, ABuffer)) and (AnAccount.LoginKey[2] > 0) then
+			//LINK the account to the client connection for the other procedures
+			TClientLink(AClient.Data).AccountLink := AnAccount;
+			SendPadding(AClient); //Legacy padding
+			ACharaList := TCharacterList.Create(TRUE);
+			TThreadLink(AClient.Data).DatabaseLink.Character.LoadByAccount(ACharaList, AnAccount);
+
+			Idx := fAccountList.IndexOf(AnAccount.ID);
+			if Idx > -1 then
 			begin
-				//LINK the account to the client connection for the other procedures
-				TClientLink(AClient.Data).AccountLink := AnAccount;
-				SendPadding(AClient); //Legacy padding
-
-				ACharaList := TThreadLink(AClient.Data).DatabaseLink.GameData.GetAccountCharas(AClient, AccountID);
-
-				Idx := fAccountList.IndexOf(AnAccount.ID);
-				if Idx > -1 then
-				begin
-					AccountInfo := fAccountList.Objects[idx] as TCharAccountInfo;
-					//Make sure no dup login via skip server.
-					if (not AccountInfo.Transfering)or(AccountInfo.InGame) then
-					begin   //Reject!
-						WriteBufferWord(0, $006a, ReplyBuffer);
-						WriteBufferByte(2, 03, ReplyBuffer);
-						SendBuffer(AClient,ReplyBuffer,GetPacketLength($006a));
-					end else
-					begin
-						AccountInfo.ClientInfo := AClient;
-						TClientLink(AClient.Data).AccountInfo := AccountInfo;
-					end;
+				AccountInfo := fAccountList.Objects[idx] as TCharAccountInfo;
+				//Make sure no dup login via skip server.
+				if (not AccountInfo.Transfering)or(AccountInfo.InGame) then
+				begin   //Reject!
+					WriteBufferWord(0, $006a, ReplyBuffer);
+					WriteBufferByte(2, 03, ReplyBuffer);
+					SendBuffer(AClient,ReplyBuffer,GetPacketLength($006a));
 				end else
 				begin
-					AccountInfo := TCharAccountInfo.Create(AnAccount.ID);
 					AccountInfo.ClientInfo := AClient;
 					TClientLink(AClient.Data).AccountInfo := AccountInfo;
-					AccountInfo.Transfering := True;
-					fAccountList.AddObject(AnAccount.ID, AccountInfo);
-					SendAccountLogon(CharaToLoginClient, AccountInfo, Self);
 				end;
-
-				//Ah..lets make sure again
-				if (AccountInfo.Transfering)or(not AccountInfo.InGame) then
-				begin
-					for Index := ACharaList.Count-1 downto 0 do
-					begin
-						ACharacter := ACharaList.Items[Index];
-						AnAccount.CharaID[ACharacter.CharaNum] := ACharacter.CID;
-						with ACharacter do
-						begin
-							BaseIndex := Ver+(Count*CharacterDataSize);
-							WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,BaseIndex);
-							Inc(Count);
-						end;
-						ACharacter.Free;
-						ACharaList.Delete(Index);
-					end;
-					ACharaList.Free;
-					//size is (24 + (character count * Character data size))
-					PacketSize := (Ver + (Count * CharacterDataSize));
-					WriteBufferWord(0,$006b,ReplyBuffer); //header
-					WriteBufferWord(2,PacketSize,ReplyBuffer);
-					SendBuffer(AClient,ReplyBuffer,PacketSize);
-				end;
-				AccountInfo.Transfering := False;
 			end else
 			begin
-				WriteBufferWord(0, $0081, ReplyBuffer);
-				WriteBufferByte(2, 01, ReplyBuffer);
-				SendBuffer(AClient,ReplyBuffer,GetPacketLength($0081));
-
-				Console.Message(
-					'Connecting RO client from '+
-					AClient.Binding.PeerIP +
-					' did not pass key validation.', 'Character Server', MS_WARNING
-				);
+				AccountInfo := TCharAccountInfo.Create(AnAccount.ID);
+				AccountInfo.ClientInfo := AClient;
+				TClientLink(AClient.Data).AccountInfo := AccountInfo;
+				AccountInfo.Transfering := True;
+				fAccountList.AddObject(AnAccount.ID, AccountInfo);
+				SendAccountLogon(CharaToLoginClient, AccountInfo, Self);
 			end;
+
+			//Ah..lets make sure again
+			if (AccountInfo.Transfering)or(not AccountInfo.InGame) then
+			begin
+				for Index := ACharaList.Count-1 downto 0 do
+				begin
+					ACharacter := ACharaList.Items[Index];
+					AnAccount.CharaID[ACharacter.CharaNum] := ACharacter.ID;
+					with ACharacter do
+					begin
+						BaseIndex := Ver+(Count*CharacterDataSize);
+						WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,BaseIndex);
+						Inc(Count);
+					end;
+					ACharaList.Delete(Index);
+				end;
+				//size is (24 + (character count * Character data size))
+				PacketSize := (Ver + (Count * CharacterDataSize));
+				WriteBufferWord(0,$006b,ReplyBuffer); //header
+				WriteBufferWord(2,PacketSize,ReplyBuffer);
+				SendBuffer(AClient,ReplyBuffer,PacketSize);
+			end;
+			ACharaList.Free;
+			AccountInfo.Transfering := False;
+		end else
+		begin
+			WriteBufferWord(0, $0081, ReplyBuffer);
+			WriteBufferByte(2, 01, ReplyBuffer);
+			SendBuffer(AClient,ReplyBuffer,GetPacketLength($0081));
+
+			Console.Message(
+				'Connecting RO client from '+
+				AClient.Binding.PeerIP +
+				' did not pass key validation.', 'Character Server', MS_WARNING
+			);
 		end;
 	end;
 end; {SendCharas}
@@ -599,7 +597,7 @@ var
 	ACharacter : TCharacter;
 	OutBuffer : TBuffer;
 	ZServerInfo : TZoneServerInfo;
-	ZoneID : byte;
+	ZoneID : Integer;
 	idx : integer;
 
 begin
@@ -612,31 +610,34 @@ begin
 	CharaIdx := BufferReadByte(2, ABuffer);
 	if AnAccount.CharaID[CharaIdx] <> 0 then
 	begin
-			ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(AClient, AnAccount.CharaID[CharaIdx]);
+			ACharacter := TCharacter.Create(AClient);
+			ACharacter.ID := AnAccount.CharaID[CharaIdx];
+			TThreadLink(AClient.Data).DatabaseLink.Character.Load(ACharacter);
 			//ACharacter.ClientVersion := -1; //Need to either save, or make sure its cleared
 																			//later on
-			if TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapCannotSave(ACharacter.Map) then
+
+			if TThreadLink(AClient.Data).DatabaseLink.Map.CantSave(ACharacter.Map) then
 			begin
 				ACharacter.Map := ACharacter.SaveMap;
 				ACharacter.Position := ACharacter.SavePoint;
 			end;
 
 			//get zone ID for the map.
-			ZoneID := TThreadLink(AClient.Data).DatabaseLink.StaticData.GetMapZoneID(ACharacter.Map);
+			ZoneID := TThreadLink(AClient.Data).DatabaseLink.Map.GetZoneID(ACharacter.Map);
 			//get the zone info from that
 
 			idx := fZoneServerList.IndexOf(ZoneID);
 			if idx > -1 then
 			begin
-				TThreadLink(AClient.Data).DatabaseLink.GameData.SaveChara(ACharacter);
+				TThreadLink(AClient.Data).DatabaseLink.Character.Save(ACharacter);
 
 
-				TClientLink(AClient.Data).AccountInfo.CharacterID := ACharacter.CID;
+				TClientLink(AClient.Data).AccountInfo.CharacterID := ACharacter.ID;
 				TClientLink(AClient.Data).Transfering := True;
 				ZServerInfo := TZoneServerInfo(fZoneServerList.Objects[idx]);
 
 				WriteBufferWord(0, $0071, OutBuffer);
-				WriteBufferLongWord(2, ACharacter.CID, OutBuffer);
+				WriteBufferLongWord(2, ACharacter.ID, OutBuffer);
 				WriteBufferString(6, ACharacter.Map + '.rsw', 16, OutBuffer);
 				WriteBufferLongWord(22,
 					ZServerInfo.Address(AClient.Binding.PeerIP
@@ -709,8 +710,11 @@ begin
 	HairStyle   := BufferReadByte(35,ABuffer);
 
 	TotalStatPt := 0;
-		//Name Check.
-		if NOT TThreadLink(AClient.Data).DatabaseLink.GameData.CharaExists(CharaName) then
+	//Name Check.
+	ACharacter := TCharacter.Create(AClient);
+	try
+		ACharacter.Name := CharaName;
+		if NOT TThreadLink(AClient.Data).DatabaseLink.Character.Exists(ACharacter) then
 		begin
 			//Stat Point check.
 			for idx := 0 to 5 do begin
@@ -732,7 +736,8 @@ begin
 			end;
 
 			//Slot Check.
-			if TThreadLink(AClient.Data).DatabaseLink.GameData.CharaExists(Account.ID, SlotNum) then
+			ACharacter.CharaNum := SlotNum;
+			if TThreadLink(AClient.Data).DatabaseLink.Character.Exists(ACharacter) then
 			begin
 				CreateCharaError(INVALIDMISC);
 				Validated := FALSE;
@@ -743,73 +748,74 @@ begin
 			begin
 				//Validated...Procede with creation
 				//Set a record in Database for our new character
-				if TThreadLink(AClient.Data).DatabaseLink.GameData.CreateChara(AClient,
-					ACharacter,Account.ID,CharaName,SlotNum) then
-				begin
-					//All other info is already saved
-					ACharacter.BaseLV         := 1;
-					ACharacter.JobLV          := 1;
-					ACharacter.JID            := 0;
-					ACharacter.Zeny           := Options.DefaultZeny;
-					ACharacter.ParamBase[STR] := StatPoints[0];
-					ACharacter.ParamBase[AGI] := StatPoints[1];
-					ACharacter.ParamBase[VIT] := StatPoints[2];
-					ACharacter.ParamBase[INT] := StatPoints[3];
-					ACharacter.ParamBase[DEX] := StatPoints[4];
-					ACharacter.ParamBase[LUK] := StatPoints[5];
-					ACharacter.CalcMaxHP;
-					ACharacter.CalcMaxSP;
-					ACharacter.CalcSpeed;
-					ACharacter.CalcMaxWeight;
-					ACharacter.CalcASpeed;
-					ACharacter.HP             := ACharacter.MaxHP;
-					ACharacter.SP             := ACharacter.MaxSP;
-					ACharacter.StatusPts      := 0;
-					ACharacter.SkillPts       := 0;
-					ACharacter.Option         := 0;
-					ACharacter.Karma          := 0;
-					ACharacter.Manner         := 0;
-					ACharacter.PartyID        := 0;
-					ACharacter.GuildID        := 0;
-					ACharacter.PetID          := 0;
-					ACharacter.Hair           := HairStyle;
-					ACharacter.HairColor      := HairColor;
-					ACharacter.ClothesColor   := 0;
+				ACharacter.AccountID := Account.ID;
+				TThreadLink(AClient.Data).DatabaseLink.Character.New(ACharacter);
+				TThreadLink(AClient.Data).DatabaseLink.Character.Load(ACharacter);
+				//All other info is already saved
+				ACharacter.BaseLV         := 1;
+				ACharacter.JobLV          := 1;
+				ACharacter.JID            := 0;
+				ACharacter.Zeny           := Options.DefaultZeny;
+				ACharacter.ParamBase[STR] := StatPoints[0];
+				ACharacter.ParamBase[AGI] := StatPoints[1];
+				ACharacter.ParamBase[VIT] := StatPoints[2];
+				ACharacter.ParamBase[INT] := StatPoints[3];
+				ACharacter.ParamBase[DEX] := StatPoints[4];
+				ACharacter.ParamBase[LUK] := StatPoints[5];
+				ACharacter.CalcMaxHP;
+				ACharacter.CalcMaxSP;
+				ACharacter.CalcSpeed;
+				ACharacter.CalcMaxWeight;
+				ACharacter.CalcASpeed;
+				ACharacter.HP             := ACharacter.MaxHP;
+				ACharacter.SP             := ACharacter.MaxSP;
+				ACharacter.StatusPts      := 0;
+				ACharacter.SkillPts       := 0;
+				ACharacter.Option         := 0;
+				ACharacter.Karma          := 0;
+				ACharacter.Manner         := 0;
+				ACharacter.PartyID        := 0;
+				ACharacter.GuildID        := 0;
+				ACharacter.PetID          := 0;
+				ACharacter.Hair           := HairStyle;
+				ACharacter.HairColor      := HairColor;
+				ACharacter.ClothesColor   := 0;
 
-					ACharacter.RightHand      := Options.DefaultRightHand;
-					ACharacter.LeftHand       := Options.DefaultLeftHand;
-					ACharacter.Armor          := Options.DefaultArmor;
-					ACharacter.Garment        := Options.DefaultGarment;
-					ACharacter.Shoes          := Options.DefaultShoes;
-					ACharacter.Accessory1     := Options.DefaultAccessory1;
-					ACharacter.Accessory2     := Options.DefaultAccessory2;
-					ACharacter.HeadTop        := Options.DefaultHeadTop;
-					ACharacter.HeadMid        := Options.DefaultHeadMid;
-					ACharacter.HeadBottom     := Options.DefaultHeadLow;
-					ACharacter.Map            := Options.DefaultMap;
-					ACharacter.Position       := Point(Options.DefaultPoint.X,Options.DefaultPoint.Y);
-					ACharacter.SaveMap        := Options.DefaultMap;
-					ACharacter.SavePoint      := Point(Options.DefaultPoint.X,Options.DefaultPoint.Y);
-					ACharacter.PartnerID      := 0;
-					ACharacter.ParentID1      := 0;
-					ACharacter.ParentID2      := 0;
-					ACharacter.BabyID         := 0;
-					ACharacter.Online         := 0;
-					ACharacter.HomunID        := 0;
+				ACharacter.RightHand      := Options.DefaultRightHand;
+				ACharacter.LeftHand       := Options.DefaultLeftHand;
+				ACharacter.Armor          := Options.DefaultArmor;
+				ACharacter.Garment        := Options.DefaultGarment;
+				ACharacter.Shoes          := Options.DefaultShoes;
+				ACharacter.Accessory1     := Options.DefaultAccessory1;
+				ACharacter.Accessory2     := Options.DefaultAccessory2;
+				ACharacter.HeadTop        := Options.DefaultHeadTop;
+				ACharacter.HeadMid        := Options.DefaultHeadMid;
+				ACharacter.HeadBottom     := Options.DefaultHeadLow;
+				ACharacter.Map            := Options.DefaultMap;
+				ACharacter.Position       := Point(Options.DefaultPoint.X,Options.DefaultPoint.Y);
+				ACharacter.SaveMap        := Options.DefaultMap;
+				ACharacter.SavePoint      := Point(Options.DefaultPoint.X,Options.DefaultPoint.Y);
+				ACharacter.PartnerID      := 0;
+				ACharacter.ParentID1      := 0;
+				ACharacter.ParentID2      := 0;
+				ACharacter.BabyID         := 0;
+				ACharacter.Online         := 0;
+				ACharacter.HomunID        := 0;
 
-					//INSERT ANY OTHER CREATION CHANGES HERE!
-					TThreadLink(AClient.Data).DatabaseLink.GameData.SaveChara(ACharacter);
-					Account.CharaID[ACharacter.CharaNum] := ACharacter.CID;
-					WriteBufferWord(0, $006d,ReplyBuffer);
-					Size := WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,2);
-					SendBuffer(AClient,ReplyBuffer,Size+2);
-					ACharacter.Free;
-				end;
+				//INSERT ANY OTHER CREATION CHANGES HERE!
+				TThreadLink(AClient.Data).DatabaseLink.Character.Save(ACharacter);
+				Account.CharaID[ACharacter.CharaNum] := ACharacter.ID;
+				WriteBufferWord(0, $006d,ReplyBuffer);
+				Size := WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,2);
+				SendBuffer(AClient,ReplyBuffer,Size+2);
 			end;
 		end else
 		begin
 			CreateCharaError(INVALIDNAME);
 		end;
+  finally
+		ACharacter.Free;
+  end;
 end;{CreateChara}
 //------------------------------------------------------------------------------
 
@@ -846,19 +852,19 @@ begin
 	CharacterID := BufferReadLongWord(2,ABuffer);
 	EmailOrID := BufferReadString(6,40,ABuffer);
 	AnAccount := TClientLink(AClient.Data).AccountLink;
-		ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(AClient, CharacterID);
-		if Assigned(ACharacter) then
+	ACharacter := TCharacter.Create(AClient);
+	try
+		ACharacter.ID := CharacterID;
+		TThreadLink(AClient.Data).DatabaseLink.Character.Load(ACharacter);
+		if AnAccount.EMail = EmailOrID then
 		begin
-			if AnAccount.EMail = EmailOrID then
-			begin
-				if TThreadLink(AClient.Data).DatabaseLink.GameData.DeleteChara(ACharacter) then
-				begin
-					WriteBufferWord(0, $006f, ReplyBuffer);
-					SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));
-				end else DeleteCharaError(DELETEBADCHAR);
-			end else DeleteCharaError(DELETEBADEMAIL);
-		end else DeleteCharaError(DELETEBADCHAR);
+			TThreadLink(AClient.Data).DatabaseLink.Character.Delete(ACharacter);
+			WriteBufferWord(0, $006f, ReplyBuffer);
+			SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));
+		end else DeleteCharaError(DELETEBADEMAIL);
+  finally
 		ACharacter.Free;
+	end;
 end;{DeleteChara}
 //------------------------------------------------------------------------------
 
@@ -1184,6 +1190,7 @@ begin
 	Options    := TCharaOptions.Create(MainProc.Options.ConfigDirectory+'/Character.ini');
 
 	Options.Load;
+	Options.Save;
 end;{LoadOptions}
 //------------------------------------------------------------------------------
 

@@ -239,7 +239,7 @@ uses
 	begin
 		FillChar(OutBuffer, GetPacketLength($2108), 0);
 		WriteBufferWord(0,$2108,OutBuffer);
-		WriteBufferLongWord(2, AChara.ID, OutBuffer);
+		WriteBufferLongWord(2, AChara.AccountID, OutBuffer);
 		WriteBufferWord(6, MainProc.ZoneServer.Options.ID, OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2108));
 	end;
@@ -255,7 +255,7 @@ uses
 	begin
 		FillChar(OutBuffer, GetPacketLength($2109), 0);
 		WriteBufferWord(0,$2109,OutBuffer);
-		WriteBufferLongWord(2, AChara.ID, OutBuffer);
+		WriteBufferLongWord(2, AChara.AccountID, OutBuffer);
 		WriteBufferByte(6, Action, OutBuffer);
 		SendBuffer(AClient,OutBuffer,GetPacketLength($2109));
 	end;

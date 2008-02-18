@@ -414,26 +414,25 @@ begin
 					//At least 2 parameters required
 					if CommandSeparator.Count >= 2 then
 					begin
-						ACharacter := GameData.LoadChara(AClient, CommandSeparator[1]);
-						if ACharacter <> nil then
+						ACharacter := TCharacter.Create(AClient);
+						ACharacter.Name := CommandSeparator[1];
+						Character.Load(ACharacter);
+						ZoneID := Map.GetZoneID(ACharacter.Map);
+						Index := -1;
+						for LoopIndex := (MainProc.InterServer.ClientList.Count - 1) downto 0 do
 						begin
-							ZoneID := StaticData.GetMapZoneID(ACharacter.Map);
-							Index := -1;
-							for LoopIndex := (MainProc.InterServer.ClientList.Count - 1) downto 0 do
+							ZoneLink := MainProc.InterServer.ZoneServerLink[LoopIndex];
+							if (ZoneLink <> NIL) AND
+							(ZoneLink.Info.ZoneID = Cardinal(ZoneID)) then
 							begin
-								ZoneLink := MainProc.InterServer.ZoneServerLink[LoopIndex];
-								if (ZoneLink <> NIL) AND
-								(ZoneLink.Info.ZoneID = Cardinal(ZoneID)) then
-								begin
-									Index := LoopIndex;
-									Break;
-								end;
+								Index := LoopIndex;
+								Break;
 							end;
-							if Index > -1 then
-							begin
-								//Same thing, but extra 2 parameter to store target character
-								InterSendGMCommandToZone(MainProc.InterServer.ClientList[Index], GMID, CharaID, AZoneID, CommandSeparator, ACharacter.ID, ACharacter.CID);
-							end;
+						end;
+						if Index > -1 then
+						begin
+							//Same thing, but extra 2 parameter to store target character
+							InterSendGMCommandToZone(MainProc.InterServer.ClientList[Index], GMID, CharaID, AZoneID, CommandSeparator, ACharacter.AccountID, ACharacter.ID);
 						end else
 						begin
 							Error.Add('Character ''' + CommandSeparator[1] + ''' not found!');
@@ -454,7 +453,7 @@ begin
 				begin
 					if CommandSeparator.Count >= 2 then
 					begin
-						ZoneID := StaticData.GetMapZoneID(CommandSeparator[1]);
+						ZoneID := Map.GetZoneID(CommandSeparator[1]);
 						if ZoneID > -1 then
 						begin
 							Index := -1;

@@ -46,10 +46,8 @@ type
 
 		Options         : THeliosOptions;
 
-		DatabaseOptions : TDatabaseOptions;
-
 		procedure LoadOptions;
-		procedure LoadDatabaseOptions;
+		
 		procedure Startup;
 		procedure Shutdown;
 
@@ -150,8 +148,6 @@ begin
 
 	PreloadOK := InitGlobals;
 
-	LoadDatabaseOptions;
-
 	if PreloadOK then
 	begin
 
@@ -237,9 +233,6 @@ begin
 	if Assigned(CharacterServer) then CharacterServer.Stop;
 	if Assigned(LoginServer) then LoginServer.Stop;
 
-	DatabaseOptions.Save;
-	DatabaseOptions.Free;
-
 	//Make sure globals are Free'd on Application exit.
 	DestroyGlobals;
 end;{TMainProc.Shutdown}
@@ -286,26 +279,8 @@ begin
 	Options    := THeliosOptions.Create('./'+ChangeFileExt(ExeName,'')+'.ini');
 
 	Options.Load;
+	Options.Save;
 end;{LoadOptions}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//LoadDatabaseOptions                                                  PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Creates and Loads the inifile.
-//
-//	Changes -
-//		March 27th, 2007 - RaX - Created.
-//
-//------------------------------------------------------------------------------
-Procedure TMainProc.LoadDatabaseOptions;
-begin
-	DatabaseOptions    := TDatabaseOptions.Create(Options.ConfigDirectory+'/Database.ini');
-
-	DatabaseOptions.Load;
-end;{LoadDatabaseOptions}
 //------------------------------------------------------------------------------
 
 

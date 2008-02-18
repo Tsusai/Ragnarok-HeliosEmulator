@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 435 -
+[2008/02/17] RaX - Swapped out database...largest commit ever. Everything has
+ changed. We're now using ZeosLib as our database component. Thanks to them 
+ we can now handle just about evert database format out there.
+-
+
 - Rev 434 -
 [2008/02/10] Tsusai - Notes/Overview: Updates for Linux Lazarus to compile.
  Kylix will no longer work. Why compile w/ an old kernel than a new one?

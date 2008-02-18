@@ -29,12 +29,11 @@ uses
 	public
 		ID : LongWord;
 		//Unicode
-		Username        : string[24];
+		Name        		: string[24];
 		Password        : string[24];
 		EMail           : string[24];
 		GenderNum       : Byte; //0 or 1 for packet (F/M respectively)
-		Bantime         : TDateTime;
-		UnBanDateTime   : string;
+		BannedUntil     : TDateTime;
 		LastIP          : string[15];
 		LoginKey        : array [1..2] of LongWord;
 		CharaID         : array [0..8] of LongWord;
@@ -115,7 +114,7 @@ end; {SetGender}
 //------------------------------------------------------------------------------
 function TAccount.GetBanned : boolean;
 begin
-	Result := (BanTime > Now);
+	Result := (BannedUntil > Now);
 end;{GetBanned}
 //------------------------------------------------------------------------------
 
@@ -132,8 +131,8 @@ end;{GetBanned}
 //------------------------------------------------------------------------------
 procedure TAccount.SetBannedTime(TimeString : string);
 begin
-	Self.Bantime := ConvertMySQLTime(TimeString);
-	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
+	Self.BannedUntil := ConvertMySQLTime(TimeString);
+	TThreadLink(ClientInfo.Data).DatabaseLink.Account.Save(self);
 end;{SetBannedTime}
 //------------------------------------------------------------------------------
 
@@ -150,8 +149,8 @@ end;{SetBannedTime}
 //------------------------------------------------------------------------------
 procedure TAccount.TemperaryBan(Seconds:Integer);
 begin
-	Self.Bantime := UnixToDateTime(DateTimeToUnix(Now) + Seconds);
-	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
+	Self.BannedUntil := UnixToDateTime(DateTimeToUnix(Now) + Seconds);
+	TThreadLink(ClientInfo.Data).DatabaseLink.Account.Save(self);
 end;{SetBannedTime}
 //------------------------------------------------------------------------------
 
@@ -187,7 +186,7 @@ end;
 procedure TAccount.SetConnectUntilTime(TimeString : string);
 begin
 	Self.ConnectUntil := ConvertMySQLTime(TimeString);
-	TThreadLink(ClientInfo.Data).DatabaseLink.CommonData.SaveAccount(self);
+	TThreadLink(ClientInfo.Data).DatabaseLink.Account.Save(self);
 end;{SetConnectUntilTime}
 //------------------------------------------------------------------------------
 
@@ -224,7 +223,7 @@ var
 
 begin
 	//Decode the remaining time to Years,Months,Days,Hours,Minutes,Seconds, and MillionSeconds
-	DecodeDateTime(UnixToDateTime(DateTimeToUnix(BanTime)-DateTimeToUnix(Now)), Years, Months, Days, Hours, Minutes, Seconds, MillionSeconds);
+	DecodeDateTime(UnixToDateTime(DateTimeToUnix(BannedUntil)-DateTimeToUnix(Now)), Years, Months, Days, Hours, Minutes, Seconds, MillionSeconds);
 	//Need to do something related to UNIX TIME
 	Dec(Years, 1970);
 	Dec(Months);

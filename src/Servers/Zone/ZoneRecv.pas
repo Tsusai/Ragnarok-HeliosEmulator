@@ -346,7 +346,7 @@ begin
 		{else}
 		ZoneSendObjectNameAndIDBasic(
 			AChara,
-			RecvCharacter.ID,
+			RecvCharacter.AccountID,
 			RecvCharacter.Name
 		);
 	end else
@@ -403,57 +403,62 @@ var
 	AnAccount   : TAccount;
 	ACharacter  : TCharacter;
 begin
-	AccountID      := BufferReadLongWord(ReadPts[0], Buffer);
-	CharacterID    := BufferReadLongWord(ReadPts[1], Buffer);
-	ValidateID1    := BufferReadLongWord(ReadPts[2], Buffer);
+	AccountID      	:= BufferReadLongWord(ReadPts[0], Buffer);
+	CharacterID    	:= BufferReadLongWord(ReadPts[1], Buffer);
+	ValidateID1    	:= BufferReadLongWord(ReadPts[2], Buffer);
 	{ClientTick     := }BufferReadLongWord(ReadPts[3], Buffer);
-	Gender         := BufferReadByte    (ReadPts[4], Buffer);
-	AnAccount  := TThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AClient, AccountID);
+	Gender         	:= BufferReadByte    (ReadPts[4], Buffer);
 
-	ACharacter := TThreadLink(AClient.Data).DatabaseLink.GameData.GetChara(AClient, CharacterID);
+	AnAccount				:=  TAccount.Create(AClient);
+	AnAccount.ID		:= AccountID;
+	TThreadLink(AClient.Data).DatabaseLink.Account.Load(AnAccount);
 
+	ACharacter := TCharacter.Create(AClient);
+	ACharacter.ID := CharacterID;
+	TThreadLink(AClient.Data).DatabaseLink.Character.Load(ACharacter);
 
-	if Assigned(AnAccount) and Assigned(ACharacter) then
+	TClientLink(AClient.Data).AccountLink := AnAccount;
+	TClientLink(AClient.Data).CharacterLink := ACharacter;
+
+	if (AnAccount.LoginKey[1] = ValidateID1) and
+		 (AnAccount.LoginKey[1] > 0) and
+		 (AnAccount.GenderNum = Gender) then
 	begin
-		if (AnAccount.LoginKey[1] = ValidateID1) and
-			 (AnAccount.LoginKey[1] > 0) and
-			(AnAccount.GenderNum = Gender) then
+		// Duplicate session safe check!
+		if MainProc.ZoneServer.CharacterList.IndexOf(ACharacter.ID) > -1 then
 		begin
-			// Duplicate session safe check!
-			if MainProc.ZoneServer.CharacterList.IndexOf(ACharacter.CID) > -1 then
-			begin
-				ACharacter.ClientInfo.Connection.Disconnect;
-			end else
-			begin
-				TClientLink(AClient.Data).AccountLink := AnAccount;
-				TClientLink(AClient.Data).CharacterLink := ACharacter;
-
-				ACharacter.ClientVersion := Version;
-				ACharacter.Online  := 1;
-				MainProc.ZoneServer.CharacterList.Add(ACharacter);
-
-				SendZoneCharaLogon(MainProc.ZoneServer.ToCharaTCPClient, ACharacter);
-
-				SendPadding(ACharacter.ClientInfo);
-
-				ZoneSendMapConnectReply(ACharacter);
-				SendZoneCharaIncrease(MainProc.ZoneServer.ToCharaTCPClient,MainProc.ZoneServer);
-
-				//Friendslist (No longer placeholder XD)
-				ACharacter.SendFriendList;
-
-				ZoneSendPlayerOnlineStatus(
-					MainProc.ZoneServer.ToInterTCPClient,
-					ACharacter.ID,
-					ACharacter.CID,
-					0 //0 = online; 1=offline
-				);
-			end;
-
+			ACharacter.Free;
+			//Disconnect frees the account
+			ACharacter.ClientInfo.Connection.Disconnect;
 		end else
 		begin
-			ZoneSendMapConnectDeny(AClient);
+
+			ACharacter.ClientVersion := Version;
+			ACharacter.Online  := 1;
+			MainProc.ZoneServer.CharacterList.Add(ACharacter);
+
+			SendZoneCharaLogon(MainProc.ZoneServer.ToCharaTCPClient, ACharacter);
+
+			SendPadding(ACharacter.ClientInfo);
+
+			ZoneSendMapConnectReply(ACharacter);
+			SendZoneCharaIncrease(MainProc.ZoneServer.ToCharaTCPClient,MainProc.ZoneServer);
+
+			//Friendslist (No longer placeholder XD)
+			ACharacter.SendFriendList;
+
+			ZoneSendPlayerOnlineStatus(
+				MainProc.ZoneServer.ToInterTCPClient,
+				ACharacter.AccountID,
+				ACharacter.ID,
+				0 //0 = online; 1=offline
+			);
 		end;
+	end else
+	begin
+		//disconnect frees the account.
+		ACharacter.Free;
+		ZoneSendMapConnectDeny(AClient);
 	end;
 end;{MapConnect}
 //------------------------------------------------------------------------------
@@ -630,7 +635,7 @@ begin
 		//able to use the gm command.
 		if TClientLink(AChara.ClientInfo.Data).AccountLink.Level >= MainProc.ZoneServer.Commands.GetCommandGMLevel(CommandID) then
 		begin
-			ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.ID, AChara.CID, TempChat);
+			ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.AccountID, AChara.ID, TempChat);
 		end else
 		begin
 			SendAreaChat(Chat, ChatLength, AChara);
@@ -675,7 +680,7 @@ begin
 		Size     := BufferReadWord(2, InBuffer);
 		Announce := BufferReadString(4, Size - 4, InBuffer);
 		//Convert XD
-		ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.ID, AChara.CID, '#BroadCastN ' + Announce);
+		ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.AccountID, AChara.ID, '#BroadCastN ' + Announce);
 	end;
 end;{GMBroadcast}
 //------------------------------------------------------------------------------
@@ -715,7 +720,7 @@ begin
 		MapName := BufferReadString(ReadPts[0], ReadPts[1] - ReadPts[0], InBuffer);
 		X       := BufferReadWord(ReadPts[1], InBuffer);
 		Y       := BufferReadWord(ReadPts[2], InBuffer);
-		ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.ID, AChara.CID, '#Warp "' + MapName +'",' + IntToStr(X) + ',' + IntToStr(Y));
+		ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.AccountID, AChara.ID, '#Warp "' + MapName +'",' + IntToStr(X) + ',' + IntToStr(Y));
 	end;
 end;{GMMapMove}
 //------------------------------------------------------------------------------
@@ -1253,39 +1258,31 @@ procedure RequestToAddFriend(
 	const ReadPts : TReadPts
 );
 var
-	TargetChar : String;  //The character name want to add to friend list
+	TargetName : String;  //The character name want to add to friend list
 	TargetChara : TCharacter;
 	ZoneID      : Integer;
 	AFriendRequestEvent : TFriendRequestEvent;
 	AlreadyFriend : Boolean;
 begin
-	TargetChar := BufferReadString(ReadPts[0], NAME_LENGTH, InBuffer);
+	TargetName := BufferReadString(ReadPts[0], NAME_LENGTH, InBuffer);
 
-	TargetChara := nil;
-	AlreadyFriend := True;
-	with TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData do
+	with TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character do
 	begin
-		if Connect then
-		try
-			TargetChara := GetChara(AChara.ClientInfo, TargetChar);
-			if (TargetChara <> NIL) then
-				AlreadyFriend := IsFriend(AChara.CID, TargetChara.ID, TargetChara.CID);
-		finally
-			Disconnect;
-		end;
+		TargetChara := TCharacter.Create(AChara.ClientInfo);
+		TargetChara.Name := TargetName;
+		Load(TargetChara);
+		AlreadyFriend :=
+			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Friend.IsFriend(
+				AChara.ID,
+				TargetChara.ID
+			);
 	end;
 
-	if (TargetChara <> NIL) and not AlreadyFriend then
+	if not AlreadyFriend then
 	begin
-		ZoneID := -1;
-		with TThreadLink(AChara.ClientInfo.Data).DatabaseLink.StaticData do
+		with TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Map do
 		begin
-			if Connect then
-			try
-				ZoneID := GetMapZoneID(TargetChara.Map);
-			finally
-				Disconnect;
-			end;
+			ZoneID := GetZoneID(TargetChara.Map);
 		end;
 
 		if ZoneID > -1 then
@@ -1295,8 +1292,8 @@ begin
 				// Too much friends
 				SendAddFriendRequestReply(
 						AChara.ClientInfo,
+						TargetChara.AccountID,
 						TargetChara.ID,
-						TargetChara.CID,
 						TargetChara.Name,
 						2
 				);
@@ -1304,15 +1301,15 @@ begin
 			end else
 			begin
 				AFriendRequestEvent := TFriendRequestEvent.Create(GetTick + 10000, AChara);
-				AFriendRequestEvent.PendingFriend := TargetChara.CID;
+				AFriendRequestEvent.PendingFriend := TargetChara.ID;
 				AChara.EventList.Add(AFriendRequestEvent);
 				// Just let inter server handle it ^_^
 				ZoneSendAddFriendRequest(
 						MainProc.ZoneServer.ToInterTCPClient,
+						AChara.AccountID,
 						AChara.ID,
-						AChara.CID,
 						AChara.Name,
-						TargetChara.CID,
+						TargetChara.ID,
 						ZoneID
 				);
 			end;
@@ -1349,11 +1346,9 @@ begin
 	AccountID   := BufferReadLongWord(ReadPts[0], InBuffer);
 	CharID      := BufferReadLongWord(ReadPts[1], InBuffer);
 
-			if TThreadLink(AChara.ClientInfo.Data).DatabaseLink.GameData.DeleteFriend(AChara.CID, AccountID, CharID) then
-			begin
-			SendDeleteFriend(AChara.ClientInfo, AccountID, CharID);
-			Dec(AChara.Friends);
-			end;
+	TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Friend.Delete(AChara.ID, CharID);
+	SendDeleteFriend(AChara.ClientInfo, AccountID, CharID);
+	Dec(AChara.Friends);
 end;{RemoveFriendFromList}
 //------------------------------------------------------------------------------
 
@@ -1387,7 +1382,7 @@ begin
 	Reply   := BufferReadByte(ReadPts[2], InBuffer);
 
 	// Nop... no way...
-	if (AChara.ID <> AccID) and (AChara.CID <> CharID) then
+	if (AChara.AccountID <> AccID) and (AChara.ID <> CharID) then
 	begin
 		if Reply = 0 then
 		begin
@@ -1395,8 +1390,8 @@ begin
 			ZoneSendAddFriendReply(
 				MainProc.ZoneServer.ToInterTCPClient,
 				CharID,
+				AChara.AccountID,
 				AChara.ID,
-				AChara.CID,
 				AChara.Name,
 				1
 			);
@@ -1406,8 +1401,8 @@ begin
 			ZoneSendAddFriendReply(
 				MainProc.ZoneServer.ToInterTCPClient,
 				CharID,
+				AChara.AccountID,
 				AChara.ID,
-				AChara.CID,
 				AChara.Name,
 				0
 			);
@@ -1579,7 +1574,7 @@ var
 	GMID		: LongWord;
 	CharacterID	: LongWord;
 	ZoneID		: LongWord;
-	TargetCID	: LongWord;
+	TargetID	: LongWord;
 	ArgCount	: Word;
 	Arguments	: array of String;
 	ArgumentLen	: Integer;
@@ -1596,7 +1591,7 @@ begin
 	GMID		:= BufferReadLongWord(6, InBuffer);
 	CharacterID	:= BufferReadLongWord(10, InBuffer);
 	ZoneID		:= BufferReadLongWord(14, InBuffer);
-	TargetCID	:= BufferReadLongWord(22, InBuffer);
+	TargetID	:= BufferReadLongWord(22, InBuffer);
 	ArgCount	:= BufferReadWord(26, InBuffer);
 
 	BufferIndex := 28;
@@ -1613,7 +1608,7 @@ begin
 	//Since array is 0 based, this would be perfect index
 	Arguments[ArgCount] := MainProc.ZoneServer.Commands.GetSyntax(CommandID);
 
-	FromChar := MainProc.ZoneServer.Database.GameData.GetCharaName(CharacterID);
+	FromChar := MainProc.ZoneServer.Database.Character.GetName(CharacterID);
 
 	Error := TStringList.Create;
 
@@ -1646,7 +1641,7 @@ begin
 
 		//Specific Character
 		TYPE_TARGETCHAR: begin
-			Index := MainProc.ZoneServer.CharacterList.IndexOf(TargetCID);
+			Index := MainProc.ZoneServer.CharacterList.IndexOf(TargetID);
 			if Index > -1 then
 			begin
 				TargetChar := MainProc.ZoneServer.CharacterList.Items[Index];
@@ -1804,8 +1799,8 @@ begin
 			ZoneSendAddFriendReply(
 				MainProc.ZoneServer.ToInterTCPClient,
 				ReqID,
+				Chara.AccountID,
 				Chara.ID,
-				Chara.CID,
 				Chara.Name,
 				3
 			);
@@ -1873,30 +1868,22 @@ begin
 						begin
 							EventList.Delete(Index);
 							//Accept
-							with TThreadLink(Chara.ClientInfo.Data).DatabaseLink.GameData do
+							with TThreadLink(Chara.ClientInfo.Data).DatabaseLink.Friend do
 							begin
-								Connect;
-								try
-									//Add target first
-									if not IsFriend(OrigID, AccID, CharID) then
-										AddFriend(OrigID, AccID, CharID, CharName);
-									//Add back
-									if not IsFriend(CharID, Chara.ID, Chara.CID) then
-										AddFriend(CharID, Chara.ID, Chara.CID, Chara.Name);
+								//Add target first
+								if not IsFriend(OrigID, CharID) then
+									Add(OrigID, CharID);
 
-									// Use 255 here!
-									ZoneSendAddFriendReply(
-										MainProc.ZoneServer.ToInterTCPClient,
-										CharID,
-										Chara.ID,
-										Chara.CID,
-										Chara.Name,
-										255
-									);
-									Break;
-								finally
-									Disconnect;
-								end;
+								// Use 255 here!
+								ZoneSendAddFriendReply(
+									MainProc.ZoneServer.ToInterTCPClient,
+									CharID,
+									Chara.AccountID,
+									Chara.ID,
+									Chara.Name,
+									255
+								);
+								Break;
 							end;
 						end else
 							Send := False;
@@ -1966,8 +1953,8 @@ begin
 		begin
 			ZoneSendPlayerOnlineReply(
 				MainProc.ZoneServer.ToInterTCPClient,
+				Chara.AccountID,
 				Chara.ID,
-				Chara.CID,
 				CID,
 				Offline,
 				ZoneID

@@ -218,7 +218,7 @@ protected
 	procedure BaseLevelUp(Levels : Integer);
 	procedure JobLevelUp(Levels : Integer);
 public
-	CID : LongWord;
+	AccountID : LongWord;
 
 	DcAndKeepData		: Boolean;
 
@@ -659,7 +659,6 @@ var
 	OldBaseEXPToNextLevel: LongWord;
 begin
 	Inherited;
-	DataChanged := TRUE;
 	for Index := 1 to MainProc.ZoneServer.Options.MaxBaseLevelsPerEXPGain do
 	begin
 		if (BaseEXP > BaseEXPToNextLevel) and (BaseLv <= MainProc.ZoneServer.Options.MaxBaseLevel) then
@@ -674,7 +673,7 @@ begin
 	if BaseEXP > BaseEXPToNextLevel then
 	begin
 
-		OldBaseEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(JobName, BaseLv-1)
+		OldBaseEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetBaseEXPToNextLevel(self, BaseLv-1)
 			div MainProc.ZoneServer.Options.BaseXPMultiplier;
 		BaseEXP := (BaseEXPToNextLevel - OldBaseEXPToNextLevel) DIV 2 + OldBaseEXPToNextLevel;
 	end;
@@ -708,7 +707,6 @@ var
 	OldJobEXPToNextLevel : LongWord;
 begin
 	Inherited;
-	DataChanged := TRUE;
 	for Index := 1 to MainProc.ZoneServer.Options.MaxJobLevelsPerEXPGain do
 	begin
 		if Value > JobEXPToNextLevel then
@@ -723,7 +721,7 @@ begin
 	if (JobEXP > JobEXPToNextLevel) AND (JobLv <= MainProc.ZoneServer.Options.MaxJobLevel) then
 	begin
 
-		OldJobEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, JobLv-1)
+		OldJobEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetJobEXPToNextLevel(self, JobLv-1)
 			div MainProc.ZoneServer.Options.JobXPMultiplier;
 		JobEXP := (JobEXPToNextLevel - OldJobEXPToNextLevel) DIV 2 + OldJobEXPToNextLevel;
 	end;
@@ -1910,7 +1908,7 @@ procedure TCharacter.CalcMaxHP;
 var
 	BaseMaxHP : Word;
 begin
-	BaseMaxHP := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxHP(Self);
+	BaseMaxHP := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetMaxHP(Self);
 
 	MaxHP := EnsureRange(
 		( BaseMaxHP * (100 + ParamBase[VIT]) div 100 ), 1, High(fMaxHP)
@@ -1996,7 +1994,7 @@ Var
 		if (tc.PartyName <> '') and (Mode = 0) and ((DType = 5) or (DType = 6)) then
 		begin
 			WriteBufferWord( 0, $0106);
-			WriteBufferLongWord( 2, tc.ID);
+			WriteBufferLongWord( 2, tc.AccountID);
 			WriteBufferWord( 6, tc.HP);
 			WriteBufferWord( 8, tc.MAXHP);
 			SendPCmd(tc, OutBuffer, 10, True, True);
@@ -2026,7 +2024,7 @@ Var
 		if (tc.PartyName <> '') and (Mode = 0) and ((DType = 5) or (DType = 6)) then
 		begin
 			WriteBufferWord( 0, $0106);
-			WriteBufferLongWord( 2, tc.ID);
+			WriteBufferLongWord( 2, tc.AccountID);
 			WriteBufferWord( 6, tc.HP);
 			WriteBufferWord( 8, tc.MAXHP);
 			SendPCmd(tc, OutBuffer, 10, True, True);
@@ -2260,8 +2258,8 @@ end;{SendRequiredStatusPoint}
 procedure TCharacter.CalcMaxSP;
 begin
 		MAXSP := EnsureRange(
-		TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxSP(self) *
-			(100 + ParamBase[INT]) div 100, 0, High(fMaxSP));
+		TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetMaxSP(self) *
+			LongWord((100 + ParamBase[INT]) div 100), 0, High(fMaxSP));
 		if SP > MAXSP then
 		begin
 			SP := MAXSP;
@@ -2314,7 +2312,7 @@ procedure TCharacter.CalcMaxWeight;
 begin
 		MaxWeight  := EnsureRange(
 			  LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
-			  TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseMaxWeight(self)
+				TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetMaxWeight(self)
 				, 0, High(fMaxWeight));
 end;{CalcMaxWeight}
 //------------------------------------------------------------------------------
@@ -2372,12 +2370,14 @@ var
 	end;{GetParamBaseWorthInStatPoints}
 	//----------------------------------------------------------------------
 begin
-	TempLevel := Max(Min(fBaseLv+Levels, MainProc.ZoneServer.Options.MaxBaseLevel), 1);
+	if ZoneStatus = isOnline then
+	begin
+		TempLevel := Max(Min(fBaseLv+Levels, MainProc.ZoneServer.Options.MaxBaseLevel), 1);
 		{Gets the base experience to next level, divides by the multiplier to lower
 		numbers, prevent overflows, and prevent large integer math. Also, this is
 		only calculated at level up rather than at each experience gain.}
-		TempEXP := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetBaseEXPToNextLevel(
-					Jobname, TempLevel
+		TempEXP := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetBaseEXPToNextLevel(
+					self, TempLevel
 					);
 
 		{If there is EXP to be gotten for the next level and we aren't leveling to the
@@ -2385,8 +2385,8 @@ begin
 		if (TempEXP > 0) AND(TempLevel <> BaseLv) then
 		begin
 			//Get stat points from database
-			TempStatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(TempLevel);
-			LastLevelStatusPoints := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(fBaseLv);
+			TempStatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetStatPoints(TempLevel);
+			LastLevelStatusPoints := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetStatPoints(fBaseLv);
 
 			//Get stats' worth in points.
 			ParamBaseStatPoints := GetParamBaseWorthInStatPoints;
@@ -2438,6 +2438,10 @@ begin
 			//Send Base Level packet
 			SendSubStat(0, $000b, BaseLv);
 		end;
+	end else
+	begin
+		fBaseLV := fBaseLV + Levels;
+  end;
 end;{BaseLevelUp}
 //------------------------------------------------------------------------------
 
@@ -2467,17 +2471,19 @@ var
 	TempSkillPts: Word;
 	Index : Integer;
 begin
+	if ZoneStatus = isOnline then
+	begin
 	//Make sure fJobLv is in range.
-	TempLevel := Max(Min(fJobLv+Levels, MainProc.ZoneServer.Options.MaxJobLevel), 1);
+		TempLevel := Max(Min(fJobLv+Levels, MainProc.ZoneServer.Options.MaxJobLevel), 1);
 		//Update job experience to next level from static database.
-		TempEXP := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobEXPToNextLevel(JobName, TempLevel);
+		TempEXP := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetJobEXPToNextLevel(self, TempLevel);
 
 		if (TempEXP > 0) AND (TempLevel <> JobLv) then
 		begin
 			JobEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.JobXPMultiplier;
-			TempSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.StaticData.GetSkillPoints(JobName,TempLevel);
+			TempSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.CharacterConstant.GetSkillPoints(self,TempLevel);
 			//Will be used once skills are implemented to "remember" added skill points.
-			//OldSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.StaticData.GetSkillPoints(JobName,JobLv);
+			//OldSkillPts := TThreadLink(Clientinfo.Data).DatabaseLink.CharacterConstant.GetSkillPoints(self,JobLv);
 
 			//Will be changed once skills are implemented, extra skill points will be
 			//'remembered' between levels.
@@ -2493,7 +2499,7 @@ begin
 			end;
 
 			//Apply job bonuses
-			TempStatArray := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetJobBonus(JobName, TempLevel);
+			TempStatArray := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetJobBonus(self, TempLevel);
 			ParamBonus := TempStatArray;
 
 			fJobLv := TempLevel;
@@ -2506,6 +2512,10 @@ begin
 			end;
 
 		end;
+	end else
+	begin
+		fJobLV := fJobLV+Levels;
+  end;
 end;{JobLevelUp}
 //------------------------------------------------------------------------------
 
@@ -2528,7 +2538,7 @@ end;{JobLevelUp}
 procedure TCharacter.ResetStats;
 begin
 	StatusPts := 0;
-	StatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.StaticData.GetStatPoints(BaseLV);
+	StatusPts := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetStatPoints(BaseLV);
 
 	ParamBase[STR] := 1;
 	ParamBase[AGI] := 1;
@@ -2562,7 +2572,8 @@ var
 	Char        : TCharacter;
 	Index       : Byte;
 begin
-	FriendList := TThreadLink(ClientInfo.Data).DatabaseLink.GameData.GetFriendList(ClientInfo, CID);
+	FriendList := TCharacterList.Create(TRUE);
+	TThreadLink(ClientInfo.Data).DatabaseLink.Friend.LoadList(FriendList, self);
 	if FriendList.Count > 0 then
 	begin
 		WriteBufferWord(0, $0201, OutBuffer);
@@ -2571,8 +2582,8 @@ begin
 		begin
 			Char := FriendList.Items[Index];
 
-			WriteBufferLongWord(4 + 32 * Index + 0, Char.ID,   OutBuffer);
-			WriteBufferLongWord(4 + 32 * Index + 4, Char.CID,  OutBuffer);
+			WriteBufferLongWord(4 + 32 * Index + 0, Char.AccountID,   OutBuffer);
+			WriteBufferLongWord(4 + 32 * Index + 4, Char.ID,  OutBuffer);
 			WriteBufferString(4 + 32 * Index + 8,  Char.Name, NAME_LENGTH, OutBuffer);
 		end;
 		SendBuffer(ClientInfo, OutBuffer, 4 + ( 32 * FriendList.Count ));
@@ -2647,6 +2658,7 @@ begin
 	ScriptStatus := SCRIPT_NOTRUNNING;
 	CharaState := charaStanding;
 	ZoneStatus := isOffline;
+	CharaNum := 255;
 end;{Create}
 //------------------------------------------------------------------------------
 

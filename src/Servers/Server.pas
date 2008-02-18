@@ -85,9 +85,7 @@ begin
 	
 	fPort := 0;
 	Database := TDatabase.Create();
-	Database.CommonData.Connect();
-	Database.GameData.Connect();
-	Database.StaticData.Connect();
+	Database.Connect();
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -104,9 +102,7 @@ end;{Create}
 Destructor TServer.Destroy;
 Begin
 	TCPServer.Free;
-	Database.CommonData.Disconnect();
-	Database.GameData.Disconnect();
-	Database.StaticData.Disconnect();
+	Database.Disconnect();
 	Database.Free;
 	inherited;
 End; (* Dest TZoneServer.Destroy

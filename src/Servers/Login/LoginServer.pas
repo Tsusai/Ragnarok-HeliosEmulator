@@ -405,6 +405,7 @@ end;{OnException}
 	procedure TLoginServer.ParseMF(AClient : TIdContext; var Username : string; Password : string);
 	var
 		GenderStr  : string;
+		AnAccount	 : TAccount;
 	begin
 		GenderStr := Uppercase(AnsiRightStr(Username,2)); {get _M or _F and cap it}
 		if (GenderStr = '_M') or
@@ -412,14 +413,23 @@ end;{OnException}
 		begin
 			//Trim the MF off because people forget to take it off.
 			Username := AnsiLeftStr(Username,Length(Username)-2);
-			//Check to see if the account already exists.
-				if NOT TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.AccountExists(Username) then
+
+			AnAccount := TAccount.Create(AClient);
+			try
+				AnAccount.Name			:= UserName;
+				AnAccount.Password	:= Password;
+				AnAccount.Gender		:= GenderStr[2];
+				//Check to see if the account already exists.
+				if NOT TLoginThreadLink(AClient.Data).DatabaseLink.Account.Exists(AnAccount) then
 				begin
 					//Create the account.
-					TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.CreateAccount(
-						Username,Password,GenderStr[2]
+					TLoginThreadLink(AClient.Data).DatabaseLink.Account.New(
+						AnAccount
 					);
 				end;
+      finally
+				AnAccount.Free;
+			end;
 		end;
 	end;{ParseMF}
 //----------------------------------------------------------------------------
@@ -471,9 +481,11 @@ end;{OnException}
 		begin
 			ParseMF(AClient, Username, Password);
 		end;
-
-			AnAccount := TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AClient, UserName);
-			if Assigned(AnAccount) then begin
+			AnAccount				:= TAccount.Create(AClient);
+			AnAccount.Name	:= UserName;
+			TLoginThreadLink(AClient.Data).DatabaseLink.Account.Load(AnAccount);
+			if AnAccount.ID > 0 then
+			begin
 				AccountPassword := AnAccount.Password;
 				if	( not (MD5Key = '') and //If key isn't blank AND if one of the combinations
 							( (Password = GetMD5(MD5Key + AccountPassword)) or
@@ -485,7 +497,7 @@ end;{OnException}
 //				if not AnAccount.IsBanned then
 					if AnAccount.State = 0 then
 					begin
-						if AnAccount.Bantime <= Now then
+						if AnAccount.BannedUntil <= Now then
 						begin
 							if not AnAccount.GameTimeUp then
 							begin
@@ -523,7 +535,7 @@ end;{OnException}
 									AnAccount.LastIP := AClient.Binding.PeerIP;
 									AnAccount.LastLoginTime := Now;
 									Inc(AnAccount.LoginCount);
-									TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
+									TLoginThreadLink(AClient.Data).DatabaseLink.Account.Save(AnAccount);
 
 									AccountInfo := TLoginAccountInfo.Create(AnAccount.ID);
 									AccountInfo.OnCharSrvList := True;
@@ -685,12 +697,12 @@ begin
 	Idx := fAccountList.IndexOf(AccountID);
 	if Idx > -1 then
 	begin
-			AnAccount := TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.GetAccount(AClient, AccountID);
+			AnAccount := TAccount.Create(AClient);
+			AnAccount.ID := AccountID;
+			TLoginThreadLink(AClient.Data).DatabaseLink.Account.Load(AnAccount);
 			if Assigned(AnAccount) then begin
-				{AnAccount.LoginKey[1] := 0;
-				AnAccount.LoginKey[2] := 0;}
 				fAccountList.Delete(Idx);
-				TLoginThreadLink(AClient.Data).DatabaseLink.CommonData.SaveAccount(AnAccount);
+				TLoginThreadLink(AClient.Data).DatabaseLink.Account.Save(AnAccount);
 			end;
 	end;
 end;
@@ -850,6 +862,7 @@ begin
 	Options    := TLoginOptions.Create(MainProc.Options.ConfigDirectory+'/Login.ini');
 
 	Options.Load;
+	Options.Save;
 end;{LoadOptions}
 //------------------------------------------------------------------------------
 

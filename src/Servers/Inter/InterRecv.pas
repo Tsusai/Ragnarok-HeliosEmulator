@@ -246,7 +246,7 @@ Var
 	FromName   : String;
 	TargetName : String;
 	Whisper    : String;
-	Chara      : TCharacter;
+	ACharacter : TCharacter;
 	ZoneID     : LongWord;
 	Index      : Integer;
 	SentWhisper : Boolean;
@@ -257,21 +257,22 @@ Begin
 	TargetName := BufferReadString(32, 24, InBuffer);
 	Whisper    := BufferReadString(56, (Size - 56), InBuffer);
 
-	with TZoneServerLink(AClient.Data).DatabaseLink.GameData do
+	with TZoneServerLink(AClient.Data).DatabaseLink.Character do
 	begin
-		Connect;
-		Chara := GetChara(AClient, TargetName);
-		Disconnect;
+
+		ACharacter := TCharacter.Create(Aclient);
+		ACharacter.Name := TargetName;
+		Load(ACharacter);
+
 	end;
+
 	with MainProc.InterServer do
 	begin
-		if (Chara <> NIL) AND (Chara.Map <> '') then
+		if (ACharacter.Map <> '') then
 		begin
-			with TZoneServerLink(AClient.Data).DatabaseLink.StaticData do
+			with TZoneServerLink(AClient.Data).DatabaseLink.Map do
 			begin
-				Connect;
-				ZoneID := GetMapZoneID(Chara.Map);
-				Disconnect;
+				ZoneID := GetZoneID(ACharacter.Map);
 			end;
 			Index := ZoneServerList.IndexOf(ZoneID);
 
@@ -286,7 +287,7 @@ Begin
 						ZoneServerInfo[Index].Connection,
 						TZoneServerLink(AClient.Data).Info.ZoneID,
 						FromID,
-						Chara.CID,
+						ACharacter.ID,
 						FromName,
 						Whisper
 				);
@@ -301,7 +302,7 @@ Begin
 				//Well..if zone is disconnected..then just say not online
 				SendWhisperReplyToZone(AClient, FromID, WHISPER_FAILED);
 			end;
-			Chara.Free;
+			aCharacter.Free;
 		end else
 		begin
 			SendWhisperReplyToZone(AClient, FromID, WHISPER_FAILED);  //Target is not online
@@ -399,11 +400,9 @@ Begin
 	ClientIPSize := BufferReadWord(14+MapNameSize, ABuffer);
 	ClientIP		 := BufferReadString(16+MapNameSize, ClientIPSize, ABuffer);
 
-	with TThreadLink(AClient.Data).DatabaseLink.StaticData do
+	with TThreadLink(AClient.Data).DatabaseLink.Map do
 	begin
-		Connect;
-		ZoneID := GetMapZoneID(MapName);
-		Disconnect;
+		ZoneID := GetZoneID(MapName);
 	end;
 
 	ZIdx := MainProc.InterServer.ZoneServerList.IndexOf(ZoneID);
@@ -517,7 +516,7 @@ var
 	CharName  : String;
 	Reply     : Byte;
 
-	Chara     : TCharacter;
+	ACharacter: TCharacter;
 	Index     : Integer;
 	ZoneID    : LongWord;
 begin
@@ -528,28 +527,20 @@ begin
 	CharName := BufferReadString(15, NAME_LENGTH, ABuffer);
 
 
-	with TZoneServerLink(AClient.Data).DatabaseLink.GameData do
+	with TZoneServerLink(AClient.Data).DatabaseLink.Character do
 	begin
-		try
-			Connect;
-			Chara := GetChara(AClient, OrigID);
-		finally
-			Disconnect;
-		end;
+		ACharacter := TCharacter.Create(AClient);
+		ACharacter.ID := OrigID;
+		Load(ACharacter);
 	end;
 
 	with MainProc.InterServer do
 	begin
-		if (Chara <> NIL) AND (Chara.Map <> '') then
+		if (ACharacter.Map <> '') then
 		begin
-			with TZoneServerLink(AClient.Data).DatabaseLink.StaticData do
+			with TZoneServerLink(AClient.Data).DatabaseLink.Map do
 			begin
-				try
-					Connect;
-					ZoneID := GetMapZoneID(Chara.Map);
-				finally
-					Disconnect;
-				end;
+				ZoneID := GetZoneID(ACharacter.Map);
 			end;
 			Index := ZoneServerList.IndexOf(ZoneID);
 
@@ -568,7 +559,7 @@ begin
 					);
 				end;
 			end;
-			Chara.Free;
+			ACharacter.Free;
 		end;
 	end;
 end;{RecvZoneRequestFriendReply}
@@ -599,24 +590,26 @@ var
 	CID		: LongWord;
 	Offline		: Byte;
 	FriendList	: TCharacterList;
-	Char		: TCharacter;
+	ACharacter		: TCharacter;
 	Index		: Byte;
 	ZoneID		: Integer;
 	ZoneIndex	: Integer;
 begin
+	ACharacter := TCharacter.Create(AClient);
 	AID	:= BufferReadLongWord(2, ABuffer);
 	CID	:= BufferReadLongWord(6, ABuffer);
 	Offline	:= BufferReadByte(10, ABuffer);
 
-	with TZoneServerLink(AClient.Data).DatabaseLink.GameData do
+	ACharacter.ID := CID;
+	ACharacter.AccountID := AID;
+
+	with TZoneServerLink(AClient.Data).DatabaseLink.Friend do
 	begin
-		try
-			Connect;
-			FriendList := GetFriendList(AClient, CID);
-		finally
-			Disconnect;
-		end;
+		FriendList := TCharacterList.Create(TRUE);
+		LoadList(FriendList, ACharacter);
 	end;
+	ACharacter.Free;
+
 	with MainProc.InterServer do
 	if Assigned(FriendList) then
 	begin
@@ -624,19 +617,15 @@ begin
 		begin
 			for Index := 0 to FriendList.Count - 1 do
 			begin
-				Char := FriendList.Items[Index];
+				ACharacter := FriendList.Items[Index];
 
 				// OK, we got all chars.
 				// let's SPAM 'EM
-				with TZoneServerLink(AClient.Data).DatabaseLink.StaticData do
+				with TZoneServerLink(AClient.Data).DatabaseLink.Map do
 				begin
-					try
-						Connect;
-						ZoneID := GetMapZoneID(Char.Map);
-					finally
-						Disconnect;
-					end;
+						ZoneID := GetZoneID(ACharacter.Map);
 				end;
+				
 				ZoneIndex := ZoneServerList.IndexOf(ZoneID);
 				if ZoneIndex > -1 then
 				begin
@@ -644,8 +633,8 @@ begin
 						ZoneServerInfo[ZoneIndex].Connection,
 						AID,
 						CID,
-						Char.ID,
-						Char.CID,
+						ACharacter.AccountID,
+						ACharacter.ID,
 						TZoneServerLink(AClient.Data).Info.ZoneID,
 						Offline
 					);

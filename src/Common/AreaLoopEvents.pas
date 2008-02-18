@@ -268,12 +268,12 @@ begin
 		case ACurrentCharacter.CharaState of
 			charaSitting :
 				begin
-					DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
+					DoAction(ACharacter.ClientInfo, ACurrentCharacter.AccountID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
 				end;
 
 			charaStanding :
 				begin
-					DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
+					DoAction(ACharacter.ClientInfo, ACurrentCharacter.AccountID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
 				end;
 		end;
 	end;
@@ -306,17 +306,17 @@ begin
 		case ACharacter.CharaState of
 			charaSitting :
 				begin
-					DoAction(ACurrentCharacter.ClientInfo, ACharacter.ID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
+					DoAction(ACurrentCharacter.ClientInfo, ACharacter.AccountID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
 				end;
 
 			charaStanding :
 				begin
-					DoAction(ACurrentCharacter.ClientInfo, ACharacter.ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
+					DoAction(ACurrentCharacter.ClientInfo, ACharacter.AccountID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
 				end;
 
 			charaAttacking :
 				begin
-					DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, ACurrentCharacter.TargetID, 0, 0, ACTION_ATTACK, 0, 0, 0);
+					DoAction(ACharacter.ClientInfo, ACurrentCharacter.AccountID, ACurrentCharacter.TargetID, 0, 0, ACTION_ATTACK, 0, 0, 0);
 				end;
 
 			charaDead :

@@ -21,57 +21,27 @@ interface
 
 	type
 
+  TDatabaseConfig = record
+		Protocol							: string;
+		Host									: string;
+		Port									: Integer;
+		Database							: string;
+		User									: string;
+		Pass									: string;
+  end;
+
 //------------------------------------------------------------------------------
 //TDatabaseOptions	                                                        CLASS
 //------------------------------------------------------------------------------
 		TDatabaseOptions = class(TMemIniFile)
-		private
-//private variables
-			fCommonType   : Integer;
-			fCommonHost 	: string;
-			fCommonPort 	: integer;
-			fCommonDB   	: string;
-			fCommonUser 	: string;
-			fCommonPass 	: string;
+		protected
+			fAccountConfig		: TDatabaseConfig;
 
-			fGameType     : Integer;
-			fGameHost 		: string;
-			fGamePort 		: integer;
-			fGameDB   		: string;
-			fGameUser 		: string;
-			fGamePass 		: string;
-
-			fStaticType   : Integer;
-			fStaticHost 	: string;
-			fStaticPort 	: integer;
-			fStaticDB   	: string;
-			fStaticUser 	: string;
-			fStaticPass 	: string;
+			fGameConfig				: TDatabaseConfig;
 
 		public
-			//CommonDB
-			property CommonType : Integer read fCommonType write fCommonType;
-			property CommonHost : string Read fCommonHost;
-			property CommonPort : integer read fCommonPort;
-			property CommonDB   : string Read fCommonDB;
-			property CommonUser : string Read fCommonUser;
-			property CommonPass : string Read fCommonPass;
-
-			//GameDB
-			property GameType : Integer read fGameType write fGameType;
-			property GameHost : string Read fGameHost;
-			property GamePort : integer read fGamePort;
-			property GameDB   : string Read fGameDB;
-			property GameUser : string Read fGameUser;
-			property GamePass : string Read fGamePass;
-
-			//StaticDB
-			property StaticType : Integer read fStaticType write fStaticType;
-			property StaticHost : string Read fStaticHost;
-			property StaticPort : integer read fStaticPort;
-			property StaticDB   : string Read fStaticDB;
-			property StaticUser : string Read fStaticUser;
-			property StaticPass : string Read fStaticPass;
+			property AccountConfig	: TDatabaseConfig read fAccountConfig;
+			property GameConfig			: TDatabaseConfig read fGameConfig;
 
 			Procedure Load;
 			Procedure Save;
@@ -84,7 +54,8 @@ implementation
 		SysUtils,
 		DatabaseConstants,
 		NetworkConstants,
-		Math;
+		Math,
+		Main;
 
 //------------------------------------------------------------------------------
 //Load()                                               PROCEDURE
@@ -104,96 +75,44 @@ implementation
 		Section    : TStringList;
 
 		//--------------------------------------------------------------------------
-		//LoadCommon                                                  SUB PROCEDURE
+		//LoadDatabaseConfig                                          SUB PROCEDURE
 		//--------------------------------------------------------------------------
-		procedure LoadCommon;
+		procedure LoadDatabaseConfig(const ADatabase : string; var ADatabaseConfig : TDatabaseConfig);
 		begin
-			ReadSectionValues('Common', Section);
-			fCommonType := EnsureRange(StrToIntDef(Section.Values['Type'], 1), 1, MAX_DBTYPE);
+			ReadSectionValues(ADatabase, Section);
+			if Section.Values['Protocol'] = '' then
+			begin
+				Section.Values['Protocol'] := 'sqlite-3';
+			end;
+			ADatabaseConfig.Protocol := Section.Values['Protocol'];
 			if Section.Values['Host'] = '' then
 			begin
-				Section.Values['Host'] := './save';
+				Section.Values['Host'] := MainProc.Options.DatabaseDirectory;
 			end;
-			fCommonHost := Section.Values['Host'];
-			fCommonPort := EnsureRange(StrToIntDef(Section.Values['Port'], 3306), 1, MAX_PORT);
-			if Section.Values['DBName'] = '' then
+			ADatabaseConfig.Host := Section.Values['Host'];
+			ADatabaseConfig.Port := EnsureRange(StrToIntDef(Section.Values['Port'], 3306), 1, MAX_PORT);
+			if Section.Values['Database'] = '' then
 			begin
-				Section.Values['DBName'] := 'helioscommon';
+				Section.Values['Database'] := ADatabase+'.db';
 			end;
-			fCommonDB := Section.Values['DBName'];
+			ADatabaseConfig.Database := Section.Values['Database'];
 			if Section.Values['Username'] = '' then
 			begin
 				Section.Values['Username'] := 'root';
 			end;
-			fCommonUser := Section.Values['Username'];
-			fCommonPass := Section.Values['Password'];
-		end;{Subroutine LoadCommon}
+			ADatabaseConfig.User := Section.Values['Username'];
+			ADatabaseConfig.Pass := Section.Values['Password'];
+		end;{Subroutine LoadOptions}
 		//--------------------------------------------------------------------------
 
-
-		//--------------------------------------------------------------------------
-		//LoadGame                                                    SUB PROCEDURE
-		//--------------------------------------------------------------------------
-		procedure LoadGame;
-		begin
-			ReadSectionValues('Game', Section);
-			fGameType := EnsureRange(StrToIntDef(Section.Values['Type'], 1), 1, MAX_DBTYPE);
-
-			if Section.Values['Host'] = '' then
-			begin
-				Section.Values['Host'] := './save';
-			end;
-			fGameHost := Section.Values['Host'];
-			fGamePort := EnsureRange(StrToIntDef(Section.Values['Port'], 3306), 1, MAX_PORT);
-
-			if Section.Values['DBName'] = '' then
-			begin
-				Section.Values['DBName'] := 'heliosgame';
-			end;
-			fGameDB := Section.Values['DBName'];
-
-			if Section.Values['Username'] = '' then
-			begin
-				Section.Values['Username'] := 'root';
-			end;
-			fGameUser := Section.Values['Username'];
-			fGamePass := Section.Values['Password'];
-		end;{Subroutine LoadGame}
-		//--------------------------------------------------------------------------
-
-		//--------------------------------------------------------------------------
-		//LoadStatic                                                  SUB PROCEDURE
-		//--------------------------------------------------------------------------
-		procedure LoadStatic;
-		begin
-			ReadSectionValues('Static', Section);
-			fStaticType := EnsureRange(StrToIntDef(Section.Values['Type'], 1), 1, MAX_DBTYPE);
-
-			if Section.Values['Host'] = '' then begin
-				Section.Values['Host'] := './save';
-			end;
-			fStaticHost := Section.Values['Host'];
-			fStaticPort := EnsureRange(StrToIntDef(Section.Values['Port'], 3306), 1, MAX_PORT);
-			if Section.Values['DBName'] = '' then begin
-				Section.Values['DBName'] := 'heliosstatic';
-			end;
-			fStaticDB := Section.Values['DBName'];
-			if Section.Values['Username'] = '' then begin
-				Section.Values['Username'] := 'root';
-			end;
-			fStaticUser := Section.Values['Username'];
-			fStaticPass := Section.Values['Password'];
-		end;{Subroutine LoadStatic}
-		//--------------------------------------------------------------------------
 	begin
 		Section    := TStringList.Create;
 
 		Section.QuoteChar := '"';
 		Section.Delimiter := ',';
 
-		LoadCommon;
-		LoadGame;
-		LoadStatic;
+		LoadDatabaseConfig('Account', fAccountConfig);
+		LoadDatabaseConfig('Game', fGameConfig);
 
 		Section.Free;
 
@@ -213,30 +132,23 @@ implementation
 //
 //------------------------------------------------------------------------------
 	procedure TDatabaseOptions.Save;
+
+		procedure SaveDatabaseConfig(const ADatabase : string; var ADatabaseConfig : TDatabaseConfig);
+		begin
+			with ADatabaseConfig do
+			begin
+				WriteString(ADatabase,'Protocol', Protocol);
+				WriteString(ADatabase,'Host', Host);
+				WriteString(ADatabase,'Port', IntToStr(Port));
+				WriteString(ADatabase,'Database', Database);
+				WriteString(ADatabase,'Username', User);
+				WriteString(ADatabase,'Password', Pass);
+			end;
+		end;
+
 	begin
-		//Common
-		WriteString('Common','Type', IntToStr(CommonType));
-		WriteString('Common','Host', CommonHost);
-		WriteString('Common','Port', IntToStr(CommonPort));
-		WriteString('Common','DBName', CommonDB);
-		WriteString('Common','Username', CommonUser);
-		WriteString('Common','Password', CommonPass);
-
-		//Game
-		WriteString('Game','Type', IntToStr(GameType));
-		WriteString('Game','Host', GameHost);
-		WriteString('Game','Port', IntToStr(GamePort));
-		WriteString('Game','DBName', GameDB);
-		WriteString('Game','Username', GameUser);
-		WriteString('Game','Password', GamePass);
-
-		//Static
-		WriteString('Static','Type', IntToStr(StaticType));
-		WriteString('Static','Host', StaticHost);
-		WriteString('Static','Port', IntToStr(StaticPort));
-		WriteString('Static','DBName', StaticDB);
-		WriteString('Static','Username', StaticUser);
-		WriteString('Static','Password', StaticPass);
+		SaveDatabaseConfig('Account', fAccountConfig);
+		SaveDatabaseConfig('Game', fGameConfig);
 
 		UpdateFile;
 	end;{Save}

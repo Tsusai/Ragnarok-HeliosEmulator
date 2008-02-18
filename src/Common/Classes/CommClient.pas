@@ -113,10 +113,10 @@ type
 		ShutDown									: Boolean;
 
 		constructor Create(
-			Source									: string;
-			Destination							: string;
-			AutoReconnect						: Boolean;
-			ReconnectDelay					: LongWord = 3000
+			ASource									: string;
+			ADestination						: string;
+			AnAutoReconnect					: Boolean;
+			AReconnectDelay					: LongWord = 3000
 		);
 
 		destructor Destroy(
@@ -160,6 +160,29 @@ uses
 
 
 //------------------------------------------------------------------------------
+//Create                                                             CONSTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does -
+//			Creates our client thread.
+//
+//	Changes -
+//		January 4th, 2007 - RaX - Created Header.
+//		January 20th, 2007 - Tsusai - Updated create call, removed FreeOnTerminate
+//
+//------------------------------------------------------------------------------
+	constructor TClientThread.Create(
+		AClient : TInterClient
+	);
+	begin
+		inherited Create(True, True, AClient.SourceName + ' Client');
+		fClient			:= AClient;
+		Priority		:= tpLowest;
+		Start;
+	end;{Create}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //Run                                                                  PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does -
@@ -189,28 +212,6 @@ uses
 		end;
 
 	end;{Run}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//Create                                                             CONSTRUCTOR
-//------------------------------------------------------------------------------
-//	What it does -
-//			Creates our client thread.
-//
-//	Changes -
-//		January 4th, 2007 - RaX - Created Header.
-//		January 20th, 2007 - Tsusai - Updated create call, removed FreeOnTerminate
-//
-//------------------------------------------------------------------------------
-	constructor TClientThread.Create(
-		AClient : TInterClient
-	);
-	begin
-		inherited Create(True, True, AClient.SourceName + ' Client');
-		fClient := AClient;
-		Start;
-	end;{Create}
 //------------------------------------------------------------------------------
 
 
@@ -264,7 +265,7 @@ begin
 	//Apparently indy threads' FreeOnTerminate does NOT work, this was added to 
 	//force it.
 	Terminate;
-end;{Execute}
+end;{Run}
 //------------------------------------------------------------------------------
 
 
@@ -281,19 +282,18 @@ end;{Execute}
 //
 //------------------------------------------------------------------------------
 	constructor TInterClient.Create(
-		Source						: string;
-		Destination				: string;
-		AutoReconnect			: Boolean;
-		ReconnectDelay		: LongWord = 3000
+		ASource							: string;
+		ADestination				: string;
+		AnAutoReconnect			: Boolean;
+		AReconnectDelay			: LongWord = 3000
 	);
 	begin
 		inherited Create;
 
-		SourceName						:= Source;
-		self.AutoReconnect		:= AutoReconnect;
-		self.ReconnectDelay		:= ReconnectDelay;
-		DestinationName				:= Destination;
-
+		SourceName						:= ASource;
+		AutoReconnect					:= AnAutoReconnect;
+		ReconnectDelay				:= AReconnectDelay;
+		DestinationName				:= ADestination;
 	end;{Create}
 //------------------------------------------------------------------------------
 

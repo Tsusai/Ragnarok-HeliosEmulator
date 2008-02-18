@@ -282,12 +282,12 @@ begin
 
 		ZoneSendPlayerOnlineStatus(
 					ToInterTCPClient,
+					ACharacter.AccountID,
 					ACharacter.ID,
-					ACharacter.CID,
 					1 //0 = online; 1=offline
 				);
 
-			TThreadLink(AConnection.Data).DatabaseLink.GameData.SaveChara(ACharacter);
+		TThreadLink(AConnection.Data).DatabaseLink.Character.Save(ACharacter);
 
 		SendZoneCharaLogOut(ToCharaTCPClient, ACharacter, Byte(ACharacter.DcAndKeepData));
 
@@ -303,7 +303,7 @@ begin
 			ACharacter.Position := ACharacter.SavePoint;
 		end;
 
-		CharacterIndex := CharacterList.IndexOf(ACharacter.CID);
+		CharacterIndex := CharacterList.IndexOf(ACharacter.ID);
 		if CharacterIndex > -1 then
 		begin
 			CharacterList.Delete(CharacterIndex);
@@ -643,6 +643,7 @@ Procedure TZoneServer.LoadOptions;
 begin
 	Options := TZoneOptions.Create(MainProc.Options.ConfigDirectory+'/Zone.ini');
 	Options.Load;
+	Options.Save;
 end;{LoadOptions}
 //------------------------------------------------------------------------------
 
@@ -679,16 +680,15 @@ Var
 	MapFileName : String;
 Begin
 	Console.WriteLn('      - Loading Maps...');
-
-	{[2007/06/01] CR - Get List of Map Names from DB. }
-	with Database.StaticData do
-	begin
-		Connect;
-		MapNames := GetMapsForZone(Options.ID);
-		Disconnect;
-	end;
-
+	MapNames := TStringList.Create;
 	try
+		{[2007/06/01] CR - Get List of Map Names from DB. }
+		with Database.Map do
+		begin
+			LoadList(MapNames, MainProc.ZoneServer.Options.ID);
+		end;
+
+
 		Console.WriteLn('        : '+ IntToStr(MapNames.Count)+ ' Found!');
 
 		for Index := 0 to (MapNames.Count - 1) do
