@@ -77,8 +77,7 @@ uses
 	GameConstants,
 	{3rd Party}
 	ZDataset,
-	DB,
-	SQLTimSt
+	DB
 	//none
 	;
 

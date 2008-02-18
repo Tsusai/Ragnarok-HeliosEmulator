@@ -74,8 +74,7 @@ uses
 	Globals,
 	{3rd Party}
 	ZDataset,
-	DB,
-	SQLTimSt
+	DB
 	//none
 	;
 

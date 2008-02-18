@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 438 -
+[2008/02/18] RaX - Quick fixes for lazarus compatibility on database code. Added
+ lazarus project file (you'll still need to add search paths for indy and zeoslib).
+-
+
 - Rev 437 -
 [2008/02/18] RaX - Fixed query problems that prevented hp/sp from showing correctly.
 -
