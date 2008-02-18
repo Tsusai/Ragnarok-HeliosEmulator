@@ -39,10 +39,10 @@ propel:
         head_top_item: { required: true, type: integer, foreignTable: Items, foreignReference: id }
         head_middle_item: { required: true, type: integer, foreignTable: Items, foreignReference: id }
         head_bottom_item: { required: true, type: integer, foreignTable: Items, foreignReference: id }
-        last_map: { required: true, type: varchar, size: 11 }
+        last_map: { required: true, type: varchar, size: 16 }
         last_map_x: { required: true, type: integer }
         last_map_y: { required: true, type: integer }
-        save_map: { required: true, type: varchar, size: 11 }
+        save_map: { required: true, type: varchar, size: 16 }
         save_map_x: { required: true, type: integer }
         save_map_y: { required: true, type: integer }
         partner_id: { required: true, type: integer, foreignTable: Characters, foreignReference: id }
@@ -682,7 +682,7 @@ propel:
     #contains map data
     Maps:
         id:
-        map_name: varchar(255)
+        map_name: varchar(16)
         zone_id: integer
         memo: boolean
         no_return_on_dc: boolean

@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 440 -
+[2008/02/18] Aeomin - Added Sqlite database, and tweaks..
+however, i'm unable to test it due to helios crash or something... weird..
+-
+
 - Rev 439 -
 [2008/02/18] RaX - Fixed database yml source, had an = where there should have
  been a :

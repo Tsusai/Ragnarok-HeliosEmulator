@@ -65,4 +65,4 @@ CREATE TABLE `accounts` (
 -- 
 
 INSERT INTO `accounts` (`id`, `name`, `password`, `last_login`, `login_count`, `gender`, `email_address`, `login_key_1`, `login_key_2`, `level`, `connect_until`, `banned_until`, `last_ip`, `state`, `created_at`, `updated_at`) VALUES 
-(100100, 'test', 'test', '2008-02-17 18:52:35', 214, 'F', '-@-', 311132785, 1669303859, 255, '9999-12-31 23:59:59', '1900-01-01 00:00:00', '127.0.0.1', 0, NULL, NULL);
+(100100, 'test', 'test', '2008-02-17 00:00:00', 0, 'F', '-@-', 0, 0, 255, '9999-12-31 23:59:59', '1900-01-01 00:00:00', '127.0.0.1', 0, NULL, NULL);

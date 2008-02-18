@@ -263,10 +263,10 @@ CREATE TABLE `characters` (
   `head_top_item` int(11) NOT NULL,
   `head_middle_item` int(11) NOT NULL,
   `head_bottom_item` int(11) NOT NULL,
-  `last_map` varchar(50) NOT NULL,
+  `last_map` varchar(16) NOT NULL,
   `last_map_x` int(11) NOT NULL,
   `last_map_y` int(11) NOT NULL,
-  `save_map` varchar(50) NOT NULL,
+  `save_map` varchar(16) NOT NULL,
   `save_map_x` int(11) NOT NULL,
   `save_map_y` int(11) NOT NULL,
   `partner_id` int(11) NOT NULL,
@@ -298,12 +298,6 @@ CREATE TABLE `characters` (
   KEY `Characters_FI_20` (`guild_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2000002 ;
 
--- 
--- Dumping data for table `characters`
--- 
-
-INSERT INTO `characters` (`id`, `account_id`, `name`, `slot`, `job_id`, `base_level`, `job_level`, `base_exp`, `job_exp`, `zeny`, `str`, `agi`, `vit`, `int`, `dex`, `luk`, `status_points`, `skill_points`, `max_hp`, `max_sp`, `current_hp`, `current_sp`, `hair_style`, `hair_color`, `clothes_color`, `option`, `inventory_id`, `storage_id`, `cart_inventory_id`, `righthand_item`, `lefthand_item`, `armor_item`, `garment_item`, `shoes_item`, `accessory1_item`, `accessory2_item`, `head_top_item`, `head_middle_item`, `head_bottom_item`, `last_map`, `last_map_x`, `last_map_y`, `save_map`, `save_map_x`, `save_map_y`, `partner_id`, `parent1_id`, `parent2_id`, `party_id`, `guild_id`, `is_online`) VALUES 
-(2000001, 100100, '-RaX-', 3, 0, 1, 1, 0, 0, 50, 5, 5, 5, 5, 5, 5, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1201, 0, 1201, 0, 0, 0, 0, 0, 0, 0, 'new_1-1', 55, 117, 'new_1-1', 53, 111, 0, 0, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -340,12 +334,6 @@ CREATE TABLE `charactervariables` (
   KEY `CharacterVariables_FI_1` (`character_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
--- 
--- Dumping data for table `charactervariables`
--- 
-
-INSERT INTO `charactervariables` (`character_id`, `key`, `value`, `id`) VALUES 
-(2000001, 'temp', '4', 3);
 
 -- --------------------------------------------------------
 
@@ -1188,7 +1176,7 @@ INSERT INTO `jobexperience` (`level`, `novice`, `swordman`, `magician`, `archer`
 
 CREATE TABLE `maps` (
   `id` int(11) NOT NULL auto_increment,
-  `map_name` varchar(255) default NULL,
+  `map_name` varchar(16) default NULL,
   `zone_id` int(11) default NULL,
   `memo` int(11) default NULL,
   `no_return_on_dc` int(11) default NULL,
@@ -1208,7 +1196,7 @@ CREATE TABLE `maps` (
   `no_guild` int(11) default NULL,
   `weather` int(11) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=651 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=651;
 
 -- 
 -- Dumping data for table `maps`
