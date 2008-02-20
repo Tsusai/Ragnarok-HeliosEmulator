@@ -206,7 +206,7 @@ var
 	AParam			: TParam;
 	Weather			: Integer;
 begin
-
+  Weather := 0;
 	ADataSet			:= TZQuery.Create(nil);
 	try
 		//MapName

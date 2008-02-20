@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 443 -
+[2008/02/18] RaX - Fixed some hints/warnings related to the last rev (index var
+ not being used anymore, etc.)
+-
+
 - Rev 442 -
 [2008/02/20] RaX - Fixed SQLite support, apparently RowsAffected in ZeosLib does
  not work with sqlite. Got around it by using if adataset.eof.

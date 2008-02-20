@@ -300,7 +300,6 @@ var
 	ADataSet		: TZQuery;
 	AParam			: TParam;
 	ACharacter	: TCharacter;
-	Index				: Integer;
 begin
 
 	ADataSet			:= TZQuery.Create(nil);
