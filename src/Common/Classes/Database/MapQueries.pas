@@ -113,7 +113,8 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataset.First;
+		if NOT ADataSet.Eof then
 		begin
 			noReturnOnDC := ADataset.Fields[0].AsInteger;
 			if NoReturnOnDC = 0 then
@@ -164,7 +165,8 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataset.First;
+		if NOT ADataSet.Eof then
 		begin
 			Result := ADataset.Fields[0].AsInteger;
 		end;
@@ -215,7 +217,8 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataSet.First;
+		if NOT ADataSet.Eof then
 		begin
 			Flags.Memo							:= Boolean(ADataset.Fields[0].AsInteger);
 			Flags.NoReturnOnDC			:= Boolean(ADataset.Fields[1].AsInteger);
@@ -234,24 +237,23 @@ begin
 			Flags.NoParty						:= Boolean(ADataset.Fields[14].AsInteger);
 			Flags.NoGuild						:= Boolean(ADataset.Fields[15].AsInteger);
 			Weather									:= ADataset.Fields[16].AsInteger;
+		end;
+		//initialize weather
+		Flags.Rain   := FALSE;
+		Flags.Snow   := FALSE;
+		Flags.Sakura := FALSE;
+		Flags.Fog    := FALSE;
+		Flags.Leaves := FALSE;
+		Flags.Smog   := FALSE;
 
-			//initialize weather
-			Flags.Rain   := FALSE;
-			Flags.Snow   := FALSE;
-			Flags.Sakura := FALSE;
-			Flags.Fog    := FALSE;
-			Flags.Leaves := FALSE;
-			Flags.Smog   := FALSE;
-
-			//Figure out weather.
-			case Weather of
-				1 : Flags.Rain     := TRUE;
-				2 : Flags.Snow     := TRUE;
-				3 : Flags.Sakura   := TRUE;
-				4 : Flags.Fog      := TRUE;
-				5 : Flags.Leaves   := TRUE;
-				6 : Flags.Smog     := TRUE;
-			end;
+		//Figure out weather.
+		case Weather of
+			1 : Flags.Rain     := TRUE;
+			2 : Flags.Snow     := TRUE;
+			3 : Flags.Sakura   := TRUE;
+			4 : Flags.Fog      := TRUE;
+			5 : Flags.Leaves   := TRUE;
+			6 : Flags.Smog     := TRUE;
 		end;
 
 
@@ -297,14 +299,11 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataSet.First;
+		while NOT ADataSet.Eof do
 		begin
-			ADataSet.First;
-			while NOT ADataSet.Eof do
-			begin
-				MapList.Add(ADataset.Fields[0].AsString);
-				ADataset.Next;
-      end;
+			MapList.Add(ADataset.Fields[0].AsString);
+			ADataset.Next;
 		end;
 
 

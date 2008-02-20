@@ -129,10 +129,18 @@ Procedure TQueryBase.Query(
 	ADataSet					: TZQuery;
 	const AQuery			: String
 );
+var
+	Pinged : Boolean;
 begin
-	if NOT Connection.Ping then
+
+	try
+		Pinged := Connection.Ping;
+	except
+		Pinged := TRUE;
+	end;
+
+	if NOT Pinged then
 	begin
-		Connection.Disconnect;
 		try
 			Connection.Connect;
 		except
@@ -165,10 +173,18 @@ Procedure TQueryBase.QueryNoResult(
 	ADataSet					: TZQuery;
 	const AQuery			: String
 );
+var
+	Pinged : Boolean;
 begin
-	if NOT Connection.Ping then
+
+	try
+		Pinged := Connection.Ping;
+	except
+		Pinged := TRUE;
+	end;
+
+	if NOT Pinged then
 	begin
-		Connection.Disconnect;
 		try
 			Connection.Connect;
 		except

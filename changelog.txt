@@ -15,7 +15,14 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
-- Rev 440 -
+- Rev 442 -
+[2008/02/20] RaX - Fixed SQLite support, apparently RowsAffected in ZeosLib does
+ not work with sqlite. Got around it by using if adataset.eof.
+[2008/02/20] RaX - Changed all <type>Queries.pas to use adataset.eof instead of
+ Adataset.rowsaffected.
+-
+
+- Rev 441 -
 [2008/02/18] Aeomin - Updated 3rdParty.txt
 -
 

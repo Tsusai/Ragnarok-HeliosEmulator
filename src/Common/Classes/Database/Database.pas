@@ -126,11 +126,12 @@ Begin
 	GameConnection.User					:= Options.GameConfig.User;
 	GameConnection.Password			:= Options.GameConfig.Pass;
 
-	Account			:= TAccountQueries.Create(AccountConnection);
-	Character		:= TCharacterQueries.Create(GameConnection);
-	Friend			:= TFriendQueries.Create(GameConnection);
-	Map					:= TMapQueries.Create(GameConnection);
-	CharacterConstant := TCharacterConstantQueries.Create(GameConnection);
+	Account											:= TAccountQueries.Create(AccountConnection);
+	Character										:= TCharacterQueries.Create(GameConnection);
+	Friend											:= TFriendQueries.Create(GameConnection);
+	Map													:= TMapQueries.Create(GameConnection);
+	CharacterConstant						:= TCharacterConstantQueries.Create(GameConnection);
+
 	if ConnectOnCreate then
 	begin
 		Connect();
@@ -187,29 +188,39 @@ Procedure TDatabase.Connect(
 );
 begin
 	try
+
 		if NOT AccountConnection.Connected then
 		begin
 			AccountConnection.Connect();
 		end;
+
 	except
+
 		Console.Message('Could not connect to '+AccountConnection.Protocol+
 			' database "'+AccountConnection.Database+'" on server at "'+
 			AccountConnection.HostName+':'+IntToStr(AccountConnection.Port)+'".',
-			'Database', MS_ERROR);
+			'Database', MS_ERROR
+		);
 		AccountConnection.Disconnect;
+
 	end;
 
 	try
+
 		if NOT GameConnection.Connected then
 		begin
 			GameConnection.Connect();
 		end;
+
 	except
+
 		Console.Message('Could not connect to '+AccountConnection.Protocol+
 			' database "'+AccountConnection.Database+'" on server at "'+
 			AccountConnection.HostName+':'+IntToStr(AccountConnection.Port)+'".',
-			'Database', MS_ERROR);
+			'Database', MS_ERROR
+		);
 		GameConnection.Disconnect;
+
 	end;
 end;
 //------------------------------------------------------------------------------

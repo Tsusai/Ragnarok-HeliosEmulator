@@ -85,21 +85,13 @@ implementation
 				Section.Values['Protocol'] := 'sqlite-3';
 			end;
 			ADatabaseConfig.Protocol := Section.Values['Protocol'];
-			if Section.Values['Host'] = '' then
-			begin
-				Section.Values['Host'] := MainProc.Options.DatabaseDirectory;
-			end;
 			ADatabaseConfig.Host := Section.Values['Host'];
 			ADatabaseConfig.Port := EnsureRange(StrToIntDef(Section.Values['Port'], 3306), 1, MAX_PORT);
 			if Section.Values['Database'] = '' then
 			begin
-				Section.Values['Database'] := ADatabase+'.db';
+				Section.Values['Database'] := MainProc.Options.DatabaseDirectory+'/'+ADatabase+'.db';
 			end;
 			ADatabaseConfig.Database := Section.Values['Database'];
-			if Section.Values['Username'] = '' then
-			begin
-				Section.Values['Username'] := 'root';
-			end;
 			ADatabaseConfig.User := Section.Values['Username'];
 			ADatabaseConfig.Pass := Section.Values['Password'];
 		end;{Subroutine LoadOptions}
@@ -111,8 +103,8 @@ implementation
 		Section.QuoteChar := '"';
 		Section.Delimiter := ',';
 
-		LoadDatabaseConfig('Account', fAccountConfig);
-		LoadDatabaseConfig('Game', fGameConfig);
+		LoadDatabaseConfig('account', fAccountConfig);
+		LoadDatabaseConfig('game', fGameConfig);
 
 		Section.Free;
 

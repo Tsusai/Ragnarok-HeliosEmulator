@@ -128,10 +128,9 @@ begin
 
 	try
 		Query(ADataSet, AQuery+WhereClause);
-
-		if ADataSet.RowsAffected > 0 then
+		ADataSet.First;
+		if NOT ADataSet.Eof then
 		begin
-			ADataSet.First;
 			//fill character data
 			AnAccount.ID						:= ADataSet.Fields[0].AsInteger;
 			AnAccount.Name					:= ADataSet.Fields[1].AsString;
@@ -208,7 +207,8 @@ begin
 
 	try
 		Query(ADataSet, AQuery+WhereClause);
-		if ADataSet.RowsAffected < 1 then
+		ADataset.First;
+		if ADataSet.Eof then
 		begin
 			Result := FALSE;
 		end;
@@ -434,7 +434,8 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataSet.First;
+		if NOT ADataSet.Eof then
 		begin
 			AnAccount.LoginKey[1]		:= ADataSet.Fields[0].AsInteger;
 			AnAccount.LoginKey[2]		:= ADataSet.Fields[1].AsInteger;

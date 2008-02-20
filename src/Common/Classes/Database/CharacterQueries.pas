@@ -159,10 +159,9 @@ begin
 
 	try
 		Query(ADataSet, AQuery+WhereClause);
-
-		if ADataSet.RowsAffected > 0 then
+		ADataSet.First;
+		if NOT ADataSet.Eof then
 		begin
-			ADataSet.First;
 			//fill character data
 			with ACharacter do
 			begin
@@ -267,7 +266,8 @@ begin
 			AParam
 		);
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataSet.First;
+		if NOT ADataSet.Eof then
 		begin
 			Result := ADataSet.Fields[0].AsString;
 		end;
@@ -312,20 +312,14 @@ begin
 			AParam
 		);
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataSet.First;
+		while NOT ADataSet.Eof do
 		begin
-			ADataSet.First;
-			for Index := 1 to ADataSet.RowsAffected do
-			begin
-				ACharacter				:= TCharacter.Create(AnAccount.ClientInfo);
-				ACharacter.ID		:= ADataSet.Fields[0].AsInteger;
-				Load(ACharacter);
-				ACharacterList.Add(ACharacter);
-				if Index <> ADataSet.RowsAffected then
-				begin
-					ADataSet.Next;
-				end;
-			end;
+			ACharacter				:= TCharacter.Create(AnAccount.ClientInfo);
+			ACharacter.ID			:= ADataSet.Fields[0].AsInteger;
+			Load(ACharacter);
+			ACharacterList.Add(ACharacter);
+			ADataSet.Next;
 		end;
 	finally
 		ADataSet.Free;
@@ -399,7 +393,8 @@ begin
 
 
 		Query(ADataSet, AQuery+WhereClause);
-		if ADataSet.RowsAffected < 1 then
+		ADataset.First;
+		if ADataSet.Eof then
 		begin
 			Result := FALSE;
 		end;
@@ -951,7 +946,8 @@ begin
 		);
 
 		Query(ADataSet, CheckVariableQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataset.First;
+		if NOT ADataSet.Eof then
 		begin
 			QueryNoResult(ADataSet2, UpdateVariableQuery);
 		end else
@@ -1007,9 +1003,9 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataset.RowsAffected > 0 then
+		ADataset.First;
+		if NOT ADataSet.Eof then
 		begin
-			ADataset.First;
 			Result := ADataset.Fields[0].AsString;
     end;
 

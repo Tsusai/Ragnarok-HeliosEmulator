@@ -122,43 +122,40 @@ begin
 		);
 		Query(ADataSet, GetFriendListQuery);
 
-		if ADataSet.RowsAffected > 0 then
+		ADataset.First;
+		while NOT ADataSet.Eof do
 		begin
-			ADataSet.First;
-			while NOT ADataSet.Eof do
+			AFriend := TCharacter.Create(ACharacter.ClientInfo);
+			if LongWord(ADataSet.Fields[0].AsInteger) = ACharacter.ID then
 			begin
-				AFriend := TCharacter.Create(ACharacter.ClientInfo);
-				if LongWord(ADataSet.Fields[0].AsInteger) = ACharacter.ID then
-				begin
-					AFriend.ID := ADataSet.Fields[0].AsInteger;
-				end else
-				begin
-					AFriend.ID := ADataSet.Fields[1].AsInteger;
-				end;
-
-				//FriendID
-				AParam := ADataset.Params.CreateParam(ftInteger, 'FriendID', ptInput);
-				AParam.AsInteger := AFriend.ID;
-				ADataSet.Params.AddParam(
-					AParam
-				);
-
-				Query(ADataSet2, GetCharacterQuery);
-				if ADataSet2.RowsAffected > 0 then
-				begin
-					ADataSet2.First;
-					AFriend.AccountID	:= ADataSet2.Fields[0].AsInteger;
-					AFriend.Name			:= ADataSet2.Fields[1].AsString;
-					ACharacterList.Add(AFriend);
-				end else
-				begin
-					AFriend.Free;
-				end;
-
-				ADataSet2.Params.Clear;
-				ADataSet2.EmptyDataSet;
-				ADataSet.Next;
+				AFriend.ID := ADataSet.Fields[0].AsInteger;
+			end else
+			begin
+				AFriend.ID := ADataSet.Fields[1].AsInteger;
 			end;
+
+			//FriendID
+			AParam := ADataset.Params.CreateParam(ftInteger, 'FriendID', ptInput);
+			AParam.AsInteger := AFriend.ID;
+			ADataSet.Params.AddParam(
+				AParam
+			);
+
+			Query(ADataSet2, GetCharacterQuery);
+			ADataset2.First;
+			if NOT ADataSet2.Eof then
+			begin
+				AFriend.AccountID	:= ADataSet2.Fields[0].AsInteger;
+				AFriend.Name			:= ADataSet2.Fields[1].AsString;
+				ACharacterList.Add(AFriend);
+			end else
+			begin
+				AFriend.Free;
+			end;
+
+			ADataSet2.Params.Clear;
+			ADataSet2.EmptyDataSet;
+			ADataSet.Next;
 		end;
 
 	finally
@@ -313,7 +310,8 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataset.First;
+		if NOT ADataSet.Eof then
 		begin
 			Result := TRUE;
     end;

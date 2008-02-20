@@ -132,7 +132,8 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataset.First;
+		if NOT ADataSet.Eof then
 		begin
 			Result := ADataset.Fields[0].AsInteger;
 		end;
@@ -184,7 +185,8 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataset.First;
+		if NOT ADataSet.Eof then
 		begin
 			Result := ADataset.Fields[0].AsInteger;
 		end;
@@ -230,7 +232,8 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataset.First;
+		if NOT ADataSet.Eof then
 		begin
 			Result := ADataset.Fields[0].AsInteger;
 		end;
@@ -277,7 +280,8 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataset.First;
+		if NOT ADataSet.Eof then
 		begin
 			Result := ADataset.Fields[0].AsInteger;
 		end;
@@ -324,7 +328,8 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataset.First;
+		if NOT ADataSet.Eof then
 		begin
 			Result := ADataset.Fields[0].AsInteger;
 		end;
@@ -370,7 +375,8 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataset.First;
+		if NOT ADataSet.Eof then
 		begin
 			Result := ADataset.Fields[0].AsInteger;
 		end;
@@ -417,7 +423,8 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataset.First;
+		if NOT ADataSet.Eof then
 		begin
 			Result := ADataset.Fields[0].AsInteger;
 		end;
@@ -463,7 +470,8 @@ begin
 		);
 
 		Query(ADataSet, AQuery);
-		if ADataSet.RowsAffected > 0 then
+		ADataset.First;
+		if NOT ADataSet.Eof then
 		begin
 			AStringList := TStringList.Create;
 			try
