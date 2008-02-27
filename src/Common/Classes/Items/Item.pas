@@ -40,9 +40,10 @@ unit Item;
 interface
 
 
-//uses
+uses
 	{RTL/VCL}
 	{Project}
+	ItemTypes;
 	{Third Party}
 	//none
 
@@ -73,6 +74,7 @@ protected
 	fWeight : LongWord;
 	fPrice	: LongWord; //The price of the item in a standard shop
 	fSell		: LongWord; //The selling price of an item to a shop
+	fType		: TItemType;
 
 public
 	Property Name		: String Read fName Write fName;

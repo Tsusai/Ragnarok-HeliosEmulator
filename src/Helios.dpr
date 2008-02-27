@@ -168,6 +168,8 @@ compile for linux, at the same time*}
 
 	//Types
 	MapTypes in 'Common\MapTypes.pas',
+	ItemTypes in 'Common\ItemTypes.pas',
+	GameTypes in 'Common\GameTypes.pas',
 
 	//Other
 	AreaLoopEvents in 'Common\AreaLoopEvents.pas',
@@ -291,6 +293,8 @@ compile for linux, at the same time*}
 
 	//Types
 	MapTypes in 'Common/MapTypes.pas',
+	ItemTypes in 'Common/ItemTypes.pas',
+	GameTypes in 'Common/GameTypes.pas',
 
 	//Other
 	AreaLoopEvents in 'Common/AreaLoopEvents.pas',

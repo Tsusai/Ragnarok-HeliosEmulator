@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 444 -
+[2008/02/26] RaX - Added GameTypes and ItemTypes, implemented them in item classes.
+ They also have routines for converting these enumerations to bytes/chars and back
+ again.
+-
+
 - Rev 443 -
 [2008/02/18] RaX - Fixed some hints/warnings related to the last rev (index var
  not being used anymore, etc.)
