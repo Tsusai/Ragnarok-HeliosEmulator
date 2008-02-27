@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 446 -
+[2008/02/26] Aeomin - Clean up RaX' last commit, i don't know what's wrong with
+his Delphi setup, but really a lot nasty tabbing there..
+-
+
 - Rev 445 -
 [2008/02/26] Aeomin - Fixed a "WTF", cleaner code in GameTypes.pas
 -

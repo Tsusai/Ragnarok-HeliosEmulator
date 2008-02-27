@@ -69,24 +69,24 @@ Revisions:
 *=============================================================================*)
 TEquipmentItem = class(TItem)
 protected
-	fViewID								: LongWord; //The view id, for the client to show the correct sprite.
-	fEquipmentType				: TEquipTypes;//The equipment type(IE::Sword, Armor)
-	fEquipmentLocation		: TEquipLocations; //What equipment locations this item resides in
-	fAttack								: Word;  //this item's attack
-	fDefense							: Word; //This item's defense
-	fRange 								: Word; //The range of this item.
-	fSlots								: Byte; //The number of slots this item has.
-	fJob									: Word; //The required job.
-	fGender								: TGenders; //The required gender, if applicable.
-	fMinimumLevel					: Word;//The minimum base level required to equip this item
-	fWeaponLevel					: Byte; //The weapon level of an item.
-	fOnEquip							: String;//Script function, executes when the item is equipped.
-	fOnDisarm							: String;//Script Function, executes when the item is unequipped.
-	fOnAttack							: String;//Script function, executes when an Item is used to attack
-	fOnDefend							: String;//Script function, executes when an Item is used to defend.
+	fViewID			: LongWord; //The view id, for the client to show the correct sprite.
+	fEquipmentType		: TEquipTypes;//The equipment type(IE::Sword, Armor)
+	fEquipmentLocation	: TEquipLocations; //What equipment locations this item resides in
+	fAttack			: Word;  //this item's attack
+	fDefense		: Word; //This item's defense
+	fRange 			: Word; //The range of this item.
+	fSlots			: Byte; //The number of slots this item has.
+	fJob			: Word; //The required job.
+	fGender			: TGenders; //The required gender, if applicable.
+	fMinimumLevel		: Word;//The minimum base level required to equip this item
+	fWeaponLevel		: Byte; //The weapon level of an item.
+	fOnEquip		: String;//Script function, executes when the item is equipped.
+	fOnDisarm		: String;//Script Function, executes when the item is unequipped.
+	fOnAttack		: String;//Script function, executes when an Item is used to attack
+	fOnDefend		: String;//Script function, executes when an Item is used to defend.
 
 public
-	Property ViewID				: LongWord
+	Property ViewID		: LongWord
 		Read fViewID
 		Write fViewID;
 	Property EquipmentType: TEquipTypes
@@ -95,19 +95,19 @@ public
 	Property EquipmentLocation: TEquipLocations
 		Read fEquipmentLocation
 		write fEquipmentLocation;
-	Property Attack				: Word
+	Property Attack		: Word
 		Read fAttack
 		Write fAttack;
-	Property Defense			: Word
+	Property Defense	: Word
 		Read fDefense
 		Write fDefense;
-	Property Range				: Word
+	Property Range		: Word
 		Read fRange
 		Write fRange;
-	Property Job 					: Word
+	Property Job 		: Word
 		Read fJob
 		Write fJob;
-	Property Gender				: TGenders
+	Property Gender		: TGenders
 		Read fGender
 		Write fGender;
 	Property MinimumLevel	: Word
@@ -116,16 +116,16 @@ public
 	Property WeaponLevel	: Byte
 		Read fWeaponLevel
 		Write fWeaponLevel;
-	Property OnEquip			: String
+	Property OnEquip	: String
 		Read fOnEquip
 		Write fOnEquip;
-	Property OnDisarm			: String
+	Property OnDisarm	: String
 		Read fOnDisarm
 		Write fOnDisarm;
-	Property OnAttack			: String
+	Property OnAttack	: String
 		Read fOnAttack
 		Write fOnAttack;
-	Property OnDefend			: String
+	Property OnDefend	: String
 		Read fOnDefend
 		Write fOnDefend;
 
