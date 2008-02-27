@@ -53,7 +53,7 @@ begin
 		else
 		begin
 			Result := 's';
-    end;
+		end;
 	end;
 end;
 
@@ -61,26 +61,20 @@ end;
 function CharToGender(AChar : Char) : TGenders;
 begin
 	case AChar of
-		'm' :
+		'm',
+		'M':
 			begin
 				Result := MALE;
 			end;
-		'M' :
-			begin
-				Result := MALE;
-			end;
-		'f'		:
-			begin
-				Result := FEMALE;
-			end;
-		'F'		:
+		'f',
+		'F':
 			begin
 				Result := FEMALE;
 			end;
 		else
 		begin
 			Result := BOTH;
-    end;
+		end;
 	end;
 end;
 

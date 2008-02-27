@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 445 -
+[2008/02/26] Aeomin - Fixed a "WTF", cleaner code in GameTypes.pas
+-
+
 - Rev 444 -
 [2008/02/26] RaX - Added GameTypes and ItemTypes, implemented them in item classes.
  They also have routines for converting these enumerations to bytes/chars and back
