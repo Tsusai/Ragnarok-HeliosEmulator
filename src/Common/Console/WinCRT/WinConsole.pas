@@ -732,8 +732,7 @@ begin
     end
     else
     begin
-    {$IFNDEF FPC}
-    //Ignoring inline ASM for FPC
+    {$IFDEF WIN32}
     asm
           MOV     AL,$B6
           OUT     $43,AL
@@ -792,8 +791,7 @@ begin
   end
   else
   begin
-  {$IFNDEF FPC}
-  //Ignoring inline ASM for FPC
+  {$IFDEF WIN32}
   asm
         MOV     AL,0
         OUT     $61,AL
@@ -896,7 +894,7 @@ begin
   Rewrite(ErrOutput);
   StdErr := TTextRec(ErrOutput).Handle;
 {$ELSE}
-  StdErr := GetStdHandle(STD_ERROR_HANDLE);
+  StdErr := GetStdHandle(DWord(STD_ERROR_HANDLE));
 {$ENDIF}
   if not GetConsoleScreenBufferInfo(StdOut, BufferInfo) then
   begin

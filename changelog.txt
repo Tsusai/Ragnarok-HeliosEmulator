@@ -15,6 +15,16 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 447 -
+[2008/03/02] Tsusai - Notes/Overview: Compatibilty stuff for FPC, Win64, etc.
+[2008/03/02] Tsusai - List32.pas: Readded ASM, w/ Win64 ASM equivalent (.Error), 
+ and added the FPC way of typcasting integers (.ExchangeItems)
+[2008/03/02] Tsusai - WinConsole: Set the ASM code for Win32 mode, instead of 
+ non-delphi mode.
+[2008/03/02] Tsusai - Added a Misc folder, currently holds the Win64 fixed version
+ of a Zeoslib file.
+-
+
 - Rev 446 -
 [2008/02/26] Aeomin - Clean up RaX' last commit, i don't know what's wrong with
 his Delphi setup, but really a lot nasty tabbing there..

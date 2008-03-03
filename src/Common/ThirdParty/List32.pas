@@ -130,8 +130,27 @@ end;
 
 
 procedure TIntList32.Error(const Msg: string; Data: Integer);
+{[2005/12/10] CR - Suppressing warning about the Pointer return type, and
+ASM directive. }
+
+  function ReturnAddr: Pointer;
+  begin
+  {$WARNINGS OFF}
+  {$IFDEF WIN64}
+    asm
+      MOVQ 32(%RBP),%RAX
+    end;
+    {$ELSE}
+    asm
+      MOV EAX,[EBP+4]
+    end;
+    {$ENDIF}
+  {$WARNINGS ON}
+  end;
+
+
 begin
-	raise EStringListError.CreateFmt(Msg, [Data]);
+     raise EStringListError.CreateFmt(Msg, [Data]) at ReturnAddr;
 end;
 
 
@@ -219,11 +238,14 @@ begin
   unsafe in most circumstances, but it's controlled within this class' methods
   and is thus SAFE. }
   {$WARNINGS OFF}
-  Temp := Integer(Item1^.FObject);
   {$IFNDEF FPC}
-  //No clue to get this to work in FPC at this time.  Ignoring
+  Temp := Integer(Item1^.FObject);
   Integer(Item1^.FObject) := Integer(Item2^.FObject);
   Integer(Item2^.FObject) := Temp;
+  {$ELSE}
+  Temp := PtrInt(Item1^.FObject);
+  PtrInt(Item1^.FObject) := PtrInt(Item2^.FObject);
+  PtrInt(Item2^.FObject) := Temp;
   {$ENDIF}
   {$WARNINGS ON}
 end;
