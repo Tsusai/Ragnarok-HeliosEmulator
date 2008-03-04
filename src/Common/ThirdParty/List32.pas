@@ -36,10 +36,10 @@ Type
  TIntList32 = class;
 
 	PIntItem = ^TIntItem;
-  TIntItem = record
-    FInt: LongWord;
-    FObject: TObject;
-  end;
+	TIntItem = record
+		FInt: LongWord;
+		FObject: TObject;
+	end;
 
   PIntItemList = ^TIntItemList;
   TIntItemList = array[0..MaxListSize] of TIntItem;
@@ -62,7 +62,7 @@ Type
     procedure InsertItem(Index: Integer; const S: LongWord);
     procedure SetSorted(Value: Boolean);
   protected
-    procedure Error(const Msg: string; Data: Integer);
+		procedure Error(const Msg: string; Data: Integer);
     procedure Changed; virtual;
     procedure Changing; virtual;
     function Get(Index: Integer): LongWord;
@@ -94,18 +94,26 @@ Type
     procedure SaveToFile(const FileName: string); virtual;
     procedure SaveToStream(Stream: TStream);
     
-    property Duplicates: TDuplicates read FDuplicates write FDuplicates;
-    property Sorted: Boolean read FSorted write SetSorted;
-    property OnChange: TNotifyEvent read FOnChange write FOnChange;
-    property OnChanging: TNotifyEvent read FOnChanging write FOnChanging;
-    property Integers [Index: Integer]: LongWord read Get write Put; default;
-    property Count: Integer read GetCount;
-    property Objects[Index: Integer]: TObject read GetObject write PutObject;
-  end;
+		property Duplicates: TDuplicates read FDuplicates write FDuplicates;
+		property Sorted: Boolean read FSorted write SetSorted;
+		property OnChange: TNotifyEvent read FOnChange write FOnChange;
+		property OnChanging: TNotifyEvent read FOnChanging write FOnChanging;
+		property Integers [Index: Integer]: LongWord read Get write Put; default;
+		property Count: Integer read GetCount;
+		property Objects[Index: Integer]: TObject read GetObject write PutObject;
+	end;
 
 implementation
 uses
 	SysUtils;
+
+
+//FPC can't do Integer(), so use these 
+{$IFNDEF FPC}
+type
+	PtrInt = integer;
+	PtrUInt = cardinal;
+{$ENDIF}
 
 { TIntList32 }
 constructor TIntList32.Create;
@@ -118,8 +126,8 @@ end;
 
 destructor TIntList32.Destroy;
 begin
-  FOnChange := nil;
-  FOnChanging := nil;
+	FOnChange := nil;
+	FOnChanging := nil;
 	CriticalSection.Leave;
 	CriticalSection.Free;
   inherited destroy;
@@ -133,21 +141,20 @@ procedure TIntList32.Error(const Msg: string; Data: Integer);
 {[2005/12/10] CR - Suppressing warning about the Pointer return type, and
 ASM directive. }
 
-  function ReturnAddr: Pointer;
-  begin
-  {$WARNINGS OFF}
-  {$IFDEF WIN64}
-    asm
-      MOVQ 32(%RBP),%RAX
-    end;
-    {$ELSE}
-    asm
-      MOV EAX,[EBP+4]
-    end;
-    {$ENDIF}
-  {$WARNINGS ON}
-  end;
-
+	{$WARNINGS OFF}
+	function ReturnAddr: Pointer;
+	begin
+	{$IFDEF Win64}
+		asm
+			MOVQ 32(%RBP),%RAX
+		end;
+		{$ELSE}
+		asm
+			MOV EAX,[EBP+4]
+		end;
+		{$ENDIF}
+	end;
+ {$WARNINGS ON}
 
 begin
      raise EStringListError.CreateFmt(Msg, [Data]) at ReturnAddr;
@@ -230,29 +237,23 @@ begin
   {$WARNINGS OFF}
   Item1 := @FList^[Index1];
   Item2 := @FList^[Index2];
-  {$WARNINGS ON}
-  Temp := Integer(Item1^.FInt);
-  Item1^.FInt := Item2^.FInt;
-  Item2^.FInt := Temp;
-  {[2005/12/10] CR - Suppress warning about Integer cast - yes, it WOULD be
-  unsafe in most circumstances, but it's controlled within this class' methods
-  and is thus SAFE. }
-  {$WARNINGS OFF}
-  {$IFNDEF FPC}
-  Temp := Integer(Item1^.FObject);
-  Integer(Item1^.FObject) := Integer(Item2^.FObject);
-  Integer(Item2^.FObject) := Temp;
-  {$ELSE}
-  Temp := PtrInt(Item1^.FObject);
-  PtrInt(Item1^.FObject) := PtrInt(Item2^.FObject);
-  PtrInt(Item2^.FObject) := Temp;
-  {$ENDIF}
-  {$WARNINGS ON}
+	{$WARNINGS ON}
+	Temp := PtrInt(Item1^.FInt);
+	Item1^.FInt := Item2^.FInt;
+	Item2^.FInt := Temp;
+	{[2005/12/10] CR - Suppress warning about Integer cast - yes, it WOULD be
+	unsafe in most circumstances, but it's controlled within this class' methods
+	and is thus SAFE. }
+	{$WARNINGS OFF}
+	Temp := PtrInt(Item1^.FObject);
+	PtrInt(Item1^.FObject) := PtrInt(Item2^.FObject);
+	PtrInt(Item2^.FObject) := Temp;
+	{$WARNINGS ON}
 end;
 
 function TIntList32.Find(const S: LongWord; var Index: Integer): Boolean;
 var
-  L, H, I: Integer;
+	L, H, I: Integer;
 begin
   Result := False;
   L := 0;

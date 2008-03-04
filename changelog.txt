@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 448 -
+[2008/03/03] Tsusai - List32: Fixed ASM warning on .Error, and simplified
+ typecasting of Integer() on .ExchangeItems
+-
+
 - Rev 447 -
 [2008/03/02] Tsusai - Notes/Overview: Compatibilty stuff for FPC, Win64, etc.
 [2008/03/02] Tsusai - List32.pas: Readded ASM, w/ Win64 ASM equivalent (.Error), 
