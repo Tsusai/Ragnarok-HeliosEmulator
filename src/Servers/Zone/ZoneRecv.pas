@@ -992,8 +992,12 @@ begin
 		 [MainProc.ZoneServer.NPCList.IndexOf(NPCID)] as TNPC;
 		if ANPC is TScriptNPC then
 		begin
-			AChara.ScriptID := ANPC.ID;
-			TScriptNPC(ANPC).OnClick(AChara);
+			if (AChara.Map = ANPC.Map)AND
+			(AChara.InPointRange(ANPC.Position)) then
+			begin
+				AChara.ScriptID := ANPC.ID;
+				TScriptNPC(ANPC).OnClick(AChara);
+			end;
 		end;
 	end;
 end;{NPCClick}

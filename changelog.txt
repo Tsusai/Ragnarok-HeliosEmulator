@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 449 -
+[2008/03/08] Aeomin - Added check to prevent talk to any NPC in zone server...
+-
+
 - Rev 448 -
 [2008/03/03] Tsusai - List32: Fixed ASM warning on .Error, and simplified
  typecasting of Integer() on .ExchangeItems

@@ -197,7 +197,7 @@ public
 	MoveTick		: LongWord;
 	ZoneStatus		: TBeingZoneStatus; //Is the being online in the Zone or not?
 
-  TargetID		: LongWord;
+	TargetID		: LongWord;
 
 	property Name      : string     read fName    write SetName;
 	property JID       : Word       read fJID     write SetClass;
@@ -256,10 +256,13 @@ public
 			var
 				APath      : TPointList
 	) : Boolean;
+
+	function InPointRange(const TargetPoint:TPoint):Boolean;
+
 	procedure Death; virtual;
 
 	procedure RemoveFromMap;
-  procedure AddToMap;
+	procedure AddToMap;
 	Constructor Create;
 	Destructor Destroy;override;
 
@@ -769,7 +772,7 @@ var
 						Result := TBeing(MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx]);
 						Exit;
 					end;
-        end;
+				end;
 			end;
 		end;
 	end;
@@ -1534,10 +1537,10 @@ begin
 								for BeingIndex := 0 to MapInfo.Cell[NewFloodItem.Path[0].X][NewFloodItem.Path[0].Y].Beings.Count - 1 do
 								begin
 									if MapInfo.Cell[NewFloodItem.Path[0].X][NewFloodItem.Path[0].Y].Beings.Objects[BeingIndex] is TBeing then
-                  begin
+									begin
 										NewFloodItem.Path.Delete(0);
 										break;
-                  end;
+									end;
 								end;
 
 								{if Cell[NewFloodItem.Path[0].X][NewFloodItem.Path[0].Y].Beings.Count > 0 then
@@ -1596,5 +1599,27 @@ begin
 	end;
 	AFloodList.Free;
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//InPointRange                                                          FUNCTION
+//------------------------------------------------------------------------------
+//  What it does -
+//		Compare TargetPoint with Tbeing's position, see if it's in viewable range
+//
+//  Changes -
+//		[2008/03/08] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function TBeing.InPointRange(const TargetPoint:TPoint):Boolean;
+var
+	Radius : Word;
+begin
+	Radius := MainProc.ZoneServer.Options.CharShowArea;
+	Result := (Abs(TargetPoint.X - Position.X) <= Radius) AND
+		(Abs(TargetPoint.Y - Position.Y) <= Radius);
+
+end;{InPointRange}
 //------------------------------------------------------------------------------
 end.
