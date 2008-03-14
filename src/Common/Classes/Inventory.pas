@@ -138,7 +138,7 @@ Overview:
 Pre:
 	Free up our ItemList
 Post:
-	Call ancestor Create.
+	Call ancestor Destroy.
 
 --
 Revisions:

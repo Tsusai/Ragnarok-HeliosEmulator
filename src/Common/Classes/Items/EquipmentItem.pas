@@ -86,6 +86,8 @@ protected
 	fOnDefend		: String;//Script function, executes when an Item is used to defend.
 
 public
+  Refineable : Boolean;
+
 	Property ViewID		: LongWord
 		Read fViewID
 		Write fViewID;
@@ -95,6 +97,9 @@ public
 	Property EquipmentLocation: TEquipLocations
 		Read fEquipmentLocation
 		write fEquipmentLocation;
+	Property Slots		: Byte
+		Read fSlots
+		Write fSlots;
 	Property Attack		: Word
 		Read fAttack
 		Write fAttack;

@@ -154,6 +154,7 @@ compile for linux, at the same time*}
 	CharacterConstantQueries in 'Common\Classes\Database\CharacterConstantQueries.pas',
 	FriendQueries in 'Common\Classes\Database\FriendQueries.pas',
 	MapQueries in 'Common\Classes\Database\MapQueries.pas',
+	ItemQueries in 'Common\Classes\Database\ItemQueries.pas',
 	QueryBase in 'Common\Classes\Database\QueryBase.pas',
 
 	//Configuration
@@ -185,7 +186,6 @@ compile for linux, at the same time*}
 	PacketTypes in 'Common\PacketTypes.pas',
 	Server in 'Servers\Server.pas',
 	ServerInfo in 'Common\Classes\ServerInfo.pas',
-	SQLExtendedRoutines in 'Common\SQLExtendedRoutines.pas',
 	TCPServerRoutines in 'Common\TCPServerRoutines.pas',
 	Version in 'Common\Version.pas',
 	WinLinux in 'Common\WinLinux.pas',
@@ -279,6 +279,7 @@ compile for linux, at the same time*}
 	CharacterConstantQueries in 'Common/Classes/Database/CharacterConstantQueries.pas',
 	FriendQueries in 'Common/Classes/Database/FriendQueries.pas',
 	MapQueries in 'Common/Classes/Database/MapQueries.pas',
+	ItemQueries in 'Common/Classes/Database/ItemQueries.pas',
 	QueryBase in 'Common/Classes/Database/QueryBase.pas',
 
 	//Configuration
@@ -305,7 +306,6 @@ compile for linux, at the same time*}
 	PacketTypes in 'Common/PacketTypes.pas',
 	Server in 'Servers/Server.pas',
 	ServerInfo in 'Common/Classes/ServerInfo.pas',
-	SQLExtendedRoutines in 'Common/SQLExtendedRoutines.pas',
 	TCPServerRoutines in 'Common/TCPServerRoutines.pas',
 	Version in 'Common/Version.pas',
 	WinLinux in 'Common/WinLinux.pas',

@@ -75,6 +75,7 @@ protected
 	fPrice		: LongWord; //The price of the item in a standard shop
 	fSell		: LongWord; //The selling price of an item to a shop
 	fType		: TItemType;
+	fSpriteID : LongWord;
 
 public
 	Property Name		: String Read fName Write fName;
@@ -82,8 +83,9 @@ public
 	Property Weight		: LongWord Read fWeight Write fWeight;
 	Property Price		: LongWord Read fPrice Write fPrice;
 	Property Sell		: LongWord Read fSell Write fSell;
-
-
+	Property ItemType: TItemType Read fType Write fType;
+	Property SpriteID : LongWord Read fSpriteID Write fSpriteID;
+	
 	Constructor Create;
 	Destructor Destroy;override;
 
