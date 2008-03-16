@@ -15,6 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 451 -
+[2008/03/16] Aeomin - Added safe check to prevent crash when player is out of bounce
+[2008/03/12] Aeomin - Added 4 script functions [hpheal, spheal, hpfullheal, spfullheal]
+[2008/03/12] Aeomin - If you want full heal, it's highly recommended use hpfullheal, spfullheal
+than hpheal 100
+-
+
 - Rev 450 -
 [2008/03/13] RaX - Committed unfinished database code for items.
 -

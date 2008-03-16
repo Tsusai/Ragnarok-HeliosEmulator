@@ -1321,12 +1321,15 @@ procedure TBeing.RemoveFromMap;
 var
 	Index : Integer;
 begin
-	Index := MapInfo.Cell[Position.X][Position.Y].Beings.IndexOf(ID);
-	if Index <> -1 then
+	if MapInfo.PointInRange(Position) then
 	begin
-		MapInfo.Cell[Position.X][Position.Y].Beings.Delete(
-			Index
-		);
+		Index := MapInfo.Cell[Position.X][Position.Y].Beings.IndexOf(ID);
+		if Index <> -1 then
+		begin
+			MapInfo.Cell[Position.X][Position.Y].Beings.Delete(
+				Index
+			);
+		end;
 	end;
 end;
 //------------------------------------------------------------------------------
@@ -1349,7 +1352,13 @@ end;
 //------------------------------------------------------------------------------
 procedure TBeing.AddToMap;
 begin
-	MapInfo.Cell[Position.X][Position.Y].Beings.AddObject(ID, self);
+	if MapInfo.PointInRange(Position) then
+	begin
+		if MapInfo.Cell[Position.X][Position.Y].Beings.IndexOf(ID) = -1 then
+		begin
+			MapInfo.Cell[Position.X][Position.Y].Beings.AddObject(ID, self);
+		end;
+	end;
 end;
 //------------------------------------------------------------------------------
 

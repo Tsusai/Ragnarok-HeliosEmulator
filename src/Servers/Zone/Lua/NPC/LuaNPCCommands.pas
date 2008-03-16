@@ -49,7 +49,11 @@ function script_getexp(ALua : TLua) : integer; cdecl; forward;
 function script_getJexp(ALua : TLua) : integer; cdecl; forward;
 function script_ResetStat(ALua : TLua) : integer; cdecl; forward;
 function script_HpDrain(ALua : TLua) : integer; cdecl; forward;
+function script_HpHeal(ALua : TLua) : integer; cdecl; forward;
 function script_SpDrain(ALua : TLua) : integer; cdecl; forward;
+function script_SpHeal(ALua : TLua) : integer; cdecl; forward;
+function script_HPFullheal(ALua : TLua) : integer; cdecl; forward;
+function script_SPFullheal(ALua : TLua) : integer; cdecl; forward;
 function script_Compass(ALua : TLua) : integer; cdecl; forward;
 function script_ShowImage(ALua : TLua) : integer; cdecl; forward;
 function script_CompassCheck(ALua : TLua) : integer; cdecl; forward;
@@ -58,7 +62,7 @@ function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 22;
+	NPCCommandCount = 26;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -82,7 +86,11 @@ const
 		(name:'getJexp';func:script_getJexp),
 		(name:'ResetStat';func:script_ResetStat),
 		(name:'hpdrain';func:script_HpDrain),
+		(name:'hpheal';func:script_HpHeal),
 		(name:'spdrain';func:script_SpDrain),
+		(name:'spheal';func:script_SpHeal),
+		(name:'hpfullheal';func:script_HPFullHeal),
+		(name:'spfullheal';func:script_SPFullHeal),
 		(name:'compass';func:script_Compass),
 		(name:'showimage';func:script_ShowImage),
 		(name:'compass_check';func:script_CompassCheck),
@@ -727,7 +735,7 @@ begin
 	end;
 end;
 
-// Lose some hp for player
+// Lose some % hp for player
 function script_HpDrain(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
@@ -741,6 +749,24 @@ begin
 			Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
 			if AChara.HP > 0 then
 				AChara.HPPercent := AChara.HPPercent - Percentage;
+		end;
+	end;
+end;
+
+//Gain some % HP for player
+function script_HpHeal(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	Percentage : Byte;
+begin
+	Result := 0;
+	if lua_gettop(ALua) = 1 then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
+			if AChara.HP > 0 then
+				AChara.HPPercent := AChara.HPPercent + Percentage;
 		end;
 	end;
 end;
@@ -760,6 +786,60 @@ begin
 			if AChara.SP > 0 then
 				AChara.SPPercent := AChara.SPPercent - Percentage;
 		end;
+	end;
+end;
+
+//Gain some % SP for player
+function script_SpHeal(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	Percentage : Byte;
+begin
+	Result := 0;
+	if lua_gettop(ALua) = 1 then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
+			if AChara.SP > 0 then
+				AChara.SPPercent := AChara.SPPercent + Percentage;
+		end;
+	end;
+end;
+
+//Full heal player's HP
+function script_HPFullHeal(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+begin
+	Result := 0;
+	if lua_gettop(ALua) = 0 then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			AChara.HP := AChara.MaxHP;
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script hpfullheal syntax error');
+	end;
+end;
+
+//Full heal player's SP
+function script_SPFullHeal(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+begin
+	Result := 0;
+	if lua_gettop(ALua) = 0 then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			AChara.SP := AChara.MaxSP;
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script spfullheal syntax error');
 	end;
 end;
 
