@@ -58,6 +58,13 @@ uses
 		const ABeing        : TBeing;
 		const AParameters   : Cardinal
 		);
+
+	procedure Emotion(
+		const ACurrentBeing : TBeing;
+		const ABeing        : TBeing;
+		const AParameters   : Cardinal
+		);
+
 	procedure ShowSitStand(
 		const ACurrentBeing : TBeing;
 		const ABeing        : TBeing;
@@ -79,7 +86,7 @@ implementation
 
 uses
 	{RTL/VCL}
-	//none
+	Math,
 	{Project}
 	Character,
 	ZoneSend,
@@ -242,6 +249,25 @@ begin
 end;{Effect}
 //------------------------------------------------------------------------------
 
+procedure Emotion(
+	const ACurrentBeing : TBeing;
+	const ABeing        : TBeing;
+	const AParameters   : Cardinal
+);
+begin
+	if ABeing is TCharacter then
+	begin
+		SendEmotion(
+			ACurrentBeing,
+			TCharacter(ABeing).ClientInfo,
+			EnsureRange(
+				AParameters,
+				Low(Byte),
+				High(Byte)
+			)
+		);
+	end;
+end;
 
 //------------------------------------------------------------------------------
 //ShowAction                                                          PROCEDURE

@@ -995,7 +995,7 @@ begin
 			if (AChara.Map = ANPC.Map)AND
 			(AChara.InPointRange(ANPC.Position)) then
 			begin
-				AChara.ScriptID := ANPC.ID;
+				AChara.ScriptBeing := ANPC;
 				TScriptNPC(ANPC).OnClick(AChara);
 			end;
 		end;
@@ -1030,7 +1030,7 @@ var
 begin
 	NPCID := BufferReadLongWord(ReadPts[0], InBuffer);
 	Choice := BufferReadByte(ReadPts[1], InBuffer);
-	if (AChara.ScriptID = NPCID) and
+	if (AChara.ScriptBeing.ID = NPCID) and
 		(AChara.ScriptStatus = SCRIPT_YIELD_MENU) then
 	begin
 		if Choice <> $FF then
@@ -1069,7 +1069,7 @@ var
 	NPCID : LongWord;
 begin
 	NPCID := BufferReadLongWord(ReadPts[0], InBuffer);
-	if (AChara.ScriptID = NPCID) and
+	if (AChara.ScriptBeing.ID = NPCID) and
 		(AChara.ScriptStatus = SCRIPT_YIELD_WAIT) then
 	begin
 		AChara.ScriptStatus := SCRIPT_RUNNING;

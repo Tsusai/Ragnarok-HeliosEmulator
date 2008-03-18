@@ -238,6 +238,7 @@ public
 	procedure ShowTeleportOut;
 	procedure UpdateDirection;
 	procedure ShowEffect(EffectID:LongWord);
+	procedure ShowEmotion(EmotionID:Byte);
 	procedure Attack(ATargetID : LongWord; AttackContinuous : Boolean; JustAttacked : Boolean);virtual;
 
 	procedure AreaLoop(
@@ -260,6 +261,8 @@ public
 	function InPointRange(const TargetPoint:TPoint):Boolean;
 
 	procedure Death; virtual;
+
+
 
 	procedure RemoveFromMap;
 	procedure AddToMap;
@@ -657,8 +660,7 @@ begin
 					begin
 						ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
 						if (Self = ABeing) and AIgnoreCurrentBeing then Continue;
-						//if (ABeing is TNPC) and IgnoreNPC then Continue;
-						{TODO : support other than TCharacter...}
+						if not (ABeing is TCharacter) then Continue; //Target MUST be a TCharacter
 						ALoopCall(Self, ABeing, AParameter);
 					end;
 				end;
@@ -914,6 +916,19 @@ begin
 end;{ShowEffect}
 //------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//ShowEmotion                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send emote packet
+//
+//	Changes-
+//		[2008/03/12] Tsusai - Created.
+//------------------------------------------------------------------------------
+procedure TBeing.ShowEmotion(EmotionID:Byte);
+begin
+	AreaLoop(Emotion, False, True, True, EmotionID);
+end;
 
 //------------------------------------------------------------------------------
 //Death                                                                PROCEDURE

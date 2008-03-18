@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 452 -
+[2008/03/17] Tsusai - Added Emotion npc function to show emotions from the npc.
+-
+
 - Rev 451 -
 [2008/03/16] Aeomin - Added safe check to prevent crash when player is out of bounce
 [2008/03/12] Aeomin - Added 4 script functions [hpheal, spheal, hpfullheal, spfullheal]

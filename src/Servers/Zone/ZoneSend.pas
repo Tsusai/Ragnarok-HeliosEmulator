@@ -94,6 +94,12 @@ uses
 		const EffectID : LongWord
 	);
 
+	procedure SendEmotion(
+		const Who:TBeing;
+		AClient : TIdContext;
+		const EmotionID : Byte
+	);
+
 	procedure ZoneDisappearBeing(
 		const Who:TBeing;
 		AClient : TIdContext;
@@ -652,6 +658,29 @@ begin
 end;{SendSpecialEffec}
 //------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//SendEmotion                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send emotion packet
+//
+//	Changes-
+//		[2007/11/24] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure SendEmotion(
+	const Who:TBeing;
+	AClient : TIdContext;
+	const EmotionID : Byte
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00c0, OutBuffer);
+	WriteBufferLongWord(2, Who.ID, OutBuffer);
+	WriteBufferByte(6, EmotionID, OutBuffer);
+	SendBuffer(AClient, OutBuffer, GetPacketLength($00c0));
+end;{SendEmotion}
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //ZoneWalkingBeing                                                     PROCEDURE

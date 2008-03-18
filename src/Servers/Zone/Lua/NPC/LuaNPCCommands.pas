@@ -57,12 +57,13 @@ function script_SPFullheal(ALua : TLua) : integer; cdecl; forward;
 function script_Compass(ALua : TLua) : integer; cdecl; forward;
 function script_ShowImage(ALua : TLua) : integer; cdecl; forward;
 function script_CompassCheck(ALua : TLua) : integer; cdecl; forward;
+function script_Emotion(ALua : TLua) : integer; cdecl; forward;
 //Special Commands
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 26;
+	NPCCommandCount = 27;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -94,6 +95,7 @@ const
 		(name:'compass';func:script_Compass),
 		(name:'showimage';func:script_ShowImage),
 		(name:'compass_check';func:script_CompassCheck),
+		(name:'emotion';func:script_Emotion),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -299,7 +301,7 @@ begin
 			Len := Length(Dialog);
 			WriteBufferWord(0, $00b4, OutBuffer);
 			WriteBufferWord(2, Len + 8, OutBuffer);
-			WriteBufferLongWord(4, AChara.ScriptID, OutBuffer);
+			WriteBufferLongWord(4, AChara.ScriptBeing.ID, OutBuffer);
 			WriteBufferString(8, Dialog, Len, OutBuffer);
 			SendBuffer(AChara.ClientInfo, OutBuffer, len + 8);
 		end;
@@ -322,7 +324,7 @@ begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
 			WriteBufferWord(0, $00b5, OutBuffer);
-			WriteBufferLongWord(2, AChara.ScriptID, OutBuffer);
+			WriteBufferLongWord(2, AChara.ScriptBeing.ID, OutBuffer);
 			SendBuffer(AChara.ClientInfo, OutBuffer, 6);
 			AChara.ScriptStatus := SCRIPT_YIELD_WAIT;
 			Result := lua_yield(ALua,0);
@@ -346,7 +348,7 @@ begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
 			WriteBufferWord(0, $00b6, OutBuffer);
-			WriteBufferLongWord(2, AChara.ScriptID, OutBuffer);
+			WriteBufferLongWord(2, AChara.ScriptBeing.ID, OutBuffer);
 			SendBuffer(AChara.ClientInfo, OutBuffer, 6);
 			AChara.ScriptStatus := SCRIPT_NOTRUNNING;
 		end;
@@ -414,7 +416,7 @@ begin
 			WriteBufferWord(0, $00b7, OutBuffer);
 			Size := Length(MenuString);
 			WriteBufferWord(2, Size + 8, OutBuffer);
-			WriteBufferLongWord(4, AChara.ScriptID, OutBuffer);
+			WriteBufferLongWord(4, AChara.ScriptBeing.ID, OutBuffer);
 			WriteBufferString(8, MenuString, Size, OutBuffer);
 			SendBuffer(AChara.ClientInfo, OutBuffer, Size + 8);
 			AChara.ScriptStatus := SCRIPT_YIELD_MENU;
@@ -864,7 +866,7 @@ begin
 					PointType := 2;
 				SendCompass(
 					AChara.ClientInfo,
-					AChara.ScriptID,
+					AChara.ScriptBeing.ID,
 					lua_tointeger(ALua, 1),
 					lua_tointeger(ALua, 2),
 					lua_tointeger(ALua, 3),
@@ -906,6 +908,21 @@ begin
 	if lua_gettop(ALua) = 2 then
 	begin
 		// Do nothing...
+	end;
+end;
+
+//Trigger emotion
+function script_Emotion(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+begin
+	Result := 0;
+	if lua_gettop(ALua) = 1 then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			AChara.ScriptBeing.ShowEmotion(lua_tointeger(ALua,1));
+		end;
 	end;
 end;
 

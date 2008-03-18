@@ -35,7 +35,7 @@ implementation
 		if (ACharacter.ScriptStatus = SCRIPT_NOTRUNNING) and
 		(ACharacter.CharaState = charaStanding) then
 		begin
-			ACharacter.ScriptID := fScriptNPC.ID;
+			ACharacter.ScriptBeing := fScriptNPC;
 			fScriptNPC.OnTouch(ACharacter);
 		end;
 	end;

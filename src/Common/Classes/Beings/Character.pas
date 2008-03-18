@@ -224,7 +224,7 @@ public
 
 	LuaInfo			: TLuaInfo; //personal lua "thread"
 	ScriptStatus		: TCharaScriptStatus; //lets us know what is going on with lua,
-	ScriptID		: LongWord;
+	ScriptBeing		  : TBeing;
 
 	ClientInfo		: TIdContext;
 
