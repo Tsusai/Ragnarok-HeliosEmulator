@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 457 -
+[2008/03/25] Aeomin - Reverted 1 line of code that made NPC invisible in red 452 [Being.pas]
+-
+
 - Rev 456 -
 [2008/03/25] Aeomin - Forgot Helios.dpr -.-"
 -

@@ -660,7 +660,9 @@ begin
 					begin
 						ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
 						if (Self = ABeing) and AIgnoreCurrentBeing then Continue;
-						if not (ABeing is TCharacter) then Continue; //Target MUST be a TCharacter
+						{if not (ABeing is TCharacter) then Continue;} //Target MUST be a TCharacter
+						//Even though it's good idea to prevent packet send to non players
+						//But the problem is that.. NPC is invisible now
 						ALoopCall(Self, ABeing, AParameter);
 					end;
 				end;
