@@ -60,7 +60,7 @@ uses
 constructor TEventList.Create(OwnsEvents : Boolean);
 begin
 	inherited Create;
-  Duplicates := dupAccept;
+	Duplicates := dupAccept;
 	self.OwnsEvents := OwnsEvents;
 end;{Create}
 //------------------------------------------------------------------------------
@@ -86,7 +86,8 @@ begin
 		AList := LockList;
 		for Index := 0 to AList.Count-1 do
 		begin
-			AList.Delete(Index);
+			TObject(AList.Items[Index]).Free;
+//			AList.Delete(Index);
 		end;
 		UnlockList;
 	end;
@@ -131,6 +132,7 @@ begin
 	begin
 		if TObject(AList.Items[Index]) IS TMovementEvent then
 		begin
+			TObject(AList.Items[Index]).Free;
 			AList.Delete(Index);
 		end;
 	end;
@@ -158,6 +160,7 @@ begin
 	begin
 		if TObject(AList.Items[Index]) IS TAttackEvent then
 		begin
+			TObject(AList.Items[Index]);
 			AList.Delete(Index);
 		end;
 	end;

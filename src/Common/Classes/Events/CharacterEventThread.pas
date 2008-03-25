@@ -129,12 +129,13 @@ begin
 						//If it does, execute the event, then delete it from the list.
 						//(The list "owns" the events, so this does not leak)   {not right now though}
 						AnEvent.Execute;
+						AnEvent.Free;
 						AnEventList.Delete(EventIndex);
 					end;
 				end;
-      finally
+			finally
 				CharacterList[CharacterIndex].EventList.UnlockList;
-      end;
+			end;
 		end;
 	end;
 	//Free up the processor

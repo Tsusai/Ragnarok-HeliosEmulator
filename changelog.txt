@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 454 -
+[2008/03/05] Aeomin - Fixed TEventList does not really own the object, which
+EventThread also didn't free them. Huge memory leak fixed also an AV.
+-
+
 - Rev 453 -
 [2008/03/05] Aeomin - Little optimization for GM command, change all gm command procedure's argument
 into const.
