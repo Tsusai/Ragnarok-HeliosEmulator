@@ -123,6 +123,7 @@ compile for linux, at the same time*}
 	UseableItem in 'Common\Classes\Items\UseableItem.pas',
 	MiscItem in 'Common\Classes\Items\MiscItem.pas',
 	Inventory in 'Common\Classes\Inventory.pas',
+	Mob in 'Common\Classes\Beings\Mob.pas',
 
 	//Lua
 	LuaPas in 'Common\ThirdParty\LuaPas.pas',
@@ -155,6 +156,7 @@ compile for linux, at the same time*}
 	FriendQueries in 'Common\Classes\Database\FriendQueries.pas',
 	MapQueries in 'Common\Classes\Database\MapQueries.pas',
 	ItemQueries in 'Common\Classes\Database\ItemQueries.pas',
+	MobQueries in 'Common\Classes\Database\MobQueries.pas',
 	QueryBase in 'Common\Classes\Database\QueryBase.pas',
 
 	//Configuration
@@ -248,6 +250,7 @@ compile for linux, at the same time*}
 	UseableItem in 'Common/Classes/Items/UseableItem.pas',
 	MiscItem in 'Common/Classes/Items/MiscItem.pas',
 	Inventory in 'Common/Classes/Inventory.pas',
+	Mob in 'Common/Classes/Beings/Mob.pas',
 
 	//Lua
 	LuaPas in 'Common/ThirdParty/LuaPas.pas',
@@ -280,6 +283,7 @@ compile for linux, at the same time*}
 	FriendQueries in 'Common/Classes/Database/FriendQueries.pas',
 	MapQueries in 'Common/Classes/Database/MapQueries.pas',
 	ItemQueries in 'Common/Classes/Database/ItemQueries.pas',
+	MobQueries in 'Common/Classes/Database/MobQueries.pas',
 	QueryBase in 'Common/Classes/Database/QueryBase.pas',
 
 	//Configuration
