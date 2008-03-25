@@ -15,13 +15,17 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 455 -
+[2008/03/25] Aeomin - Added Mob framework [Mob.pas, MobQueries.pas]
+-
+
 - Rev 454 -
-[2008/03/05] Aeomin - Fixed TEventList does not really own the object, which
+[2008/03/25] Aeomin - Fixed TEventList does not really own the object, which
 EventThread also didn't free them. Huge memory leak fixed also an AV.
 -
 
 - Rev 453 -
-[2008/03/05] Aeomin - Little optimization for GM command, change all gm command procedure's argument
+[2008/03/25] Aeomin - Little optimization for GM command, change all gm command procedure's argument
 into const.
 -
 

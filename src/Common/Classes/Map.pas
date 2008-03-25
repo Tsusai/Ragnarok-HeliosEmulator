@@ -24,6 +24,7 @@ interface
 uses
 	{RTL/VCL}
 	Types,
+	contnrs,
 	{Project}
 	EventList,
 	MapTypes
@@ -35,7 +36,7 @@ uses
 type
 
 //------------------------------------------------------------------------------
-//TMap								CLASS
+//TMap                                                                     CLASS
 //------------------------------------------------------------------------------
 TMap = class(TObject)
 	private
@@ -49,6 +50,7 @@ TMap = class(TObject)
 		State: TMapMode;
 		
 		EventList : TEventList;
+		MobList  : TObjectList;
 
 		Constructor Create;
 		Destructor Destroy;override;
@@ -89,6 +91,7 @@ uses
 	Globals,
 	Main,
 	NPC,
+	Mob,
 	{3rd Party}
 	List32
 	;
@@ -110,6 +113,8 @@ begin
 	Size.X := 0;
 	Size.Y := 0;
 	EventList := TEventList.Create(TRUE);
+	//We own mob objects here!
+	MobList := TObjectList.Create(TRUE);
 end;
 //------------------------------------------------------------------------------
 
@@ -129,6 +134,7 @@ begin
 		Unload;
 	end;
 	EventList.Free;
+	MobList.Free;
 	inherited;
 end;
 //------------------------------------------------------------------------------
@@ -259,6 +265,9 @@ Var
 	MapFile : TMemoryStream;
 	XIndex  : Integer;
 	YIndex  : Integer;
+	ObjIndex    : Integer;
+	AnNPC       : TNPC;
+	AnMob       : TMob;
 Begin
 	State  := LOADING;
 
@@ -276,6 +285,33 @@ Begin
 			Cell[XIndex][YIndex].Position := Point(XIndex, YIndex);
 			Cell[XIndex][YIndex].ObstructionCount := 0;
 			Cell[XIndex][YIndex].Beings := TIntList32.Create;
+		end;
+	end;
+
+	//Enable all npcs on this map.
+	for ObjIndex := 0 to MainProc.ZoneServer.NPCList.Count -1 do
+	begin
+		AnNPC := TNPC(MainProc.ZoneServer.NPCList.Objects[ObjIndex]);
+		if AnNPC.Map = Name then
+		begin
+			if PointInRange(AnNPC.Position) then
+			begin
+				// We don't want add npc outside of map..
+				AnNPC.MapInfo := Self;
+				Cell[AnNPC.Position.X][AnNPC.Position.Y].Beings.AddObject(AnNPC.ID, AnNPC);
+				AnNPC.Enabled := True;
+			end;
+		end;
+	end;
+
+	//Add mobs that is already in list
+	for ObjIndex := 0 to MobList.Count -1 do
+	begin
+		AnMob := TMob(MobList[ObjIndex]);
+		if PointInRange(AnMob.Position) then
+		begin
+			AnMob.MapInfo := Self;
+			Cell[AnMob.Position.X][AnMob.Position.Y].Beings.AddObject(AnMob.ID, AnMob);
 		end;
 	end;
 
@@ -391,8 +427,6 @@ end;
 function TMap.SafeLoad: Boolean;
 var
 	LoopTries : Byte;
-	NPCIndex    : Integer;
-	AnNPC       : TNPC;
 begin
 	Result := False;
 	case State of
@@ -402,17 +436,6 @@ begin
 			if State = LOADED then
 			begin
 				Result := True;
-				//Enable all npcs on this map.
-				for NPCIndex := 0 to MainProc.ZoneServer.NPCList.Count -1 do
-				begin
-					AnNPC := TNPC(MainProc.ZoneServer.NPCList.Objects[NPCIndex]);
-					if AnNPC.Map = Name then
-					begin
-						AnNPC.MapInfo := Self;
-						Cell[AnNPC.Position.X][AnNPC.Position.Y].Beings.AddObject(AnNPC.ID, AnNPC);
-						AnNPC.Enabled := True;
-					end;
-				end;
 			end;
 		end;
 		LOADING: begin
@@ -452,7 +475,7 @@ begin
 		 (APoint.Y < Size.Y) AND
 		 (APoint.X > -1) AND
 		 (APoint.Y > -1) then
-  begin
+	begin
 		Result := TRUE;
 	end else
 	begin

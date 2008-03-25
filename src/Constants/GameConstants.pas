@@ -71,7 +71,7 @@ const
 	LUK = 5; {Luck - Increases Critical hits and perfect dodge rate, and brings
 			about lots of luck. }
 
-  ASPD = $0035;
+	ASPD = $0035;
 //------------------------------------------------------------------------------
 //                             Movement Constants
 //------------------------------------------------------------------------------
@@ -226,6 +226,29 @@ const
 
 	//Max Attack speed
 	ASPEED_MAX = 199;
+
+//------------------------------------------------------------------------------
+//                                  Mob Race
+//------------------------------------------------------------------------------
+	MOBRACE_FORMLESS    = 0;
+	MOBRACE_UNDEAD      = 1;
+	MOBRACE_BEAST       = 2;
+	MOBRACE_PLANT       = 3;
+	MOBRACE_INSECT      = 4;
+	MOBRACE_FISH        = 5;
+	MOBRACE_DEMON       = 6;
+	MOBRACE_DEMI_HUMAN  = 7;
+	MOBRACE_ANGEL       = 8;
+	MOBRACE_DRAGON      = 9;
+	MOBRACE_BOSS        = 10;
+	MOBRACE_NON_BOSS    = 11;
+
+//------------------------------------------------------------------------------
+//                                 Mob Scale
+//------------------------------------------------------------------------------
+	MOBSCALE_SMAL   = 0;
+	MOBSCALE_MEDIUM = 1;
+	MOBSCALE_LARGE  = 2;
 implementation
 
 end.

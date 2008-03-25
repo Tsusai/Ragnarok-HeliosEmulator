@@ -194,11 +194,14 @@ Begin
 
 	{[2007/06/02] CR - Tsusai was right, we did need to free up this list - the
 	Zone owns the NPCs on it's maps. }
-	for Idx := NPCList.Count -1 downto 0 do
+	if NPCList.Count > 0 then
 	begin
-		if Assigned(NPCList.Objects[Idx]) then
+		for Idx := NPCList.Count -1 downto 0 do
 		begin
-			NPCList.Objects[Idx].Free;
+			if Assigned(NPCList.Objects[Idx]) then
+			begin
+				NPCList.Objects[Idx].Free;
+			end;
 		end;
 	end;
 	NPCList.Free;
@@ -290,6 +293,7 @@ begin
 		TThreadLink(AConnection.Data).DatabaseLink.Character.Save(ACharacter);
 
 		SendZoneCharaLogOut(ToCharaTCPClient, ACharacter, Byte(ACharacter.DcAndKeepData));
+
 
 		if Started and (ACharacter.MapInfo <> nil) then
 		begin
