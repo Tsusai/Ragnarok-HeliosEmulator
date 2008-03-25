@@ -128,15 +128,18 @@ var
 	AList : TList;
 begin
 	AList := LockList;
-	for Index := 0 to AList.Count - 1 do
-	begin
-		if TObject(AList.Items[Index]) IS TMovementEvent then
+	try
+		for Index := 0 to AList.Count - 1 do
 		begin
-			TObject(AList.Items[Index]).Free;
-			AList.Delete(Index);
+			if TObject(AList.Items[Index]) IS TMovementEvent then
+			begin
+//				TObject(AList.Items[Index]).Free;
+				AList.Delete(Index);
+			end;
 		end;
+	finally
+		UnlockList;
 	end;
-	UnlockList;
 end;{DeleteMovementEvents}
 //------------------------------------------------------------------------------
 
@@ -156,15 +159,18 @@ var
 	AList : TList;
 begin
 	AList := LockList;
-	for Index := 0 to AList.Count - 1 do
-	begin
-		if TObject(AList.Items[Index]) IS TAttackEvent then
+	try
+		for Index := 0 to AList.Count - 1 do
 		begin
-			TObject(AList.Items[Index]);
-			AList.Delete(Index);
+			if TObject(AList.Items[Index]) IS TAttackEvent then
+			begin
+//				TObject(AList.Items[Index]).Free;
+				AList.Delete(Index);
+			end;
 		end;
+	finally
+		UnlockList;
 	end;
-	UnlockList;
 end;{DeleteAttackEvents}
 //------------------------------------------------------------------------------
 end.

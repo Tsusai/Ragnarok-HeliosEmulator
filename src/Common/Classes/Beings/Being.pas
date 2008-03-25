@@ -559,16 +559,13 @@ Begin
 			begin
 				if MapInfo.Cell[Position.X][Position.Y].Beings.Objects[Index] is TOnTouchCellEvent then
 				begin
-					if Self IS TCharacter then
+					OnTouchCellFound := true;
+					OnTouchCell := TOnTouchCellEvent(MapInfo.Cell[Position.X][Position.Y].Beings.Objects[Index]);
+					if TCharacter(Self).OnTouchIDs.IndexOf(OnTouchCell.ScriptNPC.ID) = -1 then
 					begin
-						OnTouchCellFound := true;
-						OnTouchCell := TOnTouchCellEvent(MapInfo.Cell[Position.X][Position.Y].Beings.Objects[Index]);
-						if TCharacter(Self).OnTouchIDs.IndexOf(OnTouchCell.ScriptNPC.ID) = -1 then
-						begin
-							TCharacter(Self).OnTouchIDs.Add(OnTouchCell.ScriptNPC.ID);
-							TCharacter(Self).CharaState := charaStanding;
-							OnTouchCell.Execute(TCharacter(Self));
-						end;
+						TCharacter(Self).OnTouchIDs.Add(OnTouchCell.ScriptNPC.ID);
+						TCharacter(Self).CharaState := charaStanding;
+						OnTouchCell.Execute(TCharacter(Self));
 					end;
 				end;
 			end;
@@ -656,15 +653,12 @@ begin
 			begin
 				if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
 				begin
-					if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
-					begin
-						ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
-						if (Self = ABeing) and AIgnoreCurrentBeing then Continue;
-						{if not (ABeing is TCharacter) then Continue;} //Target MUST be a TCharacter
-						//Even though it's good idea to prevent packet send to non players
-						//But the problem is that.. NPC is invisible now
-						ALoopCall(Self, ABeing, AParameter);
-					end;
+					ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
+					if (Self = ABeing) and AIgnoreCurrentBeing then Continue;
+					{if not (ABeing is TCharacter) then Continue;} //Target MUST be a TCharacter
+					//Even though it's good idea to prevent packet send to non players
+					//But the problem is that.. NPC is invisible now
+					ALoopCall(Self, ABeing, AParameter);
 				end;
 			end;
 		end;
