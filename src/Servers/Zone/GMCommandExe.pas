@@ -21,41 +21,41 @@ uses
 	Character
 	;
 
-	procedure GMZoneStatus(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMWarp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMWarpDev(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMJump(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMGiveBaseExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMGiveJobExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMBaseLevelUp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMJobLevelUp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMAddStatusPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMAddSkillPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMGiveZeny(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMGiveStat(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMResetStats(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMSpeed(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMDie(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMZoneStatus(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMWarp(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMWarpDev(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMJump(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMGiveBaseExperience(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMGiveJobExperience(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMBaseLevelUp(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMJobLevelUp(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMAddStatusPoints(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMAddSkillPoints(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMGiveZeny(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMGiveStat(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMResetStats(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMSpeed(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMDie(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 
-	procedure GMBroadCast(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMBroadCastNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMBroadCastLocal(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMBroadCastLocalNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMBroadCastLocalBlue(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMBroadCast(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMBroadCastNoName(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMBroadCastLocal(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMBroadCastLocalNoName(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMBroadCastLocalBlue(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 
-	procedure GMBroadCastColor(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMBroadCastRed(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMBroadCastPurple(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMBroadCastGreen(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMBroadCastBlack(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMBroadCastBlue(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMBroadCastWhite(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMBroadCastColor(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMBroadCastRed(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMBroadCastPurple(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMBroadCastGreen(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMBroadCastBlack(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMBroadCastBlue(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMBroadCastWhite(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 
-	procedure GMKick(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMKickAll(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMKick(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMKickAll(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 
-	procedure GMEffect(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
-	procedure GMWhere(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+	procedure GMEffect(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMWhere(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 implementation
 uses
 	{RTL/VCL}
@@ -82,7 +82,7 @@ uses
 //		[2007/?/?] RaX - Create (Rax, correct date if you remember...)
 //		[2007/8/8] Aeomin - Moved from GMCommands.pas and create header.
 //------------------------------------------------------------------------------
-procedure GMZoneStatus(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMZoneStatus(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	Error.Add('Zone '+ IntToStr(MainProc.ZoneServer.Options.ID) + ' : ' + IntToStr(MainProc.ZoneServer.CharacterList.Count) + ' Online!');
 end;{GMZoneStatus}
@@ -98,7 +98,7 @@ end;{GMZoneStatus}
 //	Changes-
 //		[2007/08/13] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMWarp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMWarp(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	MapZoneID      : SmallInt;
 	Index          : Integer;
@@ -201,7 +201,7 @@ end;
 //		[2007/08/08] Aeomin - Create.
 //		[2007/08/13] Aeomin - Renamed from GMWarp
 //------------------------------------------------------------------------------
-procedure GMWarpDev(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMWarpDev(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	if (Length(Arguments) >= 3) then
 	begin
@@ -235,7 +235,7 @@ end;{GMWarpDev}
 //	Changes-
 //		[2007/08/14] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMJump(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMJump(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	APoint : TPoint;
 begin
@@ -283,7 +283,7 @@ end;
 //	Changes-
 //		[2007/8/8] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMGiveBaseExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMGiveBaseExperience(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	ToChange : LongWord;
 begin
@@ -316,7 +316,7 @@ end;{GMGiveBaseExperience}
 //	Changes-
 //		[2007/8/10] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMGiveJobExperience(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMGiveJobExperience(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	ToChange : LongWord;
 begin
@@ -349,7 +349,7 @@ end;{GMGiveJobExperience}
 //	Changes-
 //		[2007/8/11] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMBaseLevelUp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMBaseLevelUp(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	ToChange : SmallInt;
 	OldLevel : SmallInt;
@@ -388,7 +388,7 @@ end;{GMBaseLevelUp}
 //	Changes-
 //		[2007/8/11] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMJobLevelUp(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMJobLevelUp(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	ToChange : SmallInt;
 	OldLevel : SmallInt;
@@ -427,7 +427,7 @@ end;{GMJobLevelUp}
 //	Changes-
 //		[2007/8/14] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMAddStatusPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMAddStatusPoints(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	ToChange : Integer;
 	OldPoint : Integer;
@@ -466,7 +466,7 @@ end;
 //	Changes-
 //		[2007/8/14] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMAddSkillPoints(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMAddSkillPoints(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	ToChange : Integer;
 	OldPoint : Integer;
@@ -505,7 +505,7 @@ end;
 //	Changes-
 //		[2007/8/14] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMGiveZeny(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMGiveZeny(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	ToChange  : Integer;
 	OldAmount : Integer;
@@ -547,7 +547,7 @@ end;
 //	Changes-
 //		[2007/8/14] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMGiveStat(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMGiveStat(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	ToChange  : Integer;
 	OldAmount : Integer;
@@ -635,7 +635,7 @@ end;
 //	Changes-
 //		[2007/8/20] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMResetStats(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMResetStats(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	TargetChar.ResetStats;
 	Error.Add('Status reset successful!');
@@ -652,7 +652,7 @@ end;{GMResetStats}
 //	Changes-
 //		[2007/11/26] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMSpeed(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMSpeed(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	ToChange : Integer;
 begin
@@ -679,7 +679,7 @@ end;{GMSpeed}
 //	Changes-
 //		[2007/12/27] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMDie(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMDie(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	TargetChar.HP := 0;
 end;
@@ -695,7 +695,7 @@ end;
 //	Changes-
 //		[2007/8/9] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMBroadCast(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMBroadCast(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	Announce  : String;
 begin
@@ -714,7 +714,7 @@ end;{GMBroadCast}
 //	Changes-
 //		[2007/8/9] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMBroadCastNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMBroadCastNoName(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	SendGMAnnounce(TargetChar.ClientInfo, Arguments[0]);
 end;{GMBroadCastNoName}
@@ -732,7 +732,7 @@ end;{GMBroadCastNoName}
 //	Changes-
 //		[2007/8/11] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMBroadCastLocal(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMBroadCastLocal(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	Announce  : String;
 	AChar     : TCharacter;
@@ -771,7 +771,7 @@ end;{GMBroadCastLocal}
 //	Changes-
 //		[2007/8/11] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMBroadCastLocalNoName(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMBroadCastLocalNoName(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	AChar     : TCharacter;
 	idxY      : SmallInt;
@@ -808,7 +808,7 @@ end;{GMBroadCastLocalNoName}
 //	Changes-
 //		[2007/8/11] Aeomin - Create.
 //------------------------------------------------------------------------------
-procedure GMBroadCastLocalBlue(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMBroadCastLocalBlue(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	AChar     : TCharacter;
 	idxY      : SmallInt;
@@ -843,7 +843,7 @@ end;{GMBroadCastLocalBlue}
 //	Changes-
 //		[2007/11/12] RabidChocobo - Create.
 //------------------------------------------------------------------------------
-procedure GMBroadCastColor(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMBroadCastColor(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	Color : Integer;
 begin
@@ -876,7 +876,7 @@ end;{GMBroadCastColor}
 //	Changes-
 //		[2007/11/12] RabidChocobo - Create.
 //------------------------------------------------------------------------------
-procedure GMBroadCastRed(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMBroadCastRed(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	if (Length(Arguments) >= 2) then
 	begin
@@ -899,7 +899,7 @@ end;{GMBroadCastRed}
 //	Changes-
 //		[2007/11/12] RabidChocobo - Create.
 //------------------------------------------------------------------------------
-procedure GMBroadCastPurple(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMBroadCastPurple(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	if (Length(Arguments) >= 2) then
 	begin
@@ -922,7 +922,7 @@ end;{GMBroadCastPurple}
 //	Changes-
 //		[2007/11/12] RabidChocobo - Create.
 //------------------------------------------------------------------------------
-procedure GMBroadCastGreen(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMBroadCastGreen(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	if (Length(Arguments) >= 2) then
 	begin
@@ -945,7 +945,7 @@ end;{GMBroadCastGreen}
 //	Changes-
 //		[2007/11/12] RabidChocobo - Create.
 //------------------------------------------------------------------------------
-procedure GMBroadCastBlack(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMBroadCastBlack(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	if (Length(Arguments) >= 2) then
 	begin
@@ -968,7 +968,7 @@ end;{GMBroadCastBlack}
 //	Changes-
 //		[2007/11/12] RabidChocobo - Create.
 //------------------------------------------------------------------------------
-procedure GMBroadCastBlue(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMBroadCastBlue(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	if (Length(Arguments) >= 2) then
 	begin
@@ -991,7 +991,7 @@ end;{GMBroadCastBlue}
 //	Changes-
 //		[2007/11/12] RabidChocobo - Create.
 //------------------------------------------------------------------------------
-procedure GMBroadCastWhite(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMBroadCastWhite(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	if (Length(Arguments) >= 2) then
 	begin
@@ -1014,7 +1014,7 @@ end;{GMBroadCastWhite}
 //	Changes-
 //		[2007/12/5] Aeomin - Created.
 //------------------------------------------------------------------------------
-procedure GMKick(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMKick(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	if (Length(Arguments) >= 2) then
 	begin
@@ -1038,7 +1038,7 @@ end;{GMKick}
 //	Changes-
 //		[2007/12/5] Aeomin - Created.
 //------------------------------------------------------------------------------
-procedure GMKickAll(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMKickAll(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	Kick(TargetChar);
 end;{GMKick}
@@ -1054,7 +1054,7 @@ end;{GMKick}
 //	Changes-
 //		[2007/11/24] Aeomin - Created.
 //------------------------------------------------------------------------------
-procedure GMEffect(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMEffect(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 var
 	EffectID : Integer;
 begin
@@ -1087,7 +1087,7 @@ end;{GMEffect}
 //	Changes-
 //		[2008/01/01] Aeomin - Created.
 //------------------------------------------------------------------------------
-procedure GMWhere(const Arguments : array of String;FromChar:String;TargetChar: TCharacter; var Error : TStringList);
+procedure GMWhere(const Arguments : array of String;const FromChar:String;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	Error.Add('Map : '+TargetChar.Map);
 	Error.Add('At  : ('+IntToStr(TargetChar.Position.X)+','+IntToStr(TargetChar.Position.Y)+')');

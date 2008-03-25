@@ -40,12 +40,10 @@ const
 	GMFLAG_NOSPLIT  = 1;  //NO Split mode, use for only one argument, eg #broadcast, prevent split space and ","
 type
 	TGMCommand = procedure(
-		const
-			Arguments  : array of String;
-			FromChar   : String;
-			TargetChar : TCharacter;
-		var
-			Error : TStringList
+			const Arguments  : array of String;
+			const FromChar   : String;
+			const TargetChar : TCharacter;
+			const Error : TStringList
 		);
 
 	TGMCommands = class(TObject)
@@ -217,7 +215,7 @@ begin
 	{I don't know why, but it gives AV}
 //	for Index := fCommands.Count -1 downto 0 do
 //		fCommands.Objects[Index].Free;
-        fCommands.Clear;
+	fCommands.Clear;
 	fCommands.Free;
 	fTmpCommandList.Free;
 
