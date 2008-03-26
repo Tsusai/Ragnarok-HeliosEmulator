@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 460 -
+[2008/03/26] Aeomin - Fixed a memory leak in GM command during finding target character [InterSend.pas]
+-
+
 - Rev 459 -
 [2008/03/26] Aeomin - Fixed warp glitch caused by thread crash.
 -

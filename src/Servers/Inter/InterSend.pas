@@ -438,6 +438,7 @@ begin
 							Error.Add('Character ''' + CommandSeparator[1] + ''' not found!');
 							InterSendGMCommandReplyToZone(AClient, CharaID, Error);
 						end;
+						ACharacter.Free;
 					end else
 					begin
 						Error.Add('Syntax Help:');
