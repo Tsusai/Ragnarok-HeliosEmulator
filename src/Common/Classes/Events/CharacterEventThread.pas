@@ -47,9 +47,11 @@ uses
 	{RTL/VCL}
 	SysUtils,
 	Classes,
+	SyncObjs,
 	{Project}
 	Main,
 	Event,
+	Being,
 	{3rd Party}
 	WinLinux
 	//none
@@ -103,41 +105,48 @@ end;//Destroy
 //------------------------------------------------------------------------------
 Procedure TCharacterEventThread.Run;
 var
-	CharacterIndex	: Integer;
-	EventIndex			: Integer;
-	CurrentTime			: LongWord;
-	AnEvent					: TRootEvent;
-	AnEventList			: TList;
+	CharacterIndex		: Integer;
+	EventIndex		: Integer;
+	CurrentTime		: LongWord;
+	AnEvent			: TRootEvent;
+	AnEventList		: TList;
+	CriticalSection		: TCriticalSection;
 begin
 	//Get the current "Tick" or time.
 	CurrentTime := GetTick;
-
+	CriticalSection := TCriticalSection.Create;
 	//Loop through the character list
 	for CharacterIndex := CharacterList.Count - 1 downto 0 do
 	begin
 		if CharacterIndex < CharacterList.Count then
 		begin
-			AnEventList := CharacterList[CharacterIndex].EventList.LockList;
-			try
-				//Loop through each character's eventlist.
-				for EventIndex := 0 to AnEventList.Count - 1 do
-				begin
-					AnEvent := AnEventList[EventIndex];
-					//Check to see if the event needs to be fired.
-					if CurrentTime >= AnEvent.ExpiryTime then
+			if CharacterList[CharacterIndex].ZoneStatus = isOnline then
+			begin
+				CriticalSection.Enter;
+				AnEventList := CharacterList[CharacterIndex].EventList.LockList;
+				try
+					//Loop through each character's eventlist.
+					for EventIndex := 0 to AnEventList.Count - 1 do
 					begin
-						//If it does, execute the event, then delete it from the list.
-						//(The list "owns" the events, so this does not leak)   {not right now though}
-						AnEvent.Execute;
-						AnEvent.Free;
-						AnEventList.Delete(EventIndex);
+						AnEvent := AnEventList[EventIndex];
+						//Check to see if the event needs to be fired.
+						if CurrentTime >= AnEvent.ExpiryTime then
+						begin
+							//If it does, execute the event, then delete it from the list.
+							//(The list "owns" the events, so this does not leak)   {not right now though}
+							AnEventList.Delete(EventIndex);
+							AnEvent.Execute;
+							AnEvent.Free;
+						end;
 					end;
+				finally
+					CharacterList[CharacterIndex].EventList.UnlockList;
 				end;
-			finally
-				CharacterList[CharacterIndex].EventList.UnlockList;
+				CriticalSection.Leave;
 			end;
 		end;
 	end;
+	CriticalSection.Free;
 	//Free up the processor
 	Sleep(MainProc.ZoneServer.Options.EventTick);
 end;//Run

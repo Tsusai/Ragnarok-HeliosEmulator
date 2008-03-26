@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 459 -
+[2008/03/26] Aeomin - Fixed warp glitch caused by thread crash.
+-
+
 - Rev 458 -
 [2008/03/25] Aeomin - Misc tweaks. [Remove redundant checks].
 [2008/03/25] Aeomin - Possible fix of reappear of walking glitch [Unclear if memory leak will happen though]

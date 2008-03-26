@@ -133,7 +133,7 @@ begin
 		begin
 			if TObject(AList.Items[Index]) IS TMovementEvent then
 			begin
-//				TObject(AList.Items[Index]).Free;
+				TMovementEvent(AList.Items[Index]).Free;
 				AList.Delete(Index);
 			end;
 		end;
@@ -164,7 +164,7 @@ begin
 		begin
 			if TObject(AList.Items[Index]) IS TAttackEvent then
 			begin
-//				TObject(AList.Items[Index]).Free;
+				TObject(AList.Items[Index]).Free;
 				AList.Delete(Index);
 			end;
 		end;
