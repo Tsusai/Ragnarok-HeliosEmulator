@@ -69,9 +69,6 @@ uses
 	SysUtils,
 	Types,
 	{Project}
-	Main,
-	Globals,
-	GameConstants,
 	{3rd Party}
 	ZDataset,
 	DB

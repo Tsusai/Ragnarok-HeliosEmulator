@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 463 -
+[2008/06/08] Tsusai - Icarus uses list cleanup.
+-
+
 - Rev 462 -
 [2008/06/08] Tsusai - Phase 2 for Packet_db.  Loading mechanism updated to have
  full, unique lists to search through.  No more "can't find it in new, check

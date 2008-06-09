@@ -66,7 +66,6 @@ uses
 	Main,
 	ZoneSend,
 	PacketTypes,
-	BufferIO,
 	Map,
 	GameConstants
 	{Third Party}

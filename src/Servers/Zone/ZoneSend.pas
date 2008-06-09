@@ -32,7 +32,6 @@ uses
 	Being,
 	Character,
 	PacketTypes,
-	GameConstants,
 	{Third Party}
 	IdContext
 	;
@@ -202,6 +201,7 @@ uses
 	SysUtils,
 	{Project}
 	BufferIO,
+	GameConstants,
 	Main,
 	TCPServerRoutines,
 	WinLinux

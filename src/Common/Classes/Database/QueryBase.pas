@@ -68,9 +68,8 @@ implementation
 uses
 	{RTL/VCL}
 	SysUtils,
-	Classes,
+	Classes
 	{Project}
-	Main
 	{3rd Party}
 	//none
 	;

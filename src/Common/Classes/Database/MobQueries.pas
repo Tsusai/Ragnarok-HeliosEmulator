@@ -10,7 +10,6 @@ uses
 	{RTL/VCL}
 	{Project}
 	Mob,
-	GameConstants,
 	QueryBase,
 	{3rd Party}
 	ZSQLUpdate
@@ -32,6 +31,7 @@ type
 implementation
 
 uses
+	GameConstants,
 	ZDataset,
 	DB;
 

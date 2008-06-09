@@ -24,9 +24,6 @@ uses
 	{Project}
 	Item,
 	EquipmentItem,
-	UseableItem,
-	MiscItem,
-	Inventory,
 	QueryBase,
 	{3rd Party}
 	ZSQLUpdate
@@ -95,11 +92,9 @@ uses
 	SysUtils,
 	Types,
 	{Project}
-	Main,
-	Globals,
-	GameConstants,
-	ItemTypes,
 	GameTypes,
+	UseableItem,
+	MiscItem,
 	{3rd Party}
 	ZDataset,
 	DB

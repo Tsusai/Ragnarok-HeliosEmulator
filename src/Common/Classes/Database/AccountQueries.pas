@@ -70,8 +70,6 @@ uses
 	{RTL/VCL}
 	SysUtils,
 	{Project}
-	Main,
-	Globals,
 	{3rd Party}
 	ZDataset,
 	DB

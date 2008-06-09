@@ -23,8 +23,7 @@ uses
 	CharacterServer,
 	InterServer,
 	ZoneServer,
-	HeliosOptions,
-	DatabaseOptions;
+	HeliosOptions;
 
 type
 

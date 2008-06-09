@@ -72,7 +72,6 @@ var
 implementation
 uses
 	SysUtils,
-	StrUtils,
 	Main,
 	Globals,
 	ZoneRecv;
@@ -138,9 +137,9 @@ Begin
 		for sidx := 0 to (packet_db.Count -1) do
 		begin
 			//Look for packet_ver: sections
-			if AnsiStartsStr('packet_ver:',packet_db.Strings[sidx]) then
+			if Copy(packet_db.Strings[sidx],1,12) = ('packet_ver: ') then
 			begin
-				
+
 				//Get the packet version # out of eA
 				PacketVersion := StrToInt(
 					StringReplace(packet_db.Strings[sidx],'packet_ver: ','',[rfReplaceAll])

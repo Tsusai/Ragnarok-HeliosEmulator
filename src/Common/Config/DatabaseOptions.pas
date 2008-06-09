@@ -52,7 +52,6 @@ implementation
 	uses
 		Classes,
 		SysUtils,
-		DatabaseConstants,
 		NetworkConstants,
 		Math,
 		Main;

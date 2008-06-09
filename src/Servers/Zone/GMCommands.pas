@@ -24,9 +24,8 @@ uses
 	Classes,
 	{Project}
 	Character,
-	GMCommandsOptions,
+	GMCommandsOptions
 	{3rd Party}
-	List32
 	;
 
 const
