@@ -178,6 +178,7 @@ end;{DeActivateClient}
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created.
+//		June 8th, 2008 - Tsusai - Updated to use the Packet Object List
 //
 //------------------------------------------------------------------------------
 Function GetPacketLength(ID : Word; Version : Word = 0) : LongWord;
@@ -190,34 +191,14 @@ var
 begin
 	Result := 0;
 	Found := false;
-	CodebaseLength := Length(Codebase[Version].Packet);
+	CodebaseLength := Codebase[Version].Packets.Count;
 	for Index := 0 to CodebaseLength - 1 do
 	begin
-		if Codebase[Version].Packet[Index].ID = ID then
+		if TPackets(Codebase[Version].Packets[Index]).ID = ID then
 		begin
-			Result := Codebase[Version].Packet[Index].PLength;
+			Result := TPackets(Codebase[Version].Packets[Index]).PLength;
 			Found := true;
 			break;
-		end;
-	end;
-	// Try fetch latest packet
-	if not Found then
-	begin
-		MainLength     := Length(Codebase);
-		for BaseIndex := MainLength - 1 downto 0 do
-		begin
-			CodebaseLength := Length(Codebase[BaseIndex].Packet);
-			for Index := CodebaseLength - 1 downto 0 do
-			begin
-				if Codebase[BaseIndex].Packet[Index].ID = ID then
-				begin
-					Result := Codebase[BaseIndex].Packet[Index].PLength;
-					Found := true;
-					break;
-				end;
-			end;
-			if Found then
-				break;
 		end;
 	end;
 end;{GetPacketLength}

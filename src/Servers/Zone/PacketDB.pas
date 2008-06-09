@@ -10,6 +10,7 @@ interface
 uses
 	Character,
 	Classes,
+	Contnrs,
 	PacketTypes;
 
 	function Load_PacketDB : boolean;
@@ -32,7 +33,7 @@ type
 	TAvoidSelfPacketProc = procedure (var AChara : TCharacter; const AvoidSelf : boolean = False);
 
 type
-	TPackets = record
+	TPackets = class
 		ID : word; //PacketID
 
 		//Length, trying not to conflict with Length() command.
@@ -49,28 +50,21 @@ type
 
 	//Packet List to replace PacketArray.
 	//Needs some destruction stuffs.
-	TPacketList = class(TList)
-	private
-		function GetItem(Index: Integer): TPackets;
-		procedure SetItem(Index: Integer; const Value: TPackets);
-		function GetPItem(Index: Integer): PPackets;
-		procedure SetPItem(Index: Integer; const Value: PPackets);
+	TPacketList = class(TObjectList)
 	public
-		property Items[Index:Integer]: TPackets read GetItem write SetItem; default;
-		property PItems[Index:Integer]: PPackets read GetPItem write SetPItem;
-		procedure Add(Item: TPackets);
-		function GetData(ID : Integer) : TPackets;
-		procedure Notify(Ptr: Pointer; Action: TListNotification); override;
 		procedure Assign(Destination : TPacketList);
+		procedure Add(PacketObject : TPackets);
+		constructor Create;
 	end;
 
-	PacketArray = record
-		Packet : array of TPackets;
-	end;
-	CodeArray  = array of PacketArray;
+	type
+		TCodebaseData = record
+			PACKETVER : word;
+			Packets : TPacketList;
+		end;
 
 var
-	CodeBase : CodeArray;
+	CodeBase : array of TCodeBaseData;
 
 
 	procedure LoadStaticDatabase;
@@ -78,7 +72,7 @@ var
 implementation
 uses
 	SysUtils,
-
+	StrUtils,
 	Main,
 	Globals,
 	ZoneRecv;
@@ -110,83 +104,95 @@ Revisions:
 	packet info.
 [2006/09/26] Tsusai - Imported to Helios
 January 20th 2007 - Tsusai - Now a function
+June 8th 2008 - Tsusai - Overhauled.  Introduced a packet object list, to hold
+	packet objects, instead of another array.  Also implemented use of eAthena's
+	packet_db to help with easy updating.
 ------------------------------------------------------------------------------*)
 function Load_PacketDB : boolean;
 Var
-	sidx : word;
-	CB : word;
-	PK : integer;
-	idx : integer;
+	sidx : integer;
+	CBIdx : word;
 	ReadLoc : byte;
-
+	PacketVersion : integer;
 	packet_db : TStringList;
 	PacketInfo : TStringList;
+	PacketData : TPackets;
 	ReadPtInfo : TStringList;
 Begin
 	Result := FileExists(MainProc.Options.DatabaseDirectory+'/'+'packet_db.txt');
 	if Result then
 	begin
+		PacketVersion := 0;
+		CBIdx := 0;
+		//Init the first list
+		SetLength(Codebase,CBIdx+1);
+		Codebase[CBIdx].PACKETVER := PacketVersion;
+		Codebase[CBIdx].Packets := TPacketList.Create;
+
 		//load the packet_db file
 		packet_db := TStringList.Create;
 		packet_db.LoadFromFile(MainProc.Options.DatabaseDirectory+'/'+'packet_db.txt');
 
-		CB := 0;
-		PK := 0;
-		SetLength(CodeBase, CB + 1); //setup the CodeBase for informations
-
 		PacketInfo := TStringList.Create;
+
 		for sidx := 0 to (packet_db.Count -1) do
 		begin
-			if (Copy(packet_db[sidx],1,2) <> '0x') then
+			//Look for packet_ver: sections
+			if AnsiStartsStr('packet_ver:',packet_db.Strings[sidx]) then
+			begin
+				
+				//Get the packet version # out of eA
+				PacketVersion := StrToInt(
+					StringReplace(packet_db.Strings[sidx],'packet_ver: ','',[rfReplaceAll])
+				);
+				//skip making a new packet version group if we're already using it (ie. packetver 0)
+				if PacketVersion = Codebase[CBIdx].PACKETVER then continue;
+				Inc(CBIdx);
+				//Init New list
+				SetLength(Codebase,CBIdx+1);
+				Codebase[CBIdx].PACKETVER := PacketVersion;
+				Codebase[CBIdx].Packets := TPacketList.Create;
+				//Copy contents from previous to new list
+				Codebase[CBIdx].Packets.Assign(CodeBase[CBIdx-1].Packets);
+				//Go to next line, we're done with setup
+				Continue;
+			end else if (Copy(packet_db[sidx],1,2) <> '0x') then
 			begin
 				Continue; //we are ignoring comments and other crap
 			end;
-
+			//READ THE PACKET DATA (>^.^>)
+			PacketData := TPackets.Create;
 			PacketInfo.CommaText := packet_db[sidx];// break up the information by commas
 
 
-			//Check for existing packet, if found, start new codebase
-			for idx := 0 to (Length(CodeBase[CB].Packet) -1) do
-			begin
-				if (CodeBase[CB].Packet[idx].ID = StrToIntDef( StringReplace(PacketInfo[0], 'Ox', '$', [rfReplaceAll]),0)) then
-				begin
-					PK := 0; //Preparing for the next CodeBase
-					Inc(CB); //Go to the next codebase
-					SetLength(CodeBase, CB +1); //setup the next codebase
-					Break;
-				end;
-			end;
-
-			SetLength(CodeBase[CB].Packet, PK +1);//Setup the packet array
-
 			if (PacketInfo.Count >= 2) then
 			begin
-				CodeBase[CB].Packet[PK].ID := StrToIntDef( StringReplace(PacketInfo[0], 'Ox', '$', [rfReplaceAll]),0);
-				CodeBase[CB].Packet[PK].PLength := StrToIntDef(PacketInfo[1],0);//Save the packet length
+				PacketData.ID := StrToIntDef( StringReplace(PacketInfo[0], 'Ox', '$', [rfReplaceAll]),0);
+				PacketData.PLength := StrToIntDef(PacketInfo[1],0);//Save the packet length
 			end;
 
 			if (PacketInfo.Count = 4) then
 			begin
-				CodeBase[CB].Packet[PK].Command := PacketInfo[2]; //Procedure name to run
+				PacketData.Command := PacketInfo[2]; //Procedure name to run
 				//Loading all the procedural read packet locations
 				ReadPtInfo := TStringList.Create;
 				ReadPtInfo.Delimiter := ':';
 				ReadPtInfo.DelimitedText := PacketInfo[3];
-				SetLength(CodeBase[CB].Packet[PK].ReadPoints, ReadPtInfo.Count);
+				SetLength(PacketData.ReadPoints, ReadPtInfo.Count);
 				for ReadLoc := 0 to (ReadPtInfo.Count -1) do
 				begin
-					CodeBase[CB].Packet[PK].ReadPoints[ReadLoc] := StrToInt(ReadPtInfo[ReadLoc]);
+					PacketData.ReadPoints[ReadLoc] := StrToInt(ReadPtInfo[ReadLoc]);
 					{[2006/01/01] CR - ERangeError reported here at +36 in Rev 582...
 					don't know if it was a corrupt line in the file, or what the issue is,
 					at this point. }
 				end;
 				ReadPtInfo.Free;
 			end else begin
-				CodeBase[CB].Packet[PK].Command := 'nocommand';
-				SetLength(CodeBase[CB].Packet[PK].ReadPoints, 1);
-				CodeBase[CB].Packet[PK].ReadPoints[0] := 0;
+				PacketData.Command := 'nocommand';
+				SetLength(PacketData.ReadPoints, 1);
+				PacketData.ReadPoints[0] := 0;
 			end;
-			with CodeBase[CB].Packet[PK] do begin
+			with PacketData do begin
 				//Blank out the procedures with dummy ones.
 				ExecCommand := NoCommand;
 				ExecAvoidSelfCommand := NoCommand;
@@ -428,19 +434,21 @@ Begin
 					ExecCommand := CreatParty2;
 				end else if Command = 'snexplosionspirits' then begin
 					ExecCommand := SNExplosionSpirits; }
-				end else if Command = 'friendaddrequest' then begin
+				end else if Command = 'friendslistadd' then begin
 					ExecCommand := RequestToAddFriend;
-				end else if Command = 'frienddeleterequest' then begin
+				end else if Command = 'friendslistremove' then begin
 					ExecCommand := RemoveFriendFromList;
-				end else if Command = 'friendaddreply' then begin
+				end else if Command = 'friendlistreply' then begin
 					ExecCommand := RequestToAddFriendResponse;
 				end;
 			end;
-			Inc(PK);//jump to the next packet record
+			//Add data (or update, .Add knows how) to current work list
+			CodeBase[CBIdx].Packets.Add(PacketData);
 		end;
 
-		packet_db.Free;
-		PacketInfo.Free;
+		packet_db.Free; //free the stringlist with the text
+		//PacketInfo.Free; (Can't free, else it'll free the last object in the last list!!!!!! (x.x)'
+			
 	end else begin
 		Console.WriteLn('*** '+MainProc.Options.DatabaseDirectory+'/'+'packet_db.txt was not found.');
 	end;
@@ -452,89 +460,59 @@ begin
 	Load_PacketDB;
 end;
 
+
+(**)
+(**)
+(*TPACKETLIST METHODS!!!!!*)
+(**)
+(**)
+
 //Copy procedure
-procedure TPacketList.Assign(Destination: TPacketList);
+procedure TPacketList.Assign(Destination : TPacketList);
 var
 	idx : integer;
+	PacketObject : TPackets;
 begin
-	if not Assigned(Destination) then Destination := TPacketList.Create;
-	Destination.Clear;
+	if not Assigned(Self) then Self := TPacketList.Create;
+	Self.Clear;
 	for idx := 0 to Count - 1 do
 	begin
-		Destination.Add(GetItem(idx));
+		PacketObject := TPackets.Create;
+		PacketObject.ID := TPackets(Items[idx]).ID;
+		PacketObject.PLength := TPackets(Items[idx]).PLength;
+		PacketObject.Command := TPackets(Items[idx]).Command;
+		SetLength(PacketObject.ReadPoints,Length(TPackets(Items[idx]).ReadPoints));
+		PacketObject.ReadPoints := Copy(TPackets(Items[idx]).ReadPoints,0,Length(PacketObject.ReadPoints));
+		PacketObject.ExecCommand := TPackets(Items[idx]).ExecCommand;
+		PacketObject.ExecAvoidSelfCommand := TPackets(Items[idx]).ExecAvoidSelfCommand;
+		Destination.Add(PacketObject);
 	end;
 end;
 
-//Adds only
-{function TPacketList.Add(Item: TPackets): Integer;
-var
-	Relay: PPackets;
-begin
-	New(Relay);
-	Relay^ := Item;
-	Result := inherited Add(Relay);
-end; }
-
-//Checks the list if its there, and updates.  Else add
-procedure TPacketList.Add(Item: TPackets);
+procedure TPacketList.Add(PacketObject : TPackets);
 var
 	idx : integer;
-	Relay: PPackets;
 begin
 	for idx := 0 to Count - 1 do
 	begin
-		if GetItem(idx).ID = Item.ID then
+		If TPackets(Items[idx]).ID = PacketObject.ID then
 		begin
-			SetItem(idx,Item);
+			TPackets(Items[idx]).ID := PacketObject.ID;
+			TPackets(Items[idx]).PLength := PacketObject.PLength;
+			TPackets(Items[idx]).Command := PacketObject.Command;
+			SetLength(TPackets(Items[idx]).ReadPoints,Length(PacketObject.ReadPoints));
+			TPackets(Items[idx]).ReadPoints := Copy(PacketObject.ReadPoints,0,Length(PacketObject.ReadPoints));
+			TPackets(Items[idx]).ExecCommand := PacketObject.ExecCommand;
+			TPackets(Items[idx]).ExecAvoidSelfCommand := PacketObject.ExecAvoidSelfCommand;
 			Exit;
 		end;
 	end;
-	New(Relay);
-	Relay^ := Item;
-	inherited Add(Relay);
+	inherited Add(PacketObject);
 end;
 
-//Gets data at index
-function TPacketList.GetItem(Index: Integer): TPackets;
+constructor TPacketList.Create;
 begin
-	Result := PPackets(inherited Items[Index])^;
-end;
-
-//Gets Record based on ID
-function TPacketList.GetData(ID : Integer) : TPackets;
-var
-	idx : integer;
-begin
-	for idx := 0 to Count - 1 do
-	begin
-		if GetItem(idx).ID = ID then Result := GetItem(idx);
-		Exit;
-	end;
-end;
-
-//Updates item at specified index
-procedure TPacketList.SetItem(Index: Integer;
-	const Value: TPackets);
-begin
-	PPackets(inherited Items[Index])^ := Value;
-end;
-
-procedure TPacketList.Notify(Ptr: Pointer; Action: TListNotification);
-begin
-	inherited;
-	if ( Action = lnDeleted ) then
-		Dispose(Ptr);
-end;
-
-function TPacketList.GetPItem(Index: Integer): PPackets;
-begin
-	Result := inherited Items[Index];
-end;
-
-procedure TPacketList.SetPItem(Index: Integer;
-	const Value: PPackets);
-begin
-	inherited Items[Index] := Value;
+	Self.OwnsObjects := True;
 end;
 
 

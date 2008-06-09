@@ -457,12 +457,15 @@ end;{Start}
 //
 //	Changes -
 //		September 19th, 2006 - RaX - Created Header.
+//		June 8th, 2008 - Tsusai - Hmm...upgrades...  Updated for the new Packet
+//			object list
 //   	Old Comments Follow...
 //    [2006/03/11] Tsusai - Packet is now a word type, not a 0xHexString
 //    [2006/08/12] Tsusai - Updated for Indy.
 //    [2006/09/26] Tsusai - Imported to Helios
 //    [2006/09/28] RaX - Variables re-cased, moved "begins" to next line.
 //    [2006/10/04] Tsusai - Updated ExecCommand call
+//
 //------------------------------------------------------------------------------
 function TZoneServer.SearchPacketListing(
 
@@ -480,10 +483,10 @@ var
 begin
 	Result := False;
 
-	for Index := 0 to Length(CodeBase[Version].Packet) - 1 do
+	for Index := 0 to CodeBase[Version].Packets.Count - 1 do
 	begin
 
-		with CodeBase[Version].Packet[Index] do
+		with TPackets(CodeBase[Version].Packets.Items[Index]) do
 		begin
 
 			if (ID = Packet) then
@@ -525,6 +528,8 @@ end;{SearchPacketListing}
 //		September 19th, 2006 - RaX - Created Header.
 //		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
 //			IdContext.Binding shortcut
+//		June 08th, 2008 - Tsusai - Upgraded to parse the packets that have been
+//			moved to TObjectList form, than arrays.
 
 //    Old Comments Follow...
 //    [2005/07/11] CR - Added Comment Header, Reindented, using newer syntax for
@@ -565,20 +570,20 @@ Begin
 			for ClientBaseIndex := (Length(CodeBase) -1) downto 0 do
 			begin //Go through all the client-bases w/ packets
 
-				for PacketIndex := 0 to Length(CodeBase[ClientBaseIndex].Packet) - 1 do
+				for PacketIndex := 0 to CodeBase[ClientBaseIndex].Packets.Count - 1 do
 				begin //Search for the packet from this client-base
 
-					if (CodeBase[ClientBaseIndex].Packet[PacketIndex].ID = PacketID) then
+					if TPackets(CodeBase[ClientBaseIndex].Packets[PacketIndex]).ID = PacketID then
 					begin
-						if (CodeBase[ClientBaseIndex].Packet[PacketIndex].PLength = Lth) then
+						if TPackets(CodeBase[ClientBaseIndex].Packets[PacketIndex]).PLength = Lth then
 						begin
-							if (CodeBase[ClientBaseIndex].Packet[PacketIndex].Command = 'wanttoconnection') then
+							if TPackets(CodeBase[ClientBaseIndex].Packets[PacketIndex]).Command = 'wanttoconnection' then
 							begin
 								RecvBuffer(AClient, ABuffer[2], (Lth - 2)); //Get the rest of the packet info
 								MapConnect(ClientBaseIndex,
 									AClient,
 									ABuffer,
-									CodeBase[ClientBaseIndex].Packet[PacketIndex].ReadPoints
+									TPackets(CodeBase[ClientBaseIndex].Packets[PacketIndex]).ReadPoints
 								);
 								Found := True;
 								Break;
