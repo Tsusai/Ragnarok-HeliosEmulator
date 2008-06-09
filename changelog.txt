@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 461 -
+[2008/06/08] Tsusai - Phase 1 of fixing packet_db logic.  Possibly moving to using eA's. [PacketDB.pas]
+-
+
 - Rev 460 -
 [2008/03/26] Aeomin - Fixed a memory leak in GM command during finding target character [InterSend.pas]
 -

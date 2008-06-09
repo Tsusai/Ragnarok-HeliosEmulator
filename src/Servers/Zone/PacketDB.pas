@@ -9,6 +9,7 @@ unit PacketDB;
 interface
 uses
 	Character,
+	Classes,
 	PacketTypes;
 
 	function Load_PacketDB : boolean;
@@ -44,6 +45,25 @@ type
 		ExecAvoidSelfCommand	: TAvoidSelfPacketProc; //avoidself special procedure link
 	end;
 
+	PPackets = ^TPackets;
+
+	//Packet List to replace PacketArray.
+	//Needs some destruction stuffs.
+	TPacketList = class(TList)
+	private
+		function GetItem(Index: Integer): TPackets;
+		procedure SetItem(Index: Integer; const Value: TPackets);
+		function GetPItem(Index: Integer): PPackets;
+		procedure SetPItem(Index: Integer; const Value: PPackets);
+	public
+		property Items[Index:Integer]: TPackets read GetItem write SetItem; default;
+		property PItems[Index:Integer]: PPackets read GetPItem write SetPItem;
+		procedure Add(Item: TPackets);
+		function GetData(ID : Integer) : TPackets;
+		procedure Notify(Ptr: Pointer; Action: TListNotification); override;
+		procedure Assign(Destination : TPacketList);
+	end;
+
 	PacketArray = record
 		Packet : array of TPackets;
 	end;
@@ -58,7 +78,6 @@ var
 implementation
 uses
 	SysUtils,
-	Classes,
 
 	Main,
 	Globals,
@@ -431,6 +450,91 @@ End; (* Proc Load_PacketDB
 procedure LoadStaticDatabase;
 begin
 	Load_PacketDB;
+end;
+
+//Copy procedure
+procedure TPacketList.Assign(Destination: TPacketList);
+var
+	idx : integer;
+begin
+	if not Assigned(Destination) then Destination := TPacketList.Create;
+	Destination.Clear;
+	for idx := 0 to Count - 1 do
+	begin
+		Destination.Add(GetItem(idx));
+	end;
+end;
+
+//Adds only
+{function TPacketList.Add(Item: TPackets): Integer;
+var
+	Relay: PPackets;
+begin
+	New(Relay);
+	Relay^ := Item;
+	Result := inherited Add(Relay);
+end; }
+
+//Checks the list if its there, and updates.  Else add
+procedure TPacketList.Add(Item: TPackets);
+var
+	idx : integer;
+	Relay: PPackets;
+begin
+	for idx := 0 to Count - 1 do
+	begin
+		if GetItem(idx).ID = Item.ID then
+		begin
+			SetItem(idx,Item);
+			Exit;
+		end;
+	end;
+	New(Relay);
+	Relay^ := Item;
+	inherited Add(Relay);
+end;
+
+//Gets data at index
+function TPacketList.GetItem(Index: Integer): TPackets;
+begin
+	Result := PPackets(inherited Items[Index])^;
+end;
+
+//Gets Record based on ID
+function TPacketList.GetData(ID : Integer) : TPackets;
+var
+	idx : integer;
+begin
+	for idx := 0 to Count - 1 do
+	begin
+		if GetItem(idx).ID = ID then Result := GetItem(idx);
+		Exit;
+	end;
+end;
+
+//Updates item at specified index
+procedure TPacketList.SetItem(Index: Integer;
+	const Value: TPackets);
+begin
+	PPackets(inherited Items[Index])^ := Value;
+end;
+
+procedure TPacketList.Notify(Ptr: Pointer; Action: TListNotification);
+begin
+	inherited;
+	if ( Action = lnDeleted ) then
+		Dispose(Ptr);
+end;
+
+function TPacketList.GetPItem(Index: Integer): PPackets;
+begin
+	Result := inherited Items[Index];
+end;
+
+procedure TPacketList.SetPItem(Index: Integer;
+	const Value: PPackets);
+begin
+	inherited Items[Index] := Value;
 end;
 
 
