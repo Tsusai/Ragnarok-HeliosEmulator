@@ -52,7 +52,7 @@ type
 	//Needs some destruction stuffs.
 	TPacketList = class(TObjectList)
 	public
-		procedure Assign(Destination : TPacketList);
+		procedure Assign(Source : TPacketList);
 		procedure Add(PacketObject : TPackets);
 		constructor Create;
 	end;
@@ -146,6 +146,17 @@ Begin
 				);
 				//skip making a new packet version group if we're already using it (ie. packetver 0)
 				if PacketVersion = Codebase[CBIdx].PACKETVER then continue;
+
+				//if we're hitting our first REAL packet version (ie the Client <> server packets)
+				//Then we're just going to give it a packetversion number, and add onto it.
+				//There should be no packetver 0, just whatever the first packetver is, plus
+				//any random packets like inter before it.
+				if Codebase[CBIdx].PACKETVER = 0 then
+				begin
+					Codebase[CBIdx].PACKETVER := PacketVersion;
+					Continue;
+				end;
+
 				Inc(CBIdx);
 				//Init New list
 				SetLength(Codebase,CBIdx+1);
@@ -467,24 +478,24 @@ end;
 (**)
 
 //Copy procedure
-procedure TPacketList.Assign(Destination : TPacketList);
+procedure TPacketList.Assign(Source : TPacketList);
 var
 	idx : integer;
 	PacketObject : TPackets;
 begin
 	if not Assigned(Self) then Self := TPacketList.Create;
 	Self.Clear;
-	for idx := 0 to Count - 1 do
+	for idx := 0 to Source.Count - 1 do
 	begin
 		PacketObject := TPackets.Create;
-		PacketObject.ID := TPackets(Items[idx]).ID;
-		PacketObject.PLength := TPackets(Items[idx]).PLength;
-		PacketObject.Command := TPackets(Items[idx]).Command;
-		SetLength(PacketObject.ReadPoints,Length(TPackets(Items[idx]).ReadPoints));
-		PacketObject.ReadPoints := Copy(TPackets(Items[idx]).ReadPoints,0,Length(PacketObject.ReadPoints));
-		PacketObject.ExecCommand := TPackets(Items[idx]).ExecCommand;
-		PacketObject.ExecAvoidSelfCommand := TPackets(Items[idx]).ExecAvoidSelfCommand;
-		Destination.Add(PacketObject);
+		PacketObject.ID := TPackets(Source.Items[idx]).ID;
+		PacketObject.PLength := TPackets(Source.Items[idx]).PLength;
+		PacketObject.Command := TPackets(Source.Items[idx]).Command;
+		SetLength(PacketObject.ReadPoints,Length(TPackets(Source.Items[idx]).ReadPoints));
+		PacketObject.ReadPoints := Copy(TPackets(Source.Items[idx]).ReadPoints,0,Length(PacketObject.ReadPoints));
+		PacketObject.ExecCommand := TPackets(Source.Items[idx]).ExecCommand;
+		PacketObject.ExecAvoidSelfCommand := TPackets(Source.Items[idx]).ExecAvoidSelfCommand;
+		Add(PacketObject);
 	end;
 end;
 

@@ -187,17 +187,14 @@ var
 	BaseIndex       : Integer;
 	CodebaseLength  : Integer;
 	MainLength      : Integer;
-	Found : boolean;
 begin
 	Result := 0;
-	Found := false;
 	CodebaseLength := Codebase[Version].Packets.Count;
 	for Index := 0 to CodebaseLength - 1 do
 	begin
 		if TPackets(Codebase[Version].Packets[Index]).ID = ID then
 		begin
 			Result := TPackets(Codebase[Version].Packets[Index]).PLength;
-			Found := true;
 			break;
 		end;
 	end;

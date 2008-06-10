@@ -15,6 +15,21 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 464 -
+[2008/06/09] Tsusai - Packet_db.txt - Updated to eA packetver 14 to fix issues
+ (the pre packet_db work was newer than 5.).  Included Helios server packets
+ to the initial packetver 14 list.
+[2008/06/09] Tsusai - Fixed multiple issues.  Fixed TPacketList.Assign to 
+ properly obtain and add from the source list. Removed PACKETVER 0 stuff. 
+ Any pre-packetver data (helios server packets) are automatically merged to the
+ first packet_ver.
+[2008/06/09] Tsusai - GetPacketLength - Cleaned up Found var. Not needed
+ [TCPServerRoutines.pas]
+[2008/06/09] Tsusai - TCharacterServer.OnExecute - Added additional error message
+ and added method to remove unknown packets chunk (Probably a charaserv ping
+ packet, will investigate). [CharacterServer.pas]
+-
+
 - Rev 463 -
 [2008/06/08] Tsusai - Icarus uses list cleanup.
 -

@@ -1054,6 +1054,16 @@ begin
 				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0068)-2);
 				DeleteChara(AConnection,ABuffer);
 			end;
+		else
+			begin
+				Size := GetPacketLength(PacketID);
+				Console.Message('Unknown Character Server Packet : ' + IntToHex(PacketID,4), 'Character Server', MS_WARNING);
+				if Size-2 > 0 then
+				begin
+					Console.Message(IntToStr(Size-2) + ' additional bytes were truncated','Character Server', MS_WARNING);
+					RecvBuffer(AConnection,ABuffer[2],GetPacketLength(PacketID)-2);
+				end;
+			end;
 		end;
 	end else
 	begin
@@ -1100,10 +1110,10 @@ begin
 				begin
 					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2104)-2);
 					TZoneServerLink(AConnection.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
-          if CharaToLoginClient.Connected then
-          begin
+					if CharaToLoginClient.Connected then
+					begin
 						SendCharaOnlineUsersToLogin(CharaToLoginClient,Self);
-          end;
+					end;
 					UpdateOnlineCountToZone;
 					Console.Message('Received updated Zone Server Online Users.', 'Character Server', MS_DEBUG);
 				end;
@@ -1145,7 +1155,7 @@ begin
 					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2109)-2);
 					RemoveFromAccountList(AConnection,ABuffer);
 				end;
-		end;
+			end;
 		else
 			begin
 				Console.Message('Unknown Character Server Packet : ' + IntToHex(PacketID,4), 'Character Server', MS_WARNING);
