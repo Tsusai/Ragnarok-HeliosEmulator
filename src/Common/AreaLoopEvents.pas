@@ -156,11 +156,11 @@ Procedure ShowTeleIn(
 Begin
 	if ABeing is TCharacter then
 	begin
-		ZoneSendBeing(ACurrentBeing, TCharacter(ABeing).ClientInfo, True);
+		ZoneSendBeing(ACurrentBeing, TCharacter(ABeing), True);
 	end;
 	if ACurrentBeing is TCharacter then
 	begin
-		ZoneSendBeing(ABeing, TCharacter(ACurrentBeing).ClientInfo);
+		ZoneSendBeing(ABeing, TCharacter(ACurrentBeing));
 	end;
 End; (* Proc ShowTeleIn
 *-----------------------------------------------------------------------------*)
@@ -294,12 +294,18 @@ begin
 		case ACurrentCharacter.CharaState of
 			charaSitting :
 				begin
-					DoAction(ACharacter.ClientInfo, ACurrentCharacter.AccountID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
+					if ABeing = ACurrentBeing then
+						DoAction(ACharacter.ClientInfo, ACurrentCharacter.AccountID, 0, 0, 0, ACTION_SIT, 0, 0, 0)
+					else
+						DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
 				end;
 
 			charaStanding :
 				begin
-					DoAction(ACharacter.ClientInfo, ACurrentCharacter.AccountID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
+					if ABeing = ACurrentBeing then
+						DoAction(ACharacter.ClientInfo, ACurrentCharacter.AccountID, 0, 0, 0, ACTION_STAND, 0, 0, 0)
+					else
+						DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
 				end;
 		end;
 	end;
@@ -332,17 +338,17 @@ begin
 		case ACharacter.CharaState of
 			charaSitting :
 				begin
-					DoAction(ACurrentCharacter.ClientInfo, ACharacter.AccountID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
+					DoAction(ACurrentCharacter.ClientInfo, ACharacter.ID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
 				end;
 
 			charaStanding :
 				begin
-					DoAction(ACurrentCharacter.ClientInfo, ACharacter.AccountID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
+					DoAction(ACurrentCharacter.ClientInfo, ACharacter.ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
 				end;
 
 			charaAttacking :
 				begin
-					DoAction(ACharacter.ClientInfo, ACurrentCharacter.AccountID, ACurrentCharacter.TargetID, 0, 0, ACTION_ATTACK, 0, 0, 0);
+					DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, ACurrentCharacter.TargetID, 0, 0, ACTION_ATTACK, 0, 0, 0);
 				end;
 
 			charaDead :

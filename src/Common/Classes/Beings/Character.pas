@@ -2573,7 +2573,7 @@ var
 	Index       : Byte;
 begin
 	FriendList := TCharacterList.Create(TRUE);
-	TThreadLink(ClientInfo.Data).DatabaseLink.Friend.LoadList(FriendList, self);
+	TThreadLink(ClientInfo.Data).DatabaseLink.Friend.LoadList(FriendList, Self);
 	if FriendList.Count > 0 then
 	begin
 		WriteBufferWord(0, $0201, OutBuffer);

@@ -324,6 +324,7 @@ end;{NoCommand}
 //--
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header;
+//	[2008/06/08] Aeomin - Updated packet structure
 //------------------------------------------------------------------------------
 procedure GetNameAndID(
 	var AChara  : TCharacter;
@@ -337,30 +338,40 @@ var
 	RecvNPC : TNPC;
 begin
 	ID := BufferReadLongWord(ReadPts[0], InBuffer);
-	idx := MainProc.ZoneServer.CharacterList.IndexOfAID(ID);
-	if idx > -1 then
+	if AChara.AccountID = ID then
 	begin
-		RecvCharacter := MainProc.ZoneServer.CharacterList.Items[idx];
-		{guild check}
-		{guild version packet}
-		{else}
 		ZoneSendObjectNameAndIDBasic(
 			AChara,
-			RecvCharacter.AccountID,
-			RecvCharacter.Name
+			AChara.AccountID,
+			AChara.Name
 		);
 	end else
 	begin
-		//NPC and Mob shit here
-		idx := MainProc.ZoneServer.NPCList.IndexOf(ID);
+		idx := MainProc.ZoneServer.CharacterList.IndexOf(ID);
 		if idx > -1 then
 		begin
-			RecvNPC := MainProc.ZoneServer.NPCList.Objects[idx] as TNPC;
+			RecvCharacter := MainProc.ZoneServer.CharacterList.Items[idx];
+			{guild check}
+			{guild version packet}
+			{else}
 			ZoneSendObjectNameAndIDBasic(
 				AChara,
-				RecvNPC.ID,
-				RecvNPC.Name
+				RecvCharacter.ID,
+				RecvCharacter.Name
 			);
+		end else
+		begin
+			//NPC and Mob shit here
+			idx := MainProc.ZoneServer.NPCList.IndexOf(ID);
+			if idx > -1 then
+			begin
+				RecvNPC := MainProc.ZoneServer.NPCList.Objects[idx] as TNPC;
+				ZoneSendObjectNameAndIDBasic(
+					AChara,
+					RecvNPC.ID,
+					RecvNPC.Name
+				);
+			end;
 		end;
 	end;
 end;{GetNameAndID}
@@ -439,7 +450,8 @@ begin
 
 			SendZoneCharaLogon(MainProc.ZoneServer.ToCharaTCPClient, ACharacter);
 
-			SendPadding(ACharacter.ClientInfo);
+//			SendPadding(ACharacter.ClientInfo);
+			SendCharID(ACharacter);
 
 			ZoneSendMapConnectReply(ACharacter);
 			SendZoneCharaIncrease(MainProc.ZoneServer.ToCharaTCPClient,MainProc.ZoneServer);
@@ -541,7 +553,7 @@ begin
 		AChara.SendCharacterStats;
 
 		//Inventory Placeholder
-		WriteBufferWord(0, $00a3, OutBuffer);
+		WriteBufferWord(0, $01ee, OutBuffer);
 		WriteBufferWord(2, 4, OutBuffer);
 		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
 		//Equip Placeholder
@@ -836,7 +848,6 @@ var
 begin
 	TargetID := BufferReadLongWord(ReadPts[0], InBuffer);
 	ActionType := BufferReadByte(ReadPts[1], InBuffer);
-
 	case ActionType of
 
 		0 ://Hit target one time
@@ -846,13 +857,13 @@ begin
 				AChara.Attack(TargetID, FALSE, FALSE);
 			end;
 
-		2	://Sit
+		ACTION_SIT://Sit
 			begin
 				//TODO -- basic skill checks here
 				AChara.CharaState := charaSitting;
 			end;
 
-		3	://Stand
+		ACTION_STAND://Stand
 			begin
 				AChara.CharaState := charaStanding;
 			end;
@@ -861,7 +872,7 @@ begin
 			begin
 				AChara.CharaState := charaAttacking;
 				AChara.Attack(TargetID, TRUE, FALSE);
-      end;
+			end;
 	end;
 end;{ActionRequest}
 //------------------------------------------------------------------------------
@@ -1269,7 +1280,6 @@ var
 	AlreadyFriend : Boolean;
 begin
 	TargetName := BufferReadString(ReadPts[0], NAME_LENGTH, InBuffer);
-
 	with TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character do
 	begin
 		TargetChara := TCharacter.Create(AChara.ClientInfo);
@@ -1281,7 +1291,6 @@ begin
 				TargetChara.ID
 			);
 	end;
-
 	if not AlreadyFriend then
 	begin
 		with TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Map do
@@ -1948,7 +1957,6 @@ begin
 	Offline		:= BufferReadByte(22, InBuffer);
 
 	Index := MainProc.ZoneServer.CharacterList.IndexOf(TargetCID);
-
 	if (Index > -1) then
 	begin
 		Chara := MainProc.ZoneServer.CharacterList.Items[Index];

@@ -181,12 +181,12 @@ begin
 	Result := -1;
 	while (Index >= 0) do
 	begin
-		if AID = Items[Index].ID then
+		if AID = Items[Index].AccountID then
 		begin
 			Result := Index;
-			Exit;
+			Break;
 		end;
-		dec(Index,  1);
+		Dec(Index);
 	end;
 end;{IndexOfAID}
 //------------------------------------------------------------------------------

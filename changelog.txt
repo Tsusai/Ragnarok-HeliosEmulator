@@ -15,6 +15,16 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 465 -
+[2008/06/09] Overview/Note: After this 3 months of halt, we have alived (again).
+To "celebrate" this, we are all agreed to ditch support of old clients.
+This commit was a movement toward latest client (i guess) 2008-05-28.
+Client older than this may or may not work.
+[2008/06/09] Aeomin - MORE updates!!
+[2008/06/09] Aeomin - Removed Support_Dec06_AndNewerClients option. (New packet changes breaks everything!)
+[2008/06/08] Aeomin - Updated most of packet structure.
+-
+
 - Rev 464 -
 [2008/06/09] Tsusai - Packet_db.txt - Updated to eA packetver 14 to fix issues
  (the pre packet_db work was newer than 5.).  Included Helios server packets

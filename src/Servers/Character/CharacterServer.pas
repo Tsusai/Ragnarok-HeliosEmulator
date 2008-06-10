@@ -267,19 +267,10 @@ function TCharacterServer.WriteCharacterDataToBuffer(
 	const Offset : Integer
 ) : Byte;
 begin
-	if Options.Use108LengthForReply then
-	begin
-		Result := 108;
-		FillChar(ReplyBuffer[Offset],Offset + Result,0);
-		WriteBufferWord(Offset + 104, ACharacter.CharaNum,ReplyBuffer);
-		WriteBufferWord(Offset + 106, 0,ReplyBuffer); //eA : Rename bit (?)
-	end else
-	begin
-		Result := 106;
-		FillChar(ReplyBuffer[Offset],Offset + Result,0);
-		WriteBufferByte(Offset + 104, ACharacter.CharaNum,ReplyBuffer);
-		WriteBufferByte(Offset + 106, 0,ReplyBuffer);
-	end;
+	Result := 108;
+	FillChar(ReplyBuffer[Offset],Offset + Result,0);
+	WriteBufferWord(Offset + 104, ACharacter.CharaNum,ReplyBuffer);
+	WriteBufferWord(Offset + 106, 0,ReplyBuffer); //eA : Rename bit (?)
 	with ACharacter do begin
 		WriteBufferLongWord(Offset +  0, ID,ReplyBuffer);
 		WriteBufferLongWord(Offset +  4, BaseEXP,ReplyBuffer);
@@ -485,13 +476,7 @@ begin
 	Count     := 0;
 	Ver       := 24;
 
-	if Options.Use108LengthForReply then
-	begin
-		CharacterDataSize := 108;
-	end else
-	begin
-		CharacterDataSize := 106;
-	end;
+	CharacterDataSize := 108;
 
 	AccountID := BufferReadLongWord(2, ABuffer);
 	AnAccount := TAccount.Create(AClient);
@@ -1054,6 +1039,10 @@ begin
 				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0068)-2);
 				DeleteChara(AConnection,ABuffer);
 			end;
+		$0187: //Client keep alive
+			begin
+				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0187)-2);
+			end
 		else
 			begin
 				Size := GetPacketLength(PacketID);

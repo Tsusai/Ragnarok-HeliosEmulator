@@ -184,9 +184,7 @@ end;{DeActivateClient}
 Function GetPacketLength(ID : Word; Version : Word = 0) : LongWord;
 var
 	Index           : Integer;
-	BaseIndex       : Integer;
 	CodebaseLength  : Integer;
-	MainLength      : Integer;
 begin
 	Result := 0;
 	CodebaseLength := Codebase[Version].Packets.Count;

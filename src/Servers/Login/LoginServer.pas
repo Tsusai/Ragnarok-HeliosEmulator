@@ -764,14 +764,14 @@ end;
 			end;
 		$0277:// New login packet (kRO 2006-04-24aSakexe langtype 0)
 			begin
-				RecvBuffer(AConnection,Buffer[2],GetPacketLength($0277)-2);
+				RecvBuffer(AConnection,Buffer[2],GetPacketLength($0277,6)-2);
 				UserName := BufferReadString(6,24,Buffer);
 				Password := BufferReadString(30,24,Buffer);
 				ValidateLogin(AConnection,Buffer,Username,Password);
 			end;
 		$02b0:// New login packet (kRO 2007-05-14aSakexe langtype 0)
 			begin
-				RecvBuffer(AConnection,Buffer[2],GetPacketLength($02b0)-2);
+				RecvBuffer(AConnection,Buffer[2],GetPacketLength($02b0,8)-2);
 				UserName := BufferReadString(6,24,Buffer);
 				Password := BufferReadString(30,24,Buffer);
 				ValidateLogin(AConnection,Buffer,Username,Password);

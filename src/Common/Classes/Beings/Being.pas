@@ -455,13 +455,13 @@ Var
 							//If the target TBeing is also a character, they need info on us.
 							if ABeing is TCharacter then
 							begin
-								ZoneSendBeing(Self, TCharacter(ABeing).ClientInfo);
-								ZoneSendBeing(ABeing, TCharacter(Self).ClientInfo);
+								ZoneSendBeing(Self, TCharacter(ABeing));
+								ZoneSendBeing(ABeing, TCharacter(Self));
 								ZoneWalkingBeing(Self,Path[Path.count-1],Position,TCharacter(ABeing).ClientInfo);
 							end else  //Npc/Mob/Pet/Homunculus/Mercenary packets to the client
 							begin
 								{Todo: events for NPC}
-								ZoneSendBeing(ABeing,TCharacter(Self).ClientInfo);
+								ZoneSendBeing(ABeing,TCharacter(Self));
 							end;
 						end;
 					end;

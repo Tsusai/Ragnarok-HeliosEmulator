@@ -98,7 +98,7 @@ const
 		'WHERE contacter_id=:ID OR contactee_id=:ID;';
 
 	GetCharacterQuery =
-		'SELECT `account_id`, `name` FROM characters WHERE ID=:FriendID;';
+		'SELECT `account_id`, `name`, `last_map` FROM characters WHERE id=:FriendID;';
 
 var
 	ADataSet		: TZQuery;
@@ -106,7 +106,6 @@ var
 	AParam			: TParam;
 	AFriend			: TCharacter;
 begin
-
 	ADataSet			:= TZQuery.Create(nil);
 	ADataSet2			:= TZQuery.Create(nil);
 	try
@@ -124,16 +123,16 @@ begin
 			AFriend := TCharacter.Create(ACharacter.ClientInfo);
 			if LongWord(ADataSet.Fields[0].AsInteger) = ACharacter.ID then
 			begin
-				AFriend.ID := ADataSet.Fields[0].AsInteger;
+				AFriend.ID := ADataSet.Fields[1].AsInteger;
 			end else
 			begin
-				AFriend.ID := ADataSet.Fields[1].AsInteger;
+				AFriend.ID := ADataSet.Fields[0].AsInteger;
 			end;
 
 			//FriendID
-			AParam := ADataset.Params.CreateParam(ftInteger, 'FriendID', ptInput);
+			AParam := ADataset2.Params.CreateParam(ftInteger, 'FriendID', ptInput);
 			AParam.AsInteger := AFriend.ID;
-			ADataSet.Params.AddParam(
+			ADataSet2.Params.AddParam(
 				AParam
 			);
 
@@ -143,6 +142,7 @@ begin
 			begin
 				AFriend.AccountID	:= ADataSet2.Fields[0].AsInteger;
 				AFriend.Name			:= ADataSet2.Fields[1].AsString;
+				AFriend.Map		:= ADataSet2.Fields[2].AsString;
 				ACharacterList.Add(AFriend);
 			end else
 			begin
@@ -153,7 +153,6 @@ begin
 			ADataSet2.EmptyDataSet;
 			ADataSet.Next;
 		end;
-
 	finally
 		ADataSet.Free;
 		ADataSet2.Free;

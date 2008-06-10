@@ -625,7 +625,6 @@ begin
 				begin
 						ZoneID := GetZoneID(ACharacter.Map);
 				end;
-				
 				ZoneIndex := ZoneServerList.IndexOf(ZoneID);
 				if ZoneIndex > -1 then
 				begin

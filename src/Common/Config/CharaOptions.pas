@@ -39,7 +39,6 @@ interface
 			fLoginKey     : String;
 
 			fServerName		: String;
-			fUse108LengthForReply : boolean;
 			fShowFriendlyMessageOnDupLogin : Boolean;
 
 			fDefaultZeny  		: LongWord;
@@ -84,7 +83,6 @@ interface
 
 			//Options
 			property ServerName : String read fServerName write SetServerName;
-			property Use108LengthForReply : boolean read fUse108LengthForReply write fUse108LengthForReply;
 			property ShowFriendlyMessageOnDupLogin : Boolean read fShowFriendlyMessageOnDupLogin write fShowFriendlyMessageOnDupLogin;
 
 
@@ -198,11 +196,6 @@ implementation
 			end;
 			fServerName			:= Section.Values['ServerName'];
 
-			(*Tsusai Mar 24th 2007
-			This boolean helps decide to use either the original 106 byte length base
-			for character information, or add on an extra word for 108 character data
-			lengths.  A MIX MODE LIKE ZONE IS IMPOSSIBLE.  MUST BE ONE OR THE OTHER*)
-			fUse108LengthForReply := StrToBoolDef(Section.Values['Support_Dec06_AndNewerClients'] ,false);
 			{* Aeomin April 12th, 2007
 			 If this Boolean set as false, char server will directly DC the client when
 			 attempt duplicate login, else wil send "Someone has already logged in with this ID"*}
@@ -295,7 +288,6 @@ implementation
 
 		//Options
 		WriteString('Options','ServerName',ServerName);
-		WriteString('Options','Support_Dec06_AndNewerClients',BoolToStr(fUse108LengthForReply));
 		WriteString('Options','Show_FriendlyMessage_On_DuplicateLogin',BoolToStr(fShowFriendlyMessageOnDupLogin));
 
 		//CharacterDefaults

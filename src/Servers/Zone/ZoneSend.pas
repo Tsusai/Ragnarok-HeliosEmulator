@@ -36,6 +36,10 @@ uses
 	IdContext
 	;
 
+	procedure SendCharID(
+		const Who:TCharacter
+	);
+
 	procedure DuplicateSessionKick(
 		InBuffer : TBuffer
 	);
@@ -106,8 +110,8 @@ uses
 	);
 	procedure ZoneSendBeing(
 		const Who:TBeing;
-		AClient : TIdContext;
-		const Logon:Boolean=False
+		const AClient : TCharacter;
+		const Spawn:Boolean=False
 	);
 	procedure ZoneSendCharacterMessage(
 		const ACharacter	: TCharacter;
@@ -208,6 +212,33 @@ uses
 	{3rd Party}
 	//none
 	;
+
+//------------------------------------------------------------------------------
+//SendCharID                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Old client uses padding, this is for new client, which send
+//	right after zone auth.
+//--
+//	Pre:
+//		TODO
+//	Post:
+//		TODO
+//--
+//	Changes -
+//		[2007/0608] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendCharID(
+		const Who:TCharacter
+	);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $0283, OutBuffer);
+	WriteBufferLongWord(2, Who.ID, OutBuffer);
+	SendBuffer(Who.ClientInfo,OutBuffer,GetPacketLength($0283,Who.ClientVersion));
+end;{SendCharID}
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
@@ -324,6 +355,7 @@ end;
 //		May 1st, 2007 - Tsusai - Added const to the parameters
 //		May 25th, 2007 - Tsusai - Removed ABeing, changed to
 //			APerson, and added TCharacter conditionals
+//	[2008/06/08] Aeomin - Updated packet structure
 //------------------------------------------------------------------------------
 procedure SendAreaChat(
 	const Chat		: String;
@@ -356,7 +388,7 @@ begin
 				begin
 					WriteBufferWord(0, $008d, OutBuffer);
 					WriteBufferWord(2, Length+9, OutBuffer);
-					WriteBufferLongWord(4, ACharacter.AccountID, OutBuffer);
+					WriteBufferLongWord(4, ACharacter.ID, OutBuffer);
 					WriteBufferString(8, Chat+#0, Length+1, OutBuffer);
 					Sendbuffer(APerson.ClientInfo, OutBuffer, Length+9);
 				end;
@@ -731,95 +763,97 @@ end;{ZoneDisappearBeing}
 //                                and support for Npc/Mob etc
 //		May 1st, 2007 - Tsusai - Added const to the parameters
 //		May 25th, 2007 - Tsusai - Invisible npcs aren't sent
+//	[2008/06/08] Aeomin - Redo!
 //------------------------------------------------------------------------------
 procedure ZoneSendBeing(
 	const Who:TBeing;
-	AClient : TIdContext;
-	const Logon:Boolean=False
+	const AClient : TCharacter;
+	const Spawn:Boolean=False
 	);
 var
 	ReplyBuffer : TBuffer;
 	Chara	    : TCharacter;
+	procedure SubSendPlayer;
+	begin
+		if Spawn then
+		begin
+			WriteBufferWord(0, $022b, ReplyBuffer);
+		end else
+		begin
+			WriteBufferWord(0, $022a, ReplyBuffer);
+		end;
+		WriteBufferLongWord(2, Who.ID, ReplyBuffer);
+		WriteBufferWord(6, Who.Speed, ReplyBuffer);
+		WriteBufferWord(8, Who.Status, ReplyBuffer);
+		WriteBufferWord(10, Who.Ailments, ReplyBuffer);
+		WriteBufferWord(12, Who.Option, ReplyBuffer);
+		{2 bytes shiftload}
+		WriteBufferWord(16, Who.JID, ReplyBuffer);
+		WriteBufferWord(34, Who.Direction, ReplyBuffer);
+		Chara:=TCharacter(Who);
+		{Todo: Hair stlye, head bottom needed for Pet...}
+		WriteBufferWord(18, Chara.Hair, ReplyBuffer);
+		WriteBufferWord(20, Chara.RightHand, ReplyBuffer);  //Weapon
+		WriteBufferWord(22, Chara.LeftHand, ReplyBuffer);  //Shield
+		WriteBufferWord(24, Chara.HeadBottom, ReplyBuffer);  //Head bottom
+		WriteBufferWord(26, Chara.HeadTop, ReplyBuffer);  //Head top
+		WriteBufferWord(28, Chara.HeadMid, ReplyBuffer);  //head mid
+		WriteBufferWord(30, Chara.HairColor, ReplyBuffer);
+		WriteBufferWord(32, Chara.ClothesColor, ReplyBuffer);
+		WriteBufferWord(34, Chara.HeadDirection, ReplyBuffer);
+		WriteBufferLongWord(36, Chara.GuildID, ReplyBuffer);
+		WriteBufferWord(40, 0, ReplyBuffer);  //Emblem ID
+		WriteBufferWord(42, 0, ReplyBuffer);   //Manner
+		WriteBufferLongWord(44, 0, ReplyBuffer); //opt3?
+		{2 more shiftload}
+		WriteBufferByte(48, Chara.Karma, ReplyBuffer);
+		WriteBufferByte(49, TClientLink(Chara.ClientInfo.Data).AccountLink.GenderNum, ReplyBuffer);
+		//WriteBufferByte(44, 0, ReplyBuffer);  //Normal/Ready to fight
+		WriteBufferPointAndDirection(50, Who.Position, ReplyBuffer,Who.Direction);
+		WriteBufferByte(53, 5, ReplyBuffer);
+		WriteBufferByte(54, 5, ReplyBuffer);
+		if Spawn then
+		begin
+			WriteBufferWord(55, Who.BaseLV, ReplyBuffer);
+			SendBuffer(AClient.ClientInfo,ReplyBuffer,GetPacketLength($022b,AClient.ClientVersion));
+		end else
+		begin
+			WriteBufferByte(55, 0, ReplyBuffer);   //Standing/Dead/Sit
+			WriteBufferWord(56, Who.BaseLV, ReplyBuffer);
+			SendBuffer(AClient.ClientInfo,ReplyBuffer,GetPacketLength($022a,AClient.ClientVersion));
+		end;
+	end;
+	procedure SubSendNPC;
+	begin
+		FillChar(ReplyBuffer,GetPacketLength($0078),0);
+		WriteBufferWord(0, $0078, ReplyBuffer);
+		WriteBufferByte(2, 0, ReplyBuffer);
+		WriteBufferLongWord(3, Who.ID, ReplyBuffer);
+		WriteBufferWord(7, Who.Speed, ReplyBuffer);
+		WriteBufferWord(13, Who.Option, ReplyBuffer);
+		WriteBufferWord(15, Who.JID, ReplyBuffer);
+		WriteBufferWord(17, 0, ReplyBuffer);   //hair_style
+		WriteBufferWord(19, 0, ReplyBuffer);   //Weapon
+		WriteBufferWord(21, 0, ReplyBuffer);   //Shield
+		WriteBufferWord(23, 0, ReplyBuffer);   //headbottom
+		WriteBufferPointAndDirection(47, Who.Position, ReplyBuffer,Who.Direction);
+		WriteBufferByte(50, 5, ReplyBuffer);
+		WriteBufferByte(51, 5, ReplyBuffer);
+		SendBuffer(AClient.ClientInfo,ReplyBuffer,GetPacketLength($0078,AClient.ClientVersion));
+	end;
 begin
 	if Who.JID = NPC_INVISIBLE then
 	begin
-		exit;
+		Exit;
 	end;
 	//Old Packet Version
-	FillChar(ReplyBuffer,54,0);
-	if Logon then
-	begin
-		WriteBufferWord(0, $0079, ReplyBuffer);
-	end else begin
-		WriteBufferWord(0, $0078, ReplyBuffer);
-	end;
-	WriteBufferLongWord(2, Who.ID, ReplyBuffer);
-	WriteBufferWord(6, Who.Speed, ReplyBuffer);
-	WriteBufferWord(8, Who.Status, ReplyBuffer);
-	WriteBufferWord(10, Who.Ailments, ReplyBuffer);
-	WriteBufferWord(12, Who.Option, ReplyBuffer);
-	WriteBufferWord(14, Who.JID, ReplyBuffer);
-	WriteBufferWord(32, Who.Direction, ReplyBuffer);
+//	FillChar(ReplyBuffer,54,0);
 	if Who is TCharacter then
-	begin
-		Chara:=TCharacter(Who);
-		{Todo: Hair stlye, head bottom needed for Pet...}
-		WriteBufferWord(16, Chara.Hair, ReplyBuffer);
-		WriteBufferWord(18, Chara.RightHand, ReplyBuffer);  //Weapon
-		WriteBufferWord(20, Chara.LeftHand, ReplyBuffer);  //Shield
-		WriteBufferWord(22, Chara.HeadBottom, ReplyBuffer);  //Head bottom
-		WriteBufferWord(24, Chara.HeadTop, ReplyBuffer);  //Head top
-		WriteBufferWord(26, Chara.HeadMid, ReplyBuffer);  //head mid
-		WriteBufferWord(28, Chara.HairColor, ReplyBuffer);
-		WriteBufferWord(30, Chara.ClothesColor, ReplyBuffer);
-		WriteBufferLongWord(34, Chara.GuildID, ReplyBuffer);
-		WriteBufferWord(42, Chara.Karma, ReplyBuffer);
-		WriteBufferByte(45, TClientLink(Chara.ClientInfo.Data).AccountLink.GenderNum, ReplyBuffer);
-	end;
-	WriteBufferWord(38, 0, ReplyBuffer);  //Emblem ID
-	WriteBufferByte(44, 0, ReplyBuffer);  //Normal/Ready to fight
-	WriteBufferPointAndDirection(46, Who.Position, ReplyBuffer,Who.Direction);
-	WriteBufferByte(49, 5, ReplyBuffer);
-	WriteBufferByte(50, 5, ReplyBuffer);
-	if Logon then
-	begin
-		WriteBufferWord(51, Who.BaseLV, ReplyBuffer);
-		SendBuffer(AClient,ReplyBuffer,GetPacketLength($0079));
-	end else begin
-		WriteBufferByte(51, 0, ReplyBuffer);   //Standing/Dead/Sit
-		WriteBufferWord(52, Who.BaseLV, ReplyBuffer);
-		SendBuffer(AClient,ReplyBuffer,GetPacketLength($0078));
-	end;
-						 //Require packet version >=6
-//		WriteBufferWord(0, $022A, ReplyBuffer);
-//                WriteBufferLongWord(2, Who.ID, ReplyBuffer);
-//                WriteBufferWord(6, Who.Speed, ReplyBuffer);
-//                WriteBufferWord(8, 0, ReplyBuffer);     //Options
-//                WriteBufferWord(10, 0, ReplyBuffer);    //Options
-//                WriteBufferLongWord(12, 0, ReplyBuffer);//Options
-//                WriteBufferLongWord(44, 0, ReplyBuffer);//Options
-//                WriteBufferWord(16, Who.JID, ReplyBuffer);
-//                WriteBufferWord(18, Who.Hair, ReplyBuffer);
-//                WriteBufferWord(20, Who.RightHand, ReplyBuffer);  //Weapon
-//                WriteBufferWord(22, Who.LeftHand, ReplyBuffer);  //Shield
-//                WriteBufferWord(24, Who.HeadBottom, ReplyBuffer);  //Head bottom
-//                WriteBufferWord(26, Who.HeadTop, ReplyBuffer);  //Head top
-//                WriteBufferWord(28, Who.HeadMid, ReplyBuffer);  //head mid
-//                WriteBufferWord(30, Who.HairColor, ReplyBuffer);
-//                WriteBufferWord(32, Who.ClothesColor, ReplyBuffer);
-//                WriteBufferWord(34, Who.Direction, ReplyBuffer);
-//                WriteBufferLongWord(36, Who.GuildID, ReplyBuffer);
-//                WriteBufferWord(40, 0, ReplyBuffer);  //Emblem ID
-//                WriteBufferWord(42, Who.Manner, ReplyBuffer);
-//                WriteBufferByte(48, Who.Karma, ReplyBuffer);
-//                WriteBufferByte(49, Who.Account.GenderNum, ReplyBuffer);
-//                WriteBufferPointAndDirection(50, Who.Position, ReplyBuffer,Who.Direction);
-//                WriteBufferByte(53, 5, ReplyBuffer);
-//                WriteBufferByte(54, 5, ReplyBuffer);
-//                WriteBufferByte(55, 0, ReplyBuffer);   //Standing?
-//                WriteBufferWord(56, Who.BaseLV, ReplyBuffer);
-//                SendBuffer(AClient,ReplyBuffer,GetPacketLength($022A));
+		SubSendPlayer
+	else
+		SubSendNPC;
 end;{ZoneSendBeing}
+
 //------------------------------------------------------------------------------
 
 
