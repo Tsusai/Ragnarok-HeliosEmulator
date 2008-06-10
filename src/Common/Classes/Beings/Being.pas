@@ -1177,7 +1177,7 @@ end;
 procedure TBeing.SetPosition(Value : TPoint);
 var
 	OldPt : TPoint;
-
+	Index : Integer;
 begin
 	OldPt := Position;
 	fPosition := Value;
@@ -1188,9 +1188,13 @@ begin
 		//yet, don't remove us!
 		if MapInfo.PointInRange(OldPt) then
 		begin
-			MapInfo.Cell[OldPt.X][OldPt.Y].Beings.Delete(
-				MapInfo.Cell[OldPt.X][OldPt.Y].Beings.IndexOf(ID)
-			);
+			Index := MapInfo.Cell[OldPt.X][OldPt.Y].Beings.IndexOf(ID);
+			if Index > -1 then
+			begin
+				MapInfo.Cell[OldPt.X][OldPt.Y].Beings.Delete(
+					Index
+				);
+			end;
 		end;
 
 		//same as above, if we've set position to -1, -1, then don't add us to a

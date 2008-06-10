@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 466 -
+[2008/06/10] Aeomin - Fixed a bug when cross zone warp.
+-
+
 - Rev 465 -
 [2008/06/09] Overview/Note: After this 3 months of halt, we have alived (again).
 To "celebrate" this, we are all agreed to ditch support of old clients.
