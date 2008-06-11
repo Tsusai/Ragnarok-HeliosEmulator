@@ -855,13 +855,17 @@ begin
 end;{DeleteChara}
 //------------------------------------------------------------------------------
 
-
 procedure TCharacterServer.RenameChara(AClient : TIdContext; var ABuffer : Tbuffer);
-//var
+var
 //	AccountID : LongWord;
 //	CharacterID : LongWord;
 //	NewName : String;
+	ReplyBuffer : TBuffer;
 begin
+	//No rename support yet XD
+	WriteBufferWord(0, $028e, ReplyBuffer);
+	WriteBufferWord(2, 0, ReplyBuffer);
+	SendBuffer(AClient,ReplyBuffer, 4);
 //	AccountID :=  BufferReadLongWord(2,ABuffer);
 //	CharacterID := BufferReadLongWord(6,ABuffer);
 //	NewName := BufferReadString(10,24,ABuffer);
@@ -1043,46 +1047,39 @@ begin
 	//Check to see if it is an already connected Client
 	if (AConnection.Data is TClientLink) then
 	begin
-		case PacketID of
-		$0066: // Character Selected -- Refer Client to Map Server
-			begin
-				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0066)-2);
-				SendCharaToMap(AConnection,ABuffer);
-			end;
-		$0067: // Create New Character
-			begin
-				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0067)-2);
-				CreateChara(AConnection,ABuffer);
-			end;
-		$0068: // Request to Delete Character
-			begin
-				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0068)-2);
-				DeleteChara(AConnection,ABuffer);
-			end;
-		$0187: //Client keep alive
-			begin
-				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0187)-2);
-			end;
-		$028d: //Character Rename
-			begin
-				//<AccID>l,<CharID>l,Newname 24b
-				RecvBuffer(AConnection,ABuffer[2],34);
-//				RenameChara(AConnection,ABuffer);
-				TThreadLink(AConnection.Data).IgnorePadding := True;
-			end;
-		$028f:  // ??
-			begin
-				//<Char ID>
-				RecvBuffer(AConnection,ABuffer[2],4);
-			end
-		else
-			begin
-				if TThreadLink(AConnection.Data).IgnorePadding then
+		if not TThreadLink(AConnection.Data).CharRename then
+		begin
+			case PacketID of
+			$0066: // Character Selected -- Refer Client to Map Server
 				begin
-					TThreadLink(AConnection.Data).IgnorePadding := False;
-					//Packet is 4 bytes, 2 removed, 2 more!
+					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0066)-2);
+					SendCharaToMap(AConnection,ABuffer);
+				end;
+			$0067: // Create New Character
+				begin
+					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0067)-2);
+					CreateChara(AConnection,ABuffer);
+				end;
+			$0068: // Request to Delete Character
+				begin
+					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0068)-2);
+					DeleteChara(AConnection,ABuffer);
+				end;
+			$0187: //Client keep alive
+				begin
+					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0187)-2);
+				end;
+			$028d: //Enter Character Rename mode
+				begin
 					RecvBuffer(AConnection,ABuffer[2],2);
-				end else
+					TThreadLink(AConnection.Data).CharRename := True;
+				end;
+			$028f:  // ??
+				begin
+					//<Char ID>
+					RecvBuffer(AConnection,ABuffer[2],4);
+				end
+			else
 				begin
 					Size := GetPacketLength(PacketID);
 					Console.Message('Unknown Character Server Packet : ' + IntToHex(PacketID,4), 'Character Server', MS_WARNING);
@@ -1093,6 +1090,11 @@ begin
 					end;
 				end;
 			end;
+		end else
+		begin
+			//Char rename mode
+			RecvBuffer(AConnection,ABuffer[2],2);
+			RenameChara(AConnection,ABuffer);
 		end;
 	end else
 	begin

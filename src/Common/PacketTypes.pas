@@ -47,7 +47,7 @@ type
 	TThreadLink = class
 		Parent          : TIdContext;
 		DatabaseLink    : TDatabase;
-		IgnorePadding : Boolean;
+		CharRename : Boolean;  //Character Rename mode
 		Constructor Create(AClient : TIdContext);
 		Destructor Destroy();override;
 	end;
@@ -127,7 +127,7 @@ Constructor TThreadLink.Create(AClient : TIdContext);
 begin
 	inherited Create;
 	Parent := AClient;
-	IgnorePadding := False;
+	CharRename := False;
 end;
 
 Destructor TThreadLink.Destroy;
