@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 469 -
+[2008/06/11] RaX - And I'm back! Fixed database loading so helios won't crash if there's no database
+ on startup.
+-
+
 - Rev 468 -
 [2008/06/10] Aeomin - Another attemp, concept it bit more clear now; currently, i just make it refuse.
 -

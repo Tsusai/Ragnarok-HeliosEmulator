@@ -368,9 +368,16 @@ begin
 		//Activate server and clients.
 		ActivateServer('Zone',TCPServer, Options.IndySchedulerType, Options.IndyThreadPoolSize);
 
-		//Load Maps
-		LoadMaps;
-
+		if Database.GameConnection.Connected then
+		begin
+			//Load Maps
+			LoadMaps;
+		end else
+		begin
+			Console.Message('Could not start, helios could not connect to the database. Helios is now shutting down.', 'Zone Server', MS_ERROR);
+			Sleep(3000);
+			MainProc.Run := false;
+		end;
 		//Initiate NPC Lua
 		InitLuaState(NPCLua);
 		LoadNPCCommands(NPCLua);

@@ -42,11 +42,10 @@ type
 //------------------------------------------------------------------------------
 	TDatabase = class(TObject)
 
-	protected
+	public
 		AccountConnection			: TZConnection;
 		GameConnection				: TZConnection;
 
-	public
 		Options : TDatabaseOptions;
 
 		Account			: TAccountQueries;
@@ -202,7 +201,6 @@ begin
 			'Database', MS_ERROR
 		);
 		AccountConnection.Disconnect;
-
 	end;
 
 	try
@@ -220,7 +218,6 @@ begin
 			'Database', MS_ERROR
 		);
 		GameConnection.Disconnect;
-
 	end;
 end;
 //------------------------------------------------------------------------------
