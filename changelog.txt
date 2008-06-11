@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 467 -
+[2008/06/10] Aeomin - Small attemp to implement character rename (though now only ignore those packets, but true
+behavior of client is a b****)
+-
+
 - Rev 466 -
 [2008/06/10] Aeomin - Fixed a bug when cross zone warp.
 -

@@ -47,6 +47,7 @@ type
 	TThreadLink = class
 		Parent          : TIdContext;
 		DatabaseLink    : TDatabase;
+		IgnorePadding : Boolean;
 		Constructor Create(AClient : TIdContext);
 		Destructor Destroy();override;
 	end;
@@ -126,6 +127,7 @@ Constructor TThreadLink.Create(AClient : TIdContext);
 begin
 	inherited Create;
 	Parent := AClient;
+	IgnorePadding := False;
 end;
 
 Destructor TThreadLink.Destroy;

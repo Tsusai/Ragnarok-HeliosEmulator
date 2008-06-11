@@ -77,6 +77,7 @@ type
 		procedure SendCharaToMap(AClient : TIdContext; var ABuffer : TBuffer);
 		procedure CreateChara(AClient : TIdContext; var ABuffer : TBuffer);
 		procedure DeleteChara(AClient : TIdContext; var ABuffer : Tbuffer);
+		procedure RenameChara(AClient : TIdContext; var ABuffer : Tbuffer);
 
 		Procedure LoadOptions;
 
@@ -846,12 +847,31 @@ begin
 			TThreadLink(AClient.Data).DatabaseLink.Character.Delete(ACharacter);
 			WriteBufferWord(0, $006f, ReplyBuffer);
 			SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));
-		end else DeleteCharaError(DELETEBADEMAIL);
-  finally
+		end else
+			DeleteCharaError(DELETEBADEMAIL);
+	finally
 		ACharacter.Free;
 	end;
 end;{DeleteChara}
 //------------------------------------------------------------------------------
+
+
+procedure TCharacterServer.RenameChara(AClient : TIdContext; var ABuffer : Tbuffer);
+//var
+//	AccountID : LongWord;
+//	CharacterID : LongWord;
+//	NewName : String;
+begin
+//	AccountID :=  BufferReadLongWord(2,ABuffer);
+//	CharacterID := BufferReadLongWord(6,ABuffer);
+//	NewName := BufferReadString(10,24,ABuffer);
+
+//	TThreadLink(AClient.Data).DatabaseLink.Character.Rename(
+//		AccountID,
+//		CharacterID,
+//		NewName
+//	);
+end;
 
 
 //------------------------------------------------------------------------------
@@ -1042,15 +1062,35 @@ begin
 		$0187: //Client keep alive
 			begin
 				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0187)-2);
+			end;
+		$028d: //Character Rename
+			begin
+				//<AccID>l,<CharID>l,Newname 24b
+				RecvBuffer(AConnection,ABuffer[2],34);
+//				RenameChara(AConnection,ABuffer);
+				TThreadLink(AConnection.Data).IgnorePadding := True;
+			end;
+		$028f:  // ??
+			begin
+				//<Char ID>
+				RecvBuffer(AConnection,ABuffer[2],4);
 			end
 		else
 			begin
-				Size := GetPacketLength(PacketID);
-				Console.Message('Unknown Character Server Packet : ' + IntToHex(PacketID,4), 'Character Server', MS_WARNING);
-				if Size-2 > 0 then
+				if TThreadLink(AConnection.Data).IgnorePadding then
 				begin
-					Console.Message(IntToStr(Size-2) + ' additional bytes were truncated','Character Server', MS_WARNING);
-					RecvBuffer(AConnection,ABuffer[2],GetPacketLength(PacketID)-2);
+					TThreadLink(AConnection.Data).IgnorePadding := False;
+					//Packet is 4 bytes, 2 removed, 2 more!
+					RecvBuffer(AConnection,ABuffer[2],2);
+				end else
+				begin
+					Size := GetPacketLength(PacketID);
+					Console.Message('Unknown Character Server Packet : ' + IntToHex(PacketID,4), 'Character Server', MS_WARNING);
+					if (Size-2 > 0) then
+					begin
+						Console.Message(IntToStr(Size-2) + ' additional bytes were truncated','Character Server', MS_WARNING);
+						RecvBuffer(AConnection,ABuffer[2],GetPacketLength(PacketID)-2);
+					end;
 				end;
 			end;
 		end;

@@ -66,7 +66,7 @@ type
 			const ACharacter : TCharacter
 		);
 
-    Procedure Delete(
+		Procedure Delete(
 			const ACharacter : TCharacter
 		);
 
@@ -79,6 +79,12 @@ type
 			const ACharacter	: TCharacter;
 			const Key					: string;
 			const Value				: string
+		);
+
+		procedure Rename(
+			const AccountID : LongWord;
+			const CharID : LongWord;
+			const NewName : String
 		);
 
 	end;
@@ -1011,4 +1017,43 @@ begin
 	end;
 end;//GetVariable
 //------------------------------------------------------------------------------
+
+
+procedure TCharacterQueries.Rename(
+	const AccountID : LongWord;
+	const CharID : LongWord;
+	const NewName : String
+);
+const
+	AQuery =
+		'UPDATE characters SET `name`=:Name WHERE `id`=:CID AND `account_id`=:AID;';
+var
+	ADataSet		: TZQuery;
+	AParam	: TParam;
+begin
+	ADataSet := TZQuery.Create(nil);
+	try
+		//CID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'CID', ptInput);
+		AParam.AsInteger := CharID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//AID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'CID', ptInput);
+		AParam.AsInteger := AccountID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//Name
+		AParam := ADataset.Params.CreateParam(ftString, 'Name', ptInput);
+		AParam.AsString := NewName;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		Query(ADataSet, AQuery);
+	finally
+		ADataSet.Free;
+	end;
+end;
 end.
