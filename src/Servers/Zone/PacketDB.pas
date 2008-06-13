@@ -526,6 +526,7 @@ end;
 
 constructor TPacketList.Create;
 begin
+	inherited;
 	Self.OwnsObjects := True;
 end;
 

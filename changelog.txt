@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 471 -
+[2008/06/12] Tsusai - Fixed TPacketList crash in Lazarus, I forgot "inherited;"
+ in TPacketList.Create [PacketDB.pas]
+-
+
 - Rev 470 -
 [2008/06/12] Aeomin - Mailbox implementation part I
 [2008/06/11] Aeomin - Added script command open_mailbox & close_mailbox
