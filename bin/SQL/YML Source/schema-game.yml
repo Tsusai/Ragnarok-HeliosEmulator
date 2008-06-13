@@ -701,3 +701,15 @@ propel:
         no_party: boolean
         no_guild: boolean
         weather: boolean
+
+    #mails.. every, but none able to get
+    MailBox
+        id:
+	sender_id: { required: true, type: integer, default: 0 }
+	sender_name: varchar(24)
+	receiver_id: { required: true, type: integer, default: 0 }
+	receiver_name: varchar(24)
+	title: varchar(40)
+	message: tinytext
+	time: { required: true, type: integer, default: 0 }
+	read: { required: true, type: tinyint(1), default: 0 }

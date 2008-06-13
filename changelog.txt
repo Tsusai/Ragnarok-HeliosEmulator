@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 470 -
+[2008/06/12] Aeomin - Mailbox implementation part I
+[2008/06/11] Aeomin - Added script command open_mailbox & close_mailbox
+-
+
 - Rev 469 -
 [2008/06/11] RaX - And I'm back! Fixed database loading so helios won't crash if there's no database
  on startup.

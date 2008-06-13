@@ -47,6 +47,7 @@ uses
 	GameConstants,
 	LuaCoreRoutines,
 	Inventory,
+	Mailbox,
 	{Third Party}
 	IdContext,
 	List32
@@ -248,6 +249,8 @@ public
 
 	// How many friends?
 	Friends : Byte;
+
+	Mails : TMailBox;
 
 	procedure CalcMaxHP; override;
 	procedure CalcMaxSP; override;
@@ -2659,6 +2662,7 @@ begin
 	CharaState := charaStanding;
 	ZoneStatus := isOffline;
 	CharaNum := 255;
+	Mails := TMailbox.Create(Self);
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -2683,6 +2687,7 @@ begin
 	Inventory.Free;
 	OnTouchIDs.Free;
 	TerminateLuaThread(LuaInfo);
+	Mails.Free;
 	inherited;
 	end;{Destroy}
 //------------------------------------------------------------------------------

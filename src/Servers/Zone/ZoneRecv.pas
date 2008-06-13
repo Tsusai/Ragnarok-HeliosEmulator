@@ -194,6 +194,18 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure RequestMailRefresh(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
+	procedure ReadMail(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -261,7 +273,8 @@ uses
 	ZoneCharaCommunication,
 	ZoneInterCommunication,
 	AddFriendEvent,
-	AreaLoopEvents
+	AreaLoopEvents,
+	Mailbox
 	{3rd Party}
 	//none
 	;
@@ -573,6 +586,7 @@ begin
 		AChara.ZoneStatus := isOnline;
 		AChara.ShowTeleportIn;
 		AChara.AreaLoop(ShowInitialAction);
+
 	end;
 end;{ShowMap}
 //------------------------------------------------------------------------------
@@ -1422,6 +1436,69 @@ begin
 		end;
 	end;
 end;{RequestToAddFriendResponse}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RequestMailRefresh                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//		Client requests mail inbox refresh
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/06/11] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RequestMailRefresh(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+begin
+	SendMailList(
+		AChara
+	);
+end;{RequestMailRefresh}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ReadMail                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//		Client requests to read a mail.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/06/12] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ReadMail(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	MailID : LongWord;
+	Mail : TMail;
+begin
+	MailID := BufferReadLongWord(ReadPts[0], InBuffer);
+	Mail := AChara.Mails.Get(MailID);
+	if Mail <> nil then
+	begin
+		SendMail(
+			AChara.ClientInfo,
+			Mail
+		);
+	end;
+end;{ReadMail}
 //------------------------------------------------------------------------------
 
 

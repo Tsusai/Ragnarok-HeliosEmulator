@@ -32,6 +32,7 @@ uses
 	Being,
 	Character,
 	PacketTypes,
+	Mailbox,
 	{Third Party}
 	IdContext
 	;
@@ -195,6 +196,17 @@ uses
 		AClient		: TIdContext;
 		const Image	: String;
 		const ImageType : Byte
+	);
+	procedure ToggleMailWindow(
+		AClient		: TIdContext;
+		const Open : Boolean
+	);
+	procedure SendMailList(
+		const AChara : TCharacter
+	);
+	procedure SendMail(
+		AClient		: TIdContext;
+		const Mail : TMail
 	);
 implementation
 
@@ -1418,5 +1430,123 @@ begin
 	WriteBufferByte(66, ImageType, OutBuffer);
 	SendBuffer(AClient,OutBuffer,GetPacketLength($01b3));
 end;{SendCutin}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ToggleMailWindow                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//	Open/Close mail window on client
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//    [2008/06/11] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure ToggleMailWindow(
+	AClient		: TIdContext;
+	const Open : Boolean
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $0260, OutBuffer);
+	WriteBufferLongWord(2, Byte(not Open), OutBuffer);
+	{TODO:Packet version...}
+	SendBuffer(AClient,OutBuffer,GetPacketLength($0260,5));
+end;{ToggleMailWindow}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendMailList                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//		Send a list of mails
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/06/12] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendMailList(
+	const AChara : TCharacter
+);
+var
+	Index : Integer;
+	Mail : TMail;
+	OutBuffer : TBuffer;
+	Len : Word;
+begin
+	{This procedure will check if load from database was needed}
+	AChara.Mails.LoadMails;
+	if AChara.Mails.Mails > 0 then
+	begin
+		Len := (73*AChara.Mails.Mails) + 8;
+
+		WriteBufferWord(0, $0240, OutBuffer);
+		WriteBufferWord(2, Len, OutBuffer);
+		WriteBufferLongWord(4, AChara.Mails.Mails, OutBuffer);
+
+		for Index := 0 to AChara.Mails.Mails - 1 do
+		begin
+			Mail := AChara.Mails.Item[Index];
+			WriteBufferLongWord(73*Index+8, Mail.ID, OutBuffer);
+			WriteBufferString(73*Index+12, Mail.Title, 40, OutBuffer);
+			WriteBufferByte(73*Index+52, Byte(Mail.Read), OutBuffer);
+			WriteBufferString(73*Index+53, Mail.SenderName, NAME_LENGTH, OutBuffer);
+			WriteBufferLongWord(73*Index+77, Mail.SendTime, OutBuffer);
+		end;
+		SendBuffer(AChara.ClientInfo,OutBuffer,Len);
+	end;
+end;{SendMailList}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendMail                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//		Send a mail
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/06/12] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendMail(
+	AClient		: TIdContext;
+	const Mail : TMail
+);
+var
+	MessageLen : Byte;
+	Len : Word;
+	OutBuffer : TBuffer;
+begin
+	MessageLen := Length(Mail.Content);
+	Len := MessageLen + 101;
+
+	WriteBufferWord(0, $0242, OutBuffer);
+	WriteBufferWord(2, Len, OutBuffer);
+	WriteBufferLongWord(4, Mail.ID, OutBuffer);
+	WriteBufferString(8, Mail.Title, 40, OutBuffer);
+	WriteBufferString(48, Mail.SenderName, NAME_LENGTH, OutBuffer);
+	WriteBufferLongWord(72, 0, OutBuffer);{??}
+	WriteBufferLongWord(76, 0, OutBuffer);{Zeny}
+	FillChar(OutBuffer[80],19,$0); {No item support yet}
+	WriteBufferByte(99, MessageLen, OutBuffer);
+	WriteBufferString(100, Mail.Content, MessageLen, OutBuffer);
+	SendBuffer(AClient,OutBuffer,Len);
+end;{SendMail}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

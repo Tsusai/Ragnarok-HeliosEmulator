@@ -271,7 +271,7 @@ begin
 	Result := 108;
 	FillChar(ReplyBuffer[Offset],Offset + Result,0);
 	WriteBufferWord(Offset + 104, ACharacter.CharaNum,ReplyBuffer);
-	WriteBufferWord(Offset + 106, 0,ReplyBuffer); //eA : Rename bit (?)
+	WriteBufferWord(Offset + 106, 1,ReplyBuffer); //eA : Rename bit (?)
 	with ACharacter do begin
 		WriteBufferLongWord(Offset +  0, ID,ReplyBuffer);
 		WriteBufferLongWord(Offset +  4, BaseEXP,ReplyBuffer);

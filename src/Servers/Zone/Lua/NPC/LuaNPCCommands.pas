@@ -58,12 +58,14 @@ function script_Compass(ALua : TLua) : integer; cdecl; forward;
 function script_ShowImage(ALua : TLua) : integer; cdecl; forward;
 function script_CompassCheck(ALua : TLua) : integer; cdecl; forward;
 function script_Emotion(ALua : TLua) : integer; cdecl; forward;
+function script_OpenMailBox(ALua : TLua) : integer; cdecl; forward;
+function script_CloseMailBox(ALua : TLua) : integer; cdecl; forward;
 //Special Commands
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 27;
+	NPCCommandCount = 29;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -96,6 +98,8 @@ const
 		(name:'showimage';func:script_ShowImage),
 		(name:'compass_check';func:script_CompassCheck),
 		(name:'emotion';func:script_Emotion),
+		(name:'open_mailbox';func:script_OpenMailBox),
+		(name:'close_mailbox';func:script_CloseMailBox),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -926,6 +930,35 @@ begin
 	end;
 end;
 
+//Open Mailbox
+function script_OpenMailBox(ALua : TLua) : integer;
+var
+	AChara : TCharacter;
+begin
+	Result := 0;
+	if GetCharaFromLua(ALua,AChara) then
+	begin
+		ToggleMailWindow(
+			AChara.ClientInfo,
+			True
+		);
+	end;
+end;
+
+//Close Mailbox
+function script_CloseMailBox(ALua : TLua) : integer;
+var
+	AChara : TCharacter;
+begin
+	Result := 0;
+	if GetCharaFromLua(ALua,AChara) then
+	begin
+		ToggleMailWindow(
+			AChara.ClientInfo,
+			False
+		);
+	end;
+end;
 
 //Special commands here
 function script_get_charaname(ALua : TLua) : integer; cdecl;

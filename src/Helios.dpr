@@ -124,6 +124,7 @@ compile for linux, at the same time*}
 	MiscItem in 'Common\Classes\Items\MiscItem.pas',
 	Inventory in 'Common\Classes\Inventory.pas',
 	Mob in 'Common\Classes\Beings\Mob.pas',
+	Mailbox in 'Common\Classes\Mailbox.pas',
 
 	//Lua
 	LuaPas in 'Common\ThirdParty\LuaPas.pas',
@@ -158,6 +159,7 @@ compile for linux, at the same time*}
 	ItemQueries in 'Common\Classes\Database\ItemQueries.pas',
 	MobQueries in 'Common\Classes\Database\MobQueries.pas',
 	QueryBase in 'Common\Classes\Database\QueryBase.pas',
+	MailQueries in 'Common\Classes\Database\MailQueries.pas',
 
 	//Configuration
 	HeliosOptions in 'Common\Config\HeliosOptions.pas',
@@ -251,6 +253,7 @@ compile for linux, at the same time*}
 	MiscItem in 'Common/Classes/Items/MiscItem.pas',
 	Inventory in 'Common/Classes/Inventory.pas',
 	Mob in 'Common/Classes/Beings/Mob.pas',
+	Mailbox in 'Common/Classes/Mailbox.pas',
 
 	//Lua
 	LuaPas in 'Common/ThirdParty/LuaPas.pas',
@@ -285,6 +288,7 @@ compile for linux, at the same time*}
 	ItemQueries in 'Common/Classes/Database/ItemQueries.pas',
 	MobQueries in 'Common/Classes/Database/MobQueries.pas',
 	QueryBase in 'Common/Classes/Database/QueryBase.pas',
+	MailQueries in 'Common/Classes/Database/MailQueries.pas',
 
 	//Configuration
 	HeliosOptions in 'Common/Config/HeliosOptions.pas',
