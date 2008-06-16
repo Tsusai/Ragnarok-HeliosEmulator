@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 472 -
+[2008/06/16] Tsusai - Fixed Linux Lazarus compile issue. Unit names referenced
+ by QueryBase were not the exact case of the Zeos files (ZSQLUpdate vs ZSqlUpdate)
+ I hate Linux case sensitivity sometimes...
+-
+
 - Rev 471 -
 [2008/06/12] Tsusai - Fixed TPacketList crash in Lazarus, I forgot "inherited;"
  in TPacketList.Create [PacketDB.pas]

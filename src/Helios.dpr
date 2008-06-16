@@ -182,8 +182,7 @@ compile for linux, at the same time*}
 	Commands in 'Common\Classes\Commands.pas',
 	CommClient in 'Common\Classes\CommClient.pas',
 	Globals in 'Common\Globals.pas',
-	{$IFDEF FPC}
-	{$ELSE}
+	{$IFNDEF FPC} //If we aren't using Lazarus to compile, use madshi components
 		madExcept,
 		madLinkDisAsm,
 	{$ENDIF}

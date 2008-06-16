@@ -23,8 +23,8 @@ uses
 	{Project}
 	{3rd Party}
 	ZConnection,
-	ZSQLUpdate,
-	ZDataSet
+	ZSqlUpdate,
+	ZDataset
 	;
 
 
