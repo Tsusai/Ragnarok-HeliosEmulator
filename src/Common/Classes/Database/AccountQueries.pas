@@ -24,7 +24,7 @@ uses
 	Account,
 	QueryBase,
 	{3rd Party}
-	ZSQLUpdate
+	ZSqlUpdate
 	;
 
 

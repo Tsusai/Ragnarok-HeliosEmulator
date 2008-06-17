@@ -26,7 +26,7 @@ uses
 	QueryBase,
 	CharaList,
 	{3rd Party}
-	ZSQLUpdate
+	ZSqlUpdate
 	;
 
 

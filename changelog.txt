@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 473 -
+[2008/06/17] Tsusai - Fixed more that were sliding past Linux.  All the Database
+ files fixed.
+-
+
 - Rev 472 -
 [2008/06/16] Tsusai - Fixed Linux Lazarus compile issue. Unit names referenced
  by QueryBase were not the exact case of the Zeos files (ZSQLUpdate vs ZSqlUpdate)

@@ -25,7 +25,7 @@ uses
 	QueryBase,
 	MapTypes,
 	{3rd Party}
-	ZSQLUpdate
+	ZSqlUpdate
 	;
 
 

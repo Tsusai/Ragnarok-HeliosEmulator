@@ -32,7 +32,7 @@ uses
 	{3rd Party}
 	IdThread,
 	ZConnection,
-	ZSQLUpdate
+	ZSqlUpdate
 	;
 
 

@@ -26,7 +26,7 @@ uses
 	EquipmentItem,
 	QueryBase,
 	{3rd Party}
-	ZSQLUpdate
+	ZSqlUpdate
 	;
 
 

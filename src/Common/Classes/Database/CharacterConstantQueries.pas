@@ -26,7 +26,7 @@ uses
 	Being,
 	QueryBase,
 	{3rd Party}
-	ZSQLUpdate
+	ZSqlUpdate
 	;
 
 

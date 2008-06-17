@@ -9,7 +9,7 @@ uses
 	MailBox,
 	QueryBase,
 	{3rd Party}
-	ZSQLUpdate
+	ZSqlUpdate
 	;
 
 type
