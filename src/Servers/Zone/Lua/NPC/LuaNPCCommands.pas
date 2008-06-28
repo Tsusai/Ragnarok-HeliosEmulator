@@ -45,6 +45,7 @@ function script_menu(ALua : TLua) : integer; cdecl; forward;
 function script_getcharavar(ALua : TLua) : integer; cdecl; forward;
 function script_setcharavar(ALua : TLua) : integer; cdecl; forward;
 function script_getgold(ALua : TLua) : integer; cdecl; forward;
+function script_dropgold(ALua : TLua) : Integer; cdecl; forward;
 function script_getexp(ALua : TLua) : integer; cdecl; forward;
 function script_getJexp(ALua : TLua) : integer; cdecl; forward;
 function script_ResetStat(ALua : TLua) : integer; cdecl; forward;
@@ -65,7 +66,7 @@ function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 29;
+	NPCCommandCount = 30;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -85,6 +86,7 @@ const
 		(name:'getvar';func:script_getcharavar),
 		(name:'setvar';func:script_setcharavar),
 		(name:'getgold';func:script_getgold),
+		(name:'dropgold';func:script_dropgold),
 		(name:'getexp';func:script_getexp),
 		(name:'getJexp';func:script_getJexp),
 		(name:'ResetStat';func:script_ResetStat),
@@ -688,6 +690,31 @@ begin
 		end;
 	end;
 end;
+
+//dropgold
+function script_dropgold(ALua : TLua) : integer; cdecl;
+var
+	AChara : TCharacter;
+	Zeny : LongInt;
+begin
+	//Returns 0 results
+	Result := 0;
+	if (lua_gettop(ALua) = 1) and
+		(lua_isnumber(ALua,1)) then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			{$WARNINGS OFF}
+			Zeny := EnsureRange(lua_tointeger(ALua, 1),Low(LongInt),High(LongInt));
+			AChara.Zeny := EnsureRange(AChara.Zeny - Zeny,
+											Low(AChara.Zeny),
+											High(AChara.Zeny)
+			);
+			{$WARNINGS ON}
+		end;
+	end;
+end;
+
 
 //getexp(value)
 //Gives or takes money/zeny to/from the character

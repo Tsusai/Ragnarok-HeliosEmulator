@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 475 -
+[2008/06/28] Aeomin - Added script function dropgold
+-
+
 - Rev 474 -
 [2008/06/28] Aeomin - Renamed script function name for open mailbox
 -
