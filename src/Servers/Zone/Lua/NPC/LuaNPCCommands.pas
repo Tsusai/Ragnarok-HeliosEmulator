@@ -98,8 +98,8 @@ const
 		(name:'showimage';func:script_ShowImage),
 		(name:'compass_check';func:script_CompassCheck),
 		(name:'emotion';func:script_Emotion),
-		(name:'open_mailbox';func:script_OpenMailBox),
-		(name:'close_mailbox';func:script_CloseMailBox),
+		(name:'OpenMailing';func:script_OpenMailBox),
+		(name:'CloseMailing';func:script_CloseMailBox),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
