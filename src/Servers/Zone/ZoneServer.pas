@@ -467,8 +467,6 @@ Var
 	Version         : Word; //Index of the packet in the packet(allowed client)
 				//database (client-base).
 	PacketID        : Word; //The ID of a packet in said database.
-	PacketIndex     : Integer;
-	Found           : Boolean;
 	ABuffer         : TBuffer;
 	PacketInfo      : TPackets;
 	Size            : Word;
@@ -487,7 +485,6 @@ Begin
 		PacketID := BufferReadWord(0, ABuffer);
 		AChara := @TClientLink(AClient.Data).CharacterLink;
 
-		Found := False;
 		if NOT Assigned(AChara^) then
 		begin
 			PacketDB.GetMapConnectPacket(PacketID, Lth, Version, PacketInfo);
