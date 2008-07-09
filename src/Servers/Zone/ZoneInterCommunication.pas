@@ -9,6 +9,8 @@
 //    March 18th, 2007 - RaX - Created.
 //	[2007/10/25] Aeomin - Major clean up #1
 //	[2007/10/25] Aeomin - Major clean up #1b
+//		June 28th, 2008 - Tsusai - Updated GetPacketLength to PacketDB.GetLength
+//			in various calls
 //------------------------------------------------------------------------------
 unit ZoneInterCommunication;
 
@@ -181,7 +183,7 @@ begin
 	WriteBufferLongWord(2, ZoneServer.Options.ID, OutBuffer);
 	WriteBufferWord(6, ZoneServer.Port, OutBuffer);
 	WriteBufferMD5String(8, GetMD5(ZoneServer.Options.InterKey), OutBuffer);
-	SendBuffer(AClient,OutBuffer,GetPacketLength($2200));
+	SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2200));
 end;{ValidateWithInterServer}
 //------------------------------------------------------------------------------
 
@@ -211,7 +213,7 @@ var
 begin
 	WriteBufferWord(0, $2201, OutBuffer);
 	WriteBufferByte(2, Validated, OutBuffer);
-	SendBuffer(AClient,OutBuffer,GetPacketLength($2201));
+	SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2201));
 end;{SendValidateFlagToZone}
 //------------------------------------------------------------------------------
 
@@ -301,7 +303,7 @@ var
 begin
 	WriteBufferWord(0,$2204,OutBuffer);
 	WriteBufferWord(2,ZoneServer.OnlineUsers,OutBuffer);
-	SendBuffer(AClient,OutBuffer,GetPacketLength($2204));
+	SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2204));
 end;{SendZoneOnlineUsersToInter}
 //------------------------------------------------------------------------------
 
@@ -367,7 +369,7 @@ begin
 	WriteBufferWord(0,$2212,OutBuffer);
 	WriteBufferLongWord(2,CharID,OutBuffer);
 	WriteBufferByte(6, Code, OutBuffer);
-	SendBuffer(AClient, OutBuffer, GetPacketLength($2212));
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2212));
 end;{SendWhisperReplyToZone}
 //------------------------------------------------------------------------------
 
@@ -434,7 +436,7 @@ begin
 	WriteBufferLongWord(2,ZoneID,OutBuffer);
 	WriteBufferLongWord(6,CharID,OutBuffer);
 	WriteBufferByte(10, Code, OutBuffer);
-	SendBuffer(AClient, OutBuffer, GetPacketLength($2211));
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2211));
 end;{SendWhisperReplyToInter}
 //------------------------------------------------------------------------------
 
@@ -562,7 +564,7 @@ begin
 	WriteBufferLongWord(10, TargetChar, OutBuffer);
 	WriteBufferLongWord(14, ZoneID, OutBuffer);
 	WriteBufferString(18, ReqChar, NAME_LENGTH, OutBuffer);
-	SendBuffer(AClient, OutBuffer, GetPacketLength($2215));
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2215));
 end;{ZoneSendAddFriendRequest}
 //------------------------------------------------------------------------------
 
@@ -599,7 +601,7 @@ begin
 	WriteBufferLongWord(10, CharID, OutBuffer);
 	WriteBufferByte(14, Reply, OutBuffer);
 	WriteBufferString(15, CharName, NAME_LENGTH, OutBuffer);
-	SendBuffer(AClient, OutBuffer, GetPacketLength($2217));
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2217));
 end;{ZoneSendAddFriendReply}
 //------------------------------------------------------------------------------
 
@@ -631,7 +633,7 @@ begin
 	WriteBufferLongWord(2, AID, OutBuffer);
 	WriteBufferLongWord(6, CID, OutBuffer);
 	WriteBufferByte(10, Offline, OutBuffer);
-	SendBuffer(AClient, OutBuffer, GetPacketLength($2218));
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2218));
 end;{ZoneSendPlayerOnlineStatus}
 //------------------------------------------------------------------------------
 
@@ -667,7 +669,7 @@ begin
 	WriteBufferLongWord(10, TargetID, OutBuffer);
 	WriteBufferByte(14, Offline, OutBuffer);
 	WriteBufferLongWord(15, ZoneID, OutBuffer);
-	SendBuffer(AClient, OutBuffer, GetPacketLength($2220));
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2220));
 end;{ZoneSendPlayerOnlineReply}
 //------------------------------------------------------------------------------
 end{ZoneInterCommunication}.

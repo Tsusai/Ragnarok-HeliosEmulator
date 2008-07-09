@@ -7,6 +7,8 @@
 //
 //	Changes -
 //		May 22nd, 2007 - RaX - Created Header.
+//		June 28th, 2008 - Tsusai - Updated GetPacketLength to PacketDB.GetLength
+//			in various calls
 //
 //------------------------------------------------------------------------------
 unit InterSend;
@@ -116,6 +118,7 @@ uses
 	{Project}
 	//none
 	PacketTypes,
+	Globals,
 	GMCommands,
 	BufferIO,
 	Main,
@@ -522,7 +525,7 @@ begin
 	WriteBufferLongWord(6, ReqID, OutBuffer);
 	WriteBufferLongWord(10, TargetChar, OutBuffer);
 	WriteBufferString(14, ReqName, NAME_LENGTH, OutBuffer);
-	SendBuffer(AClient, OutBuffer, GetPacketLength($2216));
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2216));
 end;{InterSendFirendRequest}
 //------------------------------------------------------------------------------
 
@@ -559,7 +562,7 @@ begin
 	WriteBufferLongWord(10, CharID, OutBuffer);
 	WriteBufferByte(14, Reply, OutBuffer);
 	WriteBufferString(15, CharName, NAME_LENGTH, OutBuffer);
-	SendBuffer(AClient, OutBuffer, GetPacketLength($2217));
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2217));
 end;{InterSendFriendRequestReply}
 //------------------------------------------------------------------------------
 
@@ -597,7 +600,7 @@ begin
 	WriteBufferLongWord(14, TargetCID, OutBuffer);
 	WriteBufferLongWord(18, ZoneID, OutBuffer);
 	WriteBufferByte(22, Offline, OutBuffer);
-	SendBuffer(AClient, OutBuffer, GetPacketLength($2219));
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2219));
 end;{InterSendFriendOnlineStatus}
 //------------------------------------------------------------------------------
 
@@ -631,7 +634,7 @@ begin
 	WriteBufferLongWord(6,  CID, OutBuffer);
 	WriteBufferLongWord(10,  TargetID, OutBuffer);
 	WriteBufferByte(14, Offline, OutBuffer);
-	SendBuffer(AClient, OutBuffer, GetPacketLength($2221));
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2221));
 end;{InterSendFriendStatusReply}
 //------------------------------------------------------------------------------
 end.

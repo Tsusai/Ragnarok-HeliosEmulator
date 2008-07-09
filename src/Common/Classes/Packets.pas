@@ -1,6 +1,6 @@
 //This unit controls loading the packet_db.txt into memory, and setting up
 //procedures for executing packets.
-unit PacketDB;
+unit Packets;
 
 {$IFDEF FPC}
 {$MODE Delphi}
@@ -13,26 +13,29 @@ uses
 	Contnrs,
 	PacketTypes;
 
-	function Load_PacketDB : boolean;
+
 
 (*------------------------------------------------------------------------------
-Here we are setting up a table of packets for the Load_PacketDB to fill up.
-CodeBase[] - Holds the different client sets of packets
-CodeBase[].PacketArray[] - An array of the packets (1 line from packet_db)
-CodeBase[].PacketArray[].ID - the packet ID in integer form
-CodeBase[].PacketArray[].Lth - length of this packet
-CodeBase[].PacketArray[].Command - what procedure keyword does this packet represent
-CodeBase[].PacketArray[].ReadPoints[] - The reading locations of the packet to get information
-CodeBase[].PacketArray[].ExecCommand - Special type: links to tchara, readpt packet procedures
-CodeBase[].PacketArray[].ExecAvoidSelfCommand - Special type: links to tchara avoidself packet procedures
+Its a bit complex, but here is a rundown. (June 28th, 2008 - Tsusai)
+You have a TPacketDB class.  This contains multiple methods of accessing
+packet data.  The packet data breaks down into the following:
+
+TPacketDB.fCodebase[0->? Array].EAPACKETVER -
+TPacketDB.fCodebase[0->? Array].PacketList - List of TPackets.  Stores individual packets data
+	as objects.  Owns its list of objects.
+TPacketDB.GetLength - Returns length of a packet based on ID and fCodeBase index
+TPacketDB.GetPacketInfo - Same as above, but returns a TPacket object.
+TPacketDB.GetMapConnectPacket - Finds the proper mapconnect packet
+TPacketDB.GetEAPacketVer - Takes the fCodeBase index, and pulls out the EAPacketVer
 ------------------------------------------------------------------------------*)
 type
+
 	//The more usual of the zone procedures
 	TPacketProc = procedure (var AChara : TCharacter; const RecvBuffer : TBuffer; const ReadPts : TReadPts);
 	//The Tchara, Avoidself packets.  About 3 exist
 	TAvoidSelfPacketProc = procedure (var AChara : TCharacter; const AvoidSelf : boolean = False);
 
-type
+
 	TPackets = class
 		ID : word; //PacketID
 
@@ -57,17 +60,39 @@ type
 		constructor Create;
 	end;
 
-	type
-		TCodebaseData = record
-			PACKETVER : word;
-			Packets : TPacketList;
-		end;
+	TCodebaseData = record
+		EAPACKETVER : word;
+		Packets : TPacketList;
+	end;
 
-var
-	CodeBase : array of TCodeBaseData;
+	TPacketDB = class
+		private
+			fCodeBase : array of TCodeBaseData;
+		public
+			function GetLength(
+				ID : Word;
+				Version : Word = 0
+			) : LongWord;
 
+			procedure GetPacketInfo(
+				const Packet  : word;
+				const Version : Word;
+				var ReturnPackets : TPackets
+			);
 
-	procedure LoadStaticDatabase;
+			procedure GetMapConnectPacket(
+				const Packet : word;
+				const PLength : word;
+				var ReturnVersion : word;
+				var ReturnPacketInfo : TPackets
+			);
+
+			function GetEAPacketVer(InternalPacketDBVer : word) : word;
+			function Load : boolean;
+			procedure Unload;
+
+	end;
+
 
 implementation
 uses
@@ -77,11 +102,255 @@ uses
 	ZoneRecv;
 
 
+(**)
+(**)
+(*TPACKETLIST METHODS!!!!!*)
+(**)
+(**)
+
+
+//------------------------------------------------------------------------------
+//TPacketList.Assign                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Copies contents of one PacketList to another.
+//
+//	Changes -
+//		June 28th, 2008 - Tsusai - Created.
+//
+//------------------------------------------------------------------------------
+procedure TPacketList.Assign(Source : TPacketList);
+var
+	idx : integer;
+	PacketObject : TPackets;
+begin
+	if not Assigned(Self) then Self := TPacketList.Create;
+	Self.Clear;
+	for idx := 0 to Source.Count - 1 do
+	begin
+		PacketObject := TPackets.Create;
+		PacketObject.ID := TPackets(Source.Items[idx]).ID;
+		PacketObject.PLength := TPackets(Source.Items[idx]).PLength;
+		PacketObject.Command := TPackets(Source.Items[idx]).Command;
+		SetLength(PacketObject.ReadPoints,Length(TPackets(Source.Items[idx]).ReadPoints));
+		PacketObject.ReadPoints := Copy(TPackets(Source.Items[idx]).ReadPoints,0,Length(PacketObject.ReadPoints));
+		PacketObject.ExecCommand := TPackets(Source.Items[idx]).ExecCommand;
+		PacketObject.ExecAvoidSelfCommand := TPackets(Source.Items[idx]).ExecAvoidSelfCommand;
+		Add(PacketObject);
+	end;
+end;
+
+//------------------------------------------------------------------------------
+//TPacketList.Add                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Packet adding/updating procedure
+//		For all new codelists after the first one, any different packets are
+//		updated, since each packet ver after the base is an updated diff.
+//		so packet ver 3 = packet ver 0 + 1 diff, + 2 diff + 3 diff
+//
+//	Changes -
+//		June 28th, 2008 - Tsusai - Created.
+//
+//------------------------------------------------------------------------------
+procedure TPacketList.Add(PacketObject : TPackets);
+var
+	idx : integer;
+begin
+	//Check for existing to update
+	for idx := 0 to Count - 1 do
+	begin
+		If TPackets(Items[idx]).ID = PacketObject.ID then
+		begin
+			TPackets(Items[idx]).ID := PacketObject.ID;
+			TPackets(Items[idx]).PLength := PacketObject.PLength;
+			TPackets(Items[idx]).Command := PacketObject.Command;
+			SetLength(TPackets(Items[idx]).ReadPoints,Length(PacketObject.ReadPoints));
+			TPackets(Items[idx]).ReadPoints := Copy(PacketObject.ReadPoints,0,Length(PacketObject.ReadPoints));
+			TPackets(Items[idx]).ExecCommand := PacketObject.ExecCommand;
+			TPackets(Items[idx]).ExecAvoidSelfCommand := PacketObject.ExecAvoidSelfCommand;
+			Exit; //Don't need to readd another, since we updated
+		end;
+	end;
+	//Didn't find one to update, add it.
+	inherited Add(PacketObject);
+end;
+
+//------------------------------------------------------------------------------
+//TPacketList.Create                                                 CONSTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does-
+//		Sets the list to own its objects
+//
+//	Changes -
+//		June 28th, 2008 - Tsusai - Created.
+//
+//------------------------------------------------------------------------------
+constructor TPacketList.Create;
+begin
+	inherited;
+	Self.OwnsObjects := True;
+end;
+
+
+(**)
+(**)
+(*TPACKETDB METHODS!!!!!*)
+(**)
+(**)
+
+
+//------------------------------------------------------------------------------
+//TPacketDB.GetLength                                                  FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//			Gets the length of a packet specified by ID for version Version
+//
+//	Changes -
+//		December 22nd, 2006 - RaX - Created.
+//		June 8th, 2008 - Tsusai - Updated to use the Packet Object List
+//		June 28th, 2008 - Tsusai - Moved into TPacketDB as GetLength
+//
+//------------------------------------------------------------------------------
+function TPacketDB.GetLength(ID : Word; Version : Word = 0) : LongWord;
+var
+	Index           : Integer;
+	CodebaseLength  : Integer;
+begin
+	Result := 0;
+	CodebaseLength := fCodebase[Version].Packets.Count;
+	for Index := 0 to CodebaseLength - 1 do
+	begin
+		if TPackets(fCodebase[Version].Packets[Index]).ID = ID then
+		begin
+			Result := TPackets(fCodebase[Version].Packets[Index]).PLength;
+			break;
+		end;
+	end;
+end;
+
+
+//------------------------------------------------------------------------------
+//TPacketDB.GetPacketInfo                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      This is only executed to find information about a packet for ingame/zone
+//    packets.  If there is data, it returns a a valid object.
+//		External procedures must check this via if Assigned()
+//
+//  Notes -
+//    packet - The integer packet id.
+
+//    Ver - The version of packets we are going to look at.  This is called
+//      twice, first if we need to look through it with our new client packet,
+//      and if we can't find it, we need to search through the 0 version aka
+//      oldschool aka 0628sakexe based.
+
+//
+//	Changes -
+//		June 28th, 2008 - Tsusai - Moved to TPacketDB, renamed, and upgraded
+//
+//------------------------------------------------------------------------------
+Procedure TPacketDB.GetPacketInfo(
+	const Packet  : word;
+	const Version : Word;
+	var ReturnPackets : TPackets
+);
+var
+	Index : Integer;
+begin
+	ReturnPackets := nil; //Shouldn't have anything, and shuts up compiler warning
+												//about it being unassigned.
+	//Check packet list based on Version
+	for Index := 0 to fCodeBase[Version].Packets.Count - 1 do
+	begin
+		//With Statement..
+		with TPackets(fCodeBase[Version].Packets.Items[Index]) do
+		begin
+			if (ID = Packet) then
+			begin
+				//Ok so we found a matching packet ID, fill the info
+				ReturnPackets := TPackets.Create;
+				ReturnPackets.PLength := PLength;
+				SetLength(ReturnPackets.ReadPoints,Length(ReadPoints));
+				ReturnPackets.ReadPoints := Copy(ReadPoints,0,Length(ReadPoints));
+				ReturnPackets.Command := Command;
+				ReturnPackets.ExecCommand := ExecCommand;
+				ReturnPackets.ExecAvoidSelfCommand := ExecAvoidSelfCommand;
+				Break;
+			end;
+		end;
+	end;
+end;
+
+
+//------------------------------------------------------------------------------
+//TPacketDB.GetMapConnectPacket                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      Digs through all packet codebases, from newest to oldest lookgin for a
+//    'wanttoconnect' that matches the ID, and PacketLength given.  This routine
+//		will comb through using TPacketDB.GetPacketInfo until the end.  If data is
+//		found, the TPacket object has data and is sent up to the caller in
+//		ZoneServer, where if there is no data, then ZoneServer gets no data.
+//		Obviously this must be checked with an if Assigned().
+//
+//	Changes -
+//		June 28th, 2008 - Tsusai - Created
+//
+//------------------------------------------------------------------------------
+procedure TPacketDB.GetMapConnectPacket(
+	const Packet : word;
+	const PLength : word;
+	var ReturnVersion : word;
+	var ReturnPacketInfo : TPackets
+);
+var
+	ClientBaseIndex : integer;
+begin
+	for ClientBaseIndex := (Length(fCodeBase) -1) downto 0 do
+	begin
+		//Use the other TPacketDB method to find it based on ID and Version.
+		GetPacketInfo(Packet,ClientBaseIndex,ReturnPacketInfo);
+		if Assigned(ReturnPacketInfo) then
+		begin
+			//Check length and command
+			if (ReturnPacketInfo.Command = 'wanttoconnection') and (ReturnPacketInfo.PLength = PLength) then
+			begin
+				//Found it, set the version and exit
+				ReturnVersion := ClientBaseIndex;
+				Exit; //Exit since we found it.
+			end;
+		end;
+	end;
+	//Didn't find it, so free it.  This will cause a unknown client error higher up
+  ReturnPacketInfo.Free;
+end;
+
+
+//------------------------------------------------------------------------------
+//TPacketDB.GetEAPacketVer                                             FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//      By using our fCodeBase index number, which is usually stored in
+//			ACharacter.ClientVer, we can pull out the eA packet ver which is specified
+//			by the packet_db file
+//
+//	Changes -
+//		June 28th, 2008 - Tsusai - Created
+//
+//------------------------------------------------------------------------------
+function TPacketDB.GetEAPacketVer(InternalPacketDBVer : word) : word;
+begin
+	Result := fCodeBase[InternalPacketDBVer].EAPACKETVER;
+end;
+
+
 (*------------------------------------------------------------------------------
-Load_PacketDB
+TPacketDB.Load
 
 Basic logic: load packets in a set in CodeBase[] until you see a packet that is
-already listed.  If so, increment CodeBase[] and start again.
+already listed.  If so, increment CodeBase[], clone the data, and add/update
 
 TODO:
 --
@@ -106,8 +375,9 @@ January 20th 2007 - Tsusai - Now a function
 June 8th 2008 - Tsusai - Overhauled.  Introduced a packet object list, to hold
 	packet objects, instead of another array.  Also implemented use of eAthena's
 	packet_db to help with easy updating.
+June 28th, 2008 - Tsusai - Put in TPacketDB
 ------------------------------------------------------------------------------*)
-function Load_PacketDB : boolean;
+function TPacketDB.Load : boolean;
 Var
 	sidx : integer;
 	CBIdx : word;
@@ -124,9 +394,9 @@ Begin
 		PacketVersion := 0;
 		CBIdx := 0;
 		//Init the first list
-		SetLength(Codebase,CBIdx+1);
-		Codebase[CBIdx].PACKETVER := PacketVersion;
-		Codebase[CBIdx].Packets := TPacketList.Create;
+		SetLength(fCodebase,CBIdx+1);
+		fCodebase[CBIdx].EAPACKETVER := PacketVersion;
+		fCodebase[CBIdx].Packets := TPacketList.Create;
 
 		//load the packet_db file
 		packet_db := TStringList.Create;
@@ -145,25 +415,25 @@ Begin
 					StringReplace(packet_db.Strings[sidx],'packet_ver: ','',[rfReplaceAll])
 				);
 				//skip making a new packet version group if we're already using it (ie. packetver 0)
-				if PacketVersion = Codebase[CBIdx].PACKETVER then continue;
+				if PacketVersion = fCodebase[CBIdx].EAPACKETVER then continue;
 
 				//if we're hitting our first REAL packet version (ie the Client <> server packets)
 				//Then we're just going to give it a packetversion number, and add onto it.
 				//There should be no packetver 0, just whatever the first packetver is, plus
 				//any random packets like inter before it.
-				if Codebase[CBIdx].PACKETVER = 0 then
+				if fCodebase[CBIdx].EAPACKETVER = 0 then
 				begin
-					Codebase[CBIdx].PACKETVER := PacketVersion;
+					fCodebase[CBIdx].EAPACKETVER := PacketVersion;
 					Continue;
 				end;
 
 				Inc(CBIdx);
 				//Init New list
-				SetLength(Codebase,CBIdx+1);
-				Codebase[CBIdx].PACKETVER := PacketVersion;
-				Codebase[CBIdx].Packets := TPacketList.Create;
+				SetLength(fCodebase,CBIdx+1);
+				fCodebase[CBIdx].EAPACKETVER := PacketVersion;
+				fCodebase[CBIdx].Packets := TPacketList.Create;
 				//Copy contents from previous to new list
-				Codebase[CBIdx].Packets.Assign(CodeBase[CBIdx-1].Packets);
+				fCodebase[CBIdx].Packets.Assign(fCodeBase[CBIdx-1].Packets);
 				//Go to next line, we're done with setup
 				Continue;
 			end else if (Copy(packet_db[sidx],1,2) <> '0x') then
@@ -457,78 +727,39 @@ Begin
 				end;
 			end;
 			//Add data (or update, .Add knows how) to current work list
-			CodeBase[CBIdx].Packets.Add(PacketData);
+			fCodeBase[CBIdx].Packets.Add(PacketData);
 		end;
 
 		packet_db.Free; //free the stringlist with the text
 		//PacketInfo.Free; (Can't free, else it'll free the last object in the last list!!!!!! (x.x)'
-			
+
 	end else begin
 		Console.WriteLn('*** '+MainProc.Options.DatabaseDirectory+'/'+'packet_db.txt was not found.');
 	end;
-End; (* Proc Load_PacketDB
+End; (* Proc TPacketDB.Load
 *-----------------------------------------------------------------------------*)
 
-procedure LoadStaticDatabase;
-begin
-	Load_PacketDB;
-end;
-
-
-(**)
-(**)
-(*TPACKETLIST METHODS!!!!!*)
-(**)
-(**)
-
-//Copy procedure
-procedure TPacketList.Assign(Source : TPacketList);
-var
-	idx : integer;
-	PacketObject : TPackets;
-begin
-	if not Assigned(Self) then Self := TPacketList.Create;
-	Self.Clear;
-	for idx := 0 to Source.Count - 1 do
-	begin
-		PacketObject := TPackets.Create;
-		PacketObject.ID := TPackets(Source.Items[idx]).ID;
-		PacketObject.PLength := TPackets(Source.Items[idx]).PLength;
-		PacketObject.Command := TPackets(Source.Items[idx]).Command;
-		SetLength(PacketObject.ReadPoints,Length(TPackets(Source.Items[idx]).ReadPoints));
-		PacketObject.ReadPoints := Copy(TPackets(Source.Items[idx]).ReadPoints,0,Length(PacketObject.ReadPoints));
-		PacketObject.ExecCommand := TPackets(Source.Items[idx]).ExecCommand;
-		PacketObject.ExecAvoidSelfCommand := TPackets(Source.Items[idx]).ExecAvoidSelfCommand;
-		Add(PacketObject);
-	end;
-end;
-
-procedure TPacketList.Add(PacketObject : TPackets);
+///------------------------------------------------------------------------------
+//TPacketDB.Unload                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//      Unloads the database
+//
+//	Changes -
+//		June 28th, 2008 - Tsusai - Created
+//
+//------------------------------------------------------------------------------
+procedure TPacketDB.Unload;
 var
 	idx : integer;
 begin
-	for idx := 0 to Count - 1 do
+	for idx := 0 to Length(fCodeBase) - 1 do
 	begin
-		If TPackets(Items[idx]).ID = PacketObject.ID then
-		begin
-			TPackets(Items[idx]).ID := PacketObject.ID;
-			TPackets(Items[idx]).PLength := PacketObject.PLength;
-			TPackets(Items[idx]).Command := PacketObject.Command;
-			SetLength(TPackets(Items[idx]).ReadPoints,Length(PacketObject.ReadPoints));
-			TPackets(Items[idx]).ReadPoints := Copy(PacketObject.ReadPoints,0,Length(PacketObject.ReadPoints));
-			TPackets(Items[idx]).ExecCommand := PacketObject.ExecCommand;
-			TPackets(Items[idx]).ExecAvoidSelfCommand := PacketObject.ExecAvoidSelfCommand;
-			Exit;
-		end;
+		//Free lists
+		fCodeBase[idx].Packets.Free;
 	end;
-	inherited Add(PacketObject);
+	//Shut down the array of lists.
+	SetLength(fCodebase,0);
 end;
-
-constructor TPacketList.Create;
-begin
-	inherited;
-	Self.OwnsObjects := True;
-end;
-
 
 end.

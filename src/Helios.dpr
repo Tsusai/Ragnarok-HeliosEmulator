@@ -75,7 +75,7 @@ compile for linux, at the same time*}
 		{$R Helios64.res}
 	{$ENDIF}
 
-				//Console Related Units
+	//Console Related Units
 	CRTWrapper in 'Common\Console\CRTWrapper.pas',
 	WinConsole in 'Common\Console\WinCRT\WinConsole.pas',
 	Terminal in 'Common\Console\Terminal.pas',
@@ -103,7 +103,6 @@ compile for linux, at the same time*}
 	ZoneRecv in 'Servers\Zone\ZoneRecv.pas',
 	ZoneSend in 'Servers\Zone\ZoneSend.pas',
 	GMCommands in 'Servers\Zone\GMCommands.pas',
-	PacketDB in 'Servers\Zone\PacketDB.pas',
 	GMCommandExe in 'Servers\Zone\GMCommandExe.pas',
 
 	//Constants
@@ -125,6 +124,7 @@ compile for linux, at the same time*}
 	Inventory in 'Common\Classes\Inventory.pas',
 	Mob in 'Common\Classes\Beings\Mob.pas',
 	Mailbox in 'Common\Classes\Mailbox.pas',
+	Packets in 'Common\Classes\Packets.pas',
 
 	//Lua
 	LuaPas in 'Common\ThirdParty\LuaPas.pas',
@@ -231,7 +231,6 @@ compile for linux, at the same time*}
 	ZoneRecv in 'Servers/Zone/ZoneRecv.pas',
 	ZoneSend in 'Servers/Zone/ZoneSend.pas',
 	GMCommands in 'Servers/Zone/GMCommands.pas',
-	PacketDB in 'Servers/Zone/PacketDB.pas',
 	GMCommandExe in 'Servers/Zone/GMCommandExe.pas',
 
 	//Constants
@@ -253,6 +252,7 @@ compile for linux, at the same time*}
 	Inventory in 'Common/Classes/Inventory.pas',
 	Mob in 'Common/Classes/Beings/Mob.pas',
 	Mailbox in 'Common/Classes/Mailbox.pas',
+	Packets in 'Common/Classes/Packets.pas',
 
 	//Lua
 	LuaPas in 'Common/ThirdParty/LuaPas.pas',

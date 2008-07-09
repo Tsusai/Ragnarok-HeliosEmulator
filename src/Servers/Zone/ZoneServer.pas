@@ -9,6 +9,8 @@
 //		December 17th, 2006 - RaX - Created Header.
 //		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
 //		[2007/04/23] Tsusai - Changed lua filename
+//		June 28th, 2008 - Tsusai - Updated to use TPacketDB for packet usage.
+//
 //
 //------------------------------------------------------------------------------
 unit ZoneServer;
@@ -58,18 +60,6 @@ type
 		Procedure InterClientRead(AClient : TInterClient);
 
 		Procedure ProcessZonePacket(AClient : TIdContext);
-		Function  SearchPacketListing(
-			var
-				AChara   : TCharacter;
-			var
-				AClient  : TIdContext;
-			var
-				InBuffer :  TBuffer;
-			const
-				Version  : Word;
-			const
-				Packet   : Word
-			) : Boolean;
 
 		Procedure LoadOptions;
 		Procedure LoadMaps;
@@ -119,7 +109,7 @@ uses
 	LuaNPCCommands,
 	Main,
 	Map,
-	PacketDB,
+	Packets,
 	TCPServerRoutines,
 	ZoneCharaCommunication,
 	ZoneInterCommunication,
@@ -443,88 +433,6 @@ end;{Start}
 
 
 //------------------------------------------------------------------------------
-//SearchPacketListing                                                  FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//      This is only executed to find information about a packet for ingame/zone
-//    packets.
-//
-//  Notes -
-//    TChara - required
-
-//    Socket - we are passing the buffer over so we can make sure we got the
-//      right length of the packet
-
-//    Ver - The version of packets we are going to look at.  This is called
-//      twice, first if we need to look through it with our new client packet,
-//      and if we can't find it, we need to search through the 0 version aka
-//      oldschool aka 0628sakexe based.
-
-//    packet - The integer packet id.
-//
-//	Changes -
-//		September 19th, 2006 - RaX - Created Header.
-//		June 8th, 2008 - Tsusai - Hmm...upgrades...  Updated for the new Packet
-//			object list
-//   	Old Comments Follow...
-//    [2006/03/11] Tsusai - Packet is now a word type, not a 0xHexString
-//    [2006/08/12] Tsusai - Updated for Indy.
-//    [2006/09/26] Tsusai - Imported to Helios
-//    [2006/09/28] RaX - Variables re-cased, moved "begins" to next line.
-//    [2006/10/04] Tsusai - Updated ExecCommand call
-//
-//------------------------------------------------------------------------------
-function TZoneServer.SearchPacketListing(
-
-	var   AChara    : TCharacter;
-	var   AClient   : TIdContext;
-	var   InBuffer  : TBuffer;
-
-	const Version   : Word;
-	const Packet    : Word
-
-) :Boolean;
-var
-	Index : Integer;
-	Size  : Word;
-begin
-	Result := False;
-
-	for Index := 0 to CodeBase[Version].Packets.Count - 1 do
-	begin
-
-		with TPackets(CodeBase[Version].Packets.Items[Index]) do
-		begin
-
-			if (ID = Packet) then
-			begin
-				//Ok so we found a matching packet ID, now to read our right length
-				if PLength <> -1 then
-				begin
-					RecvBuffer(AClient,InBuffer[2], PLength - 2);
-				end else
-				begin
-					//Usually our string messages, where the 2nd location is the
-					//size holder of the string
-					RecvBuffer(AClient,InBuffer[2], 2);
-					Size := BufferReadWord(2, InBuffer);
-					RecvBuffer(AClient,InBuffer[4], Size - 4);
-				end;
-
-				//Execute the packet procedure, only one is runned because the other
-				//runs a dummy procedure
-				ExecCommand(AChara,InBuffer,ReadPoints);
-				ExecAvoidSelfCommand(AChara);
-				Result := True;
-			end;
-		end;
-		if Result then break;//Breaks loop if packet found.
-	end;
-end;{SearchPacketListing}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
 //ProcessZonePacket                                                   PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
@@ -556,17 +464,25 @@ Procedure TZoneServer.ProcessZonePacket(AClient : TIdContext);
 Var
 	Lth             : Integer;
 	AChara          : ^TCharacter;
-	ClientBaseIndex : Word; //Index of the packet in the packet(allowed client)
+	Version         : Word; //Index of the packet in the packet(allowed client)
 				//database (client-base).
 	PacketID        : Word; //The ID of a packet in said database.
 	PacketIndex     : Integer;
 	Found           : Boolean;
 	ABuffer         : TBuffer;
+	PacketInfo      : TPackets;
+	Size            : Word;
 Begin
 	AClient.Connection.IOHandler.CheckForDataOnSource();
 	while AClient.Connection.IOHandler.InputBuffer.Size >= 2 do
 	begin
 		Lth := AClient.Connection.IOHandler.InputBuffer.Size;
+		//Only accepting 2 bytes first because for some of the incoming packets, they
+		//are broken up according to WPE and other packet sniffers (Mapconnect is an
+		//exception).  Once we know what version and what ID, we can read the packets
+		//we need.  If we ask for more than is on the buffer, Indy waits for it.
+		//That process should not bog the server down as it should be skipping and
+		//going to the next client enqueued.
 		RecvBuffer(AClient,ABuffer[0], 2);
 		PacketID := BufferReadWord(0, ABuffer);
 		AChara := @TClientLink(AClient.Data).CharacterLink;
@@ -574,40 +490,21 @@ Begin
 		Found := False;
 		if NOT Assigned(AChara^) then
 		begin
-			for ClientBaseIndex := (Length(CodeBase) -1) downto 0 do
-			begin //Go through all the client-bases w/ packets
-
-				for PacketIndex := 0 to CodeBase[ClientBaseIndex].Packets.Count - 1 do
-				begin //Search for the packet from this client-base
-
-					if TPackets(CodeBase[ClientBaseIndex].Packets[PacketIndex]).ID = PacketID then
-					begin
-						if TPackets(CodeBase[ClientBaseIndex].Packets[PacketIndex]).PLength = Lth then
-						begin
-							if TPackets(CodeBase[ClientBaseIndex].Packets[PacketIndex]).Command = 'wanttoconnection' then
-							begin
-								RecvBuffer(AClient, ABuffer[2], (Lth - 2)); //Get the rest of the packet info
-								MapConnect(ClientBaseIndex,
-									AClient,
-									ABuffer,
-									TPackets(CodeBase[ClientBaseIndex].Packets[PacketIndex]).ReadPoints
-								);
-								Found := True;
-								Break;
-							end;
-						end;
-					end;
-				end;
-
-				if Found then
-				begin
-					Break;
-				end;
-			end;
-
-			if NOT Found then
+			PacketDB.GetMapConnectPacket(PacketID, Lth, Version, PacketInfo);
+			if Assigned(PacketInfo) then
 			begin
-				//They can't get in, so prevent the rest of their useless packets from parsing
+				//Use found data packet
+				RecvBuffer(AClient, ABuffer[2], (Lth - 2)); //Get the rest of the packet info
+				MapConnect(Version,
+					AClient,
+					ABuffer,
+					PacketInfo.ReadPoints
+				);
+				PacketInfo.Free;
+			end else
+			begin
+				//They can't get in, get their shit off buffer, then DC
+				RecvBuffer(AClient, ABuffer[2], (Lth - 2));
 				Console.Message(
 					'Someone with the IP '+
 					AClient.Binding.PeerIP +
@@ -623,20 +520,28 @@ Begin
 			end;
 
 		end else begin
-			if AChara.ClientVersion <> 0 then
+			//Already authenticated, parse the packet
+			PacketDB.GetPacketInfo(PacketID,AChara^.ClientVersion,PacketInfo);
+			if Assigned(PacketInfo) then
 			begin
-				if not SearchPacketListing(AChara^, AClient, ABuffer, AChara.ClientVersion, PacketID) then
-				begin //look for
-					if NOT SearchPacketListing(AChara^, AClient, ABuffer, 0, PacketID) then
-					begin
-						Exit; //try the older
-					end;
+				if PacketInfo.PLength <> -1 then
+				begin
+					RecvBuffer(AClient,ABuffer[2], PacketInfo.PLength - 2);
+				end else
+				begin
+					//Usually our string messages, where the 2nd location is the
+					//size holder of the string
+					RecvBuffer(AClient,ABuffer[2], 2);
+					Size := BufferReadWord(2, ABuffer);
+					RecvBuffer(AClient,ABuffer[4], Size - 4);
 				end;
-			end
-			else if NOT SearchPacketListing(AChara^, AClient, ABuffer, 0, PacketID) then
-			begin //since it's older, use that
-				Exit;
+
+				//Execute the packet procedure, only one is runned because the other
+				//runs a dummy procedure
+				PacketInfo.ExecCommand(AChara^,ABuffer,PacketInfo.ReadPoints);
+				PacketInfo.ExecAvoidSelfCommand(AChara^);
 			end;
+			PacketInfo.Free;
 		end;
 	end;
 	//Sleep to free up the processor.
@@ -774,7 +679,7 @@ begin
 	case PacketID of
 	$2101:
 		begin
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2101)-2);
+			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2101)-2);
 			Response := BufferReadByte(2,ABuffer);
 
 			//If validated.
@@ -797,12 +702,12 @@ begin
 		end;
 	$2107:
 		begin
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2107)-2);
+			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2107)-2);
 			TotalOnlinePlayers := BufferReadWord(2,ABuffer);
 		end;
 	$2110:
 		begin
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2110)-2);
+			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2110)-2);
 			DuplicateSessionKick(ABuffer);
 		end;
 	end;
@@ -870,7 +775,7 @@ begin
 	case PacketID of
 	$2201:
 		begin
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2101)-2);
+			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2101)-2);
 			Response := BufferReadByte(2,ABuffer);
 
 			//If validated.
@@ -924,27 +829,27 @@ begin
 		end;
 	$2212:
 		begin
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2212)-2);
+			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2212)-2);
 			RecvWhisperReply(ABuffer);
 		end;
 	$2216:
 		begin
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2216)-2);
+			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2216)-2);
 			RecvAddFriendRequest(ABuffer);
 		end;
 	$2217:
 		begin
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2217)-2);
+			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2217)-2);
 			RecvAddFriendRequestReply(ABuffer);
 		end;
 	$2219:
 		begin
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2219)-2);
+			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2219)-2);
 			RecvFriendOnlineStatus(ABuffer);
 		end;
 	$2221:
 		begin
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2221)-2);
+			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2221)-2);
 			RecvFriendStatus(ABuffer);
 		end;
 	end;

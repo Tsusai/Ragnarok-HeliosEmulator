@@ -8,6 +8,8 @@
 //	Changes -
 //		March 12th, 2007 - Aeomin - Created Header
 //		March 18th, 2007 - RaX - Updated Header.
+//		June 28th, 2008 - Tsusai - Updated GetPacketLength to PacketDB.GetLength
+//			in various calls
 //
 //------------------------------------------------------------------------------
 unit CharaLoginCommunication;
@@ -71,7 +73,7 @@ uses
 		WriteBufferMD5String(6, GetMD5(CharacterServer.Options.LoginKey), OutBuffer);
 		WriteBufferString(22, CharacterServer.Servername, 24, OutBuffer);
 		WriteBufferWord(46, CharacterServer.Port, OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2000));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2000));
 	end;
 //------------------------------------------------------------------------------
 
@@ -93,7 +95,7 @@ uses
 	begin
 		WriteBufferWord(0, $2001, OutBuffer);
 		WriteBufferByte(2, Validated, OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2001));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2001));
 	end;
 //------------------------------------------------------------------------------
 
@@ -172,7 +174,7 @@ uses
 	begin
 		WriteBufferWord(0,$2004,OutBuffer);
 		WriteBufferWord(2,CharacterServer.GetOnlineUserCount,OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2004));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2004));
 	end;
 //------------------------------------------------------------------------------
 
@@ -185,11 +187,11 @@ uses
 	var
 		OutBuffer : TBuffer;
 	begin
-		FillChar(OutBuffer, GetPacketLength($2005), 0);
+		FillChar(OutBuffer, PacketDB.GetLength($2005), 0);
 		WriteBufferWord(0,$2005,OutBuffer);
 		WriteBufferLongWord(2, AnAccount.AccountID , OutBuffer);
 		WriteBufferLongWord(6, CharacterServer.Options.ID , OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2005));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2005));
 	end;
 
 	procedure SendAccountLogOut(
@@ -200,10 +202,10 @@ uses
 	var
 		OutBuffer : TBuffer;
 	begin
-		FillChar(OutBuffer, GetPacketLength($2006), 0);
+		FillChar(OutBuffer, PacketDB.GetLength($2006), 0);
 		WriteBufferWord(0,$2006,OutBuffer);
 		WriteBufferLongWord(2, AnAccount.AccountID , OutBuffer);
-		SendBuffer(AClient, OutBuffer, GetPacketLength($2006));
+		SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2006));
 	end;
 //------------------------------------------------------------------------------
 
@@ -222,10 +224,10 @@ uses
 	var
 		OutBuffer : TBuffer;
 	begin
-		FillChar(OutBuffer, GetPacketLength($2007), 0);
+		FillChar(OutBuffer, PacketDB.GetLength($2007), 0);
 		WriteBufferWord(0, $2007, OutBuffer);
 		WriteBufferLongWord(2, AccountID, OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2007));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2007));
 	end;
 //------------------------------------------------------------------------------
 end.

@@ -7,6 +7,8 @@
 //
 //  Changes -
 //    January 18th, 2007 - RaX - Created Header.
+//		June 28th, 2008 - Tsusai - Updated GetPacketLength to PacketDB.GetLength
+//			in various calls
 //------------------------------------------------------------------------------
 unit ZoneCharaCommunication;
 
@@ -85,7 +87,7 @@ uses
 		WriteBufferLongWord(2, ZoneServer.Options.ID, OutBuffer);
 		WriteBufferWord(6, ZoneServer.Port, OutBuffer);
 		WriteBufferMD5String(8, GetMD5(ZoneServer.Options.CharaKey), OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2100));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2100));
 	end;//ValidateWithCharaServer 
 //------------------------------------------------------------------------------
 
@@ -110,7 +112,7 @@ uses
 	begin
 		WriteBufferWord(0, $2101, OutBuffer);
 		WriteBufferByte(2, Validated, OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2101));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2101));
 	end;//SendValidateFlagToZone
 //------------------------------------------------------------------------------
 
@@ -182,7 +184,7 @@ uses
 	begin
 		WriteBufferWord(0,$2104,OutBuffer);
 		WriteBufferWord(2,ZoneServer.OnlineUsers,OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2104));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2104));
 	end;//SendZoneOnlineUsersToChara
 //------------------------------------------------------------------------------
 
@@ -194,7 +196,7 @@ uses
 		OutBuffer : TBuffer;
 	begin
 		WriteBufferWord(0,$2105,OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2105));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2105));
 	end;
 
 	procedure SendZoneCharaDecrease(
@@ -205,7 +207,7 @@ uses
 		OutBuffer : TBuffer;
 	begin
 		WriteBufferWord(0,$2106,OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2106));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2106));
 	end;
 	
 	procedure SendOnlineCountToZone(
@@ -217,7 +219,7 @@ uses
 	begin
 		WriteBufferWord(0,$2107,OutBuffer);
 		WriteBufferWord(2,Count,OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2107));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2107));
 	end;
 
 
@@ -237,11 +239,11 @@ uses
 	var
 		OutBuffer : TBuffer;
 	begin
-		FillChar(OutBuffer, GetPacketLength($2108), 0);
+		FillChar(OutBuffer, PacketDB.GetLength($2108), 0);
 		WriteBufferWord(0,$2108,OutBuffer);
 		WriteBufferLongWord(2, AChara.AccountID, OutBuffer);
 		WriteBufferWord(6, MainProc.ZoneServer.Options.ID, OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2108));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2108));
 	end;
 //------------------------------------------------------------------------------
 
@@ -253,11 +255,11 @@ uses
 	var
 		OutBuffer : TBuffer;
 	begin
-		FillChar(OutBuffer, GetPacketLength($2109), 0);
+		FillChar(OutBuffer, PacketDB.GetLength($2109), 0);
 		WriteBufferWord(0,$2109,OutBuffer);
 		WriteBufferLongWord(2, AChara.AccountID, OutBuffer);
 		WriteBufferByte(6, Action, OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2109));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2109));
 	end;
 
 	procedure SendKickAccountToZone(
@@ -267,9 +269,9 @@ uses
 	var
 		OutBuffer : TBuffer;
 	begin
-		FillChar(OutBuffer, GetPacketLength($2110), 0);
+		FillChar(OutBuffer, PacketDB.GetLength($2110), 0);
 		WriteBufferWord(0,$2110,OutBuffer);
 		WriteBufferLongWord(2, CharId, OutBuffer);
-		SendBuffer(AClient,OutBuffer,GetPacketLength($2110));
+		SendBuffer(AClient,OutBuffer,PacketDB.GetLength($2110));
 	end;
 end.

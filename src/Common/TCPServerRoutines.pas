@@ -24,8 +24,6 @@ uses
 
 	function ActivateClient(var AClient : TInterClient) : Boolean;
 	procedure DeActivateClient(var AClient : TInterClient);
-
-  Function GetPacketLength(ID : Word; Version : Word = 0) : LongWord;
   
 implementation
 uses
@@ -33,7 +31,7 @@ uses
 	IdException,
 	Classes,
 	Globals,
-	PacketDB,
+	Packets,
 	Main,
 	IdSchedulerOfThreadDefault,
 	IdSchedulerOfThreadPool;
@@ -169,33 +167,4 @@ begin
 end;{DeActivateClient}
 //------------------------------------------------------------------------------
 
-
-//------------------------------------------------------------------------------
-//GetPacketLength                                                      FUNCTION
-//------------------------------------------------------------------------------
-//	What it does-
-//			Gets the length of a packet specified by ID for version Version
-//
-//	Changes -
-//		December 22nd, 2006 - RaX - Created.
-//		June 8th, 2008 - Tsusai - Updated to use the Packet Object List
-//
-//------------------------------------------------------------------------------
-Function GetPacketLength(ID : Word; Version : Word = 0) : LongWord;
-var
-	Index           : Integer;
-	CodebaseLength  : Integer;
-begin
-	Result := 0;
-	CodebaseLength := Codebase[Version].Packets.Count;
-	for Index := 0 to CodebaseLength - 1 do
-	begin
-		if TPackets(Codebase[Version].Packets[Index]).ID = ID then
-		begin
-			Result := TPackets(Codebase[Version].Packets[Index]).PLength;
-			break;
-		end;
-	end;
-end;{GetPacketLength}
-//------------------------------------------------------------------------------
 end.

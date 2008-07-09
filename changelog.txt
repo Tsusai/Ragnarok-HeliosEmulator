@@ -15,6 +15,24 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 476 - (actually July 8th, 2008)
+[2008/06/28] Tsusai - Moved Servers\Zone\PacketDB.pas to Common\Classes\Packets.pas
+[2008/06/28] Tsusai - ZoneServer.SearchPacketListing - Moved to Packets as TPacketDB.
+[2008/06/28] Tsusai - ZoneServer.TZoneServer.ProcessZonePacket - Moved "MapConnect" 
+ routine out to TPacketDB.GetMapConnectPacket, and changed SearchPacketListing out 
+ for TPacketDB.GetPacketInfo
+[2008/06/28] Tsusai - Packets.pas - Implemented a TPacketDB object.  This object 
+ manages packet_db data such as loading, getting packet lengths, determining what
+ client version the client is, etc.
+[2008/06/28] Tsusai - TCPServerRoutines - Removed GetPacketLength, moved to Packets.
+[2008/06/28] Tsusai - Character.pas - Added eA PacketVer variable.  Stores packet
+ ver from packet_db
+[2008/06/28] Tsusai - Globals - Added TPacketDB create/loading and unloading/free
+[2008/06/28] Tsusai - CharacterServer, CharaLoginCommunication, InterSend,
+ InterServer, LoginServer, ZoneCharaCommunication, ZoneInterCommunication, ZoneRecv,
+ ZoneSend, ZoneServer - GetPacketLength Changes to reference PacketDB.GetLength
+-
+
 - Rev 475 -
 [2008/06/28] Aeomin - Added script function dropgold
 -

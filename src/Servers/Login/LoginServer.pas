@@ -10,6 +10,8 @@
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		June 28th, 2008 - Tsusai - Updated GetPacketLength to PacketDB.GetLength
+//			in various calls
 //
 //------------------------------------------------------------------------------
 unit LoginServer;
@@ -307,7 +309,7 @@ end;{OnException}
 		WriteBufferWord( 0, $006a, Buffer);
 		WriteBufferByte( 2, Error, Buffer);
 		WriteBufferString(3, Error_Message, 20, Buffer);
-		SendBuffer(AClient, Buffer ,GetPacketLength($006a));
+		SendBuffer(AClient, Buffer,PacketDB.GetLength($006a));
 	end; // proc SendLoginError
 //------------------------------------------------------------------------------
 
@@ -328,7 +330,7 @@ end;{OnException}
 	begin
 		WriteBufferWord( 0, $0081, Buffer);
 		WriteBufferByte( 2, Error, Buffer);
-		SendBuffer(AClient, Buffer ,GetPacketLength($0081));
+		SendBuffer(AClient, Buffer ,PacketDB.GetLength($0081));
 	end; // proc SendDCError
 //------------------------------------------------------------------------------
 
@@ -740,7 +742,7 @@ end;
 		$0064: //Basic login
 			begin
 				//Read the rest of the packet
-				RecvBuffer(AConnection,Buffer[2],GetPacketLength($0064)-2);
+				RecvBuffer(AConnection,Buffer[2],PacketDB.GetLength($0064)-2);
 				UserName := BufferReadString(6,24,Buffer);
 				Password := BufferReadString(30,24,Buffer);
 				ValidateLogin(AConnection,Buffer,Username,Password);
@@ -757,37 +759,37 @@ end;
 			end;
 		$01DD: //Recieve secure login details
 			begin
-				RecvBuffer(AConnection,Buffer[2],GetPacketLength($01DD)-2);
+				RecvBuffer(AConnection,Buffer[2],PacketDB.GetLength($01DD)-2);
 				UserName := BufferReadString(6,24,Buffer);
 				Password := BufferReadMD5(30,Buffer);
 				ValidateLogin(AConnection,Buffer,Username,Password);
 			end;
 		$0277:// New login packet (kRO 2006-04-24aSakexe langtype 0)
 			begin
-				RecvBuffer(AConnection,Buffer[2],GetPacketLength($0277,6)-2);
+				RecvBuffer(AConnection,Buffer[2],PacketDB.GetLength($0277,6)-2);
 				UserName := BufferReadString(6,24,Buffer);
 				Password := BufferReadString(30,24,Buffer);
 				ValidateLogin(AConnection,Buffer,Username,Password);
 			end;
 		$02b0:// New login packet (kRO 2007-05-14aSakexe langtype 0)
 			begin
-				RecvBuffer(AConnection,Buffer[2],GetPacketLength($02b0,8)-2);
+				RecvBuffer(AConnection,Buffer[2],PacketDB.GetLength($02b0,8)-2);
 				UserName := BufferReadString(6,24,Buffer);
 				Password := BufferReadString(30,24,Buffer);
 				ValidateLogin(AConnection,Buffer,Username,Password);
 			end;
 		$0200:  //Account name?
 			begin
-				RecvBuffer(AConnection,Buffer[2],GetPacketLength($0200)-2);
+				RecvBuffer(AConnection,Buffer[2],PacketDB.GetLength($0200)-2);
 			end;
 		$0204://Receive MD5 of client...
 			begin
 				// Do nothing...
-				RecvBuffer(AConnection,Buffer[2],GetPacketLength($0204)-2);
+				RecvBuffer(AConnection,Buffer[2],PacketDB.GetLength($0204)-2);
 			end;
 		$2000:
 			begin
-				RecvBuffer(AConnection,Buffer[2],GetPacketLength($2000)-2);
+				RecvBuffer(AConnection,Buffer[2],PacketDB.GetLength($2000)-2);
 				Password := BufferReadMD5(6,Buffer);
 				VerifyCharaServer(AConnection,Buffer,Password);
 			end;
@@ -817,7 +819,7 @@ end;
 			begin
 				if AConnection.Data is TCharaServerLink then
 				begin
-					RecvBuffer(AConnection,Buffer[2],GetPacketLength($2004)-2);
+					RecvBuffer(AConnection,Buffer[2],PacketDB.GetLength($2004)-2);
 					TCharaServerLink(AConnection.Data).Info.OnlineUsers := BufferReadWord(2,Buffer);
 					Console.Message('Received updated Character Server Online Users.', 'Login Server', MS_DEBUG);
 				end;
@@ -826,7 +828,7 @@ end;
 			begin
 				if AConnection.Data is TCharaServerLink then
 				begin
-					RecvBuffer(AConnection,Buffer[2],GetPacketLength($2005)-2);
+					RecvBuffer(AConnection,Buffer[2],PacketDB.GetLength($2005)-2);
 					UpdateToAccountList(AConnection,Buffer);
 				end;
 			end;
@@ -834,7 +836,7 @@ end;
 			begin
 				if AConnection.Data is TCharaServerLink then
 				begin
-					RecvBuffer(AConnection,Buffer[2],GetPacketLength($2006)-2);
+					RecvBuffer(AConnection,Buffer[2],PacketDB.GetLength($2006)-2);
 					RemoveFromAccountList(AConnection,Buffer);
 				end;
 			end;

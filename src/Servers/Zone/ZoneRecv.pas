@@ -261,6 +261,7 @@ uses
 	Being,
 	BufferIO,
 	GameConstants,
+	Globals,
 	GMCommands,
 	LuaNPCCore,
 	Main,
@@ -458,6 +459,7 @@ begin
 		begin
 
 			ACharacter.ClientVersion := Version;
+			ACharacter.EAPACKETVER := PacketDB.GetEAPacketVer(Version);
 			ACharacter.Online  := 1;
 			MainProc.ZoneServer.CharacterList.Add(ACharacter);
 
@@ -576,7 +578,7 @@ begin
 		//Arrow Placeholder
 		WriteBufferWord(0, $013c, OutBuffer);
 		WriteBufferWord(2, 0, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, GetPacketLength($013c,AChara.ClientVersion));
+		SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($013c,AChara.ClientVersion));
 
 		AChara.CharaState := charaStanding;
 

@@ -10,6 +10,8 @@
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
+//		June 28th, 2008 - Tsusai - Updated GetPacketLength to PacketDB.GetLength
+//			in various calls
 //
 //------------------------------------------------------------------------------
 unit CharacterServer;
@@ -359,10 +361,10 @@ begin
 			//Show "Someone has already logged in with this ID" ?
 			if Options.ShowFriendlyMessageOnDupLogin then
 			begin
-			FillChar(OutBuffer, GetPacketLength($0081), 0);
+			FillChar(OutBuffer, PacketDB.GetLength($0081), 0);
 			WriteBufferWord(0, $0081, OutBuffer);
 			WriteBufferByte(2, 2, OutBuffer);
-			SendBuffer(AccountInfo.ClientInfo, OutBuffer, GetPacketLength($0081));
+			SendBuffer(AccountInfo.ClientInfo, OutBuffer, PacketDB.GetLength($0081));
 			end;
 			AccountInfo.ClientInfo.Connection.Disconnect;
 		end;
@@ -410,7 +412,7 @@ begin
 	case PacketID of
 	$2001:
 		begin
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2001)-2);
+			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2001)-2);
 			Response := BufferReadByte(2,ABuffer);
 			if Response = 0 then
 			begin
@@ -431,7 +433,7 @@ begin
 		end;
 	$2007:
 		begin
-			RecvBuffer(AClient,ABuffer[2],GetPacketLength($2007)-2);
+			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2007)-2);
 			LoginClientKickAccount(AClient, ABuffer);
 		end;
 	end;
@@ -504,7 +506,7 @@ begin
 				begin   //Reject!
 					WriteBufferWord(0, $006a, ReplyBuffer);
 					WriteBufferByte(2, 03, ReplyBuffer);
-					SendBuffer(AClient,ReplyBuffer,GetPacketLength($006a));
+					SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($006a));
 				end else
 				begin
 					AccountInfo.ClientInfo := AClient;
@@ -547,7 +549,7 @@ begin
 		begin
 			WriteBufferWord(0, $0081, ReplyBuffer);
 			WriteBufferByte(2, 01, ReplyBuffer);
-			SendBuffer(AClient,ReplyBuffer,GetPacketLength($0081));
+			SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($0081));
 
 			Console.Message(
 				'Connecting RO client from '+
@@ -631,13 +633,13 @@ begin
 					OutBuffer
 				);
 				WriteBufferWord(26, ZServerInfo.Port, OutBuffer);
-				SendBuffer(AClient, OutBuffer, GetPacketLength($0071));
+				SendBuffer(AClient, OutBuffer, PacketDB.GetLength($0071));
 			end else
 			begin
 				//Server offline error goes here
 				WriteBufferWord(0, $0081, Outbuffer);
 				WriteBufferByte(2, 01, OutBuffer);
-				SendBuffer(AClient, OutBuffer, GetPacketLength($0081));
+				SendBuffer(AClient, OutBuffer, PacketDB.GetLength($0081));
 			end;
 		ACharacter.Free;
 	end;
@@ -683,7 +685,7 @@ var
 	begin
 		WriteBufferWord(0, $006e, ReplyBuf);
 		WriteBufferByte(2, Error, ReplyBuf);
-		SendBuffer(AClient,ReplyBuf,GetPacketLength($006e));
+		SendBuffer(AClient,ReplyBuf,PacketDB.GetLength($006e));
 	end;
 
 begin
@@ -831,7 +833,7 @@ var
 	begin
 		WriteBufferWord(0, $0070, ReplyBuffer);
 		WriteBufferByte(2, Error, ReplyBuffer);
-		SendBuffer(AClient,ReplyBuffer,GetPacketLength($0070));
+		SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($0070));
 	end;
 
 begin
@@ -846,7 +848,7 @@ begin
 		begin
 			TThreadLink(AClient.Data).DatabaseLink.Character.Delete(ACharacter);
 			WriteBufferWord(0, $006f, ReplyBuffer);
-			SendBuffer(AClient,ReplyBuffer, GetPacketLength($006f));
+			SendBuffer(AClient,ReplyBuffer, PacketDB.GetLength($006f));
 		end else
 			DeleteCharaError(DELETEBADEMAIL);
 	finally
@@ -1052,22 +1054,22 @@ begin
 			case PacketID of
 			$0066: // Character Selected -- Refer Client to Map Server
 				begin
-					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0066)-2);
+					RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0066)-2);
 					SendCharaToMap(AConnection,ABuffer);
 				end;
 			$0067: // Create New Character
 				begin
-					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0067)-2);
+					RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0067)-2);
 					CreateChara(AConnection,ABuffer);
 				end;
 			$0068: // Request to Delete Character
 				begin
-					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0068)-2);
+					RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0068)-2);
 					DeleteChara(AConnection,ABuffer);
 				end;
 			$0187: //Client keep alive
 				begin
-					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0187)-2);
+					RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0187)-2);
 				end;
 			$028d: //Enter Character Rename mode
 				begin
@@ -1081,12 +1083,12 @@ begin
 				end
 			else
 				begin
-					Size := GetPacketLength(PacketID);
+					Size := PacketDB.GetLength(PacketID);
 					Console.Message('Unknown Character Server Packet : ' + IntToHex(PacketID,4), 'Character Server', MS_WARNING);
 					if (Size-2 > 0) then
 					begin
 						Console.Message(IntToStr(Size-2) + ' additional bytes were truncated','Character Server', MS_WARNING);
-						RecvBuffer(AConnection,ABuffer[2],GetPacketLength(PacketID)-2);
+						RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength(PacketID)-2);
 					end;
 				end;
 			end;
@@ -1105,12 +1107,12 @@ begin
 				AConnection.Data := TClientlink.Create(AConnection);
 				TClientLink(AConnection.Data).DatabaseLink := Database;
 				//Verify login and send characters
-				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($0065)-2);
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0065)-2);
 				SendCharas(AConnection,ABuffer);
 			end;
 		$2100: // Zone Server Connection request
 			begin
-				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2100)-2);
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2100)-2);
 				VerifyZoneServer(AConnection,ABuffer);
 			end;
 		$2102: // Zone Server sending new WAN location details
@@ -1139,7 +1141,7 @@ begin
 			begin
 				if AConnection.Data is TZoneServerLink then
 				begin
-					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2104)-2);
+					RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2104)-2);
 					TZoneServerLink(AConnection.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
 					if CharaToLoginClient.Connected then
 					begin
@@ -1175,7 +1177,7 @@ begin
 			begin
 				if AConnection.Data is TZoneServerLink then
 				begin
-					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2108)-2);
+					RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2108)-2);
 					UpdateToAccountList(AConnection,ABuffer);
 				end;
 		end;
@@ -1183,7 +1185,7 @@ begin
 			begin
 				if AConnection.Data is TZoneServerLink then
 				begin
-					RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2109)-2);
+					RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2109)-2);
 					RemoveFromAccountList(AConnection,ABuffer);
 				end;
 			end;

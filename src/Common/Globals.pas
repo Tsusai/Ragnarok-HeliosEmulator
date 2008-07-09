@@ -21,6 +21,7 @@ uses
 	{RTL/VCL}
 	//none
 	{Project}
+	Packets,
 	Terminal
 	{3rd Party}
 	//none
@@ -47,6 +48,9 @@ var
 	ExeName					: String;
 
 	LastAccountID   : Integer;
+
+	//Our Global Packet Database
+	PacketDB        : TPacketDB;
 //------------------------------------------------------------------------------
 
 const
@@ -69,7 +73,6 @@ uses
 	WinLinux,
 	{Project}
 	Main,
-	PacketDB,
 	{3rd Party}
 	IdHashMessageDigest
 	;
@@ -94,13 +97,13 @@ var
 	Hash : TIdHashMessageDigest5;
 begin
 	Hash := TIdHashMessageDigest5.Create;
-        {$IFDEF FPC}
-        Result := Hash.HashStringAsHex(Input);
-        {$ELSE}
-        Result := Hash.AsHex(Hash.HashValue(Input));
-        {$ENDIF}
- 
-        Hash.Free;
+	{$IFDEF FPC}
+	Result := Hash.HashStringAsHex(Input);
+	{$ELSE}
+	Result := Hash.AsHex(Hash.HashValue(Input));
+	{$ENDIF}
+
+	Hash.Free;
 end;{GetMD5}
 //------------------------------------------------------------------------------
 
@@ -115,11 +118,13 @@ end;{GetMD5}
 //		December 22nd, 2006 - RaX - Created Header.
 //		January 20th, 2007 - Tsusai - Now a function that returns success of
 //			Database connecting and packet_db
+//		June 28th, 2008 - Tsusai - Inits the Packet Database object, and loads
 //
 //------------------------------------------------------------------------------
 function InitGlobals : boolean;
 begin
-	Result := (Load_PacketDB);
+	PacketDB := TPacketDB.Create;
+	Result := PacketDB.Load;
 end; {InitGlobals}
 //------------------------------------------------------------------------------
 
@@ -132,11 +137,13 @@ end; {InitGlobals}
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
+//		June 28th, 2008 - Tsusai - Inits the Packet Database object, and loads
 //
 //------------------------------------------------------------------------------
 procedure DestroyGlobals;
 begin
-	//placeholder for future globals
+	PacketDB.Unload;
+	PacketDB.Free;
 end;{DestroyGlobals}
 //------------------------------------------------------------------------------
 

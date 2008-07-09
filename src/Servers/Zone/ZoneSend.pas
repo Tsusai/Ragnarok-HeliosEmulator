@@ -12,6 +12,8 @@
 //		May 1st, 2007 - Tsusai - Added const to the parameters of almost all
 //			routines
 //		[2007/10/25] Aeomin - major clean up #1
+//		June 28th, 2008 - Tsusai - Updated GetPacketLength to PacketDB.GetLength
+//			in various calls
 //
 //------------------------------------------------------------------------------
 unit ZoneSend;
@@ -218,6 +220,7 @@ uses
 	{Project}
 	BufferIO,
 	GameConstants,
+	Globals,
 	Main,
 	TCPServerRoutines,
 	WinLinux
@@ -248,7 +251,7 @@ var
 begin
 	WriteBufferWord(0, $0283, OutBuffer);
 	WriteBufferLongWord(2, Who.ID, OutBuffer);
-	SendBuffer(Who.ClientInfo,OutBuffer,GetPacketLength($0283,Who.ClientVersion));
+	SendBuffer(Who.ClientInfo,OutBuffer,PacketDB.GetLength($0283,Who.ClientVersion));
 end;{SendCharID}
 //------------------------------------------------------------------------------
 
@@ -283,7 +286,7 @@ begin
 		Chara := MainProc.ZoneServer.CharacterList[Idx] as TCharacter;
 		WriteBufferWord(0, $0081, OutBuffer);
 		WriteBufferByte(2, 2, OutBuffer);
-		SendBuffer(Chara.ClientInfo,OutBuffer,GetPacketLength($0081));
+		SendBuffer(Chara.ClientInfo,OutBuffer,PacketDB.GetLength($0081));
 		Chara.DelayDisconnect(10000);
 	end;
 end;
@@ -313,7 +316,7 @@ var
 begin
 	WriteBufferWord(0, $018B, OutBuffer);
 	WriteBufferWord(2, 0, OutBuffer);
-	SendBuffer(Who.ClientInfo,OutBuffer,GetPacketLength($018B));
+	SendBuffer(Who.ClientInfo,OutBuffer,PacketDB.GetLength($018B));
 	Who.DelayDisconnect(GetTick + 10000);
 end;
 //------------------------------------------------------------------------------
@@ -438,7 +441,7 @@ begin
 	//send leave 2
 	WriteBufferWord(0, $00b3,OutBuffer);
 	WriteBufferByte(2, 1,OutBuffer);
-	SendBuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($00b3,ACharacter.ClientVersion));
+	SendBuffer(ACharacter.ClientInfo, OutBuffer, PacketDB.GetLength($00b3,ACharacter.ClientVersion));
 	ACharacter.DelayDisconnect(10000);
 end;//SendCharacterSelectResponse
 //------------------------------------------------------------------------------
@@ -546,7 +549,7 @@ begin
 	//send leave 2
 	WriteBufferWord(0, $018b, OutBuffer);
 	WriteBufferWord(2, 0, OutBuffer);
-	Sendbuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($018b, ACharacter.ClientVersion));
+	Sendbuffer(ACharacter.ClientInfo, OutBuffer, PacketDB.GetLength($018b, ACharacter.ClientVersion));
 	ACharacter.DelayDisconnect(GetTick + 10000);
 end;{SendQuitGameResponse}
 //------------------------------------------------------------------------------
@@ -581,7 +584,7 @@ begin
 	else
 		WriteBufferByte(2, 1, OutBuffer);
 	WriteBufferByte(3, Amount, OutBuffer);
-	SendBuffer(AChara.ClientInfo,OutBuffer,GetPacketLength($00bc));
+	SendBuffer(AChara.ClientInfo,OutBuffer,PacketDB.GetLength($00bc));
 end;
 //------------------------------------------------------------------------------
 
@@ -611,7 +614,7 @@ begin
 	WriteBufferWord(0, $020a, OutBuffer);
 	WriteBufferLongWord(2, AccID, OutBuffer);
 	WriteBufferLongWord(6, CharID, OutBuffer);
-	SendBuffer(AClient, OutBuffer, GetPacketLength($020a));
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($020a));
 end;{SendDeleteFriend}
 //------------------------------------------------------------------------------
 
@@ -673,7 +676,7 @@ var
 begin
 	WriteBufferWord(0, $0098, OutBuffer);
 	WriteBufferByte(2, Code, OutBuffer);
-	SendBuffer(AChara.ClientInfo,OutBuffer,GetPacketLength($0098));
+	SendBuffer(AChara.ClientInfo,OutBuffer,PacketDB.GetLength($0098));
 end;{SendWhisperReply}
 //------------------------------------------------------------------------------
 
@@ -698,7 +701,7 @@ begin
 	WriteBufferWord(0, $01f3, OutBuffer);
 	WriteBufferLongWord(2, Who.ID, OutBuffer);
 	WriteBufferLongWord(6, EffectID, OutBuffer);
-	SendBuffer(AClient, OutBuffer, GetPacketLength($01f3));
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($01f3));
 end;{SendSpecialEffec}
 //------------------------------------------------------------------------------
 
@@ -722,7 +725,7 @@ begin
 	WriteBufferWord(0, $00c0, OutBuffer);
 	WriteBufferLongWord(2, Who.ID, OutBuffer);
 	WriteBufferByte(6, EmotionID, OutBuffer);
-	SendBuffer(AClient, OutBuffer, GetPacketLength($00c0));
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($00c0));
 end;{SendEmotion}
 //------------------------------------------------------------------------------
 
@@ -753,7 +756,7 @@ begin
 	WriteBufferWord(0, $0080, ReplyBuffer);
 	WriteBufferLongWord(2, Who.ID, ReplyBuffer);
 	WriteBufferByte(6, Effect, ReplyBuffer);
-	SendBuffer(AClient,ReplyBuffer,GetPacketLength($0080));
+	SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($0080));
 end;{ZoneDisappearBeing}
 //------------------------------------------------------------------------------
 
@@ -827,17 +830,17 @@ var
 		if Spawn then
 		begin
 			WriteBufferWord(55, Who.BaseLV, ReplyBuffer);
-			SendBuffer(AClient.ClientInfo,ReplyBuffer,GetPacketLength($022b,AClient.ClientVersion));
+			SendBuffer(AClient.ClientInfo,ReplyBuffer,PacketDB.GetLength($022b,AClient.ClientVersion));
 		end else
 		begin
 			WriteBufferByte(55, 0, ReplyBuffer);   //Standing/Dead/Sit
 			WriteBufferWord(56, Who.BaseLV, ReplyBuffer);
-			SendBuffer(AClient.ClientInfo,ReplyBuffer,GetPacketLength($022a,AClient.ClientVersion));
+			SendBuffer(AClient.ClientInfo,ReplyBuffer,PacketDB.GetLength($022a,AClient.ClientVersion));
 		end;
 	end;
 	procedure SubSendNPC;
 	begin
-		FillChar(ReplyBuffer,GetPacketLength($0078),0);
+		FillChar(ReplyBuffer,PacketDB.GetLength($0078),0);
 		WriteBufferWord(0, $0078, ReplyBuffer);
 		WriteBufferByte(2, 0, ReplyBuffer);
 		WriteBufferLongWord(3, Who.ID, ReplyBuffer);
@@ -851,7 +854,7 @@ var
 		WriteBufferPointAndDirection(47, Who.Position, ReplyBuffer,Who.Direction);
 		WriteBufferByte(50, 5, ReplyBuffer);
 		WriteBufferByte(51, 5, ReplyBuffer);
-		SendBuffer(AClient.ClientInfo,ReplyBuffer,GetPacketLength($0078,AClient.ClientVersion));
+		SendBuffer(AClient.ClientInfo,ReplyBuffer,PacketDB.GetLength($0078,AClient.ClientVersion));
 	end;
 begin
 	if Who.JID = NPC_INVISIBLE then
@@ -919,10 +922,10 @@ procedure ZoneSendConnectionsCount(
 var
 	ReplyBuffer : TBuffer;
 begin
-	FillChar(ReplyBuffer,GetPacketLength($00C2),0);
+	FillChar(ReplyBuffer,PacketDB.GetLength($00C2),0);
 	WriteBufferWord(0, $00C2, ReplyBuffer);
 	WriteBufferLongWord(2, MainProc.ZoneServer.TotalOnlinePlayers, ReplyBuffer);
-	SendBuffer(AClient,ReplyBuffer,GetPacketLength($00C2));
+	SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($00C2));
 end;{ZoneSendConnectionsCount}
 //------------------------------------------------------------------------------
 
@@ -954,7 +957,7 @@ begin
 	WriteBufferPointAndDirection(6, ACharacter.Position,ReplyBuffer,ACharacter.Direction);
 	WriteBufferByte(9, 5, ReplyBuffer);
 	WriteBufferByte(10, 5, ReplyBuffer);
-	SendBuffer(ACharacter.ClientInfo,ReplyBuffer,GetPacketLength($0073,ACharacter.ClientVersion));
+	SendBuffer(ACharacter.ClientInfo,ReplyBuffer,PacketDB.GetLength($0073,ACharacter.ClientVersion));
 end;{ZoneSendMapConnectReply}
 //------------------------------------------------------------------------------
 
@@ -982,7 +985,7 @@ var
 begin
 	WriteBufferWord(0, $0074, ReplyBuffer);
 	WriteBufferByte(2, 0 ,    ReplyBuffer);
-	SendBuffer(AClient,ReplyBuffer,GetPacketLength($0074));
+	SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($0074));
 end;{ZoneSendMapConnectReply}
 //------------------------------------------------------------------------------
 
@@ -1013,7 +1016,7 @@ begin
 	WriteBufferWord   (0, $0095, OutBuffer);
 	WriteBufferLongWord(2, ID, OutBuffer);
 	WriteBufferString (6, Name, 24, OutBuffer);
-	SendBuffer(ACharacter.ClientInfo, OutBuffer, GetPacketLength($0095,ACharacter.ClientVersion));
+	SendBuffer(ACharacter.ClientInfo, OutBuffer, PacketDB.GetLength($0095,ACharacter.ClientVersion));
 end;{ZoneSendObjectNameAndIDBasic}
 //------------------------------------------------------------------------------
 
@@ -1041,7 +1044,7 @@ var
 begin
 	WriteBufferWord(0, $007f, ReplyBuffer);
 	WriteBufferLongWord(2, GetTick, ReplyBuffer);
-	SendBuffer(ACharacter.ClientInfo, ReplyBuffer, GetPacketLength($007f,ACharacter.ClientVersion));
+	SendBuffer(ACharacter.ClientInfo, ReplyBuffer, PacketDB.GetLength($007f,ACharacter.ClientVersion));
 end;{ZoneSendTickToClient}
 //------------------------------------------------------------------------------
 
@@ -1072,7 +1075,7 @@ begin
 	WriteBufferLongWord(2, ACharacter.MoveTick, ReplyBuffer);
 	WriteBufferTwoPoints( 6, DestPoint, ACharacter.Position, ReplyBuffer);
 	WriteBufferByte(11, 0, ReplyBuffer);
-	SendBuffer(ACharacter.ClientInfo, ReplyBuffer, GetPacketLength($0087, ACharacter.ClientVersion));
+	SendBuffer(ACharacter.ClientInfo, ReplyBuffer, PacketDB.GetLength($0087, ACharacter.ClientVersion));
 end;{ZoneSendWalkReply}
 //------------------------------------------------------------------------------
 
@@ -1182,12 +1185,12 @@ procedure ZoneWalkingBeing(
 var
 	ReplyBuffer : TBuffer;
 begin
-	FillChar(ReplyBuffer,GetPacketLength($0086),0);
+	FillChar(ReplyBuffer,PacketDB.GetLength($0086),0);
 	WriteBufferWord(0, $0086, ReplyBuffer);
 	WriteBufferLongWord(2, Who.ID, ReplyBuffer);
 	WriteBufferTwoPoints(6, Point1, Point2, ReplyBuffer);
 	WriteBufferLongWord(12, GetTick, ReplyBuffer);
-	SendBuffer(AClient,ReplyBuffer,GetPacketLength($0086));
+	SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($0086));
 end;{ZoneWalkingBeing}
 //------------------------------------------------------------------------------
 
@@ -1218,7 +1221,7 @@ begin
 	WriteBufferLongWord(2, Who.ID, ReplyBuffer);
 	WriteBufferWord(6, Who.HeadDirection, ReplyBuffer);
 	WriteBufferByte(8, Who.Direction, ReplyBuffer);
-	SendBuffer(AClient,ReplyBuffer,GetPacketLength($009c));
+	SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($009c));
 end;{ZoneUpdateDirection}
 //------------------------------------------------------------------------------
 
@@ -1249,7 +1252,7 @@ begin
 	WriteBufferLongWord(2, ReqAID, OutBuffer);
 	WriteBufferLongWord(6, ReqID, OutBuffer);
 	WriteBufferString(10, ReqName, NAME_LENGTH, OutBuffer);
-	SendBuffer(AClient,OutBuffer,GetPacketLength($0207));
+	SendBuffer(AClient,OutBuffer,PacketDB.GetLength($0207));
 end;{ZoneSendAddFriendRequest}
 //------------------------------------------------------------------------------
 
@@ -1283,7 +1286,7 @@ begin
 	WriteBufferLongWord(4, AccID, OutBuffer);
 	WriteBufferLongWord(8, CharID, OutBuffer);
 	WriteBufferString(12, CharName, NAME_LENGTH, OutBuffer);
-	SendBuffer(AClient,OutBuffer,GetPacketLength($0209));
+	SendBuffer(AClient,OutBuffer,PacketDB.GetLength($0209));
 end;{SendAddFriendRequestReply}
 //------------------------------------------------------------------------------
 
@@ -1315,7 +1318,7 @@ begin
 	WriteBufferLongWord(2, AID, OutBuffer);
 	WriteBufferLongWord(6, CID, OutBuffer);
 	WriteBufferByte(10, Offline, OutBuffer);
-	SendBuffer(AClient,OutBuffer,GetPacketLength($0206));
+	SendBuffer(AClient,OutBuffer,PacketDB.GetLength($0206));
 end;{SendFirendOnlineStatus}
 //------------------------------------------------------------------------------
 
@@ -1360,7 +1363,7 @@ begin
 	WriteBufferByte(26, ActionType, OutBuffer);
 	WriteBufferWord(27, Parameter3, OutBuffer);
 
-	SendBuffer(AClient,OutBuffer,GetPacketLength($008a));
+	SendBuffer(AClient,OutBuffer,PacketDB.GetLength($008a));
 end;{DoAction}
 //------------------------------------------------------------------------------
 
@@ -1398,7 +1401,7 @@ begin
 	WriteBufferLongWord(14, Y, OutBuffer);
 	WriteBufferByte(18, PointID, OutBuffer);
 	WriteBufferLongWord(19, Color, OutBuffer);
-	SendBuffer(AClient,OutBuffer,GetPacketLength($0144));
+	SendBuffer(AClient,OutBuffer,PacketDB.GetLength($0144));
 end;{SendCompass}
 //------------------------------------------------------------------------------
 
@@ -1428,7 +1431,7 @@ begin
 	WriteBufferWord(0, $01b3, OutBuffer);
 	WriteBufferString(2, Image, 64, OutBuffer);
 	WriteBufferByte(66, ImageType, OutBuffer);
-	SendBuffer(AClient,OutBuffer,GetPacketLength($01b3));
+	SendBuffer(AClient,OutBuffer,PacketDB.GetLength($01b3));
 end;{SendCutin}
 //------------------------------------------------------------------------------
 
@@ -1457,7 +1460,7 @@ begin
 	WriteBufferWord(0, $0260, OutBuffer);
 	WriteBufferLongWord(2, Byte(not Open), OutBuffer);
 	{TODO:Packet version...}
-	SendBuffer(AClient,OutBuffer,GetPacketLength($0260,5));
+	SendBuffer(AClient,OutBuffer,PacketDB.GetLength($0260,5));
 end;{ToggleMailWindow}
 //------------------------------------------------------------------------------
 

@@ -8,6 +8,8 @@
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
+//		June 28th, 2008 - Tsusai - Updated GetPacketLength to PacketDB.GetLength
+//			in various calls
 //
 //------------------------------------------------------------------------------
 unit InterServer;
@@ -317,7 +319,7 @@ begin
 	case PacketID of
 	$2200: // Zone Server Connection request
 		begin
-			RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2200)-2);
+			RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2200)-2);
 			VerifyZoneServer(AConnection,ABuffer);
 		end;
 	$2202: // Zone Server sending new WAN location details
@@ -346,7 +348,7 @@ begin
 		begin
 			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2204)-2);
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2204)-2);
 				//TZoneServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
 				Console.Message('Received updated Zone Server Online Users.', 'Inter Server', MS_NOTICE);
 			end;
@@ -395,7 +397,7 @@ begin
 		begin
 			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2211)-2);
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2211)-2);
 				RecvWhisperReply(AConnection, ABuffer);
 			end;
 		end;
@@ -403,7 +405,7 @@ begin
 		begin
 			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2215)-2);
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2215)-2);
 				RecvZoneRequestFriend(AConnection, ABuffer);
 			end;
 		end;
@@ -411,7 +413,7 @@ begin
 		begin
 			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2217)-2);
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2217)-2);
 				RecvZoneRequestFriendReply(AConnection, ABuffer);
 			end;
 		end;
@@ -419,7 +421,7 @@ begin
 		begin
 			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2218)-2);
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2218)-2);
 				RecvZonePlayerOnlineStatus(AConnection, ABuffer);
 			end;
 		end;
@@ -427,7 +429,7 @@ begin
 		begin
 			if AConnection.Data is TZoneServerLink then
 			begin
-				RecvBuffer(AConnection,ABuffer[2],GetPacketLength($2220)-2);
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2220)-2);
 				RecvZonePlayerOnlineReply(AConnection, ABuffer);
 			end;
 		end;

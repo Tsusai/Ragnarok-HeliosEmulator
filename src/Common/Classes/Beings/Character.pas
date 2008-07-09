@@ -102,6 +102,7 @@ Revisions:
 	fZeny in an earlier commit).  Changed ParamUP and ParamBonus so they use the
 	ByteStatArray type like TBeing uses for ParamBase.
 [2007/05/28] Tsusai - Added ScriptID, to store current(/last?) script id in use
+[2008/06/28] Tsusai - Added eAPacketVer to hold the packetdb ea number.
 *=============================================================================*)
 TCharacter = class(TBeing)
 protected
@@ -243,7 +244,10 @@ public
 	//No idea what 0..5 is from.  Stats?
 	ATK : array[R_HAND..L_HAND] of array[0..5] of Word; // Displayed ATK power
 
+	//Which packet array (since arrays start at 0) holds all the packets that are compatible.
 	ClientVersion : Integer;
+	//eA's Packet Version, relates toPACKET_VER in the packet_db.txt
+	EAPACKETVER : Integer;
 
 	OnTouchIDs : TIntList32;
 
@@ -1975,7 +1979,7 @@ Var
 			SendBuffer(
 				ClientInfo,
 				OutBuffer,
-				GetPacketLength($00b0 + Mode, ClientVersion)
+				PacketDB.GetLength($00b0 + Mode, ClientVersion)
 			);
 		end;
 	end;{Send_00b0}
@@ -2104,7 +2108,7 @@ begin
 	WriteBufferWord(38, Critical, OutBuffer);
 	WriteBufferWord(40, AttackDelay DIV 2, OutBuffer);
 	WriteBufferWord(42, 0, OutBuffer);
-	SendBuffer(ClientInfo, OutBuffer, GetPacketLength($00bd,ClientVersion));
+	SendBuffer(ClientInfo, OutBuffer, PacketDB.GetLength($00bd,ClientVersion));
 
 	// Update base XP
 	SendSubStat(1, 1, BaseEXP);
@@ -2128,12 +2132,12 @@ begin
 		WriteBufferLongWord( 2, 13+idx, OutBuffer);
 		WriteBufferLongWord( 6, ParamBase[idx], OutBuffer);
 		WriteBufferLongWord(10, ParamBonus[idx], OutBuffer);
-		SendBuffer(ClientInfo, OutBuffer, GetPacketLength($0141,ClientVersion));
+		SendBuffer(ClientInfo, OutBuffer, PacketDB.GetLength($0141,ClientVersion));
 	end;
 	// Send attack range.
 	WriteBufferWord(0, $013a, OutBuffer);
 	WriteBufferWord(2, AttackRange, OutBuffer);
-	SendBuffer(ClientInfo, OutBuffer, GetPacketLength($013a,ClientVersion));
+	SendBuffer(ClientInfo, OutBuffer, PacketDB.GetLength($013a,ClientVersion));
 
 	// Update the character's view packets if necessary.
 	if UpdateView then
@@ -2191,7 +2195,7 @@ begin
 			SendBuffer(
 				ClientInfo,
 				OutBuffer,
-				GetPacketLength($0141, ClientVersion)
+				PacketDB.GetLength($0141, ClientVersion)
 			);
 		end;
 	end;
@@ -2233,7 +2237,7 @@ begin
 			SendBuffer(
 			ClientInfo,
 			OutBuffer,
-			GetPacketLength($00be, ClientVersion)
+			PacketDB.GetLength($00be, ClientVersion)
 			);
 		end;
 	end;
