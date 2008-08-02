@@ -88,6 +88,9 @@ type
 		Fog       : Boolean;
 		Leaves    : Boolean;
 		Smog      : Boolean;
+
+		//Objects tracking
+		AutoId    : LongWord;
 	end;
 
 	//graph related types

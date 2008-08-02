@@ -44,6 +44,8 @@ function script_checkpoint(ALua : TLua) : integer; cdecl; forward;
 function script_menu(ALua : TLua) : integer; cdecl; forward;
 function script_getcharavar(ALua : TLua) : integer; cdecl; forward;
 function script_setcharavar(ALua : TLua) : integer; cdecl; forward;
+function script_SetItem(ALua : TLua) : integer; cdecl; forward;
+function script_GetItem(ALua : TLua) : integer; cdecl; forward;
 function script_getgold(ALua : TLua) : integer; cdecl; forward;
 function script_dropgold(ALua : TLua) : Integer; cdecl; forward;
 function script_getexp(ALua : TLua) : integer; cdecl; forward;
@@ -66,7 +68,7 @@ function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 30;
+	NPCCommandCount = 32;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -85,6 +87,8 @@ const
 		(name:'menu';func:script_menu),
 		(name:'getvar';func:script_getcharavar),
 		(name:'setvar';func:script_setcharavar),
+		(name:'setitem';func:script_SetItem),
+		(name:'getitem';func:script_GetItem),
 		(name:'getgold';func:script_getgold),
 		(name:'dropgold';func:script_dropgold),
 		(name:'getexp';func:script_getexp),
@@ -627,8 +631,8 @@ begin
 				end;
 			end else
 			begin
-					Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.GetVariable(AChara,Key);
-					lua_pushstring(ALua, PChar(Value));
+				Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.GetVariable(AChara,Key);
+				lua_pushstring(ALua, PChar(Value));
 			end;
 		end;
 	end else
@@ -661,6 +665,19 @@ begin
 	begin
 		luaL_error(ALua,'script setvar syntax error');
 	end;
+end;
+
+//SetItem - Apparently is set vriable..
+//so I just made it wrapper of setvar
+function script_SetItem(ALua : TLua) : Integer;
+begin
+	Result := script_setcharavar(ALua);
+end;
+
+//getitem- see above
+function script_GetItem(ALua : TLua) : Integer;
+begin
+	Result := script_getcharavar(ALua);
 end;
 
 //getgold(value)

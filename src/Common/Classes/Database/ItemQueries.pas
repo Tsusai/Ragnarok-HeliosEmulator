@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//ItemQueries						                                                   UNIT
+//ItemQueries                                                               UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //			Item related database routines
@@ -24,6 +24,8 @@ uses
 	{Project}
 	Item,
 	EquipmentItem,
+	UseableItem,
+	MiscItem,
 	QueryBase,
 	{3rd Party}
 	ZSqlUpdate
@@ -33,7 +35,7 @@ uses
 type
 
 //------------------------------------------------------------------------------
-//TItemQueries                                                       CLASS
+//TItemQueries                                                             CLASS
 //------------------------------------------------------------------------------
 	TItemQueries = class(TQueryBase)
 
@@ -46,15 +48,15 @@ type
 			const AnItem : TEquipmentItem
 		);
 
-		{Procedure LoadUseableDefinition(
+		procedure LoadUseableDefinition(
 			const AnItem : TUseableItem
 		);
 
-		Procedure LoadMiscDefinition(
+		procedure LoadMiscDefinition(
 			const AnItem : TMiscItem
 		);
 
-		Procedure LoadInstance(
+		{Procedure LoadInstance(
 			const AnItem : TItem
 		); }
 
@@ -79,7 +81,6 @@ type
 			const AnInventory : TInventory
 		);}
 
-
 	end;
 //------------------------------------------------------------------------------
 
@@ -93,8 +94,6 @@ uses
 	Types,
 	{Project}
 	GameTypes,
-	UseableItem,
-	MiscItem,
 	{3rd Party}
 	ZDataset,
 	DB
@@ -103,7 +102,7 @@ uses
 
 
 //------------------------------------------------------------------------------
-//Load				          		                                      		PROCEDURE
+//Load                                                                 PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Loads an item by ID or Name
@@ -140,7 +139,7 @@ end;//Load
 
 
 //------------------------------------------------------------------------------
-//LoadDefinition        		                                      		PROCEDURE
+//LoadDefinition                                                       PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Loads an item by ID or Name
@@ -192,7 +191,7 @@ end;//LoadDefinition
 
 
 //------------------------------------------------------------------------------
-//LoadEquipmentDefinition        		                                  PROCEDURE
+//LoadEquipmentDefinition                                              PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Loads an equipment item by definition ID
@@ -218,7 +217,7 @@ begin
 
 	ADataSet			:= TZQuery.Create(nil);
 	try
-		//Level
+		//ID
 		AParam := ADataset.Params.CreateParam(ftInteger, 'ID', ptInput);
 		AParam.AsInteger := AnItem.ID;
 		ADataSet.Params.AddParam(
@@ -250,41 +249,35 @@ begin
 	end;
 end;//LoadDefinition
 //------------------------------------------------------------------------------
-{
+
+
 //------------------------------------------------------------------------------
-//GetMaxSP				          		                                      FUNCTION
+//LoadUseableDefinition                                                PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//			Gets the max sp for a job at a level
+//		Loads an usable item by definition ID
 //
 //	Changes -
-//		February 12th, 2008 - RaX - Created.
+//		[208/07/22] Aeomin - Created.
 //
 //------------------------------------------------------------------------------
-function TitemQueries.GetMaxSP(
-	const ACharacter: TCharacter
-) : LongWord;
-
+procedure TItemQueries.LoadUseableDefinition(
+	const AnItem : TUseableItem
+);
 var
-	ADataSet		: TZQuery;
-	AParam			: TParam;
-	AQuery			: String;
+	ADataSet	: TZQuery;
+	AParam		: TParam;
+	AQuery		: String;
 begin
 
 	AQuery :=
-		'SELECT '+ACharacter.JobName+' FROM sp WHERE level=:Level;';
-	Result := 0;
-	ADataSet			:= TZQuery.Create(nil);
+		'SELECT on_use_function WHERE item_definition_id=:ID';
+
+	ADataSet	:= TZQuery.Create(nil);
 	try
-		//JobName
-		AParam := ADataset.Params.CreateParam(ftString, 'JobName', ptInput);
-		AParam.AsString := ACharacter.JobName;
-		ADataSet.Params.AddParam(
-			AParam
-		);
-		//Level
-		AParam := ADataset.Params.CreateParam(ftInteger, 'Level', ptInput);
-		AParam.AsInteger := ACharacter.BaseLV;
+		//ID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'ID', ptInput);
+		AParam.AsInteger := AnItem.ID;
 		ADataSet.Params.AddParam(
 			AParam
 		);
@@ -293,14 +286,55 @@ begin
 		ADataset.First;
 		if NOT ADataSet.Eof then
 		begin
-			Result := ADataset.Fields[0].AsInteger;
+			AnItem.OnUse		:= ADataset.Fields[0].AsString;
 		end;
-
-
 	finally
 		ADataSet.Free;
 	end;
-end;//GetMaxSP
+end;{LoadUseableDefinition}
 //------------------------------------------------------------------------------
-}
+
+
+//------------------------------------------------------------------------------
+//LoadMiscDefinition                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Loads an usable item by definition ID
+//
+//	Changes -
+//		[208/07/22] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure TItemQueries.LoadMiscDefinition(
+	const AnItem : TMiscItem
+);
+var
+	ADataSet	: TZQuery;
+	AParam		: TParam;
+	AQuery		: String;
+begin
+
+	AQuery :=
+		'SELECT on_compound_function WHERE item_definition_id=:ID';
+
+	ADataSet	:= TZQuery.Create(nil);
+	try
+		//ID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'ID', ptInput);
+		AParam.AsInteger := AnItem.ID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+
+		Query(ADataSet, AQuery);
+		ADataset.First;
+		if NOT ADataSet.Eof then
+		begin
+			AnItem.OnCompound	:= ADataset.Fields[0].AsString;
+		end;
+	finally
+		ADataSet.Free;
+	end;
+end;{LoadMiscDefinition}
+//------------------------------------------------------------------------------
 end.
