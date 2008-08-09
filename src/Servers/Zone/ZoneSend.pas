@@ -210,6 +210,11 @@ uses
 		AClient		: TIdContext;
 		const Mail : TMail
 	);
+	procedure SendDeleteMailResult(
+		AClient		: TIdContext;
+		const MailID:LongWord;
+		const Flag : Boolean
+	);
 implementation
 
 
@@ -1551,5 +1556,36 @@ begin
 	WriteBufferString(100, Mail.Content, MessageLen, OutBuffer);
 	SendBuffer(AClient,OutBuffer,Len);
 end;{SendMail}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendDeleteMailResult                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//		Send result of delete mail.
+//	Packet size still need improve -.-"
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/08/09] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendDeleteMailResult(
+	AClient		: TIdContext;
+	const MailID:LongWord;
+	const Flag : Boolean
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $0257, OutBuffer);
+	WriteBufferLongWord(2, MailID, OutBuffer);
+	WriteBufferWord(6, Byte(NOT Flag), OutBuffer);
+	SendBuffer(AClient,OutBuffer,8);
+end;{SendDeleteMailResult}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

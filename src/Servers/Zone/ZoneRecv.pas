@@ -206,6 +206,12 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure DeleteMail(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -1501,6 +1507,38 @@ begin
 		);
 	end;
 end;{ReadMail}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//DeleteMail                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//		Client wants delete mail.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/08/09] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure DeleteMail(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	MailID : LongWord;
+begin
+	MailID := BufferReadLongWord(ReadPts[0], InBuffer);
+	SendDeleteMailResult(
+		AChara.ClientInfo,
+		MailID,
+		AChara.Mails.Delete(MailID)
+	);
+end;{DeleteMail}
 //------------------------------------------------------------------------------
 
 

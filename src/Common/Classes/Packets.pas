@@ -723,7 +723,9 @@ Begin
 				end else if Command = 'mailrefresh' then begin
 					ExecCommand := RequestMailRefresh;
 				end else if Command = 'mailread' then begin
-					ExecCommand := ReadMail;
+					ExecCommand := ReadMail
+				end else if Command = 'maildelete' then begin
+					ExecCommand := DeleteMail;
 				end;
 			end;
 			//Add data (or update, .Add knows how) to current work list

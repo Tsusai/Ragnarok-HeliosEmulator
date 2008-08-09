@@ -28,6 +28,10 @@ type
 			const CharID : LongWord;
 			const MailID : LongWord
 		):TMail;
+		function Delete(
+			const CharID : LongWord;
+			const MailID : LongWord
+		):Boolean;
 	end;
 
 implementation
@@ -120,7 +124,7 @@ const
 		'UPDATE mailbox SET `read`=1 WHERE `id`=:ID AND `receiver_id`=:CID;';
 var
 	ADataSet	: TZQuery;
-	ADataSet2		: TZQuery;
+	ADataSet2	: TZQuery;
 	AParam		: TParam;
 begin
 	Result := nil;
@@ -170,5 +174,69 @@ begin
 		ADataSet2.Free;
 	end;
 end;{Get}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Delete                                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Delete a mail.
+//
+//	Changes -
+//		[2008/08/09] Aeomin - Created
+//
+//------------------------------------------------------------------------------
+function TMailQueries.Delete(
+			const CharID : LongWord;
+			const MailID : LongWord
+		):Boolean;
+const
+	AQuery =
+		'SELECT `id` FROM mailbox WHERE `id`=:ID AND `receiver_id`=:CID';
+	ADeleteQuery = 'DELETE FROM mailbox WHERE `id`=:ID AND `receiver_id`=:CID';
+var
+	ADataSet	: TZQuery;
+	ADataSet2	: TZQuery;
+	AParam		: TParam;
+begin
+	Result := False;
+	ADataSet	:= TZQuery.Create(nil);
+	ADataSet2	:= TZQuery.Create(nil);
+	//ID
+	AParam := ADataset.Params.CreateParam(ftInteger, 'ID', ptInput);
+	AParam.AsInteger := MailID;
+	ADataSet.Params.AddParam(
+		AParam
+	);
+	AParam := ADataset2.Params.CreateParam(ftInteger, 'ID', ptInput);
+	AParam.AsInteger := MailID;
+	ADataSet2.Params.AddParam(
+		AParam
+	);
+	//CID
+	AParam := ADataset.Params.CreateParam(ftInteger, 'CID', ptInput);
+	AParam.AsInteger := CharID;
+	ADataSet.Params.AddParam(
+		AParam
+	);
+	AParam := ADataset2.Params.CreateParam(ftInteger, 'CID', ptInput);
+	AParam.AsInteger := CharID;
+	ADataSet2.Params.AddParam(
+		AParam
+	);
+	try
+		Query(ADataSet, AQuery);
+		ADataSet.First;
+		if NOT ADataSet.Eof then
+		begin
+			QueryNoResult(ADataSet2, ADeleteQuery);
+			Result := True;
+		end;
+	finally
+		ADataSet.Free;
+		ADataSet2.Free;
+	end;
+end;{Delete}
 //------------------------------------------------------------------------------
 end.

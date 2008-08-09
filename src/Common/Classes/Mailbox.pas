@@ -35,6 +35,7 @@ type
 		procedure LoadMails;
 		procedure Clear;
 		function Get(const AMailID:LongWord):TMail;
+		function Delete(const AMailID:LongWord):Boolean;
 		constructor Create(const ABeing:TBeing);
 		destructor Destroy; override;
 	end;
@@ -83,6 +84,19 @@ begin
 			AMailID
 		);
 	fChanged := True; {Assume player reading an unread message}
+end;
+
+function TMailBox.Delete(const AMailID:LongWord):Boolean;
+var
+	AChara : TCharacter;
+begin
+	AChara := TCharacter(fBeing);
+	Result :=
+		TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Mail.Delete(
+			AChara.ID,
+			AMailID
+		);
+	fChanged := True;
 end;
 
 constructor TMailBox.Create(const ABeing:TBeing);
