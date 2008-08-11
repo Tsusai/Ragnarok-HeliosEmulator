@@ -55,10 +55,6 @@ uses
 		procedure SetConnectUntilTime(TimeString : string);
 		procedure TemperaryBan(Seconds:Integer);
 		function GetBanUntilTimeString:String;
-		//2 functions bellow is made by Thomas Greiner
-		//http://www.swissdelphicenter.ch/torry/showcode.php?id=844
-		function DateTimeToUnix(ConvDate: TDateTime): Longint;
-		function UnixToDateTime(USec: Longint): TDateTime;
 		Constructor Create(AClient : TIdContext);
 	end;{TAccount}
 //------------------------------------------------------------------------------
@@ -71,15 +67,12 @@ uses
 	PacketTypes,
 	DateUtils;
 
-const
-	// Sets UnixStartDate to TDateTime of 01/01/1970
-	UnixStartDate: TDateTime = 25569.0;
 //------------------------------------------------------------------------------
 //SetGender                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Set fGender in local Class (M = 1 , F = 0)
-//    GenderNum at.
+//	GenderNum at.
 //
 //	Changes -
 //		December 22nd, 2006 - RaX - Created Header.
@@ -230,7 +223,7 @@ begin
 	Dec(Days);
 	//Glue up between 2 time
 	Glue := ' ';
-        Result := '';
+	Result := '';
 		//Onlys shows Years, because months is 0
 		if (Years > 0) and (Months = 0) then
 		begin
@@ -284,43 +277,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//DateTimeToUnix                                                       PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Convert TDateTime to Unix Time
-//
-//	Changes -
-//		April 12th, 2007 - Aeomin - Created Header
-//
-//------------------------------------------------------------------------------
-function TAccount.DateTimeToUnix(ConvDate: TDateTime): Longint;
-begin
-	//example: DateTimeToUnix(now);
-	Result := Round((ConvDate - UnixStartDate) * 86400);
-end;
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//UnixToDateTime                                                       PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Convert Unix Time to TDateTime
-//
-//	Changes -
-//		April 12th, 2007 - Aeomin - Created Header
-//
-//------------------------------------------------------------------------------
-function TAccount.UnixToDateTime(USec: Longint): TDateTime;
-begin
-	//Example: UnixToDateTime(1003187418);
-	Result := (Usec / 86400) + UnixStartDate;
-end;
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//Create			                                                 		CONSTRUCTOR
+//Create                                                             CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Creates our account and sets up the clientinfo
