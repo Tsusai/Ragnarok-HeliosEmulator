@@ -586,8 +586,6 @@ begin
 		WriteBufferWord(2, 4, OutBuffer);
 		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
 
-		AChara.SendCharacterStats;
-
 		//Inventory Placeholder
 		WriteBufferWord(0, $01ee, OutBuffer);
 		WriteBufferWord(2, 4, OutBuffer);
@@ -610,6 +608,7 @@ begin
 		AChara.ShowTeleportIn;
 		AChara.AreaLoop(ShowInitialAction);
 
+		AChara.SendCharacterStats;
 	end;
 end;{ShowMap}
 //------------------------------------------------------------------------------
