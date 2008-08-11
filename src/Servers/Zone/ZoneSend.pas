@@ -206,14 +206,24 @@ uses
 	procedure SendMailList(
 		const AChara : TCharacter
 	);
-	procedure SendMail(
+	procedure SendMailContent(
 		AClient		: TIdContext;
 		const Mail : TMail
 	);
 	procedure SendDeleteMailResult(
-		AClient		: TIdContext;
+		const AChara	: TCharacter;
 		const MailID:LongWord;
 		const Flag : Boolean
+	);
+	procedure SendMailResult(
+		const AChara	: TCharacter;
+		const Fail  :Boolean
+	);
+	procedure SendNewMailNotify(
+		const AChara	: TCharacter;
+		const MailID	: LongWord;
+		const Sender	: String;
+		const Title	: String
 	);
 implementation
 
@@ -1519,7 +1529,7 @@ end;{SendMailList}
 
 
 //------------------------------------------------------------------------------
-//SendMail                                                             PROCEDURE
+//SendMailContent                                                      PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
 //		Send a mail
@@ -1532,7 +1542,7 @@ end;{SendMailList}
 //  Changes -
 //		[2008/06/12] - Aeomin - Created
 //------------------------------------------------------------------------------
-procedure SendMail(
+procedure SendMailContent(
 	AClient		: TIdContext;
 	const Mail : TMail
 );
@@ -1555,7 +1565,7 @@ begin
 	WriteBufferByte(99, MessageLen, OutBuffer);
 	WriteBufferString(100, Mail.Content, MessageLen, OutBuffer);
 	SendBuffer(AClient,OutBuffer,Len);
-end;{SendMail}
+end;{SendMailContent}
 //------------------------------------------------------------------------------
 
 
@@ -1575,7 +1585,7 @@ end;{SendMail}
 //		[2008/08/09] - Aeomin - Created
 //------------------------------------------------------------------------------
 procedure SendDeleteMailResult(
-	AClient		: TIdContext;
+	const AChara		: TCharacter;
 	const MailID:LongWord;
 	const Flag : Boolean
 );
@@ -1585,7 +1595,67 @@ begin
 	WriteBufferWord(0, $0257, OutBuffer);
 	WriteBufferLongWord(2, MailID, OutBuffer);
 	WriteBufferWord(6, Byte(NOT Flag), OutBuffer);
-	SendBuffer(AClient,OutBuffer,8);
+	SendBuffer(AChara.ClientInfo,OutBuffer,AChara.EAPACKETVER);
 end;{SendDeleteMailResult}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendMailResult                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//		Is sending mail successful?
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/08/10] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendMailResult(
+	const AChara	: TCharacter;
+	const Fail  :Boolean
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $0249, OutBuffer);
+	WriteBufferByte(2,Byte(Fail), OutBuffer);
+	SendBuffer(AChara.ClientInfo,OutBuffer,AChara.EAPACKETVER);
+end;{SendMailResult}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendNewMailNotify                                                    PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//		Notify player a new mail arrived
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/08/11] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendNewMailNotify(
+	const AChara	: TCharacter;
+	const MailID	: LongWord;
+	const Sender	: String;
+	const Title	: String
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $024a, OutBuffer);
+	WriteBufferLongWord(2,MailID, OutBuffer);
+	WriteBufferString(6, Sender, NAME_LENGTH, OutBuffer);
+	WriteBufferString(6+NAME_LENGTH, Title, 40, OutBuffer);
+	SendBuffer(AChara.ClientInfo,OutBuffer,AChara.EAPACKETVER);
+end;{SendNewMailNotify}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

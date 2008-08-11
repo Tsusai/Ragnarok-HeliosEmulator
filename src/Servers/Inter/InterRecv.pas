@@ -74,6 +74,11 @@ procedure RecvZonePlayerOnlineReply(
 	AClient : TIdContext;
 	ABuffer : TBuffer
 );
+
+procedure RecvZoneNewMailNotify(
+	AClient : TIdContext;
+	ABuffer : TBuffer
+);
 implementation
 
 
@@ -89,7 +94,8 @@ uses
 	ZoneInterCommunication,
 	InterSend,
 	GameConstants,
-	CharaList
+	CharaList,
+	MailBox
 	{3rd Party}
 	//none
 	;
@@ -695,5 +701,66 @@ begin
 		end;
 	end;
 end;{RecvZonePlayerOnlineReply}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvZoneNewMailNotify                                                PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//	Load mail then notify the player (if online)
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2008/08/11] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvZoneNewMailNotify(
+	AClient : TIdContext;
+	ABuffer : TBuffer
+);
+var
+	CharID : LongWord;
+	MailID : LongWord;
+	Mail : TMail;
+	TargetChara : TCharacter;
+	ZoneID : Integer;
+	ZoneIndex : Integer;
+begin
+	MailID := BufferReadLongWord(2, ABuffer);
+	Mail := TZoneServerLink(AClient.Data).DatabaseLink.Mail.Get(
+			MailID
+		);
+
+	TargetChara := TCharacter.Create(nil);
+	TargetChara.ID := Mail.ReceiverID;
+	try
+		TZoneServerLink(AClient.Data).DatabaseLink.Character.Load(
+			TargetChara
+		);
+
+		ZoneID := TZoneServerLink(AClient.Data).DatabaseLink.Map.GetZoneID(TargetChara.Map);
+		if ZoneID > -1 then
+		begin
+			ZoneIndex := MainProc.InterServer.ZoneServerList.IndexOf(ZoneID);
+			if ZoneIndex > -1 then
+			begin
+				InterSendMailNotify(
+					TZoneServerInfo(MainProc.InterServer.ZoneServerList.Objects[ZoneIndex]).Connection,
+					Mail.ReceiverID,
+					Mail.ID,
+					Mail.SenderName,
+					Mail.Title
+				);
+			end;
+		end;
+	finally
+		Mail.Free;
+		TargetChara.Free;
+	end;
+end;{RecvZoneNewMailNotify}
 //------------------------------------------------------------------------------
 end.

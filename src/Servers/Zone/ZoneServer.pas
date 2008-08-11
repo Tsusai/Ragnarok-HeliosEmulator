@@ -849,6 +849,11 @@ begin
 			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2221)-2);
 			RecvFriendStatus(ABuffer);
 		end;
+	$2223:
+		begin
+			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2223)-2);
+			RecvMailNotify(ABuffer);
+		end;
 	end;
 end;{InterClientRead}
 //------------------------------------------------------------------------------

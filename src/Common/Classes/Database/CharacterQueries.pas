@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//CharacterQueries			                                                   UNIT
+//CharacterQueries                                                          UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //			Character related database routines
@@ -33,7 +33,7 @@ uses
 type
 
 //------------------------------------------------------------------------------
-//TCharacterQueries                                                       CLASS
+//TCharacterQueries                                                        CLASS
 //------------------------------------------------------------------------------
 	TCharacterQueries = class(TQueryBase)
 
@@ -86,7 +86,6 @@ type
 			const CharID : LongWord;
 			const NewName : String
 		);
-
 	end;
 //------------------------------------------------------------------------------
 
@@ -107,7 +106,7 @@ uses
 	;
 
 //------------------------------------------------------------------------------
-//Load							                                                PROCEDURE
+//Load                                                                 PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Loads an Character
@@ -239,7 +238,7 @@ end;//Load
 
 
 //------------------------------------------------------------------------------
-//GetName								                                              FUNCTION
+//GetName                                                               FUNCTION
 //------------------------------------------------------------------------------
 //	What it does-
 //			Gets a character's name by it's ID
@@ -283,7 +282,7 @@ end;//GetName
 
 
 //------------------------------------------------------------------------------
-//LoadByAccountID				                                              PROCEDURE
+//LoadByAccountID                                                      PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Loads a list of characters by account id
@@ -332,7 +331,7 @@ end;//LoadByAccountID
 
 
 //------------------------------------------------------------------------------
-//Exists							                                                PROCEDURE
+//Exists                                                               PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Checks to see if a character exists
@@ -410,7 +409,7 @@ end;//Exists
 
 
 //------------------------------------------------------------------------------
-//Save				 						      																			 PROCEDURE
+//Save                                                                 PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //		Save a character.
@@ -779,7 +778,7 @@ end;//Save
 
 
 //------------------------------------------------------------------------------
-//New				                                                         Procedure
+//New                                                                  Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Creates an account.
@@ -835,7 +834,7 @@ end;//New
 
 
 //------------------------------------------------------------------------------
-//Delete							                                                PROCEDURE
+//Delete                                                               PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Deletes a Character
@@ -876,7 +875,7 @@ end;//Delete
 
 
 //------------------------------------------------------------------------------
-//SetVariable				                                                PROCEDURE
+//SetVariable                                                          PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Set variable
@@ -956,7 +955,7 @@ begin
 		end else
 		begin
 			QueryNoResult(ADataSet2, InsertVariableQuery);
-    end;
+		end;
 	finally
 		ADataSet.Free;
 		ADataSet2.Free;
@@ -966,7 +965,7 @@ end;//SetVariable
 
 
 //------------------------------------------------------------------------------
-//GetVariable				                                                PROCEDURE
+//GetVariable                                                          PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Gets a variable
@@ -1010,7 +1009,7 @@ begin
 		if NOT ADataSet.Eof then
 		begin
 			Result := ADataset.Fields[0].AsString;
-    end;
+		end;
 
 	finally
 		ADataSet.Free;

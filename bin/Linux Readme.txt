@@ -1,4 +1,4 @@
-Will no work with Kylix!!!!!!
+Will not work with Kylix!!!!!!
 
 Possible Required Libraries (dev packages)
 - liblua 

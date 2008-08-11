@@ -52,6 +52,9 @@
 0x2219,23
 0x2220,19
 0x2221,15
+//Mailbox
+0x2222,6
+0x2223,74
 
 //GM Command from zone to inter
 0x2205,-1

@@ -1915,15 +1915,18 @@ procedure TCharacter.CalcMaxHP;
 var
 	BaseMaxHP : Word;
 begin
-	BaseMaxHP := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetMaxHP(Self);
-
-	MaxHP := EnsureRange(
-		( BaseMaxHP * (100 + ParamBase[VIT]) div 100 ), 1, High(fMaxHP)
-		);
-
-	if (HP > MaxHP) then
+	if ClientInfo <> nil then
 	begin
-		HP := MaxHP;
+		BaseMaxHP := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetMaxHP(Self);
+
+		MaxHP := EnsureRange(
+			( BaseMaxHP * (100 + ParamBase[VIT]) div 100 ), 1, High(fMaxHP)
+			);
+
+		if (HP > MaxHP) then
+		begin
+			HP := MaxHP;
+		end;
 	end;
 end;{CalcMaxHP}
 //------------------------------------------------------------------------------
@@ -2264,6 +2267,8 @@ end;{SendRequiredStatusPoint}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxSP;
 begin
+	if ClientInfo <> nil then
+	begin
 		MAXSP := EnsureRange(
 		TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetMaxSP(self) *
 			LongWord((100 + ParamBase[INT]) div 100), 0, High(fMaxSP));
@@ -2271,6 +2276,7 @@ begin
 		begin
 			SP := MAXSP;
 		end;
+	end;
 end;{CalcMaxSP}
 //------------------------------------------------------------------------------
 
@@ -2317,10 +2323,13 @@ end;{CalcSpeed}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxWeight;
 begin
+	if ClientInfo <> nil then
+	begin
 		MaxWeight  := EnsureRange(
 			  LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
 				TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetMaxWeight(self)
 				, 0, High(fMaxWeight));
+	end;
 end;{CalcMaxWeight}
 //------------------------------------------------------------------------------
 

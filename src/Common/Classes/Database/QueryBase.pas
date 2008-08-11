@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//QueryBase			                                                           UNIT
+//QueryBase                                                                 UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //			Base class for query collections
@@ -31,7 +31,7 @@ uses
 type
 
 //------------------------------------------------------------------------------
-//TQueryBase		                                                         CLASS
+//TQueryBase                                                               CLASS
 //------------------------------------------------------------------------------
 	TQueryBase = class(TObject)
 
@@ -76,7 +76,7 @@ uses
 
 
 //------------------------------------------------------------------------------
-//Create			                                                     CONSTRUCTOR
+//Create                                                             CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Builds our object.
@@ -95,7 +95,7 @@ End;{Create}
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//Destroy							                                               DESTRUCTOR
+//Destroy                                                             DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //			Frees up our custom properties.
@@ -115,7 +115,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//Query                                           										PROCEDURE
+//Query                                                                PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Queries the database
@@ -149,7 +149,7 @@ begin
 
 	if Connection.Connected then
 	begin
-		ADataSet.Connection									:= Connection;
+		ADataSet.Connection	:= Connection;
 		ADataSet.SQL.Add(AQuery);
 		ADataSet.ExecSQL;
 		ADataSet.Open;
@@ -159,7 +159,7 @@ end;
 
 
 //------------------------------------------------------------------------------
-//QueryNoResult                                    										PROCEDURE
+//QueryNoResult                                                        PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Queries the database with no result
@@ -193,7 +193,7 @@ begin
 
 	if Connection.Connected then
 	begin
-		ADataSet.Connection									:= Connection;
+		ADataSet.Connection	:= Connection;
 		ADataSet.SQL.Add(AQuery);
 		ADataSet.ExecSQL;
 	end;

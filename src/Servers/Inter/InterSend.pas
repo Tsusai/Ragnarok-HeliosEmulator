@@ -109,6 +109,14 @@ uses
 			const TargetID : LongWord;
 			const Offline : Byte
 		);
+
+	procedure InterSendMailNotify(
+		AClient : TIdContext;
+		const CharID : LongWord;
+		const MailID : LongWord;
+		const Sender : String;
+		const Title  : String
+	);
 implementation
 
 
@@ -434,7 +442,7 @@ begin
 						end;
 						if Index > -1 then
 						begin
-							//Same thing, but extra 2 parameter to store target character
+							//Same thing, but 2 extra parameters to store target character
 							InterSendGMCommandToZone(MainProc.InterServer.ClientList[Index], GMID, CharaID, AZoneID, CommandSeparator, ACharacter.AccountID, ACharacter.ID);
 						end else
 						begin
@@ -636,5 +644,39 @@ begin
 	WriteBufferByte(14, Offline, OutBuffer);
 	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2221));
 end;{InterSendFriendStatusReply}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//InterSendMailNotify                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//	Send new mail notify to zone
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2008/08/11] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure InterSendMailNotify(
+	AClient : TIdContext;
+	const CharID : LongWord;
+	const MailID : LongWord;
+	const Sender : String;
+	const Title  : String
+);
+var
+	OutBuffer   : TBuffer;
+begin
+	WriteBufferWord(0, $2223, OutBuffer);
+	WriteBufferLongWord(2,CharID, OutBuffer);
+	WriteBufferLongWord(6,MailID, OutBuffer);
+	WriteBufferString(10,Sender,NAME_LENGTH, OutBuffer);
+	WriteBufferString(10+NAME_LENGTH, Title, 40, OutBuffer);
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2223));
+end;{InterSendMailNotify}
 //------------------------------------------------------------------------------
 end.

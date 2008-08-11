@@ -15,6 +15,16 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 480 -
+[2008/08/11] Aeomin - Added InterSendMailNotify [InterSend.pas]
+[2008/08/11] Aeomin - Added RecvZoneNewMailNotify [InterRecv.pas]
+[2008/08/10] Aeomin - Added MailWindowSwitch,RequestSendMail [ZoneRecv.pas]
+[2008/08/11] Aeomin - Added SendNewMailNotify [ZoneSend.pas]
+[2008/08/11] Aeomin - Added ZoneSendNotifyMail [ZoneInterCommunication.pas]
+[2008/08/11] Aeomin - Finish up mailbox implementation (w/o item/zeny).
+[2008/08/10] Aeomin - Added some checks to prevent crash when load character without assign socket[Character.pas]
+-
+
 - Rev 479 -
 [2008/08/09] Aeomin - Able to delete mail now.
 [2008/08/09] Aeomin - Added Delete procedure in MailQueries/MailBox.

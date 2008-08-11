@@ -147,6 +147,15 @@ const
 	);
 	//----------------------------------------------------------------------
 
+
+	//----------------------------------------------------------------------
+	// MailBox
+	//----------------------------------------------------------------------
+	procedure ZoneSendNotifyMail(
+		AClient : TInterClient;
+		const MailID : LongWord
+	);
+	//----------------------------------------------------------------------
 implementation
 uses
 	Main,
@@ -671,5 +680,33 @@ begin
 	WriteBufferLongWord(15, ZoneID, OutBuffer);
 	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2220));
 end;{ZoneSendPlayerOnlineReply}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ZoneSendNotifyMail                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//	Tell inter to notify player about new mail (if can)
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2008/08/11] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ZoneSendNotifyMail(
+	AClient : TInterClient;
+	const MailID : LongWord
+);
+var
+	OutBuffer   : TBuffer;
+begin
+	WriteBufferWord(0, $2222, OutBuffer);
+	WriteBufferLongWord(2, MailID, OutBuffer);
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2222));
+end;
 //------------------------------------------------------------------------------
 end{ZoneInterCommunication}.

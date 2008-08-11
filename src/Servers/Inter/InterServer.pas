@@ -433,6 +433,14 @@ begin
 				RecvZonePlayerOnlineReply(AConnection, ABuffer);
 			end;
 		end;
+	$2222:
+		begin
+			if AConnection.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2222)-2);
+				RecvZoneNewMailNotify(AConnection, ABuffer);
+			end;
+		end
 	else
 		begin
 			Console.Message('Unknown Inter Server Packet : ' + IntToHex(PacketID,4), 'Inter Server', MS_WARNING);
@@ -521,6 +529,7 @@ begin
 	SendValidateFlagToZone(AClient,Validated);
 end;
 //------------------------------------------------------------------------------
+
 
 (*- Function ------------------------------------------------------------------*
 TInterServer.GetZoneServerInfo

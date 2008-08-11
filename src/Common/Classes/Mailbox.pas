@@ -36,20 +36,27 @@ type
 		procedure Clear;
 		function Get(const AMailID:LongWord):TMail;
 		function Delete(const AMailID:LongWord):Boolean;
+		function Send(const Receiver,Title,Content : String):Boolean;
 		constructor Create(const ABeing:TBeing);
 		destructor Destroy; override;
 	end;
 
 implementation
 uses
+	Main,
+	SysUtils,
+	DateUtils,
 	Character,
 	ZoneSend,
-	PacketTypes;
+	PacketTypes,
+	ZoneInterCommunication;
+
 
 function TMailBox.GetValue(Index : Integer) : TMail;
 begin
 	Result := TMail(fMailList[Index]);
 end;
+
 
 procedure TMailBox.LoadMails;
 var
@@ -68,10 +75,12 @@ begin
 	end;
 end;
 
+
 procedure TMailBox.Clear;
 begin
 	fMailList.Clear;
 end;
+
 
 function TMailBox.Get(const AMailID:LongWord):TMail;
 var
@@ -86,6 +95,7 @@ begin
 	fChanged := True; {Assume player reading an unread message}
 end;
 
+
 function TMailBox.Delete(const AMailID:LongWord):Boolean;
 var
 	AChara : TCharacter;
@@ -99,6 +109,52 @@ begin
 	fChanged := True;
 end;
 
+
+function TMailBox.Send(const Receiver,Title,Content : String):Boolean;
+var
+	AChara : TCharacter;
+	Target : TCharacter;
+	Mail   : TMail;
+begin
+	AChara := TCharacter(fBeing);
+
+	Result := False;
+
+	Target := TCharacter.Create(nil);
+	Mail   := TMail.Create;
+	try
+		Target.ID := 0;
+		Target.Name := Receiver;
+		TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.Load(Target);
+		if Target.ID > 0 then
+		begin
+			//Prevent send to yourself
+			if Target.ID <> AChara.ID then
+			begin
+				Mail.SenderID := AChara.ID;
+				Mail.SenderName := AChara.Name;
+				Mail.ReceiverID := Target.ID;
+				Mail.ReceiverName := Target.Name;
+				Mail.Title := Title;
+				Mail.Content := Content;
+				Mail.SendTime := DateTimeToUnix(Now);
+				TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Mail.Add(
+						Mail
+					);
+				ZoneSendNotifyMail(
+					MainProc.ZoneServer.ToInterTCPClient,
+					Mail.ID
+				);
+				Result := True;
+			end;
+		end;
+	finally
+		Target.Free;
+		Mail.Free;
+	end;
+end;
+
+
 constructor TMailBox.Create(const ABeing:TBeing);
 begin
 	{Set to True so we can load a fresh copy}
@@ -111,4 +167,5 @@ destructor TMailBox.Destroy;
 begin
 	fMailList.Free;
 end;
+
 end.

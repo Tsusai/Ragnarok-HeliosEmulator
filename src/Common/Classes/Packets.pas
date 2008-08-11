@@ -720,12 +720,16 @@ Begin
 					ExecCommand := RemoveFriendFromList;
 				end else if Command = 'friendlistreply' then begin
 					ExecCommand := RequestToAddFriendResponse;
+				end else if Command = 'mailwinopen' then begin
+					ExecCommand := MailWindowSwitch;
 				end else if Command = 'mailrefresh' then begin
 					ExecCommand := RequestMailRefresh;
 				end else if Command = 'mailread' then begin
-					ExecCommand := ReadMail
+					ExecCommand := ReadMail;
 				end else if Command = 'maildelete' then begin
 					ExecCommand := DeleteMail;
+				end else if Command = 'mailsend' then begin
+					ExecCommand := RequestSendMail;
 				end;
 			end;
 			//Add data (or update, .Add knows how) to current work list

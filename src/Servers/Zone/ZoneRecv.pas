@@ -195,6 +195,12 @@ uses
 		const ReadPts : TReadPts
 	);
 
+	procedure MailWindowSwitch(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
 	procedure RequestMailRefresh(
 		var AChara  : TCharacter;
 		const InBuffer : TBuffer;
@@ -208,6 +214,12 @@ uses
 	);
 
 	procedure DeleteMail(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
+	procedure RequestSendMail(
 		var AChara  : TCharacter;
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
@@ -250,6 +262,9 @@ uses
 	);
 	procedure RecvFriendStatus(
 			InBuffer : TBuffer
+	);
+	procedure RecvMailNotify(
+		InBuffer : TBuffer
 	);
 	//----------------------------------------------------------------------
 
@@ -1448,6 +1463,41 @@ end;{RequestToAddFriendResponse}
 
 
 //------------------------------------------------------------------------------
+//MailWindowSwitch                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//		Client close mailbox window or switch.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/08/10] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure MailWindowSwitch(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	Flag : Word;
+begin
+	Flag := BufferReadWord(ReadPts[0], InBuffer);
+	if (Flag = 0) OR (Flag = 1) then
+	begin
+		{TODO:Remove item}
+	end;
+	if (Flag = 0) OR (Flag = 2) then
+	begin
+		{TODO:Remove Zeny}
+	end;
+end;{MailWindowSwitch}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //RequestMailRefresh                                                   PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
@@ -1501,7 +1551,7 @@ begin
 	Mail := AChara.Mails.Get(MailID);
 	if Mail <> nil then
 	begin
-		SendMail(
+		SendMailContent(
 			AChara.ClientInfo,
 			Mail
 		);
@@ -1534,11 +1584,62 @@ var
 begin
 	MailID := BufferReadLongWord(ReadPts[0], InBuffer);
 	SendDeleteMailResult(
-		AChara.ClientInfo,
+		AChara,
 		MailID,
 		AChara.Mails.Delete(MailID)
 	);
 end;{DeleteMail}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RequestSendMail                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//		Client wants to send a mail!
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/08/10] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RequestSendMail(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	Len        : Word;
+	Receiver   : String;
+	Title      : String;
+	ContentLen : Byte;
+	Content    : String;
+
+
+begin
+	{TODO:Trading detection}
+	{TODO:Mail Tick to prevent spam}
+	Len   := BufferReadWord(ReadPts[0], InBuffer);
+	Receiver  := BufferReadString(ReadPts[1],24, InBuffer);
+	Title := BufferReadString(ReadPts[2],40, InBuffer);
+	ContentLen := BufferReadByte(ReadPts[3], InBuffer);
+	Content := BufferReadString(ReadPts[3]+1,ContentLen, InBuffer);
+
+	if Len = (ContentLen+70) then
+	begin
+		{TODO:ITEMS!!!!ZENY!!!!!}
+		SendMailResult(
+			AChara,
+			(not AChara.Mails.Send(
+					Receiver, Title, Content
+					)
+				)
+			);
+	end;
+end;{RequestSendMail}
 //------------------------------------------------------------------------------
 
 
@@ -2148,5 +2249,53 @@ begin
 		);
 	end;
 end;{RecvFriendStatus}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvMailNotify                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//	Okay, received notify, let's parse it
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2008/08/11] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvMailNotify(
+	InBuffer : TBuffer
+);
+var
+	CharID : LongWord;
+	MailID : LongWord;
+	Sender : String;
+	Title  : String;
+
+	Index     : Integer;
+	Chara     : TCharacter;
+begin
+	CharID := BufferReadLongWord(2, InBuffer);
+	MailID := BufferReadLongWord(6, InBuffer);
+	Sender := BufferReadString(10,NAME_LENGTH, InBuffer);
+	Title  := BufferReadString(10+NAME_LENGTH, 40, InBuffer);
+
+	Index := MainProc.ZoneServer.CharacterList.IndexOf(CharID);
+
+	if (Index > -1) then
+	begin
+		Chara := MainProc.ZoneServer.CharacterList.Items[Index];
+
+		SendNewMailNotify(
+			Chara,
+			MailID,
+			Sender,
+			Title
+		);
+	end;
+end;{RecvMailNotify}
 //------------------------------------------------------------------------------
 end{ZoneRecv}.
