@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 482 -
+[2008/08/11] Aeomin - Updated game.sql for mysql and sqlite db.
+-
+
 - Rev 481 -
 [2008/08/11] Aeomin - Clean up Account.pas
 -
