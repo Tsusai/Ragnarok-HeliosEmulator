@@ -620,6 +620,8 @@ Begin
 					ExecCommand := GMSummonItemMob;}
 				end else if Command = 'mapmove' then begin
 					ExecCommand := GMMapMove;
+				end else if Command = 'recall' then begin
+					ExecCommand := GMRecall;
 				{end else if Command = 'npcamountinput' then begin
 					ExecCommand := NPCIntegerInput;
 				end else if Command = 'npccloseclicked' then begin
@@ -697,10 +699,10 @@ Begin
 				end else if Command = 'changecart' then begin
 					ExecCommand := ChangeCart;
 				end else if Command = 'openvending' then begin
-					ExecCommand := OpenVendingShop;
+					ExecCommand := OpenVendingShop;}
 				end else if Command = 'shift' then begin
 					ExecCommand := GMShiftChar;
-				end else if Command = 'summon' then begin
+				{end else if Command = 'summon' then begin
 					ExecCommand := GMSummonChar;
 				end else if Command = 'autospell' then begin
 					ExecCommand := AutoSpellSelect;

@@ -100,6 +100,18 @@ uses
 		const ReadPts : TReadPts
 	);
 
+	procedure GMShiftChar(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
+	procedure GMRecall(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
 	procedure SlashWho(
 		var AChara  : TCharacter;
 		const InBuffer : TBuffer;
@@ -771,6 +783,72 @@ begin
 		ZoneSendGMCommandtoInter(MainProc.ZoneServer.ToInterTCPClient, AChara.AccountID, AChara.ID, '#Warp "' + MapName +'",' + IntToStr(X) + ',' + IntToStr(Y));
 	end;
 end;{GMMapMove}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMShiftChar                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//	Alias of #Goto
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2008/08/11] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure GMShiftChar(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+begin
+
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMRecall                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+//	Alias of #Recall
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//	[2008/08/11] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure GMRecall(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	CharName : String;
+	CommandID: Integer;
+	RequiredGMLevel : Byte;
+begin
+	CommandID := MainProc.ZoneServer.Commands.GetCommandID('CharMove');
+	RequiredGMLevel := MainProc.ZoneServer.Commands.GetCommandGMLevel(CommandID);
+	if TClientLink(AChara.ClientInfo.Data).AccountLink.Level >= RequiredGMLevel then
+	begin
+		//Get the request
+		CharName := BufferReadString(ReadPts[0], NAME_LENGTH, InBuffer);
+		ZoneSendGMCommandtoInter(
+			MainProc.ZoneServer.ToInterTCPClient,
+			AChara.AccountID,
+			AChara.ID,
+			'#CharMove "' + CharName + '",' + AChara.Map + ',' + IntToStr(AChara.Position.X) + ',' + IntToStr(AChara.Position.Y)
+		);
+	end;
+end;
 //------------------------------------------------------------------------------
 
 
@@ -1833,7 +1911,7 @@ begin
 		ArgumentLen := BufferReadWord(BufferIndex, InBuffer);
 		inc(BufferIndex, 2);
 		Arguments[Index] := BufferReadString(BufferIndex,ArgumentLen,InBuffer);
-		inc(BufferIndex, ArgumentLen);
+		Inc(BufferIndex, ArgumentLen);
 	end;
 	//Since array is 0 based, this would be perfect index
 	Arguments[ArgCount] := MainProc.ZoneServer.Commands.GetSyntax(CommandID);

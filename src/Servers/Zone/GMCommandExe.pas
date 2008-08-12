@@ -27,6 +27,7 @@ uses
 	procedure GMWarp(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 	procedure GMWarpDev(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 	procedure GMJump(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMCharMove(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 	procedure GMRecall(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 
 	procedure GMGiveBaseExperience(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
@@ -206,7 +207,7 @@ end;
 //------------------------------------------------------------------------------
 procedure GMWarpDev(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 begin
-	if (Length(Arguments) >= 3) then
+	if (Length(Arguments) >= 4) then
 	begin
 		if not ZoneSendWarp(
 				TargetChar,
@@ -274,6 +275,39 @@ begin
 		Error.Add('Jumped to ' + IntToStr(APoint.X) + ',' + IntToStr(APoint.Y));
 	end;
 end;
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//GMCharMove                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Warp a player to you.
+//
+//	Changes-
+//		[2008/08/11] Aeomin - Create.
+//------------------------------------------------------------------------------
+procedure GMCharMove(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+begin
+	if (Length(Arguments) >= 5) then
+	begin
+		if not ZoneSendWarp(
+				TargetChar,
+				Arguments[1],
+				EnsureRange(StrToIntDef(Arguments[2], 0), 0, High(Word)),
+				EnsureRange(StrToIntDef(Arguments[3], 0), 0, High(Word))
+			) then
+		begin
+			Error.Add('Map ' + Arguments[0] + ' not found!');
+		end else
+		begin
+			Error.Add('Warped ' + TargetChar.Name);
+		end;
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;{GMRecall}
 //------------------------------------------------------------------------------
 
 

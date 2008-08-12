@@ -148,6 +148,7 @@ begin
 	AddCommand('Warp',            GMWarp,                 99, TYPE_RETURNBACK, '<Map Name>,<X>,<Y>');
 	AddCommand('WarpDev',         GMWarpDev,              99, TYPE_RETURNBACK, '<Map Name>,<X>,<Y>');
 	AddCommand('Jump',            GMJump,                 99, TYPE_RETURNBACK, '[X],[Y]');
+	AddCommand('CharMove',        GMCharMove,             99, TYPE_TARGETCHAR, '<Player Name>,<Map Name>,<X>,<Y>');
 	AddCommand('Recall',          GMRecall,               99, TYPE_TARGETCHAR, '<Player Name>',True);
 	// - - - Player Control
 	AddCommand('GiveBaseExp',     GMGiveBaseExperience,   99, TYPE_TARGETCHAR, '<Player Name>,<Amount>');

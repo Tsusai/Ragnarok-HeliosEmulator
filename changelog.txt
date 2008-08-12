@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 486 -
+[2008/08/11] Aeomin - Added /recall support, but #recall doesn't work, need improvement.
+-
+
 - Rev 485 -
 [2008/08/11] Aeomin - Added #Recall, but having a problem on load TCharacter doesn't sync. (Helios doesn't save character on real time...)
 [2008/08/11] Aeomin - Yet another improvement in GM Command.
