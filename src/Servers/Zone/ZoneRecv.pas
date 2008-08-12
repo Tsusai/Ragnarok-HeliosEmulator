@@ -1811,7 +1811,7 @@ var
 	Index		: Integer;
 	BufferIndex	: Integer;
 	Error		: TStringList;
-	FromChar	: String;
+	FromChar	: TCharacter;
 	TargetChar	: TCharacter;
 	idxY		: SmallInt;
 	idxX		: SmallInt;
@@ -1837,80 +1837,90 @@ begin
 	end;
 	//Since array is 0 based, this would be perfect index
 	Arguments[ArgCount] := MainProc.ZoneServer.Commands.GetSyntax(CommandID);
-
-	FromChar := MainProc.ZoneServer.Database.Character.GetName(CharacterID);
+	FromChar := TCharacter.Create(nil);
+	FromChar.ID := CharacterID;
+	MainProc.ZoneServer.Database.Character.Load(FromChar);
 
 	Error := TStringList.Create;
 
-	case MainProc.ZoneServer.Commands.GetCommandType(CommandID) of
-		//Whole zone server, no player involved
-		TYPE_BROADCAST: begin
-			//Server only, no player involved
-			MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, nil, Error);
-		end;
-
-		//The Orignal GM
-		TYPE_RETURNBACK: begin
-			//Recycle
-			Index := MainProc.ZoneServer.CharacterList.IndexOf(CharacterID);
-			if Index > -1 then
+	try
+		case MainProc.ZoneServer.Commands.GetCommandType(CommandID) of
+			//Whole zone server, no player involved
+			TYPE_BROADCAST:
 			begin
-				TargetChar := MainProc.ZoneServer.CharacterList.Items[Index];
-				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
+				//Server only, no player involved
+				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, nil, Error);
 			end;
-		end;
 
-		//All players
-		TYPE_ALLPLAYERS: begin
-			for Index := MainProc.ZoneServer.CharacterList.Count -1 downto 0 do
+			//The Orignal GM
+			TYPE_RETURNBACK:
 			begin
-				TargetChar := MainProc.ZoneServer.CharacterList.Items[Index];
-				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
-			end;
-		end;
-
-		//Specific Character
-		TYPE_TARGETCHAR: begin
-			Index := MainProc.ZoneServer.CharacterList.IndexOf(TargetID);
-			if Index > -1 then
-			begin
-				TargetChar := MainProc.ZoneServer.CharacterList.Items[Index];
-				MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
-			end else
-			begin
-				Error.Add('Character ' + Arguments[0] + ' not found!');
-			end;
-		end;
-
-		//All players in Specific map
-		TYPE_TARGETMAP: begin
-			//Arguments[0] should be map name
-			Index := MainProc.ZoneServer.MapList.IndexOf(Arguments[0]);
-			if Index > -1 then
-			begin
-				Map := MainProc.ZoneServer.MapList.Items[Index];
-				//Every player will be executed!
-				//more checking should done in actual gm command code
-				for idxY := Map.Size.Y - 1 downto 0 do
+				//Recycle
+				Index := MainProc.ZoneServer.CharacterList.IndexOf(CharacterID);
+				if Index > -1 then
 				begin
-					for idxX := Map.Size.X - 1 downto 0 do
+					TargetChar := MainProc.ZoneServer.CharacterList.Items[Index];
+					MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
+				end;
+			end;
+
+			//All players
+			TYPE_ALLPLAYERS:
+			begin
+				for Index := MainProc.ZoneServer.CharacterList.Count -1 downto 0 do
+				begin
+					TargetChar := MainProc.ZoneServer.CharacterList.Items[Index];
+					MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
+				end;
+			end;
+
+			//Specific Character
+			TYPE_TARGETCHAR:
+			begin
+				Index := MainProc.ZoneServer.CharacterList.IndexOf(TargetID);
+				if Index > -1 then
+				begin
+					TargetChar := MainProc.ZoneServer.CharacterList.Items[Index];
+					MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
+				end else
+				begin
+					Error.Add('Character ' + Arguments[0] + ' not found!');
+				end;
+			end;
+
+			//All players in Specific map
+			TYPE_TARGETMAP:
+			begin
+				//Arguments[0] should be map name
+				Index := MainProc.ZoneServer.MapList.IndexOf(Arguments[0]);
+				if Index > -1 then
+				begin
+					Map := MainProc.ZoneServer.MapList.Items[Index];
+					//Every player will be executed!
+					//more checking should done in actual gm command code
+					for idxY := Map.Size.Y - 1 downto 0 do
 					begin
-						for Index := Map.Cell[idxX, idxY].Beings.Count - 1 downto 0 do
+						for idxX := Map.Size.X - 1 downto 0 do
 						begin
-							if not (Map.Cell[idxX,idxY].Beings.Objects[Index] is TCharacter) then
+							for Index := Map.Cell[idxX, idxY].Beings.Count - 1 downto 0 do
 							begin
-								Continue;
+								if not (Map.Cell[idxX,idxY].Beings.Objects[Index] is TCharacter) then
+								begin
+									Continue;
+								end;
+								TargetChar := Map.Cell[idxX,idxY].Beings.Objects[Index] as TCharacter;
+								MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
 							end;
-							TargetChar := Map.Cell[idxX,idxY].Beings.Objects[Index] as TCharacter;
-							MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
 						end;
 					end;
+				end else
+				begin
+					Error.Add('Map ' + Arguments[0] + ' not found!');
 				end;
-			end else
-			begin
-				Error.Add('Map ' + Arguments[0] + ' not found!');
 			end;
 		end;
+	finally
+		FromChar.Free;
 	end;
 
 	if Error.Count > 0 then
