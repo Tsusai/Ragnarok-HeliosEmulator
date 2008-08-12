@@ -186,8 +186,6 @@ begin
 	// Use temperary list!!!
 	fCommandPrefix := CommandOptions.Load(fTmpCommandList, fCommands);
 	CommandOptions.Save(fTmpCommandList);
-
-	fTmpCommandList.Clear;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -203,12 +201,11 @@ end;{Create}
 //
 //------------------------------------------------------------------------------
 Destructor TGMCommands.Destroy;
-//var
-//	Index : Cardinal;
+var
+	Index : Cardinal;
 begin
-	{I don't know why, but it gives AV}
-//	for Index := fCommands.Count -1 downto 0 do
-//		fCommands.Objects[Index].Free;
+	for Index := fTmpCommandList.Count -1 downto 0 do
+		fTmpCommandList.Objects[Index].Free;
 	fCommands.Clear;
 	fCommands.Free;
 	fTmpCommandList.Free;
