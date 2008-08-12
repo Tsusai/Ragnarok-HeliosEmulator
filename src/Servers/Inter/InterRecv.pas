@@ -723,7 +723,6 @@ procedure RecvZoneNewMailNotify(
 	ABuffer : TBuffer
 );
 var
-	CharID : LongWord;
 	MailID : LongWord;
 	Mail : TMail;
 	TargetChara : TCharacter;

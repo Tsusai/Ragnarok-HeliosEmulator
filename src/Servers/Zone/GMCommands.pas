@@ -61,18 +61,12 @@ type
 		Constructor Create;
 		Destructor  Destroy; override;
 		function AddCommand(
-			const
-				Name        : String;
-			const
-				CommandFunc : TGMCommand;
-			const
-				Level       : Byte;
-			const
-				AType       : Byte;
-			const
-				AFlag       : Byte;
-			const
-				ASyntax     : String
+			const Name        : String;
+			const CommandFunc : TGMCommand;
+			const Level       : Byte;
+			const AType       : Byte;
+			const ASyntax     : String;
+			const NoBreak     : Boolean = False
 			) : Word;
 
 		function IsCommand(
@@ -99,10 +93,9 @@ type
 				CommandID : Word
 			): Byte;
 
-		function GetCommandFlag(
-			const
-				CommandID : Word
-			): Byte;
+		function GetCommandNoBreak(
+			const CommandID : Word
+			): Boolean;
 
 		function GetSyntax(
 			const
@@ -111,11 +104,11 @@ type
 	end;
 
 	TCommand = class
-		Name        : String;
-		Level       : Byte;
-		CommandType : Byte;    //Should the command send to single zone/broadcast? or something else
-		Flag        : Byte;    //To tell inter server don't break parameter!
-		Syntax      : String;  //Help message XD
+		Name              : String;
+		Level             : Byte;
+		CommandType       : Byte;    //Should the command send to single zone/broadcast? or something else
+		NoParseParameter  : Boolean;    //To tell inter server don't break parameter!
+		Syntax            : String;  //Help message XD
 
 		CommandFunc : TGMCommand;
 	end;
@@ -150,44 +143,44 @@ begin
 	CommandOptions := TGMCommandsOptions.Create(MainProc.Options.ConfigDirectory+'/GMCommands.ini');
 
 	//AddCommand(Command Name,   Calling Function, Lvl required, command type, argument parsing mode, Syntax Help Message)
-	AddCommand('ZoneStatus',      GMZoneStatus,           1,  TYPE_BROADCAST,  GMFLAG_NORMAL,  '');
+	AddCommand('ZoneStatus',      GMZoneStatus,           1,  TYPE_BROADCAST,  '');
 	// - - - Warps
-	AddCommand('Warp',            GMWarp,                 99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '<Map Name>,<X>,<Y>');
-	AddCommand('WarpDev',         GMWarpDev,              99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '<Map Name>,<X>,<Y>');
-	AddCommand('Jump',            GMJump,                 99, TYPE_RETURNBACK, GMFLAG_NORMAL,  '[X],[Y]');
+	AddCommand('Warp',            GMWarp,                 99, TYPE_RETURNBACK, '<Map Name>,<X>,<Y>');
+	AddCommand('WarpDev',         GMWarpDev,              99, TYPE_RETURNBACK, '<Map Name>,<X>,<Y>');
+	AddCommand('Jump',            GMJump,                 99, TYPE_RETURNBACK, '[X],[Y]');
 	// - - - Player Control
-	AddCommand('GiveBaseExp',     GMGiveBaseExperience,   99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
-	AddCommand('GiveJobExp',      GMGiveJobExperience,    99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
-	AddCommand('BaseLevelUp',     GMBaseLevelUp,          99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
-	AddCommand('JobLevelUp',      GMJobLevelUp,           99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
-	AddCommand('AddStatusPoints', GMAddStatusPoints,      99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
-	AddCommand('AddSkillPoints',  GMAddSkillPoints,       99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
-	AddCommand('GiveZeny',        GMGiveZeny,             99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Amount>');
-	AddCommand('GiveStat',        GMGiveStat,             99, TYPE_TARGETCHAR, GMFLAG_NORMAL,  '<Player Name>,<Type>,<Amount>');
-	AddCommand('ResetStats',      GMResetStats,           99, TYPE_TARGETCHAR, GMFLAG_NOSPLIT, '<Player Name>');
-	AddCommand('Speed',           GMSpeed,                99, TYPE_RETURNBACK, GMFLAG_NORMAL, '<Speed>');
-	AddCommand('Die',             GMDie,                  99, TYPE_RETURNBACK, GMFLAG_NORMAL, '');
+	AddCommand('GiveBaseExp',     GMGiveBaseExperience,   99, TYPE_TARGETCHAR, '<Player Name>,<Amount>');
+	AddCommand('GiveJobExp',      GMGiveJobExperience,    99, TYPE_TARGETCHAR, '<Player Name>,<Amount>');
+	AddCommand('BaseLevelUp',     GMBaseLevelUp,          99, TYPE_TARGETCHAR, '<Player Name>,<Amount>');
+	AddCommand('JobLevelUp',      GMJobLevelUp,           99, TYPE_TARGETCHAR, '<Player Name>,<Amount>');
+	AddCommand('AddStatusPoints', GMAddStatusPoints,      99, TYPE_TARGETCHAR, '<Player Name>,<Amount>');
+	AddCommand('AddSkillPoints',  GMAddSkillPoints,       99, TYPE_TARGETCHAR, '<Player Name>,<Amount>');
+	AddCommand('GiveZeny',        GMGiveZeny,             99, TYPE_TARGETCHAR, '<Player Name>,<Amount>');
+	AddCommand('GiveStat',        GMGiveStat,             99, TYPE_TARGETCHAR, '<Player Name>,<Type>,<Amount>');
+	AddCommand('ResetStats',      GMResetStats,           99, TYPE_TARGETCHAR, '<Player Name>', True);
+	AddCommand('Speed',           GMSpeed,                99, TYPE_RETURNBACK, '<Speed>');
+	AddCommand('Die',             GMDie,                  99, TYPE_RETURNBACK, '');
 	// - - - Broadcast Sets
-	AddCommand('BroadCast',       GMBroadCast,            99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
-	AddCommand('BroadCastN',      GMBroadCastNoName,      99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
-	AddCommand('BroadCastL',      GMBroadCastLocal,       99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '<Message>');
-	AddCommand('BroadCastLN',     GMBroadCastLocalNoName, 99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '<Message>');
-	AddCommand('BroadCastLB',     GMBroadCastLocalBlue,   99, TYPE_RETURNBACK, GMFLAG_NOSPLIT, '<Message>');
+	AddCommand('BroadCast',       GMBroadCast,            99, TYPE_ALLPLAYERS, '<Message>', True);
+	AddCommand('BroadCastN',      GMBroadCastNoName,      99, TYPE_ALLPLAYERS, '<Message>', True);
+	AddCommand('BroadCastL',      GMBroadCastLocal,       99, TYPE_RETURNBACK, '<Message>', True);
+	AddCommand('BroadCastLN',     GMBroadCastLocalNoName, 99, TYPE_RETURNBACK, '<Message>', True);
+	AddCommand('BroadCastLB',     GMBroadCastLocalBlue,   99, TYPE_RETURNBACK, '<Message>', True);
 
-	AddCommand('BroadCastColor',  GMBroadCastColor,       99, TYPE_ALLPLAYERS, GMFLAG_NORMAL,  '<Color>,<Message>');
-	AddCommand('BroadCastR',      GMBroadCastRed,         99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
-	AddCommand('BroadCastP',      GMBroadCastPurple,      99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
-	AddCommand('BroadCastG',      GMBroadCastGreen,       99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
-	AddCommand('BroadCastBLK',    GMBroadCastBlack,       99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
-	AddCommand('BroadCastB',      GMBroadCastBlue,        99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
-	AddCommand('BroadCastW',      GMBroadCastWhite,       99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '<Message>');
+	AddCommand('BroadCastColor',  GMBroadCastColor,       99, TYPE_ALLPLAYERS, '<Color>,<Message>');
+	AddCommand('BroadCastR',      GMBroadCastRed,         99, TYPE_ALLPLAYERS, '<Message>', True);
+	AddCommand('BroadCastP',      GMBroadCastPurple,      99, TYPE_ALLPLAYERS, '<Message>', True);
+	AddCommand('BroadCastG',      GMBroadCastGreen,       99, TYPE_ALLPLAYERS, '<Message>', True);
+	AddCommand('BroadCastBLK',    GMBroadCastBlack,       99, TYPE_ALLPLAYERS, '<Message>', True);
+	AddCommand('BroadCastB',      GMBroadCastBlue,        99, TYPE_ALLPLAYERS, '<Message>', True);
+	AddCommand('BroadCastW',      GMBroadCastWhite,       99, TYPE_ALLPLAYERS, '<Message>', True);
 	// - - - Management
-	AddCommand('Kick',            GMKick,                 99, TYPE_TARGETCHAR, GMFLAG_NOSPLIT, '<Player Name>');
-	AddCommand('KickAll',         GMKickAll,              99, TYPE_ALLPLAYERS, GMFLAG_NOSPLIT, '');
+	AddCommand('Kick',            GMKick,                 99, TYPE_TARGETCHAR, '<Player Name>', True);
+	AddCommand('KickAll',         GMKickAll,              99, TYPE_ALLPLAYERS, '');
 	// - - - Misc stuffs
 	// - - - Debug
-	AddCommand('Effect',          GMEffect,               99, TYPE_RETURNBACK, GMFLAG_NORMAL, '<Effect Id>');
-	AddCommand('Where',           GMWhere,               99, TYPE_RETURNBACK, GMFLAG_NORMAL, '');
+	AddCommand('Effect',          GMEffect,               99, TYPE_RETURNBACK, '<Effect Id>');
+	AddCommand('Where',           GMWhere,               99, TYPE_RETURNBACK,  '');
 	// Use temperary list!!!
 	fCommandPrefix := CommandOptions.Load(fTmpCommandList, fCommands);
 	CommandOptions.Save(fTmpCommandList);
@@ -243,18 +236,12 @@ Revisions:
 	parameters constant.
 *-----------------------------------------------------------------------------*)
 function TGMCommands.AddCommand(
-	const
-		Name        : String;
-	const
-		CommandFunc : TGMCommand;
-	const
-		Level       : Byte;
-	const
-		AType       : Byte;
-	const
-		AFlag       : Byte;
-	const
-		ASyntax     : String
+	const Name        : String;
+	const CommandFunc : TGMCommand;
+	const Level       : Byte;
+	const AType       : Byte;
+	const ASyntax     : String;
+	const NoBreak     : Boolean = False
 	) : Word;
 var
 	Command : TCommand;
@@ -263,7 +250,7 @@ Begin
 	Command.Name := Name;
 	Command.Level := Level;
 	Command.CommandType := AType;
-	Command.Flag := AFlag;
+	Command.NoParseParameter := NoBreak;
 	Command.Syntax := ASyntax;
 	Command.CommandFunc := CommandFunc;
 
@@ -426,11 +413,11 @@ end; (* Func TGMCommands.GetCommandType
 
 
 (*- Function ------------------------------------------------------------------*
-TGMCommands.GetCommandFlag
+TGMCommands.GetCommandNoBreak
 --------------------------------------------------------------------------------
 Overview:
 --
-	Gets the command Flag (used in inter server)
+	Should command parse parameters?
 
 --
 Revisions:
@@ -438,16 +425,15 @@ Revisions:
 (Format: [yyyy/mm/dd] <Author> - <Comment>)
 [2007/08/09] Aeomin - Created
 *-----------------------------------------------------------------------------*)
-function TGMCommands.GetCommandFlag(
-	const
-		CommandID : Word
-	): Byte;
+function TGMCommands.GetCommandNoBreak(
+	const CommandID : Word
+	):Boolean;
 var
 	Command : TCommand;
 begin
 	Command := fCommands.Objects[CommandID] as TCommand;
-	Result := Command.Flag;
-end; (* Func TGMCommands.GetCommandFlag
+	Result := Command.NoParseParameter;
+end; (* Func TGMCommands.GetCommandNoBreak
 *-----------------------------------------------------------------------------*)
 
 

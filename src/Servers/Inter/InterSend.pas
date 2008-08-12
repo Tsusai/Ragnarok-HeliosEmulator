@@ -377,23 +377,21 @@ begin
 	Error := TStringList.Create;
 	try
 		//Let's flag it!
-		case MainProc.InterServer.Commands.GetCommandFlag(CommandID) of
-			GMFLAG_NORMAL: begin
-				CommandSeparator.Delimiter := ',';
-				CommandSeparator.DelimitedText := CommandString;
+		if MainProc.InterServer.Commands.GetCommandNoBreak(CommandID) then
+		begin
+			Position := Pos(' ', CommandString);
+			if Position > 0 then
+			begin
+				CommandSeparator.Add(Copy(CommandString, 1, Position - 1));
+				CommandSeparator.Add(Copy(CommandString, Position + 1, StrLen(PChar(CommandString)) - Cardinal(Position)));
+			end else
+			begin
+				CommandSeparator.Add(CommandString);
 			end;
-			//DelimitedText will break parameter even when no need to, so using this way
-			GMFLAG_NOSPLIT: begin
-				Position := Pos(' ', CommandString);
-				if Position > 0 then
-				begin
-					CommandSeparator.Add(Copy(CommandString, 1, Position - 1));
-					CommandSeparator.Add(Copy(CommandString, Position + 1, StrLen(PChar(CommandString)) - Cardinal(Position)));
-				end else
-				begin
-					CommandSeparator.Add(CommandString);
-				end;
-			end;
+		end else
+		begin
+			CommandSeparator.Delimiter := ',';
+			CommandSeparator.DelimitedText := CommandString;
 		end;
 
 		//Get command type
