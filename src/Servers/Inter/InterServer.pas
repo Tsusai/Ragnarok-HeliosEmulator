@@ -216,6 +216,8 @@ begin
 		begin
 			fZoneServerList.Delete(idx);
 		end;
+		AConnection.Data.Free;
+		AConnection.Data:=nil;
 	end;
 	ClientList.Delete(ClientList.IndexOf(AConnection));
 end;{OnDisconnect}

@@ -1277,6 +1277,11 @@ begin
 			fAccountList.Delete(Idx);
 		end;
 	end;
+	if Assigned(AConnection.Data) then
+	begin
+		AConnection.Data.Free;
+		AConnection.Data:=nil;
+	end;
 end;{OnDisconnect}
 //------------------------------------------------------------------------------
 

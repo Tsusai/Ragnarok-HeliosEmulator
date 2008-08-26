@@ -304,7 +304,8 @@ begin
 		end;
 		SendZoneCharaDecrease(ToCharaTCPClient,Self);
 	end;
-
+	AConnection.Data.Free;
+	AConnection.Data:=nil;
 end;{OnDisconnect}
 //------------------------------------------------------------------------------
 

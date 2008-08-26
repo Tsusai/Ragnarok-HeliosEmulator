@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 488 -
+[2008/08/26] Aeomin - Made each server manually free up Thread Object when disconnect.
+        The reason behind this was Indy does not free it up when use Thread Pool.
+-
+
 - Rev 487 -
 [2008/08/11] Aeomin - Fixed a memory leak in GM Commands
 -

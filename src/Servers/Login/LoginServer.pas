@@ -264,6 +264,8 @@ begin
 			fCharaServerList.Delete(idx);
 		end;
 	end;
+	AConnection.Data.Free;
+	AConnection.Data:=nil;
 end;{OnDisconnect}
 //------------------------------------------------------------------------------
 

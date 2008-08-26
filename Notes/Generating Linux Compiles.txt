@@ -1,27 +1,4 @@
 (work in progress)
 
-READ FIRST
-This guide ONLY covers being able to compile a linux executable using Delphi in 
-a Windows Environment, not the actual Kylix.  Reason for this is that Kylix at this
-current time is usually not graphically...functional in the newer kernels, unless
-you feel the need to spend lots of time getting it working (which we will not help
-with)
-
-To compile a linux executable using Delphi for Windows
-
-Requirements
-- CrossKylix from http://crosskylix.untergrund.net
-- Open Kylix from http://borland.com/products/downloads/download_kylix.html (Burn to a CD)
-- *** Our Indy 10 package (http://theicebox.info/indy10.zip).  If your IDE has already
-  come with a copy, you will need to get and unzip this on the side folder.  If you already 
-  use this modified package (installed when following our Delphi Install directions) then you
-  do not need to download it again. YOU WILL NEED TO KNOW THE PATH LOCATION!!!!!!
-
-Installation
-1) Download the above
-2) Follow instructions on how to install from CrossKylix's website.
-3) Assuming everything went ok, Open Delphi and then goto Tools->Crosskylix Options
-4) You need to add some extra paths here, each separated with a semicolin.  You will 
- need to add paths to all the folders of the Indy Package (subfolder searchind does
- not work)
-5) When all set and done, goto Project-> Compile in Crosskylix.
+[This file needs redo; Helios no longer supports Kylix]
+[Use Freepascal(Lazarus) instead]

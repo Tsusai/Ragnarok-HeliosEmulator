@@ -1,4 +1,4 @@
-[03/07/07] Tsusai
+[03/07/07] Tsusai [Status: Deprecated support for old client]
  PROBLEM: kRO exes from Oct 2006 increased a packet size of the character information
   packets used in creation's display and normal display from 106 to 108.   Currently there is no
   way to dynamicly check like what is possible for the zone.
