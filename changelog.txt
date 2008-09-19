@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 489 -
+[2008/09/19] Aeomin - Added config MaxHairStyle and MaxHairColor in character server
+ to prevent breakage.
+-
+
 - Rev 488 -
 [2008/08/26] Aeomin - Made each server manually free up Thread Object when disconnect.
         The reason behind this was Indy does not free it up when use Thread Pool.

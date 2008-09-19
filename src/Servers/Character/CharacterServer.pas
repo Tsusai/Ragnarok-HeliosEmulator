@@ -765,8 +765,8 @@ begin
 				ACharacter.PartyID        := 0;
 				ACharacter.GuildID        := 0;
 				ACharacter.PetID          := 0;
-				ACharacter.Hair           := HairStyle;
-				ACharacter.HairColor      := HairColor;
+				ACharacter.Hair           := EnsureRange(HairStyle,0,Options.MaxHairStyle);
+				ACharacter.HairColor      := EnsureRange(HairColor,0,Options.MaxHairColor);
 				ACharacter.ClothesColor   := 0;
 
 				ACharacter.RightHand      := Options.DefaultRightHand;

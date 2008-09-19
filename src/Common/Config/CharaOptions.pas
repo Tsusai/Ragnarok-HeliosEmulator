@@ -23,11 +23,11 @@ interface
 	type
 
 //------------------------------------------------------------------------------
-//TCharaOptions	                                                        CLASS
+//TCharaOptions                                                            CLASS
 //------------------------------------------------------------------------------
 		TCharaOptions = class(TMemIniFile)
 		private
-//private variables
+			//private variables
 			fID		: LongWord;
 			fPort		      : Word;
 			fWANIP		    : String;
@@ -40,6 +40,8 @@ interface
 
 			fServerName		: String;
 			fShowFriendlyMessageOnDupLogin : Boolean;
+			fMaxHairStyle : Byte;
+			fMaxHairColor : Byte;
 
 			fDefaultZeny  		: LongWord;
 			fDefaultMap   		: String;
@@ -58,7 +60,7 @@ interface
 			fIndySchedulerType  : Byte;
 			fIndyThreadPoolSize : Word;
 
-//Gets/Sets
+			//Gets/Sets
 			procedure SetPort(Value : Word);
 			procedure SetWANIP(Value : String);
 			procedure SetLANIP(Value : String);
@@ -84,7 +86,8 @@ interface
 			//Options
 			property ServerName : String read fServerName write SetServerName;
 			property ShowFriendlyMessageOnDupLogin : Boolean read fShowFriendlyMessageOnDupLogin write fShowFriendlyMessageOnDupLogin;
-
+			property MaxHairStyle : Byte read fMaxHairStyle;
+			property MaxHairColor : Byte read fMaxHairColor;
 
 			property DefaultZeny: LongWord read fDefaultZeny write fDefaultZeny;
 			property DefaultMap : String read fDefaultMap write fDefaultMap;
@@ -196,6 +199,9 @@ implementation
 			end;
 			fServerName			:= Section.Values['ServerName'];
 
+			fMaxHairStyle := EnsureRange(StrToIntDef(Section.Values['MaxHairStyle'], 25), 0, High(Byte));
+			fMaxHairColor := EnsureRange(StrToIntDef(Section.Values['MaxHairColor'], 8), 0, High(Byte));
+
 			{* Aeomin April 12th, 2007
 			 If this Boolean set as false, char server will directly DC the client when
 			 attempt duplicate login, else wil send "Someone has already logged in with this ID"*}
@@ -289,6 +295,8 @@ implementation
 		//Options
 		WriteString('Options','ServerName',ServerName);
 		WriteString('Options','Show_FriendlyMessage_On_DuplicateLogin',BoolToStr(fShowFriendlyMessageOnDupLogin));
+		WriteString('Options','MaxHairStyle',IntToStr(MaxHairStyle));
+		WriteString('Options','MaxHairColor',IntToStr(MaxHairColor));
 
 		//CharacterDefaults
 		WriteString('CharacterDefaults','Zeny',IntToStr(DefaultZeny));
