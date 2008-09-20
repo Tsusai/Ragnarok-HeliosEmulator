@@ -76,7 +76,7 @@ protected
 	fDefense		: Word; //This item's defense
 	fRange 			: Word; //The range of this item.
 	fSlots			: Byte; //The number of slots this item has.
-	fJob			: Word; //The required job.
+	fJob			: LongWord; //The required job.
 	fGender			: TGenders; //The required gender, if applicable.
 	fMinimumLevel		: Word;//The minimum base level required to equip this item
 	fWeaponLevel		: Byte; //The weapon level of an item.
@@ -109,7 +109,7 @@ public
 	Property Range		: Word
 		Read fRange
 		Write fRange;
-	Property Job 		: Word
+	Property Job 		: LongWord
 		Read fJob
 		Write fJob;
 	Property Gender		: TGenders

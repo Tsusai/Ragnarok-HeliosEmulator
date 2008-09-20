@@ -15,8 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 494 -
+[2008/09/20] Aeomin - Forgot to load definitions.
+[2008/09/20] Aeomin - Fixed client ignore first item (Something just not right...)
+-
+
 - Rev 493 -
-[2008/09/20] Aeomin - Now character added record in inventory when create character.
+[2008/09/20] Aeomin - Now character server added record in inventory when create character.
 -
 
 - Rev 492 -

@@ -1718,7 +1718,8 @@ begin
 			begin
 				with InventoryItem.Item do
 				begin
-					WriteBufferWord(OffSet, ItemCount+2, OutBuffer);    //Index
+					{TODO: Verify why +3 not +2}
+					WriteBufferWord(OffSet, ItemCount+3, OutBuffer);    //Index
 					WriteBufferWord(OffSet+2, ID, OutBuffer);  //ID
 					WriteBufferByte(OffSet+4, ItemTypeToByte(ItemType), OutBuffer);    //Type
 					WriteBufferByte(OffSet+5, 1, OutBuffer);    //Identified?

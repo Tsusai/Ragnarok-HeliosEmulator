@@ -54,7 +54,8 @@ end;
 		read GetValue write SetValue;default;
 		Property Count : Integer read GetCount;
 
-		Procedure Add(const AnItem : TItem; const Quantity : Word);
+		Procedure Add(const AnItem : TItem; const Quantity : Word);overload;
+		procedure Add(const AnInventoryItem:TInventoryItem);overload;
 		Procedure Insert(const AnItem : TItem; const Quantity : Word; Index : Integer);
 		Procedure Delete(const Index : Integer);
 		Procedure Clear();
@@ -119,6 +120,22 @@ begin
 	AnInventoryItem := TInventoryItem.Create;
 	AnInventoryItem.Item := AnItem;
 	AnInventoryItem.Quantity := Quantity;
+	fList.Add(AnInventoryItem);
+end;{Add}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Add                                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Adds a TInventoryItem to the list.
+//
+//	Changes -
+//		[2008/09/20] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure TInventoryList.Add(const AnInventoryItem:TInventoryItem);
+begin
 	fList.Add(AnInventoryItem);
 end;{Add}
 //------------------------------------------------------------------------------

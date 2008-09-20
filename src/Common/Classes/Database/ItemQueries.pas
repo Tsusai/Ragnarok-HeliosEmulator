@@ -68,13 +68,13 @@ type
 
 		{Procedure Save(
 			const AnItem : TItem
-		);
+		); }
 
-		Procedure  New(
+		{procedure  New(
 			const AnItem : TItem
-		);
+		);}
 
-		Procedure  Delete(
+		{Procedure  Delete(
 			const AnItem : TItem
 		); }
 
@@ -118,7 +118,6 @@ Procedure TItemQueries.Load(
 	const AnItem : TItem
 );
 begin
-
 	LoadDefinition(AnItem);
 	//LoadInstance(AnItem);
 
@@ -206,9 +205,9 @@ Procedure TItemQueries.LoadEquipmentDefinition(
 );
 const
 	AQuery =
-		'SELECT slots, refinement_level, refineable, on_equip_function, on_unequip_function, '+
-		'allowed_jobs, allowed_gender, defense_rating, body_region, on_defend_function, '+
-		'attack_rating, range, on_attack_function '+
+		'SELECT slots, weapon_level, refinable, on_equip_function, on_unequip_function, '+
+		'allowed_jobs, allowed_gender, equip_location, on_defend_function, '+
+		'attack_rating, attack_range, on_attack_function '+
 		'FROM itemdefinitionsequip WHERE item_definition_id=:ID';
 var
 	ADataSet		: TZQuery;
@@ -227,19 +226,19 @@ begin
 		ADataset.First;
 		if NOT ADataSet.Eof then
 		begin
-			AnItem.Slots							:= ADataset.Fields[0].AsInteger;
-			AnItem.WeaponLevel				:= ADataset.Fields[1].AsInteger;
-			AnItem.Refineable					:= StrToBoolDef(ADataset.Fields[2].AsString, FALSE);
-			AnItem.OnEquip						:= ADataSet.Fields[3].AsString;
-			AnItem.OnDisarm						:= ADataset.Fields[4].AsString;
-			AnItem.Job								:= ADataset.Fields[5].AsInteger;
-			AnItem.Gender							:= CharToGender(ADataset.Fields[6].AsString[1]);
-			AnItem.Defense						:= ADataset.Fields[7].AsInteger;
-			AnItem.EquipmentLocation	:= BytetoEquipLocations(ADataset.Fields[8].AsInteger);
-			AnItem.OnDefend						:= ADataset.Fields[9].AsString;
-			AnItem.Attack							:= ADataset.Fields[10].AsInteger;
-			AnItem.Range							:= ADataset.Fields[11].AsInteger;
-			AnItem.OnAttack						:= ADataset.Fields[12].AsString;
+			AnItem.Slots			:= ADataset.Fields[0].AsInteger;
+			AnItem.WeaponLevel		:= ADataset.Fields[1].AsInteger;
+			AnItem.Refineable		:= StrToBoolDef(ADataset.Fields[2].AsString, FALSE);
+			AnItem.OnEquip			:= ADataSet.Fields[3].AsString;
+			AnItem.OnDisarm			:= ADataset.Fields[4].AsString;
+			AnItem.Job			:= ADataset.Fields[5].AsInteger;
+			AnItem.Gender			:= CharToGender(ADataset.Fields[6].AsString[1]);
+			{AnItem.Defense			:= ADataset.Fields[7].AsInteger;}
+			AnItem.EquipmentLocation	:= BytetoEquipLocations(ADataset.Fields[7].AsInteger);
+			AnItem.OnDefend			:= ADataset.Fields[8].AsString;
+			AnItem.Attack			:= ADataset.Fields[9].AsInteger;
+			AnItem.Range			:= ADataset.Fields[10].AsInteger;
+			AnItem.OnAttack			:= ADataset.Fields[11].AsString;
 		end;
 
 
@@ -374,7 +373,7 @@ var
 				AItem := TUseableItem.Create;
 				AItem.ID := ADataSet.Fields[0].AsInteger;
 				Amount := ADataSet.Fields[1].AsInteger;
-				LoadDefinition(AItem);
+				Load(AItem);
 				AnInventory.Add(
 					AItem,
 					Amount
@@ -402,7 +401,7 @@ var
 				AItem := TEquipmentItem.Create;
 				AItem.ID := ADataSet.Fields[0].AsInteger;
 				Amount := ADataSet.Fields[1].AsInteger;
-				LoadDefinition(AItem);
+				Load(AItem);
 				AnInventory.Add(
 					AItem,
 					Amount
@@ -430,7 +429,7 @@ var
 				AItem := TMiscItem.Create;
 				AItem.ID := ADataSet.Fields[0].AsInteger;
 				Amount := ADataSet.Fields[1].AsInteger;
-				LoadDefinition(AItem);
+				Load(AItem);
 				AnInventory.Add(
 					AItem,
 					Amount
@@ -446,4 +445,5 @@ begin
 	LoadEquipment;
 	LoadEtc;
 end;{FillInventory}
+//------------------------------------------------------------------------------
 end.
