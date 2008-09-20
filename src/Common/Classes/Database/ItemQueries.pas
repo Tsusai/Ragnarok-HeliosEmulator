@@ -235,7 +235,7 @@ begin
 			AnItem.Job								:= ADataset.Fields[5].AsInteger;
 			AnItem.Gender							:= CharToGender(ADataset.Fields[6].AsString[1]);
 			AnItem.Defense						:= ADataset.Fields[7].AsInteger;
-			//AnItem.EquipmentLocation	:= BytetoEquipLocations(ADataset.Fields[8].AsInteger);
+			AnItem.EquipmentLocation	:= BytetoEquipLocations(ADataset.Fields[8].AsInteger);
 			AnItem.OnDefend						:= ADataset.Fields[9].AsString;
 			AnItem.Attack							:= ADataset.Fields[10].AsInteger;
 			AnItem.Range							:= ADataset.Fields[11].AsInteger;

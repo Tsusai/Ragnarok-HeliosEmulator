@@ -243,8 +243,10 @@ uses
 	Globals,
 	Main,
 	InventoryList,
+	ItemTypes,
 	Item,
 	UseableItem,
+	EquipmentItem,
 	MiscItem,
 	TCPServerRoutines,
 	WinLinux
@@ -1689,16 +1691,23 @@ procedure SendInventory(
 );
 var
 	OutBuffer : TBuffer;
+	OutBufferEquip : TBuffer;
 	Len   : Word;
 	Index : Word;
 	OffSet : Word;
-	UseableCount : Word;
+	OffSetEquip : Word;
+	ItemCount : Word;
+	EquipmentCount : Word;
 	InventoryItem : TInventoryItem;
+	EquipmentItem : TEquipmentItem;
 begin
-	UseableCount := 0;
+	ItemCount := 0;
+	EquipmentCount := 0;
 	OffSet := 4;
+	OffSetEquip := 4;
 
 	WriteBufferWord(0, $01ee, OutBuffer);
+	WriteBufferWord(0, $00a4, OutBufferEquip);
 	if AInventory.ItemList.Count > 0 then
 	begin
 		for Index := 0 to AInventory.ItemList.Count - 1 do
@@ -1709,24 +1718,53 @@ begin
 			begin
 				with InventoryItem.Item do
 				begin
-					WriteBufferWord(OffSet, Index+2, OutBuffer);    //Index
+					WriteBufferWord(OffSet, ItemCount+2, OutBuffer);    //Index
 					WriteBufferWord(OffSet+2, ID, OutBuffer);  //ID
-					WriteBufferByte(OffSet+4, Byte(ItemType), OutBuffer);    //Type
+					WriteBufferByte(OffSet+4, ItemTypeToByte(ItemType), OutBuffer);    //Type
 					WriteBufferByte(OffSet+5, 1, OutBuffer);    //Identified?
-					WriteBufferWord(OffSet+6, 1, OutBuffer); //Amount
+					WriteBufferWord(OffSet+6, InventoryItem.Quantity, OutBuffer); //Amount
 					WriteBufferWord(OffSet+8, 0, OutBuffer);     //For ammo
 					WriteBufferWord(OffSet+10, 0, OutBuffer);   //Card 1
 					WriteBufferWord(OffSet+12, 0, OutBuffer);   //2
 					WriteBufferWord(OffSet+14, 0, OutBuffer);   //3
 					WriteBufferWord(OffSet+16, 0, OutBuffer);   //4
+					Inc(OffSet,18);
 				end;
-				Inc(UseableCount);
+				Inc(ItemCount);
+			end else
+			if InventoryItem.Item is TEquipmentItem then
+			begin
+				EquipmentItem := InventoryItem.Item as TEquipmentItem;
+				WriteBufferWord(OffSetEquip, EquipmentCount+2, OutBufferEquip);    //Index
+				//View ID?
+				if EquipmentItem.ViewID > 0 then
+					WriteBufferWord(OffSetEquip+2, EquipmentItem.ViewID, OutBufferEquip)
+				else
+					WriteBufferWord(OffSetEquip+2, EquipmentItem.ID, OutBufferEquip);  //ID
+				WriteBufferByte(OffSetEquip+4, 5, OutBufferEquip);    //Type
+				WriteBufferByte(OffSetEquip+5, Byte(EquipmentItem.Identified), OutBufferEquip);    //Identified
+				WriteBufferWord(OffSetEquip+6, EquipTypeToByte(EquipmentItem.EquipmentType), OutBufferEquip);
+				WriteBufferWord(OffSetEquip+8, 0, OutBufferEquip); //Equiped?
+				WriteBufferByte(OffSetEquip+10, 0, OutBufferEquip); //Broken?
+				WriteBufferByte(OffSetEquip+11, EquipmentItem.Refined, OutBufferEquip);
+				WriteBufferWord(OffSetEquip+12, 0, OutBufferEquip);   //Card 1
+				WriteBufferWord(OffSetEquip+14, 0, OutBufferEquip);   //2
+				WriteBufferWord(OffSetEquip+16, 0, OutBufferEquip);   //3
+				WriteBufferWord(OffSetEquip+18, 0, OutBufferEquip);   //4
+//				WriteBufferWord(OffSetEquip+24, 0, OutBufferEquip);   //??
+				Inc(OffSetEquip,20);
+				Inc(EquipmentCount);
 			end;
 		end;
 	end;
-	Len := (UseableCount * 18) + 4;
+	//Items
+	Len := (ItemCount * 18) + 4;
 	WriteBufferWord(2, Len, OutBuffer);
 	SendBuffer(AClient, OutBuffer, Len);
+	//Equipments
+	Len := (EquipmentCount * 20) + 4;
+	WriteBufferWord(2, Len, OutBufferEquip);
+	SendBuffer(AClient, OutBufferEquip, Len);
 end;{SendInventory}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

@@ -86,7 +86,9 @@ protected
 	fOnDefend		: String;//Script function, executes when an Item is used to defend.
 
 public
-  Refineable : Boolean;
+	Refineable : Boolean;
+	Identified : Boolean;
+	Refined : Byte;
 
 	Property ViewID		: LongWord
 		Read fViewID

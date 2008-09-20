@@ -607,10 +607,6 @@ begin
 			AChara.Inventory
 		);
 
-		//Equip Placeholder
-		WriteBufferWord(0, $00a4, OutBuffer);
-		WriteBufferWord(2, 4, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
 		//Arrow Placeholder
 		WriteBufferWord(0, $013c, OutBuffer);
 		WriteBufferWord(2, 0, OutBuffer);

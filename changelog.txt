@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 491 -
+[2008/09/20] Aeomin - 1.1 Phrase of item implementation.
+[2008/09/20] Aeomin - Fixed etc item appear in useable.
+[2008/09/20] Aeomin - Equipment now appear too.
+-
+
 - Rev 490 -
 [2008/09/19] Aeomin - First phrase of item implementation.
 [2008/09/19] Aeomin - Items now appear in inventory (exclude equipment).
