@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 492 -
+[2008/09/20] Aeomin - Small tweak in item.
+-
+
 - Rev 491 -
 [2008/09/20] Aeomin - 1.1 Phrase of item implementation.
 [2008/09/20] Aeomin - Fixed etc item appear in useable.

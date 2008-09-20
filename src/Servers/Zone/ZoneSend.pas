@@ -1707,7 +1707,7 @@ begin
 	OffSetEquip := 4;
 
 	WriteBufferWord(0, $01ee, OutBuffer);
-	WriteBufferWord(0, $00a4, OutBufferEquip);
+	WriteBufferWord(0, $02d0, OutBufferEquip);
 	if AInventory.ItemList.Count > 0 then
 	begin
 		for Index := 0 to AInventory.ItemList.Count - 1 do
@@ -1742,17 +1742,17 @@ begin
 				else
 					WriteBufferWord(OffSetEquip+2, EquipmentItem.ID, OutBufferEquip);  //ID
 				WriteBufferByte(OffSetEquip+4, 5, OutBufferEquip);    //Type
-				WriteBufferByte(OffSetEquip+5, Byte(EquipmentItem.Identified), OutBufferEquip);    //Identified
+				WriteBufferByte(OffSetEquip+5, Byte(InventoryItem.Identified), OutBufferEquip);    //Identified
 				WriteBufferWord(OffSetEquip+6, EquipTypeToByte(EquipmentItem.EquipmentType), OutBufferEquip);
 				WriteBufferWord(OffSetEquip+8, 0, OutBufferEquip); //Equiped?
 				WriteBufferByte(OffSetEquip+10, 0, OutBufferEquip); //Broken?
-				WriteBufferByte(OffSetEquip+11, EquipmentItem.Refined, OutBufferEquip);
+				WriteBufferByte(OffSetEquip+11, InventoryItem.Refined, OutBufferEquip);
 				WriteBufferWord(OffSetEquip+12, 0, OutBufferEquip);   //Card 1
 				WriteBufferWord(OffSetEquip+14, 0, OutBufferEquip);   //2
 				WriteBufferWord(OffSetEquip+16, 0, OutBufferEquip);   //3
 				WriteBufferWord(OffSetEquip+18, 0, OutBufferEquip);   //4
-//				WriteBufferWord(OffSetEquip+24, 0, OutBufferEquip);   //??
-				Inc(OffSetEquip,20);
+				WriteBufferWord(OffSetEquip+24, 0, OutBufferEquip);   //??
+				Inc(OffSetEquip,26);
 				Inc(EquipmentCount);
 			end;
 		end;
@@ -1762,7 +1762,7 @@ begin
 	WriteBufferWord(2, Len, OutBuffer);
 	SendBuffer(AClient, OutBuffer, Len);
 	//Equipments
-	Len := (EquipmentCount * 20) + 4;
+	Len := (EquipmentCount * 26) + 4;
 	WriteBufferWord(2, Len, OutBufferEquip);
 	SendBuffer(AClient, OutBufferEquip, Len);
 end;{SendInventory}

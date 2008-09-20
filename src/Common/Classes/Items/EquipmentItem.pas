@@ -87,8 +87,6 @@ protected
 
 public
 	Refineable : Boolean;
-	Identified : Boolean;
-	Refined : Byte;
 
 	Property ViewID		: LongWord
 		Read fViewID

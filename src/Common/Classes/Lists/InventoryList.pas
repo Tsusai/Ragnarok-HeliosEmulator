@@ -26,6 +26,9 @@ type
 TInventoryItem = Class(TObject)
 	Item		: TItem;
 	Quantity	: Word;
+
+	Identified : Boolean;
+	Refined : Byte;
 end;
 //------------------------------------------------------------------------------
 
