@@ -35,6 +35,7 @@ uses
 	Character,
 	PacketTypes,
 	Mailbox,
+	Inventory,
 	{Third Party}
 	IdContext
 	;
@@ -200,7 +201,7 @@ uses
 		const ImageType : Byte
 	);
 	procedure ToggleMailWindow(
-		AClient		: TIdContext;
+		const AChara	: TCharacter;
 		const Open : Boolean
 	);
 	procedure SendMailList(
@@ -225,6 +226,10 @@ uses
 		const Sender	: String;
 		const Title	: String
 	);
+	procedure SendInventory(
+		AClient		: TIdContext;
+		const AInventory : TInventory
+	);
 implementation
 
 
@@ -237,6 +242,10 @@ uses
 	GameConstants,
 	Globals,
 	Main,
+	InventoryList,
+	Item,
+	UseableItem,
+	MiscItem,
 	TCPServerRoutines,
 	WinLinux
 	{3rd Party}
@@ -1466,7 +1475,7 @@ end;{SendCutin}
 //    [2008/06/11] Aeomin - Created.
 //------------------------------------------------------------------------------
 procedure ToggleMailWindow(
-	AClient		: TIdContext;
+	const AChara	: TCharacter;
 	const Open : Boolean
 );
 var
@@ -1475,7 +1484,7 @@ begin
 	WriteBufferWord(0, $0260, OutBuffer);
 	WriteBufferLongWord(2, Byte(not Open), OutBuffer);
 	{TODO:Packet version...}
-	SendBuffer(AClient,OutBuffer,PacketDB.GetLength($0260,5));
+	SendBuffer(AChara.ClientInfo,OutBuffer,PacketDB.GetLength($0260,AChara.ClientVersion));
 end;{ToggleMailWindow}
 //------------------------------------------------------------------------------
 
@@ -1657,5 +1666,67 @@ begin
 	WriteBufferString(6+NAME_LENGTH, Title, 40, OutBuffer);
 	SendBuffer(AChara.ClientInfo,OutBuffer,AChara.EAPACKETVER);
 end;{SendNewMailNotify}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendInventory                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Send items in inventory
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/09/19] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendInventory(
+	AClient		: TIdContext;
+	const AInventory : TInventory
+);
+var
+	OutBuffer : TBuffer;
+	Len   : Word;
+	Index : Word;
+	OffSet : Word;
+	UseableCount : Word;
+	InventoryItem : TInventoryItem;
+begin
+	UseableCount := 0;
+	OffSet := 4;
+
+	WriteBufferWord(0, $01ee, OutBuffer);
+	if AInventory.ItemList.Count > 0 then
+	begin
+		for Index := 0 to AInventory.ItemList.Count - 1 do
+		begin
+			InventoryItem := AInventory.ItemList.Items[Index];
+			if (InventoryItem.Item is TUseableItem) OR
+			(InventoryItem.Item is TMiscItem) then
+			begin
+				with InventoryItem.Item do
+				begin
+					WriteBufferWord(OffSet, Index+2, OutBuffer);    //Index
+					WriteBufferWord(OffSet+2, ID, OutBuffer);  //ID
+					WriteBufferByte(OffSet+4, Byte(ItemType), OutBuffer);    //Type
+					WriteBufferByte(OffSet+5, 1, OutBuffer);    //Identified?
+					WriteBufferWord(OffSet+6, 1, OutBuffer); //Amount
+					WriteBufferWord(OffSet+8, 0, OutBuffer);     //For ammo
+					WriteBufferWord(OffSet+10, 0, OutBuffer);   //Card 1
+					WriteBufferWord(OffSet+12, 0, OutBuffer);   //2
+					WriteBufferWord(OffSet+14, 0, OutBuffer);   //3
+					WriteBufferWord(OffSet+16, 0, OutBuffer);   //4
+				end;
+				Inc(UseableCount);
+			end;
+		end;
+	end;
+	Len := (UseableCount * 18) + 4;
+	WriteBufferWord(2, Len, OutBuffer);
+	SendBuffer(AClient, OutBuffer, Len);
+end;{SendInventory}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

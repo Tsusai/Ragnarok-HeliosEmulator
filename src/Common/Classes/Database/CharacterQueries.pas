@@ -113,6 +113,7 @@ uses
 //
 //	Changes -
 //		February 12th, 2008 - RaX - Created.
+//		[2008/09/19] Aeomin - Added left join
 //
 //------------------------------------------------------------------------------
 Procedure TCharacterQueries.Load(
@@ -121,15 +122,17 @@ Procedure TCharacterQueries.Load(
 
 const
 	AQuery =
-		'SELECT `id`, `account_id`, `name`, `slot`, `job_id`, `base_level`, `job_level`, `base_exp`, '+
+		'SELECT characters.id, `account_id`, `name`, `slot`, `job_id`, `base_level`, `job_level`, `base_exp`, '+
 		'`job_exp`, `zeny`, `str`, `agi`, `vit`, `int`, `dex`, `luk`, `status_points`, `skill_points`, '+
 		'`current_hp`, `current_sp`, `hair_style`, `hair_color`, `clothes_color`, `option`, `inventory_id`, '+
 		'`storage_id`, `cart_inventory_id`, `righthand_item`, `lefthand_item`, `armor_item`, '+
 		'`garment_item`, `shoes_item`, `accessory1_item`, `accessory2_item`, `head_top_item`, '+
 		'`head_middle_item`, `head_bottom_item`, `last_map`, `last_map_x`, `last_map_y`, '+
 		'`save_map`, `save_map_x`, `save_map_y`, `partner_id`, `parent1_id`, `parent2_id`, '+
-		'`party_id`, `guild_id`, `is_online` '+
-		'FROM characters';
+		'`party_id`, `guild_id`, `is_online`, '+
+		'inventory.item_storage_use_id, inventory.item_storage_equip_id, inventory.item_storage_etc_id, '+
+		'itemstorage.items_id,itemstorage.count_capacity,itemstorage.weight_capacity '+
+		'FROM characters LEFT JOIN inventory ON (characters.inventory_id=inventory.id) LEFT JOIN itemstorage ON (characters.storage_id=itemstorage.id) ';
 
 var
 	WhereClause : String;
@@ -139,7 +142,7 @@ var
 begin
 	if ACharacter.ID > 0 then
 	begin
-		WhereClause := ' WHERE id=:ID;';
+		WhereClause := ' WHERE characters.id=:ID;';
 	end else
 	begin
 		WhereClause := ' WHERE name=:Name;'
@@ -192,8 +195,8 @@ begin
 				HairColor        := ADataSet.Fields[21].AsInteger;
 				ClothesColor     := ADataSet.Fields[22].AsInteger;
 				Option           := ADataSet.Fields[23].AsInteger;
-				//InventoryID      := ADataSet.Fields[24].AsInteger;
-				//StorageID				 := ADataSet.Fields[25].AsInteger;
+				Inventory.IventoryID := ADataSet.Fields[24].AsInteger;
+				Inventory.StorageID  := ADataSet.Fields[25].AsInteger;
 				//CartInventoryID	 := ADataSet.Fields[26].AsInteger;
 				RightHand        := ADataSet.Fields[27].AsInteger;
 				LeftHand         := ADataSet.Fields[28].AsInteger;
@@ -219,6 +222,9 @@ begin
 				PartyID          := ADataSet.Fields[46].AsInteger;
 				GuildID          := ADataSet.Fields[47].AsInteger;
 				Online           := ADataSet.Fields[48].AsInteger;
+				Inventory.UseID  := ADataSet.Fields[49].AsInteger;
+				Inventory.EquipID:= ADataSet.Fields[50].AsInteger;
+				Inventory.EtcID  := ADataSet.Fields[51].AsInteger;
 
 				CalcMaxWeight;
 				CalcMaxHP;

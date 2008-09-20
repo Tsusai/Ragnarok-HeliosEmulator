@@ -85,7 +85,7 @@ public
 	Property Sell		: LongWord Read fSell Write fSell;
 	Property ItemType: TItemType Read fType Write fType;
 	Property SpriteID : LongWord Read fSpriteID Write fSpriteID;
-	
+
 	Constructor Create;
 	Destructor Destroy;override;
 

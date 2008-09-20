@@ -28,6 +28,7 @@ uses
 	FriendQueries,
 	MapQueries,
 	MailQueries,
+	ItemQueries,
 	CharacterConstantQueries,
 	{3rd Party}
 	IdThread,
@@ -54,6 +55,7 @@ type
 		Friend			: TFriendQueries;
 		Map					: TMapQueries;
 		Mail			: TMailQueries;
+		Items			: TItemQueries;
 		CharacterConstant: TCharacterConstantQueries;
 
 		Constructor Create(
@@ -133,6 +135,7 @@ Begin
 	Map													:= TMapQueries.Create(GameConnection);
 	CharacterConstant						:= TCharacterConstantQueries.Create(GameConnection);
 	Mail								:= TMailQueries.Create(GameConnection);
+	Items					:= TItemQueries.Create(GameConnection);
 
 	if ConnectOnCreate then
 	begin
@@ -164,6 +167,7 @@ begin
 	Map.Free;
 	CharacterConstant.Free;
 	Mail.Free;
+	Items.Free;
 	
 	AccountConnection.Free;
 	GameConnection.Free;

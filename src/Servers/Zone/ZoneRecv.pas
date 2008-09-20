@@ -507,6 +507,9 @@ begin
 			//Friendslist (No longer placeholder XD)
 			ACharacter.SendFriendList;
 
+			//Load Inventory
+			ACharacter.LoadInventory;
+
 			ZoneSendPlayerOnlineStatus(
 				MainProc.ZoneServer.ToInterTCPClient,
 				ACharacter.AccountID,
@@ -598,10 +601,12 @@ begin
 		WriteBufferWord(2, 4, OutBuffer);
 		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
 
-		//Inventory Placeholder
-		WriteBufferWord(0, $01ee, OutBuffer);
-		WriteBufferWord(2, 4, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, 4);
+		//Inventory
+		SendInventory(
+			AChara.ClientInfo,
+			AChara.Inventory
+		);
+
 		//Equip Placeholder
 		WriteBufferWord(0, $00a4, OutBuffer);
 		WriteBufferWord(2, 4, OutBuffer);

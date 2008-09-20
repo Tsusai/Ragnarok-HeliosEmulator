@@ -281,6 +281,8 @@ public
 
 	procedure Death; override;
 
+	procedure LoadInventory;
+
 	Constructor Create(AClient : TIdContext);
 	Destructor  Destroy; override;
 
@@ -2645,6 +2647,31 @@ begin
 		end;
 	end;
 end;
+
+
+//------------------------------------------------------------------------------
+//LoadInventory                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Load all items in inventory
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2008/09/17] Aeomin - Created
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.LoadInventory;
+begin
+	TThreadLink(ClientInfo.Data).DatabaseLink.Items.FillInventory(
+		Inventory
+	);
+end;{LoadInventory}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //Create                                                             CONSTRUCTOR

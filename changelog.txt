@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 490 -
+[2008/09/19] Aeomin - First phrase of item implementation.
+[2008/09/19] Aeomin - Items now appear in inventory (exclude equipment).
+[2008/09/19] Aeomin - There's no GM command to get item yet, you have to play around.
+-
+
 - Rev 489 -
 [2008/09/19] Aeomin - Added config MaxHairStyle and MaxHairColor in character server
  to prevent breakage.

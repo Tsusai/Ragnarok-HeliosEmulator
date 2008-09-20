@@ -983,7 +983,7 @@ begin
 	if GetCharaFromLua(ALua,AChara) then
 	begin
 		ToggleMailWindow(
-			AChara.ClientInfo,
+			AChara,
 			True
 		);
 	end;
@@ -998,7 +998,7 @@ begin
 	if GetCharaFromLua(ALua,AChara) then
 	begin
 		ToggleMailWindow(
-			AChara.ClientInfo,
+			AChara,
 			False
 		);
 	end;

@@ -64,7 +64,7 @@ procedure TMailQueries.LoadMails(
 );
 const
 	AQuery =
-		'SELECT * FROM mailbox WHERE `receiver_id`=:ID ORDER BY `time` DESC LIMIT 30;';
+		'SELECT * FROM mailbox WHERE `receiver_id`=:ID ORDER BY `time` DESC;';
 var
 	ADataSet	: TZQuery;
 	AParam		: TParam;

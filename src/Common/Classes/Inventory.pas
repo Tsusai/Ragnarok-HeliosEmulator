@@ -76,14 +76,20 @@ protected
 	Function GetItem(Index : Integer) : TItem;
 	Procedure UpdateItemQuantity(const Index : Integer; const Quantity : Word);
 public
+	IventoryID : LongWord;
+	StorageID  : LongWord;
+	UseID      : LongWord;
+	EquipID    : LongWord;
+	EtcID      : LongWord;
+	
+	property ItemList : TInventoryList read fItemList;
 	Property Items[Index : Integer] : TItem Read GetItem;
 	Procedure Add(AnItem : TItem; Quantity : Word);
 	Procedure Remove(AnItem : TItem; Quantity : Word);
 	Procedure Delete(Index : Integer);
 	Constructor Create(Parent : TObject);
 	Destructor Destroy;override;
-
-End;(* TInventory
+end;(* TInventory
 *== CLASS ====================================================================*)
 
 

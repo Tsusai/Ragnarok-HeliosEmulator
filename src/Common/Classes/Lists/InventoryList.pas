@@ -24,7 +24,7 @@ type
 //TInventoryItem                                                         CLASS
 //------------------------------------------------------------------------------
 TInventoryItem = Class(TObject)
-	Item			: TItem;
+	Item		: TItem;
 	Quantity	: Word;
 end;
 //------------------------------------------------------------------------------
@@ -91,18 +91,8 @@ end;{Create}
 //    October 30th, 2007 - RaX - Created.
 //------------------------------------------------------------------------------
 destructor TInventoryList.Destroy;
-var
-	Index : Integer;
 begin
-	//if we own the items, free all of them in the list.
-
-	for Index := 0 to fList.Count-1 do
-	begin
-		if OwnsItems then
-		begin
-			Items[Index].Item.Free;
-		end;
-	end;
+	Clear;
 	fList.Free;
 	// Call TObject destructor
 	inherited;
@@ -213,8 +203,9 @@ procedure TInventoryList.Clear;
 var
 	Index : Integer;
 begin
-
 	//if we own the characters, the free them.
+	if fList.Count > 0 then
+	begin
 		for Index := 0 to fList.Count - 1 do
 		begin
 			if OwnsItems then
@@ -222,10 +213,8 @@ begin
 				Items[Index].Item.Free;
 			end;
 		end;
-
-
-	fList.Clear;
-
+		fList.Clear;
+	end;
 end;{Clear}
 //------------------------------------------------------------------------------
 

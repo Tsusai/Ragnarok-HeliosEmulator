@@ -182,7 +182,7 @@ begin
 	// - - - Misc stuffs
 	// - - - Debug
 	AddCommand('Effect',          GMEffect,               99, TYPE_RETURNBACK, '<Effect Id>');
-	AddCommand('Where',           GMWhere,               99, TYPE_RETURNBACK,  '');
+	AddCommand('Where',           GMWhere,                99, TYPE_RETURNBACK,  '');
 	// Use temperary list!!!
 	fCommandPrefix := CommandOptions.Load(fTmpCommandList, fCommands);
 	CommandOptions.Save(fTmpCommandList);
