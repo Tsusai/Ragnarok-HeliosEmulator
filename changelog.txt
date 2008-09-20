@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 493 -
+[2008/09/20] Aeomin - Now character added record in inventory when create character.
+-
+
 - Rev 492 -
 [2008/09/20] Aeomin - Small tweak in item.
 -

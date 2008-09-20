@@ -58,6 +58,12 @@ type
 			ADataSet					: TZQuery;
 			const AQuery			: String
 		);
+
+		function LastID(
+			const Field : String;
+			const Table : String;
+			const Append : String = ''
+		):LongWord;
 	end;
 //------------------------------------------------------------------------------
 
@@ -200,4 +206,41 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//LastID                                                                FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//		Get "last insert ID" by finx max
+//
+//	Changes -
+//		[2008/09/20] Aeomin - Created
+//
+//------------------------------------------------------------------------------
+function TQueryBase.LastID(
+	const Field : String;
+	const Table : String;
+	const Append : String = ''
+):LongWord;
+var
+	AQuery		: String;
+	ADataSet	: TZQuery;
+begin
+	Result := 0;
+
+	AQuery := 'SELECT MAX('+Field+') FROM '+Table+' '+Append + ';';
+	
+	ADataSet	:= TZQuery.Create(nil);
+	try
+		Query(ADataSet, AQuery);
+		ADataSet.First;
+		if NOT ADataSet.Eof then
+		begin
+			Result := ADataSet.Fields[0].AsInteger;
+		end;
+	finally
+		ADataSet.Free;
+	end;
+end;{LastID}
+//------------------------------------------------------------------------------
 end.

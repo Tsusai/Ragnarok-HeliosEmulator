@@ -314,7 +314,7 @@ procedure TMailQueries.Add(
 const
 	AQuery = 'INSERT INTO mailbox (`sender_id`,`sender_name`,`receiver_id`,`receiver_name`,`title`,`message`,`time`) VALUES '+
 		'(:SenderID,:SenderName,:ReceiverID,:ReceiverName,:Title,:Message,:Time);';
-	ALastID = 'SELECT max(id) as id FROM mailbox WHERE `receiver_id`=:ReceiverID;';
+	ALastID = 'SELECT MAX(id) as id FROM mailbox WHERE `receiver_id`=:ReceiverID;';
 var
 	ADataSet	: TZQuery;
 	ADataSet2	: TZQuery;

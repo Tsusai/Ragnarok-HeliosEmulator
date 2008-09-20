@@ -86,6 +86,9 @@ type
 			const CharID : LongWord;
 			const NewName : String
 		);
+
+		function GenerateStorageID:LongWord;
+		function CreateInventory:LongWord;
 	end;
 //------------------------------------------------------------------------------
 
@@ -97,6 +100,7 @@ uses
 	{RTL/VCL}
 	SysUtils,
 	Types,
+	Math,
 	{Project}
 	GameConstants,
 	{3rd Party}
@@ -453,7 +457,7 @@ const
 			'`status_points`=:StatusPoints, ' +
 			'`skill_points`=:SkillPoints, ' +
 			'`option`=:Option, ' +
-			//'inventory_id=:InventoryID, '+
+			'inventory_id=:InventoryID, '+
 			//'storage_id=:StorageID, '+
 			//'cart_inventory_id=:CartInventoryID, '+
 			'`party_id`=:PartyID, ' +
@@ -619,6 +623,12 @@ begin
 		//Option
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Option', ptInput);
 		AParam.AsInteger := ACharacter.Option;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//InventoryID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'InventoryID', ptInput);
+		AParam.AsInteger := ACharacter.Inventory.IventoryID;
 		ADataSet.Params.AddParam(
 			AParam
 		);
@@ -1061,4 +1071,90 @@ begin
 		ADataSet.Free;
 	end;
 end;
+
+
+//------------------------------------------------------------------------------
+//GenerateStorageID                                                    PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Generate an inventory GUID, improvement needed!
+//
+//	Changes -
+//		[2008/09/20] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function TCharacterQueries.GenerateStorageID:LongWord;
+const
+	AQuery = 'SELECT MAX(cart_inventory_id) FROM characters UNION SELECT MAX(item_storage_etc_id) FROM inventory UNION SELECT MAX(items_id) FROM itemstorage';
+var
+	ADataSet	: TZQuery;
+begin
+	Result := 0;
+	ADataSet	:= TZQuery.Create(nil);
+	try
+		Query(ADataSet, AQuery);
+		ADataSet.First;
+		while NOT ADataSet.Eof do
+		begin
+			Result:=Max(ADataSet.Fields[0].AsInteger,Result);
+			ADataSet.Next;
+		end;
+	finally
+		ADataSet.Free;
+	end;
+	Inc(Result);
+end;{GenerateStorageID}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GenerateStorageID                                                    PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Create an inventory record
+//
+//	Changes -
+//		[2008/09/20] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function TCharacterQueries.CreateInventory:LongWord;
+const
+	AQuery = 'INSERT INTO `inventory` (`item_storage_use_id`,`item_storage_equip_id`,`item_storage_etc_id`) VALUES '+
+		'(:UseID,:EquipID,:EtcID)';
+var
+	ID		: LongWord;
+	ADataSet	: TZQuery;
+	AParam		: TParam;
+begin
+	ID := GenerateStorageID;
+	ADataSet	:= TZQuery.Create(nil);
+	//UseID
+	AParam := ADataset.Params.CreateParam(ftInteger, 'UseID', ptInput);
+	AParam.AsInteger := ID;
+	ADataSet.Params.AddParam(
+		AParam
+	);
+	//EquipID
+	AParam := ADataset.Params.CreateParam(ftInteger, 'EquipID', ptInput);
+	AParam.AsInteger := ID+1;
+	ADataSet.Params.AddParam(
+		AParam
+	);
+	//EtcID
+	AParam := ADataset.Params.CreateParam(ftInteger, 'EtcID', ptInput);
+	AParam.AsInteger := ID+2;
+	ADataSet.Params.AddParam(
+		AParam
+	);
+	try
+		QueryNoResult(ADataSet, AQuery);
+		Result := LastID(
+			'`id`',
+			'`inventory`'
+			);
+	finally
+		ADataSet.Free;
+	end;
+end;{CreateInventory}
+//------------------------------------------------------------------------------
 end.
