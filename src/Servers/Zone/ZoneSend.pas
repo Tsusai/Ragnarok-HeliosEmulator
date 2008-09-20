@@ -36,6 +36,8 @@ uses
 	PacketTypes,
 	Mailbox,
 	Inventory,
+	Item,
+	InventoryList,
 	{Third Party}
 	IdContext
 	;
@@ -230,6 +232,11 @@ uses
 		AClient		: TIdContext;
 		const AInventory : TInventory
 	);
+	procedure SendNewItem(
+		AClient		: TIdContext;
+		const AInventory : TInventoryItem;
+		const Index	: Word
+	);
 implementation
 
 
@@ -242,9 +249,7 @@ uses
 	GameConstants,
 	Globals,
 	Main,
-	InventoryList,
 	ItemTypes,
-	Item,
 	UseableItem,
 	EquipmentItem,
 	MiscItem,
@@ -1606,7 +1611,7 @@ begin
 	WriteBufferWord(0, $0257, OutBuffer);
 	WriteBufferLongWord(2, MailID, OutBuffer);
 	WriteBufferWord(6, Byte(NOT Flag), OutBuffer);
-	SendBuffer(AChara.ClientInfo,OutBuffer,AChara.EAPACKETVER);
+	SendBuffer(AChara.ClientInfo,OutBuffer,PacketDB.GetLength($0257,AChara.ClientVersion));
 end;{SendDeleteMailResult}
 //------------------------------------------------------------------------------
 
@@ -1634,7 +1639,7 @@ var
 begin
 	WriteBufferWord(0, $0249, OutBuffer);
 	WriteBufferByte(2,Byte(Fail), OutBuffer);
-	SendBuffer(AChara.ClientInfo,OutBuffer,AChara.EAPACKETVER);
+	SendBuffer(AChara.ClientInfo,OutBuffer,PacketDB.GetLength($0249,AChara.ClientVersion));
 end;{SendMailResult}
 //------------------------------------------------------------------------------
 
@@ -1666,7 +1671,7 @@ begin
 	WriteBufferLongWord(2,MailID, OutBuffer);
 	WriteBufferString(6, Sender, NAME_LENGTH, OutBuffer);
 	WriteBufferString(6+NAME_LENGTH, Title, 40, OutBuffer);
-	SendBuffer(AChara.ClientInfo,OutBuffer,AChara.EAPACKETVER);
+	SendBuffer(AChara.ClientInfo,OutBuffer,PacketDB.GetLength($024a,AChara.ClientVersion));
 end;{SendNewMailNotify}
 //------------------------------------------------------------------------------
 
@@ -1767,5 +1772,52 @@ begin
 	WriteBufferWord(2, Len, OutBufferEquip);
 	SendBuffer(AClient, OutBufferEquip, Len);
 end;{SendInventory}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendNewItem                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		New item!!
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/09/20] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendNewItem(
+	AClient		: TIdContext;
+	const AInventory : TInventoryItem;
+	const Index	: Word
+);
+var
+	OutBuffer : TBuffer;
+begin
+	with AInventory.Item do
+	begin
+		WriteBufferWord(0, $02d4, OutBuffer);
+		WriteBufferWord(2, Index+3, OutBuffer);
+		WriteBufferWord(4, AInventory.Quantity, OutBuffer);
+		WriteBufferWord(6, ID, OutBuffer);
+		WriteBufferByte(8, 1, OutBuffer);
+		WriteBufferByte(9, 0, OutBuffer); //Broken?
+		WriteBufferByte(10, AInventory.Refined, OutBuffer);
+		WriteBufferWord(11, 0, OutBuffer);   //Card 1
+		WriteBufferWord(13, 0, OutBuffer);   //2
+		WriteBufferWord(15, 0, OutBuffer);   //3
+		WriteBufferWord(17, 0, OutBuffer);   //4
+		WriteBufferWord(19, 0, OutBuffer);
+		if AInventory.Item is TEquipmentItem then
+			WriteBufferByte(21, EquipTypeToByte(TEquipmentItem(AInventory.Item).EquipmentType), OutBuffer);
+		WriteBufferByte(22, 0, OutBuffer);  //Fail?
+		WriteBufferLongWord(23, 0, OutBuffer);
+		WriteBufferLongWord(27, 0, OutBuffer);
+		SendBuffer(AClient, OutBuffer, 29);
+	end;
+end;{SendNewItem}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

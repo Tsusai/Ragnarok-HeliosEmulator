@@ -61,6 +61,8 @@ uses
 
 	procedure GMEffect(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 	procedure GMWhere(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+
+	procedure GMItem(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 implementation
 uses
 	{RTL/VCL}
@@ -72,7 +74,9 @@ uses
 	ZoneSend,
 	PacketTypes,
 	Map,
-	GameConstants
+	GameConstants,
+	UseableItem,
+	ItemTypes
 	{Third Party}
 	;
 
@@ -1157,4 +1161,14 @@ begin
 	Error.Add('At  : ('+IntToStr(TargetChar.Position.X)+','+IntToStr(TargetChar.Position.Y)+')');
 end;{GMWhere}
 //------------------------------------------------------------------------------
+
+procedure GMItem(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+var
+	AnItem : TUseableItem;
+begin
+	AnItem := TUseableItem.Create;
+	AnItem.ID := 502;
+	AnItem.ItemType := USEABLE;
+	TargetChar.Inventory.Add(AnItem,100);
+end;
 end{GMCommandExe}.

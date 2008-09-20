@@ -376,7 +376,8 @@ var
 				Load(AItem);
 				AnInventory.Add(
 					AItem,
-					Amount
+					Amount,
+					True
 				);
 				ADataSet.Next;
 			end;
@@ -404,7 +405,8 @@ var
 				Load(AItem);
 				AnInventory.Add(
 					AItem,
-					Amount
+					Amount,
+					True
 				);
 				ADataSet.Next;
 			end;
@@ -432,7 +434,8 @@ var
 				Load(AItem);
 				AnInventory.Add(
 					AItem,
-					Amount
+					Amount,
+					True
 				);
 				ADataSet.Next;
 			end;

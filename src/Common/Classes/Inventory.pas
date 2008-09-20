@@ -73,8 +73,11 @@ TInventory = class(TObject)
 protected
 	fItemList : TInventoryList;
 	ClientInfo : TIdContext;
-	Function GetItem(Index : Integer) : TItem;
-	Procedure UpdateItemQuantity(const Index : Integer; const Quantity : Word);
+	fCountUseable	: Word;
+	fCountEquip	: Word;
+	fCountMisc	: Word;
+	function GetItem(Index : Integer) : TItem;
+	procedure UpdateItemQuantity(const Index : Integer; const Quantity : Word);
 public
 	IventoryID : LongWord;
 	StorageID  : LongWord;
@@ -83,24 +86,30 @@ public
 	EtcID      : LongWord;
 	
 	property ItemList : TInventoryList read fItemList;
-	Property Items[Index : Integer] : TItem Read GetItem;
-	Procedure Add(AnItem : TItem; Quantity : Word);
-	Procedure Remove(AnItem : TItem; Quantity : Word);
-	Procedure Delete(Index : Integer);
-	Constructor Create(Parent : TObject);
-	Destructor Destroy;override;
+	property Items[Index : Integer] : TItem Read GetItem;
+	property CountUseable	: Word read fCountUseable;
+	property CountEquip	: Word read fCountEquip;
+	property CountMisc	: Word read fCountMisc;
+	procedure Add(AnItem : TItem; Quantity : Word;const DontSend:Boolean=False);overload;
+	procedure Add(const AnInventoryItem : TInventoryItem;const DontSend:Boolean=False);overload;
+	procedure Remove(AnItem : TItem; Quantity : Word);
+	procedure Delete(Index : Integer);
+	constructor Create(Parent : TObject);
+	destructor Destroy;override;
 end;(* TInventory
 *== CLASS ====================================================================*)
 
 
 implementation
 uses
-	Character;
-
-//uses
 	{RTL/VCL}
 	{Project}
-
+	Character,
+	ZoneSend,
+	UseableItem,
+	EquipmentItem,
+	MiscItem
+	;
 	{Third Party}
 	//none
 
@@ -128,6 +137,9 @@ begin
 	inherited Create;
 	self.ClientInfo := TCharacter(Parent).ClientInfo;
 	fItemList := TInventoryList.Create(FALSE);
+	fCountUseable := 0;
+	fCountEquip := 0;
+	fCountMisc := 0;
 End; (* Cons TInventory.Create
 *-----------------------------------------------------------------------------*)
 
@@ -177,12 +189,67 @@ begin
 end;
 
 
-Procedure TInventory.Add(AnItem: TItem; Quantity: Word);
+Procedure TInventory.Add(AnItem: TItem; Quantity: Word;const DontSend:Boolean=False);
+var
+	Index : Word;
 begin
+	Index := 0;
 	fItemList.Add(AnItem, Quantity);
-	//Send Packet here
+	if AnItem is TUseableItem then
+	begin
+		Inc(fCountUseable);
+		Index := fCountUseable;
+	end else
+	if AnItem is TEquipmentItem then
+	begin
+		Inc(fCountEquip);
+		Index := fCountEquip;
+	end else
+	if AnItem is TMiscItem then
+	begin
+		Inc(fCountMisc);
+		Index := fCountMisc;
+	end;
+	if not DontSend then
+	begin
+		SendNewItem(
+			ClientInfo,
+			fItemList.Items[Index-1],
+			Index-1
+		);
+	end;
 end;
 
+procedure TInventory.Add(const AnInventoryItem : TInventoryItem;const DontSend:Boolean=False);
+var
+	Index : Word;
+begin
+	Index := 0;
+	fItemList.Add(AnInventoryItem);
+	if AnInventoryItem.Item is TUseableItem then
+	begin
+		Inc(fCountUseable);
+		Index := fCountUseable;
+	end else
+	if AnInventoryItem.Item is TEquipmentItem then
+	begin
+		Inc(fCountEquip);
+		Index := fCountEquip;
+	end else
+	if AnInventoryItem.Item is TMiscItem then
+	begin
+		Inc(fCountMisc);
+		Index := fCountMisc;
+	end;
+	if not DontSend then
+	begin
+		SendNewItem(
+			ClientInfo,
+			AnInventoryItem,
+			Index-1
+		);
+	end;
+end;
 
 Procedure TInventory.Delete(Index : Integer);
 begin

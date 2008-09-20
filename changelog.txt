@@ -15,6 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 495 -
+[2008/09/20] Aeomin - Phrase 1 of add item.
+[2008/09/20] Aeomin - Added command #item to attemp get 100 orange potions
+   (No database involved, still testing packets)
+[2008/09/20] Aeomin - Some tweaks.
+-
+
 - Rev 494 -
 [2008/09/20] Aeomin - Forgot to load definitions.
 [2008/09/20] Aeomin - Fixed client ignore first item (Something just not right...)
