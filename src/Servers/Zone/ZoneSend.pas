@@ -1800,7 +1800,7 @@ begin
 	with AInventory.Item do
 	begin
 		WriteBufferWord(0, $02d4, OutBuffer);
-		WriteBufferWord(2, Index+2, OutBuffer);
+		WriteBufferWord(2, Index+3, OutBuffer);
 		WriteBufferWord(4, AInventory.Quantity, OutBuffer);
 		WriteBufferWord(6, ID, OutBuffer);
 		WriteBufferByte(8, 1, OutBuffer);
@@ -1811,8 +1811,7 @@ begin
 		WriteBufferWord(15, 0, OutBuffer);   //3
 		WriteBufferWord(17, 0, OutBuffer);   //4
 		WriteBufferWord(19, 0, OutBuffer);
-		if AInventory.Item is TEquipmentItem then
-			WriteBufferByte(21, EquipTypeToByte(TEquipmentItem(AInventory.Item).EquipmentType), OutBuffer);
+		WriteBufferByte(21, ItemTypeToByte(ItemType), OutBuffer);;
 		WriteBufferByte(22, 0, OutBuffer);  //Fail?
 		WriteBufferLongWord(23, 0, OutBuffer);
 		WriteBufferLongWord(27, 0, OutBuffer);

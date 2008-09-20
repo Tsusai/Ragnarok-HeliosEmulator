@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 497 -
+[2008/09/20] Aeomin - Use #item to win orange potions, kthxbye
+-
+
 - Rev 496 -
 [2008/09/20] Aeomin - Fixed Index, BUT ITEM STILL WON'T ADD
 -
