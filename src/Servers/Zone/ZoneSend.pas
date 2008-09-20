@@ -1800,7 +1800,7 @@ begin
 	with AInventory.Item do
 	begin
 		WriteBufferWord(0, $02d4, OutBuffer);
-		WriteBufferWord(2, Index+3, OutBuffer);
+		WriteBufferWord(2, Index+2, OutBuffer);
 		WriteBufferWord(4, AInventory.Quantity, OutBuffer);
 		WriteBufferWord(6, ID, OutBuffer);
 		WriteBufferByte(8, 1, OutBuffer);

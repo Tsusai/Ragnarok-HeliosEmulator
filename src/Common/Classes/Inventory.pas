@@ -73,9 +73,8 @@ TInventory = class(TObject)
 protected
 	fItemList : TInventoryList;
 	ClientInfo : TIdContext;
-	fCountUseable	: Word;
+	fCountItem	: Word;
 	fCountEquip	: Word;
-	fCountMisc	: Word;
 	function GetItem(Index : Integer) : TItem;
 	procedure UpdateItemQuantity(const Index : Integer; const Quantity : Word);
 public
@@ -87,9 +86,8 @@ public
 	
 	property ItemList : TInventoryList read fItemList;
 	property Items[Index : Integer] : TItem Read GetItem;
-	property CountUseable	: Word read fCountUseable;
+	property Countitem	: Word read fCountItem;
 	property CountEquip	: Word read fCountEquip;
-	property CountMisc	: Word read fCountMisc;
 	procedure Add(AnItem : TItem; Quantity : Word;const DontSend:Boolean=False);overload;
 	procedure Add(const AnInventoryItem : TInventoryItem;const DontSend:Boolean=False);overload;
 	procedure Remove(AnItem : TItem; Quantity : Word);
@@ -137,9 +135,8 @@ begin
 	inherited Create;
 	self.ClientInfo := TCharacter(Parent).ClientInfo;
 	fItemList := TInventoryList.Create(FALSE);
-	fCountUseable := 0;
+	fCountItem := 0;
 	fCountEquip := 0;
-	fCountMisc := 0;
 End; (* Cons TInventory.Create
 *-----------------------------------------------------------------------------*)
 
@@ -195,26 +192,22 @@ var
 begin
 	Index := 0;
 	fItemList.Add(AnItem, Quantity);
-	if AnItem is TUseableItem then
+	if (AnItem is TUseableItem) OR
+	(AnItem is TMiscItem) then
 	begin
-		Inc(fCountUseable);
-		Index := fCountUseable;
+		Inc(fCountItem);
+		Index := fCountItem;
 	end else
 	if AnItem is TEquipmentItem then
 	begin
 		Inc(fCountEquip);
 		Index := fCountEquip;
-	end else
-	if AnItem is TMiscItem then
-	begin
-		Inc(fCountMisc);
-		Index := fCountMisc;
 	end;
 	if not DontSend then
 	begin
 		SendNewItem(
 			ClientInfo,
-			fItemList.Items[Index-1],
+			fItemList.Items[fItemList.Count-1],
 			Index-1
 		);
 	end;
@@ -226,20 +219,16 @@ var
 begin
 	Index := 0;
 	fItemList.Add(AnInventoryItem);
-	if AnInventoryItem.Item is TUseableItem then
+	if (AnInventoryItem.Item is TUseableItem)OR
+	(AnInventoryItem.Item is TMiscItem) then
 	begin
-		Inc(fCountUseable);
-		Index := fCountUseable;
+		Inc(fCountItem);
+		Index := fCountItem;
 	end else
 	if AnInventoryItem.Item is TEquipmentItem then
 	begin
 		Inc(fCountEquip);
 		Index := fCountEquip;
-	end else
-	if AnInventoryItem.Item is TMiscItem then
-	begin
-		Inc(fCountMisc);
-		Index := fCountMisc;
 	end;
 	if not DontSend then
 	begin

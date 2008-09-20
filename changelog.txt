@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 496 -
+[2008/09/20] Aeomin - Fixed Index, BUT ITEM STILL WON'T ADD
+-
+
 - Rev 495 -
 [2008/09/20] Aeomin - Phrase 1 of add item.
 [2008/09/20] Aeomin - Added command #item to attemp get 100 orange potions
