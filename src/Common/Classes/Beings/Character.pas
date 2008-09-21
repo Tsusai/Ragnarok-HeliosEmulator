@@ -261,6 +261,7 @@ public
 	procedure CalcSpeed; override;
 	procedure CalcMaxWeight;
 	procedure CalcHIT;
+  procedure CalcFLEE;
 
 	procedure SendSubStat(
 		const Mode     : Word;
@@ -2090,6 +2091,7 @@ begin
   CalcSpeed;
   CalcASpeed;
   CalcHIT;
+  CalcFLEE;
 
 	//Speed
 	SendSubStat(0, 0, Speed);
@@ -2364,8 +2366,30 @@ end;{CalcMaxWeight}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcHIT;
 begin
-    HIT := EnsureRange(Word(ParamBase[DEX] + fBaseLv), 0, High(HIT));
+    HIT := EnsureRange(Word(ParamBase[DEX] + ParamBonus[DEX] + fBaseLv), 0, High(HIT));
 end;{CalcHIT}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CalcFLEE                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Calculates the character's FLEE (Rate)
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	Status effects on FLEE
+// --
+//	Changes -
+//		September 21th, 2008 - RabidCh - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.CalcFLEE;
+begin
+    HIT := EnsureRange(Word(ParamBase[AGI] + ParamBonus[AGI] + fBaseLv), 0, High(FLEE1));
+end;{CalcFLEE}
 //------------------------------------------------------------------------------
 
 
@@ -2476,6 +2500,7 @@ begin
       CalcSpeed;
       CalcASpeed;
       CalcHIT;
+      CalcFLEE;
 
 			//Set hp and sp to full if enabled in the ini.
 			if MainProc.ZoneServer.Options.FullHPOnLevelUp then

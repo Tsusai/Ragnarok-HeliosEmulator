@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 500 -
+[2008/09/21] RabidCh - Added Flee.
+[2008/09/21] RabidCh - Forgot stat bonuses for Hit.
+-
+
 - Rev 499 -
 [2008/09/20] RabidCh - Forgot Version.pas.
 -

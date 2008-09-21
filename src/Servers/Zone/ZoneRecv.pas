@@ -1355,7 +1355,7 @@ begin
       // Update information relating to change
 			AChara.CalcASpeed;
       AChara.CalcHIT;
-//    AChara.CalcFlee;  Placeholder.
+      AChara.CalcFlee;
 		end;
 		
 		if Def = 0 then
