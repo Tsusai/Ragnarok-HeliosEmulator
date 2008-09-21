@@ -260,6 +260,7 @@ public
 	procedure CalcMaxSP; override;
 	procedure CalcSpeed; override;
 	procedure CalcMaxWeight;
+	procedure CalcHIT;
 
 	procedure SendSubStat(
 		const Mode     : Word;
@@ -330,7 +331,7 @@ public
 	property HomunID   : LongWord   read fHomunID write SetHomunID;
 	property Weight    : LongWord   read fWeight write SetWeight;
 	property MaxWeight : LongWord   read fMaxWeight write SetMaxWeight;
-	property JobName   : String     read  fJobName;
+	property JobName   : String     read fJobName;
 end;{TCharacter}
 
 implementation
@@ -1938,7 +1939,7 @@ end;{CalcMaxHP}
 //SendSubStat                                                          PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//		Send sub state defined by Mode(speed, Def,MDef etc...),
+//		Send sub stat defined by Mode(speed, Def,MDef etc...),
 //		send party info, and Recalculate Weight
 //
 ///	Parameters-
@@ -2082,6 +2083,14 @@ var
 	idx :integer;
 	OutBuffer : TBuffer;
 begin
+  //Calculate all stats before sending
+  CalcMaxHP;
+  CalcMaxSP;
+  CalcMaxWeight;
+  CalcSpeed;
+  CalcASpeed;
+  CalcHIT;
+
 	//Speed
 	SendSubStat(0, 0, Speed);
 	//HPSP
@@ -2321,6 +2330,8 @@ end;{CalcSpeed}
 //		January 24th, 2007 - RaX - Created.
 //		July 24th, 2007 - RaX - Cleaned up super long calculation to make it
 //			easier to read, also added try finally around connect/disconnect.
+//    September 20th, 2008 - RabidCh - Addition of ParamBonus[STR] instead of
+//      subtraction.
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMaxWeight;
@@ -2328,11 +2339,33 @@ begin
 	if ClientInfo <> nil then
 	begin
 		MaxWeight  := EnsureRange(
-			  LongWord((ParamBase[STR] - ParamBonus[STR]) * 300) +
+			  LongWord((ParamBase[STR] + ParamBonus[STR]) * 300) +
 				TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetMaxWeight(self)
 				, 0, High(fMaxWeight));
 	end;
 end;{CalcMaxWeight}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CalcHIT                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Calculates the character's HIT (Rate)
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	Status effects on HIT
+// --
+//	Changes -
+//		September 20th, 2008 - RabidCh - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.CalcHit;
+begin
+    HIT := EnsureRange(Word(ParamBase[DEX] + fBaseLv), 0, High(HIT));
+end;{CalcHIT}
 //------------------------------------------------------------------------------
 
 
@@ -2436,11 +2469,13 @@ begin
 			fBaseLv := TempLevel;
 			//Run stat calculations.
 			BaseEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
-			CalcMaxWeight;
-			CalcMaxHP;
-			CalcMaxSP;
-			CalcSpeed;
-			CalcASpeed;
+      //Calculate all
+      CalcMaxHP;
+      CalcMaxSP;
+      CalcMaxWeight;
+      CalcSpeed;
+      CalcASpeed;
+      CalcHIT;
 
 			//Set hp and sp to full if enabled in the ini.
 			if MainProc.ZoneServer.Options.FullHPOnLevelUp then

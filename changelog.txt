@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 498 -
+[2008/09/20] RabidCh - Added Hit.
+[2008/09/20] RabidCh - Bonus STR is added to the base, not subtracted.
+-
+
 - Rev 497 -
 [2008/09/20] Aeomin - Use #item to win orange potions, kthxbye
 -

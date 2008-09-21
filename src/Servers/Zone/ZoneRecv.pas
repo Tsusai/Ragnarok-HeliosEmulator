@@ -1352,7 +1352,10 @@ begin
 		Def := AChara.ParamBase[LocalType] - OldAmount;
 		if LocalType in [AGI, DEX] then
 		begin
+      // Update information relating to change
 			AChara.CalcASpeed;
+      AChara.CalcHIT;
+//    AChara.CalcFlee;  Placeholder.
 		end;
 		
 		if Def = 0 then
