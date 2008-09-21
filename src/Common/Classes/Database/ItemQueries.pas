@@ -63,7 +63,7 @@ type
 
 	public
 		Procedure  Load(
-			const AnItem : TItem
+			var AnItem : TItem
 		);
 
 		{Procedure Save(
@@ -78,9 +78,16 @@ type
 			const AnItem : TItem
 		); }
 
-		procedure  FillInventory(
+		procedure FillInventory(
 			const AnInventory : TInventory
 		);
+
+		function Find(
+			const ID : Word
+		):Boolean;overload;
+		function Find(
+			const Name : String
+		):Word;overload;
 
 	end;
 //------------------------------------------------------------------------------
@@ -115,23 +122,50 @@ uses
 //
 //------------------------------------------------------------------------------
 Procedure TItemQueries.Load(
-	const AnItem : TItem
+	var AnItem : TItem
 );
+var
+	EquipmentItem : TEquipmentItem;
+	UseableItem	: TUseableItem;
+	MiscItem	: TMiscItem;
+
+	procedure ChangeType(const Input:TItem;const Output:TItem);
+	begin
+		Output.Name	:= Input.Name;
+		Output.ID	:= Input.ID;
+		Output.Weight	:= Input.Weight;
+		Output.Price	:= Input.Price;
+		Output.Sell	:= Input.Sell;
+		Output.ItemType	:= Input.ItemType;
+		Output.SpriteID	:= Input.SpriteID;
+	end;
 begin
 	LoadDefinition(AnItem);
 	//LoadInstance(AnItem);
 
-	if AnItem IS TEquipmentItem then
+	if AnItem.ItemType = Equipment then
 	begin
-		LoadEquipmentDefinition(TEquipmentItem(AnItem));
+		EquipmentItem := TEquipmentItem.Create;
+		ChangeType(AnItem, EquipmentItem);
+		AnItem.Free;
+		LoadEquipmentDefinition(EquipmentItem);
+		AnItem:=EquipmentItem;
 	end else
-	if AnItem IS TUseableItem then
+	if AnItem.ItemType = Useable then
 	begin
-		LoadUseableDefinition(TUseableItem(AnItem));
+		UseableItem := TUseableItem.Create;
+		ChangeType(AnItem, UseableItem);
+		AnItem.Free;
+		LoadUseableDefinition(UseableItem);
+		AnItem:=UseableItem;
 	end else
-	if AnItem IS TMiscItem then
+	if AnItem.ItemType = Misc then
 	begin
-		LoadMiscDefinition(TMiscItem(AnItem));
+		MiscItem := TMiscItem.Create;
+		ChangeType(AnItem, MiscItem);
+		AnItem.Free;
+		LoadMiscDefinition(MiscItem);
+		AnItem:=MiscItem;
 	end;
 
 end;//Load
@@ -370,7 +404,7 @@ var
 			ADataSet.First;
 			while NOT ADataSet.Eof do
 			begin
-				AItem := TUseableItem.Create;
+				AItem := TItem.Create;
 				AItem.ID := ADataSet.Fields[0].AsInteger;
 				Amount := ADataSet.Fields[1].AsInteger;
 				Load(AItem);
@@ -399,7 +433,7 @@ var
 			ADataSet.First;
 			while NOT ADataSet.Eof do
 			begin
-				AItem := TEquipmentItem.Create;
+				AItem := TItem.Create;
 				AItem.ID := ADataSet.Fields[0].AsInteger;
 				Amount := ADataSet.Fields[1].AsInteger;
 				Load(AItem);
@@ -428,7 +462,7 @@ var
 			ADataSet.First;
 			while NOT ADataSet.Eof do
 			begin
-				AItem := TMiscItem.Create;
+				AItem := TItem.Create;
 				AItem.ID := ADataSet.Fields[0].AsInteger;
 				Amount := ADataSet.Fields[1].AsInteger;
 				Load(AItem);
@@ -448,5 +482,83 @@ begin
 	LoadEquipment;
 	LoadEtc;
 end;{FillInventory}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Find                                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Check if item exists
+//
+//	Changes -
+//		[2008/09/20] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function TItemQueries.Find(
+	const ID : Word
+):Boolean;
+const
+	AQuery = 'SELECT id FROM itemdefinitions WHERE id=:ID';
+var
+	ADataSet	: TZQuery;
+	AParam		: TParam;
+begin
+	ADataSet	:= TZQuery.Create(nil);
+	try
+		//ID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'ID', ptInput);
+		AParam.AsInteger := ID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		Query(ADataSet, AQuery);
+		ADataSet.First;
+		Result := NOT ADataSet.Eof;
+	finally
+		ADataSet.Free;
+	end;
+end;{Find}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Find                                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Check if item exists; return zero is not found.
+//
+//	Changes -
+//		[2008/09/20] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function TItemQueries.Find(
+	const Name : String
+):Word;
+const
+	AQuery = 'SELECT id FROM itemdefinitions WHERE name=:Name';
+var
+	ADataSet	: TZQuery;
+	AParam		: TParam;
+begin
+	Result := 0;
+	ADataSet	:= TZQuery.Create(nil);
+	try
+		//ID
+		AParam := ADataset.Params.CreateParam(ftString, 'Name', ptInput);
+		AParam.AsString := Name;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		Query(ADataSet, AQuery);
+		ADataSet.First;
+		if NOT ADataSet.Eof then
+		begin
+			Result := ADataSet.Fields[0].AsInteger;
+		end;
+	finally
+		ADataSet.Free;
+	end;
+end;{Find}
 //------------------------------------------------------------------------------
 end.

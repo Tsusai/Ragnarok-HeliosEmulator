@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 501 -
+[2008/09/21] Aeomin - Now #item need specify item, but still doesn't save into database though.
+-
+
 - Rev 500 -
 [2008/09/21] RabidCh - Added Flee.
 [2008/09/21] RabidCh - Forgot stat bonuses for Hit.

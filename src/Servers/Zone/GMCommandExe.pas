@@ -75,7 +75,7 @@ uses
 	PacketTypes,
 	Map,
 	GameConstants,
-	UseableItem,
+	Item,
 	ItemTypes
 	{Third Party}
 	;
@@ -1164,11 +1164,35 @@ end;{GMWhere}
 
 procedure GMItem(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 var
-	AnItem : TUseableItem;
+	ID : Word;
+	Amount : Word;
+	Valid : Boolean;
+	AnItem : TItem;
 begin
-	AnItem := TUseableItem.Create;
-	AnItem.ID := 502;
-	AnItem.ItemType := USEABLE;
-	TargetChar.Inventory.Add(AnItem,100);
+	if (Length(Arguments) >= 2) then
+	begin
+		ID := StrToIntDef(Arguments[0], 0);
+		if (Length(Arguments) >= 3) then
+			Amount := EnsureRange(StrToIntDef(Arguments[1], 1),1,High(Word))
+		else
+			Amount := 1;
+		if ID >0 then
+			Valid := TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Items.Find(ID)
+		else
+		begin
+			ID := TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Items.Find(Arguments[0]);
+			Valid := ID > 0;
+		end;
+		if Valid then
+		begin
+			AnItem := TItem.Create;
+			AnItem.ID := ID;
+			TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Items.Load(AnItem);
+			TargetChar.Inventory.Add(AnItem,Amount);
+		end else
+		begin
+			Error.Add('Item not found!');
+		end;
+	end;
 end;
 end{GMCommandExe}.

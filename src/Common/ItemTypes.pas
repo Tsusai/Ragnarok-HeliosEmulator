@@ -90,7 +90,7 @@ begin
 	case AnItemType of
 		EQUIPMENT :
 			begin
-				Result := 1;
+				Result := 4;
 			end;
 		USEABLE :
 			begin
@@ -107,7 +107,7 @@ end;{ItemTypeToByte}
 function ByteToItemType(AByte : Byte) : TItemType;
 begin
 	case AByte of
-		1 :
+		4 :
 			begin
 				Result := EQUIPMENT;
 			end;

@@ -90,6 +90,7 @@ public
 	property CountEquip	: Word read fCountEquip;
 	procedure Add(AnItem : TItem; Quantity : Word;const DontSend:Boolean=False);overload;
 	procedure Add(const AnInventoryItem : TInventoryItem;const DontSend:Boolean=False);overload;
+	function Add(const ID:Word;const Quantity:Word):Boolean;overload;
 	procedure Remove(AnItem : TItem; Quantity : Word);
 	procedure Delete(Index : Integer);
 	constructor Create(Parent : TObject);
@@ -103,6 +104,7 @@ uses
 	{RTL/VCL}
 	{Project}
 	Character,
+	PacketTypes,
 	ZoneSend,
 	UseableItem,
 	EquipmentItem,
@@ -187,58 +189,56 @@ end;
 
 
 Procedure TInventory.Add(AnItem: TItem; Quantity: Word;const DontSend:Boolean=False);
-var
-	Index : Word;
 begin
-	Index := 0;
 	fItemList.Add(AnItem, Quantity);
 	if (AnItem is TUseableItem) OR
 	(AnItem is TMiscItem) then
 	begin
 		Inc(fCountItem);
-		Index := fCountItem;
 	end else
 	if AnItem is TEquipmentItem then
 	begin
 		Inc(fCountEquip);
-		Index := fCountEquip;
 	end;
 	if not DontSend then
 	begin
 		SendNewItem(
 			ClientInfo,
 			fItemList.Items[fItemList.Count-1],
-			Index-1
+			fItemList.Count-1
 		);
 	end;
 end;
 
 procedure TInventory.Add(const AnInventoryItem : TInventoryItem;const DontSend:Boolean=False);
-var
-	Index : Word;
 begin
-	Index := 0;
 	fItemList.Add(AnInventoryItem);
 	if (AnInventoryItem.Item is TUseableItem)OR
 	(AnInventoryItem.Item is TMiscItem) then
 	begin
 		Inc(fCountItem);
-		Index := fCountItem;
 	end else
 	if AnInventoryItem.Item is TEquipmentItem then
 	begin
 		Inc(fCountEquip);
-		Index := fCountEquip;
 	end;
 	if not DontSend then
 	begin
 		SendNewItem(
 			ClientInfo,
 			AnInventoryItem,
-			Index-1
+			fItemList.Count-1
 		);
 	end;
 end;
+
+
+function TInventory.Add(const ID:Word;const Quantity:Word):Boolean;
+begin
+	Result := False;
+	{TODO:Implement}
+end;
+
 
 Procedure TInventory.Delete(Index : Integer);
 begin
