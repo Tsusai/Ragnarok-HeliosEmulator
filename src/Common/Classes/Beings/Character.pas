@@ -2362,7 +2362,7 @@ end;{CalcMaxWeight}
 //		September 20th, 2008 - RabidCh - Created.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.CalcHit;
+procedure TCharacter.CalcHIT;
 begin
     HIT := EnsureRange(Word(ParamBase[DEX] + fBaseLv), 0, High(HIT));
 end;{CalcHIT}
