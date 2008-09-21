@@ -176,7 +176,6 @@ public
 	//No idea what 0..5 is from.  Stats?
 	ATK					: Word;
 
-	//For Mobs and NPCs, Leave #2's alone (0), and use #1s
 	MATK1				: Word;
 	MATK2				: Word;
 	DEF1				: Word;

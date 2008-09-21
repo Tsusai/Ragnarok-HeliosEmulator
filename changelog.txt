@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+
+- Rev 502 -
+[2008/09/21] RabidCh - Removed /trunk/bin/SQL from SVN.
+-
+
 - Rev 501 -
 [2008/09/21] Aeomin - Now #item need specify item, but still doesn't save into database though.
 -
