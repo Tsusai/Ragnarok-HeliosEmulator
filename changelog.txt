@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 504 -
+[2008/09/21] Aeomin - Added Save & New in ItemQueries to prepare data saving.
+[2008/09/21] Aeomin - Code cleanup in ItemQueries.
+-
+
 - Rev 503 -
 [2008/09/21] Aeomin - Stackable items should stack up now.
 [2008/09/21] Aeomin - Inventory List now have "smart" index management.

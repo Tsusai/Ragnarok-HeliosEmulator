@@ -1741,11 +1741,7 @@ begin
 			begin
 				EquipmentItem := InventoryItem.Item as TEquipmentItem;
 				WriteBufferWord(OffSetEquip, Index+1, OutBufferEquip);    //Index
-				//View ID?
-				if EquipmentItem.ViewID > 0 then
-					WriteBufferWord(OffSetEquip+2, EquipmentItem.ViewID, OutBufferEquip)
-				else
-					WriteBufferWord(OffSetEquip+2, EquipmentItem.ID, OutBufferEquip);  //ID
+				WriteBufferWord(OffSetEquip+2, EquipmentItem.ID, OutBufferEquip);  //ID
 				WriteBufferByte(OffSetEquip+4, 5, OutBufferEquip);    //Type
 				WriteBufferByte(OffSetEquip+5, Byte(InventoryItem.Identified), OutBufferEquip);    //Identified
 				WriteBufferWord(OffSetEquip+6, EquipTypeToByte(EquipmentItem.EquipmentType), OutBufferEquip);
@@ -1809,7 +1805,10 @@ begin
 		WriteBufferWord(13, 0, OutBuffer);   //2
 		WriteBufferWord(15, 0, OutBuffer);   //3
 		WriteBufferWord(17, 0, OutBuffer);   //4
-//		WriteBufferWord(19, EquipTypeToByte(EquipmentItem.EquipmentType), OutBuffer);
+		if AInventory.Item is TEquipmentItem then
+		begin
+			WriteBufferWord(19, EquipTypeToByte(TEquipmentItem(AInventory.Item).EquipmentType), OutBuffer);
+		end;
 		WriteBufferByte(21, ItemTypeToByte(ItemType), OutBuffer);;
 		WriteBufferByte(22, 0, OutBuffer);  //Fail?
 		WriteBufferLongWord(23, 0, OutBuffer);

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//ZoneOptions	                                                         UNIT
+//ZoneOptions                                                               UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //			This unit is used to gain access to configuration variables loaded from
@@ -22,11 +22,11 @@ interface
 	type
 
 //------------------------------------------------------------------------------
-//TZoneOptions	                                                        CLASS
+//TZoneOptions                                                             CLASS
 //------------------------------------------------------------------------------
 		TZoneOptions = class(TMemIniFile)
 		private
-//private variables
+			//private variables
 			fID           : LongWord;
 			fPort		      : Word;
 			fEnabled      : boolean;
@@ -68,7 +68,10 @@ interface
 
 			fMaxStats : Integer;
 
-//Gets/Sets
+			fMaxStackItem : Word;
+			fMaxItems : Word;
+
+			//Gets/Sets
 			procedure SetPort(Value : Word);
 			procedure SetWANIP(Value : String);
 			procedure SetLANIP(Value : String);
@@ -121,6 +124,9 @@ interface
 
 			property MaxCharacterStats : Integer read fMaxStats;
 
+			property MaxStackItem : Word read fMaxStackItem;
+			property MaxItems : Word read fMaxItems;
+
 			//Public methods
 			procedure Load;
 			procedure Save;
@@ -135,7 +141,7 @@ implementation
 		NetworkConstants;
 
 //------------------------------------------------------------------------------
-//Load()                                               PROCEDURE
+//Load                                                                 PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			This routine is called to load the ini file values from file itself.
@@ -248,6 +254,8 @@ implementation
 			fFullHPOnLevelUp := StrToBoolDef(Section.Values['Full HP on Level up?'], TRUE);
 			fFullSPOnLevelUp := StrToBoolDef(Section.Values['Full SP on Level up?'], TRUE);
 			fMaxStats := StrToIntDef(Section.Values['Max. Character Stats'], 99);
+			fMaxStackItem := EnsureRange(StrToIntDef(Section.Values['MaxStackItem'], 30000),0,High(Word));
+			fMaxItems := EnsureRange(StrToIntDef(Section.Values['MaxItems'], 100),0,High(Word));
 		end;{Subroutine LoadPerformance}
 	//--------------------------------------------------------------------------
 
@@ -334,6 +342,9 @@ implementation
 		WriteString('Game','Full SP On Level Up?',BoolToStr(fFullSPOnLevelUp));
 
 		WriteString('Game','Max. Character Stats',IntToStr(fMaxStats));
+
+		WriteString('Game','MaxStackItem',IntToStr(fMaxStackItem));
+		WriteString('Game','MaxItems',IntToStr(fMaxItems));
 		//Options
 
 		UpdateFile;

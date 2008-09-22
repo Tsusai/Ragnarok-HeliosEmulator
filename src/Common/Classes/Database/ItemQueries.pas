@@ -27,6 +27,7 @@ uses
 	UseableItem,
 	MiscItem,
 	Inventory,
+	InventoryList,
 	QueryBase,
 	{3rd Party}
 	ZSqlUpdate
@@ -62,17 +63,19 @@ type
 		); }
 
 	public
-		Procedure  Load(
+		procedure Load(
 			var AnItem : TItem
 		);
 
-		{Procedure Save(
-			const AnItem : TItem
-		); }
+		procedure Save(
+			const AnItem : TInventoryItem;
+			const AnInventory : TInventory
+		);
 
-		{procedure  New(
-			const AnItem : TItem
-		);}
+		procedure New(
+			const AnItem : TInventoryItem;
+			const AnInventory : TInventory
+		);
 
 		{Procedure  Delete(
 			const AnItem : TItem
@@ -369,6 +372,156 @@ end;{LoadMiscDefinition}
 
 
 //------------------------------------------------------------------------------
+//Save                                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Save an item instance
+//
+//	Changes -
+//		[2008/09/21] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure TItemQueries.Save(
+	const AnItem : TInventoryItem;
+	const AnInventory : TInventory
+);
+const
+	AQuery = 'UPDATE items SET item_storage_id=:StorageID, amount=:Amount, '+
+	'last_x=:X, last_y=:Y, last_map_id=:MapID WHERE `id`=:ID';
+var
+	ADataSet	: TZQuery;
+	AParam		: TParam;
+begin
+	ADataSet	:= TZQuery.Create(nil);
+	try
+		//ID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'ID', ptInput);
+		AParam.AsInteger := AnItem.DataID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//StorageID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'StorageID', ptInput);
+		if AnItem.Item is TUseableItem then
+			AParam.AsInteger := AnInventory.UseID
+		else
+		if AnItem.Item is TEquipmentItem then
+			AParam.AsInteger := AnInventory.EquipID
+		else
+		if AnItem.Item is TMiscItem then
+			AParam.AsInteger := AnInventory.EtcID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//Amount
+		AParam := ADataset.Params.CreateParam(ftInteger, 'Amount', ptInput);
+		AParam.AsInteger := AnItem.Quantity;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//X
+		AParam := ADataset.Params.CreateParam(ftInteger, 'X', ptInput);
+		AParam.AsInteger := AnItem.X;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//Y
+		AParam := ADataset.Params.CreateParam(ftInteger, 'Y', ptInput);
+		AParam.AsInteger := AnItem.Y;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//MapID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'MapID', ptInput);
+		AParam.AsInteger := AnItem.MapID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		QueryNoResult(ADataSet, AQuery);
+	finally
+		ADataSet.Free;
+	end;
+end;{Save}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//New                                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Create a new record in database
+//
+//	Changes -
+//		[2008/09/21] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure TItemQueries.New(
+	const AnItem : TInventoryItem;
+	const AnInventory : TInventory
+);
+const
+	AQuery = 'INSERT INTO items (`item_definition_id`,`item_storage_id`,`amount`,`last_x`,`last_y`,`last_map_id`) VALUES '+
+	'(:DefinitionID, :StorageID, :Amount, :X, :Y, :MapID);';
+var
+	ADataSet	: TZQuery;
+	AParam		: TParam;
+begin
+	ADataSet	:= TZQuery.Create(nil);
+	try
+		//DefinitionID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'DefinitionID', ptInput);
+		AParam.AsInteger := AnItem.Item.ID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//StorageID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'StorageID', ptInput);
+		if AnItem.Item is TUseableItem then
+			AParam.AsInteger := AnInventory.UseID
+		else
+		if AnItem.Item is TEquipmentItem then
+			AParam.AsInteger := AnInventory.EquipID
+		else
+		if AnItem.Item is TMiscItem then
+			AParam.AsInteger := AnInventory.EtcID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//Amount
+		AParam := ADataset.Params.CreateParam(ftInteger, 'Amount', ptInput);
+		AParam.AsInteger := AnItem.Quantity;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//X
+		AParam := ADataset.Params.CreateParam(ftInteger, 'X', ptInput);
+		AParam.AsInteger := AnItem.X;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//Y
+		AParam := ADataset.Params.CreateParam(ftInteger, 'Y', ptInput);
+		AParam.AsInteger := AnItem.Y;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//MapID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'MapID', ptInput);
+		AParam.AsInteger := AnItem.MapID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+
+		QueryNoResult(ADataSet, AQuery);
+		AnItem.DataID := LastID('`id`','`items`','WHERE item_definition_id='+IntToStr(AnItem.Item.ID));
+	finally
+		ADataSet.Free;
+	end;
+end;{New}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //FillInventory                                                        PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
@@ -382,105 +535,56 @@ procedure TItemQueries.FillInventory(
 	const AnInventory : TInventory
 );
 const
-	AQuery = 'SELECT `item_definition_id`,`amount`,`last_x`,`last_y`,`last_map_id` '+
+	AQuery = 'SELECT `id`,`item_definition_id`,`amount`,`last_x`,`last_y`,`last_map_id` '+
 	'FROM items ' +
-	'WHERE `item_storage_id`=:ID';
+	'WHERE `item_storage_id` IN (:UseID,:EquipID,:MiscID)';
 var
 	ADataSet	: TZQuery;
 	AParam		: TParam;
-	AItem		: TItem;
-	Amount		: LongWord;
-	procedure LoadUseable;
-	begin
-		ADataSet	:= TZQuery.Create(nil);
-		try
-			//UseID
-			AParam := ADataset.Params.CreateParam(ftInteger, 'ID', ptInput);
-			AParam.AsInteger := AnInventory.UseID;
-			ADataSet.Params.AddParam(
-				AParam
-			);
-			Query(ADataSet, AQuery);
-			ADataSet.First;
-			while NOT ADataSet.Eof do
-			begin
-				AItem := TItem.Create;
-				AItem.ID := ADataSet.Fields[0].AsInteger;
-				Amount := ADataSet.Fields[1].AsInteger;
-				Load(AItem);
-				AnInventory.Add(
-					AItem,
-					Amount,
-					True
-				);
-				ADataSet.Next;
-			end;
-		finally
-			ADataSet.Free;
-		end;
-	end;
-	procedure LoadEquipment;
-	begin
-		ADataSet	:= TZQuery.Create(nil);
-		try
-			//EquipID
-			AParam := ADataset.Params.CreateParam(ftInteger, 'ID', ptInput);
-			AParam.AsInteger := AnInventory.EquipID;
-			ADataSet.Params.AddParam(
-				AParam
-			);
-			Query(ADataSet, AQuery);
-			ADataSet.First;
-			while NOT ADataSet.Eof do
-			begin
-				AItem := TItem.Create;
-				AItem.ID := ADataSet.Fields[0].AsInteger;
-				Amount := ADataSet.Fields[1].AsInteger;
-				Load(AItem);
-				AnInventory.Add(
-					AItem,
-					Amount,
-					True
-				);
-				ADataSet.Next;
-			end;
-		finally
-			ADataSet.Free;
-		end;
-	end;
-	procedure LoadEtc;
-	begin
-		ADataSet	:= TZQuery.Create(nil);
-		try
-			//EtcID
-			AParam := ADataset.Params.CreateParam(ftInteger, 'ID', ptInput);
-			AParam.AsInteger := AnInventory.EtcID;
-			ADataSet.Params.AddParam(
-				AParam
-			);
-			Query(ADataSet, AQuery);
-			ADataSet.First;
-			while NOT ADataSet.Eof do
-			begin
-				AItem := TItem.Create;
-				AItem.ID := ADataSet.Fields[0].AsInteger;
-				Amount := ADataSet.Fields[1].AsInteger;
-				Load(AItem);
-				AnInventory.Add(
-					AItem,
-					Amount,
-					True
-				);
-				ADataSet.Next;
-			end;
-		finally
-			ADataSet.Free;
-		end;
-	end;
+	AItem		: TInventoryItem;
 begin
-	LoadUseable;
-	LoadEquipment;
-	LoadEtc;
+	ADataSet	:= TZQuery.Create(nil);
+	try
+		//UseID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'UseID', ptInput);
+		AParam.AsInteger := AnInventory.UseID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//EquipID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'EquipID', ptInput);
+		AParam.AsInteger := AnInventory.EquipID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//MiscID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'MiscID', ptInput);
+		AParam.AsInteger := AnInventory.EtcID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		Query(ADataSet, AQuery);
+		ADataSet.First;
+		while NOT ADataSet.Eof do
+		begin
+			AItem := TInventoryItem.Create;
+			AItem.DataID := ADataSet.Fields[0].AsInteger;
+			AItem.Item := TItem.Create;
+			AItem.Item.ID := ADataSet.Fields[1].AsInteger;
+			AItem.Quantity := ADataSet.Fields[2].AsInteger;
+			AItem.X := ADataSet.Fields[3].AsInteger;
+			AItem.Y := ADataSet.Fields[4].AsInteger;
+			AItem.MapID := ADataSet.Fields[5].AsInteger;
+			Load(AItem.Item);
+			AnInventory.Add(
+				AItem,
+				True
+			);
+			ADataSet.Next;
+		end;
+	finally
+		ADataSet.Free;
+	end;
 end;{FillInventory}
 //------------------------------------------------------------------------------
 
