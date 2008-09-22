@@ -246,6 +246,7 @@ begin
 	begin
 		Inc(fCountEquip);
 		AnInventoryItem.Quantity := 1;
+		Amount := 1;
 		fItemList.Add(AnInventoryItem);
 		ItemIndex := AnInventoryItem.Index;
 		if not DontSend then

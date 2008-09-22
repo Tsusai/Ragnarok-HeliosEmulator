@@ -1744,7 +1744,9 @@ begin
 				WriteBufferWord(OffSetEquip, Index+1, OutBufferEquip);    //Index
 				WriteBufferWord(OffSetEquip+2, EquipmentItem.ID, OutBufferEquip);  //ID
 				WriteBufferByte(OffSetEquip+4, 5, OutBufferEquip);    //Type
-				WriteBufferByte(OffSetEquip+5, Byte(InventoryItem.Identified), OutBufferEquip);    //Identified
+//				WriteBufferByte(OffSetEquip+5, Byte(InventoryItem.Identified), OutBufferEquip);    //Identified
+				//Identified for now
+				WriteBufferByte(OffSetEquip+5, 1, OutBufferEquip);
 				WriteBufferWord(OffSetEquip+6, EquipTypeToByte(EquipmentItem.EquipmentType), OutBufferEquip);
 				WriteBufferWord(OffSetEquip+8, 0, OutBufferEquip); //Equiped?
 				WriteBufferByte(OffSetEquip+10, 0, OutBufferEquip); //Broken?

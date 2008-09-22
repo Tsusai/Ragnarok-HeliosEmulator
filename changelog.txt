@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 506 -
+[2008/09/21] Aeomin - Small tweaks
+-
+
 - Rev 505 -
 [2008/09/21] Aeomin - Now item instances are saved in database. (YAY)
 -
