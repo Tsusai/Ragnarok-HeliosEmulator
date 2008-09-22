@@ -511,7 +511,6 @@ begin
 		ADataSet.Params.AddParam(
 			AParam
 		);
-
 		QueryNoResult(ADataSet, AQuery);
 		AnItem.DataID := LastID('`id`','`items`','WHERE item_definition_id='+IntToStr(AnItem.Item.ID));
 	finally

@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 505 -
+[2008/09/21] Aeomin - Now item instances are saved in database. (YAY)
+-
+
 - Rev 504 -
 [2008/09/21] Aeomin - Added Save & New in ItemQueries to prepare data saving.
 [2008/09/21] Aeomin - Code cleanup in ItemQueries.

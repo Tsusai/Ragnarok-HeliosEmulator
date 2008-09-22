@@ -91,7 +91,7 @@ public
 	property Countitem	: Word read fCountItem;
 	property CountEquip	: Word read fCountEquip;
 	procedure Add(AnItem : TItem; Quantity : Word;const DontSend:Boolean=False);overload;
-	procedure Add(const AnInventoryItem : TInventoryItem;const DontSend:Boolean=False);overload;
+	procedure Add(var AnInventoryItem : TInventoryItem;const DontSend:Boolean=False);overload;
 	function Add(const ID:Word;const Quantity:Word):Boolean;overload;
 	procedure Remove(AnItem : TItem; Quantity : Word);
 	procedure Delete(Index : Integer);
@@ -203,16 +203,14 @@ begin
 	Add(Item,DontSend);
 end;
 
-procedure TInventory.Add(const AnInventoryItem : TInventoryItem;const DontSend:Boolean=False);
+procedure TInventory.Add(var AnInventoryItem : TInventoryItem;const DontSend:Boolean=False);
 var
 	ItemIndex : Word;
 	Index : Integer;
-	Item : TInventoryItem;
-	Add : Boolean;
+	Amount : Word;
 begin
+	Amount := AnInventoryItem.Quantity;
 	ItemIndex := 0;
-	Add := True;
-	Item := AnInventoryItem;
 	if (AnInventoryItem.Item is TUseableItem)OR
 	(AnInventoryItem.Item is TMiscItem) then
 	begin
@@ -221,35 +219,49 @@ begin
 		begin
 			Inc(TInventoryItem(fStackableList.Objects[Index]).Quantity,AnInventoryItem.Quantity);
 			ItemIndex := TInventoryItem(fStackableList.Objects[Index]).Index;
-			Item.Item.Free;
-			Item.Item := TInventoryItem(fStackableList.Objects[Index]).Item;
-			Add := False;
+			AnInventoryItem.Item.Free;
+			AnInventoryItem.Free;
+			AnInventoryItem := TInventoryItem(fStackableList.Objects[Index]);
+
+			if not DontSend then
+				TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
+					AnInventoryItem,
+					Self
+				);
 		end else
 		begin
 			fItemList.Add(AnInventoryItem);
 			fStackableList.AddObject(AnInventoryItem.Item.ID,AnInventoryItem);
 			Inc(fCountItem);
 			ItemIndex := AnInventoryItem.Index;
+			if not DontSend then
+				TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
+					AnInventoryItem,
+					Self
+				);
 		end;
 		Inc(fCountItem);
 	end else
 	if AnInventoryItem.Item is TEquipmentItem then
 	begin
 		Inc(fCountEquip);
+		AnInventoryItem.Quantity := 1;
 		fItemList.Add(AnInventoryItem);
 		ItemIndex := AnInventoryItem.Index;
+		if not DontSend then
+			TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
+				AnInventoryItem,
+				Self
+			);
 	end;
 	if not DontSend then
 	begin
 		SendNewItem(
 			ClientInfo,
-			Item,
-			ItemIndex
+			AnInventoryItem,
+			ItemIndex,
+			Amount
 		);
-	end;
-	if not Add then
-	begin
-		Item.Free;
 	end;
 end;
 

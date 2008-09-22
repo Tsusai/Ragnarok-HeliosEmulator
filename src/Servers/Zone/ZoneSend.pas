@@ -235,7 +235,8 @@ uses
 	procedure SendNewItem(
 		AClient		: TIdContext;
 		const AInventory : TInventoryItem;
-		const Index	: Word
+		const Index	: Word;
+		const Amount	: Word
 	);
 implementation
 
@@ -1787,7 +1788,8 @@ end;{SendInventory}
 procedure SendNewItem(
 	AClient		: TIdContext;
 	const AInventory : TInventoryItem;
-	const Index	: Word
+	const Index	: Word;
+	const Amount	: Word
 );
 var
 	OutBuffer : TBuffer;
@@ -1796,7 +1798,7 @@ begin
 	begin
 		WriteBufferWord(0, $02d4, OutBuffer);
 		WriteBufferWord(2, Index+1, OutBuffer);
-		WriteBufferWord(4, AInventory.Quantity, OutBuffer);
+		WriteBufferWord(4, Amount, OutBuffer);
 		WriteBufferWord(6, ID, OutBuffer);
 		WriteBufferByte(8, 1, OutBuffer);
 		WriteBufferByte(9, 0, OutBuffer); //Broken?
