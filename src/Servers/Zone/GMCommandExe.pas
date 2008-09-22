@@ -1162,6 +1162,16 @@ begin
 end;{GMWhere}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//GMItem                                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Get item (but doesn't save into database yet)
+//
+//	Changes-
+//		[2008/10/20] Aeomin - Created.
+//------------------------------------------------------------------------------
 procedure GMItem(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 var
 	ID : Word;
@@ -1193,6 +1203,11 @@ begin
 		begin
 			Error.Add('Item not found!');
 		end;
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
 	end;
-end;
+end;{GMItem}
+//------------------------------------------------------------------------------
 end{GMCommandExe}.

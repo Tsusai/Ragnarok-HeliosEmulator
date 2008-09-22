@@ -47,7 +47,8 @@ uses
 	Item,
 	InventoryList,
 	{Third Party}
-	IdContext
+	IdContext,
+	List32
 	//none
 	;
 
@@ -75,6 +76,7 @@ protected
 	ClientInfo : TIdContext;
 	fCountItem	: Word;
 	fCountEquip	: Word;
+	fStackableList	: TIntList32;
 	function GetItem(Index : Integer) : TItem;
 	procedure UpdateItemQuantity(const Index : Integer; const Quantity : Word);
 public
@@ -137,6 +139,8 @@ begin
 	inherited Create;
 	self.ClientInfo := TCharacter(Parent).ClientInfo;
 	fItemList := TInventoryList.Create(FALSE);
+	//Stores item that is stackable, this list does not own object
+	fStackableList := TIntList32.Create;
 	fCountItem := 0;
 	fCountEquip := 0;
 End; (* Cons TInventory.Create
@@ -165,7 +169,8 @@ Revisions:
 Destructor TInventory.Destroy;
 var
 	Index : Integer;
-Begin
+begin
+	fStackableList.Free;
 	//Pre
 	//TODO, list needs to own items, I sense a custom list coming on...
 	for Index := 0 to fItemList.Count - 1 do
@@ -188,47 +193,63 @@ begin
 end;
 
 
-Procedure TInventory.Add(AnItem: TItem; Quantity: Word;const DontSend:Boolean=False);
+procedure TInventory.Add(AnItem: TItem; Quantity: Word;const DontSend:Boolean=False);
+var
+	Item : TInventoryItem;
 begin
-	fItemList.Add(AnItem, Quantity);
-	if (AnItem is TUseableItem) OR
-	(AnItem is TMiscItem) then
-	begin
-		Inc(fCountItem);
-	end else
-	if AnItem is TEquipmentItem then
-	begin
-		Inc(fCountEquip);
-	end;
-	if not DontSend then
-	begin
-		SendNewItem(
-			ClientInfo,
-			fItemList.Items[fItemList.Count-1],
-			fItemList.Count-1
-		);
-	end;
+	Item := TInventoryItem.Create;
+	Item.Item := AnItem;
+	Item.Quantity := Quantity;
+	Add(Item,DontSend);
 end;
 
 procedure TInventory.Add(const AnInventoryItem : TInventoryItem;const DontSend:Boolean=False);
+var
+	ItemIndex : Word;
+	Index : Integer;
+	Item : TInventoryItem;
+	Add : Boolean;
 begin
-	fItemList.Add(AnInventoryItem);
+	ItemIndex := 0;
+	Add := True;
+	Item := AnInventoryItem;
 	if (AnInventoryItem.Item is TUseableItem)OR
 	(AnInventoryItem.Item is TMiscItem) then
 	begin
+		Index := fStackableList.IndexOf(AnInventoryItem.Item.ID);
+		if Index > -1 then
+		begin
+			Inc(TInventoryItem(fStackableList.Objects[Index]).Quantity,AnInventoryItem.Quantity);
+			ItemIndex := TInventoryItem(fStackableList.Objects[Index]).Index;
+			Item.Item.Free;
+			Item.Item := TInventoryItem(fStackableList.Objects[Index]).Item;
+			Add := False;
+		end else
+		begin
+			fItemList.Add(AnInventoryItem);
+			fStackableList.AddObject(AnInventoryItem.Item.ID,AnInventoryItem);
+			Inc(fCountItem);
+			ItemIndex := AnInventoryItem.Index;
+		end;
 		Inc(fCountItem);
 	end else
 	if AnInventoryItem.Item is TEquipmentItem then
 	begin
 		Inc(fCountEquip);
+		fItemList.Add(AnInventoryItem);
+		ItemIndex := AnInventoryItem.Index;
 	end;
 	if not DontSend then
 	begin
 		SendNewItem(
 			ClientInfo,
-			AnInventoryItem,
-			fItemList.Count-1
+			Item,
+			ItemIndex
 		);
+	end;
+	if not Add then
+	begin
+		Item.Free;
 	end;
 end;
 

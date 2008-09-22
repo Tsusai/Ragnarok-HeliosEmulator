@@ -16,6 +16,7 @@ unit InventoryList;
 interface
 uses
 	Item,
+	List32,
 	Contnrs;
 
 type
@@ -24,6 +25,8 @@ type
 //TInventoryItem                                                         CLASS
 //------------------------------------------------------------------------------
 TInventoryItem = Class(TObject)
+	Index		: Word;  //Should only modify by TInventoryList
+
 	Item		: TItem;
 	Quantity	: Word;
 
@@ -37,15 +40,16 @@ end;
 //TInventoryList                                                          CLASS
 //------------------------------------------------------------------------------
 	TInventoryList = Class(TObject)
-
-	Private
+	private
 		fList : TObjectList;
+		fSlotList : TIntList32;
+		fNextID : Word;
 
 		Function GetValue(Index : Integer) : TInventoryItem;
 		Procedure SetValue(Index : Integer; Value : TInventoryItem);
 		Function GetCount : Integer;
-
-	Public
+		function RegisterIndex : Word;
+	public
 		OwnsItems : Boolean;
 
 		Constructor Create(OwnsItems : Boolean);
@@ -56,7 +60,7 @@ end;
 
 		Procedure Add(const AnItem : TItem; const Quantity : Word);overload;
 		procedure Add(const AnInventoryItem:TInventoryItem);overload;
-		Procedure Insert(const AnItem : TItem; const Quantity : Word; Index : Integer);
+//		Procedure Insert(const AnItem : TItem; const Quantity : Word; Index : Integer);
 		Procedure Delete(const Index : Integer);
 		Procedure Clear();
 
@@ -81,6 +85,8 @@ begin
 	inherited Create;
 	fList := TObjectList.Create(TRUE);
 	self.OwnsItems := OwnsItems;
+	fSlotList := TIntList32.Create;
+	fNextID := 0;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -98,6 +104,7 @@ destructor TInventoryList.Destroy;
 begin
 	Clear;
 	fList.Free;
+	fSlotList.Free;
 	// Call TObject destructor
 	inherited;
 end;{Destroy}
@@ -118,6 +125,7 @@ var
 	AnInventoryItem : TInventoryItem;
 begin
 	AnInventoryItem := TInventoryItem.Create;
+	AnInventoryItem.Index := RegisterIndex;
 	AnInventoryItem.Item := AnItem;
 	AnInventoryItem.Quantity := Quantity;
 	fList.Add(AnInventoryItem);
@@ -136,6 +144,7 @@ end;{Add}
 //------------------------------------------------------------------------------
 procedure TInventoryList.Add(const AnInventoryItem:TInventoryItem);
 begin
+	AnInventoryItem.Index := RegisterIndex;
 	fList.Add(AnInventoryItem);
 end;{Add}
 //------------------------------------------------------------------------------
@@ -149,8 +158,9 @@ end;{Add}
 //
 //  Changes -
 //    October 30th, 2007 - RaX - Created.
+//	[2008/09/21] Aeomin - Banned this procedure.
 //------------------------------------------------------------------------------
-procedure TInventoryList.Insert(const AnItem : TItem; const Quantity : Word; Index: Integer);
+{procedure TInventoryList.Insert(const AnItem : TItem; const Quantity : Word; Index: Integer);
 var
 	AnInventoryItem : TInventoryItem;
 begin
@@ -158,7 +168,7 @@ begin
 	AnInventoryItem.Item := AnItem;
 	AnInventoryItem.Quantity := Quantity;
 	fList.Insert(Index, AnInventoryItem);
-end;{Insert}
+end;}{Insert}
 //------------------------------------------------------------------------------
 
 
@@ -173,6 +183,7 @@ end;{Insert}
 //------------------------------------------------------------------------------
 procedure TInventoryList.Delete(const Index : Integer);
 begin
+	fSlotList.Add(TInventoryItem(Items[Index].Item).Index);
 	if OwnsItems then
 	begin
 		Items[Index].Item.Free;
@@ -235,6 +246,7 @@ begin
 		end;
 		fList.Clear;
 	end;
+	fSlotList.Clear;
 end;{Clear}
 //------------------------------------------------------------------------------
 
@@ -272,7 +284,7 @@ end;{SetValue}
 
 
 //------------------------------------------------------------------------------
-//GetCount                                                            PROCEDURE
+//GetCount                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
 //      Gets the count from the fList object
@@ -284,6 +296,30 @@ Function TInventoryList.GetCount : Integer;
 begin
 	Result := fList.Count;
 end;{GetCount}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RegisterIndex                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Attempt to find next ID.
+//
+//	Changes -
+//		[2008/09/21] Aeomin - Created
+//------------------------------------------------------------------------------
+function TInventoryList.RegisterIndex : Word;
+begin
+	if fSlotList.Count > 0 then
+	begin
+		Result := fSlotList[0];
+		fSlotList.Delete(0);
+	end else
+	begin
+		Result := fNextID;
+		Inc(fNextID);
+	end;
+end;{RegisterIndex}
 //------------------------------------------------------------------------------
 end.
 

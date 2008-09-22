@@ -180,10 +180,11 @@ begin
 	AddCommand('Kick',            GMKick,                 99, TYPE_TARGETCHAR, '<Player Name>', True);
 	AddCommand('KickAll',         GMKickAll,              99, TYPE_ALLPLAYERS, '');
 	// - - - Misc stuffs
+	AddCommand('Item',            GMItem,                 99, TYPE_RETURNBACK,  '<ID/Name>,[Amount]');
 	// - - - Debug
 	AddCommand('Effect',          GMEffect,               99, TYPE_RETURNBACK, '<Effect Id>');
 	AddCommand('Where',           GMWhere,                99, TYPE_RETURNBACK,  '');
-	AddCommand('Item',GMItem,99,TYPE_RETURNBACK,'');
+
 	// Use temperary list!!!
 	fCommandPrefix := CommandOptions.Load(fTmpCommandList, fCommands);
 	CommandOptions.Save(fTmpCommandList);

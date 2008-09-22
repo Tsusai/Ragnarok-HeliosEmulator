@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 503 -
+[2008/09/21] Aeomin - Stackable items should stack up now.
+[2008/09/21] Aeomin - Inventory List now have "smart" index management.
+-
 
 - Rev 502 -
 [2008/09/21] RabidCh - Removed /trunk/bin/SQL from SVN.
