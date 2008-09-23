@@ -262,6 +262,7 @@ public
 	procedure CalcMaxWeight;
 	procedure CalcHIT;
   procedure CalcFLEE;
+  procedure CalcMATK;
 
 	procedure SendSubStat(
 		const Mode     : Word;
@@ -2092,6 +2093,7 @@ begin
   CalcASpeed;
   CalcHIT;
   CalcFLEE;
+  CalcMATK;
 
 	//Speed
 	SendSubStat(0, 0, Speed);
@@ -2394,6 +2396,33 @@ end;{CalcFLEE}
 
 
 //------------------------------------------------------------------------------
+//CalcMATK                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Calculates the character's Min and Max MATK
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		September 22th, 2008 - RabidCh - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.CalcMATK;
+begin
+  //Calculate Min MATK
+  MATK1 := EnsureRange(Word(ParamBase[INT] + ParamBonus[INT]
+    + Trunc(Power(Floor((ParamBase[INT] + ParamBonus[INT])/7), 2))), 0, High(MATK1));
+  //Calculate Max MATK
+  MATK2 := EnsureRange(Word(ParamBase[INT] + ParamBonus[INT]
+    + Trunc(Power(Floor((ParamBase[INT] + ParamBonus[INT])/5), 2))), 0, High(MATK2));
+end;{CalcMATK}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //BaseLevelUp                                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
@@ -2605,6 +2634,7 @@ end;{JobLevelUp}
 // --
 //	Changes -
 //		[2007/08/20] - Aeomin - Created.
+//		[2008/09/22] - RabidCh - Added SendCharacterStats to update status window.
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.ResetStats;
@@ -2618,6 +2648,8 @@ begin
 	ParamBase[VIT] := 1;
 	ParamBase[INT] := 1;
 	ParamBase[LUK] := 1;
+  //Update status
+  SendCharacterStats;
 end;{ResetStats}
 //------------------------------------------------------------------------------
 
