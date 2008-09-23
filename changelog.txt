@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 507 -
+[2008/09/22] RabidCh - Fixed Flee display.
+[2008/09/22] RabidCh - Status window is updated after increasing stats/level.
+-
+
 - Rev 506 -
 [2008/09/21] Aeomin - Small tweaks
 -

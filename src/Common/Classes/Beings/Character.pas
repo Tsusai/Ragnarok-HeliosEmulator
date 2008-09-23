@@ -2388,7 +2388,7 @@ end;{CalcHIT}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcFLEE;
 begin
-    HIT := EnsureRange(Word(ParamBase[AGI] + ParamBonus[AGI] + fBaseLv), 0, High(FLEE1));
+    FLEE1 := EnsureRange(Word(ParamBase[AGI] + ParamBonus[AGI] + fBaseLv), 0, High(FLEE1));
 end;{CalcFLEE}
 //------------------------------------------------------------------------------
 
@@ -2493,14 +2493,8 @@ begin
 			fBaseLv := TempLevel;
 			//Run stat calculations.
 			BaseEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
-      //Calculate all
-      CalcMaxHP;
-      CalcMaxSP;
-      CalcMaxWeight;
-      CalcSpeed;
-      CalcASpeed;
-      CalcHIT;
-      CalcFLEE;
+      //Update character's stats
+      SendCharacterStats;
 
 			//Set hp and sp to full if enabled in the ini.
 			if MainProc.ZoneServer.Options.FullHPOnLevelUp then
