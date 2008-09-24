@@ -1350,7 +1350,7 @@ begin
 
 		//How many stats added?
 		Def := AChara.ParamBase[LocalType] - OldAmount;
-    AChara.SendCharacterStats;
+		AChara.SendCharacterStats;
 		
 		if Def = 0 then
 		begin

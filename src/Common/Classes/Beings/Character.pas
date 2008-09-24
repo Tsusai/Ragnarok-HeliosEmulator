@@ -2412,12 +2412,26 @@ end;{CalcFLEE}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcMATK;
 begin
-  //Calculate Min MATK
-  MATK1 := EnsureRange(Word(ParamBase[INT] + ParamBonus[INT]
-    + Trunc(Power(Floor((ParamBase[INT] + ParamBonus[INT])/7), 2))), 0, High(MATK1));
-  //Calculate Max MATK
-  MATK2 := EnsureRange(Word(ParamBase[INT] + ParamBonus[INT]
-    + Trunc(Power(Floor((ParamBase[INT] + ParamBonus[INT])/5), 2))), 0, High(MATK2));
+	//Calculate Min MATK
+	MATK1 := EnsureRange(
+			Word(ParamBase[INT] + ParamBonus[INT]
+			+ Trunc(Power(
+				(ParamBase[INT] + ParamBonus[INT]) DIV 7,
+				2
+				))),
+			0,
+			High(MATK1)
+	);
+	//Calculate Max MATK
+	MATK2 := EnsureRange(
+			Word(ParamBase[INT] + ParamBonus[INT]
+			+ Trunc(Power(
+				(ParamBase[INT] + ParamBonus[INT]) DIV 5,
+				2
+				))),
+			0,
+			High(MATK2)
+	);
 end;{CalcMATK}
 //------------------------------------------------------------------------------
 
@@ -2522,8 +2536,8 @@ begin
 			fBaseLv := TempLevel;
 			//Run stat calculations.
 			BaseEXPToNextLevel := TempEXP DIV MainProc.ZoneServer.Options.BaseXPMultiplier;
-      //Update character's stats
-      SendCharacterStats;
+			//Update character's stats
+			SendCharacterStats;
 
 			//Set hp and sp to full if enabled in the ini.
 			if MainProc.ZoneServer.Options.FullHPOnLevelUp then

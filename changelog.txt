@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 509 -
+[2008/09/23] Aeomin - Simplify RabidCh's last commit.
+-
+
 - Rev 508 -
 [2008/09/22] RabidCh - Added MATK.
 [2008/09/22] RabidCh - Status window is updated after resetting stats.
