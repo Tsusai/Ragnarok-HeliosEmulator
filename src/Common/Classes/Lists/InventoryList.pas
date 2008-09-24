@@ -16,29 +16,11 @@ unit InventoryList;
 interface
 uses
 	Item,
+	ItemInstance,
 	List32,
 	Contnrs;
 
 type
-
-//------------------------------------------------------------------------------
-//TInventoryItem                                                         CLASS
-//------------------------------------------------------------------------------
-TInventoryItem = Class(TObject)
-	Index		: Word;  //Should only modify by TInventoryList
-	DataID		: LongWord; //ID used in database
-
-	Item		: TItem;
-	Quantity	: Word;
-
-	Identified : Boolean;
-	Refined : Byte;
-
-	X,Y : Word;
-	MapID : LongWord;
-end;
-//------------------------------------------------------------------------------
-
 
 //------------------------------------------------------------------------------
 //TInventoryList                                                          CLASS
@@ -49,8 +31,8 @@ end;
 		fSlotList : TIntList32;
 		fNextID : Word;
 
-		Function GetValue(Index : Integer) : TInventoryItem;
-		Procedure SetValue(Index : Integer; Value : TInventoryItem);
+		Function GetValue(Index : Integer) : TItemInstance;
+		Procedure SetValue(Index : Integer; Value : TItemInstance);
 		Function GetCount : Integer;
 		function RegisterIndex : Word;
 	public
@@ -58,12 +40,12 @@ end;
 
 		Constructor Create(OwnsItems : Boolean);
 		Destructor Destroy; override;
-		Property Items[Index : Integer] : TInventoryItem
+		Property Items[Index : Integer] : TItemInstance
 		read GetValue write SetValue;default;
 		Property Count : Integer read GetCount;
 
 		Procedure Add(const AnItem : TItem; const Quantity : Word);overload;
-		procedure Add(const AnInventoryItem:TInventoryItem);overload;
+		procedure Add(const AnInventoryItem:TItemInstance);overload;
 //		Procedure Insert(const AnItem : TItem; const Quantity : Word; Index : Integer);
 		Procedure Delete(const Index : Integer);
 		Procedure Clear();
@@ -126,9 +108,9 @@ end;{Destroy}
 //------------------------------------------------------------------------------
 procedure TInventoryList.Add(const AnItem : TItem; const Quantity : Word);
 var
-	AnInventoryItem : TInventoryItem;
+	AnInventoryItem : TItemInstance;
 begin
-	AnInventoryItem := TInventoryItem.Create;
+	AnInventoryItem := TItemInstance.Create;
 	AnInventoryItem.Index := RegisterIndex;
 	AnInventoryItem.Item := AnItem;
 	AnInventoryItem.Quantity := Quantity;
@@ -146,7 +128,7 @@ end;{Add}
 //	Changes -
 //		[2008/09/20] Aeomin - Created.
 //------------------------------------------------------------------------------
-procedure TInventoryList.Add(const AnInventoryItem:TInventoryItem);
+procedure TInventoryList.Add(const AnInventoryItem:TItemInstance);
 begin
 	AnInventoryItem.Index := RegisterIndex;
 	fList.Add(AnInventoryItem);
@@ -187,7 +169,7 @@ end;}{Insert}
 //------------------------------------------------------------------------------
 procedure TInventoryList.Delete(const Index : Integer);
 begin
-	fSlotList.Add(TInventoryItem(Items[Index].Item).Index);
+	fSlotList.Add(TItemInstance(Items[Index].Item).Index);
 	if OwnsItems then
 	begin
 		Items[Index].Item.Free;
@@ -264,9 +246,9 @@ end;{Clear}
 //  Changes -
 //    October 30th, 2007 - RaX - Created.
 //------------------------------------------------------------------------------
-function TInventoryList.GetValue(Index : Integer): TInventoryItem;
+function TInventoryList.GetValue(Index : Integer): TItemInstance;
 begin
-	Result := TInventoryItem(fList.Items[Index]);
+	Result := TItemInstance(fList.Items[Index]);
 end;{GetValue}
 //------------------------------------------------------------------------------
 
@@ -280,7 +262,7 @@ end;{GetValue}
 //  Changes -
 //    October 30th, 2007 - RaX - Created.
 //------------------------------------------------------------------------------
-procedure TInventoryList.SetValue(Index : Integer; Value : TInventoryItem);
+procedure TInventoryList.SetValue(Index : Integer; Value : TItemInstance);
 begin
 	fList.Items[Index] := Value;
 end;{SetValue}

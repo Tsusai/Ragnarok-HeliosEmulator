@@ -2368,7 +2368,7 @@ end;{CalcMaxWeight}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcHIT;
 begin
-    HIT := EnsureRange(Word(ParamBase[DEX] + ParamBonus[DEX] + fBaseLv), 0, High(HIT));
+	HIT := EnsureRange(Word(ParamBase[DEX] + ParamBonus[DEX] + fBaseLv), 0, High(HIT));
 end;{CalcHIT}
 //------------------------------------------------------------------------------
 
@@ -2390,7 +2390,7 @@ end;{CalcHIT}
 //------------------------------------------------------------------------------
 procedure TCharacter.CalcFLEE;
 begin
-    FLEE1 := EnsureRange(Word(ParamBase[AGI] + ParamBonus[AGI] + fBaseLv), 0, High(FLEE1));
+	FLEE1 := EnsureRange(Word(ParamBase[AGI] + ParamBonus[AGI] + fBaseLv), 0, High(FLEE1));
 end;{CalcFLEE}
 //------------------------------------------------------------------------------
 

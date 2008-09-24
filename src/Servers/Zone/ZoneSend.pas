@@ -37,7 +37,7 @@ uses
 	Mailbox,
 	Inventory,
 	Item,
-	InventoryList,
+	ItemInstance,
 	{Third Party}
 	IdContext
 	;
@@ -234,7 +234,7 @@ uses
 	);
 	procedure SendNewItem(
 		AClient		: TIdContext;
-		const AInventory : TInventoryItem;
+		const AInventory : TItemInstance;
 		const Index	: Word;
 		const Amount	: Word
 	);
@@ -1704,7 +1704,7 @@ var
 	OffSetEquip : Word;
 	ItemCount : Word;
 	EquipmentCount : Word;
-	InventoryItem : TInventoryItem;
+	InventoryItem : TItemInstance;
 	EquipmentItem : TEquipmentItem;
 begin
 	ItemCount := 0;
@@ -1789,7 +1789,7 @@ end;{SendInventory}
 //------------------------------------------------------------------------------
 procedure SendNewItem(
 	AClient		: TIdContext;
-	const AInventory : TInventoryItem;
+	const AInventory : TItemInstance;
 	const Index	: Word;
 	const Amount	: Word
 );

@@ -27,7 +27,7 @@ uses
 	UseableItem,
 	MiscItem,
 	Inventory,
-	InventoryList,
+	ItemInstance,
 	QueryBase,
 	{3rd Party}
 	ZSqlUpdate
@@ -68,12 +68,12 @@ type
 		);
 
 		procedure Save(
-			const AnItem : TInventoryItem;
+			const AnItem : TItemInstance;
 			const AnInventory : TInventory
 		);
 
 		procedure New(
-			const AnItem : TInventoryItem;
+			const AnItem : TItemInstance;
 			const AnInventory : TInventory
 		);
 
@@ -382,7 +382,7 @@ end;{LoadMiscDefinition}
 //
 //------------------------------------------------------------------------------
 procedure TItemQueries.Save(
-	const AnItem : TInventoryItem;
+	const AnItem : TItemInstance;
 	const AnInventory : TInventory
 );
 const
@@ -456,7 +456,7 @@ end;{Save}
 //
 //------------------------------------------------------------------------------
 procedure TItemQueries.New(
-	const AnItem : TInventoryItem;
+	const AnItem : TItemInstance;
 	const AnInventory : TInventory
 );
 const
@@ -540,7 +540,7 @@ const
 var
 	ADataSet	: TZQuery;
 	AParam		: TParam;
-	AItem		: TInventoryItem;
+	AItem		: TItemInstance;
 begin
 	ADataSet	:= TZQuery.Create(nil);
 	try
@@ -566,7 +566,7 @@ begin
 		ADataSet.First;
 		while NOT ADataSet.Eof do
 		begin
-			AItem := TInventoryItem.Create;
+			AItem := TItemInstance.Create;
 			AItem.DataID := ADataSet.Fields[0].AsInteger;
 			AItem.Item := TItem.Create;
 			AItem.Item.ID := ADataSet.Fields[1].AsInteger;

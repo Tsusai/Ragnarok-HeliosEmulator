@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 510 -
+[2008/09/23] Aeomin - Renamed TInventoryItem to TItemInstance and extracted to new pas file.
+-
+
 - Rev 509 -
 [2008/09/23] Aeomin - Simplify RabidCh's last commit.
 -

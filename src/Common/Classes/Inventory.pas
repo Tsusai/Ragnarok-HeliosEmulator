@@ -45,6 +45,7 @@ uses
 	Classes,
 	{Project}
 	Item,
+	ItemInstance,
 	InventoryList,
 	{Third Party}
 	IdContext,
@@ -91,7 +92,7 @@ public
 	property Countitem	: Word read fCountItem;
 	property CountEquip	: Word read fCountEquip;
 	procedure Add(AnItem : TItem; Quantity : Word;const DontSend:Boolean=False);overload;
-	procedure Add(var AnInventoryItem : TInventoryItem;const DontSend:Boolean=False);overload;
+	procedure Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False);overload;
 	function Add(const ID:Word;const Quantity:Word):Boolean;overload;
 	procedure Remove(AnItem : TItem; Quantity : Word);
 	procedure Delete(Index : Integer);
@@ -195,15 +196,15 @@ end;
 
 procedure TInventory.Add(AnItem: TItem; Quantity: Word;const DontSend:Boolean=False);
 var
-	Item : TInventoryItem;
+	Item : TItemInstance;
 begin
-	Item := TInventoryItem.Create;
+	Item := TItemInstance.Create;
 	Item.Item := AnItem;
 	Item.Quantity := Quantity;
 	Add(Item,DontSend);
 end;
 
-procedure TInventory.Add(var AnInventoryItem : TInventoryItem;const DontSend:Boolean=False);
+procedure TInventory.Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False);
 var
 	ItemIndex : Word;
 	Index : Integer;
@@ -217,11 +218,11 @@ begin
 		Index := fStackableList.IndexOf(AnInventoryItem.Item.ID);
 		if Index > -1 then
 		begin
-			Inc(TInventoryItem(fStackableList.Objects[Index]).Quantity,AnInventoryItem.Quantity);
-			ItemIndex := TInventoryItem(fStackableList.Objects[Index]).Index;
+			Inc(TItemInstance(fStackableList.Objects[Index]).Quantity,AnInventoryItem.Quantity);
+			ItemIndex := TItemInstance(fStackableList.Objects[Index]).Index;
 			AnInventoryItem.Item.Free;
 			AnInventoryItem.Free;
-			AnInventoryItem := TInventoryItem(fStackableList.Objects[Index]);
+			AnInventoryItem := TItemInstance(fStackableList.Objects[Index]);
 
 			if not DontSend then
 				TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
