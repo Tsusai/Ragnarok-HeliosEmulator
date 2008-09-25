@@ -258,6 +258,8 @@ begin
 	end;
 	if not DontSend then
 	begin
+		TClientLink(ClientInfo.Data).CharacterLink.Weight :=
+			TClientLink(ClientInfo.Data).CharacterLink.Weight + AnInventoryItem.Item.Weight;
 		SendNewItem(
 			ClientInfo,
 			AnInventoryItem,
