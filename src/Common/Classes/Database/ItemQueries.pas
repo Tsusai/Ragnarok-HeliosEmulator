@@ -396,7 +396,7 @@ begin
 	try
 		//ID
 		AParam := ADataset.Params.CreateParam(ftInteger, 'ID', ptInput);
-		AParam.AsInteger := AnItem.DataID;
+		AParam.AsInteger := AnItem.ID;
 		ADataSet.Params.AddParam(
 			AParam
 		);
@@ -512,7 +512,7 @@ begin
 			AParam
 		);
 		QueryNoResult(ADataSet, AQuery);
-		AnItem.DataID := LastID('`id`','`items`','WHERE item_definition_id='+IntToStr(AnItem.Item.ID));
+		AnItem.ID := LastID('`id`','`items`','WHERE item_definition_id='+IntToStr(AnItem.Item.ID));
 	finally
 		ADataSet.Free;
 	end;
@@ -567,7 +567,7 @@ begin
 		while NOT ADataSet.Eof do
 		begin
 			AItem := TItemInstance.Create;
-			AItem.DataID := ADataSet.Fields[0].AsInteger;
+			AItem.ID := ADataSet.Fields[0].AsInteger;
 			AItem.Item := TItem.Create;
 			AItem.Item.ID := ADataSet.Fields[1].AsInteger;
 			AItem.Quantity := ADataSet.Fields[2].AsInteger;

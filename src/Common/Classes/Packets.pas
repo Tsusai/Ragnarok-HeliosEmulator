@@ -498,10 +498,10 @@ Begin
 				end	else if Command = 'changedir' then begin
 					ExecCommand := CharaRotation;
 				{end	else if Command = 'takeitem' then	begin
-					ExecCommand := TakeItem;
+					ExecCommand := TakeItem;}
 				end else if Command = 'dropitem' then begin
 					ExecCommand := DropItem;
-				end else if Command = 'useitem' then begin
+				{end else if Command = 'useitem' then begin
 					ExecCommand := ItemUse;
 				end else if Command = 'equipitem' then begin
 					ExecCommand := ItemEquip;

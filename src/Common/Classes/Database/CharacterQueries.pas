@@ -230,11 +230,11 @@ begin
 				Inventory.EquipID:= ADataSet.Fields[50].AsInteger;
 				Inventory.EtcID  := ADataSet.Fields[51].AsInteger;
 
-				CalcMaxWeight;
+				{CalcMaxWeight;
 				CalcMaxHP;
 				CalcMaxSP;
 				CalcSpeed;
-				CalcASpeed;
+				CalcASpeed;}
 			end;
 		end;
 

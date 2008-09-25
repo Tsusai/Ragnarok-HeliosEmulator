@@ -12,7 +12,7 @@ type
 //------------------------------------------------------------------------------
 TItemInstance = Class(TObject)
 	Index		: Word;  //Should only modify by TInventoryList
-	DataID		: LongWord; //ID used in database
+	ID		: LongWord; //Instance ID
 
 	Item		: TItem;
 	Quantity	: Word;

@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 511 -
+[2008/09/24] Aeomin - Fixed character MaxWeight didn't show.
+-
+
 - Rev 510 -
 [2008/09/23] Aeomin - Renamed TInventoryItem to TItemInstance and extracted to new pas file.
 -

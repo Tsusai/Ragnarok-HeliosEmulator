@@ -261,8 +261,8 @@ public
 	procedure CalcSpeed; override;
 	procedure CalcMaxWeight;
 	procedure CalcHIT;
-  procedure CalcFLEE;
-  procedure CalcMATK;
+	procedure CalcFLEE;
+	procedure CalcMATK;
 
 	procedure SendSubStat(
 		const Mode     : Word;
@@ -1825,8 +1825,8 @@ procedure TCharacter.SetWeight(
 		Value : LongWord
 	);
 begin
-	Inherited;
-	SendSubStat(0, $0018, Weight);
+	fWeight := Value;
+	SendSubStat(0, $0018, Value);
 	DataChanged := TRUE;
 end;{SetWeight}
 //------------------------------------------------------------------------------
@@ -1851,8 +1851,8 @@ procedure TCharacter.SetMaxWeight(
 		Value : LongWord
 	);
 begin
-	Inherited;
-	SendSubStat(0, $0019, MaxWeight);
+	fMaxWeight := Value;
+	SendSubStat(0, $0019, Value);
 	DataChanged := TRUE;
 end;{SetMaxWeight}
 //------------------------------------------------------------------------------
@@ -2085,15 +2085,15 @@ var
 	idx :integer;
 	OutBuffer : TBuffer;
 begin
-  //Calculate all stats before sending
-  CalcMaxHP;
-  CalcMaxSP;
-  CalcMaxWeight;
-  CalcSpeed;
-  CalcASpeed;
-  CalcHIT;
-  CalcFLEE;
-  CalcMATK;
+	//Calculate all stats before sending
+	CalcMaxHP;
+	CalcMaxSP;
+	CalcMaxWeight;
+	CalcSpeed;
+	CalcASpeed;
+	CalcHIT;
+	CalcFLEE;
+	CalcMATK;
 
 	//Speed
 	SendSubStat(0, 0, Speed);
@@ -2343,7 +2343,7 @@ begin
 	if ClientInfo <> nil then
 	begin
 		MaxWeight  := EnsureRange(
-			  LongWord((ParamBase[STR] + ParamBonus[STR]) * 300) +
+			LongWord((ParamBase[STR] + ParamBonus[STR]) * 300) +
 				TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetMaxWeight(self)
 				, 0, High(fMaxWeight));
 	end;

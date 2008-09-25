@@ -236,6 +236,12 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure DropItem(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -1715,6 +1721,31 @@ begin
 			);
 	end;
 end;{RequestSendMail}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//DropItem                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Drop item.
+//--
+//	Pre:
+//		TODO
+//	Post:
+//		TODO
+//--
+//  Changes -
+//		[2008/09/23] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure DropItem(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+begin
+
+end;{DropItem}
 //------------------------------------------------------------------------------
 
 
