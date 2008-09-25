@@ -105,7 +105,7 @@ const
 //                             Character Job Constants
 //------------------------------------------------------------------------------
 	JOB_NOVICE     =  0;  //Novice
-	JOB_SWORDSMAN  =  1;  //Swordsman
+	JOB_SWORDMAN  =  1;  //Swordsman
 	JOB_MAGE       =  2;  //Magician
 	JOB_ARCHER     =  3;  //Archer
 	JOB_ACOLYTE    =  4;  //Acolyte
@@ -141,7 +141,7 @@ const
 	HJOB_OFFSET    = 4001;
 
 	HJOB_HIGH_NOVICE     = HJOB_OFFSET + JOB_NOVICE;      //4001 High Novice
-	HJOB_HIGH_SWORDSMAN  = HJOB_OFFSET + JOB_SWORDSMAN;   //4002 High Swordsman
+	HJOB_HIGH_SWORDMAN  = HJOB_OFFSET + JOB_SWORDMAN;   //4002 High Swordsman
 	HJOB_HIGH_MAGE       = HJOB_OFFSET + JOB_MAGE;        //4003 High Magician
 	HJOB_HIGH_ARCHER     = HJOB_OFFSET + JOB_ARCHER;      //4004 High Archer
 	HJOB_HIGH_ACOLYTE    = HJOB_OFFSET + JOB_ACOLYTE;     //4005 High Acolyte
@@ -169,7 +169,7 @@ const
 	HJOB_BABY_OFFSET    = 4023;
 
 	HJOB_BABY            = HJOB_BABY_OFFSET + JOB_NOVICE;       //4023 Baby Novice
-	HJOB_BABY_SWORDSMAN  = HJOB_BABY_OFFSET + JOB_SWORDSMAN;    //4024 Baby Swordsman
+	HJOB_BABY_SWORDMAN  = HJOB_BABY_OFFSET + JOB_SWORDMAN;    //4024 Baby Swordsman
 	HJOB_BABY_MAGE       = HJOB_BABY_OFFSET + JOB_MAGE;         //4025 Baby Magician
 	HJOB_BABY_ARCHER     = HJOB_BABY_OFFSET + JOB_ARCHER;       //4026 Baby Archer
 	HJOB_BABY_ACOLYTE    = HJOB_BABY_OFFSET + JOB_ACOLYTE;      //4027 Baby Acolyte
@@ -198,7 +198,7 @@ const
 	HJOB_EXPANDED_OFFSET    = 4046;
 
 	HJOB_EXPANDED_TAEKWON              = HJOB_EXPANDED_OFFSET + JOB_NOVICE;     //4046 Taekwon Boy/Girl
-	HJOB_EXPANDED_STAR_GLADIATOR       = HJOB_EXPANDED_OFFSET + JOB_SWORDSMAN;  //4047 Taekwon Master
+	HJOB_EXPANDED_STAR_GLADIATOR       = HJOB_EXPANDED_OFFSET + JOB_SWORDMAN;  //4047 Taekwon Master
 	HJOB_EXPANDED_STAR_GLADIATOR_2     = HJOB_EXPANDED_OFFSET + JOB_MAGE;       //4048 Taekwon Master(Flying)
 	HJOB_EXPANDED_SOUL_LINKER          = HJOB_EXPANDED_OFFSET + JOB_ARCHER;     //4049 Soul Linker
 

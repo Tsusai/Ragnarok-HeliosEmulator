@@ -507,7 +507,7 @@ begin
 
 	case fJID of
 		JOB_NOVICE     :  fJobName := 'Novice';
-		JOB_SWORDSMAN  :  fJobName := 'Swordsman';
+		JOB_SWORDMAN  :  fJobName := 'Swordman';
 		JOB_MAGE       :  fJobName := 'Magician';
 		JOB_ARCHER     :  fJobName := 'Archer';
 		JOB_ACOLYTE    :  fJobName := 'Acolyte';
@@ -535,7 +535,7 @@ begin
 		JOB_NINJA      :  fJobName := 'Ninja';
 
 		HJOB_HIGH_NOVICE     : fJobName := 'High_Novice';
-		HJOB_HIGH_SWORDSMAN  : fJobName := 'High_Swordsman';
+		HJOB_HIGH_SWORDMAN  : fJobName := 'High_Swordman';
 		HJOB_HIGH_MAGE       : fJobName := 'High_Magician';
 		HJOB_HIGH_ARCHER     : fJobName := 'High_Archer';
 		HJOB_HIGH_ACOLYTE    : fJobName := 'High_Acolyte';
@@ -558,7 +558,7 @@ begin
 		HJOB_GYPSY           : fJobName := 'Gypsy';
 
 		HJOB_BABY             : fJobName := 'Baby_Novice';
-		HJOB_BABY_SWORDSMAN   : fJobName := 'Baby_Swordsman';
+		HJOB_BABY_SWORDMAN   : fJobName := 'Baby_Swordman';
 		HJOB_BABY_MAGE        : fJobName := 'Baby_Magician';
 		HJOB_BABY_ARCHER      : fJobName := 'Baby_Archer';
 		HJOB_BABY_ACOLYTE     : fJobName := 'Baby_Acolyte';

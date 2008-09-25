@@ -125,6 +125,9 @@ protected
 	fPosition         : TPoint;
 	fSpeed            : Word;
 	fASpeed						: Word;
+  //Added Min and max hit for MobQueries.pas [Spre]
+  fMinimumHit       : Integer;
+  fMaximumHit       : Integer;
 
 	AttackDelay				: LongWord;
 
@@ -163,6 +166,8 @@ protected
 	procedure SetPosition(Value : TPoint); virtual;
 	procedure SetSpeed(Value : Word); virtual;
 	procedure SetASpeed(Value : Word); virtual;
+  procedure SetMinimumHit(Value : Integer); virtual;
+  procedure SetMaximumHit(Value : Integer); virtual;
 	function GetHpPercent: Byte;
 	procedure SetHPPercent(Value : Byte);
 	function GetSpPercent: Byte;
@@ -222,6 +227,8 @@ public
 	property Position  : TPoint     read fPosition write SetPosition;
 	property Speed     : Word       read fSpeed write SetSpeed;
 	property ASpeed		 : Word				read fASpeed write SetASpeed;
+  property MinimumHit		 : Integer				read fMinimumHit write SetMinimumHit;
+	property MaximumHit		 : Integer				read fMaximumHit write SetMinimumHit;
 	Procedure Walk;
 
 	Procedure CalcMaxHP; virtual; abstract;
@@ -1171,6 +1178,16 @@ procedure TBeing.SetSpeed(Value : Word); begin fSpeed := Value; end;
 procedure TBeing.SetASpeed(Value : Word);
 begin
 	fASpeed := Value;
+end;
+
+procedure TBeing.SetMinimumHit(Value : Integer);
+begin
+  fMinimumHit := Value;
+end;
+
+procedure TBeing.SetMaximumHit(Value : Integer);
+begin
+  fMaximumHit := Value;
 end;
 
 procedure TBeing.SetPosition(Value : TPoint);

@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 512 -
+[2008/09/24] Spre - Added JobChange Script command, Still needs packets(Started the packet) to change without reloging.
+[2008/09/24] Spre - Added Minimum and Maximum attack to mobqueries. Aswell as attack speed.
+-
+
 - Rev 511 -
 [2008/09/24] Aeomin - Fixed character MaxWeight didn't show.
 -

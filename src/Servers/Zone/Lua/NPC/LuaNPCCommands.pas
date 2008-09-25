@@ -63,12 +63,13 @@ function script_CompassCheck(ALua : TLua) : integer; cdecl; forward;
 function script_Emotion(ALua : TLua) : integer; cdecl; forward;
 function script_OpenMailBox(ALua : TLua) : integer; cdecl; forward;
 function script_CloseMailBox(ALua : TLua) : integer; cdecl; forward;
+function script_JobChange(ALua : TLua) : integer; cdecl; forward;
 //Special Commands
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 32;
+	NPCCommandCount = 33;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -106,6 +107,7 @@ const
 		(name:'emotion';func:script_Emotion),
 		(name:'OpenMailing';func:script_OpenMailBox),
 		(name:'CloseMailing';func:script_CloseMailBox),
+    (name:'JobChange';func:script_JobChange),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -1002,6 +1004,27 @@ begin
 			False
 		);
 	end;
+end;
+
+//Change Jobs
+//Change Job script code [Spre]
+function script_JobChange(ALua : TLua) : integer;
+var
+  AChara : TCharacter;
+begin
+  if (lua_gettop(ALua) = 1) then
+begin
+      if GetCharaFromLua(ALua,AChara) then
+begin
+    	AChara.JID := lua_tointeger(ALua, 1);
+    	AChara.JobLv := 0;
+
+end else
+	begin
+		luaL_error(ALua,'script SetJob syntax error');
+	end;
+end;
+  Result := 1;
 end;
 
 //Special commands here

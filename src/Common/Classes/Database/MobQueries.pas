@@ -49,11 +49,11 @@ procedure TMobQueries.Load(
 	const AnMob : TMob
 );
 const
-	AQuery =
-		'SELECT `id`, `sprite_name`, `name`, `range` , `LV`, `HP`, `SP`, `str`, `agi`, `vit`, `int`, `dex`, `luk`, '+
-		'`attack_rating_min`, `attack_rating_max`, `def`, `exp`, `jexp`, `as`, `es`, `move_speed`, `attackedmt`, `attackmt`, ' +
+	AQuery =  //Changed Query Code slightly to conform with sql. [Spre]
+		'SELECT `id`, `sprite_name`, `name`, `aRan` , `LV`, `HP`, `SP`, `str`, `int`, `vit`, `dex`, `agi`, `luk`, '+
+		'`attack_rating_min`, `attack_rating_max`, `def`, `exp`, `jexp`, `as`, `es`, `mspeed`, `attackedmt`, `attackmt`, ' +
 		'`property`, `scale`, `class`, `race`, `mdef`, `taming_item`, `food_item` ' +
-		'FROM mob';
+		'FROM mobs';
 var
 	ADataSet	: TZQuery;
 	AParam		: TParam;
@@ -102,11 +102,14 @@ begin
 				ParamBase[INT]   := ADataSet.Fields[10].AsInteger;
 				ParamBase[DEX]   := ADataSet.Fields[11].AsInteger;
 				ParamBase[LUK]   := ADataSet.Fields[12].AsInteger;
-				//attack_rating_min & attack_rating_max unknown yet
+        //Attack_Rating_min and Max Fields below [Spre]
+        MinimumHit       := ADataSet.Fields[13].AsInteger;
+        MaximumHit       := ADataSet.Fields[14].AsInteger;
 				Defence          := ADataSet.Fields[15].AsInteger;
 				BaseExp          := ADataSet.Fields[16].AsInteger;
 				JobExp           := ADataSet.Fields[17].AsInteger;
-				//as & es - Unknown
+        ASpeed           := ADataSet.Fields[18].AsInteger; //as = AttackSpeed [Spre]
+				//es - Unknown
 				Speed            := ADataSet.Fields[20].AsInteger;
 				//attackedmt & attackmt - Unknown
 				//What should we do for proerty..?
