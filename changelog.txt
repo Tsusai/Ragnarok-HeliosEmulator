@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 516 -
+[2008/09/24] RabidCh - Added perfect dodge and status window critical.
+[2008/09/24] RabidCh - Changed some variable names around.
+-
+
 - Rev 515 -
 [2008/09/24] Aeomin - Forgot update weight when add Item
 -

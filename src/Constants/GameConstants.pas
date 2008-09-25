@@ -215,7 +215,7 @@ const
 	ACTION_MULTIHIT_ATTACK = $08;
 	ACTION_ENDUREATTACK = $09;
 	ACTION_CRITICAL_ATTACK = $0a;
-	ACTION_LUCKY_DODGE = $0b;
+	ACTION_PERFECT_DODGE = $0b;
 
 	//Action constants - for AreaLoop event ShowAction
 	ACTION_DO_ATTACK = 1;

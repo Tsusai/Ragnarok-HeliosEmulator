@@ -263,6 +263,8 @@ public
 	procedure CalcHIT;
 	procedure CalcFLEE;
 	procedure CalcMATK;
+	procedure CalcPerfectDodge;
+	procedure CalcFalseCritical;
 
 	procedure SendSubStat(
 		const Mode     : Word;
@@ -2086,7 +2088,7 @@ var
 	idx :integer;
 	OutBuffer : TBuffer;
 begin
-	//Calculate all stats before sending
+	//Calculate all stats  and substats before sending
 	CalcMaxHP;
 	CalcMaxSP;
 	CalcMaxWeight;
@@ -2095,6 +2097,8 @@ begin
 	CalcHIT;
 	CalcFLEE;
 	CalcMATK;
+  CalcPerfectDodge;
+  CalcFalseCritical;
 
 	//Speed
 	SendSubStat(0, 0, Speed);
@@ -2123,8 +2127,8 @@ begin
 	WriteBufferWord(30, MDEF2, OutBuffer);
 	WriteBufferWord(32, HIT, OutBuffer);
 	WriteBufferWord(34, FLEE1, OutBuffer);
-	WriteBufferWord(36, Lucky, OutBuffer);
-	WriteBufferWord(38, Critical, OutBuffer);
+	WriteBufferWord(36, PerfectDodge, OutBuffer);
+	WriteBufferWord(38, FalseCritical, OutBuffer);
 	WriteBufferWord(40, AttackDelay DIV 2, OutBuffer);
 	WriteBufferWord(42, 0, OutBuffer);
 	SendBuffer(ClientInfo, OutBuffer, PacketDB.GetLength($00bd,ClientVersion));
@@ -2434,6 +2438,58 @@ begin
 			High(MATK2)
 	);
 end;{CalcMATK}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CalcPerfectDodge                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Calculates the character's Perfect Dodge (Rate)
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	Status modifiers
+// --
+//	Changes -
+//		September 24th, 2008 - RabidCh - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.CalcPerfectDodge;
+begin
+	PerfectDodge := EnsureRange(Byte(
+		(((ParamBase[LUK] + ParamBonus[LUK]) div 10) + 1)
+		),
+		0, High(PerfectDodge)
+	);
+end;{CalcPerfectDodge}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CalcFalseCritical                                                    PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Calculates the character's CRIT rate in the status window which is false.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	Status modifiers
+// --
+//	Changes -
+//		September 24th, 2008 - RabidCh - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.CalcFalseCritical;
+begin
+	FalseCritical := EnsureRange(Word(
+		((ParamBase[LUK] + ParamBonus[LUK]) div 3)
+		),
+		0, High(FalseCritical)
+	);
+end;{CalcFalseCritical}
 //------------------------------------------------------------------------------
 
 

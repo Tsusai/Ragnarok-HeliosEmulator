@@ -177,7 +177,7 @@ public
 	HeadDirection	: Word;
 	Direction 	: Byte;
 
-	AttackRange	: word;
+	AttackRange	: Word;
 	//No idea what 0..5 is from.  Stats?
 	ATK					: Word;
 
@@ -189,7 +189,8 @@ public
 	MDEF2				: Word;
 	HIT					: Word;
 	FLEE1				: Word;
-	Lucky				: Word;
+	PerfectDodge: Byte;
+	FalseCritical	: Word;
 	Critical		: Word;
 
 	MapID				: LongWord;
