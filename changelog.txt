@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 517 -
+[2008/09/24] Spre - Started work On MD5, Threw code That is licensed under GPL in branches to work from.
+[2008/09/24] Spre - Added Mob attack motions/delays to mobqueries and being(THanks lone_wolf for the description of said). (Any issues let me know)
+-
+
 - Rev 516 -
 [2008/09/24] RabidCh - Added perfect dodge and status window critical.
 [2008/09/24] RabidCh - Changed some variable names around.
