@@ -2774,9 +2774,12 @@ begin
 	TThreadLink(ClientInfo.Data).DatabaseLink.Items.FillInventory(
 		Inventory
 	);
-	for Index := Inventory.ItemList.Count - 1 downto 0 do
+	if Inventory.ItemList.Count > 0 then
 	begin
-		Inc(AWeight, TItemInstance(Inventory.ItemList.Items[Index]).Item.Weight);
+		for Index := Inventory.ItemList.Count - 1 downto 0 do
+		begin
+			Inc(AWeight, TItemInstance(Inventory.ItemList.Items[Index]).Item.Weight);
+		end;
 	end;
 	Weight := AWeight;
 end;{LoadInventory}
