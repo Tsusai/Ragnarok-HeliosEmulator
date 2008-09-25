@@ -351,7 +351,8 @@ uses
 	PacketTypes,
 	TCPServerRoutines,
 	CharaList,
-	AreaLoopEvents
+	AreaLoopEvents,
+	ItemInstance
 	{Third Party}
 	//none
 	;
@@ -2765,10 +2766,19 @@ end;
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.LoadInventory;
+var
+	Index : Word;
+	AWeight : LongWord;
 begin
+	AWeight := 0;
 	TThreadLink(ClientInfo.Data).DatabaseLink.Items.FillInventory(
 		Inventory
 	);
+	for Index := Inventory.ItemList.Count - 1 downto 0 do
+	begin
+		Inc(AWeight, TItemInstance(Inventory.ItemList.Items[Index]).Item.Weight);
+	end;
+	Weight := AWeight;
 end;{LoadInventory}
 //------------------------------------------------------------------------------
 

@@ -107,7 +107,7 @@ const
 		(name:'emotion';func:script_Emotion),
 		(name:'OpenMailing';func:script_OpenMailBox),
 		(name:'CloseMailing';func:script_CloseMailBox),
-    (name:'JobChange';func:script_JobChange),
+		(name:'JobChange';func:script_JobChange),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -1010,21 +1010,20 @@ end;
 //Change Job script code [Spre]
 function script_JobChange(ALua : TLua) : integer;
 var
-  AChara : TCharacter;
+	AChara : TCharacter;
 begin
-  if (lua_gettop(ALua) = 1) then
-begin
-      if GetCharaFromLua(ALua,AChara) then
-begin
-    	AChara.JID := lua_tointeger(ALua, 1);
-    	AChara.JobLv := 0;
-
-end else
+	if (lua_gettop(ALua) = 1) then
 	begin
-		luaL_error(ALua,'script SetJob syntax error');
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			AChara.JID := lua_tointeger(ALua, 1);
+			AChara.JobLv := 0;
+		end else
+		begin
+			luaL_error(ALua,'script SetJob syntax error');
+		end;
 	end;
-end;
-  Result := 1;
+	Result := 0;
 end;
 
 //Special commands here

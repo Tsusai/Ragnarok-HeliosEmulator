@@ -102,13 +102,13 @@ begin
 				ParamBase[INT]   := ADataSet.Fields[10].AsInteger;
 				ParamBase[DEX]   := ADataSet.Fields[11].AsInteger;
 				ParamBase[LUK]   := ADataSet.Fields[12].AsInteger;
-        //Attack_Rating_min and Max Fields below [Spre]
-        MinimumHit       := ADataSet.Fields[13].AsInteger;
-        MaximumHit       := ADataSet.Fields[14].AsInteger;
+				//Attack_Rating_min and Max Fields below [Spre]
+				MinimumHit       := ADataSet.Fields[13].AsInteger;
+				MaximumHit       := ADataSet.Fields[14].AsInteger;
 				Defence          := ADataSet.Fields[15].AsInteger;
 				BaseExp          := ADataSet.Fields[16].AsInteger;
 				JobExp           := ADataSet.Fields[17].AsInteger;
-        ASpeed           := ADataSet.Fields[18].AsInteger; //as = AttackSpeed [Spre]
+				ASpeed           := ADataSet.Fields[18].AsInteger; //as = AttackSpeed [Spre]
 				//es - Unknown
 				Speed            := ADataSet.Fields[20].AsInteger;
 				//attackedmt & attackmt - Unknown
