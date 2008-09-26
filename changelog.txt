@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 520 -
+[2008/09/25] Spre - Removed the development MD5
+-
+
 - Rev 519 -
 [2008/09/25] Aeomin - Added checking for: Weight, Item Count (including stacking).
 [2008/09/25] Aeomin - Added ErrorConstants.pas
