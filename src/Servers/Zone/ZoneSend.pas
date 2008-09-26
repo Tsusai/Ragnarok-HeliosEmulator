@@ -242,6 +242,11 @@ uses
 		AClient		: TIdContext;
 		const Flag	: Byte
 	);
+	procedure SendStatusIcon(
+		const AChara	: TCharacter;
+		const IconID	: Word;
+		const Active	: Boolean
+	);
 implementation
 
 
@@ -1855,5 +1860,36 @@ begin
 		SendBuffer(AClient, OutBuffer, 29);
 	end;
 end;{SendNewItemFailed}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendStatusIcon                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Send icons on right side
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/09/25] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendStatusIcon(
+	const AChara	: TCharacter;
+	const IconID	: Word;
+	const Active	: Boolean
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $0196, OutBuffer);
+	WriteBufferWord(2, IconID, OutBuffer);
+	WriteBufferLongWord(4, AChara.AccountID, OutBuffer);
+	WriteBufferByte(8, Byte(Active), OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($0196,AChara.ClientVersion));
+end;{SendStatusIcon}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

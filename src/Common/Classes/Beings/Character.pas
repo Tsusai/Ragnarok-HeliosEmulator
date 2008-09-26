@@ -354,7 +354,8 @@ uses
 	TCPServerRoutines,
 	CharaList,
 	AreaLoopEvents,
-	ItemInstance
+	ItemInstance,
+	ZoneSend
 	{Third Party}
 	//none
 	;
@@ -1827,7 +1828,85 @@ end;{SetOnline}
 procedure TCharacter.SetWeight(
 		Value : LongWord
 	);
+var
+	PreviousPercentage : Byte;
+	CurrentPercentage : Byte;
 begin
+	PreviousPercentage := 0;
+	CurrentPercentage := 0;
+	if MaxWeight > 0 then
+	begin
+		PreviousPercentage := Trunc((Weight / MaxWeight)*100);
+		CurrentPercentage := Trunc((Value / MaxWeight)*100);
+	end;
+//	PreviousPercentage := Weight * 100 div fMaxWeight;
+//	CurrentPercentage := Value * 100 DIV fMaxWeight;
+
+	if (PreviousPercentage >= 50) AND (CurrentPercentage < 50) then
+	begin
+		if PreviousPercentage >= 90 then
+		begin
+			SendStatusIcon(
+				Self,
+				36,
+				False
+			);
+		end else
+		begin
+			SendStatusIcon(
+				Self,
+				35,
+				False
+			);
+		end;
+	end else
+	if (PreviousPercentage >= 50) AND (CurrentPercentage >= 50) then
+	begin
+		if (PreviousPercentage >= 50) AND (PreviousPercentage < 90) AND (CurrentPercentage >= 90) then
+		begin
+			SendStatusIcon(
+				Self,
+				35,
+				False
+			);
+			SendStatusIcon(
+				Self,
+				36,
+				True
+			);
+		end else
+		if (PreviousPercentage >= 90)AND (CurrentPercentage >= 50) AND (CurrentPercentage < 90) then
+		begin
+			SendStatusIcon(
+				Self,
+				35,
+				True
+			);
+			SendStatusIcon(
+				Self,
+				36,
+				False
+			);
+		end;
+	end else
+	if (PreviousPercentage < 50) AND (CurrentPercentage >= 50) then
+	begin
+		if CurrentPercentage >= 90 then
+		begin
+			SendStatusIcon(
+				Self,
+				36,
+				True
+			);
+		end else
+		begin
+			SendStatusIcon(
+				Self,
+				35,
+				True
+			);
+		end;
+	end;
 	fWeight := Value;
 	SendSubStat(0, $0018, Value);
 	DataChanged := TRUE;
@@ -2097,8 +2176,8 @@ begin
 	CalcHIT;
 	CalcFLEE;
 	CalcMATK;
-  CalcPerfectDodge;
-  CalcFalseCritical;
+	CalcPerfectDodge;
+	CalcFalseCritical;
 
 	//Speed
 	SendSubStat(0, 0, Speed);

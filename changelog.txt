@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 521 -
+[2008/09/26] Aeomin - Now shows overweight icon.
+[2008/09/25] Aeomin - Added SendStatusIcon for sending icons on right side.
+-
+
 - Rev 520 -
 [2008/09/25] Spre - Removed the development MD5
 -
