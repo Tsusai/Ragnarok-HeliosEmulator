@@ -128,8 +128,8 @@ protected
 	//Added Min and max hit for MobQueries.pas [Spre]
 	fMinimumHit       : Integer;
 	fMaximumHit       : Integer;
-  fAttackDmgTime			:	Integer;
-  fAttack_Motion			:	Integer;
+	fAttackDmgTime			:	Integer;
+	fAttack_Motion			:	Integer;
 
 	AttackDelay				: LongWord;
 
@@ -170,8 +170,8 @@ protected
 	procedure SetASpeed(Value : Word); virtual;
 	procedure SetMinimumHit(Value : Integer); virtual;
 	procedure SetMaximumHit(Value : Integer); virtual;
-  procedure SetAttackDmgTime(Value	:	Integer);	virtual;
-  procedure SetAttack_Motion(Value	:	Integer);	virtual;
+	procedure SetAttackDmgTime(Value	:	Integer);	virtual;
+	procedure SetAttack_Motion(Value	:	Integer);	virtual;
 	function GetHpPercent: Byte;
 	procedure SetHPPercent(Value : Byte);
 	function GetSpPercent: Byte;
@@ -234,8 +234,8 @@ public
 	property ASpeed		 : Word				read fASpeed write SetASpeed;
 	property MinimumHit		 : Integer				read fMinimumHit write SetMinimumHit;
 	property MaximumHit		 : Integer				read fMaximumHit write SetMinimumHit;
-  property AttackDmgTime	:	Integer				read fAttackDmgTime	write	SetAttackDmgTime;
-  property Attack_Motion	:	Integer				read fAttack_Motion	write	SetAttack_Motion;
+	property AttackDmgTime	:	Integer				read fAttackDmgTime	write	SetAttackDmgTime;
+	property Attack_Motion	:	Integer				read fAttack_Motion	write	SetAttack_Motion;
 	Procedure Walk;
 
 	Procedure CalcMaxHP; virtual; abstract;
@@ -1199,12 +1199,12 @@ end;
 // Mob attack delays and motions [Spre]
 procedure TBeing.SetAttackDmgTime(Value	:	Integer);
 begin
-   fAttackDmgTime	:=	Value;
+	fAttackDmgTime	:=	Value;
 end;
 
 procedure TBeing.SetAttack_Motion(Value	:	Integer);
 begin
-   fAttack_Motion	:=	Value;
+	fAttack_Motion	:=	Value;
 end;
 
 procedure TBeing.SetPosition(Value : TPoint);

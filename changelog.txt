@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 518 -
+[2008/09/25] Aeomin - More preparation for dropitem.
+-
+
 - Rev 517 -
 [2008/09/24] Spre - Started work On MD5, Threw code That is licensed under GPL in branches to work from.
 [2008/09/24] Spre - Added Mob attack motions/delays to mobqueries and being(THanks lone_wolf for the description of said). (Any issues let me know)

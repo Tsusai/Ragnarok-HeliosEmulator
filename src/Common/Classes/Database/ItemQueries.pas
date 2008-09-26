@@ -536,7 +536,7 @@ procedure TItemQueries.FillInventory(
 const
 	AQuery = 'SELECT `id`,`item_definition_id`,`amount`,`last_x`,`last_y`,`last_map_id` '+
 	'FROM items ' +
-	'WHERE `item_storage_id` IN (:UseID,:EquipID,:MiscID)';
+	'WHERE `item_storage_id` IN (:UseID,:EquipID,:MiscID) AND `last_map_id`=0;';
 var
 	ADataSet	: TZQuery;
 	AParam		: TParam;

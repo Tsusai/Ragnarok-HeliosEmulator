@@ -11,21 +11,43 @@ type
 //TItemInstance                                                            CLASS
 //------------------------------------------------------------------------------
 TItemInstance = Class(TObject)
-	Index		: Word;  //Should only modify by TInventoryList
-	ID		: LongWord; //Instance ID
+	private
+	public
+		Index		: Word;  //Should only modify by TInventoryList
+		ID		: LongWord; //Instance ID
 
-	Item		: TItem;
-	Quantity	: Word;
+		Item		: TItem;
+		Quantity	: Word;
 
-	Identified : Boolean;
-	Refined : Byte;
+		Identified : Boolean;
+		Refined : Byte;
 
-	X,Y : Word;
-	MapID : LongWord;
+		X,Y : Word;
+		SubX,SubY : Byte;
+		MapID : LongWord;
+		procedure GenerateSubCoordinate;
+		constructor Create;
 end;
 //------------------------------------------------------------------------------
 
 
 implementation
 
+
+procedure TItemInstance.GenerateSubCoordinate;
+var
+	RandomValue: LongWord;
+begin
+	RandomValue := Random( $FFFFFF );
+	SubX := (RandomValue AND 3) * 3 + 3;
+	SubY := ((RandomValue SHR 2) AND 3) * 3 + 3;
+end;{GenerateSubCoordinate}
+//------------------------------------------------------------------------------
+
+
+constructor TItemInstance.Create;
+begin
+	GenerateSubCoordinate;
+end;{Create}
+//------------------------------------------------------------------------------
 end.

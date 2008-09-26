@@ -111,8 +111,8 @@ begin
 				ASpeed           := ADataSet.Fields[18].AsInteger; //as = AttackSpeed [Spre]
 				//es - Unknown
 				Speed            := ADataSet.Fields[20].AsInteger;
-        AttackDmgTime 	 :=	ADataSet.Fields[21].AsInteger; //  Attack Damage Delay [Spre]
-        Attack_Motion		 := ADataSet.Fields[22].AsInteger; //  Attack Motion Delay [Spre]
+				AttackDmgTime	:=	ADataSet.Fields[21].AsInteger; //  Attack Damage Delay [Spre]
+				Attack_Motion	:= ADataSet.Fields[22].AsInteger; //  Attack Motion Delay [Spre]
 				//attackedmt & attackmt - Unknown
 				//What should we do for proerty..?
 				Scale            := ADataSet.Fields[24].AsInteger;

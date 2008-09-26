@@ -29,28 +29,29 @@ type
 	private
 		fList : TObjectList;
 		fSlotList : TIntList32;
+		fIndexList : TIntList32;
 		fNextID : Word;
 
-		Function GetValue(Index : Integer) : TItemInstance;
-		Procedure SetValue(Index : Integer; Value : TItemInstance);
-		Function GetCount : Integer;
+		function GetValue(Index : Integer) : TItemInstance;
+		procedure SetValue(Index : Integer; Value : TItemInstance);
+		function GetCount : Integer;
 		function RegisterIndex : Word;
 	public
 		OwnsItems : Boolean;
 
-		Constructor Create(OwnsItems : Boolean);
-		Destructor Destroy; override;
-		Property Items[Index : Integer] : TItemInstance
-		read GetValue write SetValue;default;
+		constructor Create(OwnsItems : Boolean);
+		destructor Destroy; override;
+		property Items[Index : Integer] : TItemInstance
+			read GetValue write SetValue;default;
 		Property Count : Integer read GetCount;
 
-		Procedure Add(const AnItem : TItem; const Quantity : Word);overload;
+		procedure Add(const AnItem : TItem; const Quantity : Word);overload;
 		procedure Add(const AnInventoryItem:TItemInstance);overload;
-//		Procedure Insert(const AnItem : TItem; const Quantity : Word; Index : Integer);
-		Procedure Delete(const Index : Integer);
-		Procedure Clear();
+//		procedure Insert(const AnItem : TItem; const Quantity : Word; Index : Integer);
+		procedure Delete(const Index : Integer);
+		procedure Clear();
 
-		Function IndexOf(const ID : LongWord) : Integer;
+		function IndexOf(const ID : LongWord) : Integer;
 	end;
 //------------------------------------------------------------------------------
 
@@ -72,6 +73,7 @@ begin
 	fList := TObjectList.Create(TRUE);
 	self.OwnsItems := OwnsItems;
 	fSlotList := TIntList32.Create;
+	fIndexList := TIntList32.Create;
 	fNextID := 0;
 end;{Create}
 //------------------------------------------------------------------------------
@@ -91,6 +93,7 @@ begin
 	Clear;
 	fList.Free;
 	fSlotList.Free;
+	fIndexList.Free;
 	// Call TObject destructor
 	inherited;
 end;{Destroy}
@@ -111,10 +114,9 @@ var
 	AnInventoryItem : TItemInstance;
 begin
 	AnInventoryItem := TItemInstance.Create;
-	AnInventoryItem.Index := RegisterIndex;
 	AnInventoryItem.Item := AnItem;
 	AnInventoryItem.Quantity := Quantity;
-	fList.Add(AnInventoryItem);
+	Add(AnInventoryItem);
 end;{Add}
 //------------------------------------------------------------------------------
 
@@ -132,6 +134,7 @@ procedure TInventoryList.Add(const AnInventoryItem:TItemInstance);
 begin
 	AnInventoryItem.Index := RegisterIndex;
 	fList.Add(AnInventoryItem);
+	fIndexList.AddObject(AnInventoryItem.Index, AnInventoryItem);
 end;{Add}
 //------------------------------------------------------------------------------
 
@@ -168,7 +171,14 @@ end;}{Insert}
 //    October 30th, 2007 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure TInventoryList.Delete(const Index : Integer);
+var
+	AnIndex : Integer;
 begin
+	AnIndex := fIndexList.IndexOf(TItemInstance(Items[Index].Item).Index);
+	if AnIndex > -1 then
+	begin
+		fIndexList.Delete(AnIndex);
+	end;
 	fSlotList.Add(TItemInstance(Items[Index].Item).Index);
 	if OwnsItems then
 	begin
