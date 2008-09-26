@@ -238,6 +238,10 @@ uses
 		const Index	: Word;
 		const Amount	: Word
 	);
+	procedure SendNewItemFailed(
+		AClient		: TIdContext;
+		const Flag	: Byte
+	);
 implementation
 
 
@@ -1820,5 +1824,36 @@ begin
 		SendBuffer(AClient, OutBuffer, 29);
 	end;
 end;{SendNewItem}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendNewItemFailed                                                    PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Failed to add item
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/09/25] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendNewItemFailed(
+	AClient		: TIdContext;
+	const Flag	: Byte
+);
+var
+	OutBuffer : TBuffer;
+begin
+	if Flag > 0 then
+	begin
+		WriteBufferWord(0, $02d4, OutBuffer);
+		WriteBufferByte(22, Flag, OutBuffer);
+		SendBuffer(AClient, OutBuffer, 29);
+	end;
+end;{SendNewItemFailed}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

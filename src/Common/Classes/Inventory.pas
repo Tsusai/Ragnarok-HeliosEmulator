@@ -111,7 +111,9 @@ uses
 	ZoneSend,
 	UseableItem,
 	EquipmentItem,
-	MiscItem
+	MiscItem,
+	Main,
+	ErrorConstants
 	;
 	{Third Party}
 	//none
@@ -209,63 +211,95 @@ var
 	ItemIndex : Word;
 	Index : Integer;
 	Amount : Word;
+	Failed : Byte;
 begin
+	Failed := 0;
 	Amount := AnInventoryItem.Quantity;
 	ItemIndex := 0;
-	if (AnInventoryItem.Item is TUseableItem)OR
-	(AnInventoryItem.Item is TMiscItem) then
+	if fItemList.Count >= MainProc.ZoneServer.Options.MaxItems then
 	begin
-		Index := fStackableList.IndexOf(AnInventoryItem.Item.ID);
-		if Index > -1 then
+		Failed := ADDITEM_TOOMUCH;
+	end else
+	begin
+		{Ignore checking when loading inventory}
+		if (not DontSend) AND ((TClientLink(ClientInfo.Data).CharacterLink.Weight + (AnInventoryItem.Item.Weight*Amount))
+		> TClientLink(ClientInfo.Data).CharacterLink.MaxWeight) then
 		begin
-			Inc(TItemInstance(fStackableList.Objects[Index]).Quantity,AnInventoryItem.Quantity);
-			ItemIndex := TItemInstance(fStackableList.Objects[Index]).Index;
-			AnInventoryItem.Item.Free;
-			AnInventoryItem.Free;
-			AnInventoryItem := TItemInstance(fStackableList.Objects[Index]);
-
-			if not DontSend then
-				TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
-					AnInventoryItem,
-					Self
-				);
+			Failed := ADDITEM_OVERWEIGHT;
 		end else
 		begin
-			fItemList.Add(AnInventoryItem);
-			fStackableList.AddObject(AnInventoryItem.Item.ID,AnInventoryItem);
-			Inc(fCountItem);
-			ItemIndex := AnInventoryItem.Index;
-			if not DontSend then
-				TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
-					AnInventoryItem,
-					Self
-				);
+			if (AnInventoryItem.Item is TUseableItem)OR
+			(AnInventoryItem.Item is TMiscItem) then
+			begin
+				Index := fStackableList.IndexOf(AnInventoryItem.Item.ID);
+				if Index > -1 then
+				begin
+					if (TItemInstance(fStackableList.Objects[Index]).Quantity + AnInventoryItem.Quantity)
+					> MainProc.ZoneServer.Options.MaxStackItem then
+					begin
+						Failed := ADDITEM_TOOMUCHSTACKING;
+					end else
+					begin
+						Inc(TItemInstance(fStackableList.Objects[Index]).Quantity,AnInventoryItem.Quantity);
+						ItemIndex := TItemInstance(fStackableList.Objects[Index]).Index;
+						AnInventoryItem.Item.Free;
+						AnInventoryItem.Free;
+						AnInventoryItem := TItemInstance(fStackableList.Objects[Index]);
+
+						if not DontSend then
+							TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
+								AnInventoryItem,
+								Self
+							);
+					end;
+				end else
+				begin
+					fItemList.Add(AnInventoryItem);
+					fStackableList.AddObject(AnInventoryItem.Item.ID,AnInventoryItem);
+					Inc(fCountItem);
+					ItemIndex := AnInventoryItem.Index;
+					if not DontSend then
+						TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
+							AnInventoryItem,
+							Self
+						);
+				end;
+				Inc(fCountItem);
+			end else
+			if AnInventoryItem.Item is TEquipmentItem then
+			begin
+				Inc(fCountEquip);
+				AnInventoryItem.Quantity := 1;
+				Amount := 1;
+				fItemList.Add(AnInventoryItem);
+				ItemIndex := AnInventoryItem.Index;
+				if not DontSend then
+					TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
+						AnInventoryItem,
+						Self
+					);
+			end;
 		end;
-		Inc(fCountItem);
-	end else
-	if AnInventoryItem.Item is TEquipmentItem then
-	begin
-		Inc(fCountEquip);
-		AnInventoryItem.Quantity := 1;
-		Amount := 1;
-		fItemList.Add(AnInventoryItem);
-		ItemIndex := AnInventoryItem.Index;
-		if not DontSend then
-			TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
-				AnInventoryItem,
-				Self
-			);
 	end;
 	if not DontSend then
 	begin
-		TClientLink(ClientInfo.Data).CharacterLink.Weight :=
-			TClientLink(ClientInfo.Data).CharacterLink.Weight + AnInventoryItem.Item.Weight;
-		SendNewItem(
-			ClientInfo,
-			AnInventoryItem,
-			ItemIndex,
-			Amount
-		);
+		if Failed > 0 then
+		begin
+			SendNewItemFailed(
+				ClientInfo,
+				Failed
+			);
+		end else
+		begin
+			TClientLink(ClientInfo.Data).CharacterLink.Weight :=
+				TClientLink(ClientInfo.Data).CharacterLink.Weight + AnInventoryItem.Item.Weight*Amount;
+			SendNewItem(
+				ClientInfo,
+				AnInventoryItem,
+				ItemIndex,
+				Amount
+			);
+		end;
 	end;
 end;
 

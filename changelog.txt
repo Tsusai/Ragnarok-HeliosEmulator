@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 519 -
+[2008/09/25] Aeomin - Added checking for: Weight, Item Count (including stacking).
+[2008/09/25] Aeomin - Added ErrorConstants.pas
+-
+
 - Rev 518 -
 [2008/09/25] Aeomin - More preparation for dropitem.
 -

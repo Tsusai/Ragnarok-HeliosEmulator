@@ -110,6 +110,7 @@ compile for linux, at the same time*}
 	DatabaseConstants in 'Constants\DatabaseConstants.pas',
 	NetworkConstants in 'Constants\NetworkConstants.pas',
 	LuaVarConstants in 'Constants\LuaVarConstants.pas',
+	ErrorConstants in 'Constants\ErrorConstants.pas',
 
 	//Game Objects
 	Account in 'Common\Classes\Account.pas',
@@ -239,6 +240,7 @@ compile for linux, at the same time*}
 	DatabaseConstants in 'Constants/DatabaseConstants.pas',
 	NetworkConstants in 'Constants/NetworkConstants.pas',
 	LuaVarConstants in 'Constants/LuaVarConstants.pas',
+	ErrorConstants in 'Constants/ErrorConstants.pas',
 
 	//Game Objects
 	Account in 'Common/Classes/Account.pas',

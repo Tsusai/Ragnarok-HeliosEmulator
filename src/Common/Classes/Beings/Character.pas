@@ -2834,7 +2834,10 @@ begin
 	begin
 		for Index := Inventory.ItemList.Count - 1 downto 0 do
 		begin
-			Inc(AWeight, TItemInstance(Inventory.ItemList.Items[Index]).Item.Weight);
+			Inc(
+				AWeight,
+				TItemInstance(Inventory.ItemList.Items[Index]).Item.Weight * TItemInstance(Inventory.ItemList.Items[Index]).Quantity
+			);
 		end;
 	end;
 	Weight := AWeight;
