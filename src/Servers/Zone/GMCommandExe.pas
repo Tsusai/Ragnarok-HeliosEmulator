@@ -41,6 +41,7 @@ uses
 	procedure GMResetStats(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 	procedure GMSpeed(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 	procedure GMDie(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+  //procedure GMResetLook(const Arguments	:	array of String;const	FromChara:TCharacter;const	TargetChar;	TCharacter;const	Error	:	TStringList);
 
 	procedure GMBroadCast(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 	procedure GMBroadCastNoName(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
@@ -63,6 +64,8 @@ uses
 	procedure GMWhere(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 
 	procedure GMItem(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+
+	procedure GMJob(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 implementation
 uses
 	{RTL/VCL}
@@ -753,6 +756,20 @@ begin
 end;
 //------------------------------------------------------------------------------
 
+{//------------------------------------------------------------------------------
+//GMResetLook                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Reset target character's Look
+//
+//	Changes-
+//		[2008/09/24] Spre - Create.
+//------------------------------------------------------------------------------
+procedure GMResetLook(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+begin
+	TargetChar.ResetLook;
+	Error.Add('Look reset successful!');
+end;{GMResetLook}
 
 //------------------------------------------------------------------------------
 //GMBroadCast                                                          PROCEDURE
@@ -1209,5 +1226,32 @@ begin
 		Error.Add(Arguments[Length(Arguments)-1]);
 	end;
 end;{GMItem}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMJob                                                 							PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Changes a character's job
+//
+//	Changes-
+//		[2008/9/27] RaX - Created.
+//------------------------------------------------------------------------------
+procedure GMJob(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+var
+	NewJob : Word;
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		NewJob := EnsureRange(StrToIntDef(Arguments[0], 0), 0, High(Word));
+		TargetChar.ChangeJob(NewJob);
+		Error.Add('Job changed to ' + TargetChar.JobName + '.');
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;{GMJob}
 //------------------------------------------------------------------------------
 end{GMCommandExe}.

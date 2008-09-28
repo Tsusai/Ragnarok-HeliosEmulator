@@ -64,6 +64,7 @@ function script_Emotion(ALua : TLua) : integer; cdecl; forward;
 function script_OpenMailBox(ALua : TLua) : integer; cdecl; forward;
 function script_CloseMailBox(ALua : TLua) : integer; cdecl; forward;
 function script_JobChange(ALua : TLua) : integer; cdecl; forward;
+//function script_ResetLook(ALua	:TLua)	:	Integer; cdecl;	forward;
 //Special Commands
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
@@ -108,6 +109,7 @@ const
 		(name:'OpenMailing';func:script_OpenMailBox),
 		(name:'CloseMailing';func:script_CloseMailBox),
 		(name:'JobChange';func:script_JobChange),
+    //(name:'ResetLook';func:script_ResetLook),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -1016,15 +1018,26 @@ begin
 	begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
-			AChara.JID := lua_tointeger(ALua, 1);
-			AChara.JobLv := 0;
-		end else
-		begin
-			luaL_error(ALua,'script SetJob syntax error');
+			AChara.ChangeJob(EnsureRange(lua_tointeger(ALua, 1), 0, high(word)));
 		end;
+	end else
+	begin
+	luaL_error(ALua,'script ChangeJob syntax error');
 	end;
 	Result := 0;
 end;
+
+{//Reset Look
+//Code I am working on to reset ones look to 0 [Spre]
+function script_ResetLook(ALua	:TLua)	:	Integer;	cdecl;
+var
+	AChara	:	TCharacter;
+
+  begin
+	//AChara.ResetLook;
+  Result := 0;
+	luaL_error(ALua,'script Reset Look syntax error');
+  end; }
 
 //Special commands here
 function script_get_charaname(ALua : TLua) : integer; cdecl;

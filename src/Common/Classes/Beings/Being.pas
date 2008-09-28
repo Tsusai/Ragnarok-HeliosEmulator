@@ -138,7 +138,7 @@ protected
 			Value : String
 		); virtual;
 
-	procedure SetClass(Value : word); virtual;
+	procedure SetJID(Value : word); virtual;
 	procedure SetBaseLV(Value : word); virtual;
 	procedure SetJobLV(Value : word); virtual;
 	procedure SetBaseEXP(Value : LongWord); virtual;
@@ -209,7 +209,7 @@ public
 	TargetID		: LongWord;
 
 	property Name      : string     read fName    write SetName;
-	property JID       : Word       read fJID     write SetClass;
+	property JID       : Word       read fJID     write SetJID;
 	property BaseLV    : Word       read fBaseLV  write SetBaseLV;
 	property JobLV     : Word       read fJobLV   write SetJobLV;
 	property BaseEXP   : LongWord   read fBaseEXP write fBaseEXP;
@@ -1052,7 +1052,7 @@ Begin
 End; (* Proc TBeing.SetName
 *-----------------------------------------------------------------------------*)
 
-procedure TBeing.SetClass(
+procedure TBeing.SetJID(
 		Value : Word
 	);
 begin

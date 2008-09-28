@@ -32,6 +32,7 @@ uses
 	Types,
 	{Project}
 	Being,
+	GameTypes,
 	Character,
 	PacketTypes,
 	Mailbox,
@@ -197,6 +198,11 @@ uses
 		const PointType : LongWord;
 		const Color     : LongWord
 	);
+  //Spres attempt to make a SetJob Packet thingie
+ { procedure SendJID(
+    AClient   : TIdContext;
+    const jobchange  : Integer;
+  );     }
 	procedure SendCutin(
 		AClient		: TIdContext;
 		const Image	: String;
@@ -247,6 +253,14 @@ uses
 		const IconID	: Word;
 		const Active	: Boolean
 	);
+
+	procedure SendUpdatedLook(
+		const AChara			: TCharacter;
+		const CharacterID	: LongWord;
+		const AType				: TLookTypes;
+		const Value1			: Word;
+		const Value2			: Word
+);
 implementation
 
 
@@ -1446,7 +1460,6 @@ begin
 end;{SendCompass}
 //------------------------------------------------------------------------------
 
-
 //------------------------------------------------------------------------------
 //SendCutin                                                            PROCEDURE
 //------------------------------------------------------------------------------
@@ -1891,5 +1904,40 @@ begin
 	WriteBufferByte(8, Byte(Active), OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($0196,AChara.ClientVersion));
 end;{SendStatusIcon}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendUpdatedLook																								 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Updates the look of a character.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/09/27] RaX - Created.
+//------------------------------------------------------------------------------
+procedure SendUpdatedLook(
+	const AChara			: TCharacter;
+	const CharacterID	: LongWord;
+	const AType				: TLookTypes;
+	const Value1			: Word;
+	const Value2			: Word
+);
+var
+	OutBuffer : TBuffer;
+begin
+	//$1d7 charID Type classID
+	WriteBufferWord(0, $01d7, OutBuffer);
+	WriteBufferLongWord(2, CharacterID, OutBuffer);
+	WriteBufferByte(6, Byte(AType), OutBuffer);
+	WriteBufferWord(7, Value1, OutBuffer);
+	WriteBufferWord(9, Value2, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($01d7,AChara.ClientVersion));
+end;{SendUpdatedLook}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

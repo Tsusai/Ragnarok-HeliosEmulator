@@ -25,7 +25,21 @@ interface
 	{Third Party}
 
 type
-
+	TLookTypes =
+	(
+		LOOK_JOB,
+		LOOK_HAIR,
+		LOOK_WEAPON,
+		LOOK_HEAD_BOTTOM,
+		LOOK_HEAD_TOP,
+		LOOK_HEAD_MID,
+		LOOK_HAIR_COLOR,
+		LOOK_CLOTHES_COLOR,
+		LOOK_SHIELD,
+		LOOK_SHOES,
+		LOOK_MOB
+	);
+	
 	TGenders =
 	(
 		MALE,

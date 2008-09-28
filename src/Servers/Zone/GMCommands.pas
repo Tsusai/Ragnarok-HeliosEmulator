@@ -162,6 +162,8 @@ begin
 	AddCommand('ResetStats',      GMResetStats,           99, TYPE_TARGETCHAR, '<Player Name>', True);
 	AddCommand('Speed',           GMSpeed,                99, TYPE_RETURNBACK, '<Speed>');
 	AddCommand('Die',             GMDie,                  99, TYPE_RETURNBACK, '');
+	AddCommand('Job',             GMJob,                  99, TYPE_RETURNBACK, '<Job ID>');
+  //AddCommand('ResetLook',				GMResetLook,						99,	TYPE_RETURNBACK, '<Player Name>,<Value>');
 	// - - - Broadcast Sets
 	AddCommand('BroadCast',       GMBroadCast,            99, TYPE_ALLPLAYERS, '<Message>', True);
 	AddCommand('BroadCastN',      GMBroadCastNoName,      99, TYPE_ALLPLAYERS, '<Message>', True);

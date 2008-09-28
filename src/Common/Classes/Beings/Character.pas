@@ -153,7 +153,7 @@ protected
 		const Value : String
 	); override;
 
-	procedure SetClass(Value : Word); override;
+	procedure SetJID(Value : Word); override;
 	procedure SetBaseLV(Value : Word); override;
 	procedure SetJobLV(Value : Word); override;
 	procedure SetBaseEXP(Value : LongWord); override;
@@ -205,6 +205,7 @@ protected
 	procedure SetParentID2(Value : LongWord);
 	procedure SetWeight(Value : LongWord);
 	procedure SetMaxWeight(Value : LongWord);
+
 	procedure SetBabyID(
 		const Value : LongWord
 	);
@@ -288,6 +289,8 @@ public
 
 	procedure LoadInventory;
 
+	procedure ChangeJob(JobID : Word);
+
 	Constructor Create(AClient : TIdContext);
 	Destructor  Destroy; override;
 
@@ -297,6 +300,7 @@ public
 		write SetSaveTime;
 
 	property CharaState  : TCharaState read fCharaState write SetCharaState;
+ 
 	//For timed save procedure to activate.
 	property BaseEXP   : LongWord    read fBaseEXP write SetBaseEXP;
 	property JobEXP    : LongWord    read fJobEXP write SetJobEXP;
@@ -336,7 +340,11 @@ public
 	property Weight    : LongWord   read fWeight write SetWeight;
 	property MaxWeight : LongWord   read fMaxWeight write SetMaxWeight;
 	property JobName   : String     read fJobName;
-end;{TCharacter}
+ //property UpdateLook			:	Byte		read	fUpdateLook	write	SetUpdateLook;
+ // property UnEquipAll			:	Byte		read	fUnEquipAll	write SetUnEquipAll;
+ // property UpdateOption		:	Byte		read	fUpdateOption	write	SetUpdateOption;
+  //property ResetLook	 : Integer		read	fResetLook	write	SetResetLook;
+	end;{TCharacter}
 
 implementation
 
@@ -350,6 +358,7 @@ uses
 	Main,
 	BufferIO,
 	Globals,
+	GameTypes,
 	PacketTypes,
 	TCPServerRoutines,
 	CharaList,
@@ -487,22 +496,23 @@ end;{SetName}
 
 
 //------------------------------------------------------------------------------
-//SetClass                                                             PROCEDURE
+//SetJob                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Sets the Class to Value. Also, lets our object know that data has
 //    changed.
 // --
 //   Pre:
-//	TODO
+//	Inplement UpdateOption, UnEquipAll Routines.
 //   Post:
 //	TODO
 // --
 //	Changes -
+//		September	25,	2008	-	Spre	-Updated Routine with some jobchange code.
 //		December 22nd, 2006 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-procedure TCharacter.SetClass(
+procedure TCharacter.SetJID(
 		Value : Word
 	);
 begin
@@ -510,18 +520,18 @@ begin
 	fJID := Value;
 
 	case fJID of
-		JOB_NOVICE     :  fJobName := 'Novice';
-		JOB_SWORDMAN  :  fJobName := 'Swordman';
-		JOB_MAGE       :  fJobName := 'Magician';
-		JOB_ARCHER     :  fJobName := 'Archer';
-		JOB_ACOLYTE    :  fJobName := 'Acolyte';
-		JOB_MERCHANT   :  fJobName := 'Merchant';
-		JOB_THIEF      :  fJobName := 'Thief';
+		JOB_NOVICE			:  fJobName := 'Novice';
+		JOB_SWORDMAN		:  fJobName := 'Swordman';
+		JOB_MAGE				:  fJobName := 'Magician';
+		JOB_ARCHER			:  fJobName := 'Archer';
+		JOB_ACOLYTE			:  fJobName := 'Acolyte';
+		JOB_MERCHANT		:  fJobName := 'Merchant';
+		JOB_THIEF				:  fJobName := 'Thief';
 
-		JOB_KNIGHT     :  fJobName := 'Knight';
-		JOB_PRIEST     :  fJobName := 'Priest';
-		JOB_WIZARD     :  fJobName := 'Wizard';
-		JOB_BLACKSMITH :  fJobName := 'Blacksmith';
+		JOB_KNIGHT			:  fJobName := 'Knight';
+		JOB_PRIEST			:  fJobName := 'Priest';
+		JOB_WIZARD			:  fJobName := 'Wizard';
+		JOB_BLACKSMITH	:  fJobName := 'Blacksmith';
 		JOB_HUNTER     :  fJobName := 'Hunter';
 		JOB_ASSASSIN   :  fJobName := 'Assassin';
 
@@ -591,8 +601,7 @@ begin
 		HJOB_EXPANDED_STAR_GLADIATOR_2     : fJobName := 'Star_Gladiator';
 		HJOB_EXPANDED_SOUL_LINKER          : fJobName := 'Soul_Linker';
 	end;
-
-end;{SetClass}
+end;{SetJID}
 //------------------------------------------------------------------------------
 
 
@@ -2798,7 +2807,7 @@ begin
 	ParamBase[VIT] := 1;
 	ParamBase[INT] := 1;
 	ParamBase[LUK] := 1;
-  //Update status
+	//Update status
   SendCharacterStats;
 end;{ResetStats}
 //------------------------------------------------------------------------------
@@ -2884,7 +2893,25 @@ begin
 	end;
 end;
 
-
+{//Reset Characters look to 0, Look being headgear view.
+procedure TCharacter.SetResetLook(Value	:	Integer);
+var
+	AChara	:	TCharacter;
+begin
+  if HeadTop > 0 then
+  begin
+    AChara.ResetLook := 0;
+  end; 
+  if HeadMid > 0 then
+  begin
+  	AChara.ResetLook := 0;
+  end;
+  if HeadBottom > 0 then
+  begin
+  	AChara.ResetLook := 0;
+  end;
+end;
+       }
 //------------------------------------------------------------------------------
 //LoadInventory                                                        PROCEDURE
 //------------------------------------------------------------------------------
@@ -2921,6 +2948,37 @@ begin
 	end;
 	Weight := AWeight;
 end;{LoadInventory}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ChangeJob		                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Changes a character's job.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2008/09/26] RaX - Created
+//
+//------------------------------------------------------------------------------
+Procedure TCharacter.ChangeJob(JobID: Word);
+begin
+	if ZoneStatus = isOnline then
+	begin
+		JID := JobId;
+		JobLV	:= 0;
+		AreaLoop(JobChange, False, True, True, JID);
+		//ShowEffect();   - need confirmation, and what effect do we send?
+		SendCharacterStats;   //this also recalculated stats
+		//TODO
+		//Send skill list;
+	end;
+end;{ChangeJob}
 //------------------------------------------------------------------------------
 
 

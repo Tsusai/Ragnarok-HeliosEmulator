@@ -82,6 +82,12 @@ uses
 		const ABeing        : TBeing;
 		const AParameters   : Cardinal
 	);
+
+	procedure JobChange(
+		const ACurrentBeing : TBeing;
+		const ABeing        : TBeing;
+		const AParameters   : Cardinal
+	);
 implementation
 
 uses
@@ -90,7 +96,8 @@ uses
 	{Project}
 	Character,
 	ZoneSend,
-	GameConstants
+	GameConstants,
+	GameTypes
 	{Third Party}
 	//none
 	;
@@ -379,6 +386,28 @@ begin
 	if (ACurrentBeing is TCharacter) AND (ABeing is TCharacter) then
 	begin
 		ZoneDisappearBeing(ACurrentBeing, TCharacter(Abeing).ClientInfo, 1);
+	end;
+end;{ShowDeath}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//JobChange                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Show job change to everyone in the area
+//
+//	Changes-
+//		[2008/9/27] RaX - Created.
+//------------------------------------------------------------------------------
+procedure JobChange(
+	const ACurrentBeing : TBeing;
+	const ABeing        : TBeing;
+	const AParameters   : Cardinal
+);
+begin
+	if (ACurrentBeing is TCharacter) AND (ABeing is TCharacter) then
+	begin
+		SendUpdatedLook(TCharacter(ACurrentBeing), TCharacter(ABeing).AccountId, LOOK_JOB, TCharacter(ABeing).JID, 0);
 	end;
 end;{ShowDeath}
 //------------------------------------------------------------------------------
