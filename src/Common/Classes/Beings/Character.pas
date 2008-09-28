@@ -143,7 +143,12 @@ protected
 	fTimeToSave       : TDateTime;
 
 	fJobName          : String;
+	//Start New info for jobchange [Spre]
+	//fUnEquipAll				: Byte; 	// Unequips all gears [Spre]  Will be written when items are done
+	//fUpdateOption			:	Byte;  //	Removed options from character.
 	fCharaState       : TCharaState;
+  //Reset Look to Zero GM Command. [Spre]
+  fResetLook				:	Integer;
 
 	procedure SetSaveTime(Value : Boolean);
 	procedure SetCharaState(Value : TCharaState);
@@ -205,6 +210,8 @@ protected
 	procedure SetParentID2(Value : LongWord);
 	procedure SetWeight(Value : LongWord);
 	procedure SetMaxWeight(Value : LongWord);
+  procedure SetResetLook(Value		:	Integer);
+
 
 	procedure SetBabyID(
 		const Value : LongWord
@@ -340,11 +347,11 @@ public
 	property Weight    : LongWord   read fWeight write SetWeight;
 	property MaxWeight : LongWord   read fMaxWeight write SetMaxWeight;
 	property JobName   : String     read fJobName;
- //property UpdateLook			:	Byte		read	fUpdateLook	write	SetUpdateLook;
- // property UnEquipAll			:	Byte		read	fUnEquipAll	write SetUnEquipAll;
+	// property UnEquipAll			:	Byte		read	fUnEquipAll	write SetUnEquipAll;
  // property UpdateOption		:	Byte		read	fUpdateOption	write	SetUpdateOption;
-  //property ResetLook	 : Integer		read	fResetLook	write	SetResetLook;
+	property ResetLook	 : Integer		read	fResetLook	write	SetResetLook;
 	end;{TCharacter}
+
 
 implementation
 
@@ -600,8 +607,9 @@ begin
 		HJOB_EXPANDED_STAR_GLADIATOR       : fJobName := 'Star_Gladiator';
 		HJOB_EXPANDED_STAR_GLADIATOR_2     : fJobName := 'Star_Gladiator';
 		HJOB_EXPANDED_SOUL_LINKER          : fJobName := 'Soul_Linker';
-	end;
+end;
 end;{SetJID}
+
 //------------------------------------------------------------------------------
 
 
@@ -2893,25 +2901,22 @@ begin
 	end;
 end;
 
-{//Reset Characters look to 0, Look being headgear view.
+//Reset Characters look to 0, Look being headgear view.
 procedure TCharacter.SetResetLook(Value	:	Integer);
-var
-	AChara	:	TCharacter;
 begin
   if HeadTop > 0 then
   begin
-    AChara.ResetLook := 0;
-  end; 
+    ResetLook := 0;
+  end;
   if HeadMid > 0 then
   begin
-  	AChara.ResetLook := 0;
+  	ResetLook := 0;
   end;
   if HeadBottom > 0 then
   begin
-  	AChara.ResetLook := 0;
+  	ResetLook := 0;
   end;
 end;
-       }
 //------------------------------------------------------------------------------
 //LoadInventory                                                        PROCEDURE
 //------------------------------------------------------------------------------
@@ -3015,7 +3020,19 @@ begin
 end;{Create}
 //------------------------------------------------------------------------------
 
+{ //------------------------------------------------------------------------------
+//SetSendStats                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Should Send stats to the server on jobchange
+// --
+//------------------------------------------------------------------------------
+procedure TCharacter.SetBaseStats(
+		const AClient : TIdContext;
+	);
+begin
 
+end;} //Needs finished [Spre]
 //------------------------------------------------------------------------------
 //Destroy                                                             DESTRUCTOR
 //------------------------------------------------------------------------------

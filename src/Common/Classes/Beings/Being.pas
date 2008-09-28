@@ -133,6 +133,9 @@ protected
 
 	AttackDelay				: LongWord;
 
+  // Reset Look? [Spre]
+  fResetLook				:	Integer;
+
 	procedure SetName(
 		const
 			Value : String
@@ -176,6 +179,8 @@ protected
 	procedure SetHPPercent(Value : Byte);
 	function GetSpPercent: Byte;
 	procedure SetSPPercent(Value : Byte);
+  procedure SetResetLook(Value	:	Integer);
+
 public
 	ID					: LongWord;
 	HeadDirection	: Word;
@@ -236,6 +241,7 @@ public
 	property MaximumHit		 : Integer				read fMaximumHit write SetMinimumHit;
 	property AttackDmgTime	:	Integer				read fAttackDmgTime	write	SetAttackDmgTime;
 	property Attack_Motion	:	Integer				read fAttack_Motion	write	SetAttack_Motion;
+	property ResetLook	:	Integer			read	fResetLook	write	SetResetLook;
 	Procedure Walk;
 
 	Procedure CalcMaxHP; virtual; abstract;
@@ -253,8 +259,7 @@ public
 	procedure ShowEffect(EffectID:LongWord);
 	procedure ShowEmotion(EmotionID:Byte);
 	procedure Attack(ATargetID : LongWord; AttackContinuous : Boolean; JustAttacked : Boolean);virtual;
-
-	procedure AreaLoop(
+  	procedure AreaLoop(
 			ALoopCall           : TLoopCall;
 			AIgnoreCurrentBeing : Boolean = True;
 			IgnoreMob           : Boolean = True;
@@ -1205,6 +1210,11 @@ end;
 procedure TBeing.SetAttack_Motion(Value	:	Integer);
 begin
 	fAttack_Motion	:=	Value;
+end;
+
+procedure TBeing.SetResetLook(Value	:	Integer);
+begin
+  fResetLook	:=	Value;
 end;
 
 procedure TBeing.SetPosition(Value : TPoint);

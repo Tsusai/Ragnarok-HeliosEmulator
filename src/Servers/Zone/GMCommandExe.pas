@@ -41,7 +41,8 @@ uses
 	procedure GMResetStats(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 	procedure GMSpeed(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 	procedure GMDie(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
-  //procedure GMResetLook(const Arguments	:	array of String;const	FromChara:TCharacter;const	TargetChar;	TCharacter;const	Error	:	TStringList);
+
+	procedure GMResetLook(const Arguments	:	array of String;const	FromChar:TCharacter;const	TargetChar;	TCharacter;const	Error	:	TStringList);
 
 	procedure GMBroadCast(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 	procedure GMBroadCastNoName(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
@@ -756,7 +757,8 @@ begin
 end;
 //------------------------------------------------------------------------------
 
-{//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 //GMResetLook                                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
@@ -767,7 +769,7 @@ end;
 //------------------------------------------------------------------------------
 procedure GMResetLook(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 begin
-	TargetChar.ResetLook;
+	TargetChar.ResetLook	:=	0;
 	Error.Add('Look reset successful!');
 end;{GMResetLook}
 

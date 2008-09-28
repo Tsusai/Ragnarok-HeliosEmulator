@@ -64,13 +64,13 @@ function script_Emotion(ALua : TLua) : integer; cdecl; forward;
 function script_OpenMailBox(ALua : TLua) : integer; cdecl; forward;
 function script_CloseMailBox(ALua : TLua) : integer; cdecl; forward;
 function script_JobChange(ALua : TLua) : integer; cdecl; forward;
-//function script_ResetLook(ALua	:TLua)	:	Integer; cdecl;	forward;
+function script_ResetLook(ALua	:TLua)	:	Integer; cdecl;	forward;
 //Special Commands
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 33;
+	NPCCommandCount = 34;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -109,7 +109,7 @@ const
 		(name:'OpenMailing';func:script_OpenMailBox),
 		(name:'CloseMailing';func:script_CloseMailBox),
 		(name:'JobChange';func:script_JobChange),
-    //(name:'ResetLook';func:script_ResetLook),
+    (name:'ResetLook';func:script_ResetLook),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.

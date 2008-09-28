@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 523 -
+[2008/09/26] Spre - Added Most of reset look, It compiles, but will not fully work untill I get the gm portion sorted out.
+-
+
 - Rev 522 -
 [2008/09/26] Spre - Added script command JobChange.
 [2008/09/27] RaX - Added sendupdatedlook to zonesend, added arealoopevent JobChange,
