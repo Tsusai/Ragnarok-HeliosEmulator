@@ -1074,8 +1074,8 @@ begin
 				end;
 			$028d: //Enter Character Rename mode
 				begin
-					RecvBuffer(AConnection,ABuffer[2],2);
-					TThreadLink(AConnection.Data).CharRename := True;
+					{RecvBuffer(AConnection,ABuffer[2],2);
+					TThreadLink(AConnection.Data).CharRename := True;}
 				end;
 			$028f:  // ??
 				begin

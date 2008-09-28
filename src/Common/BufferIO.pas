@@ -65,7 +65,7 @@ uses
 
 	procedure SendPadding(var AClient : TIdContext);
 
-	procedure SendBuffer(var AClient : TIdContext; const Buffer : TBuffer; const Size : LongWord);overload;
+	procedure SendBuffer(var AClient : TIdContext;const Buffer : TBuffer; const Size : LongWord);overload;
 	procedure SendBuffer(var AClient : TInterClient; const Buffer : TBuffer; const Size : LongWord);overload;
 	procedure RecvBuffer(
 		var AClient : TIdContext;
@@ -441,11 +441,18 @@ PREMADE SENDING OF BUFFER TO CLIENT
 
 
 	//Socket Method SendBuffer - Writes the buffer to the socket.
-	procedure SendBuffer(var AClient : TIdContext; const Buffer : TBuffer; const Size : LongWord);
+	procedure SendBuffer(var AClient : TIdContext;const Buffer : TBuffer; const Size : LongWord);
 	var
 		SendBytes : TIdBytes;
 	begin
 		SendBytes := RawToBytes(Buffer,Size);
+		{if AClient.Data is TClientLink then
+		begin
+			if (TClientLink(AClient.Data).EncKey1 > 0)AND(TClientLink(AClient.Data).EncKey2 > 0) then
+			begin
+				WriteBufferWord(0, TClientLink(AClient.Data).DecryptMessageID(BufferReadWord(0,Buffer)), Buffer);
+			end;
+		end;}
 		AClient.Connection.IOHandler.Write(SendBytes);
 	end;
 

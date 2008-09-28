@@ -484,6 +484,11 @@ Begin
 		//going to the next client enqueued.
 		RecvBuffer(AClient,ABuffer[0], 2);
 		PacketID := BufferReadWord(0, ABuffer);
+		{if (TClientLink(AClient.Data).EncKey1 > 0)AND(TClientLink(AClient.Data).EncKey2 > 0) then
+		begin
+			PacketID := TClientLink(AClient.Data).DecryptMessageID(PacketID);
+		end;}
+		
 		AChara := @TClientLink(AClient.Data).CharacterLink;
 
 		if NOT Assigned(AChara^) then

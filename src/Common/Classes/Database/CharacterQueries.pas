@@ -1096,7 +1096,9 @@ begin
 		ADataSet.First;
 		while NOT ADataSet.Eof do
 		begin
-			Result:=Max(ADataSet.Fields[0].AsInteger,Result);
+			Result:=Max(
+				EnsureRange(StrToIntDef(ADataSet.Fields[0].AsString,0),0,High(LongWord))
+				,Result);
 			ADataSet.Next;
 		end;
 	finally

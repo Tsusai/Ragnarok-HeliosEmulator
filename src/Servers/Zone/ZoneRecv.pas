@@ -466,6 +466,8 @@ var
 	Gender      : Byte;
 	AnAccount   : TAccount;
 	ACharacter  : TCharacter;
+
+//	Key1,Key2   : LongWord;
 begin
 	AccountID      	:= BufferReadLongWord(ReadPts[0], Buffer);
 	CharacterID    	:= BufferReadLongWord(ReadPts[1], Buffer);
@@ -506,6 +508,11 @@ begin
 
 //			SendPadding(ACharacter.ClientInfo);
 			SendCharID(ACharacter);
+
+			{Key1:=Random($FFFFFF)+10;
+			Key2:=Random($FFFFFF)+10;
+			SendEncryptKeys(AClient,Key1,Key2);
+			TClientLink(AClient.Data).InitializeMessageID(Key1,Key2);}
 
 			ZoneSendMapConnectReply(ACharacter);
 			SendZoneCharaIncrease(MainProc.ZoneServer.ToCharaTCPClient,MainProc.ZoneServer);

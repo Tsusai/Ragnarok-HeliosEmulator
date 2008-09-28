@@ -57,6 +57,12 @@ type
 		CharacterLink : TCharacter;
 		AccountInfo	: TCharAccountInfo;
 		Transfering   : Boolean;
+
+		EncKey1		: LongWord;
+		EncKey2		: LongWord;
+		procedure InitializeMessageID(const Key1,Key2:LongWord);
+		function DecryptMessageID(const ID:Word):Word;
+		constructor Create(AClient : TIdContext);
 		Destructor Destroy();override;
 	end;
 
@@ -133,6 +139,35 @@ end;
 Destructor TThreadLink.Destroy;
 begin
 	inherited;
+end;
+constructor TClientLink.Create(AClient : TIdContext);
+begin
+	inherited Create(AClient);
+	EncKey1 := 0;
+	EncKey2 := 0;
+end;
+procedure TClientLink.InitializeMessageID(const Key1,Key2:LongWord);
+var
+	TemporaryCode : array[1..8] of Byte;
+	ShiftTemporary : LongWord;
+	Index	: Byte;
+	AWord : LongWord;
+begin
+	ShiftTemporary := Key1;
+	for Index := 8 downto 1 do
+	begin
+		TemporaryCode[Index] := ShiftTemporary AND $F;
+		ShiftTemporary := ShiftTemporary shr 4;
+	end;
+	AWord := (TemporaryCode[6] shl 12) + (TemporaryCode[4] shl 8) + (TemporaryCode[7] shl 4) + (TemporaryCode[1]);
+	EncKey1 := (TemporaryCode[2] shl 12) + (TemporaryCode[3] shl 8) + (TemporaryCode[5] shl 4) + (TemporaryCode[8]);
+	EncKey2 := ((((EncKey1 mod $F3AC) + AWord) shl 16) or ((EncKey1 mod $49DF)+EncKey1)) mod Key2;
+end;
+
+function TClientLink.DecryptMessageID(const ID:Word):Word;
+begin
+	EncKey1 := (($343FD * EncKey1) + EncKey2) AND $FFFFFFFF;
+	Result := (ID mod ((EncKey1 shr 16) and $7FFF)) and $FFF;
 end;
 
 Destructor TClientLink.Destroy;

@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- rev 528 -
+[2008/09/28] Aeomin - Fixed DC in character server when using sqlite.
+-
+
 - Rev 527 -
 [2008/09/28] Spre - Updated game.db everything expect mobs are in it.
 -

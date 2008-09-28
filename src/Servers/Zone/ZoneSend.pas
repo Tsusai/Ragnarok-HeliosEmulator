@@ -198,11 +198,7 @@ uses
 		const PointType : LongWord;
 		const Color     : LongWord
 	);
-  //Spres attempt to make a SetJob Packet thingie
- { procedure SendJID(
-    AClient   : TIdContext;
-    const jobchange  : Integer;
-  );     }
+
 	procedure SendCutin(
 		AClient		: TIdContext;
 		const Image	: String;
@@ -260,7 +256,11 @@ uses
 		const AType				: TLookTypes;
 		const Value1			: Word;
 		const Value2			: Word
-);
+	);
+	procedure SendEncryptKeys(
+		AClient		: TIdContext;
+		const Key1,Key2 : LongWord
+	);
 implementation
 
 
@@ -1939,5 +1939,35 @@ begin
 	WriteBufferWord(9, Value2, OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($01d7,AChara.ClientVersion));
 end;{SendUpdatedLook}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendEncryptKeys                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Send keys for packet id encryption.
+//		(Apparently KRO doesn't support it)
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/09/26] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendEncryptKeys(
+	AClient		: TIdContext;
+	const Key1,Key2 : LongWord
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $02AE, OutBuffer);
+	WriteBufferLongWord(2, Key1, OutBuffer);
+	WriteBufferLongWord(6, Key2, OutBuffer);
+	SendBuffer(AClient, OutBuffer, 10);
+end;
 //------------------------------------------------------------------------------
 end{ZoneSend}.

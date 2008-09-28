@@ -1032,12 +1032,14 @@ end;
 function script_ResetLook(ALua	:TLua)	:	Integer;	cdecl;
 var
 	AChara	:	TCharacter;
-
-  begin
-	AChara.ResetLook;
-  Result := 0;
-	luaL_error(ALua,'script Reset Look syntax error');
+begin
+	Result := 0;
+	if GetCharaFromLua(ALua,AChara) then
+	begin
+		AChara.ResetLook;
 	end;
+	luaL_error(ALua,'script Reset Look syntax error');
+end;
 
 //Special commands here
 function script_get_charaname(ALua : TLua) : integer; cdecl;
