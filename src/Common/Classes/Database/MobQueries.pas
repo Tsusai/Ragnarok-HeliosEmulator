@@ -109,7 +109,7 @@ begin
 				BaseExp          := ADataSet.Fields[16].AsInteger;
 				JobExp           := ADataSet.Fields[17].AsInteger;
 				ASpeed           := ADataSet.Fields[18].AsInteger; //as = AttackSpeed [Spre]
-				SkillRange				:=	ADataSet.Fields[19].AsInteger; //es - Reports say SKILL RANGE/SIGHT
+				EnemySight				:=	ADataSet.Fields[19].AsInteger; //es - Reports say Enemy SIGHT
 				Speed            := ADataSet.Fields[20].AsInteger;
 				AttackDmgTime	:=	ADataSet.Fields[21].AsInteger; //  Attack Damage Delay [Spre]
 				Attack_Motion	:= ADataSet.Fields[22].AsInteger; //  Attack Motion Delay [Spre]

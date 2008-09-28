@@ -132,7 +132,7 @@ protected
 	fAttackDmgTime			:	Integer;
 	fAttack_Motion			:	Integer;
 	//Skill Range [Spre]
-	fSkillRange				:	Byte;
+	fEnemySight				:	Byte;
 
 	AttackDelay				: LongWord;
 
@@ -178,7 +178,7 @@ protected
 	procedure SetMaximumHit(Value : Integer); virtual;
 	procedure SetAttackDmgTime(Value	:	Integer);	virtual;
 	procedure SetAttack_Motion(Value	:	Integer);	virtual;
-	procedure SetSkillRange(Value	:	Byte);	virtual;
+	procedure SetEnemySight(Value	:	Byte);	virtual;
 	function GetHpPercent: Byte;
 	procedure SetHPPercent(Value : Byte);
 	function GetSpPercent: Byte;
@@ -245,7 +245,7 @@ public
 	property MaximumHit		 : Integer				read fMaximumHit write SetMinimumHit;
 	property AttackDmgTime	:	Integer				read fAttackDmgTime	write	SetAttackDmgTime;
 	property Attack_Motion	:	Integer				read fAttack_Motion	write	SetAttack_Motion;
-  property SkillRange	:	Byte				read	fSkillRange	write	SetSkillRange;
+  property EnemySight	:	Byte				read	fEnemySight	write	SetEnemySight;
 	property ResetLook	:	Integer			read	fResetLook	write	SetResetLook;
 	Procedure Walk;
 
@@ -1218,9 +1218,9 @@ begin
 end;
 
 //Mob Skill Range [Spre]
-procedure TBeing.SetSkillRange(Value	:	Byte);
+procedure TBeing.SetEnemySight(Value	:	Byte);
 begin
-  fSkillRange	:=	Value;
+	fEnemySight	:=	Value;
 end;
 
 procedure TBeing.SetResetLook(Value	:	Integer);
