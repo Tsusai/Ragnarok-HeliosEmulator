@@ -15,6 +15,14 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 526 -
+[2008/09/28] RabidCh - Spre didn't update the changelog.
+-
+
+- Rev 525 -
+[2008/09/28] Spre - I am an idiot FIXED es which is ENEMYSIGHT thanks lonewolf :D
+-
+
 - Rev 524 -
 [2008/09/28] Spre - Added Mored efined fields to MobQueries, Including What is thought to be skill range.
 [2008/09/28] Spre - Fixed some changelg entries....
