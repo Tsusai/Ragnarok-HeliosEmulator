@@ -15,8 +15,15 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 524 -
+[2008/09/28] Spre - Added Mored efined fields to MobQueries, Including What is thought to be skill range.
+[2008/09/28] Spre - Fixed some changelg entries....
+[2008/09/28] Spre - Realized the changelog was still incomplete. Rev 512 where I added the original JobChange script
+ Had another change where all source code declarations of Swordsman were changed to the true name of SWORDMAN.
+-
+
 - Rev 523 -
-[2008/09/26] Spre - Added Most of reset look, It compiles, but will not fully work untill I get the gm portion sorted out.
+[2008/09/28] Spre - Added Most of reset look, It compiles, but will not fully work untill I get the gm portion sorted out.
 -
 
 - Rev 522 -

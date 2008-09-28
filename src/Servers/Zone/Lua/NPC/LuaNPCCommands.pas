@@ -1027,17 +1027,17 @@ begin
 	Result := 0;
 end;
 
-{//Reset Look
+//Reset Look
 //Code I am working on to reset ones look to 0 [Spre]
 function script_ResetLook(ALua	:TLua)	:	Integer;	cdecl;
 var
 	AChara	:	TCharacter;
 
   begin
-	//AChara.ResetLook;
+	AChara.ResetLook;
   Result := 0;
 	luaL_error(ALua,'script Reset Look syntax error');
-  end; }
+	end;
 
 //Special commands here
 function script_get_charaname(ALua : TLua) : integer; cdecl;

@@ -128,8 +128,11 @@ protected
 	//Added Min and max hit for MobQueries.pas [Spre]
 	fMinimumHit       : Integer;
 	fMaximumHit       : Integer;
+	// Attack Damage and time motions. [Spre]
 	fAttackDmgTime			:	Integer;
 	fAttack_Motion			:	Integer;
+	//Skill Range [Spre]
+	fSkillRange				:	Byte;
 
 	AttackDelay				: LongWord;
 
@@ -175,6 +178,7 @@ protected
 	procedure SetMaximumHit(Value : Integer); virtual;
 	procedure SetAttackDmgTime(Value	:	Integer);	virtual;
 	procedure SetAttack_Motion(Value	:	Integer);	virtual;
+	procedure SetSkillRange(Value	:	Byte);	virtual;
 	function GetHpPercent: Byte;
 	procedure SetHPPercent(Value : Byte);
 	function GetSpPercent: Byte;
@@ -241,6 +245,7 @@ public
 	property MaximumHit		 : Integer				read fMaximumHit write SetMinimumHit;
 	property AttackDmgTime	:	Integer				read fAttackDmgTime	write	SetAttackDmgTime;
 	property Attack_Motion	:	Integer				read fAttack_Motion	write	SetAttack_Motion;
+  property SkillRange	:	Byte				read	fSkillRange	write	SetSkillRange;
 	property ResetLook	:	Integer			read	fResetLook	write	SetResetLook;
 	Procedure Walk;
 
@@ -1210,6 +1215,12 @@ end;
 procedure TBeing.SetAttack_Motion(Value	:	Integer);
 begin
 	fAttack_Motion	:=	Value;
+end;
+
+//Mob Skill Range [Spre]
+procedure TBeing.SetSkillRange(Value	:	Byte);
+begin
+  fSkillRange	:=	Value;
 end;
 
 procedure TBeing.SetResetLook(Value	:	Integer);
