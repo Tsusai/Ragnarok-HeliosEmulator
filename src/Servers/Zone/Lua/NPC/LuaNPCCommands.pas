@@ -109,7 +109,7 @@ const
 		(name:'OpenMailing';func:script_OpenMailBox),
 		(name:'CloseMailing';func:script_CloseMailBox),
 		(name:'JobChange';func:script_JobChange),
-    (name:'ResetLook';func:script_ResetLook),
+		(name:'ResetLook';func:script_ResetLook),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -1039,7 +1039,8 @@ begin
 		AChara.ResetLook;
 	end;
 	luaL_error(ALua,'script Reset Look syntax error');
-end;
+	end;
+
 
 //Special commands here
 function script_get_charaname(ALua : TLua) : integer; cdecl;

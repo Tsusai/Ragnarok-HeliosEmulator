@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 532 -
+[2008/09/28] Spre - #resetlook in, final testing will occur once items views are in and working. GMCommand and Possible scritp command usage.
+-
+
 - Rev 531 -
 [2008/09/28] Aeomin - More preparation for item drop
 [2008/09/28] Aeomin - Fixed internal crash in item.

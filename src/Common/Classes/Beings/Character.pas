@@ -148,7 +148,7 @@ protected
 	//fUpdateOption			:	Byte;  //	Removed options from character.
 	fCharaState       : TCharaState;
   //Reset Look to Zero GM Command. [Spre]
-  fResetLook				:	Integer;
+	fResetLook				:	Integer;
 
 	procedure SetSaveTime(Value : Boolean);
 	procedure SetCharaState(Value : TCharaState);
@@ -210,7 +210,7 @@ protected
 	procedure SetParentID2(Value : LongWord);
 	procedure SetWeight(Value : LongWord);
 	procedure SetMaxWeight(Value : LongWord);
-  procedure SetResetLook(Value		:	Integer);
+	procedure SetResetLook(Value		:	Integer);
 
 
 	procedure SetBabyID(
