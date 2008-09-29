@@ -74,7 +74,8 @@ implementation
 uses
 	{RTL/VCL}
 	SysUtils,
-	Classes
+	Classes,
+	Globals
 	{Project}
 	{3rd Party}
 	//none
@@ -157,8 +158,15 @@ begin
 	begin
 		ADataSet.Connection	:= Connection;
 		ADataSet.SQL.Add(AQuery);
-		ADataSet.ExecSQL;
-		ADataSet.Open;
+		try
+			ADataSet.ExecSQL;
+			ADataSet.Open;
+		except
+			on E : Exception do
+			begin
+				Console.Message('Query error :: '+E.Message, 'Database', MS_WARNING);
+			end;
+		end;
 	end;
 end;
 //------------------------------------------------------------------------------
@@ -201,7 +209,14 @@ begin
 	begin
 		ADataSet.Connection	:= Connection;
 		ADataSet.SQL.Add(AQuery);
-		ADataSet.ExecSQL;
+		try
+			ADataSet.ExecSQL;
+		except
+			on E : Exception do
+			begin
+				Console.Message('Query error :: '+E.Message, 'Database', MS_WARNING);
+			end;
+		end;
 	end;
 end;
 //------------------------------------------------------------------------------
