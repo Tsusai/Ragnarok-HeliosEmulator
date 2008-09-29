@@ -2976,9 +2976,8 @@ begin
 	if ZoneStatus = isOnline then
 	begin
 		JID := JobId;
-		JobLV	:= 0;
+		JobLV	:= 1;
 		AreaLoop(JobChange, False, True, True, JID);
-		//ShowEffect();   - need confirmation, and what effect do we send?
 		SendCharacterStats;   //this also recalculated stats
 		//TODO
 		//Send skill list;

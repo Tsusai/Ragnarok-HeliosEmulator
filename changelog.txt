@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 535 -
+[2008/09/29] Spre - Fixed jobLv in character.pas
+-
+
 - Rev 534 -
 [2008/09/28] RaX - changed the way we handle zeoslib connections to prevent leaking of
  connections to the database.
