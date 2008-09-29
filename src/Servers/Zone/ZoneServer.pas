@@ -348,6 +348,7 @@ Procedure TZoneServer.Start();
 begin
 	if NOT Started then
 	begin
+  	inherited;
 		//Load our Zone.ini
 		LoadOptions;
 

@@ -35,8 +35,10 @@ type
 		Procedure EnsureFileStructure;
 
 	public
-		Run : Boolean;
-		Loaded : Boolean;
+		Run							: Boolean;
+		Loaded					: Boolean;
+
+		ContinueLoading : Boolean;
 
 		LoginServer 		: TLoginServer;
 		CharacterServer : TCharacterServer;
@@ -91,7 +93,7 @@ constructor TMainProc.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
 	Loaded := FALSE;
-
+	ContinueLoading := true;
 	LoadOptions;
 	EnsureFileStructure;
 
@@ -140,44 +142,51 @@ end;{TMainProc.Destroy}
 //
 //------------------------------------------------------------------------------
 procedure TMainProc.Startup;
-var
-	PreloadOK : boolean;
 begin
 	Run := TRUE;
+	ContinueLoading := InitGlobals;
 
-	PreloadOK := InitGlobals;
-
-	if PreloadOK then
+	//Start and create Enabled Servers
+	if Options.LoginEnabled then
 	begin
-
-		//Start and create Enabled Servers
-		if Options.LoginEnabled then
+		LoginServer      := TLoginServer.Create;
+		if ContinueLoading then
 		begin
-			LoginServer      := TLoginServer.Create;
 			LoginServer.Start;
 		end;
-		//NOTE: Prior
-		if Options.CharaEnabled then
+	end;
+	//NOTE: Prior
+	if Options.CharaEnabled then
+	begin
+		CharacterServer  := TCharacterServer.Create;
+		if ContinueLoading then
 		begin
-			CharacterServer  := TCharacterServer.Create;
 			CharacterServer.Start;
 		end;
+	end;
 
-		if Options.InterEnabled then
+	if Options.InterEnabled then
+	begin
+		InterServer      := TInterServer.Create;
+		if ContinueLoading then
 		begin
-			InterServer      := TInterServer.Create;
 			InterServer.Start;
 		end;
+	end;
 
-		if Options.ZoneEnabled then
+	if Options.ZoneEnabled then
+	begin
+		ZoneServer       := TZoneServer.Create;
+		if ContinueLoading then
 		begin
-			ZoneServer       := TZoneServer.Create;
 			ZoneServer.Start;
 		end;
+	end;
 
-		Console.WriteLn('- Startup Success');
-		Console.WriteLn('  For a list of console commands, input "/help".');
-		Console.WriteLn('');
+	if ContinueLoading then
+	begin
+		Console.Message('Startup success', 'SYSTEM', MS_INFO);
+		Console.Message('For a list of commands, please type "/help".', 'SYSTEM', MS_INFO);
 
 		//Link Enabled Servers
 		if Options.CharaEnabled then
@@ -189,15 +198,11 @@ begin
 			ZoneServer.ConnectToCharacter;
 			ZoneServer.ConnectToInter;
 		end;
-
 	end else
-	begin
-		Console.EnableCommands := FALSE;//disable console commands.
-		Console.WriteLn('- Startup Failed');
-		Console.WriteLn('  Please see what error was mentioned above, close this program '+
-			'and correct');
-	end;
-
+  begin
+		Console.Message('Startup failed', 'SYSTEM', MS_ERROR);
+		Console.Message('Please shutdown helios and correct the above errors.', 'SYSTEM', MS_INFO);
+  end;
 	Loaded := TRUE;
 end;{TMainProc.Startup}
 //------------------------------------------------------------------------------

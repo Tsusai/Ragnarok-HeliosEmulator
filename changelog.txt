@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 530 -
+[2008/09/28] RaX - Updated Console logging ability, now works like it should.
+-
+
 - Rev 529 -
 [2008/09/28] Aeomin - Identified & Refined value are now stored in items table
 	(require update data table)

@@ -209,6 +209,7 @@ Procedure TCharacterServer.Start();
 begin
 	if NOT Started then
 	begin
+  	inherited;
 		LoadOptions;
 
 		ServerName := Options.ServerName;

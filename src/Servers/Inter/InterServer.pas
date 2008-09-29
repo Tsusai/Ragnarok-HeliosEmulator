@@ -261,6 +261,7 @@ Procedure TInterServer.Start();
 begin
 	if NOT Started then
 	begin
+  	inherited;
 		LoadOptions;
 
 		Port := Options.Port;

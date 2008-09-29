@@ -57,7 +57,7 @@ type
 		Constructor Create;
 		Destructor  Destroy;Override;
 
-		Procedure   Start();virtual;abstract;
+		Procedure   Start();virtual;
 		Procedure   Stop;virtual;abstract;
 	end;
 
@@ -82,10 +82,9 @@ begin
 	TCPServer.OnDisconnect := OnDisconnect;
 	TCPServer.OnExecute := OnExecute;
 	TCPServer.OnException := OnException;
-	
+
 	fPort := 0;
 	Database := TDatabase.Create();
-	Database.Connect();
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -126,7 +125,7 @@ end;{GetStarted}
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//SetPort                                                          FUNCTION
+//SetPort                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //
@@ -140,4 +139,18 @@ begin
 end;{GetStarted}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//Start			                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//
+//------------------------------------------------------------------------------
+Procedure TServer.Start();
+begin
+	Database.Connect();
+end;{Start}
+//------------------------------------------------------------------------------
 end.

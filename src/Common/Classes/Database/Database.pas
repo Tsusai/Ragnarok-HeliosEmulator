@@ -58,9 +58,7 @@ type
 		Items			: TItemQueries;
 		CharacterConstant: TCharacterConstantQueries;
 
-		Constructor Create(
-			ConnectOnCreate : Boolean = true
-		);
+		Constructor Create();
 
 		Destructor  Destroy
 		(
@@ -107,9 +105,7 @@ uses
 //		February 1st, 2008 - RaX - Created
 //
 //------------------------------------------------------------------------------
-Constructor TDatabase.Create(
-	ConnectOnCreate : Boolean = true
-);
+Constructor TDatabase.Create();
 Begin
 	Inherited Create;
 	LoadOptions;
@@ -136,11 +132,6 @@ Begin
 	CharacterConstant						:= TCharacterConstantQueries.Create(GameConnection);
 	Mail								:= TMailQueries.Create(GameConnection);
 	Items					:= TItemQueries.Create(GameConnection);
-
-	if ConnectOnCreate then
-	begin
-		Connect();
-  end;
 End;{Create}
 //------------------------------------------------------------------------------
 
@@ -202,13 +193,17 @@ begin
 		end;
 
 	except
-
-		Console.Message('Could not connect to '+AccountConnection.Protocol+
-			' database "'+AccountConnection.Database+'" on server at "'+
-			AccountConnection.HostName+':'+IntToStr(AccountConnection.Port)+'".',
-			'Database', MS_ERROR
-		);
-		AccountConnection.Disconnect;
+		on E : Exception do
+		begin
+			Console.Message('Could not connect to '+AccountConnection.Protocol+
+				' database "'+AccountConnection.Database+'" on server at "'+
+				AccountConnection.HostName+':'+IntToStr(AccountConnection.Port)+
+				'". Error Message :: '+E.Message,
+				'Database', MS_ERROR
+			);
+			AccountConnection.Disconnect;
+			MainProc.ContinueLoading := false;
+		end;
 	end;
 
 	try
@@ -219,13 +214,17 @@ begin
 		end;
 
 	except
-
-		Console.Message('Could not connect to '+AccountConnection.Protocol+
-			' database "'+AccountConnection.Database+'" on server at "'+
-			AccountConnection.HostName+':'+IntToStr(AccountConnection.Port)+'".',
-			'Database', MS_ERROR
-		);
-		GameConnection.Disconnect;
+		on E : Exception do
+		begin
+			Console.Message('Could not connect to '+GameConnection.Protocol+
+				' database "'+GameConnection.Database+'" on server at "'+
+				GameConnection.HostName+':'+IntToStr(GameConnection.Port)+
+				'". Error Message :: '+E.Message,
+				'Database', MS_ERROR
+			);
+			GameConnection.Disconnect;
+			MainProc.ContinueLoading := false;
+		end;
 	end;
 end;
 //------------------------------------------------------------------------------
