@@ -15,7 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
-- rev 528 -
+- Rev 529 -
+[2008/09/28] Aeomin - Identified & Refined value are now stored in items table
+	(require update data table)
+-
+
+- Rev 528 -
 [2008/09/28] Aeomin - Fixed DC in character server when using sqlite.
 -
 

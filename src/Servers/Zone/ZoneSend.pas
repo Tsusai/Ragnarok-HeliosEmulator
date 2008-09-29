@@ -1766,9 +1766,7 @@ begin
 				WriteBufferWord(OffSetEquip, Index+1, OutBufferEquip);    //Index
 				WriteBufferWord(OffSetEquip+2, EquipmentItem.ID, OutBufferEquip);  //ID
 				WriteBufferByte(OffSetEquip+4, 5, OutBufferEquip);    //Type
-//				WriteBufferByte(OffSetEquip+5, Byte(InventoryItem.Identified), OutBufferEquip);    //Identified
-				//Identified for now
-				WriteBufferByte(OffSetEquip+5, 1, OutBufferEquip);
+				WriteBufferByte(OffSetEquip+5, Byte(InventoryItem.Identified), OutBufferEquip);    //Identified
 				WriteBufferWord(OffSetEquip+6, EquipTypeToByte(EquipmentItem.EquipmentType), OutBufferEquip);
 				WriteBufferWord(OffSetEquip+8, 0, OutBufferEquip); //Equiped?
 				WriteBufferByte(OffSetEquip+10, 0, OutBufferEquip); //Broken?
@@ -1824,7 +1822,7 @@ begin
 		WriteBufferWord(2, Index+1, OutBuffer);
 		WriteBufferWord(4, Amount, OutBuffer);
 		WriteBufferWord(6, ID, OutBuffer);
-		WriteBufferByte(8, 1, OutBuffer);
+		WriteBufferByte(8, Byte(AInventory.Identified), OutBuffer);
 		WriteBufferByte(9, 0, OutBuffer); //Broken?
 		WriteBufferByte(10, AInventory.Refined, OutBuffer);
 		WriteBufferWord(11, 0, OutBuffer);   //Card 1

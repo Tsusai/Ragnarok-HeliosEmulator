@@ -80,7 +80,8 @@ uses
 	Map,
 	GameConstants,
 	Item,
-	ItemTypes
+	ItemTypes,
+	ItemInstance
 	{Third Party}
 	;
 
@@ -1196,7 +1197,7 @@ var
 	ID : Word;
 	Amount : Word;
 	Valid : Boolean;
-	AnItem : TItem;
+	AnItem : TItemInstance;
 begin
 	if (Length(Arguments) >= 2) then
 	begin
@@ -1214,10 +1215,13 @@ begin
 		end;
 		if Valid then
 		begin
-			AnItem := TItem.Create;
-			AnItem.ID := ID;
-			TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Items.Load(AnItem);
-			TargetChar.Inventory.Add(AnItem,Amount);
+			AnItem := TItemInstance.Create;
+			AnItem.Item := TItem.Create;
+			AnItem.Item.ID := ID;
+			AnItem.Quantity := Amount;
+			AnItem.Identified := True;
+			TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Items.Load(AnItem.Item);
+			TargetChar.Inventory.Add(AnItem);
 		end else
 		begin
 			Error.Add('Item not found!');
@@ -1232,7 +1236,7 @@ end;{GMItem}
 
 
 //------------------------------------------------------------------------------
-//GMJob                                                 							PROCEDURE
+//GMJob                                                                 ROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //		Changes a character's job

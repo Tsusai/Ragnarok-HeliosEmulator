@@ -387,7 +387,7 @@ procedure TItemQueries.Save(
 );
 const
 	AQuery = 'UPDATE items SET item_storage_id=:StorageID, amount=:Amount, '+
-	'last_x=:X, last_y=:Y, last_map_id=:MapID WHERE `id`=:ID';
+	'`identified`=:Identified,`refined`:=Refined, last_x=:X, last_y=:Y, last_map_id=:MapID WHERE `id`=:ID';
 var
 	ADataSet	: TZQuery;
 	AParam		: TParam;
@@ -416,6 +416,18 @@ begin
 		//Amount
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Amount', ptInput);
 		AParam.AsInteger := AnItem.Quantity;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//Identified
+		AParam := ADataset.Params.CreateParam(ftBoolean, 'Identified', ptInput);
+		AParam.AsInteger := Byte(AnItem.Identified);
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//Refined
+		AParam := ADataset.Params.CreateParam(ftInteger, 'Refined', ptInput);
+		AParam.AsInteger := AnItem.Refined;
 		ADataSet.Params.AddParam(
 			AParam
 		);
@@ -460,8 +472,8 @@ procedure TItemQueries.New(
 	const AnInventory : TInventory
 );
 const
-	AQuery = 'INSERT INTO items (`item_definition_id`,`item_storage_id`,`amount`,`last_x`,`last_y`,`last_map_id`) VALUES '+
-	'(:DefinitionID, :StorageID, :Amount, :X, :Y, :MapID);';
+	AQuery = 'INSERT INTO items (`item_definition_id`,`item_storage_id`,`amount`,`identified`,`last_x`,`last_y`,`last_map_id`) VALUES '+
+	'(:DefinitionID, :StorageID, :Amount, :Identified, :X, :Y, :MapID);';
 var
 	ADataSet	: TZQuery;
 	AParam		: TParam;
@@ -490,6 +502,12 @@ begin
 		//Amount
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Amount', ptInput);
 		AParam.AsInteger := AnItem.Quantity;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//Identified
+		AParam := ADataset.Params.CreateParam(ftBoolean, 'Identified', ptInput);
+		AParam.AsInteger := Byte(AnItem.Identified);
 		ADataSet.Params.AddParam(
 			AParam
 		);
@@ -534,7 +552,7 @@ procedure TItemQueries.FillInventory(
 	const AnInventory : TInventory
 );
 const
-	AQuery = 'SELECT `id`,`item_definition_id`,`amount`,`last_x`,`last_y`,`last_map_id` '+
+	AQuery = 'SELECT `id`,`item_definition_id`,`amount`,`identified`,`refined`,`last_x`,`last_y`,`last_map_id` '+
 	'FROM items ' +
 	'WHERE `item_storage_id` IN (:UseID,:EquipID,:MiscID) AND `last_map_id`=0;';
 var
@@ -571,9 +589,11 @@ begin
 			AItem.Item := TItem.Create;
 			AItem.Item.ID := ADataSet.Fields[1].AsInteger;
 			AItem.Quantity := ADataSet.Fields[2].AsInteger;
-			AItem.X := ADataSet.Fields[3].AsInteger;
-			AItem.Y := ADataSet.Fields[4].AsInteger;
-			AItem.MapID := ADataSet.Fields[5].AsInteger;
+			AItem.Identified := Boolean(ADataSet.Fields[3].AsInteger);
+			AItem.Refined := ADataSet.Fields[4].AsInteger;;
+			AItem.X := ADataSet.Fields[5].AsInteger;
+			AItem.Y := ADataSet.Fields[6].AsInteger;
+			AItem.MapID := ADataSet.Fields[7].AsInteger;
 			Load(AItem.Item);
 			AnInventory.Add(
 				AItem,
