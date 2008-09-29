@@ -209,7 +209,7 @@ Procedure TCharacterServer.Start();
 begin
 	if NOT Started then
 	begin
-  	inherited;
+
 		LoadOptions;
 
 		ServerName := Options.ServerName;
@@ -218,6 +218,7 @@ begin
 		ActivateServer('Character',TCPServer, Options.IndySchedulerType, Options.IndyThreadPoolSize);
 		WANIP := Options.WANIP;
 		LANIP := Options.LANIP;
+		inherited;
 	end else
 	begin
 		Console.Message('Cannot Start():: Character Server is already running!', 'Character Server', MS_ALERT);
@@ -242,6 +243,7 @@ var
 begin
 	if Started then
 	begin
+		inherited;
 		DeActivateServer('Character',TCPServer);
 		DeActivateClient(CharaToLoginClient);
 

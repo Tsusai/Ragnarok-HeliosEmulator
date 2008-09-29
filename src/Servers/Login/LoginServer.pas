@@ -198,6 +198,7 @@ var
 begin
 	if Started then
 	begin
+
 		DeActivateServer('Login', TCPServer);
 
 		//Free up our existing server info objects
@@ -209,6 +210,7 @@ begin
 
 		Options.Save;
 		Options.Free;
+		inherited;
 	end else
 	begin
 		Console.Message('Cannot Stop():: Login server is not running.', 'Login Server', MS_ALERT);

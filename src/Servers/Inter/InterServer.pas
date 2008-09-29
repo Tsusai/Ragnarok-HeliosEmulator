@@ -288,9 +288,11 @@ Procedure TInterServer.Stop();
 begin
 	if Started then
 	begin
+
 		DeActivateServer('Inter',TCPServer);
 		Options.Save;
 		Options.Free;
+		inherited;
 	end else
 	begin
 		Console.Message('Cannot Start():: Inter Server not running.', 'Inter Server', MS_ALERT);

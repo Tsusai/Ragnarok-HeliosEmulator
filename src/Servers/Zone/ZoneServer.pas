@@ -399,6 +399,7 @@ Procedure TZoneServer.Stop();
 begin
 	if Started then
 	begin
+
 		if Options.KickOnShutdown then
 		begin
 			KickAll;
@@ -426,6 +427,7 @@ begin
 		//start.
 		Options.Save;
 		Options.Free;
+		inherited;
 	end else
 	begin
 		Console.Message('Cannot Stop():: Zone Server is not running!', 'Zone Server', MS_ALERT);

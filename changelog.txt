@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 534 -
+[2008/09/28] RaX - changed the way we handle zeoslib connections to prevent leaking of
+ connections to the database.
+-
+
 - Rev 533 -
 [2008/09/28] RaX - Added query error logging.
 -

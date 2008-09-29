@@ -58,7 +58,7 @@ type
 		Destructor  Destroy;Override;
 
 		Procedure   Start();virtual;
-		Procedure   Stop;virtual;abstract;
+		Procedure   Stop();virtual;
 	end;
 
 
@@ -152,5 +152,20 @@ Procedure TServer.Start();
 begin
 	Database.Connect();
 end;{Start}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Stop			                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//
+//	Changes -
+//
+//------------------------------------------------------------------------------
+Procedure TServer.Stop();
+begin
+	Database.Disconnect();
+end;{Stop}
 //------------------------------------------------------------------------------
 end.
