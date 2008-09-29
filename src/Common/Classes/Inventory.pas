@@ -94,6 +94,7 @@ public
 	procedure Add(AnItem : TItem; Quantity : Word;const DontSend:Boolean=False);overload;
 	procedure Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False);overload;
 	function Add(const ID:Word;const Quantity:Word):Boolean;overload;
+	procedure Drop(const Index:Word;const Quantity:Word);
 	procedure Remove(AnItem : TItem; Quantity : Word);
 	procedure Delete(Index : Integer);
 	constructor Create(Parent : TObject);
@@ -105,6 +106,7 @@ end;(* TInventory
 implementation
 uses
 	{RTL/VCL}
+	Types,
 	{Project}
 	Character,
 	PacketTypes,
@@ -170,21 +172,11 @@ Revisions:
 [2007/10/29] RaX - Created.
 *-----------------------------------------------------------------------------*)
 Destructor TInventory.Destroy;
-var
-	Index : Integer;
 begin
 	fStackableList.Free;
-	//Pre
-	//TODO, list needs to own items, I sense a custom list coming on...
-	for Index := 0 to fItemList.Count - 1 do
-	begin
-		TItem(fItemList.Items[Index]).Free;
-	end;
 
 	fItemList.Free;
-	//--
 
-	//Always clean up your owned objects/memory first, then call ancestor.
 	inherited;
 End;(* Dest TInventory.Destroy
 *-----------------------------------------------------------------------------*)
@@ -310,8 +302,41 @@ begin
 	{TODO:Implement}
 end;
 
+procedure TInventory.Drop(const Index:Word;const Quantity:Word);
+var
+	AChara : TCharacter;
+	LoopIndex : Byte;
+	Position : TPoint;
+	FoundPosition : Boolean;
+begin
+	AChara := TClientLink(ClientInfo.Data).CharacterLink;
+	if AChara.MapInfo.IsBlocked(AChara.Position) then
+	begin
+		//Standing on unwalkable area?
+		Exit;
+	end else
+	begin
+		Position.X:= AChara.Position.X + (Random(3)-1);
+		Position.Y:= AChara.Position.Y + (Random(3)-1);
+		FoundPosition := False;
+		for LoopIndex := 1 to 6 do
+		begin
+			if  NOT AChara.MapInfo.IsBlocked(Position) then
+			begin
+				FoundPosition := True;
+				Break;
+			end;
+			Position.X:= AChara.Position.X + (Random(3)-1);
+			Position.Y:= AChara.Position.Y + (Random(3)-1);
+		end;
+		if not FoundPosition then
+		begin
+			Position := AChara.Position;
+		end;
+	end;
+end;
 
-Procedure TInventory.Delete(Index : Integer);
+procedure TInventory.Delete(Index : Integer);
 begin
 	fItemList.Delete(Index);
 	//Send packet here.

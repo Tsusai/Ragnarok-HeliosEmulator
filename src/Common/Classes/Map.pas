@@ -160,7 +160,7 @@ begin
 	if (AGraph[APoint.X][APoint.Y].Attribute in [1,5]) OR
 		(AGraph[APoint.X][APoint.Y].ObstructionCount > 0 ) then
 	begin
-		Result := true
+		Result := True;
 	end;
 end;
 //------------------------------------------------------------------------------

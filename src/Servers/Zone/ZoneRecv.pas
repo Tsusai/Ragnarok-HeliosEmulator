@@ -1750,8 +1750,13 @@ procedure DropItem(
 	const InBuffer : TBuffer;
 	const ReadPts : TReadPts
 );
+var
+	Index : Word;
+	Quantity : Word;
 begin
-
+	Index := BufferReadWord(ReadPts[0], InBuffer);
+	Quantity := BufferReadWord(ReadPts[1], InBuffer);
+	AChara.Inventory.Drop(Index,Quantity);
 end;{DropItem}
 //------------------------------------------------------------------------------
 

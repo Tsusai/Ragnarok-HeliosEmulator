@@ -261,6 +261,10 @@ uses
 		AClient		: TIdContext;
 		const Key1,Key2 : LongWord
 	);
+	procedure SendDropItem(
+		const AChara : TCharacter;
+		const AnItem : TItemInstance
+	);
 implementation
 
 
@@ -1967,5 +1971,40 @@ begin
 	WriteBufferLongWord(6, Key2, OutBuffer);
 	SendBuffer(AClient, OutBuffer, 10);
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendDropItem                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Send drop item.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/09/28] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendDropItem(
+	const AChara : TCharacter;
+	const AnItem : TItemInstance
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $009e, OutBuffer);
+	WriteBufferLongWord(2, AnItem.ID, OutBuffer);
+	WriteBufferWord(6, AnItem.Item.ID, OutBuffer);
+	WriteBufferByte(8, Byte(AnItem.Identified), OutBuffer);
+	WriteBufferWord(9, AnItem.X, OutBuffer);
+	WriteBufferWord(11, AnItem.Y, OutBuffer);
+	WriteBufferByte(13, AnItem.SubX, OutBuffer);
+	WriteBufferByte(14, AnItem.SubY, OutBuffer);
+	WriteBufferWord(15, AnItem.Quantity, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($009e,AChara.ClientVersion));
+end;{SendDropItem}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

@@ -233,11 +233,12 @@ begin
 	//if we own the characters, the free them.
 	if fList.Count > 0 then
 	begin
-		for Index := 0 to fList.Count - 1 do
+		if OwnsItems then
 		begin
-			if OwnsItems then
+			for Index := 0 to fList.Count - 1 do
 			begin
 				Items[Index].Item.Free;
+				Items[Index].Free;
 			end;
 		end;
 		fList.Clear;
