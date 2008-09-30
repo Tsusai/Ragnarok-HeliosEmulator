@@ -114,11 +114,6 @@ end;{TMainProc.Create}
 //------------------------------------------------------------------------------
 destructor  TMainProc.Destroy;
 begin
-	if Assigned(ZoneServer) then ZoneServer.Free;
-	if Assigned(InterServer) then InterServer.Free;
-	if Assigned(CharacterServer) then CharacterServer.Free;
-	if Assigned(LoginServer) then LoginServer.Free;
-
 	Options.Save;
 	Options.Free;
 
@@ -227,16 +222,17 @@ procedure TMainProc.Shutdown;
 begin
 	Loaded := FALSE;
 	Console.WriteLn('- Helios is shutting down...');
+	
 	//Go backwards (so zone doesn't try and connect to character while shutting down)
-
-	//Disconnect clients.
-
-
 	if Assigned(ZoneServer) then ZoneServer.Stop;
 	if Assigned(InterServer) then InterServer.Stop;
 	if Assigned(CharacterServer) then CharacterServer.Stop;
 	if Assigned(LoginServer) then LoginServer.Stop;
 
+	if Assigned(ZoneServer) then ZoneServer.Free;
+	if Assigned(InterServer) then InterServer.Free;
+	if Assigned(CharacterServer) then CharacterServer.Free;
+	if Assigned(LoginServer) then LoginServer.Free;
 	//Make sure globals are Free'd on Application exit.
 	DestroyGlobals;
 end;{TMainProc.Shutdown}

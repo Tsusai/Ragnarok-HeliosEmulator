@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+
+- Rev 541 -
+[2008/09/29] RaX - Fixed leak in /restart, moved destroying of servers into TMainProc.Destroy
+-
+
 - Rev 540 -
 [2008/09/29] Spre - Another fix to mobqueries, The main query base now reflects the previous changemade.
 -
