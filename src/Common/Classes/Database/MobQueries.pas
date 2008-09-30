@@ -52,7 +52,7 @@ const
 	AQuery =  //Changed Query Code slightly to conform with sql. [Spre]
 		'SELECT `id`, `sprite_name`, `name`, `aRan` , `LV`, `HP`, `SP`, `str`, `int`, `vit`, `dex`, `agi`, `luk`, '+
 		'`attack_rating_min`, `attack_rating_max`, `def`, `exp`, `jexp`, `as`, `es`, `mspeed`, `attackedmt`, `attackmt`, ' +
-		'`property`, `scale`, `class`, `race`, `mdef`, `taming_item`, `food_item` ' +
+		'`element`, `scale`, `race`, `mdef`, `taming_item`, `food_item` ' +
 		'FROM mobs';
 var
 	ADataSet	: TZQuery;

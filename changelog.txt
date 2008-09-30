@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 540 -
+[2008/09/29] Spre - Another fix to mobqueries, The main query base now reflects the previous changemade.
+-
+
 - Rev 539 -
 [2008/09/29] Aeomin - Shouldn't fixed InventoryID problem
 -
