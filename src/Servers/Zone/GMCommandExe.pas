@@ -758,22 +758,6 @@ begin
 end;
 //------------------------------------------------------------------------------
 
-
-//------------------------------------------------------------------------------
-//GMResetLook                                                         PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//		Reset target character's Look
-//
-//	Changes-
-//		[2008/09/24] Spre - Create.
-//------------------------------------------------------------------------------
-procedure GMResetLook(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
-begin
-	TargetChar.ResetLook	:=	0;
-	Error.Add('Look reset successful!');
-end;{GMResetLook}
-
 //------------------------------------------------------------------------------
 //GMBroadCast                                                          PROCEDURE
 //------------------------------------------------------------------------------
@@ -1260,4 +1244,29 @@ begin
 	end;
 end;{GMJob}
 //------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GMResetLook                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Reset target character's Look
+//
+//	Changes-
+//		[2008/09/24] Spre - Create.
+//		[2008/09/24] Spre - Added New check!
+//------------------------------------------------------------------------------
+procedure GMResetLook(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+begin
+	if (Length(Arguments)	>=2) then
+	begin
+	TargetChar.ResetLook	:=	0;
+	Error.Add('Look reset successful!');
+	end	else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;{GMResetLook}
+
 end{GMCommandExe}.

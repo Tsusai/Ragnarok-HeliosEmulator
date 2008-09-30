@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 537 -
+[2008/09/29] Spre - Added Syntax check to resetlook. ...also fixed a booboo i made in the file :D
+-
+
 - Rev 536 -
 [2008/09/29] Aeomin - Now you can't send mail to any character of same account. [MailBox.pas]
   (No one told me anything detail about it.)
