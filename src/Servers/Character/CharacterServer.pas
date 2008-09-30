@@ -662,6 +662,7 @@ end;{SendCharaToMap}
 //    July      6th, 2006 - Tsusai - Started work on changing dummy procedure to
 //      real procedure.
 //		January 12th, 2007 - Tsusai - Fixed Stat point display.
+//    September 29th 2008 - Tsusai - Corrected InventoryID spelling error.
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.CreateChara(
@@ -740,7 +741,7 @@ begin
 				//Validated...Procede with creation
 				//Set a record in Database for our new character
 				ACharacter.AccountID := Account.ID;
-				ACharacter.Inventory.IventoryID := TThreadLink(AClient.Data).DatabaseLink.Character.CreateInventory;
+				ACharacter.Inventory.InventoryID := TThreadLink(AClient.Data).DatabaseLink.Character.CreateInventory;
 				TThreadLink(AClient.Data).DatabaseLink.Character.New(ACharacter);
 				TThreadLink(AClient.Data).DatabaseLink.Character.Load(ACharacter);
 				//All other info is already saved

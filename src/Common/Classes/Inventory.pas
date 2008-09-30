@@ -70,6 +70,7 @@ Revisions:
 *------------------------------------------------------------------------------*
 (Format: [yyyy/mm/dd] <Author> - <Description of Change>)
 [2007/10/29] RaX - Created.
+September 29th 2008 - Tsusai - Corrected InventoryID spelling error.
 *=============================================================================*)
 TInventory = class(TObject)
 protected
@@ -81,7 +82,7 @@ protected
 	function GetItem(Index : Integer) : TItem;
 	procedure UpdateItemQuantity(const Index : Integer; const Quantity : Word);
 public
-	IventoryID : LongWord;
+	InventoryID : LongWord;
 	StorageID  : LongWord;
 	UseID      : LongWord;
 	EquipID    : LongWord;

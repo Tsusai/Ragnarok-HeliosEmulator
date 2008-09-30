@@ -118,6 +118,7 @@ uses
 //	Changes -
 //		February 12th, 2008 - RaX - Created.
 //		[2008/09/19] Aeomin - Added left join
+//    September 29th 2008 - Tsusai - Corrected InventoryID spelling error.
 //
 //------------------------------------------------------------------------------
 Procedure TCharacterQueries.Load(
@@ -199,7 +200,7 @@ begin
 				HairColor        := ADataSet.Fields[21].AsInteger;
 				ClothesColor     := ADataSet.Fields[22].AsInteger;
 				Option           := ADataSet.Fields[23].AsInteger;
-				Inventory.IventoryID := ADataSet.Fields[24].AsInteger;
+				Inventory.InventoryID := ADataSet.Fields[24].AsInteger;
 				Inventory.StorageID  := ADataSet.Fields[25].AsInteger;
 				//CartInventoryID	 := ADataSet.Fields[26].AsInteger;
 				RightHand        := ADataSet.Fields[27].AsInteger;
@@ -426,6 +427,9 @@ end;//Exists
 //
 //	Changes -
 //		February 12th, 2008 - RaX - Created.
+//    September 29th, 2008 - Tsusai - Changed is_online to be an integer, as
+//      boolean wasn't working proper with Zeos and mysql 5
+//    September 29th 2008 - Tsusai - Corrected InventoryID spelling error.
 //
 //------------------------------------------------------------------------------
 procedure TCharacterQueries.Save(
@@ -628,7 +632,7 @@ begin
 		);
 		//InventoryID
 		AParam := ADataset.Params.CreateParam(ftInteger, 'InventoryID', ptInput);
-		AParam.AsInteger := ACharacter.Inventory.IventoryID;
+		AParam.AsInteger := ACharacter.Inventory.InventoryID;
 		ADataSet.Params.AddParam(
 			AParam
 		);
@@ -777,8 +781,8 @@ begin
 			AParam
 		);
 		//Online
-		AParam := ADataset.Params.CreateParam(ftBoolean, 'Online', ptInput);
-		AParam.AsBoolean := Boolean(ACharacter.Online);
+		AParam := ADataset.Params.CreateParam(ftInteger, 'Online', ptInput);
+		AParam.AsInteger := (ACharacter.Online);
 		ADataSet.Params.AddParam(
 			AParam
 		);
@@ -801,6 +805,7 @@ end;//Save
 //
 //	Changes -
 //		February 12th, 2008 - RaX - Created.
+//    September 29th 2008 - Tsusai - Corrected InventoryID spelling error.
 //
 //------------------------------------------------------------------------------
 procedure TCharacterQueries.New(
@@ -840,7 +845,7 @@ begin
 		);
 		//InventoryID
 		AParam := ADataset.Params.CreateParam(ftInteger, 'InventoryID', ptInput);
-		AParam.AsInteger := ACharacter.Inventory.IventoryID;
+		AParam.AsInteger := ACharacter.Inventory.InventoryID;
 		ADataSet.Params.AddParam(
 			AParam
 		);

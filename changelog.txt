@@ -16,6 +16,12 @@ Developers & Contributers
 --------------------------------------------------------------------------------
 
 
+- Rev 542 -
+[2008/09/29] Tsusai - Corrected "Inventory.IventoryID" spelling error, and changed
+ Character database saving to save is_online as an integer, instead of a boolean.
+ For some reason, it's trying to save "N" when false.  Database is TinyInt.
+-
+
 - Rev 541 -
 [2008/09/29] RaX - Fixed leak in /restart, moved destroying of servers into TMainProc.Destroy
 -
