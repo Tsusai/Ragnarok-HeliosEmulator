@@ -810,8 +810,8 @@ const
 const
 	AQuery =
 			'INSERT INTO characters '+
-			'(name, slot, account_id) '+
-			'VALUES(:Name, :Slot, :AccountID);';
+			'(name, slot, account_id, inventory_id) '+
+			'VALUES(:Name, :Slot, :AccountID, :InventoryID);';
 var
 	ADataSet		: TZQuery;
 	AParam			: TParam;
@@ -835,6 +835,12 @@ begin
 		//AccountID
 		AParam := ADataset.Params.CreateParam(ftInteger, 'AccountID', ptInput);
 		AParam.AsInteger := ACharacter.AccountID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		//InventoryID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'InventoryID', ptInput);
+		AParam.AsInteger := ACharacter.Inventory.IventoryID;
 		ADataSet.Params.AddParam(
 			AParam
 		);

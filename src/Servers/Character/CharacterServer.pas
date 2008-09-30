@@ -740,6 +740,7 @@ begin
 				//Validated...Procede with creation
 				//Set a record in Database for our new character
 				ACharacter.AccountID := Account.ID;
+				ACharacter.Inventory.IventoryID := TThreadLink(AClient.Data).DatabaseLink.Character.CreateInventory;
 				TThreadLink(AClient.Data).DatabaseLink.Character.New(ACharacter);
 				TThreadLink(AClient.Data).DatabaseLink.Character.Load(ACharacter);
 				//All other info is already saved
@@ -765,7 +766,6 @@ begin
 				ACharacter.Option         := 0;
 				ACharacter.Karma          := 0;
 				ACharacter.Manner         := 0;
-				ACharacter.Inventory.IventoryID := TThreadLink(AClient.Data).DatabaseLink.Character.CreateInventory;
 				ACharacter.PartyID        := 0;
 				ACharacter.GuildID        := 0;
 				ACharacter.PetID          := 0;

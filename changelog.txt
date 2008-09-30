@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 539 -
+[2008/09/29] Aeomin - Shouldn't fixed InventoryID problem
+-
+
 - Rev 538 -
 [2008/09/29] Spre - Nixed Property and Class from mobqueries, these are reserved words. Created ELEMENT in place of property.
 we May eventually decide to do something BIG for element(rax said so i believe)
