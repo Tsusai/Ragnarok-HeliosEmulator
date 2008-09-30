@@ -129,7 +129,7 @@ begin
 		if Target.ID > 0 then
 		begin
 			//Prevent send to yourself
-			if Target.ID <> AChara.ID then
+			if Target.AccountID <> AChara.AccountID then
 			begin
 				Mail.SenderID := AChara.ID;
 				Mail.SenderName := AChara.Name;

@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 536 -
+[2008/09/29] Aeomin - Now you can't send mail to any character of same account. [MailBox.pas]
+  (No one told me anything detail about it.)
+-
+
 - Rev 535 -
 [2008/09/29] Spre - Fixed jobLv in character.pas
 -
