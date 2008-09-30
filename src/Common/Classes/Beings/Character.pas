@@ -348,7 +348,7 @@ public
 	property MaxWeight : LongWord   read fMaxWeight write SetMaxWeight;
 	property JobName   : String     read fJobName;
 	// property UnEquipAll			:	Byte		read	fUnEquipAll	write SetUnEquipAll;
- // property UpdateOption		:	Byte		read	fUpdateOption	write	SetUpdateOption;
+	// property UpdateOption		:	Byte		read	fUpdateOption	write	SetUpdateOption;
 	property ResetLook	 : Integer		read	fResetLook	write	SetResetLook;
 	end;{TCharacter}
 

@@ -133,11 +133,8 @@ protected
 	fAttack_Motion			:	Integer;
 	//Skill Range [Spre]
 	fEnemySight				:	Byte;
-
+	fElement	:	Word;
 	AttackDelay				: LongWord;
-
-  // Reset Look? [Spre]
-  fResetLook				:	Integer;
 
 	procedure SetName(
 		const
@@ -179,11 +176,11 @@ protected
 	procedure SetAttackDmgTime(Value	:	Integer);	virtual;
 	procedure SetAttack_Motion(Value	:	Integer);	virtual;
 	procedure SetEnemySight(Value	:	Byte);	virtual;
+	procedure SetElement(Value	:	Word);	virtual;
 	function GetHpPercent: Byte;
 	procedure SetHPPercent(Value : Byte);
 	function GetSpPercent: Byte;
 	procedure SetSPPercent(Value : Byte);
-  procedure SetResetLook(Value	:	Integer);
 
 public
 	ID					: LongWord;
@@ -245,8 +242,8 @@ public
 	property MaximumHit		 : Integer				read fMaximumHit write SetMinimumHit;
 	property AttackDmgTime	:	Integer				read fAttackDmgTime	write	SetAttackDmgTime;
 	property Attack_Motion	:	Integer				read fAttack_Motion	write	SetAttack_Motion;
-  property EnemySight	:	Byte				read	fEnemySight	write	SetEnemySight;
-	property ResetLook	:	Integer			read	fResetLook	write	SetResetLook;
+	property EnemySight	:	Byte				read	fEnemySight	write	SetEnemySight;
+	property Element	:	Word			read	fElement	write	SetElement;
 	Procedure Walk;
 
 	Procedure CalcMaxHP; virtual; abstract;
@@ -1217,15 +1214,16 @@ begin
 	fAttack_Motion	:=	Value;
 end;
 
-//Mob Skill Range [Spre]
+//Mob Sight Range [Spre]
 procedure TBeing.SetEnemySight(Value	:	Byte);
 begin
 	fEnemySight	:=	Value;
 end;
 
-procedure TBeing.SetResetLook(Value	:	Integer);
+//Mob Property  [Spre]
+procedure TBeing.SetElement(Value	:	Word);
 begin
-  fResetLook	:=	Value;
+	fElement	:=	Value;
 end;
 
 procedure TBeing.SetPosition(Value : TPoint);

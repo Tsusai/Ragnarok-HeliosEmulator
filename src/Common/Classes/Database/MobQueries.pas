@@ -113,13 +113,12 @@ begin
 				Speed            := ADataSet.Fields[20].AsInteger;
 				AttackDmgTime	:=	ADataSet.Fields[21].AsInteger; //  Attack Damage Delay [Spre]
 				Attack_Motion	:= ADataSet.Fields[22].AsInteger; //  Attack Motion Delay [Spre]
-				//What should we do for proerty..?
-				Scale            := ADataSet.Fields[24].AsInteger;
-				//Class?
-				Race             := ADataSet.Fields[26].AsInteger;
-				MDef             := ADataSet.Fields[27].AsInteger;
-				TamingItem       := ADataSet.Fields[28].AsInteger;
-				FoodItem         := ADataSet.Fields[29].AsInteger;
+				Scale            := ADataSet.Fields[23].AsInteger;
+				Element           := ADataSet.Fields[24].AsInteger; // Monster Property
+				Race             := ADataSet.Fields[25].AsInteger;
+				MDef             := ADataSet.Fields[26].AsInteger;
+				TamingItem       := ADataSet.Fields[27].AsInteger;
+				FoodItem         := ADataSet.Fields[28].AsInteger;
 			end;
 		end;
 	finally

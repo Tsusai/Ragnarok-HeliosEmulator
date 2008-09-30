@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 538 -
+[2008/09/29] Spre - Nixed Property and Class from mobqueries, these are reserved words. Created ELEMENT in place of property.
+we May eventually decide to do something BIG for element(rax said so i believe)
+[2008/09/29] Spre - Fixed some previously left spaces converted them to tabs.
+-
+
 - Rev 537 -
 [2008/09/29] Spre - Added Syntax check to resetlook. ...also fixed a booboo i made in the file :D
 -
