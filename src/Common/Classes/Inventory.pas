@@ -347,6 +347,11 @@ begin
 			TheItem,
 			Quantity
 		);
+		SendDeleteItem(
+			AChara,
+			Index,
+			Quantity
+		);
 	end;
 end;
 

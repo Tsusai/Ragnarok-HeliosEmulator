@@ -266,6 +266,11 @@ uses
 		const AnItem : TItemInstance;
 		const AQuantity : Word
 	);
+	procedure SendDeleteItem(
+		const AChara : TCharacter;
+		const Index : Word;
+		const Quantity : Word
+	);
 implementation
 
 
@@ -2008,5 +2013,35 @@ begin
 	WriteBufferWord(15, AQuantity, OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($009e,AChara.ClientVersion));
 end;{SendDropItem}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendDeleteItem                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Delete an item
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/09/29] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendDeleteItem(
+	const AChara : TCharacter;
+	const Index : Word;
+	const Quantity : Word
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00af, OutBuffer);
+	WriteBufferWord(2, Index, OutBuffer);
+	WriteBufferWord(4, Quantity, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($00af,AChara.ClientVersion));
+end;{SendDeleteItem}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

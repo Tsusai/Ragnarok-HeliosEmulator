@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 544 -
+[2008/09/29] Aeomin - Phase II of item drop.
+[2008/09/29] Aeomin - You can drop everything now!
+  [But lo! Still no data involved!]
+-
+
 - Rev 543 -
 [2008/09/29] Aeomin - Phase I of item drop.
 [2008/09/29] Aeomin - No data was modified, just 90% packet playing (fun XD)
