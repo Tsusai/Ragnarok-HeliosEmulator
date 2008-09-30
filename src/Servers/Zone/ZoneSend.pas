@@ -263,7 +263,8 @@ uses
 	);
 	procedure SendDropItem(
 		const AChara : TCharacter;
-		const AnItem : TItemInstance
+		const AnItem : TItemInstance;
+		const AQuantity : Word
 	);
 implementation
 
@@ -1990,7 +1991,8 @@ end;
 //------------------------------------------------------------------------------
 procedure SendDropItem(
 	const AChara : TCharacter;
-	const AnItem : TItemInstance
+	const AnItem : TItemInstance;
+	const AQuantity : Word
 );
 var
 	OutBuffer : TBuffer;
@@ -2003,7 +2005,7 @@ begin
 	WriteBufferWord(11, AnItem.Y, OutBuffer);
 	WriteBufferByte(13, AnItem.SubX, OutBuffer);
 	WriteBufferByte(14, AnItem.SubY, OutBuffer);
-	WriteBufferWord(15, AnItem.Quantity, OutBuffer);
+	WriteBufferWord(15, AQuantity, OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($009e,AChara.ClientVersion));
 end;{SendDropItem}
 //------------------------------------------------------------------------------

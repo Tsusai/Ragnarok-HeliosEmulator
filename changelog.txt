@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 543 -
+[2008/09/29] Aeomin - Phase I of item drop.
+[2008/09/29] Aeomin - No data was modified, just 90% packet playing (fun XD)
+  [You can't drop 2 items, missing packet]
+-
 
 - Rev 542 -
 [2008/09/29] Tsusai - Corrected "Inventory.IventoryID" spelling error, and changed

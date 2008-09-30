@@ -309,13 +309,16 @@ var
 	LoopIndex : Byte;
 	Position : TPoint;
 	FoundPosition : Boolean;
+	TheItem : TItemInstance;
 begin
 	AChara := TClientLink(ClientInfo.Data).CharacterLink;
 	if AChara.MapInfo.IsBlocked(AChara.Position) then
 	begin
 		//Standing on unwalkable area?
 		Exit;
-	end else
+	end;
+	TheItem := fItemList.IndexItems[Index-1];
+	if (TheItem <> nil)AND(TheItem.Quantity >= Quantity) then
 	begin
 		Position.X:= AChara.Position.X + (Random(3)-1);
 		Position.Y:= AChara.Position.Y + (Random(3)-1);
@@ -334,6 +337,16 @@ begin
 		begin
 			Position := AChara.Position;
 		end;
+		{Improvement needed}
+		TheItem.X := Position.X;
+		TheItem.Y := Position.Y;
+		TheItem.MapID := AChara.MapID;
+
+		SendDropItem(
+			AChara,
+			TheItem,
+			Quantity
+		);
 	end;
 end;
 

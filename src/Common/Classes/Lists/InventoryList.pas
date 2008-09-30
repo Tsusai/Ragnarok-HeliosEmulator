@@ -34,6 +34,7 @@ type
 
 		function GetValue(Index : Integer) : TItemInstance;
 		procedure SetValue(Index : Integer; Value : TItemInstance);
+		function GetIndexItem(Index : Integer) : TItemInstance;
 		function GetCount : Integer;
 		function RegisterIndex : Word;
 	public
@@ -43,6 +44,7 @@ type
 		destructor Destroy; override;
 		property Items[Index : Integer] : TItemInstance
 			read GetValue write SetValue;default;
+		property IndexItems[Index : Integer] : TItemInstance read GetIndexItem;
 		Property Count : Integer read GetCount;
 
 		procedure Add(const AnItem : TItem; const Quantity : Word);overload;
@@ -277,6 +279,29 @@ procedure TInventoryList.SetValue(Index : Integer; Value : TItemInstance);
 begin
 	fList.Items[Index] := Value;
 end;{SetValue}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetIndexItem                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Get iteminstance, but using Index ID of a"rray way"
+//
+//	Changes -
+//		[2008/09/29] Aeomin - Created;
+//------------------------------------------------------------------------------
+function TInventoryList.GetIndexItem(Index : Integer): TItemInstance;
+var
+	ItemIdex : Integer;
+begin
+	Result := nil;
+	ItemIdex := fIndexList.IndexOf(Index);
+	if ItemIdex > -1 then
+	begin
+		Result := TItemInstance(fIndexList.Objects[ItemIdex]);
+	end;
+end;{GetIndexItem}
 //------------------------------------------------------------------------------
 
 
