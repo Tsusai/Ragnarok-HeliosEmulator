@@ -625,6 +625,11 @@ Begin
 		begin
 			if AMap.LoadFromFile(MapFileName) then
 			begin
+				if NOT Options.DynamicMapLoading then
+				begin
+					AMap.Load;
+				end;
+				
 				Pass := true;
 			end else
 			begin

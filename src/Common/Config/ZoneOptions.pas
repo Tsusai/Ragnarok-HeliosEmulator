@@ -71,6 +71,8 @@ interface
 			fMaxStackItem : Word;
 			fMaxItems : Word;
 
+			fDynamicMapLoading : Boolean;
+
 			//Gets/Sets
 			procedure SetPort(Value : Word);
 			procedure SetWANIP(Value : String);
@@ -126,6 +128,8 @@ interface
 
 			property MaxStackItem : Word read fMaxStackItem;
 			property MaxItems : Word read fMaxItems;
+
+			property DynamicMapLoading : Boolean read fDynamicMapLoading;
 
 			//Public methods
 			procedure Load;
@@ -256,6 +260,7 @@ implementation
 			fMaxStats := StrToIntDef(Section.Values['Max. Character Stats'], 99);
 			fMaxStackItem := EnsureRange(StrToIntDef(Section.Values['MaxStackItem'], 30000),0,High(Word));
 			fMaxItems := EnsureRange(StrToIntDef(Section.Values['MaxItems'], 100),0,High(Word));
+			fDynamicMapLoading := StrToBoolDef(Section.Values['Dynamic Map Loading'], true);
 		end;{Subroutine LoadPerformance}
 	//--------------------------------------------------------------------------
 
@@ -345,6 +350,7 @@ implementation
 
 		WriteString('Game','MaxStackItem',IntToStr(fMaxStackItem));
 		WriteString('Game','MaxItems',IntToStr(fMaxItems));
+		WriteString('Game','Dynamic Map Loading',BoolToStr(fDynamicMapLoading));
 		//Options
 
 		UpdateFile;

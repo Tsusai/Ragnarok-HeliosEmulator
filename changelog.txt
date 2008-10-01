@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 546 -
+[2008/09/29] RaX - Added dynamic loading switch into Zone.ini, game section.
+-
+
 - Rev 545 -
 [2008/09/29] RaX - Redid map loading to include id, map loading is now faster.
 -
