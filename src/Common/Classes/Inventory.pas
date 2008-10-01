@@ -96,7 +96,8 @@ public
 	procedure Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False);overload;
 	function Add(const ID:Word;const Quantity:Word):Boolean;overload;
 	procedure Drop(const Index:Word;const Quantity:Word);
-	procedure Remove(AnItem : TItem; Quantity : Word);
+	procedure Remove(const OldItem:TItemInstance;const Quantity:Word;var NewItem:TItemInstance);overload;
+	procedure Remove(const OldItem:TItemInstance;const Quantity:Word);overload;
 	procedure Delete(Index : Integer);
 	constructor Create(Parent : TObject);
 	destructor Destroy;override;
@@ -310,6 +311,7 @@ var
 	Position : TPoint;
 	FoundPosition : Boolean;
 	TheItem : TItemInstance;
+	NewItem : TItemInstance;
 begin
 	AChara := TClientLink(ClientInfo.Data).CharacterLink;
 	if AChara.MapInfo.IsBlocked(AChara.Position) then
@@ -318,7 +320,7 @@ begin
 		Exit;
 	end;
 	TheItem := fItemList.IndexItems[Index-1];
-	if (TheItem <> nil)AND(TheItem.Quantity >= Quantity) then
+	if (TheItem <> nil)AND(Quantity>0)AND(TheItem.Quantity >= Quantity) then
 	begin
 		Position.X:= AChara.Position.X + (Random(3)-1);
 		Position.Y:= AChara.Position.Y + (Random(3)-1);
@@ -338,20 +340,51 @@ begin
 			Position := AChara.Position;
 		end;
 		{Improvement needed}
-		TheItem.X := Position.X;
-		TheItem.Y := Position.Y;
-		TheItem.MapID := AChara.MapInfo.ID;
 
-		SendDropItem(
-			AChara,
-			TheItem,
-			Quantity
-		);
-		SendDeleteItem(
-			AChara,
-			Index,
-			Quantity
-		);
+		if Quantity >= TheItem.Quantity then
+		begin
+			TheItem.X := Position.X;
+			TheItem.Y := Position.Y;
+			TheItem.MapID := AChara.MapInfo.ID;
+			TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
+				TheItem,
+				nil
+			);
+			{Deletem 'em all}
+			SendDeleteItem(
+				AChara,
+				TheItem.Index,
+				TheItem.Quantity
+			);
+			SendDropItem(
+				AChara,
+				TheItem,
+				Quantity
+			);
+			fItemList.Delete(TheItem,True);
+		end else
+		begin
+			Remove(
+				TheItem,
+				Quantity,
+				NewItem
+			);
+			NewItem.X := Position.X;
+			NewItem.Y := Position.Y;
+			NewItem.MapID := AChara.MapInfo.ID;
+			{FIX ME}
+			TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
+				NewItem,
+				nil
+			);
+			SendDropItem(
+				AChara,
+				NewItem,
+				Quantity
+			);
+			TheItem := NewItem;
+		end;
+		AChara.MapInfo.Cell[TheItem.X,TheItem.Y].Items.AddObject(TheItem.ID,TheItem);
 	end;
 end;
 
@@ -361,28 +394,86 @@ begin
 	//Send packet here.
 end;
 
-
-Procedure TInventory.Remove(AnItem: TItem; Quantity: Word);
-var
-	ItemIndex : Integer;
-begin
-	ItemIndex := fItemList.IndexOf(AnItem.ID);
-	if ItemIndex > -1 then
-	begin
-		if fItemList.Items[ItemIndex].Quantity <= Quantity then
-		begin
-			self.Delete(ItemIndex);
-		end else
-		begin
-			UpdateItemQuantity(ItemIndex, fItemList.Items[ItemIndex].Quantity - Quantity);
-		end;
-	end;
-end;
-
-
 Procedure TInventory.UpdateItemQuantity(const Index: Integer; const Quantity: Word);
 begin
 	fItemList.Items[Index].Quantity := Quantity;
 	//Send Packets Here
 end;
+
+//------------------------------------------------------------------------------
+//Remove                                                                FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//		In situation such drop item,player not always drop everything.
+//	In this case, item will split into two.
+//	Quantity is amount for newitem.
+//	You will also need to New in database.
+//
+//	Changes -
+//		[2008/09/29] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure TInventory.Remove(const OldItem:TItemInstance;const Quantity:Word;var NewItem:TItemInstance);
+begin
+	NewItem := nil;
+	if Quantity < OldItem.Quantity then
+	begin
+		NewItem := TItemInstance.Create;
+		OldItem.Quantity:= OldItem.Quantity - Quantity;
+		NewItem.Quantity := Quantity;
+		NewItem.Item := TItem.Create;
+		NewItem.Item.ID := OldItem.Item.ID;
+		NewItem.Identified := OldItem.Identified;
+		TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(OldItem,Self);
+		TThreadLink(ClientInfo.Data).DatabaseLink.Items.Load(NewItem.Item);
+		SendDeleteItem(
+			TClientLink(ClientInfo.Data).CharacterLink,
+			OldItem.Index,
+			Quantity
+		);
+	end else
+	begin
+		{Remove 'em}
+		SendDeleteItem(
+			TClientLink(ClientInfo.Data).CharacterLink,
+			OldItem.Index,
+			OldItem.Quantity
+		);
+		fItemList.Delete(OldItem);
+	end;
+end;{Remove}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Remove                                                                FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//		Similar to above, except this removes item (such sell to npc)
+//
+//	Changes -
+//		[2008/09/30] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure TInventory.Remove(const OldItem:TItemInstance;const Quantity:Word);
+begin
+	if Quantity < OldItem.Quantity then
+	begin
+		OldItem.Quantity:= OldItem.Quantity - Quantity;
+		TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(OldItem,Self);
+		SendDeleteItem(
+			TClientLink(ClientInfo.Data).CharacterLink,
+			OldItem.Index,
+			Quantity
+		);
+	end else
+	begin
+		{Remove 'em}
+		SendDeleteItem(
+			TClientLink(ClientInfo.Data).CharacterLink,
+			OldItem.Index,
+			OldItem.Quantity
+		);
+		fItemList.Delete(OldItem);
+	end;
+end;{Remove}
+//------------------------------------------------------------------------------
 end.

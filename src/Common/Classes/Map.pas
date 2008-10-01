@@ -285,6 +285,7 @@ Begin
 			Cell[XIndex][YIndex].Position := Point(XIndex, YIndex);
 			Cell[XIndex][YIndex].ObstructionCount := 0;
 			Cell[XIndex][YIndex].Beings := TIntList32.Create;
+			Cell[XIndex][YIndex].Items  := TIntList32.Create;
 		end;
 	end;
 
@@ -344,6 +345,7 @@ Begin
 			for YIndex := 0 to Size.Y - 1 do
 			begin
 				Cell[XIndex][YIndex].Beings.Free;
+				Cell[XIndex][YIndex].Items.Free;
 			end;
 		end;
 		SetLength(Cell, 0, 0);

@@ -257,14 +257,13 @@ public
 	procedure ShowTeleportIn;
 	procedure ShowTeleportOut;
 	procedure UpdateDirection;
+	procedure ShowAreaItems;
 	procedure ShowEffect(EffectID:LongWord);
 	procedure ShowEmotion(EmotionID:Byte);
 	procedure Attack(ATargetID : LongWord; AttackContinuous : Boolean; JustAttacked : Boolean);virtual;
-  	procedure AreaLoop(
+	procedure AreaLoop(
 			ALoopCall           : TLoopCall;
 			AIgnoreCurrentBeing : Boolean = True;
-			IgnoreMob           : Boolean = True;
-			IgnoreNPC           : Boolean = True;
 			AParameter          : Cardinal = 0
 		);
 
@@ -657,7 +656,7 @@ end;
 //  Changes -
 //    March 20th, 2007 - Aeomin - Created
 //------------------------------------------------------------------------------
-procedure TBeing.AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True; IgnoreMob:Boolean=True; IgnoreNPC:Boolean=True;AParameter : Cardinal = 0);
+procedure TBeing.AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True;AParameter : Cardinal = 0);
 var
 		idxY : integer;
 		idxX : integer;
@@ -714,7 +713,7 @@ end;
 //------------------------------------------------------------------------------
 procedure TBeing.ShowTeleportIn;
 begin
-	AreaLoop(ShowTeleIn, True);
+	AreaLoop(ShowAreaBeings, True);
 end;
 //------------------------------------------------------------------------------
 
@@ -747,12 +746,28 @@ end;
 procedure TBeing.UpdateDirection;
 begin
 	AreaLoop(UpdateDir, True);
-end;
+end;{UpdateDirection}
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//Attack			                                                      PROCEDURE
+//ShowAreaItems                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Send client that there's items around.
+//
+//	Changes -
+//		[2008/09/30] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure TBeing.ShowAreaItems;
+begin
+
+end;{ShowAreaItems}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Attack                                                               PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
 // 	Shows an attack and calculates damage.
@@ -927,7 +942,7 @@ end;
 //------------------------------------------------------------------------------
 procedure TBeing.ShowEffect(EffectID:LongWord);
 begin
-	AreaLoop(Effect, False, True, True, EffectID);
+	AreaLoop(Effect, False, EffectID);
 end;{ShowEffect}
 //------------------------------------------------------------------------------
 
@@ -942,7 +957,7 @@ end;{ShowEffect}
 //------------------------------------------------------------------------------
 procedure TBeing.ShowEmotion(EmotionID:Byte);
 begin
-	AreaLoop(Emotion, False, True, True, EmotionID);
+	AreaLoop(Emotion, False, EmotionID);
 end;
 
 //------------------------------------------------------------------------------

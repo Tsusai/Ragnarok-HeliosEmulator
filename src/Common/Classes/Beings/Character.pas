@@ -444,7 +444,7 @@ begin
 		end else
 		if (fCharaState = charaDead) then
 		begin
-			AreaLoop(ShowDeath, FALSE, TRUE, TRUE);
+			AreaLoop(ShowDeath, FALSE);
 		end;
 	end;
 
@@ -2985,18 +2985,18 @@ end;
 //Reset Characters look to 0, Look being headgear view.
 procedure TCharacter.SetResetLook(Value	:	Integer);
 begin
-  if HeadTop > 0 then
-  begin
-    ResetLook := 0;
-  end;
-  if HeadMid > 0 then
-  begin
-  	ResetLook := 0;
-  end;
-  if HeadBottom > 0 then
-  begin
-  	ResetLook := 0;
-  end;
+	if HeadTop > 0 then
+	begin
+		ResetLook := 0;
+	end;
+	if HeadMid > 0 then
+	begin
+		ResetLook := 0;
+	end;
+	if HeadBottom > 0 then
+	begin
+		ResetLook := 0;
+	end;
 end;
 //------------------------------------------------------------------------------
 //LoadInventory                                                        PROCEDURE
@@ -3038,7 +3038,7 @@ end;{LoadInventory}
 
 
 //------------------------------------------------------------------------------
-//ChangeJob		                                                       PROCEDURE
+//ChangeJob                                                            PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //		Changes a character's job.
@@ -3058,7 +3058,7 @@ begin
 	begin
 		JID := JobId;
 		JobLV	:= 1;
-		AreaLoop(JobChange, False, True, True, JID);
+		AreaLoop(JobChange, False, JID);
 		SendCharacterStats;   //this also recalculated stats
 		//TODO
 		//Send skill list;

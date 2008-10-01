@@ -402,14 +402,21 @@ begin
 		);
 		//StorageID
 		AParam := ADataset.Params.CreateParam(ftInteger, 'StorageID', ptInput);
-		if AnItem.Item is TUseableItem then
-			AParam.AsInteger := AnInventory.UseID
-		else
-		if AnItem.Item is TEquipmentItem then
-			AParam.AsInteger := AnInventory.EquipID
-		else
-		if AnItem.Item is TMiscItem then
-			AParam.AsInteger := AnInventory.EtcID;
+		if AnInventory = nil then
+		begin
+			AParam.AsInteger := 0;
+		end else
+		begin
+			if AnItem.Item is TUseableItem then
+				AParam.AsInteger := AnInventory.UseID
+			else
+			if AnItem.Item is TEquipmentItem then
+				AParam.AsInteger := AnInventory.EquipID
+			else
+			if AnItem.Item is TMiscItem then
+				AParam.AsInteger := AnInventory.EtcID;
+		end;
+
 		ADataSet.Params.AddParam(
 			AParam
 		);
@@ -488,14 +495,20 @@ begin
 		);
 		//StorageID
 		AParam := ADataset.Params.CreateParam(ftInteger, 'StorageID', ptInput);
-		if AnItem.Item is TUseableItem then
-			AParam.AsInteger := AnInventory.UseID
-		else
-		if AnItem.Item is TEquipmentItem then
-			AParam.AsInteger := AnInventory.EquipID
-		else
-		if AnItem.Item is TMiscItem then
-			AParam.AsInteger := AnInventory.EtcID;
+		if AnInventory = nil then
+		begin
+			AParam.AsInteger := 0;
+		end else
+		begin
+			if AnItem.Item is TUseableItem then
+				AParam.AsInteger := AnInventory.UseID
+			else
+			if AnItem.Item is TEquipmentItem then
+				AParam.AsInteger := AnInventory.EquipID
+			else
+			if AnItem.Item is TMiscItem then
+				AParam.AsInteger := AnInventory.EtcID;
+		end;
 		ADataSet.Params.AddParam(
 			AParam
 		);

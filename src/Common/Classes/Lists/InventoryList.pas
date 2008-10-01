@@ -50,7 +50,8 @@ type
 		procedure Add(const AnItem : TItem; const Quantity : Word);overload;
 		procedure Add(const AnInventoryItem:TItemInstance);overload;
 //		procedure Insert(const AnItem : TItem; const Quantity : Word; Index : Integer);
-		procedure Delete(const Index : Integer);
+		procedure Delete(const Index : Integer);overload;
+		procedure Delete(const ItemInstance:TItemInstance;const DontFree:Boolean=False);overload;
 		procedure Clear();
 
 		function IndexOf(const ID : LongWord) : Integer;
@@ -176,18 +177,37 @@ procedure TInventoryList.Delete(const Index : Integer);
 var
 	AnIndex : Integer;
 begin
-	AnIndex := fIndexList.IndexOf(TItemInstance(Items[Index].Item).Index);
+	AnIndex := fIndexList.IndexOf(Index);
 	if AnIndex > -1 then
 	begin
-		fIndexList.Delete(AnIndex);
+		Delete(TItemInstance(fIndexList.Objects[AnIndex]));
 	end;
-	fSlotList.Add(TItemInstance(Items[Index].Item).Index);
-	if OwnsItems then
-	begin
-		Items[Index].Item.Free;
-	end;
-	fList.Delete(Index);
 end;{Delete}
+//------------------------------------------------------------------------------
+
+
+procedure TInventoryList.Delete(const ItemInstance:TItemInstance;const DontFree:Boolean=False);
+var
+	Index:Integer;
+	AnIndex : Integer;
+begin
+	Index:=fList.IndexOf(ItemInstance);
+	if Index>-1 then
+	begin
+		fSlotList.Add(ItemInstance.Index);
+		fList.Delete(Index);
+		AnIndex := fIndexList.IndexOf(ItemInstance.Index);
+		if AnIndex > -1 then
+		begin
+			fIndexList.Delete(AnIndex);
+		end;
+		if NOT DontFree AND OwnsItems then
+		begin
+			Items[Index].Item.Free;
+			Items[Index].Free;
+		end;
+	end;
+end;
 //------------------------------------------------------------------------------
 
 

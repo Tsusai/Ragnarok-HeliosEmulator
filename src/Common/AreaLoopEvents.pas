@@ -38,7 +38,7 @@ uses
 		const ABeing        : TBeing;
 		const AParameters   : Cardinal
 		);
-	procedure ShowTeleIn(
+	procedure ShowAreaBeings(
 		const ACurrentBeing : TBeing;
 		const ABeing        : TBeing;
 		const AParameters   : Cardinal
@@ -139,7 +139,7 @@ End; (* Proc ShowBeingWalk
 
 
 (*- Procedure -----------------------------------------------------------------*
-ShowTeleIn
+ShowAreaBeings
 --------------------------------------------------------------------------------
 Overview:
 --
@@ -155,7 +155,7 @@ Revisions:
 	all constant, to follow new TLoopCall declaration.
 [2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
-Procedure ShowTeleIn(
+Procedure ShowAreaBeings(
 	const ACurrentBeing : TBeing;
 	const ABeing        : TBeing;
 	const AParameters   : Cardinal
@@ -169,7 +169,7 @@ Begin
 	begin
 		ZoneSendBeing(ABeing, TCharacter(ACurrentBeing));
 	end;
-End; (* Proc ShowTeleIn
+End; (* Proc ShowAreaBeings
 *-----------------------------------------------------------------------------*)
 
 

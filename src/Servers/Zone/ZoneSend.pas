@@ -271,6 +271,10 @@ uses
 		const Index : Word;
 		const Quantity : Word
 	);
+	procedure SendGroundItem(
+		const AChara : TCharacter;
+		const AnItem : TItemInstance
+	);
 implementation
 
 
@@ -2039,9 +2043,44 @@ var
 	OutBuffer : TBuffer;
 begin
 	WriteBufferWord(0, $00af, OutBuffer);
-	WriteBufferWord(2, Index, OutBuffer);
+	WriteBufferWord(2, Index+1, OutBuffer);
 	WriteBufferWord(4, Quantity, OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($00af,AChara.ClientVersion));
 end;{SendDeleteItem}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendGroundItem                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Item appears on ground.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/09/30] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendGroundItem(
+	const AChara : TCharacter;
+	const AnItem : TItemInstance
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $009d, OutBuffer);
+	WriteBufferLongWord(2, AnItem.ID, OutBuffer);
+	WriteBufferWord(6, AnItem.Item.ID, OutBuffer);
+	WriteBufferByte(8, Byte(AnItem.Identified), OutBuffer);
+	WriteBufferWord(9, AnItem.X, OutBuffer);
+	WriteBufferWord(11, AnItem.Y, OutBuffer);
+	WriteBufferWord(13, AnItem.Quantity, OutBuffer);
+	WriteBufferByte(15, AnItem.SubX, OutBuffer);
+	WriteBufferByte(16, AnItem.SubY, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($009d,AChara.ClientVersion));
+end;{SendGroundItem}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

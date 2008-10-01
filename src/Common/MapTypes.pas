@@ -103,6 +103,8 @@ type
 		ObstructionCount: Byte;
 		//TBeings in this cell (NPC/Mob/Chara)
 		Beings          : TIntList32;
+		//Items!!
+		Items		: TIntList32;
 	end;
 
 	TGraph = array of array of TCell;
