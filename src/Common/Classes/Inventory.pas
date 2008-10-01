@@ -340,7 +340,7 @@ begin
 		{Improvement needed}
 		TheItem.X := Position.X;
 		TheItem.Y := Position.Y;
-		TheItem.MapID := AChara.MapID;
+		TheItem.MapID := AChara.MapInfo.ID;
 
 		SendDropItem(
 			AChara,

@@ -203,7 +203,6 @@ public
 	FalseCritical	: Word;
 	Critical		: Word;
 
-	MapID				: LongWord;
 	SaveMapID		: LongWord;
 	MapInfo			: TMap;
 	EventList		: TEventList;

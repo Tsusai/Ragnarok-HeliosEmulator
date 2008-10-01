@@ -602,42 +602,43 @@ Const
 	FSTR_MAPFILE = '%s/%s.pms';
 Var
 	Index       : Integer;
-	AMap        : TMap;
-	MapNames    : TStringList;
 	MapFileName : String;
+	AMap				: TMap;
+	Pass				: Boolean;
 Begin
 	Console.WriteLn('      - Loading Maps...');
-	MapNames := TStringList.Create;
-	try
-		{[2007/06/01] CR - Get List of Map Names from DB. }
-		with Database.Map do
-		begin
-			LoadList(MapNames, MainProc.ZoneServer.Options.ID);
-		end;
+	Database.Map.LoadList(MapList, MainProc.ZoneServer.Options.ID);
 
+	Console.WriteLn('        : '+ IntToStr(MapList.Count)+ ' Found!');
 
-		Console.WriteLn('        : '+ IntToStr(MapNames.Count)+ ' Found!');
-
-		for Index := 0 to (MapNames.Count - 1) do
-		begin
-			MapFileName := Format(
+	for Index := MapList.Count - 1 downto 0 do
+	begin
+		AMap := MapList[Index];
+		MapFileName :=
+			Format(
 				FSTR_MAPFILE,
-				[MainProc.Options.MapDirectory, MapNames[Index]]
+				[MainProc.Options.MapDirectory, AMap.Name]
 			);
-			if FileExists(MapFileName) then
+
+		Pass := false;
+		if FileExists(MapFileName) then
+		begin
+			if AMap.LoadFromFile(MapFileName) then
 			begin
-				AMap := TMap.Create;
-				if AMap.LoadFromFile(MapFileName) then
-				begin
-					AMap.Name := MapNames[Index];
-					MapList.Add(AMap);
-				end;
-			end else begin
-				Console.WriteLn('      - Map ' + MapFileName + ' does not exist!');
+				Pass := true;
+			end else
+			begin
+				Console.WriteLn('      - Map ' + MapFileName + ' seems to be corrupt!');
 			end;
+		end else
+		begin
+			Console.WriteLn('      - Map ' + MapFileName + ' does not exist!');
+    end;
+
+		if NOT Pass then
+		begin
+			MapList.Delete(Index);
 		end;
-	finally
-		MapNames.Free;
 	end;
 	Console.WriteLn('      - Maps Loaded!');
 End; (* Proc TZoneServer.LoadMaps

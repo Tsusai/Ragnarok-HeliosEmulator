@@ -24,6 +24,7 @@ uses
 	{Project}
 	QueryBase,
 	MapTypes,
+	MapList,
 	{3rd Party}
 	ZSqlUpdate
 	;
@@ -54,7 +55,7 @@ type
 		);
 
 		Procedure  LoadList(
-			const MapList: TStringList;
+			const MapList: TMapList;
 			const ZoneID : LongWord
 		);
 	end;
@@ -69,6 +70,7 @@ uses
 	SysUtils,
 	Types,
 	{Project}
+	Map,
 	{3rd Party}
 	ZDataset,
 	DB
@@ -272,18 +274,19 @@ end;//LoadFlags
 //
 //------------------------------------------------------------------------------
 procedure TMapQueries.LoadList(
-	const MapList						: TStringList;
+	const MapList						: TMapList;
 	const ZoneID						: LongWord
 );
 
 const
 	AQuery =
-		'SELECT map_name FROM maps '+
+		'SELECT id, map_name FROM maps '+
 		'WHERE zone_id=:ID;';
 
 var
 	ADataSet		: TZQuery;
 	AParam			: TParam;
+	AMap				: TMap;
 begin
 
 	ADataSet			:= TZQuery.Create(nil);
@@ -299,7 +302,10 @@ begin
 		ADataSet.First;
 		while NOT ADataSet.Eof do
 		begin
-			MapList.Add(ADataset.Fields[0].AsString);
+			AMap := TMap.Create;
+			AMap.ID := ADataset.Fields[0].AsInteger;
+			AMap.Name := ADataset.Fields[1].AsString;
+			MapList.Add(AMap);
 			ADataset.Next;
 		end;
 

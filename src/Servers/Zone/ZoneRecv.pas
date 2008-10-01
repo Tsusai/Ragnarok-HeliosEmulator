@@ -635,7 +635,10 @@ begin
 			AChara.ClientInfo,
 			AChara.Inventory
 		);
-	end;
+	end else
+	begin
+		AChara.ClientInfo.Connection.Disconnect;
+  end;
 end;{ShowMap}
 //------------------------------------------------------------------------------
 

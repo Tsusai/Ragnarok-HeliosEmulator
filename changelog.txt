@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 545 -
+[2008/09/29] RaX - Redid map loading to include id, map loading is now faster.
+-
+
 - Rev 544 -
 [2008/09/29] Aeomin - Phase II of item drop.
 [2008/09/29] Aeomin - You can drop everything now!

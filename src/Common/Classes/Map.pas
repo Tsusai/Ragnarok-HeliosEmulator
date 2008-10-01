@@ -43,11 +43,12 @@ TMap = class(TObject)
 		Path : String;
 
 	public
-		Name : String;
-		Cell : TGraph;
-		Size : TPoint;
-		Flags: TFlags;
-		State: TMapMode;
+		ID		: LongWord;
+		Name	: String;
+		Cell	: TGraph;
+		Size	: TPoint;
+		Flags	: TFlags;
+		State	: TMapMode;
 		
 		EventList : TEventList;
 		MobList  : TObjectList;
@@ -238,7 +239,6 @@ Begin
 		if Result then //If we've passed the checks then...
 		begin
 			//Load Map Information.
-			Name := ExtractFileNameMod(Path);
 			Size := MapSize;
 		end;
 

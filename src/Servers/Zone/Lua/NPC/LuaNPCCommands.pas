@@ -1022,7 +1022,7 @@ begin
 		end;
 	end else
 	begin
-	luaL_error(ALua,'script ChangeJob syntax error');
+		luaL_error(ALua,'script ChangeJob syntax error');
 	end;
 	Result := 0;
 end;

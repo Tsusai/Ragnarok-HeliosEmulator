@@ -20,8 +20,8 @@ type
 		
 		Race  : Byte;
 		Scale : Byte;
-		TamingItem : Word;
-		FoodItem  : Word;
+		TamingItem : LongWord;
+		FoodItem  : LongWord;
 	end;
 
 implementation
