@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 553 -
+[2008/10/02] Aeomin - Fixed crash when drop item =(
+-
+
 - Rev 552 -
 [2008/10/01] Aeomin - Phase IIII of drop item.
 [2008/10/01] Aeomin - Fixed item duplicates after warp.

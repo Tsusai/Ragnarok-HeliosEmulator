@@ -73,7 +73,8 @@ implementation
 constructor TInventoryList.Create(OwnsItems : Boolean);
 begin
 	inherited Create;
-	fList := TObjectList.Create(TRUE);
+	//We will manually free 'em
+	fList := TObjectList.Create(FALSE);
 	self.OwnsItems := OwnsItems;
 	fSlotList := TIntList32.Create;
 	fIndexList := TIntList32.Create;
@@ -201,7 +202,7 @@ begin
 		begin
 			fIndexList.Delete(AnIndex);
 		end;
-		if NOT DontFree AND OwnsItems then
+		if (NOT DontFree) AND OwnsItems then
 		begin
 			Items[Index].Item.Free;
 			Items[Index].Free;
