@@ -273,6 +273,8 @@ public
 	procedure CalcMATK;
 	procedure CalcPerfectDodge;
 	procedure CalcFalseCritical;
+  procedure CalcCritical;
+  procedure CalcDEF2;
 
 	procedure SendSubStat(
 		const Mode     : Word;
@@ -2195,6 +2197,8 @@ begin
 	CalcMATK;
 	CalcPerfectDodge;
 	CalcFalseCritical;
+  CalcCritical;
+  CalcDEF2;
 
 	//Speed
 	SendSubStat(0, 0, Speed);
@@ -2516,20 +2520,18 @@ begin
 	//Calculate Min MATK
 	MATK1 := EnsureRange(
 			Word(ParamBase[INT] + ParamBonus[INT]
-			+ Trunc(Power(
-				(ParamBase[INT] + ParamBonus[INT]) DIV 7,
-				2
-				))),
+			+ Sqr(
+				(ParamBase[INT] + ParamBonus[INT]) DIV 7
+				)),
 			0,
 			High(MATK1)
 	);
 	//Calculate Max MATK
 	MATK2 := EnsureRange(
 			Word(ParamBase[INT] + ParamBonus[INT]
-			+ Trunc(Power(
-				(ParamBase[INT] + ParamBonus[INT]) DIV 5,
-				2
-				))),
+			+ Sqr(
+				(ParamBase[INT] + ParamBonus[INT]) DIV 5
+				)),
 			0,
 			High(MATK2)
 	);
@@ -2586,6 +2588,61 @@ begin
 		0, High(FalseCritical)
 	);
 end;{CalcFalseCritical}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CalcCritical                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Calculates the character's real CRIT rate.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	Status modifiers
+// --
+//	Changes -
+//		September 30th, 2008 - RabidCh - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.CalcCritical;
+begin
+	Critical := EnsureRange(Word(
+		((ParamBase[LUK] + ParamBonus[LUK]) * 3 div 10)
+		),
+		0, High(Critical)
+	);
+end;{CalcCritical}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CalcDEF2                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Calculates the character's VIT-based defense, DEF2.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	Skill additives and status modifiers
+// --
+//	Changes -
+//		September 30th, 2008 - RabidCh - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.CalcDEF2;
+begin
+	DEF2 := EnsureRange(Word(
+		((ParamBase[VIT] + ParamBonus[VIT]) div 2)
+		 + (Max(
+				Floor(((ParamBase[VIT] + ParamBonus[VIT]) * 3 DIV 10)),
+			((
+				Sqr((ParamBase[VIT] + ParamBonus[VIT])) DIV 150) - 1)
+			))
+		), 0, High(DEF2));
+end;{CalcDEF2}
 //------------------------------------------------------------------------------
 
 
