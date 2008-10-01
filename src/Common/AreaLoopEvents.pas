@@ -28,65 +28,66 @@ uses
 	{RTL/VCL}
 	Classes,
 	{Project}
+	GameObject,
 	Being
 	{Third Party}
 	//none
 	;
 
 	procedure ShowBeingWalk(
-		const ACurrentBeing : TBeing;
-		const ABeing        : TBeing;
-		const AParameters   : Cardinal
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : Cardinal
 		);
 	procedure ShowAreaBeings(
-		const ACurrentBeing : TBeing;
-		const ABeing        : TBeing;
-		const AParameters   : Cardinal
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : Cardinal
 		);
 	procedure TeleOut(
-		const ACurrentBeing : TBeing;
-		const ABeing        : TBeing;
-		const AParameters   : Cardinal
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : Cardinal
 		);
 	procedure UpdateDir(
-		const ACurrentBeing : TBeing;
-		const ABeing        : TBeing;
-		const AParameters   : Cardinal
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : Cardinal
 		);
 	procedure Effect(
-		const ACurrentBeing : TBeing;
-		const ABeing        : TBeing;
-		const AParameters   : Cardinal
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : Cardinal
 		);
 
 	procedure Emotion(
-		const ACurrentBeing : TBeing;
-		const ABeing        : TBeing;
-		const AParameters   : Cardinal
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : Cardinal
 		);
 
 	procedure ShowSitStand(
-		const ACurrentBeing : TBeing;
-		const ABeing        : TBeing;
-		const AParameters   : Cardinal
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : Cardinal
 	);
 
 	procedure ShowInitialAction(
-		const ACurrentBeing : TBeing;
-		const ABeing        : TBeing;
-		const AParameters   : Cardinal
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : Cardinal
 	);
 
 	procedure ShowDeath(
-		const ACurrentBeing : TBeing;
-		const ABeing        : TBeing;
-		const AParameters   : Cardinal
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : Cardinal
 	);
 
 	procedure JobChange(
-		const ACurrentBeing : TBeing;
-		const ABeing        : TBeing;
-		const AParameters   : Cardinal
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : Cardinal
 	);
 implementation
 
@@ -120,18 +121,21 @@ Revisions:
 [yyyy/mm/dd] <Author> - <Comment>
 *-----------------------------------------------------------------------------*)
 Procedure ShowBeingWalk(
-	const ACurrentBeing : TBeing;
-	const ABeing        : TBeing;
-	const AParameters   : Cardinal
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : Cardinal
 );
+var
+	ABeing : TBeing;
 Begin
-	if ABeing is TCharacter then
+	if AObject is TCharacter then
 	begin
+		ABeing := TBeing(ACurrentObject);
 		ZoneWalkingBeing(
-			ACurrentBeing,
-			ACurrentBeing.Path[ACurrentBeing.Path.Count -1],
-			ACurrentBeing.Position,
-			TCharacter(ABeing).ClientInfo
+			ABeing,
+			ABeing.Path[ABeing.Path.Count -1],
+			ABeing.Position,
+			TCharacter(AObject).ClientInfo
 		);
 	end;
 End; (* Proc ShowBeingWalk
@@ -156,18 +160,18 @@ Revisions:
 [2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
 Procedure ShowAreaBeings(
-	const ACurrentBeing : TBeing;
-	const ABeing        : TBeing;
-	const AParameters   : Cardinal
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : Cardinal
 );
 Begin
-	if ABeing is TCharacter then
+	if AObject is TCharacter then
 	begin
-		ZoneSendBeing(ACurrentBeing, TCharacter(ABeing), True);
+		ZoneSendBeing(TBeing(ACurrentObject), TCharacter(AObject), True);
 	end;
-	if ACurrentBeing is TCharacter then
+	if ACurrentObject is TCharacter then
 	begin
-		ZoneSendBeing(ABeing, TCharacter(ACurrentBeing));
+		ZoneSendBeing(TBeing(AObject), TCharacter(ACurrentObject));
 	end;
 End; (* Proc ShowAreaBeings
 *-----------------------------------------------------------------------------*)
@@ -190,14 +194,14 @@ Revisions:
 [2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
 Procedure TeleOut(
-	const ACurrentBeing : TBeing;
-	const ABeing        : TBeing;
-	const AParameters   : Cardinal
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : Cardinal
 );
 Begin
-	if ABeing is TCharacter then
+	if AObject is TCharacter then
 	begin
-		ZoneDisappearBeing(ACurrentBeing, TCharacter(Abeing).ClientInfo, 2);
+		ZoneDisappearBeing(TBeing(ACurrentObject), TCharacter(AObject).ClientInfo, 2);
 	end;
 End; (* Proc TeleOut
 *-----------------------------------------------------------------------------*)
@@ -221,14 +225,14 @@ Revisions:
 [2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
 Procedure UpdateDir(
-	const ACurrentBeing : TBeing;
-	const ABeing        : TBeing;
-	const AParameters   : Cardinal
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : Cardinal
 );
 Begin
-	if ABeing is TCharacter then
+	if AObject is TCharacter then
 	begin
-		ZoneUpdateDirection(ACurrentBeing, TCharacter(Abeing).ClientInfo);
+		ZoneUpdateDirection(TBeing(ACurrentObject), TCharacter(AObject).ClientInfo);
 	end;
 End; (* Proc UpdateDir
 *-----------------------------------------------------------------------------*)
@@ -244,29 +248,29 @@ End; (* Proc UpdateDir
 //		[2007/11/24] Aeomin - Created.
 //------------------------------------------------------------------------------
 procedure Effect(
-	const ACurrentBeing : TBeing;
-	const ABeing        : TBeing;
-	const AParameters   : Cardinal
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : Cardinal
 );
 begin
-	if ABeing is TCharacter then
+	if AObject is TCharacter then
 	begin
-		SendSpecialEffect(ACurrentBeing, TCharacter(Abeing).ClientInfo, AParameters);
+		SendSpecialEffect(Tbeing(ACurrentObject), TCharacter(AObject).ClientInfo, AParameters);
 	end;
 end;{Effect}
 //------------------------------------------------------------------------------
 
 procedure Emotion(
-	const ACurrentBeing : TBeing;
-	const ABeing        : TBeing;
-	const AParameters   : Cardinal
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : Cardinal
 );
 begin
-	if ABeing is TCharacter then
+	if AObject is TCharacter then
 	begin
 		SendEmotion(
-			ACurrentBeing,
-			TCharacter(ABeing).ClientInfo,
+			TBeing(ACurrentObject),
+			TCharacter(AObject).ClientInfo,
 			EnsureRange(
 				AParameters,
 				Low(Byte),
@@ -286,22 +290,22 @@ end;
 //		[2007/12/24] RaX - Created.
 //------------------------------------------------------------------------------
 procedure ShowSitStand(
-	const ACurrentBeing : TBeing;
-	const ABeing        : TBeing;
-	const AParameters   : Cardinal
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : Cardinal
 );
 var
 	ACurrentCharacter : TCharacter;
 	ACharacter : TCharacter;
 begin
-	if (ACurrentBeing is TCharacter) AND (ABeing is TCharacter) then
+	if (ACurrentObject is TCharacter) AND (AObject is TCharacter) then
 	begin
-		ACharacter := TCharacter(ABeing);
-		ACurrentCharacter := TCharacter(ACurrentBeing);
+		ACharacter := TCharacter(AObject);
+		ACurrentCharacter := TCharacter(ACurrentObject);
 		case ACurrentCharacter.CharaState of
 			charaSitting :
 				begin
-					if ABeing = ACurrentBeing then
+					if AObject = ACurrentObject then
 						DoAction(ACharacter.ClientInfo, ACurrentCharacter.AccountID, 0, 0, 0, ACTION_SIT, 0, 0, 0)
 					else
 						DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
@@ -309,7 +313,7 @@ begin
 
 			charaStanding :
 				begin
-					if ABeing = ACurrentBeing then
+					if AObject = ACurrentObject then
 						DoAction(ACharacter.ClientInfo, ACurrentCharacter.AccountID, 0, 0, 0, ACTION_STAND, 0, 0, 0)
 					else
 						DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
@@ -330,18 +334,18 @@ end;{ShowAction}
 //		[2007/12/24] RaX - Created.
 //------------------------------------------------------------------------------
 procedure ShowInitialAction(
-	const ACurrentBeing : TBeing;
-	const ABeing        : TBeing;
-	const AParameters   : Cardinal
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : Cardinal
 );
 var
 	ACurrentCharacter : TCharacter;
 	ACharacter : TCharacter;
 begin
-	if (ACurrentBeing is TCharacter) AND (ABeing is TCharacter) then
+	if (ACurrentObject is TCharacter) AND (AObject is TCharacter) then
 	begin
-		ACharacter := TCharacter(ABeing);
-		ACurrentCharacter := TCharacter(ACurrentBeing);
+		ACharacter := TCharacter(AObject);
+		ACurrentCharacter := TCharacter(ACurrentObject);
 		case ACharacter.CharaState of
 			charaSitting :
 				begin
@@ -360,7 +364,7 @@ begin
 
 			charaDead :
 				begin
-					ZoneDisappearBeing(ABeing, TCharacter(ACurrentBeing).ClientInfo, 1);
+					ZoneDisappearBeing(TBeing(AObject), TCharacter(ACurrentObject).ClientInfo, 1);
 				end;
 		end;
 	end;
@@ -378,14 +382,14 @@ end;{ShowAction}
 //		[2007/12/28] RaX - Created.
 //------------------------------------------------------------------------------
 procedure ShowDeath(
-	const ACurrentBeing : TBeing;
-	const ABeing        : TBeing;
-	const AParameters   : Cardinal
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : Cardinal
 );
 begin
-	if (ACurrentBeing is TCharacter) AND (ABeing is TCharacter) then
+	if (ACurrentObject is TCharacter) AND (AObject is TCharacter) then
 	begin
-		ZoneDisappearBeing(ACurrentBeing, TCharacter(Abeing).ClientInfo, 1);
+		ZoneDisappearBeing(TBeing(ACurrentObject), TCharacter(AObject).ClientInfo, 1);
 	end;
 end;{ShowDeath}
 //------------------------------------------------------------------------------
@@ -400,14 +404,14 @@ end;{ShowDeath}
 //		[2008/9/27] RaX - Created.
 //------------------------------------------------------------------------------
 procedure JobChange(
-	const ACurrentBeing : TBeing;
-	const ABeing        : TBeing;
-	const AParameters   : Cardinal
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : Cardinal
 );
 begin
-	if (ACurrentBeing is TCharacter) AND (ABeing is TCharacter) then
+	if (ACurrentObject is TCharacter) AND (AObject is TCharacter) then
 	begin
-		SendUpdatedLook(TCharacter(ACurrentBeing), TCharacter(ABeing).AccountId, LOOK_JOB, TCharacter(ABeing).JID, 0);
+		SendUpdatedLook(TCharacter(ACurrentObject), TCharacter(AObject).AccountId, LOOK_JOB, TCharacter(AObject).JID, 0);
 	end;
 end;{ShowDeath}
 //------------------------------------------------------------------------------

@@ -76,9 +76,9 @@ TBeing = class; //Forward Declaration.
 
 {[2007/03/28] CR - No X,Y parameters needed -- reduced and eliminated. }
 TLoopCall = procedure(
-		const ACurrentBeing : TBeing;
-		const ABeing        : TBeing;
-		const AParameters   : Cardinal
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : Cardinal
 		);
 
 (*= CLASS =====================================================================*
