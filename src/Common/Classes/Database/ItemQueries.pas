@@ -29,6 +29,7 @@ uses
 	Inventory,
 	ItemInstance,
 	QueryBase,
+	Map,
 	{3rd Party}
 	ZSqlUpdate
 	;
@@ -83,6 +84,9 @@ type
 
 		procedure FillInventory(
 			const AnInventory : TInventory
+		);
+		procedure FillMapGround(
+			const Map:TMap
 		);
 
 		function Find(
@@ -618,6 +622,64 @@ begin
 		ADataSet.Free;
 	end;
 end;{FillInventory}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//FillMapGround                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Load all items into map
+//
+//	Changes -
+//		[2008/09/30] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure TItemQueries.FillMapGround(
+	const Map:TMap
+);
+const
+	AQuery = 'SELECT `id`,`item_definition_id`,`amount`,`identified`,`refined`,`last_x`,`last_y`,`last_map_id` '+
+	'FROM items ' +
+	'WHERE `last_map_id`=:MapID;';
+var
+	ADataSet	: TZQuery;
+	AParam		: TParam;
+	AItem		: TItemInstance;
+begin
+	ADataSet	:= TZQuery.Create(nil);
+	try
+		//MapID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'MapID', ptInput);
+		AParam.AsInteger := Map.ID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		Query(ADataSet, AQuery);
+		ADataSet.First;
+		while NOT ADataSet.Eof do
+		begin
+			AItem := TItemInstance.Create;
+			AItem.ID := ADataSet.Fields[0].AsInteger;
+			AItem.Item := TItem.Create;
+			AItem.Item.ID := ADataSet.Fields[1].AsInteger;
+			AItem.Quantity := ADataSet.Fields[2].AsInteger;
+			AItem.Identified := Boolean(ADataSet.Fields[3].AsInteger);
+			AItem.Refined := ADataSet.Fields[4].AsInteger;;
+			AItem.X := ADataSet.Fields[5].AsInteger;
+			AItem.Y := ADataSet.Fields[6].AsInteger;
+			AItem.MapID := ADataSet.Fields[7].AsInteger;
+			Load(AItem.Item);
+			Map.Cell[AItem.X, AItem.Y].Items.AddObject(
+				AItem.ID,
+				AItem
+			);
+			ADataSet.Next;
+		end;
+	finally
+		ADataSet.Free;
+	end;
+end;{FillMapGround}
 //------------------------------------------------------------------------------
 
 

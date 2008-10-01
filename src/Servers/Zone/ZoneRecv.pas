@@ -526,6 +526,9 @@ begin
 				ACharacter.ID,
 				0 //0 = online; 1=offline
 			);
+
+			//Load Inventory
+			ACharacter.LoadInventory;
 		end;
 	end else
 	begin
@@ -627,14 +630,13 @@ begin
 
 		AChara.SendCharacterStats;
 
-		//Load Inventory
-		AChara.LoadInventory;
-
 		//Inventory
 		SendInventory(
 			AChara.ClientInfo,
 			AChara.Inventory
 		);
+
+		AChara.GenerateWeight;
 	end else
 	begin
 		AChara.ClientInfo.Connection.Disconnect;

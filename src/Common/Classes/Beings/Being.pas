@@ -258,7 +258,6 @@ public
 	procedure ShowTeleportIn;
 	procedure ShowTeleportOut;
 	procedure UpdateDirection;
-	procedure ShowAreaItems;
 	procedure ShowEffect(EffectID:LongWord);
 	procedure ShowEmotion(EmotionID:Byte);
 	procedure Attack(ATargetID : LongWord; AttackContinuous : Boolean; JustAttacked : Boolean);virtual;
@@ -308,7 +307,8 @@ uses
 	ZoneSend,
 	OnTouchCellEvent,
 	MapTypes,
-	AttackEvent
+	AttackEvent,
+	ItemInstance
 	{Third Party}
 	//none
 	;
@@ -392,7 +392,7 @@ Var
 	procedure HideBeings;
 	var
 		ABeing : TBeing;
-		BeingIdx : Integer;
+		ObjectIdx : Integer;
 	begin
 		//Ok this took me some time to setup just right
 		//First, what we're trying to determine is if we moved in a particular
@@ -415,11 +415,11 @@ Var
 				(abs(OldPt.X - idxX) < Radius) and
 				(OldPt.Y = idxY + Directions[Direction].Y * (Radius - 1))) then
 			begin
-				for BeingIdx := MapInfo.Cell[idxX,idxY].Beings.Count -1  downto 0 do
+				for ObjectIdx := MapInfo.Cell[idxX,idxY].Beings.Count -1  downto 0 do
 				begin
-					if MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] is TBeing then
+					if MapInfo.Cell[idxX,idxY].Beings.Objects[ObjectIdx] is TBeing then
 					begin
-						ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
+						ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[ObjectIdx] as TBeing;
 						if ABeing = Self then Continue;
 
 						//Packets for base being if its a character
@@ -439,6 +439,19 @@ Var
 						end;
 					end;
 				end;
+				if Self is TCharacter then
+				begin
+					if MapInfo.Cell[idxX,idxY].Items.Count > 0 then
+					begin
+						for ObjectIdx := MapInfo.Cell[idxX,idxY].Items.Count -1  downto 0 do
+						begin
+							SendRemoveGroundItem(
+								TCharacter(Self),
+								TItemInstance(MapInfo.Cell[idxX,idxY].Items.Objects[ObjectIdx]).ID
+							);
+						end;
+					end;
+				end;
 			end;
 		end;
 	end;
@@ -446,7 +459,7 @@ Var
 	procedure ShowBeings;
 	var
 		ABeing : TBeing;
-		BeingIdx : Integer;
+		ObjectIdx : Integer;
 	begin
 		//Check to make sure that we're inside the map edges by one to prevent
 		//looking outside of the map bounds.
@@ -461,11 +474,11 @@ Var
 				(abs(Position.X - idxX) < Radius) and
 				(Position.Y = idxY - Directions[Direction].Y * (Radius - 1))) then
 			begin
-				for BeingIdx := MapInfo.Cell[idxX,idxY].Beings.Count -1  downto 0 do
+				for ObjectIdx := MapInfo.Cell[idxX,idxY].Beings.Count -1  downto 0 do
 				begin
-					if MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] is TBeing then
+					if MapInfo.Cell[idxX,idxY].Beings.Objects[ObjectIdx] is TBeing then
 					begin
-						ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TBeing;
+						ABeing := MapInfo.Cell[idxX,idxY].Beings.Objects[ObjectIdx] as TBeing;
 						if ABeing = Self then Continue;
 
 						//If we are a tcharacter, we need packets!
@@ -482,6 +495,19 @@ Var
 								{Todo: events for NPC}
 								ZoneSendBeing(ABeing,TCharacter(Self));
 							end;
+						end;
+					end;
+				end;
+				if Self is TCharacter then
+				begin
+					if MapInfo.Cell[idxX,idxY].Items.Count > 0 then
+					begin
+						for ObjectIdx := MapInfo.Cell[idxX,idxY].Items.Count - 1 downto 0 do
+						begin
+							SendGroundItem(
+								TCharacter(Self),
+								TItemInstance(MapInfo.Cell[idxX,idxY].Items.Objects[ObjectIdx])
+							);
 						end;
 					end;
 				end;
@@ -661,23 +687,31 @@ procedure TBeing.AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True;
 var
 		idxY : integer;
 		idxX : integer;
-		BeingIdx : integer;
-		ABeing : TBeing;
+		ObjectIdx : integer;
+		AObject : TGameObject;
 begin
 	for idxY := Max(0,Position.Y-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.Y+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.Y-1) do
 	begin
 		for idxX := Max(0,Position.X-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.X+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.X-1) do
 		begin
-			for BeingIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
+			for ObjectIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
 			begin
-				if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
+				if MapInfo.Cell[idxX][idxY].Beings.Objects[ObjectIdx] is TBeing then
 				begin
-					ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
-					if (Self = ABeing) and AIgnoreCurrentBeing then Continue;
+					AObject := MapInfo.Cell[idxX][idxY].Beings.Objects[ObjectIdx] as TGameObject;
+					if (Self = AObject) and AIgnoreCurrentBeing then Continue;
 					{if not (ABeing is TCharacter) then Continue;} //Target MUST be a TCharacter
 					//Even though it's good idea to prevent packet send to non players
 					//But the problem is that.. NPC is invisible now
-					ALoopCall(Self, ABeing, AParameter);
+					ALoopCall(Self, AObject, AParameter);
+				end;
+			end;
+			if MapInfo.Cell[idxX][idxY].Items.Count > 0 then
+			begin
+				for ObjectIdx := MapInfo.Cell[idxX][idxY].Items.Count -1 downto 0 do
+				begin
+					AObject := MapInfo.Cell[idxX][idxY].Items.Objects[ObjectIdx] as TGameObject;
+					ALoopCall(Self, AObject, AParameter);
 				end;
 			end;
 		end;
@@ -714,7 +748,7 @@ end;
 //------------------------------------------------------------------------------
 procedure TBeing.ShowTeleportIn;
 begin
-	AreaLoop(ShowAreaBeings, True);
+	AreaLoop(ShowAreaObjects, True);
 end;
 //------------------------------------------------------------------------------
 
@@ -748,22 +782,6 @@ procedure TBeing.UpdateDirection;
 begin
 	AreaLoop(UpdateDir, True);
 end;{UpdateDirection}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//ShowAreaItems                                                        PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does -
-//		Send client that there's items around.
-//
-//	Changes -
-//		[2008/09/30] Aeomin - Created
-//------------------------------------------------------------------------------
-procedure TBeing.ShowAreaItems;
-begin
-
-end;{ShowAreaItems}
 //------------------------------------------------------------------------------
 
 

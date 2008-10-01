@@ -39,7 +39,7 @@ uses
 		const AObject        : TGameObject;
 		const AParameters    : Cardinal
 		);
-	procedure ShowAreaBeings(
+	procedure ShowAreaObjects(
 		const ACurrentObject : TGameObject;
 		const AObject        : TGameObject;
 		const AParameters    : Cardinal
@@ -98,7 +98,8 @@ uses
 	Character,
 	ZoneSend,
 	GameConstants,
-	GameTypes
+	GameTypes,
+	ItemInstance
 	{Third Party}
 	//none
 	;
@@ -159,7 +160,7 @@ Revisions:
 	all constant, to follow new TLoopCall declaration.
 [2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
-Procedure ShowAreaBeings(
+Procedure ShowAreaObjects(
 	const ACurrentObject : TGameObject;
 	const AObject        : TGameObject;
 	const AParameters    : Cardinal
@@ -169,9 +170,14 @@ Begin
 	begin
 		ZoneSendBeing(TBeing(ACurrentObject), TCharacter(AObject), True);
 	end;
-	if ACurrentObject is TCharacter then
+
+	if (ACurrentObject is TCharacter)AND(AObject is TBeing) then
 	begin
 		ZoneSendBeing(TBeing(AObject), TCharacter(ACurrentObject));
+	end else
+	if AObject is TItemInstance then
+	begin
+		SendGroundItem(TCharacter(ACurrentObject), TItemInstance(AObject));
 	end;
 End; (* Proc ShowAreaBeings
 *-----------------------------------------------------------------------------*)

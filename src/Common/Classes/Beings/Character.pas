@@ -301,6 +301,8 @@ public
 
 	procedure ChangeJob(JobID : Word);
 
+	procedure GenerateWeight;
+
 	Constructor Create(AClient : TIdContext);
 	Destructor  Destroy; override;
 
@@ -2998,6 +3000,8 @@ begin
 		ResetLook := 0;
 	end;
 end;
+
+
 //------------------------------------------------------------------------------
 //LoadInventory                                                        PROCEDURE
 //------------------------------------------------------------------------------
@@ -3014,25 +3018,10 @@ end;
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.LoadInventory;
-var
-	Index : Word;
-	AWeight : LongWord;
 begin
-	AWeight := 0;
 	TThreadLink(ClientInfo.Data).DatabaseLink.Items.FillInventory(
 		Inventory
 	);
-	if Inventory.ItemList.Count > 0 then
-	begin
-		for Index := Inventory.ItemList.Count - 1 downto 0 do
-		begin
-			Inc(
-				AWeight,
-				TItemInstance(Inventory.ItemList.Items[Index]).Item.Weight * TItemInstance(Inventory.ItemList.Items[Index]).Quantity
-			);
-		end;
-	end;
-	Weight := AWeight;
 end;{LoadInventory}
 //------------------------------------------------------------------------------
 
@@ -3064,6 +3053,42 @@ begin
 		//Send skill list;
 	end;
 end;{ChangeJob}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GenerateWeight                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Calculate total weight for items
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2008/10/01] Aeomin - Created
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.GenerateWeight;
+var
+	Index : Word;
+	AWeight : LongWord;
+begin
+	AWeight := 0;
+	if Inventory.ItemList.Count > 0 then
+	begin
+		for Index := Inventory.ItemList.Count - 1 downto 0 do
+		begin
+			Inc(
+				AWeight,
+				TItemInstance(Inventory.ItemList.Items[Index]).Item.Weight * TItemInstance(Inventory.ItemList.Items[Index]).Quantity
+			);
+		end;
+	end;
+	Weight := AWeight;
+end;{GenerateWeight}
 //------------------------------------------------------------------------------
 
 

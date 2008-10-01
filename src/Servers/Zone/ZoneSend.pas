@@ -275,6 +275,10 @@ uses
 		const AChara : TCharacter;
 		const AnItem : TItemInstance
 	);
+	procedure SendRemoveGroundItem(
+		const AChara : TCharacter;
+		const ID     : LongWord
+	);
 implementation
 
 
@@ -2082,5 +2086,33 @@ begin
 	WriteBufferByte(16, AnItem.SubY, OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($009d,AChara.ClientVersion));
 end;{SendGroundItem}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendRemoveGroundItem                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Remove item from ground
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/10/01] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendRemoveGroundItem(
+	const AChara : TCharacter;
+	const ID     : LongWord
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00a1, OutBuffer);
+	WriteBufferLongWord(2, ID, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($00a1,AChara.ClientVersion));
+end;{SendRemoveGroundItem}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

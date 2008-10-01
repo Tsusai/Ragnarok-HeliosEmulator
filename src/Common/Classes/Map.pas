@@ -315,6 +315,7 @@ Begin
 			Cell[AnMob.Position.X][AnMob.Position.Y].Beings.AddObject(AnMob.ID, AnMob);
 		end;
 	end;
+	MainProc.ZoneServer.Database.Items.FillMapGround(Self);
 
 	State := LOADED;
 

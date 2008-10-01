@@ -3,6 +3,7 @@ unit ItemInstance;
 interface
 
 uses
+	GameObject,
 	Item
 	;
 type
@@ -10,7 +11,7 @@ type
 //------------------------------------------------------------------------------
 //TItemInstance                                                            CLASS
 //------------------------------------------------------------------------------
-TItemInstance = Class(TObject)
+TItemInstance = Class(TGameObject)
 	private
 	public
 		Index		: Word;  //Should only modify by TInventoryList
