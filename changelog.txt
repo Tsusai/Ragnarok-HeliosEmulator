@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 548 -
+[2008/09/30] RabidCh - Added MDEF2.
+-
+
 - Rev 547 -
 [2008/09/30] RabidCh - Added DEF2.
 [2008/09/30] RabidCh - Added Critical (Not FalseCritical).

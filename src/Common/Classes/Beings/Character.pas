@@ -273,8 +273,9 @@ public
 	procedure CalcMATK;
 	procedure CalcPerfectDodge;
 	procedure CalcFalseCritical;
-  procedure CalcCritical;
-  procedure CalcDEF2;
+	procedure CalcCritical;
+	procedure CalcDEF2;
+	procedure CalcMDEF2;
 
 	procedure SendSubStat(
 		const Mode     : Word;
@@ -2197,8 +2198,9 @@ begin
 	CalcMATK;
 	CalcPerfectDodge;
 	CalcFalseCritical;
-  CalcCritical;
-  CalcDEF2;
+	CalcCritical;
+	CalcDEF2;
+	CalcMDEF2;
 
 	//Speed
 	SendSubStat(0, 0, Speed);
@@ -2621,7 +2623,7 @@ end;{CalcCritical}
 //CalcDEF2                                                             PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//		Calculates the character's VIT-based defense, DEF2.
+//		Calculates the character's VIT-based defense.
 // --
 //   Pre:
 //	TODO
@@ -2643,6 +2645,28 @@ begin
 			))
 		), 0, High(DEF2));
 end;{CalcDEF2}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CalcMDEF2                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Calculates the character's INT-based magic defense.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	Skill additives and status modifiers
+// --
+//	Changes -
+//		September 30th, 2008 - RabidCh - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.CalcMDEF2;
+begin
+	MDEF2 := EnsureRange(Word(ParamBase[INT] + ParamBonus[INT]), 0, High(MDEF2));
+end;{CalcMDEF2}
 //------------------------------------------------------------------------------
 
 
