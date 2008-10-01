@@ -127,6 +127,7 @@ compile for linux, at the same time*}
 	Mob in 'Common\Classes\Beings\Mob.pas',
 	Mailbox in 'Common\Classes\Mailbox.pas',
 	Packets in 'Common\Classes\Packets.pas',
+	GameObject in 'Common\Classes\GameObject.pas',
 
 	//Lua
 	LuaPas in 'Common\ThirdParty\LuaPas.pas',
@@ -257,6 +258,7 @@ compile for linux, at the same time*}
 	Mob in 'Common/Classes/Beings/Mob.pas',
 	Mailbox in 'Common/Classes/Mailbox.pas',
 	Packets in 'Common/Classes/Packets.pas',
+	GameObject in 'Common/Classes/GameObject.pas',
 
 	//Lua
 	LuaPas in 'Common/ThirdParty/LuaPas.pas',

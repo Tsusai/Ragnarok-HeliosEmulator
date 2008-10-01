@@ -52,12 +52,13 @@ uses
 	{RTL/VCL}
 	Types,
 	Classes,
+	SysUtils,
 	{Project}
 	GameConstants,
 	EventList,
 	Map,
 	PointList,
-	SysUtils
+	GameObject
 	{Third Party}
 	//none
 	;
@@ -102,7 +103,7 @@ Revisions:
 	ByteStatArray.
 [2007/05/28] Tsusai - Removed MapPointer
 *=============================================================================*)
-TBeing = class(TObject)
+TBeing = class(TGameObject)
 protected
 	fName             : String;
 	fJID              : Word;

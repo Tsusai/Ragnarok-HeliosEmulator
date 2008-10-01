@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 550 -
+[2008/09/30] Aeomin - Added TGameObject.
+-
+
 - Rev 549 -
 [2008/09/30] Aeomin - Phase III of Item Drop.
  [Still working on it!!!] 
