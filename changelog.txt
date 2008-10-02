@@ -15,8 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 554 -
+[2008/10/01] Aeomin - Small clean up of TInventory
+-
+
 - Rev 553 -
-[2008/10/02] Aeomin - Fixed crash when drop item =(
+[2008/10/01] Aeomin - Fixed crash when drop item =(
 -
 
 - Rev 552 -

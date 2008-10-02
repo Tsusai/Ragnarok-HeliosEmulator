@@ -3072,22 +3072,8 @@ end;{ChangeJob}
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.GenerateWeight;
-var
-	Index : Word;
-	AWeight : LongWord;
 begin
-	AWeight := 0;
-	if Inventory.ItemList.Count > 0 then
-	begin
-		for Index := Inventory.ItemList.Count - 1 downto 0 do
-		begin
-			Inc(
-				AWeight,
-				TItemInstance(Inventory.ItemList.Items[Index]).Item.Weight * TItemInstance(Inventory.ItemList.Items[Index]).Quantity
-			);
-		end;
-	end;
-	Weight := AWeight;
+	Weight := Inventory.Weight;
 end;{GenerateWeight}
 //------------------------------------------------------------------------------
 

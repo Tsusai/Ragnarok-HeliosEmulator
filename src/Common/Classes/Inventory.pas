@@ -79,8 +79,11 @@ protected
 	fCountItem	: Word;
 	fCountEquip	: Word;
 	fStackableList	: TIntList32;
+	fWeight : LongWord;
 	function GetItem(Index : Integer) : TItem;
-	procedure UpdateItemQuantity(const Index : Integer; const Quantity : Word);
+	procedure IncreaseWeight(const AWeight:LongWord);
+	procedure DecreaseWeight(const AWeight:LongWord);
+	function IsStackable(const AnItem : TItemInstance):Boolean;
 public
 	InventoryID : LongWord;
 	StorageID  : LongWord;
@@ -92,13 +95,13 @@ public
 	property Items[Index : Integer] : TItem Read GetItem;
 	property Countitem	: Word read fCountItem;
 	property CountEquip	: Word read fCountEquip;
+	property Weight : LongWord read fWeight;
 	procedure Add(AnItem : TItem; Quantity : Word;const DontSend:Boolean=False);overload;
 	procedure Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False);overload;
 	function Add(const ID:Word;const Quantity:Word):Boolean;overload;
 	procedure Drop(const Index:Word;const Quantity:Word);
 	procedure Remove(const OldItem:TItemInstance;const Quantity:Word;var NewItem:TItemInstance);overload;
 	procedure Remove(const OldItem:TItemInstance;const Quantity:Word);overload;
-	procedure Delete(Index : Integer);
 	constructor Create(Parent : TObject);
 	destructor Destroy;override;
 end;(* TInventory
@@ -109,6 +112,7 @@ implementation
 uses
 	{RTL/VCL}
 	Types,
+	Math,
 	{Project}
 	Character,
 	PacketTypes,
@@ -150,6 +154,7 @@ begin
 	fStackableList := TIntList32.Create;
 	fCountItem := 0;
 	fCountEquip := 0;
+	fWeight := 0;
 End; (* Cons TInventory.Create
 *-----------------------------------------------------------------------------*)
 
@@ -173,23 +178,53 @@ Revisions:
 --
 [2007/10/29] RaX - Created.
 *-----------------------------------------------------------------------------*)
-Destructor TInventory.Destroy;
+destructor TInventory.Destroy;
 begin
 	fStackableList.Free;
 
 	fItemList.Free;
 
 	inherited;
-End;(* Dest TInventory.Destroy
-*-----------------------------------------------------------------------------*)
+end;{Destroy}
+//------------------------------------------------------------------------------
 
 
-Function TInventory.GetItem(Index: Integer) : TItem;
+//------------------------------------------------------------------------------
+function TInventory.GetItem(Index: Integer) : TItem;
 begin
 	Result := TItem(fItemList[Index]);
 end;
+//------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+procedure TInventory.IncreaseWeight(const AWeight:LongWord);
+begin
+	fWeight := EnsureRange(AWeight + fWeight,0,High(LongWord));
+	TClientLink(ClientInfo.Data).CharacterLink.Weight := fWeight;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+procedure TInventory.DecreaseWeight(const AWeight:LongWord);
+begin
+	fWeight := EnsureRange(fWeight - AWeight,0,High(LongWord));
+	TClientLink(ClientInfo.Data).CharacterLink.Weight := fWeight;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+function TInventory.IsStackable(const AnItem : TItemInstance):Boolean;
+begin
+	Result := ((AnItem.Item is TUseableItem)OR
+		(AnItem.Item is TMiscItem));
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 procedure TInventory.Add(AnItem: TItem; Quantity: Word;const DontSend:Boolean=False);
 var
 	Item : TItemInstance;
@@ -199,7 +234,10 @@ begin
 	Item.Quantity := Quantity;
 	Add(Item,DontSend);
 end;
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
 procedure TInventory.Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False);
 var
 	ItemIndex : Word;
@@ -222,8 +260,7 @@ begin
 			Failed := ADDITEM_OVERWEIGHT;
 		end else
 		begin
-			if (AnInventoryItem.Item is TUseableItem)OR
-			(AnInventoryItem.Item is TMiscItem) then
+			if IsStackable(AnInventoryItem) then
 			begin
 				Index := fStackableList.IndexOf(AnInventoryItem.Item.ID);
 				if Index > -1 then
@@ -274,6 +311,10 @@ begin
 					);
 			end;
 		end;
+		if Failed = 0 then
+		begin
+			fWeight := EnsureRange(AnInventoryItem.Item.Weight*AnInventoryItem.Quantity + fWeight,0,High(LongWord));
+		end;
 	end;
 	if not DontSend then
 	begin
@@ -299,10 +340,23 @@ end;
 
 
 function TInventory.Add(const ID:Word;const Quantity:Word):Boolean;
+var
+	AnItem : TItemInstance;
 begin
 	Result := False;
-	{TODO:Implement}
-end;
+	if TThreadLink(ClientInfo.Data).DatabaseLink.Items.Find(ID) then
+	begin
+		AnItem := TItemInstance.Create;
+		AnItem.Item := TItem.Create;
+		AnItem.Item.ID := ID;
+		AnItem.Quantity := Quantity;
+		AnItem.Identified := True;
+		TThreadLink(ClientInfo.Data).DatabaseLink.Items.Load(AnItem.Item);
+		Add(AnItem);
+		Result := True;
+	end;
+end;{Add}
+//------------------------------------------------------------------------------
 
 procedure TInventory.Drop(const Index:Word;const Quantity:Word);
 var
@@ -388,17 +442,6 @@ begin
 	end;
 end;
 
-procedure TInventory.Delete(Index : Integer);
-begin
-	fItemList.Delete(Index);
-	//Send packet here.
-end;
-
-Procedure TInventory.UpdateItemQuantity(const Index: Integer; const Quantity: Word);
-begin
-	fItemList.Items[Index].Quantity := Quantity;
-	//Send Packets Here
-end;
 
 //------------------------------------------------------------------------------
 //Remove                                                                FUNCTION
@@ -430,6 +473,7 @@ begin
 			OldItem.Index,
 			Quantity
 		);
+		DecreaseWeight(Quantity*OldItem.Item.Weight);
 	end else
 	begin
 		{Remove 'em}
@@ -439,6 +483,7 @@ begin
 			OldItem.Quantity
 		);
 		fItemList.Delete(OldItem);
+		DecreaseWeight(OldItem.Quantity*OldItem.Item.Weight);
 	end;
 end;{Remove}
 //------------------------------------------------------------------------------
@@ -464,6 +509,7 @@ begin
 			OldItem.Index,
 			Quantity
 		);
+		DecreaseWeight(Quantity*OldItem.Item.Weight);
 	end else
 	begin
 		{Remove 'em}
@@ -473,6 +519,7 @@ begin
 			OldItem.Quantity
 		);
 		fItemList.Delete(OldItem);
+		DecreaseWeight(OldItem.Quantity*OldItem.Item.Weight);
 	end;
 end;{Remove}
 //------------------------------------------------------------------------------
