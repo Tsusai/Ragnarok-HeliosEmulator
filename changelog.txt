@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 557 -
+[2008/10/01] Aeomin - Added ParameterList.pas that does nothing right now.
+-
+
 - Rev 556 -
 [2008/10/01] RaX - Added script command getitem.
 -

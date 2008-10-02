@@ -142,6 +142,7 @@ compile for linux, at the same time*}
 	PointList in 'Common\Classes\Lists\PointList.pas',
 	EventList in 'Common\Classes\Events\EventList.pas',
 	InventoryList in 'Common\Classes\Lists\InventoryList.pas',
+	ParameterList in 'Common\Classes\Lists\ParameterList.pas',
 
 	//Events
 	Event in 'Common\Classes\Events\Event.pas',
@@ -273,6 +274,7 @@ compile for linux, at the same time*}
 	PointList in 'Common/Classes/Lists/PointList.pas',
 	EventList in 'Common/Classes/Events/EventList.pas',
 	InventoryList in 'Common/Classes/Lists/InventoryList.pas',
+	ParameterList in 'Common/Classes/Lists/ParameterList.pas',
 
 	//Events
 	Event in 'Common/Classes/Events/Event.pas',
