@@ -416,6 +416,7 @@ begin
 				Quantity
 			);
 			fItemList.Delete(TheItem,True);
+			DecreaseWeight(Quantity*TheItem.Item.Weight);
 		end else
 		begin
 			Remove(
