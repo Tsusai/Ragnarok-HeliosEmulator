@@ -25,6 +25,8 @@ uses
 	LuaPas,
 	Main,
 	Math,
+	Item,
+	ItemInstance,
 	NPC,
 	PacketTypes,
 	ZoneSend,
@@ -678,10 +680,64 @@ begin
 	Result := script_setcharavar(ALua);
 end;
 
-//getitem- see above
+//gives the character an item of quantity
 function script_GetItem(ALua : TLua) : Integer;
+var
+	AChara : TCharacter;
+	AnItem : TItemInstance;
+	ItemID	: Word;
 begin
-	Result := script_getcharavar(ALua);
+	Result := 0;
+	//check number of parameters
+	if lua_gettop(ALua) = 2 then
+	begin
+		//check to make sure it was a character who executed this script
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+
+			ItemID := 0;
+			//type check first parameter to see if we're dealing with an item id or name
+			if lua_isnumber(ALua, 1) then
+			begin
+				//if we're dealing with an id, we try to find the item.
+				if	TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Find(
+							lua_tointeger(ALua, 1)
+						) then
+				begin
+					ItemID := lua_tointeger(ALua, 1);
+				end;
+			//else, if we're dealing with a name, we try to find the id.
+			end else
+			begin
+				ItemID :=  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Find(lua_tostring(ALua, 1));
+			end;
+			//if an id was found, we check the second parameter
+			if ItemID > 0 then
+			begin
+				//type check the second parameter, quantity
+				if lua_isnumber(ALua, 2) then
+				begin
+        	//since we passed all checks, create the item instance and add it to the inventory.
+					AnItem := TItemInstance.Create;
+					AnItem.Item := TItem.Create;
+					AnItem.Item.ID := ItemID;
+					AnItem.Quantity := lua_tointeger(ALua, 2);
+					AnItem.Identified := true;
+					TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Load(AnItem.Item);
+					AChara.Inventory.Add(AnItem);
+				end else
+				begin
+					luaL_error(ALua,'script getitem syntax error, second parameter should be numeric');
+        end;
+			end else
+			begin
+        luaL_error(ALua,'script getitem syntax error, item not found');
+      end;
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script getitem syntax error, incorrect number of parameters');
+  end;
 end;
 
 //getgold(value)
