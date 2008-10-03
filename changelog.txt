@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 564 -
+[2008/10/03] Tsusai - Last one didn't seem to commit...trying again...
+-
+
 - Rev 563 -
 [2008/10/03] Tsusai - In all server components, the code dealing with winsock numbers
  have been changed from IntToStr(winsock#) to 'winsock#'.  Why convert when we already

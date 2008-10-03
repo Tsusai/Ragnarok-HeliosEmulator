@@ -188,7 +188,6 @@ compile for linux, at the same time*}
 	Globals in 'Common\Globals.pas',
 	{$IFNDEF FPC} //If we aren't using Lazarus to compile, use madshi components
 		madExcept,
-		madLinkDisAsm,
 	{$ENDIF}
 	PacketTypes in 'Common\PacketTypes.pas',
 	Server in 'Servers\Server.pas',

@@ -287,8 +287,8 @@ end;{OnDisconnect}
 procedure TLoginServer.OnException(AConnection: TIdContext;
 	AException: Exception);
 begin
-	if ContainsStr(AException.Message, IntToStr(10053)) or
-		ContainsStr(AException.Message, IntToStr(10054))
+	if ContainsStr(AException.Message, '10053') or
+		ContainsStr(AException.Message, '10054')
 	then begin
 		AConnection.Connection.Disconnect;
 	end;
