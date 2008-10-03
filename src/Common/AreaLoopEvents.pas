@@ -29,7 +29,8 @@ uses
 	Classes,
 	{Project}
 	GameObject,
-	Being
+	Being,
+	ParameterList
 	{Third Party}
 	//none
 	;
@@ -37,57 +38,57 @@ uses
 	procedure ShowBeingWalk(
 		const ACurrentObject : TGameObject;
 		const AObject        : TGameObject;
-		const AParameters    : Cardinal
+		const AParameters    : TParameterList = nil
 		);
 	procedure ShowAreaObjects(
 		const ACurrentObject : TGameObject;
 		const AObject        : TGameObject;
-		const AParameters    : Cardinal
+		const AParameters    : TParameterList = nil
 		);
 	procedure TeleOut(
 		const ACurrentObject : TGameObject;
 		const AObject        : TGameObject;
-		const AParameters    : Cardinal
+		const AParameters    : TParameterList = nil
 		);
 	procedure UpdateDir(
 		const ACurrentObject : TGameObject;
 		const AObject        : TGameObject;
-		const AParameters    : Cardinal
+		const AParameters    : TParameterList = nil
 		);
 	procedure Effect(
 		const ACurrentObject : TGameObject;
 		const AObject        : TGameObject;
-		const AParameters    : Cardinal
+		const AParameters    : TParameterList = nil
 		);
 
 	procedure Emotion(
 		const ACurrentObject : TGameObject;
 		const AObject        : TGameObject;
-		const AParameters    : Cardinal
+		const AParameters    : TParameterList = nil
 		);
 
 	procedure ShowSitStand(
 		const ACurrentObject : TGameObject;
 		const AObject        : TGameObject;
-		const AParameters    : Cardinal
+		const AParameters    : TParameterList = nil
 	);
 
 	procedure ShowInitialAction(
 		const ACurrentObject : TGameObject;
 		const AObject        : TGameObject;
-		const AParameters    : Cardinal
+		const AParameters    : TParameterList = nil
 	);
 
 	procedure ShowDeath(
 		const ACurrentObject : TGameObject;
 		const AObject        : TGameObject;
-		const AParameters    : Cardinal
+		const AParameters    : TParameterList = nil
 	);
 
 	procedure JobChange(
 		const ACurrentObject : TGameObject;
 		const AObject        : TGameObject;
-		const AParameters    : Cardinal
+		const AParameters    : TParameterList = nil
 	);
 implementation
 
@@ -124,7 +125,7 @@ Revisions:
 Procedure ShowBeingWalk(
 	const ACurrentObject : TGameObject;
 	const AObject        : TGameObject;
-	const AParameters    : Cardinal
+	const AParameters    : TParameterList = nil
 );
 var
 	ABeing : TBeing;
@@ -163,7 +164,7 @@ Revisions:
 Procedure ShowAreaObjects(
 	const ACurrentObject : TGameObject;
 	const AObject        : TGameObject;
-	const AParameters    : Cardinal
+	const AParameters    : TParameterList = nil
 );
 Begin
 	if AObject is TCharacter then
@@ -202,7 +203,7 @@ Revisions:
 Procedure TeleOut(
 	const ACurrentObject : TGameObject;
 	const AObject        : TGameObject;
-	const AParameters    : Cardinal
+	const AParameters    : TParameterList = nil
 );
 Begin
 	if AObject is TCharacter then
@@ -233,7 +234,7 @@ Revisions:
 Procedure UpdateDir(
 	const ACurrentObject : TGameObject;
 	const AObject        : TGameObject;
-	const AParameters    : Cardinal
+	const AParameters    : TParameterList = nil
 );
 Begin
 	if AObject is TCharacter then
@@ -256,12 +257,12 @@ End; (* Proc UpdateDir
 procedure Effect(
 	const ACurrentObject : TGameObject;
 	const AObject        : TGameObject;
-	const AParameters    : Cardinal
+	const AParameters    : TParameterList = nil
 );
 begin
 	if AObject is TCharacter then
 	begin
-		SendSpecialEffect(Tbeing(ACurrentObject), TCharacter(AObject).ClientInfo, AParameters);
+		SendSpecialEffect(Tbeing(ACurrentObject), TCharacter(AObject).ClientInfo, AParameters.GetAsLongWord(1));
 	end;
 end;{Effect}
 //------------------------------------------------------------------------------
@@ -269,7 +270,7 @@ end;{Effect}
 procedure Emotion(
 	const ACurrentObject : TGameObject;
 	const AObject        : TGameObject;
-	const AParameters    : Cardinal
+	const AParameters    : TParameterList = nil
 );
 begin
 	if AObject is TCharacter then
@@ -278,7 +279,7 @@ begin
 			TBeing(ACurrentObject),
 			TCharacter(AObject).ClientInfo,
 			EnsureRange(
-				AParameters,
+				AParameters.GetAsLongWord(1),
 				Low(Byte),
 				High(Byte)
 			)
@@ -298,7 +299,7 @@ end;
 procedure ShowSitStand(
 	const ACurrentObject : TGameObject;
 	const AObject        : TGameObject;
-	const AParameters    : Cardinal
+	const AParameters    : TParameterList = nil
 );
 var
 	ACurrentCharacter : TCharacter;
@@ -342,7 +343,7 @@ end;{ShowAction}
 procedure ShowInitialAction(
 	const ACurrentObject : TGameObject;
 	const AObject        : TGameObject;
-	const AParameters    : Cardinal
+	const AParameters    : TParameterList = nil
 );
 var
 	ACurrentCharacter : TCharacter;
@@ -390,7 +391,7 @@ end;{ShowAction}
 procedure ShowDeath(
 	const ACurrentObject : TGameObject;
 	const AObject        : TGameObject;
-	const AParameters    : Cardinal
+	const AParameters    : TParameterList = nil
 );
 begin
 	if (ACurrentObject is TCharacter) AND (AObject is TCharacter) then
@@ -412,7 +413,7 @@ end;{ShowDeath}
 procedure JobChange(
 	const ACurrentObject : TGameObject;
 	const AObject        : TGameObject;
-	const AParameters    : Cardinal
+	const AParameters    : TParameterList = nil
 );
 begin
 	if (ACurrentObject is TCharacter) AND (AObject is TCharacter) then

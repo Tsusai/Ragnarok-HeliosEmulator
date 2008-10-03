@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 559 -
+[2008/10/02] Aeomin - TParameterList in place!
+-
+
 - Rev 558 -
 [2008/10/02] RabidCh - Added ATK in status window, but still very incomplete due to many stuff involved with it.
 [2008/10/02] RabidCh - Added 1 in CalcCritical calculation.

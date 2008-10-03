@@ -378,7 +378,8 @@ uses
 	CharaList,
 	AreaLoopEvents,
 	ItemInstance,
-	ZoneSend
+	ZoneSend,
+	ParameterList
 	{Third Party}
 	//none
 	;
@@ -3072,12 +3073,17 @@ end;{LoadInventory}
 //
 //------------------------------------------------------------------------------
 Procedure TCharacter.ChangeJob(JobID: Word);
+var
+	ParameterList : TParameterList;
 begin
 	if ZoneStatus = isOnline then
 	begin
+		ParameterList := TParameterList.Create;
+		ParameterList.AddAsLongWord(1,JID);
 		JID := JobId;
 		JobLV	:= 1;
-		AreaLoop(JobChange, False, JID);
+		AreaLoop(JobChange, False, ParameterList);
+		ParameterList.Free;
 		SendCharacterStats;   //this also recalculated stats
 		//TODO
 		//Send skill list;

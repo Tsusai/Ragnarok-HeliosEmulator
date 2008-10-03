@@ -58,7 +58,8 @@ uses
 	EventList,
 	Map,
 	PointList,
-	GameObject
+	GameObject,
+	ParameterList
 	{Third Party}
 	//none
 	;
@@ -78,7 +79,7 @@ TBeing = class; //Forward Declaration.
 TLoopCall = procedure(
 		const ACurrentObject : TGameObject;
 		const AObject        : TGameObject;
-		const AParameters    : Cardinal
+		const AParameters    : TParameterList = nil
 		);
 
 (*= CLASS =====================================================================*
@@ -264,7 +265,7 @@ public
 	procedure AreaLoop(
 			ALoopCall           : TLoopCall;
 			AIgnoreCurrentBeing : Boolean = True;
-			AParameter          : Cardinal = 0
+			AParameter          : TParameterList = nil
 		);
 
 	Function GetPath(
@@ -683,7 +684,7 @@ end;
 //  Changes -
 //    March 20th, 2007 - Aeomin - Created
 //------------------------------------------------------------------------------
-procedure TBeing.AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True;AParameter : Cardinal = 0);
+procedure TBeing.AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True;AParameter : TParameterList = nil);
 var
 		idxY : integer;
 		idxX : integer;
@@ -960,8 +961,13 @@ end;
 //		[2007/11/24] Aeomin - Created.
 //------------------------------------------------------------------------------
 procedure TBeing.ShowEffect(EffectID:LongWord);
+var
+	ParameterList : TParameterList;
 begin
-	AreaLoop(Effect, False, EffectID);
+	ParameterList := TParameterList.Create;
+	ParameterList.AddAsLongWord(1,EffectID);
+	AreaLoop(Effect, False, ParameterList);
+	ParameterList.Free;
 end;{ShowEffect}
 //------------------------------------------------------------------------------
 
@@ -975,8 +981,13 @@ end;{ShowEffect}
 //		[2008/03/12] Tsusai - Created.
 //------------------------------------------------------------------------------
 procedure TBeing.ShowEmotion(EmotionID:Byte);
+var
+	ParameterList : TParameterList;
 begin
-	AreaLoop(Emotion, False, EmotionID);
+	ParameterList := TParameterList.Create;
+	ParameterList.AddAsLongWord(1,EmotionID);
+	AreaLoop(Emotion, False, ParameterList);
+	ParameterList.Free;
 end;
 
 //------------------------------------------------------------------------------
