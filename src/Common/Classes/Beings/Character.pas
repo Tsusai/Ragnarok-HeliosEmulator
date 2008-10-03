@@ -250,7 +250,8 @@ public
 
 	AttackRange : Word;
 	//No idea what 0..5 is from.  Stats?
-	ATK : array[R_HAND..L_HAND] of array[0..5] of Word; // Displayed ATK power
+//Commenting below, ATK + items + skills needs to be worked out before this
+//	ATK : array[R_HAND..L_HAND] of array[0..5] of Word; // Displayed ATK power
 
 	//Which packet array (since arrays start at 0) holds all the packets that are compatible.
 	ClientVersion : Integer;
@@ -276,6 +277,7 @@ public
 	procedure CalcCritical;
 	procedure CalcDEF2;
 	procedure CalcMDEF2;
+	procedure CalcATK;
 
 	procedure SendSubStat(
 		const Mode     : Word;
@@ -2203,6 +2205,7 @@ begin
 	CalcCritical;
 	CalcDEF2;
 	CalcMDEF2;
+	CalcATK;
 
 	//Speed
 	SendSubStat(0, 0, Speed);
@@ -2221,8 +2224,8 @@ begin
 		WriteBufferByte((idx)*2+4, EnsureRange(ParamBase[idx], 0, High(Byte)), OutBuffer);
 		WriteBufferByte((idx)*2+5, EnsureRange(ParamUp[idx], 0, High(Byte)), OutBuffer);
 	end;
-	WriteBufferWord(16, ATK[0][0], OutBuffer);
-	WriteBufferWord(18, ATK[1][0] + ATK[0][4], OutBuffer);
+	WriteBufferWord(16, ATK{[0][0]}, OutBuffer); //Taking array out until later
+	WriteBufferWord(18, {ATK[1][0] + ATK[0][4]} 0, OutBuffer); //Taking this out until later
 	WriteBufferWord(20, MATK2, OutBuffer);
 	WriteBufferWord(22, MATK1, OutBuffer);
 	WriteBufferWord(24, DEF1, OutBuffer);
@@ -2613,7 +2616,7 @@ end;{CalcFalseCritical}
 procedure TCharacter.CalcCritical;
 begin
 	Critical := EnsureRange(Word(
-		((ParamBase[LUK] + ParamBonus[LUK]) * 3 div 10)
+		1 + ((ParamBase[LUK] + ParamBonus[LUK]) * 3 div 10)
 		),
 		0, High(Critical)
 	);
@@ -2669,6 +2672,33 @@ procedure TCharacter.CalcMDEF2;
 begin
 	MDEF2 := EnsureRange(Word(ParamBase[INT] + ParamBonus[INT]), 0, High(MDEF2));
 end;{CalcMDEF2}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CalcATK                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Calculates the character's ATK.  Incomplete for now.
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	Actual implementation, current is just placeholder.
+// --
+//	Changes -
+//		September 30th, 2008 - RabidCh - Created.
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.CalcATK;
+begin
+	ATK := EnsureRange(Word(
+	ParamBase[STR] + ParamBonus[STR]
+	 + Floor(Sqr((ParamBase[STR] + ParamBonus[STR]) div 10))
+	 + Floor((ParamBase[DEX] + ParamBonus[DEX]) div 5)
+	 + Floor(((ParamBase[LUK] + ParamBonus[LUK]) div 5)))
+	, 0, High(ATK));
+end;{CalcATK}
 //------------------------------------------------------------------------------
 
 
