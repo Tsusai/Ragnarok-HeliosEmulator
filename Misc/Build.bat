@@ -2,14 +2,17 @@ rem ----------------------------------------------------------------
 rem Helios DCC32.exe Batch File
 rem You must set all the correct paths for this to work!!!!
 rem ----------------------------------------------------------------
-
 @echo off
+
+rem ----------------------------------------------------------------
+rem Environmental variables
+rem ----------------------------------------------------------------
 echo Setting enviromental paths
 
 rem ----------------------------------------------------------------
-rem Helios Source Folder with the .dpr file
+rem Helios Folder with bin, obj, and src folders
 rem ----------------------------------------------------------------
-set helios=c:\users\tsusai\desktop\delphi\helios\src
+set helios=c:\users\tsusai\desktop\delphi\helios
 
 rem ----------------------------------------------------------------
 rem Indy 10 library (dcu) files
@@ -29,9 +32,23 @@ set maddisasm=C:\Program Files\madCollection\madDisAsm\DeXter
 set madexcept=C:\Program Files\madCollection\madExcept\DeXter
 
 rem ----------------------------------------------------------------
+rem SVN Section.  Uncomment if you want to update first
+rem ----------------------------------------------------------------
+rem set svndir=c:\
+rem cd %helios%
+rem %svndir%\svn update .
+rem %svndir%\svn update .\Database
+rem %svndir%\svn update .\Scripts
+
+rem ----------------------------------------------------------------
 rem BUILD IT!!!!!
 rem ----------------------------------------------------------------
 
-cd %helios%
+cd %helios%\src
 echo Building
 dcc32 -B -U"%indylibdcu%";"%zeoslibdcu%";"%madbasic%";"%maddisasm%";"%madexcept%" Helios.dpr
+
+rem ----------------------------------------------------------------
+rem Done, let the user know.  Comment out if you don't want to wait
+rem ----------------------------------------------------------------
+pause
