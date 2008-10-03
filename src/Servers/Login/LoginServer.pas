@@ -287,8 +287,8 @@ end;{OnDisconnect}
 procedure TLoginServer.OnException(AConnection: TIdContext;
 	AException: Exception);
 begin
-	if AnsiContainsStr(AException.Message, IntToStr(10053)) or
-		AnsiContainsStr(AException.Message, IntToStr(10054))
+	if ContainsStr(AException.Message, IntToStr(10053)) or
+		ContainsStr(AException.Message, IntToStr(10054))
 	then begin
 		AConnection.Connection.Disconnect;
 	end;
@@ -414,12 +414,12 @@ end;{OnException}
 		GenderStr  : string;
 		AnAccount	 : TAccount;
 	begin
-		GenderStr := Uppercase(AnsiRightStr(Username,2)); {get _M or _F and cap it}
+		GenderStr := Uppercase(RightStr(Username,2)); {get _M or _F and cap it}
 		if (GenderStr = '_M') or
 		(GenderStr = '_F') then
 		begin
 			//Trim the MF off because people forget to take it off.
-			Username := AnsiLeftStr(Username,Length(Username)-2);
+			Username := LeftStr(Username,Length(Username)-2);
 
 			AnAccount := TAccount.Create(AClient);
 			try

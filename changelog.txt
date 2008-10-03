@@ -15,6 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 563 -
+[2008/10/03] Tsusai - In all server components, the code dealing with winsock numbers
+ have been changed from IntToStr(winsock#) to 'winsock#'.  Why convert when we already
+ know it as a number.  Updated various Ansi***** calls to a future universal name
+ (AnsiCompareText to CompareText) for D2009/unicode in the future.
+-
+
 - Rev 562 -
 [2008/10/03] Tsusai - SVN updating added to, but commented out in Build.bat
 -
