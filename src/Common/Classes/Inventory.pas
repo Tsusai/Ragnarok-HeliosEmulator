@@ -121,7 +121,9 @@ uses
 	EquipmentItem,
 	MiscItem,
 	Main,
-	ErrorConstants
+	ErrorConstants,
+	ParameterList,
+	AreaLoopEvents
 	;
 	{Third Party}
 	//none
@@ -366,6 +368,7 @@ var
 	FoundPosition : Boolean;
 	TheItem : TItemInstance;
 	NewItem : TItemInstance;
+	ParameterList : TParameterList;
 begin
 	AChara := TClientLink(ClientInfo.Data).CharacterLink;
 	if AChara.MapInfo.IsBlocked(AChara.Position) then
@@ -410,11 +413,13 @@ begin
 				TheItem.Index,
 				TheItem.Quantity
 			);
-			SendDropItem(
-				AChara,
-				TheItem,
-				Quantity
-			);
+
+			ParameterList := TParameterList.Create;
+			ParameterList.AddAsObject(1,TheItem);
+			ParameterList.AddAsLongWord(2,Quantity);
+			AChara.AreaLoop(ShowDropitem,False,ParameterList);
+			ParameterList.Free;
+
 			fItemList.Delete(TheItem,True);
 			DecreaseWeight(Quantity*TheItem.Item.Weight);
 		end else
@@ -432,11 +437,13 @@ begin
 				NewItem,
 				nil
 			);
-			SendDropItem(
-				AChara,
-				NewItem,
-				Quantity
-			);
+
+			ParameterList := TParameterList.Create;
+			ParameterList.AddAsObject(1,NewItem);
+			ParameterList.AddAsLongWord(2,Quantity);
+			AChara.AreaLoop(ShowDropitem,False,ParameterList);
+			ParameterList.Free;
+
 			TheItem := NewItem;
 		end;
 		AChara.MapInfo.Cell[TheItem.X,TheItem.Y].Items.AddObject(TheItem.ID,TheItem);

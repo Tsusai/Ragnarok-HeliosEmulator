@@ -90,6 +90,12 @@ uses
 		const AObject        : TGameObject;
 		const AParameters    : TParameterList = nil
 	);
+
+	procedure ShowDropitem(
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : TParameterList = nil
+	);
 implementation
 
 uses
@@ -422,4 +428,22 @@ begin
 	end;
 end;{ShowDeath}
 //------------------------------------------------------------------------------
+
+procedure ShowDropitem(
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : TParameterList = nil
+);
+begin
+	if (AObject is TCharacter) then
+	begin
+		SendDropItem(
+			TCharacter(AObject),
+			TItemInstance(AParameters.GetAsObject(1)),
+			AParameters.GetAsLongWord(2)
+		);
+	end;
+
+end;
+
 end.
