@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 565 -
+[2008/10/03] Tsusai - Added TAccount.Passkey for new MD5 password work.  Will
+ not run without updated SQL table.
+-
+
 - Rev 564 -
 [2008/10/03] Tsusai - Last one didn't seem to commit...trying again...
 -
