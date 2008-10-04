@@ -1791,10 +1791,17 @@ procedure TakeItem(
 	const InBuffer : TBuffer;
 	const ReadPts : TReadPts
 );
+var
+	ID : LongWord;
 begin
+	if AChara.CharaState in [charaStanding,charaWalking,charaAttacking] then
+	begin
+		ID := BufferReadLongWord(ReadPts[0], InBuffer);
 
+	end;
 end;{TakeItem}
 //------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //RecvRedirectWhisper                                                  PROCEDURE

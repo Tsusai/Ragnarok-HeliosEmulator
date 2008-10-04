@@ -78,9 +78,9 @@ type
 			const AnInventory : TInventory
 		);
 
-		{Procedure  Delete(
-			const AnItem : TItem
-		); }
+		procedure Delete(
+			const ID : LongWord
+		);
 
 		procedure FillInventory(
 			const AnInventory : TInventory
@@ -552,6 +552,41 @@ begin
 		ADataSet.Free;
 	end;
 end;{New}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Delete                                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Delete an item instance
+//
+//	Changes -
+//		[2008/10/03] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure TItemQueries.Delete(
+	const ID : LongWord
+);
+const
+	AQuery = 'DELETE FROM `items` WHERE id=:ID;';
+var
+	ADataSet	: TZQuery;
+	AParam		: TParam;
+begin
+	ADataSet	:= TZQuery.Create(nil);
+	try
+		//ID
+		AParam := ADataset.Params.CreateParam(ftInteger, 'ID', ptInput);
+		AParam.AsInteger := ID;
+		ADataSet.Params.AddParam(
+			AParam
+		);
+		QueryNoResult(ADataSet, AQuery);
+	finally
+		ADataSet.Free;
+	end;
+end;{Delete}
 //------------------------------------------------------------------------------
 
 

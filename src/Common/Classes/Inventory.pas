@@ -83,6 +83,7 @@ protected
 	procedure IncreaseWeight(const AWeight:LongWord);
 	procedure DecreaseWeight(const AWeight:LongWord);
 	function IsStackable(const AnItem : TItemInstance):Boolean;
+	function Move(var AnInventoryItem : TItemInstance;var New:Boolean):Byte;
 public
 	InventoryID : LongWord;
 	StorageID  : LongWord;
@@ -227,6 +228,63 @@ end;
 
 
 //------------------------------------------------------------------------------
+//Move                                                                  FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//		I don't know...(honestly)
+//
+//	Changes -
+//		[2008/10/03] Aeomin - Created
+//------------------------------------------------------------------------------
+function TInventory.Move(var AnInventoryItem : TItemInstance;var New:Boolean):Byte;
+var
+	Index : Integer;
+begin
+	Result := 0;
+	New := False;
+	if fItemList.Count >= MainProc.ZoneServer.Options.MaxItems then
+	begin
+		Result := ADDITEM_TOOMUCH;
+	end else
+	begin
+		if IsStackable(AnInventoryItem) then
+		begin
+			Index := fItemList.StackableList.IndexOf(AnInventoryItem.Item.ID);
+			if Index > -1 then
+			begin
+				if (TItemInstance(fItemList.StackableList.Objects[Index]).Quantity + AnInventoryItem.Quantity)
+				> MainProc.ZoneServer.Options.MaxStackItem then
+				begin
+					Result := ADDITEM_TOOMUCHSTACKING;
+				end else
+				begin
+					Inc(TItemInstance(fItemList.StackableList.Objects[Index]).Quantity,AnInventoryItem.Quantity);
+					AnInventoryItem.Item.Free;
+					AnInventoryItem.Free;
+					AnInventoryItem := TItemInstance(fItemList.StackableList.Objects[Index]);
+				end;
+			end else
+			begin
+				fItemList.Add(AnInventoryItem,True);
+				Inc(fCountItem);
+				New := True;
+			end;
+			Inc(fCountItem);
+		end else
+		if AnInventoryItem.Item is TEquipmentItem then
+		begin
+			Inc(fCountEquip);
+			AnInventoryItem.Quantity := 1;
+			fItemList.Add(AnInventoryItem);
+
+			New := True;
+		end;
+	end;
+end;{Move}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 procedure TInventory.Add(AnItem: TItem; Quantity: Word;const DontSend:Boolean=False);
 var
 	Item : TItemInstance;
@@ -242,14 +300,11 @@ end;
 //------------------------------------------------------------------------------
 procedure TInventory.Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False);
 var
-	ItemIndex : Word;
-	Index : Integer;
 	Amount : Word;
 	Failed : Byte;
+	New : Boolean;
 begin
-	Failed := 0;
 	Amount := AnInventoryItem.Quantity;
-	ItemIndex := 0;
 	if fItemList.Count >= MainProc.ZoneServer.Options.MaxItems then
 	begin
 		Failed := ADDITEM_TOOMUCH;
@@ -262,54 +317,22 @@ begin
 			Failed := ADDITEM_OVERWEIGHT;
 		end else
 		begin
-			if IsStackable(AnInventoryItem) then
+			Failed := Move(AnInventoryItem,New);
+			if not DontSend then
 			begin
-				Index := fItemList.StackableList.IndexOf(AnInventoryItem.Item.ID);
-				if Index > -1 then
+				if New then
 				begin
-					if (TItemInstance(fItemList.StackableList.Objects[Index]).Quantity + AnInventoryItem.Quantity)
-					> MainProc.ZoneServer.Options.MaxStackItem then
-					begin
-						Failed := ADDITEM_TOOMUCHSTACKING;
-					end else
-					begin
-						Inc(TItemInstance(fItemList.StackableList.Objects[Index]).Quantity,AnInventoryItem.Quantity);
-						ItemIndex := TItemInstance(fItemList.StackableList.Objects[Index]).Index;
-						AnInventoryItem.Item.Free;
-						AnInventoryItem.Free;
-						AnInventoryItem := TItemInstance(fItemList.StackableList.Objects[Index]);
-
-						if not DontSend then
-							TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
-								AnInventoryItem,
-								Self
-							);
-					end;
-				end else
-				begin
-					fItemList.Add(AnInventoryItem,True);
-					Inc(fCountItem);
-					ItemIndex := AnInventoryItem.Index;
-					if not DontSend then
-						TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
-							AnInventoryItem,
-							Self
-						);
-				end;
-				Inc(fCountItem);
-			end else
-			if AnInventoryItem.Item is TEquipmentItem then
-			begin
-				Inc(fCountEquip);
-				AnInventoryItem.Quantity := 1;
-				Amount := 1;
-				fItemList.Add(AnInventoryItem);
-				ItemIndex := AnInventoryItem.Index;
-				if not DontSend then
 					TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
 						AnInventoryItem,
 						Self
 					);
+				end else
+				begin
+					TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
+						AnInventoryItem,
+						Self
+					);
+				end;
 			end;
 		end;
 		if Failed = 0 then
@@ -332,7 +355,7 @@ begin
 			SendNewItem(
 				ClientInfo,
 				AnInventoryItem,
-				ItemIndex,
+				AnInventoryItem.Index,
 				Amount
 			);
 		end;
