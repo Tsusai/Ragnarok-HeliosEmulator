@@ -78,7 +78,6 @@ protected
 	ClientInfo : TIdContext;
 	fCountItem	: Word;
 	fCountEquip	: Word;
-	fStackableList	: TIntList32;
 	fWeight : LongWord;
 	function GetItem(Index : Integer) : TItem;
 	procedure IncreaseWeight(const AWeight:LongWord);
@@ -157,8 +156,6 @@ begin
 	inherited Create;
 	self.ClientInfo := TCharacter(Parent).ClientInfo;
 	fItemList := TInventoryList.Create(FALSE);
-	//Stores item that is stackable, this list does not own object
-	fStackableList := TIntList32.Create;
 	fCountItem := 0;
 	fCountEquip := 0;
 	fWeight := 0;
@@ -187,8 +184,6 @@ Revisions:
 *-----------------------------------------------------------------------------*)
 destructor TInventory.Destroy;
 begin
-	fStackableList.Free;
-
 	fItemList.Free;
 
 	inherited;
@@ -269,20 +264,20 @@ begin
 		begin
 			if IsStackable(AnInventoryItem) then
 			begin
-				Index := fStackableList.IndexOf(AnInventoryItem.Item.ID);
+				Index := fItemList.StackableList.IndexOf(AnInventoryItem.Item.ID);
 				if Index > -1 then
 				begin
-					if (TItemInstance(fStackableList.Objects[Index]).Quantity + AnInventoryItem.Quantity)
+					if (TItemInstance(fItemList.StackableList.Objects[Index]).Quantity + AnInventoryItem.Quantity)
 					> MainProc.ZoneServer.Options.MaxStackItem then
 					begin
 						Failed := ADDITEM_TOOMUCHSTACKING;
 					end else
 					begin
-						Inc(TItemInstance(fStackableList.Objects[Index]).Quantity,AnInventoryItem.Quantity);
-						ItemIndex := TItemInstance(fStackableList.Objects[Index]).Index;
+						Inc(TItemInstance(fItemList.StackableList.Objects[Index]).Quantity,AnInventoryItem.Quantity);
+						ItemIndex := TItemInstance(fItemList.StackableList.Objects[Index]).Index;
 						AnInventoryItem.Item.Free;
 						AnInventoryItem.Free;
-						AnInventoryItem := TItemInstance(fStackableList.Objects[Index]);
+						AnInventoryItem := TItemInstance(fItemList.StackableList.Objects[Index]);
 
 						if not DontSend then
 							TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
@@ -292,8 +287,7 @@ begin
 					end;
 				end else
 				begin
-					fItemList.Add(AnInventoryItem);
-					fStackableList.AddObject(AnInventoryItem.Item.ID,AnInventoryItem);
+					fItemList.Add(AnInventoryItem,True);
 					Inc(fCountItem);
 					ItemIndex := AnInventoryItem.Index;
 					if not DontSend then
@@ -419,6 +413,7 @@ begin
 				TheItem.Index,
 				TheItem.Quantity
 			);
+			DecreaseWeight(Quantity*TheItem.Item.Weight);
 
 			ParameterList := TParameterList.Create;
 			ParameterList.AddAsObject(1,TheItem);
@@ -427,7 +422,6 @@ begin
 			ParameterList.Free;
 
 			fItemList.Delete(TheItem,True);
-			DecreaseWeight(Quantity*TheItem.Item.Weight);
 		end else
 		begin
 			Remove(

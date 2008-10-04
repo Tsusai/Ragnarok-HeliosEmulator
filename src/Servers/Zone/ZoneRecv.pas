@@ -242,6 +242,12 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure TakeItem(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -1765,6 +1771,30 @@ begin
 end;{DropItem}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//TakeItem                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Try to pickup an item
+//--
+//	Pre:
+//		TODO
+//	Post:
+//		TODO
+//--
+//  Changes -
+//		[2008/10/03] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure TakeItem(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+begin
+
+end;{TakeItem}
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //RecvRedirectWhisper                                                  PROCEDURE

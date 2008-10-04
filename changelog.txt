@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 569 -
+[2008/10/03] Aeomin - Fixed a bug in item drop.
+-
+
 - Rev 568 -
 [2008/10/03] Aeomin - More overload procedures for remove item.
 -

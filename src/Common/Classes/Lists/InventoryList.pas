@@ -39,6 +39,7 @@ type
 		function RegisterIndex : Word;
 	public
 		OwnsItems : Boolean;
+		StackableList	: TIntList32;
 
 		constructor Create(OwnsItems : Boolean);
 		destructor Destroy; override;
@@ -47,8 +48,8 @@ type
 		property IndexItems[Index : Integer] : TItemInstance read GetIndexItem;
 		Property Count : Integer read GetCount;
 
-		procedure Add(const AnItem : TItem; const Quantity : Word);overload;
-		procedure Add(const AnInventoryItem:TItemInstance);overload;
+		//procedure Add(const AnItem : TItem; const Quantity : Word);overload;
+		procedure Add(const AnInventoryItem:TItemInstance;const Stack:Boolean = False);overload;
 //		procedure Insert(const AnItem : TItem; const Quantity : Word; Index : Integer);
 		procedure Delete(const Index : Integer);overload;
 		procedure Delete(const ItemInstance:TItemInstance;const DontFree:Boolean=False);overload;
@@ -78,6 +79,7 @@ begin
 	self.OwnsItems := OwnsItems;
 	fSlotList := TIntList32.Create;
 	fIndexList := TIntList32.Create;
+	StackableList	:= TIntList32.Create;
 	fNextID := 0;
 end;{Create}
 //------------------------------------------------------------------------------
@@ -98,6 +100,7 @@ begin
 	fList.Free;
 	fSlotList.Free;
 	fIndexList.Free;
+	StackableList.Free;
 	// Call TObject destructor
 	inherited;
 end;{Destroy}
@@ -113,7 +116,7 @@ end;{Destroy}
 //  Changes -
 //    October 30th, 2007 - RaX - Created.
 //------------------------------------------------------------------------------
-procedure TInventoryList.Add(const AnItem : TItem; const Quantity : Word);
+{procedure TInventoryList.Add(const AnItem : TItem; const Quantity : Word);
 var
 	AnInventoryItem : TItemInstance;
 begin
@@ -121,7 +124,7 @@ begin
 	AnInventoryItem.Item := AnItem;
 	AnInventoryItem.Quantity := Quantity;
 	Add(AnInventoryItem);
-end;{Add}
+end;}{Add}
 //------------------------------------------------------------------------------
 
 
@@ -134,11 +137,15 @@ end;{Add}
 //	Changes -
 //		[2008/09/20] Aeomin - Created.
 //------------------------------------------------------------------------------
-procedure TInventoryList.Add(const AnInventoryItem:TItemInstance);
+procedure TInventoryList.Add(const AnInventoryItem:TItemInstance;const Stack:Boolean = False);
 begin
 	AnInventoryItem.Index := RegisterIndex;
 	fList.Add(AnInventoryItem);
 	fIndexList.AddObject(AnInventoryItem.Index, AnInventoryItem);
+	if Stack then
+	begin
+		StackableList.AddObject(AnInventoryItem.Item.ID,AnInventoryItem);
+	end;
 end;{Add}
 //------------------------------------------------------------------------------
 
@@ -197,6 +204,11 @@ begin
 	begin
 		fSlotList.Add(ItemInstance.Index);
 		fList.Delete(Index);
+		AnIndex := StackableList.IndexOf(ItemInstance.Item.ID);
+		if AnIndex > -1 then
+		begin
+			StackableList.Delete(AnIndex);
+		end;
 		AnIndex := fIndexList.IndexOf(ItemInstance.Index);
 		if AnIndex > -1 then
 		begin
