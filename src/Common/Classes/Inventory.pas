@@ -654,6 +654,7 @@ begin
 		Result := Quantity;
 	end else
 	begin
+		TThreadLink(ClientInfo.Data).DatabaseLink.Items.Delete(OldItem.ID);
 		{Remove 'em}
 		SendDeleteItem(
 			TClientLink(ClientInfo.Data).CharacterLink,

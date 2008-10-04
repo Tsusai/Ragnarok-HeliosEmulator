@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 575 -
+[2008/10/04] Aeomin - Fixed delete item didn't remove from database.
+-
+
 - Rev 574 -
 [2008/10/04] Aeomin - Updated packet db that can support 2008-10-01 client.
 -
