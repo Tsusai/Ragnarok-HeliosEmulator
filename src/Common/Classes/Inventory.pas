@@ -102,6 +102,8 @@ public
 	procedure Drop(const Index:Word;const Quantity:Word);
 	procedure Remove(const OldItem:TItemInstance;const Quantity:Word;var NewItem:TItemInstance);overload;
 	procedure Remove(const OldItem:TItemInstance;const Quantity:Word);overload;
+	function AmountOf(const ID:LongWord):Word;overload;
+	function AmountOf(const Name:String):Word;overload;
 	constructor Create(Parent : TObject);
 	destructor Destroy;override;
 end;(* TInventory
@@ -535,4 +537,56 @@ begin
 end;{Remove}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//AmountOf                                                              FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//		Find amount of an item using definition ID.
+//
+//	Changes -
+//		[2008/10/03] Aeomin - Created
+//------------------------------------------------------------------------------
+function TInventory.AmountOf(const ID:LongWord):Word;
+var
+	Index : Integer;
+	Instance : TItemInstance;
+begin
+	Result := 0;
+	if fItemList.Count > 0 then
+	begin
+		for Index := 0 to fItemList.Count - 1 do
+		begin
+			Instance := fItemList[Index] as TItemInstance;
+			if Instance.Item.ID = ID then
+			begin
+				Result := Result + Instance.Quantity;
+			end;
+		end;
+	end;
+end;{AmountOf}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//AmountOf                                                              FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//		Find amount of an item using item name
+//
+//	Changes -
+//		[2008/10/03] Aeomin - Created
+//------------------------------------------------------------------------------
+function TInventory.AmountOf(const Name:String):Word;
+var
+	ID : LongWord;
+begin
+	Result := 0;
+	ID := TThreadLink(ClientInfo.Data).DatabaseLink.Items.Find(Name);
+	if ID > 0 then
+	begin
+		Result := AmountOf(ID);
+	end;
+end;{AmountOf}
+//------------------------------------------------------------------------------
 end{Inventory}.
