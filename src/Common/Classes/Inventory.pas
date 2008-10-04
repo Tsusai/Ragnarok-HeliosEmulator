@@ -83,7 +83,7 @@ protected
 	procedure IncreaseWeight(const AWeight:LongWord);
 	procedure DecreaseWeight(const AWeight:LongWord);
 	function IsStackable(const AnItem : TItemInstance):Boolean;
-	function Move(var AnInventoryItem : TItemInstance;var New:Boolean):Byte;
+	function Move(var AnInventoryItem : TItemInstance;var New:Boolean;const IgnoreWeight:Boolean=False;const UpdateWeight:Boolean=True):Byte;
 public
 	InventoryID : LongWord;
 	StorageID  : LongWord;
@@ -96,8 +96,9 @@ public
 	property Countitem	: Word read fCountItem;
 	property CountEquip	: Word read fCountEquip;
 	property Weight : LongWord read fWeight;
+	procedure Pickup(const ID : LongWord);
 	procedure Add(AnItem : TItem; Quantity : Word;const DontSend:Boolean=False);overload;
-	procedure Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False);overload;
+	function Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False;const Transfer:Boolean=False):Boolean;overload;
 	function Add(const ID:Word;const Quantity:Word):Boolean;overload;
 	procedure Drop(const Index:Word;const Quantity:Word);
 	procedure Remove(const OldItem:TItemInstance;const Quantity:Word;var NewItem:TItemInstance);overload;
@@ -236,7 +237,7 @@ end;
 //	Changes -
 //		[2008/10/03] Aeomin - Created
 //------------------------------------------------------------------------------
-function TInventory.Move(var AnInventoryItem : TItemInstance;var New:Boolean):Byte;
+function TInventory.Move(var AnInventoryItem : TItemInstance;var New:Boolean;const IgnoreWeight:Boolean=False;const UpdateWeight:Boolean=True):Byte;
 var
 	Index : Integer;
 begin
@@ -247,40 +248,110 @@ begin
 		Result := ADDITEM_TOOMUCH;
 	end else
 	begin
-		if IsStackable(AnInventoryItem) then
+		if (not IgnoreWeight) AND ((TClientLink(ClientInfo.Data).CharacterLink.Weight + (AnInventoryItem.Item.Weight*AnInventoryItem.Quantity))
+		> TClientLink(ClientInfo.Data).CharacterLink.MaxWeight) then
 		begin
-			Index := fItemList.StackableList.IndexOf(AnInventoryItem.Item.ID);
-			if Index > -1 then
+			Result := ADDITEM_OVERWEIGHT;
+		end else
+		begin
+			if IsStackable(AnInventoryItem) then
 			begin
-				if (TItemInstance(fItemList.StackableList.Objects[Index]).Quantity + AnInventoryItem.Quantity)
-				> MainProc.ZoneServer.Options.MaxStackItem then
+				Index := fItemList.StackableList.IndexOf(AnInventoryItem.Item.ID);
+				if Index > -1 then
 				begin
-					Result := ADDITEM_TOOMUCHSTACKING;
+					if (TItemInstance(fItemList.StackableList.Objects[Index]).Quantity + AnInventoryItem.Quantity)
+					> MainProc.ZoneServer.Options.MaxStackItem then
+					begin
+						Result := ADDITEM_TOOMUCHSTACKING;
+					end else
+					begin
+						Inc(TItemInstance(fItemList.StackableList.Objects[Index]).Quantity,AnInventoryItem.Quantity);
+						AnInventoryItem.Item.Free;
+						AnInventoryItem.Free;
+						AnInventoryItem := TItemInstance(fItemList.StackableList.Objects[Index]);
+					end;
 				end else
 				begin
-					Inc(TItemInstance(fItemList.StackableList.Objects[Index]).Quantity,AnInventoryItem.Quantity);
-					AnInventoryItem.Item.Free;
-					AnInventoryItem.Free;
-					AnInventoryItem := TItemInstance(fItemList.StackableList.Objects[Index]);
+					fItemList.Add(AnInventoryItem,True);
+					Inc(fCountItem);
+					New := True;
 				end;
-			end else
-			begin
-				fItemList.Add(AnInventoryItem,True);
 				Inc(fCountItem);
+			end else
+			if AnInventoryItem.Item is TEquipmentItem then
+			begin
+				Inc(fCountEquip);
+				AnInventoryItem.Quantity := 1;
+				fItemList.Add(AnInventoryItem);
+
 				New := True;
 			end;
-			Inc(fCountItem);
-		end else
-		if AnInventoryItem.Item is TEquipmentItem then
-		begin
-			Inc(fCountEquip);
-			AnInventoryItem.Quantity := 1;
-			fItemList.Add(AnInventoryItem);
 
-			New := True;
+			if Result = 0 then
+			begin
+				fWeight := EnsureRange(AnInventoryItem.Item.Weight*AnInventoryItem.Quantity + fWeight,0,High(LongWord));
+				if UpdateWeight then
+					TClientLink(ClientInfo.Data).CharacterLink.Weight := fWeight;
+			end;
 		end;
 	end;
 end;{Move}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Pickup                                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Pickup craps
+//
+//	Changes -
+//		[2008/10/03] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure TInventory.Pickup(const ID : LongWord);
+var
+	AnInventoryItem : TItemInstance;
+	AChara : TCharacter;
+	Index : Integer;
+	CellIndex : Integer;
+	X,Y:Word;
+	AParameters : TParameterList;
+begin
+	AChara := TClientLink(ClientInfo.Data).CharacterLink;
+	Index := AChara.MapInfo.ItemList.IndexOf(ID);
+	if Index > -1 then
+	begin
+		AnInventoryItem := AChara.MapInfo.ItemList.Objects[Index] as TItemInstance;
+		X := AnInventoryItem.X;
+		Y := AnInventoryItem.Y;
+		//Make sure within 1 cell distance
+		if (Abs(AChara.Position.X-X)<=1)AND
+		(Abs(AChara.Position.Y-Y)<=1) then
+		begin
+			CellIndex := AChara.MapInfo.Cell[
+				X,
+				Y
+			].Items.IndexOf(ID);
+			if CellIndex > -1 then
+			begin
+				if Add(AnInventoryItem) then
+				begin
+					AChara.MapInfo.Cell[
+						X,
+						Y
+					].Items.Delete(CellIndex);
+					AChara.MapInfo.ItemList.Delete(Index);
+
+					AParameters := TParameterList.Create;
+					AParameters.AddAsLongWord(1,ID);
+					AChara.AreaLoop(RemoveGroundItem, FALSE,AParameters);
+					AChara.AreaLoop(ShowPickupItem, FALSE,AParameters);
+					AParameters.Free;
+				end;
+			end;
+		end;
+	end;
+end;{Pickup}
 //------------------------------------------------------------------------------
 
 
@@ -298,48 +369,31 @@ end;
 
 
 //------------------------------------------------------------------------------
-procedure TInventory.Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False);
+function TInventory.Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False;const Transfer:Boolean=False):Boolean;
 var
 	Amount : Word;
 	Failed : Byte;
 	New : Boolean;
 begin
 	Amount := AnInventoryItem.Quantity;
-	if fItemList.Count >= MainProc.ZoneServer.Options.MaxItems then
+	Failed := Move(AnInventoryItem,New,DontSend,NOT DontSend);
+	if not DontSend then
 	begin
-		Failed := ADDITEM_TOOMUCH;
-	end else
-	begin
-		{Ignore checking when loading inventory}
-		if (not DontSend) AND ((TClientLink(ClientInfo.Data).CharacterLink.Weight + (AnInventoryItem.Item.Weight*Amount))
-		> TClientLink(ClientInfo.Data).CharacterLink.MaxWeight) then
+		if New then
 		begin
-			Failed := ADDITEM_OVERWEIGHT;
+			TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
+				AnInventoryItem,
+				Self
+			);
 		end else
 		begin
-			Failed := Move(AnInventoryItem,New);
-			if not DontSend then
-			begin
-				if New then
-				begin
-					TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
-						AnInventoryItem,
-						Self
-					);
-				end else
-				begin
-					TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
-						AnInventoryItem,
-						Self
-					);
-				end;
-			end;
-		end;
-		if Failed = 0 then
-		begin
-			fWeight := EnsureRange(AnInventoryItem.Item.Weight*AnInventoryItem.Quantity + fWeight,0,High(LongWord));
+			TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
+				AnInventoryItem,
+				Self
+			);
 		end;
 	end;
+
 	if not DontSend then
 	begin
 		if Failed > 0 then
@@ -350,8 +404,6 @@ begin
 			);
 		end else
 		begin
-			TClientLink(ClientInfo.Data).CharacterLink.Weight :=
-				TClientLink(ClientInfo.Data).CharacterLink.Weight + AnInventoryItem.Item.Weight*Amount;
 			SendNewItem(
 				ClientInfo,
 				AnInventoryItem,
@@ -360,6 +412,7 @@ begin
 			);
 		end;
 	end;
+	Result := (Failed = 0);
 end;{Add}
 //------------------------------------------------------------------------------
 
@@ -630,6 +683,7 @@ begin
 			begin
 				AnInsctance := Instance;
 				Result := True;
+				Break;
 			end;
 		end;
 	end;

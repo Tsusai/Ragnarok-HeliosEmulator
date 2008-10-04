@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 571 -
+[2008/10/04] Aeomin - More cleanup in Inventory.pas
+-
+
 - Rev 570 -
 [2008/10/03] Aeomin - Splitted Add procedure into Move [Inventory.pas]
 [2008/10/03] Aeomin - This not only provides clean code but also could reuse for pickup item.

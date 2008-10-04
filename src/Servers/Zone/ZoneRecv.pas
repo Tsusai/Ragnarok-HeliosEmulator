@@ -1797,7 +1797,7 @@ begin
 	if AChara.CharaState in [charaStanding,charaWalking,charaAttacking] then
 	begin
 		ID := BufferReadLongWord(ReadPts[0], InBuffer);
-
+		AChara.Inventory.Pickup(ID);
 	end;
 end;{TakeItem}
 //------------------------------------------------------------------------------

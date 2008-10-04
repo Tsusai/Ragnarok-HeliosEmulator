@@ -102,6 +102,12 @@ uses
 		const AObject        : TGameObject;
 		const AParameters    : TParameterList = nil
 	);
+
+	procedure RemoveGroundItem(
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : TParameterList = nil
+	);
 implementation
 
 uses
@@ -483,9 +489,35 @@ begin
 		SendPickUpItemAnimation(
 			TCharacter(AObject),
 			TCharacter(ACurrentObject).ID,
-			TItemInstance(AParameters.GetAsObject(1)).ID
+			AParameters.GetAsLongWord(1)
 		);
 	end;
 end;{ShowPickupItem}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RemoveGroundItem                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Delete item
+//
+//	Changes-
+//		[2008/10/03] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RemoveGroundItem(
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : TParameterList = nil
+);
+begin
+	if (AObject is TCharacter) then
+	begin
+		SendRemoveGroundItem(
+			TCharacter(AObject),
+			AParameters.GetAsLongWord(1)
+		);
+	end;
+end;{RemoveGroundItem}
 //------------------------------------------------------------------------------
 end.

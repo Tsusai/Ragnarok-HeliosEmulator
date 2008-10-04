@@ -709,6 +709,10 @@ begin
 				AItem.ID,
 				AItem
 			);
+			Map.ItemList.AddObject(
+				AItem.ID,
+				AItem
+			);
 			ADataSet.Next;
 		end;
 	finally
