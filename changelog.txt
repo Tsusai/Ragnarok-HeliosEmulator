@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 574 -
+[2008/10/04] Aeomin - Updated packet db that can support 2008-10-01 client.
+-
+
 - Rev 573 -
 [2008/10/04] Aeomin - Implement pickup itemz.
 -
