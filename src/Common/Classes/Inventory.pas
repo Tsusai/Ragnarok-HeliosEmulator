@@ -83,7 +83,7 @@ protected
 	procedure IncreaseWeight(const AWeight:LongWord);
 	procedure DecreaseWeight(const AWeight:LongWord);
 	function IsStackable(const AnItem : TItemInstance):Boolean;
-	function Move(var AnInventoryItem : TItemInstance;var New:Boolean;const IgnoreWeight:Boolean=False;const UpdateWeight:Boolean=True):Byte;
+	function Move(var AnInventoryItem : TItemInstance;var New:Boolean;const IgnoreWeight:Boolean=False;const UpdateWeight:Boolean=True;const DontFree:Boolean=False):Byte;
 public
 	InventoryID : LongWord;
 	StorageID  : LongWord;
@@ -237,12 +237,14 @@ end;
 //	Changes -
 //		[2008/10/03] Aeomin - Created
 //------------------------------------------------------------------------------
-function TInventory.Move(var AnInventoryItem : TItemInstance;var New:Boolean;const IgnoreWeight:Boolean=False;const UpdateWeight:Boolean=True):Byte;
+function TInventory.Move(var AnInventoryItem : TItemInstance;var New:Boolean;const IgnoreWeight:Boolean=False;const UpdateWeight:Boolean=True;const DontFree:Boolean=False):Byte;
 var
 	Index : Integer;
+	Amount : Word;
 begin
 	Result := 0;
 	New := False;
+	Amount := AnInventoryItem.Quantity;
 	if fItemList.Count >= MainProc.ZoneServer.Options.MaxItems then
 	begin
 		Result := ADDITEM_TOOMUCH;
@@ -266,8 +268,11 @@ begin
 					end else
 					begin
 						Inc(TItemInstance(fItemList.StackableList.Objects[Index]).Quantity,AnInventoryItem.Quantity);
-						AnInventoryItem.Item.Free;
-						AnInventoryItem.Free;
+						if not DontFree then
+						begin
+							AnInventoryItem.Item.Free;
+							AnInventoryItem.Free;
+						end;
 						AnInventoryItem := TItemInstance(fItemList.StackableList.Objects[Index]);
 					end;
 				end else
@@ -289,7 +294,7 @@ begin
 
 			if Result = 0 then
 			begin
-				fWeight := EnsureRange(AnInventoryItem.Item.Weight*AnInventoryItem.Quantity + fWeight,0,High(LongWord));
+				fWeight := EnsureRange(AnInventoryItem.Item.Weight*Amount + fWeight,0,High(LongWord));
 				if UpdateWeight then
 					TClientLink(ClientInfo.Data).CharacterLink.Weight := fWeight;
 			end;
@@ -316,6 +321,56 @@ var
 	CellIndex : Integer;
 	X,Y:Word;
 	AParameters : TParameterList;
+	function TransferToInventory:Boolean;
+	var
+		Amount : Word;
+		Failed : Byte;
+		New : Boolean;
+		OldInstance:TItemInstance;
+	begin
+		Amount := AnInventoryItem.Quantity;
+		OldInstance := AnInventoryItem;
+		Failed := Move(AnInventoryItem,New,False,True,True);
+		if New then
+		begin
+			AnInventoryItem.X := 0;
+			AnInventoryItem.Y := 0;
+			AnInventoryItem.MapID := 0;
+			TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
+				AnInventoryItem,
+				Self
+			);
+		end else
+		begin
+			TThreadLink(ClientInfo.Data).DatabaseLink.Items.Delete(
+				OldInstance.ID
+			);
+			OldInstance.Item.Free;
+			OldInstance.Free;
+			TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
+				AnInventoryItem,
+				Self
+			);
+		end;
+
+
+		if Failed > 0 then
+		begin
+			SendNewItemFailed(
+				ClientInfo,
+				Failed
+			);
+		end else
+		begin
+			SendNewItem(
+				ClientInfo,
+				AnInventoryItem,
+				AnInventoryItem.Index,
+				Amount
+			);
+		end;
+		Result := (Failed = 0);
+	end;
 begin
 	AChara := TClientLink(ClientInfo.Data).CharacterLink;
 	Index := AChara.MapInfo.ItemList.IndexOf(ID);
@@ -334,7 +389,7 @@ begin
 			].Items.IndexOf(ID);
 			if CellIndex > -1 then
 			begin
-				if Add(AnInventoryItem) then
+				if TransferToInventory then
 				begin
 					AChara.MapInfo.Cell[
 						X,
@@ -344,8 +399,8 @@ begin
 
 					AParameters := TParameterList.Create;
 					AParameters.AddAsLongWord(1,ID);
-					AChara.AreaLoop(RemoveGroundItem, FALSE,AParameters);
 					AChara.AreaLoop(ShowPickupItem, FALSE,AParameters);
+					AChara.AreaLoop(RemoveGroundItem, FALSE,AParameters);
 					AParameters.Free;
 				end;
 			end;
@@ -377,7 +432,7 @@ var
 begin
 	Amount := AnInventoryItem.Quantity;
 	Failed := Move(AnInventoryItem,New,DontSend,NOT DontSend);
-	if not DontSend then
+	if (not DontSend) then
 	begin
 		if New then
 		begin

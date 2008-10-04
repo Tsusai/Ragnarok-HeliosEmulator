@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 573 -
+[2008/10/04] Aeomin - Implement pickup itemz.
+-
+
 - Rev 572 -
 [2008/10/04] RaX - Added GetItemQuantity and DropItem script commands.
 -

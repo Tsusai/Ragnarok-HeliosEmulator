@@ -486,11 +486,18 @@ procedure ShowPickupItem(
 begin
 	if (AObject is TCharacter) then
 	begin
-		SendPickUpItemAnimation(
-			TCharacter(AObject),
-			TCharacter(ACurrentObject).ID,
-			AParameters.GetAsLongWord(1)
-		);
+		if AObject = ACurrentObject then
+			SendPickUpItemAnimation(
+				TCharacter(AObject),
+				TCharacter(ACurrentObject).AccountID,
+				AParameters.GetAsLongWord(1)
+			)
+		else
+			SendPickUpItemAnimation(
+				TCharacter(AObject),
+				TCharacter(ACurrentObject).ID,
+				AParameters.GetAsLongWord(1)
+			);
 	end;
 end;{ShowPickupItem}
 //------------------------------------------------------------------------------
