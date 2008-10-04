@@ -101,9 +101,12 @@ public
 	function Add(const ID:Word;const Quantity:Word):Boolean;overload;
 	procedure Drop(const Index:Word;const Quantity:Word);
 	procedure Remove(const OldItem:TItemInstance;const Quantity:Word;var NewItem:TItemInstance);overload;
-	procedure Remove(const OldItem:TItemInstance;const Quantity:Word);overload;
-	function AmountOf(const ID:LongWord):Word;overload;
-	function AmountOf(const Name:String):Word;overload;
+	function Remove(const OldItem:TItemInstance;const Quantity:Word):Word;overload;
+	procedure Remove(const ID : LongWord;Quantity:Word);overload;
+	procedure Remove(const Name : String;const Quantity:Word);overload;
+	function GetInstance(const ID:LongWord;var AnInsctance:TItemInstance):Boolean;
+	function AmountOf(const ID:LongWord):LongWord;overload;
+	function AmountOf(const Name:String):LongWord;overload;
 	constructor Create(Parent : TObject);
 	destructor Destroy;override;
 end;(* TInventory
@@ -511,7 +514,7 @@ end;{Remove}
 //	Changes -
 //		[2008/09/30] Aeomin - Created
 //------------------------------------------------------------------------------
-procedure TInventory.Remove(const OldItem:TItemInstance;const Quantity:Word);
+function TInventory.Remove(const OldItem:TItemInstance;const Quantity:Word):Word;
 begin
 	if Quantity < OldItem.Quantity then
 	begin
@@ -523,6 +526,7 @@ begin
 			Quantity
 		);
 		DecreaseWeight(Quantity*OldItem.Item.Weight);
+		Result := Quantity;
 	end else
 	begin
 		{Remove 'em}
@@ -531,10 +535,88 @@ begin
 			OldItem.Index,
 			OldItem.Quantity
 		);
+		Result := OldItem.Quantity;
 		fItemList.Delete(OldItem);
 		DecreaseWeight(OldItem.Quantity*OldItem.Item.Weight);
 	end;
 end;{Remove}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//Remove                                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Remove item from inventory using definition ID.
+//
+//	Changes -
+//		[2008/10/03] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure TInventory.Remove(const ID : LongWord;Quantity:Word);
+var
+	ItemInstance : TItemInstance;
+begin
+	while Quantity > 0 do
+	begin
+		if GetInstance(ID,ItemInstance) then
+		begin
+			Quantity := Quantity - Remove(ItemInstance,Quantity);
+		end else
+			Break; {Can't find any}
+	end;
+end;{Remove}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Remove                                                               PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Remove item from inventory using definition Name
+//
+//	Changes -
+//		[2008/10/03] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure TInventory.Remove(const Name : String;const Quantity:Word);
+var
+	ID : LongWord;
+begin
+	ID := TThreadLink(ClientInfo.Data).DatabaseLink.Items.Find(Name);
+	if ID > 0 then
+	begin
+		Remove(ID,Quantity);
+	end;
+end;{Remove}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetInstance                                                           FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//		Find instance using definition ID; return FALSE if not found.
+//
+//	Changes -
+//		[2008/10/03] Aeomin - Created
+//------------------------------------------------------------------------------
+function TInventory.GetInstance(const ID:LongWord;var AnInsctance:TItemInstance):Boolean;
+var
+	Index : Integer;
+	Instance : TItemInstance;
+begin
+	Result := False;
+	if fItemList.Count > 0 then
+	begin
+		for Index := 0 to fItemList.Count - 1 do
+		begin
+			Instance := fItemList[Index] as TItemInstance;
+			if Instance.Item.ID = ID then
+			begin
+				AnInsctance := Instance;
+				Result := True;
+			end;
+		end;
+	end;
+end;{GetInstance}
 //------------------------------------------------------------------------------
 
 
@@ -547,7 +629,7 @@ end;{Remove}
 //	Changes -
 //		[2008/10/03] Aeomin - Created
 //------------------------------------------------------------------------------
-function TInventory.AmountOf(const ID:LongWord):Word;
+function TInventory.AmountOf(const ID:LongWord):LongWord;
 var
 	Index : Integer;
 	Instance : TItemInstance;
@@ -560,7 +642,7 @@ begin
 			Instance := fItemList[Index] as TItemInstance;
 			if Instance.Item.ID = ID then
 			begin
-				Result := Result + Instance.Quantity;
+				Result := EnsureRange(Result + Instance.Quantity,0,High(LongWord));
 			end;
 		end;
 	end;
@@ -577,7 +659,7 @@ end;{AmountOf}
 //	Changes -
 //		[2008/10/03] Aeomin - Created
 //------------------------------------------------------------------------------
-function TInventory.AmountOf(const Name:String):Word;
+function TInventory.AmountOf(const Name:String):LongWord;
 var
 	ID : LongWord;
 begin

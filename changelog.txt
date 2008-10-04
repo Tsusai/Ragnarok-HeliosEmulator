@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 568 -
+[2008/10/03] Aeomin - More overload procedures for remove item.
+-
+
 - Rev 567 -
 [2008/10/03] Aeomin - Added AmountOf in Inventory.
 -
