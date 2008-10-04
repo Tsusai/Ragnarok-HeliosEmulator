@@ -27,9 +27,9 @@ uses
 	contnrs,
 	{Project}
 	EventList,
-	MapTypes
+	MapTypes,
 	{3rd Party}
-	//none
+	List32
 	;
 
 
@@ -52,6 +52,7 @@ TMap = class(TObject)
 		
 		EventList : TEventList;
 		MobList  : TObjectList;
+		ItemList : TIntList32;
 
 		Constructor Create;
 		Destructor Destroy;override;
@@ -92,9 +93,8 @@ uses
 	Globals,
 	Main,
 	NPC,
-	Mob,
+	Mob
 	{3rd Party}
-	List32
 	;
 
 //------------------------------------------------------------------------------
@@ -116,6 +116,7 @@ begin
 	EventList := TEventList.Create(TRUE);
 	//We own mob objects here!
 	MobList := TObjectList.Create(TRUE);
+	ItemList := TIntList32.Create;
 end;
 //------------------------------------------------------------------------------
 
@@ -136,6 +137,7 @@ begin
 	end;
 	EventList.Free;
 	MobList.Free;
+	ItemList.Free;
 	inherited;
 end;
 //------------------------------------------------------------------------------

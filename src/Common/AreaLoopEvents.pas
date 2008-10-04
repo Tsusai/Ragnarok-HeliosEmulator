@@ -96,6 +96,12 @@ uses
 		const AObject        : TGameObject;
 		const AParameters    : TParameterList = nil
 	);
+
+	procedure ShowPickupItem(
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : TParameterList = nil
+	);
 implementation
 
 uses
@@ -408,7 +414,7 @@ end;{ShowDeath}
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//JobChange                                                       PROCEDURE
+//JobChange                                                            PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //		Show job change to everyone in the area
@@ -429,6 +435,16 @@ begin
 end;{ShowDeath}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ShowDropitem                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Drops an item to ground
+//
+//	Changes-
+//		[2008/10/02] Aeomin - Created
+//------------------------------------------------------------------------------
 procedure ShowDropitem(
 	const ACurrentObject : TGameObject;
 	const AObject        : TGameObject;
@@ -443,7 +459,33 @@ begin
 			AParameters.GetAsLongWord(2)
 		);
 	end;
+end;{ShowDropitem}
+//------------------------------------------------------------------------------
 
-end;
 
+//------------------------------------------------------------------------------
+//ShowPickupItem                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Show pickup animation
+//
+//	Changes-
+//		[2008/10/03] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ShowPickupItem(
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : TParameterList = nil
+);
+begin
+	if (AObject is TCharacter) then
+	begin
+		SendPickUpItemAnimation(
+			TCharacter(AObject),
+			TCharacter(ACurrentObject).ID,
+			TItemInstance(AParameters.GetAsObject(1)).ID
+		);
+	end;
+end;{ShowPickupItem}
+//------------------------------------------------------------------------------
 end.

@@ -279,6 +279,12 @@ uses
 		const AChara : TCharacter;
 		const ID     : LongWord
 	);
+
+	procedure SendPickUpItemAnimation(
+		const AChara : TCharacter;
+		const CharID : LongWord;
+		const ItemID : LongWord
+	);
 implementation
 
 
@@ -2114,5 +2120,40 @@ begin
 	WriteBufferLongWord(2, ID, OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($00a1,AChara.ClientVersion));
 end;{SendRemoveGroundItem}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendPickUpItemAnimation                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Wrapper for action packet, it sends pickup item animation
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/10/03] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendPickUpItemAnimation(
+	const AChara : TCharacter;
+	const CharID : LongWord;
+	const ItemID : LongWord
+);
+begin
+	DoAction(
+		AChara.ClientInfo,
+		CharID,
+		ItemID,
+		0,
+		0,
+		ACTION_PICKUP_ITEM,
+		0,
+		0,
+		0
+	);
+end;{SendPickUpItemAnimation}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

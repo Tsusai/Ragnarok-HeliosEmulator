@@ -338,7 +338,8 @@ begin
 			);
 		end;
 	end;
-end;
+end;{Add}
+//------------------------------------------------------------------------------
 
 
 function TInventory.Add(const ID:Word;const Quantity:Word):Boolean;
@@ -447,8 +448,10 @@ begin
 			TheItem := NewItem;
 		end;
 		AChara.MapInfo.Cell[TheItem.X,TheItem.Y].Items.AddObject(TheItem.ID,TheItem);
+		AChara.MapInfo.ItemList.AddObject(TheItem.ID,TheItem);
 	end;
-end;
+end;{Drop}
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
@@ -531,4 +534,5 @@ begin
 	end;
 end;{Remove}
 //------------------------------------------------------------------------------
-end.
+
+end{Inventory}.
