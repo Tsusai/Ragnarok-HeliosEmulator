@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 572 -
+[2008/10/04] RaX - Added GetItemQuantity and DropItem script commands.
+-
+
 - Rev 571 -
 [2008/10/04] Aeomin - More cleanup in Inventory.pas
 -

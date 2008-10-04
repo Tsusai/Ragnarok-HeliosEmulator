@@ -62,6 +62,7 @@ program Helios;
 
 {$APPTYPE CONSOLE}
 uses
+  madLinkDisAsm,
 {*These definitions make it possible to step through programs in windows and
 compile for linux, at the same time*}
 //------------------------------------------------------------------------------

@@ -48,6 +48,8 @@ function script_getcharavar(ALua : TLua) : integer; cdecl; forward;
 function script_setcharavar(ALua : TLua) : integer; cdecl; forward;
 function script_SetItem(ALua : TLua) : integer; cdecl; forward;
 function script_GetItem(ALua : TLua) : integer; cdecl; forward;
+function script_DropItem(ALua : TLua) : integer; cdecl; forward;
+function script_GetItemQuantity(ALua : TLua) : integer; cdecl; forward;
 function script_getgold(ALua : TLua) : integer; cdecl; forward;
 function script_dropgold(ALua : TLua) : Integer; cdecl; forward;
 function script_getexp(ALua : TLua) : integer; cdecl; forward;
@@ -72,7 +74,7 @@ function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 34;
+	NPCCommandCount = 35;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -93,6 +95,7 @@ const
 		(name:'setvar';func:script_setcharavar),
 		(name:'setitem';func:script_SetItem),
 		(name:'getitem';func:script_GetItem),
+		(name:'dropitem';func:script_DropItem),
 		(name:'getgold';func:script_getgold),
 		(name:'dropgold';func:script_dropgold),
 		(name:'getexp';func:script_getexp),
@@ -717,27 +720,125 @@ begin
 				//type check the second parameter, quantity
 				if lua_isnumber(ALua, 2) then
 				begin
-        	//since we passed all checks, create the item instance and add it to the inventory.
+					//since we passed all checks, create the item instance and add it to the inventory.
 					AnItem := TItemInstance.Create;
 					AnItem.Item := TItem.Create;
 					AnItem.Item.ID := ItemID;
-					AnItem.Quantity := lua_tointeger(ALua, 2);
+					AnItem.Quantity := EnsureRange(lua_tointeger(ALua, 2), 1, High(Word));
 					AnItem.Identified := true;
 					TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Load(AnItem.Item);
 					AChara.Inventory.Add(AnItem);
 				end else
 				begin
 					luaL_error(ALua,'script getitem syntax error, second parameter should be numeric');
-        end;
+				end;
 			end else
 			begin
-        luaL_error(ALua,'script getitem syntax error, item not found');
-      end;
+				luaL_error(ALua,'script getitem syntax error, item not found');
+			end;
 		end;
 	end else
 	begin
 		luaL_error(ALua,'script getitem syntax error, incorrect number of parameters');
-  end;
+	end;
+end;
+
+function script_GetItemQuantity(ALua : TLua) : Integer;
+var
+	AChara : TCharacter;
+	ItemID	: Word;
+begin
+	Result := 0;
+	//check number of parameters
+	if lua_gettop(ALua) = 1 then
+	begin
+		//check to make sure it was a character who executed this script
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+
+			ItemID := 0;
+			//type check first parameter to see if we're dealing with an item id or name
+			if lua_isnumber(ALua, 1) then
+			begin
+				//if we're dealing with an id, we try to find the item.
+				if	TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Find(
+							lua_tointeger(ALua, 1)
+						) then
+				begin
+					ItemID := lua_tointeger(ALua, 1);
+				end;
+			//else, if we're dealing with a name, we try to find the id.
+			end else
+			begin
+				ItemID :=  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Find(lua_tostring(ALua, 1));
+			end;
+			//if an id was found, we check the second parameter
+			if ItemID > 0 then
+			begin
+					lua_pushinteger(ALua, AChara.Inventory.AmountOf(ItemId));
+			end else
+			begin
+				luaL_error(ALua,'script getitemquantity syntax error, item not found');
+			end;
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script getitemquantity syntax error, incorrect number of parameters');
+	end;
+end;
+
+function script_DropItem(ALua : TLua) : Integer;
+var
+	AChara : TCharacter;
+	ItemID	: Word;
+	Quantity : Word;
+begin
+	Result := 0;
+	//check number of parameters
+	if lua_gettop(ALua) = 2 then
+	begin
+		//check to make sure it was a character who executed this script
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+
+			ItemID := 0;
+			//type check first parameter to see if we're dealing with an item id or name
+			if lua_isnumber(ALua, 1) then
+			begin
+				//if we're dealing with an id, we try to find the item.
+				if	TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Find(
+							lua_tointeger(ALua, 1)
+						) then
+				begin
+					ItemID := lua_tointeger(ALua, 1);
+				end;
+			//else, if we're dealing with a name, we try to find the id.
+			end else
+			begin
+				ItemID :=  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Find(lua_tostring(ALua, 1));
+			end;
+			//if an id was found, we check the second parameter
+			if ItemID > 0 then
+			begin
+				//type check the second parameter, quantity
+				if lua_isnumber(ALua, 2) then
+				begin
+					Quantity := EnsureRange(lua_toInteger(ALua, 2), 1, High(Word));
+					//since we passed all checks, create the item instance and add it to the inventory.
+					AChara.Inventory.Remove(ItemID, Quantity);
+				end else
+				begin
+					luaL_error(ALua,'script dropitem syntax error, second parameter should be numeric');
+				end;
+			end else
+			begin
+				luaL_error(ALua,'script dropitem syntax error, item not found');
+			end;
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script dropitem syntax error, incorrect number of parameters');
+	end;
 end;
 
 //getgold(value)
