@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 577 -
+[2008/10/04] Aeomin - Possible temporary fix for attack animation not show to yourself.
+-
+
 - Rev 576 -
 [2008/10/04] Aeomin - Fixed a crash in "rare" situation when pickup item.
 -
