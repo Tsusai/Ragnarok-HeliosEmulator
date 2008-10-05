@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 576 -
+[2008/10/04] Aeomin - Fixed a crash in "rare" situation when pickup item.
+-
+
 - Rev 575 -
 [2008/10/04] Aeomin - Fixed delete item didn't remove from database.
 -

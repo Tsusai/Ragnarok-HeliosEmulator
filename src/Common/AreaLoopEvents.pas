@@ -436,7 +436,10 @@ procedure JobChange(
 begin
 	if (ACurrentObject is TCharacter) AND (AObject is TCharacter) then
 	begin
-		SendUpdatedLook(TCharacter(ACurrentObject), TCharacter(AObject).AccountId, LOOK_JOB, TCharacter(AObject).JID, 0);
+		if ACurrentObject = AObject then
+			SendUpdatedLook(TCharacter(ACurrentObject), TCharacter(AObject).AccountId, LOOK_JOB, TCharacter(AObject).JID, 0)
+		else
+			SendUpdatedLook(TCharacter(ACurrentObject), TCharacter(AObject).ID, LOOK_JOB, TCharacter(AObject).JID, 0)
 	end;
 end;{ShowDeath}
 //------------------------------------------------------------------------------

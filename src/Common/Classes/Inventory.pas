@@ -331,29 +331,6 @@ var
 		Amount := AnInventoryItem.Quantity;
 		OldInstance := AnInventoryItem;
 		Failed := Move(AnInventoryItem,New,False,True,True);
-		if New then
-		begin
-			AnInventoryItem.X := 0;
-			AnInventoryItem.Y := 0;
-			AnInventoryItem.MapID := 0;
-			TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
-				AnInventoryItem,
-				Self
-			);
-		end else
-		begin
-			TThreadLink(ClientInfo.Data).DatabaseLink.Items.Delete(
-				OldInstance.ID
-			);
-			OldInstance.Item.Free;
-			OldInstance.Free;
-			TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
-				AnInventoryItem,
-				Self
-			);
-		end;
-
-
 		if Failed > 0 then
 		begin
 			SendNewItemFailed(
@@ -362,6 +339,27 @@ var
 			);
 		end else
 		begin
+			if New then
+			begin
+				AnInventoryItem.X := 0;
+				AnInventoryItem.Y := 0;
+				AnInventoryItem.MapID := 0;
+				TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
+					AnInventoryItem,
+					Self
+				);
+			end else
+			begin
+				TThreadLink(ClientInfo.Data).DatabaseLink.Items.Delete(
+					OldInstance.ID
+				);
+				OldInstance.Item.Free;
+				OldInstance.Free;
+				TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
+					AnInventoryItem,
+					Self
+				);
+			end;
 			SendNewItem(
 				ClientInfo,
 				AnInventoryItem,
