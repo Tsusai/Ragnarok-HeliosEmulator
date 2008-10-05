@@ -508,7 +508,7 @@ begin
 		//Standing on unwalkable area?
 		Exit;
 	end;
-	TheItem := fItemList.IndexItems[Index-1];
+	TheItem := fItemList.IndexItems[Index];
 	if (TheItem <> nil)AND(Quantity>0)AND(TheItem.Quantity >= Quantity) then
 	begin
 		Position.X:= AChara.Position.X + (Random(3)-1);
@@ -823,14 +823,26 @@ begin
 			AChara := TClientLink(ClientInfo.Data).CharacterLink;
 			if AnItem.Identified then
 			begin
-				SendEquipItemResult(
-					AChara,
-					Index,
-					EquipLocationsToByte(
-						TEquipmentItem(AnItem.Item).EquipmentLocation
-					),
-					True
-				);
+				if (TEquipmentItem(AnItem).MinimumLevel <= AChara.BaseLV) then
+				begin
+					AnItem.Equipped := True;
+					SendEquipItemResult(
+						AChara,
+						Index,
+						EquipLocationsToByte(
+							TEquipmentItem(AnItem.Item).EquipmentLocation
+						),
+						True
+					);
+				end else
+				begin
+					SendEquipItemResult(
+						AChara,
+						0,
+						0,
+						False
+					);
+				end;
 			end else
 			begin
 				SendEquipItemResult(

@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 582 -
+[2008/10/05] Aeomin - ID in character.RightHand,LeftHand,Garmet ... ... now loaded
+       into equipment window [still packet playing].
+-
+
 - Rev 581 -
 [2008/10/05] Aeomin - Packet playing for equip item.
 -

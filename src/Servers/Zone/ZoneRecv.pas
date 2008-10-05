@@ -1773,7 +1773,10 @@ var
 begin
 	Index := BufferReadWord(ReadPts[0], InBuffer);
 	Quantity := BufferReadWord(ReadPts[1], InBuffer);
-	AChara.Inventory.Drop(Index,Quantity);
+	if Index > 0 then
+	begin
+		AChara.Inventory.Drop(Index,Quantity);
+	end;
 end;{DropItem}
 //------------------------------------------------------------------------------
 
@@ -1834,7 +1837,10 @@ begin
 	if AChara.CharaState in [charaStanding,charaWalking,charaAttacking] then
 	begin
 		Index := BufferReadWord(ReadPts[0], InBuffer);
-		AChara.Inventory.Equip(Index-1);
+		if Index > 0 then
+		begin
+			AChara.Inventory.Equip(Index-1);
+		end;
 	end;
 end;{ItemEquip}
 //------------------------------------------------------------------------------

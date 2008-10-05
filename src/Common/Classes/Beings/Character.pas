@@ -3051,7 +3051,7 @@ end;
 procedure TCharacter.LoadInventory;
 begin
 	TThreadLink(ClientInfo.Data).DatabaseLink.Items.FillInventory(
-		Inventory
+		Self
 	);
 end;{LoadInventory}
 //------------------------------------------------------------------------------

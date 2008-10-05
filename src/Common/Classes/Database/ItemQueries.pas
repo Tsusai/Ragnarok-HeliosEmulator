@@ -30,6 +30,7 @@ uses
 	ItemInstance,
 	QueryBase,
 	Map,
+	Character,
 	{3rd Party}
 	ZSqlUpdate
 	;
@@ -83,7 +84,7 @@ type
 		);
 
 		procedure FillInventory(
-			const AnInventory : TInventory
+			const AChara : TCharacter
 		);
 		procedure FillMapGround(
 			const Map:TMap
@@ -601,7 +602,7 @@ end;{Delete}
 //
 //------------------------------------------------------------------------------
 procedure TItemQueries.FillInventory(
-	const AnInventory : TInventory
+	const AChara : TCharacter
 );
 const
 	AQuery = 'SELECT `id`,`item_definition_id`,`amount`,`identified`,`refined`,`last_x`,`last_y`,`last_map_id` '+
@@ -611,27 +612,36 @@ var
 	ADataSet	: TZQuery;
 	AParam		: TParam;
 	AItem		: TItemInstance;
+	function IsEquipped(const ID : LongWord):Boolean;
+	begin
+		Result := (ID in [AChara.RightHand,AChara.LeftHand,AChara.Armor,AChara.Garment,
+			AChara.Shoes,AChara.Accessory1,AChara.Accessory2,AChara.HeadTop,
+			AChara.HeadMid,AChara.HeadBottom])
+	end;
 begin
 	ADataSet	:= TZQuery.Create(nil);
 	try
-		//UseID
-		AParam := ADataset.Params.CreateParam(ftInteger, 'UseID', ptInput);
-		AParam.AsInteger := AnInventory.UseID;
-		ADataSet.Params.AddParam(
-			AParam
-		);
-		//EquipID
-		AParam := ADataset.Params.CreateParam(ftInteger, 'EquipID', ptInput);
-		AParam.AsInteger := AnInventory.EquipID;
-		ADataSet.Params.AddParam(
-			AParam
-		);
-		//MiscID
-		AParam := ADataset.Params.CreateParam(ftInteger, 'MiscID', ptInput);
-		AParam.AsInteger := AnInventory.EtcID;
-		ADataSet.Params.AddParam(
-			AParam
-		);
+		with AChara.Inventory do
+		begin
+			//UseID
+			AParam := ADataset.Params.CreateParam(ftInteger, 'UseID', ptInput);
+			AParam.AsInteger := UseID;
+			ADataSet.Params.AddParam(
+				AParam
+			);
+			//EquipID
+			AParam := ADataset.Params.CreateParam(ftInteger, 'EquipID', ptInput);
+			AParam.AsInteger := EquipID;
+			ADataSet.Params.AddParam(
+				AParam
+			);
+			//MiscID
+			AParam := ADataset.Params.CreateParam(ftInteger, 'MiscID', ptInput);
+			AParam.AsInteger := EtcID;
+			ADataSet.Params.AddParam(
+				AParam
+			);
+		end;
 		Query(ADataSet, AQuery);
 		ADataSet.First;
 		while NOT ADataSet.Eof do
@@ -642,12 +652,13 @@ begin
 			AItem.Item.ID := ADataSet.Fields[1].AsInteger;
 			AItem.Quantity := ADataSet.Fields[2].AsInteger;
 			AItem.Identified := Boolean(ADataSet.Fields[3].AsInteger);
-			AItem.Refined := ADataSet.Fields[4].AsInteger;;
+			AItem.Refined := ADataSet.Fields[4].AsInteger;
+			AItem.Equipped := IsEquipped(AItem.ID);
 			AItem.X := ADataSet.Fields[5].AsInteger;
 			AItem.Y := ADataSet.Fields[6].AsInteger;
 			AItem.MapID := ADataSet.Fields[7].AsInteger;
 			Load(AItem.Item);
-			AnInventory.Add(
+			AChara.Inventory.Add(
 				AItem,
 				True
 			);

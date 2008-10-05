@@ -23,6 +23,7 @@ TItemInstance = Class(TGameObject)
 		Identified : Boolean;
 		Refined : Byte;
 		Broken : Boolean;
+		Equipped :Boolean;
 
 		X,Y : Word;
 		SubX,SubY : Byte;
