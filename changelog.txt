@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 579 -
+[2008/10/04] Aeomin - Fixed Attack animation.
+-
+
 - Rev 578 -
 [2008/10/04] Aeomin - Another attempt to fix attack animation.
 -

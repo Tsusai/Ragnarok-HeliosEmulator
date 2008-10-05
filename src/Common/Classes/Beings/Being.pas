@@ -846,12 +846,16 @@ var
 							ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
 							if ABeing is TCharacter then
 							begin
-								if (ID=Self.ID) then
-									DoAction(TCharacter(ABeing).ClientInfo, Self.ID, TargetID, AttackDelay DIV 2, 0, ACTION_ATTACK, EnsureRange(Damage, 0, High(Word)), 1, 0)
-								else
-								if (TargetID=Self.ID) then
-									DoAction(TCharacter(ABeing).ClientInfo, ID, Self.ID, AttackDelay DIV 2, 0, ACTION_ATTACK, EnsureRange(Damage, 0, High(Word)), 1, 0)
-								else
+								if Self is TCharacter then
+								begin
+									if (ID=Self.ID) then
+										DoAction(TCharacter(ABeing).ClientInfo, TCharacter(Self).AccountID, TargetID, AttackDelay DIV 2, 0, ACTION_ATTACK, EnsureRange(Damage, 0, High(Word)), 1, 0)
+									else
+									if (TargetID=Self.ID) then
+										DoAction(TCharacter(ABeing).ClientInfo, ID, TCharacter(Self).AccountID, AttackDelay DIV 2, 0, ACTION_ATTACK, EnsureRange(Damage, 0, High(Word)), 1, 0)
+									else
+										DoAction(TCharacter(ABeing).ClientInfo, ID, TargetID, AttackDelay DIV 2, 0, ACTION_ATTACK, EnsureRange(Damage, 0, High(Word)), 1, 0);
+								end else
 									DoAction(TCharacter(ABeing).ClientInfo, ID, TargetID, AttackDelay DIV 2, 0, ACTION_ATTACK, EnsureRange(Damage, 0, High(Word)), 1, 0);
 							end;
 						end;
