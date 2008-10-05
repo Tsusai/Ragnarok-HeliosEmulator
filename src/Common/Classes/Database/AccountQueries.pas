@@ -362,9 +362,9 @@ const
 const
 	AQuery =
 		'INSERT INTO accounts '+
-		'(name, password, gender) '+
+		'(name, password, gender, storage_id) '+
 		'VALUES'+
-		'(:Name , :Password, :Gender);';
+		'(:Name , :Password, :Gender, :StorageID);';
 var
 	ADataSet		: TZQuery;
 	AParam			: TParam;
@@ -386,6 +386,12 @@ begin
 	//Gender
 	AParam := ADataset.Params.CreateParam(ftString, 'Gender', ptInput);
 	AParam.AsString := AnAccount.Gender;
+	ADataSet.Params.AddParam(
+		AParam
+	);
+	//StorageID
+	AParam := ADataset.Params.CreateParam(ftInteger, 'StorageID', ptInput);
+	AParam.AsInteger := AnAccount.StorageID;
 	ADataSet.Params.AddParam(
 		AParam
 	);

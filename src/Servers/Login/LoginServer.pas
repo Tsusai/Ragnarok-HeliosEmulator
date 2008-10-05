@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//LoginServer			                                                        UNIT
+//LoginServer                                                               UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //      The Login Server Class.
@@ -409,36 +409,37 @@ end;{OnException}
 //		January 4th, 2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-	procedure TLoginServer.ParseMF(AClient : TIdContext; var Username : string; Password : string);
-	var
-		GenderStr  : string;
-		AnAccount	 : TAccount;
+procedure TLoginServer.ParseMF(AClient : TIdContext; var Username : string; Password : string);
+var
+	GenderStr	: string;
+	AnAccount	: TAccount;
+begin
+	GenderStr := Uppercase(RightStr(Username,2)); {get _M or _F and cap it}
+	if (GenderStr = '_M') or
+	(GenderStr = '_F') then
 	begin
-		GenderStr := Uppercase(RightStr(Username,2)); {get _M or _F and cap it}
-		if (GenderStr = '_M') or
-		(GenderStr = '_F') then
-		begin
-			//Trim the MF off because people forget to take it off.
-			Username := LeftStr(Username,Length(Username)-2);
+		//Trim the MF off because people forget to take it off.
+		Username := LeftStr(Username,Length(Username)-2);
 
-			AnAccount := TAccount.Create(AClient);
-			try
-				AnAccount.Name			:= UserName;
-				AnAccount.Password	:= Password;
-				AnAccount.Gender		:= GenderStr[2];
-				//Check to see if the account already exists.
-				if NOT TLoginThreadLink(AClient.Data).DatabaseLink.Account.Exists(AnAccount) then
-				begin
-					//Create the account.
-					TLoginThreadLink(AClient.Data).DatabaseLink.Account.New(
-						AnAccount
-					);
-				end;
-      finally
-				AnAccount.Free;
+		AnAccount := TAccount.Create(AClient);
+		try
+			AnAccount.Name		:= UserName;
+			AnAccount.Password	:= Password;
+			AnAccount.Gender	:= GenderStr[2];
+			//Check to see if the account already exists.
+			if NOT TLoginThreadLink(AClient.Data).DatabaseLink.Account.Exists(AnAccount) then
+			begin
+				AnAccount.StorageID := TLoginThreadLink(AClient.Data).DatabaseLink.Character.CreateStorage;
+				//Create the account.
+				TLoginThreadLink(AClient.Data).DatabaseLink.Account.New(
+					AnAccount
+				);
 			end;
+		finally
+			AnAccount.Free;
 		end;
-	end;{ParseMF}
+	end;
+end;{ParseMF}
 //----------------------------------------------------------------------------
 
 

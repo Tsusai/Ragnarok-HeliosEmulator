@@ -89,6 +89,7 @@ type
 
 		function GenerateStorageID:LongWord;
 		function CreateInventory:LongWord;
+		function CreateStorage:LongWord;
 	end;
 //------------------------------------------------------------------------------
 
@@ -1169,5 +1170,45 @@ begin
 		ADataSet.Free;
 	end;
 end;{CreateInventory}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CreateStorage                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Create a storage record
+//
+//	Changes -
+//		[2008/10/04] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function TCharacterQueries.CreateStorage:LongWord;
+const
+	AQuery = 'INSERT INTO `itemstorage` (`items_id`) VALUES '+
+		'(:StorageID)';
+var
+	ID		: LongWord;
+	ADataSet	: TZQuery;
+	AParam		: TParam;
+begin
+	ID := GenerateStorageID;
+	ADataSet	:= TZQuery.Create(nil);
+	//StorageID
+	AParam := ADataset.Params.CreateParam(ftInteger, 'StorageID', ptInput);
+	AParam.AsInteger := ID;
+	ADataSet.Params.AddParam(
+		AParam
+	);
+	try
+		QueryNoResult(ADataSet, AQuery);
+		Result := LastID(
+			'`id`',
+			'`itemstorage`'
+			);
+	finally
+		ADataSet.Free;
+	end;
+end;{CreateStorage}
 //------------------------------------------------------------------------------
 end.

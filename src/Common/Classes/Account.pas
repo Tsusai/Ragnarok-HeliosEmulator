@@ -31,7 +31,7 @@ uses
 		//Unicode
 		Name        		: string[24];
 		Password        : string[32];
-    Passkey         : string[6];
+		Passkey         : string[6];
 		EMail           : string[24];
 		GenderNum       : Byte; //0 or 1 for packet (F/M respectively)
 		BannedUntil     : TDateTime;
@@ -41,6 +41,7 @@ uses
 		LoginCount      : Integer;
 		LastLoginTime   : TDateTime;
 		Level           : Byte;
+		StorageID	: LongWord;
 		ConnectUntil    : TDateTime;
 		State           : Byte;
 
