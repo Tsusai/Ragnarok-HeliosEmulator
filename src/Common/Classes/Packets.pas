@@ -502,10 +502,10 @@ Begin
 				end else if Command = 'dropitem' then begin
 					ExecCommand := DropItem;
 				{end else if Command = 'useitem' then begin
-					ExecCommand := ItemUse;
+					ExecCommand := ItemUse;}
 				end else if Command = 'equipitem' then begin
 					ExecCommand := ItemEquip;
-				end else if Command = 'unequipitem' then begin
+				{end else if Command = 'unequipitem' then begin
 					ExecCommand := ItemUnequip;}
 				end else if Command = 'restart' then begin
 					ExecCommand := ReturnToCharacterSelect;

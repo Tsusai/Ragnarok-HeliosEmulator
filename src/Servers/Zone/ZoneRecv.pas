@@ -248,6 +248,12 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+	
+	procedure ItemEquip(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -1800,6 +1806,37 @@ begin
 		AChara.Inventory.Pickup(ID);
 	end;
 end;{TakeItem}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ItemEquip                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Equip item
+//--
+//	Pre:
+//		TODO
+//	Post:
+//		TODO
+//--
+//  Changes -
+//		[2008/10/05] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ItemEquip(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	Index:Word;
+begin
+	if AChara.CharaState in [charaStanding,charaWalking,charaAttacking] then
+	begin
+		Index := BufferReadWord(ReadPts[0], InBuffer);
+		AChara.Inventory.Equip(Index-1);
+	end;
+end;{ItemEquip}
 //------------------------------------------------------------------------------
 
 

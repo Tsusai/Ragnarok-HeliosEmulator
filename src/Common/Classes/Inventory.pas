@@ -108,6 +108,8 @@ public
 	function GetInstance(const ID:LongWord;var AnInsctance:TItemInstance):Boolean;
 	function AmountOf(const ID:LongWord):LongWord;overload;
 	function AmountOf(const Name:String):LongWord;overload;
+	procedure Equip(const Index:Word);
+	{procedure Use(const Index:Word);}
 	constructor Create(Parent : TObject);
 	destructor Destroy;override;
 end;(* TInventory
@@ -128,6 +130,7 @@ uses
 	MiscItem,
 	Main,
 	ErrorConstants,
+	ItemTypes,
 	ParameterList,
 	AreaLoopEvents
 	;
@@ -795,5 +798,50 @@ begin
 		Result := AmountOf(ID);
 	end;
 end;{AmountOf}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Equip                                                                 FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//		Attempt to equip an equipment
+//
+//	Changes -
+//		[2008/10/05] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure TInventory.Equip(const Index:Word);
+var
+	AnItem : TItemInstance;
+	AChara : TCharacter;
+begin
+	AnItem := fItemList.IndexItems[Index];
+	if AnItem <> nil then
+	begin
+		if AnItem.Item is TEquipmentItem then
+		begin
+			AChara := TClientLink(ClientInfo.Data).CharacterLink;
+			if AnItem.Identified then
+			begin
+				SendEquipItemResult(
+					AChara,
+					Index,
+					EquipLocationsToByte(
+						TEquipmentItem(AnItem.Item).EquipmentLocation
+					),
+					True
+				);
+			end else
+			begin
+				SendEquipItemResult(
+					AChara,
+					0,
+					0,
+					False
+				);
+			end;
+		end;
+	end;
+end;{Equip}
 //------------------------------------------------------------------------------
 end{Inventory}.

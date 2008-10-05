@@ -285,6 +285,13 @@ uses
 		const CharID : LongWord;
 		const ItemID : LongWord
 	);
+
+	procedure SendEquipItemResult(
+		const AChara : TCharacter;
+		const Index : Word;
+		const Location:Word;
+		const Success:Boolean
+	);
 implementation
 
 
@@ -2156,4 +2163,37 @@ begin
 	);
 end;{SendPickUpItemAnimation}
 //------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendEquipItemResult                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Tell client to move an item from inventory to equipment window.
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/10/05] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendEquipItemResult(
+	const AChara : TCharacter;
+	const Index : Word;
+	const Location:Word;
+	const Success:Boolean
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00aa, OutBuffer);
+	WriteBufferWord(2, Index+1, OutBuffer);
+	WriteBufferWord(4, Location, OutBuffer);
+	WriteBufferByte(6, Byte(Success), OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($00aa,AChara.ClientVersion));
+end;{SendEquipItemResult}
+//------------------------------------------------------------------------------
+
 end{ZoneSend}.

@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 581 -
+[2008/10/05] Aeomin - Packet playing for equip item.
+-
+
 - Rev 580 -
 [2008/10/04] Aeomin - Added generate storage ID in M/F registration.
 -
