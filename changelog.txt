@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 583 -
+[2008/10/05] Aeomin - Fixed max stats cap not working.
+-
+
 - Rev 582 -
 [2008/10/05] Aeomin - ID in character.RightHand,LeftHand,Garmet ... ... now loaded
        into equipment window [still packet playing].

@@ -1364,8 +1364,14 @@ begin
 			begin
 				if OldAmount < CHAR_STAT_MAX then
 				begin
-					AChara.StatusPts := AChara.StatusPts - AChara.ParamUp[LocalType];
-					AChara.ParamBase[LocalType] := AChara.ParamBase[LocalType] + 1;
+					if AChara.ParamBase[LocalType] < MainProc.ZoneServer.Options.MaxCharacterStats then
+					begin
+						AChara.StatusPts := AChara.StatusPts - AChara.ParamUp[LocalType];
+						AChara.ParamBase[LocalType] := AChara.ParamBase[LocalType] + 1;
+					end else
+					begin
+						Break;
+					end;
 				end else
 				begin
 					//Too much already!
