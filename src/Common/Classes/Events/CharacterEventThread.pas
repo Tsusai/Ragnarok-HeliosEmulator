@@ -126,7 +126,7 @@ begin
 				AnEventList := CharacterList[CharacterIndex].EventList.LockList;
 				try
 					//Loop through each character's eventlist.
-					for EventIndex := 0 to AnEventList.Count - 1 do
+					for EventIndex := (AnEventList.Count - 1) downto 0 do
 					begin
 						AnEvent := AnEventList[EventIndex];
 						//Check to see if the event needs to be fired.

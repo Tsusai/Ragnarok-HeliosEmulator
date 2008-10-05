@@ -20,17 +20,10 @@ uses
 	Event;
 
 type
-	PEvent = ^TRootEvent;
-
 //------------------------------------------------------------------------------
 //TEventList                                                          CLASS
 //------------------------------------------------------------------------------
 	TEventList = Class(TThreadList)
-
-	Private
-
-		OwnsEvents : Boolean;//If we own the Events, we handle free'ing them.
-
 	Public
 		Constructor Create(OwnsEvents : Boolean);
 		Destructor Destroy; override;
@@ -57,11 +50,9 @@ uses
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-constructor TEventList.Create(OwnsEvents : Boolean);
+constructor TEventList.Create;
 begin
 	inherited Create;
-	Duplicates := dupAccept;
-	self.OwnsEvents := OwnsEvents;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -80,17 +71,14 @@ var
 	Index : Integer;
 	AList : TList;
 begin
-	//if we own the Events, free all of them in the list.
-	if OwnsEvents then
+
+	AList := LockList;
+	for Index := (AList.Count-1) downto 0 do
 	begin
-		AList := LockList;
-		for Index := 0 to AList.Count-1 do
-		begin
-			TObject(AList.Items[Index]).Free;
-//			AList.Delete(Index);
-		end;
-		UnlockList;
+		TObject(AList.Items[Index]).Free;
+		AList.Delete(Index);
 	end;
+	UnlockList;
 
 	inherited;
 end;{Destroy}
@@ -129,7 +117,7 @@ var
 begin
 	AList := LockList;
 	try
-		for Index := 0 to AList.Count - 1 do
+		for Index := (AList.Count - 1) downto 0 do
 		begin
 			if TObject(AList.Items[Index]) IS TMovementEvent then
 			begin
@@ -160,7 +148,7 @@ var
 begin
 	AList := LockList;
 	try
-		for Index := 0 to AList.Count - 1 do
+		for Index := (AList.Count - 1) downto 0 do
 		begin
 			if TObject(AList.Items[Index]) IS TAttackEvent then
 			begin

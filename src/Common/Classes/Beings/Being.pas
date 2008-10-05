@@ -299,6 +299,7 @@ uses
 	{RTL/VCL}
 	Math,
 	WinLinux,
+	SyncObjs,
 	{Project}
 	AreaLoopEvents,
 	Character,
@@ -806,6 +807,8 @@ var
 	Damage : LongWord;
 	AMoveDelay : LongWord;
 	AnAttackDelay : LongWord;
+	CriticalSection : TCriticalSection;
+	Found : Boolean;
 
 	//check to see if a target is in range
 	Function GetTargetIfInRange(ID : LongWord; Distance : Word) : TBeing;
@@ -866,6 +869,8 @@ var
 	end;
 
 begin
+	Found := false;
+	CriticalSection := TCriticalSection.Create;
 		ATarget := GetTargetIfInRange(ATargetID, 1);
 		if Assigned(ATarget) then
 		begin
@@ -915,6 +920,7 @@ begin
 								ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
 								if ABeing.ID = ATargetID then
 								begin
+									CriticalSection.Enter;
 									EventList.DeleteMovementEvents;
 									TargetID := ATargetID;
 									ATarget := ABeing;
@@ -949,17 +955,22 @@ begin
 											TAttackEvent.Create(AnAttackDelay, self, ATarget, FALSE)
 										);
 									end;
-									Exit;
+									CriticalSection.Leave;
+									break;
 								end;
 							end;
 						end;
 					end;
+					if(Found) then
+						break;
 				end;
+				if(Found) then
+					break;
 			end;
 		end;
+		CriticalSection.Free;
 end;
 //------------------------------------------------------------------------------
-
 
 //------------------------------------------------------------------------------
 //ShowEffect                                                           PROCEDURE
