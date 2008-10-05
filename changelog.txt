@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 578 -
+[2008/10/04] Aeomin - Another attempt to fix attack animation.
+-
+
 - Rev 577 -
 [2008/10/04] Aeomin - Possible temporary fix for attack animation not show to yourself.
 -
