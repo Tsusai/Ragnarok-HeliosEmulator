@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 585 -
+[2008/10/05] RaX - Fixed character's being able to click multiple times to
+ attack multiple times when they should have only attacked once.
+-
+
 - Rev 584 -
 [2008/10/05] RaX - Fixed event thread crash related to attacking and walking.
  We were not using a critical section in the attack code where we should have been.

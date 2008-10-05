@@ -997,7 +997,8 @@ begin
 
 		0 ://Hit target one time
 			begin
-				//Temporary
+				AChara.EventList.DeleteAttackEvents;
+				AChara.EventList.DeleteMovementEvents;
 				AChara.CharaState := charaAttacking;
 				AChara.Attack(TargetID, FALSE, FALSE);
 			end;
@@ -1015,6 +1016,8 @@ begin
 
 		7 : //Hit target continuously
 			begin
+				AChara.EventList.DeleteAttackEvents;
+				AChara.EventList.DeleteMovementEvents;
 				AChara.CharaState := charaAttacking;
 				AChara.Attack(TargetID, TRUE, FALSE);
 			end;
