@@ -307,6 +307,7 @@ uses
 	Classes,
 	SysUtils,
 	Types,
+	SyncObjs,
 	{Project}
 	Account,
 	Being,
@@ -1811,12 +1812,21 @@ procedure TakeItem(
 );
 var
 	ID : LongWord;
+	CriticalSection : TCriticalSection;
 begin
+	CriticalSection := TCriticalSection.Create;
+	CriticalSection.Enter;
+	try
 	if AChara.CharaState in [charaStanding,charaWalking,charaAttacking] then
 	begin
 		ID := BufferReadLongWord(ReadPts[0], InBuffer);
 		AChara.Inventory.Pickup(ID);
 	end;
+	finally
+		CriticalSection.Leave;
+		CriticalSection.Free;
+	end;
+
 end;{TakeItem}
 //------------------------------------------------------------------------------
 
