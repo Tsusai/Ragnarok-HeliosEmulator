@@ -509,6 +509,9 @@ begin
 		Exit;
 	end;
 	TheItem := fItemList.IndexItems[Index];
+	{You can't drop if equipment were equipped!}
+	if TheItem.Equipped then
+		Exit;
 	if (TheItem <> nil)AND(Quantity>0)AND(TheItem.Quantity >= Quantity) then
 	begin
 		Position.X:= AChara.Position.X + (Random(3)-1);
@@ -736,7 +739,8 @@ begin
 		for Index := 0 to fItemList.Count - 1 do
 		begin
 			Instance := fItemList[Index] as TItemInstance;
-			if Instance.Item.ID = ID then
+			{Equipped items doesn't count!}
+			if (Instance.Item.ID = ID) AND (NOT Instance.Equipped) then
 			begin
 				AnInsctance := Instance;
 				Result := True;
@@ -768,7 +772,7 @@ begin
 		for Index := 0 to fItemList.Count - 1 do
 		begin
 			Instance := fItemList[Index] as TItemInstance;
-			if Instance.Item.ID = ID then
+			if (Instance.Item.ID = ID)AND (NOT Instance.Equipped) then
 			begin
 				Result := EnsureRange(Result + Instance.Quantity,0,High(LongWord));
 			end;

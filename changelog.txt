@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 589 -
+[2008/10/08] Aeomin - Added checks in Inventory to prevent drop equipped item.
+-
+
 - Rev 588 -
 [2008/10/08] Aeomin - Construct basic functions in Equipment.pas
 -
