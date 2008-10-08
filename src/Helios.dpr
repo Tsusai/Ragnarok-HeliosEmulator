@@ -119,16 +119,19 @@ compile for linux, at the same time*}
 	Being in 'Common\Classes\Beings\Being.pas',
 	Map in 'Common\Classes\Map.pas',
 	NPC in 'Common\Classes\Beings\NPC.pas',
+	Mob in 'Common\Classes\Beings\Mob.pas',
+	Mailbox in 'Common\Classes\Mailbox.pas',
+	Packets in 'Common\Classes\Packets.pas',
+	GameObject in 'Common\Classes\GameObject.pas',
+
+	//Items
 	Item in 'Common\Classes\Items\Item.pas',
 	EquipmentItem in 'Common\Classes\Items\EquipmentItem.pas',
 	UseableItem in 'Common\Classes\Items\UseableItem.pas',
 	MiscItem in 'Common\Classes\Items\MiscItem.pas',
 	Inventory in 'Common\Classes\Inventory.pas',
 	ItemInstance in 'Common\Classes\Items\ItemInstance.pas',
-	Mob in 'Common\Classes\Beings\Mob.pas',
-	Mailbox in 'Common\Classes\Mailbox.pas',
-	Packets in 'Common\Classes\Packets.pas',
-	GameObject in 'Common\Classes\GameObject.pas',
+	Equipment in 'Common\Classes\Items\Equipment.pas',
 
 	//Lua
 	LuaPas in 'Common\ThirdParty\LuaPas.pas',
@@ -250,16 +253,19 @@ compile for linux, at the same time*}
 	Being in 'Common/Classes/Beings/Being.pas',
 	Map in 'Common/Classes/Map.pas',
 	NPC in 'Common/Classes/Beings/NPC.pas',
+	Mob in 'Common/Classes/Beings/Mob.pas',
+	Mailbox in 'Common/Classes/Mailbox.pas',
+	Packets in 'Common/Classes/Packets.pas',
+	GameObject in 'Common/Classes/GameObject.pas',
+
+	//Items
 	Item in 'Common/Classes/Items/Item.pas',
 	EquipmentItem in 'Common/Classes/Items/EquipmentItem.pas',
 	UseableItem in 'Common/Classes/Items/UseableItem.pas',
 	MiscItem in 'Common/Classes/Items/MiscItem.pas',
 	Inventory in 'Common/Classes/Inventory.pas',
 	ItemInstance in 'Common/Classes/Items/ItemInstance.pas',
-	Mob in 'Common/Classes/Beings/Mob.pas',
-	Mailbox in 'Common/Classes/Mailbox.pas',
-	Packets in 'Common/Classes/Packets.pas',
-	GameObject in 'Common/Classes/GameObject.pas',
+	Equipment in 'Common/Classes/Items/Equipment.pas',
 
 	//Lua
 	LuaPas in 'Common/ThirdParty/LuaPas.pas',

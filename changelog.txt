@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 587 -
+[2008/10/08] Aeomin - Added Equipment.pas to prepare equipment.
+-
+
 - Rev 586 -
 [2008/10/05] RaX - Made Item Pickup threadsafe. Added critical section in zonerecv.takeitem
 -
