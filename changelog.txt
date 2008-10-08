@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 588 -
+[2008/10/08] Aeomin - Construct basic functions in Equipment.pas
+-
+
 - Rev 587 -
 [2008/10/08] Aeomin - Added Equipment.pas to prepare equipment.
 -
