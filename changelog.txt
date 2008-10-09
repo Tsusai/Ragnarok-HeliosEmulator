@@ -15,7 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
-- Rev 590 -
+- Rev 592 -
+[2008/10/09] Spre - Fixed TempOraryBan Typo in Loginserver.pas and account.pas ..FIXED changelg entry for raxie!
+-
+
+- Rev 591 -
 [2008/10/09] RaX - Cleaned up attacking even more! Added comments, separated out
  a new routine called GetTargetIfInRange, moved it into TBeing out of being an inline
  function.

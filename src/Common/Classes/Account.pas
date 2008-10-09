@@ -55,7 +55,7 @@ uses
 
 		procedure SetBannedTime(TimeString : string);
 		procedure SetConnectUntilTime(TimeString : string);
-		procedure TemperaryBan(Seconds:Integer);
+		procedure TemporaryBan(Seconds:Integer);
 		function GetBanUntilTimeString:String;
 		Constructor Create(AClient : TIdContext);
 	end;{TAccount}
@@ -142,7 +142,7 @@ end;{SetBannedTime}
 //		April 10th, 2007 - Aeomin - Created Header
 //
 //------------------------------------------------------------------------------
-procedure TAccount.TemperaryBan(Seconds:Integer);
+procedure TAccount.TemporaryBan(Seconds:Integer);
 begin
 	Self.BannedUntil := UnixToDateTime(DateTimeToUnix(Now) + Seconds);
 	TThreadLink(ClientInfo.Data).DatabaseLink.Account.Save(self);

@@ -112,7 +112,7 @@ const
 	LOGIN_TIMEUP          = 2;
 	LOGIN_REJECTED        = 3;
 	LOGIN_BANNED          = 4;
-	LOGIN_TEMPERARYBAN    = 6;
+	LOGIN_TEMPORARYBAN    = 6;
 	//LOGIN_SERVERFULL =  ;
 
 //------------------------------------------------------------------------------
@@ -557,7 +557,7 @@ end;{ParseMF}
 							end;
 						end else
 						begin
-							SendLoginError(AClient, LOGIN_TEMPERARYBAN, AnAccount.GetBanUntilTimeString);
+							SendLoginError(AClient, LOGIN_TEMPORARYBAN, AnAccount.GetBanUntilTimeString);
 						end;
 					end else
 					begin
