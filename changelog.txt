@@ -16,6 +16,12 @@ Developers & Contributers
 --------------------------------------------------------------------------------
 
 - Rev 590 -
+[2008/10/09] RaX - Cleaned up attacking even more! Added comments, separated out
+ a new routine called GetTargetIfInRange, moved it into TBeing out of being an inline
+ function.
+-
+
+- Rev 590 -
 [2008/10/08] RaX - Cleaned up attacking, made it use arealoop.
 -
 

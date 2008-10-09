@@ -267,7 +267,11 @@ public
 			AIgnoreCurrentBeing : Boolean = True;
 			AParameter          : TParameterList = nil
 		);
-
+	Function GetTargetIfInRange(
+		const ID						: LongWord;
+		const Distance			: Word;
+		var TargetBeing			: TBeing
+	) : Boolean;
 	Function GetPath(
 			const
 				StartPoint : TPoint;
@@ -788,6 +792,43 @@ end;{UpdateDirection}
 
 
 //------------------------------------------------------------------------------
+//GetTargetIfInRange                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//  What it does -
+// 	Attempts to return the selected tbeing by id in range of this being.
+//
+//  Changes -
+//	March 20th, 2007 - RaX - Moved out of Attack as an inline function
+//------------------------------------------------------------------------------
+Function TBeing.GetTargetIfInRange(
+	const ID						: LongWord;
+	const Distance			: Word;
+	var TargetBeing			: TBeing
+) : Boolean;
+var
+	idxX, idxY, BeingIdx : Integer;
+begin
+	Result := FALSE;
+	for idxY := Max(0,Position.Y-Distance) to Min(Position.Y+Distance, MapInfo.Size.Y-1) do
+	begin
+		for idxX := Max(0,Position.X-Distance) to Min(Position.X+Distance, MapInfo.Size.X-1) do
+		begin
+			for BeingIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
+			begin
+				if TBeing(MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx]).ID = ID then
+				begin
+					Result			:= TRUE;
+					TargetBeing	:= TBeing(MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx]);
+					Exit;
+				end;
+			end;
+		end;
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //Attack                                                               PROCEDURE
 //------------------------------------------------------------------------------
 //  What it does -
@@ -796,51 +837,38 @@ end;{UpdateDirection}
 //  Changes -
 //	December 26th, 2007 - RaX - Created Header
 //------------------------------------------------------------------------------
-procedure TBeing.Attack(ATargetID : LongWord; AttackContinuous : Boolean; JustAttacked : Boolean);
+procedure TBeing.Attack(
+	ATargetID					: LongWord;
+	AttackContinuous	: Boolean;
+	JustAttacked			: Boolean
+);
 var
-	idxY : integer;
-	idxX : integer;
-	BeingIdx : integer;
-	ABeing : TBeing;
-	ATarget : TBeing;
-	Pass : Boolean;
-	AMoveDelay : LongWord;
-	AnAttackDelay : LongWord;
-	CriticalSection : TCriticalSection;
-	Found : Boolean;
-	Parameters : TParameterList;
-
-	//check to see if a target is in range
-	Function GetTargetIfInRange(ID : LongWord; Distance : Word) : TBeing;
-	var
-		idxX, idxY, BeingIdx : Integer;
-	begin
-		Result := NIL;
-		for idxY := Max(0,Position.Y-Distance) to Min(Position.Y+Distance, MapInfo.Size.Y-1) do
-		begin
-			for idxX := Max(0,Position.X-Distance) to Min(Position.X+Distance, MapInfo.Size.X-1) do
-			begin
-				for BeingIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
-				begin
-					if TBeing(MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx]).ID = ATargetID then
-					begin
-						Result := TBeing(MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx]);
-						Exit;
-					end;
-				end;
-			end;
-		end;
-	end;
+	idxY							: integer;
+	idxX							: integer;
+	BeingIdx					: integer;
+	ABeing						: TBeing;
+	ATarget						: TBeing;
+	Pass							: Boolean;
+	AMoveDelay				: LongWord;
+	AnAttackDelay			: LongWord;
+	CriticalSection		: TCriticalSection;
+	Found							: Boolean;
+	Parameters				: TParameterList;
 
 begin
 	Found := false;
 	CriticalSection := TCriticalSection.Create;
-		ATarget := GetTargetIfInRange(ATargetID, 1);
-		if Assigned(ATarget) then
+	try
+		//Try to find the target if it's in range of us.
+		//Needs range implemented here in place of the 1
+		if GetTargetIfInRange(ATargetID, 1, ATarget) then
 		begin
+			//If we found the target, then we pass...but if we're looking at a character...
 			Pass := TRUE;
 			if ATarget is TCharacter then
 			begin
+				//We check to see if the character is either dead or playing dead, to see if
+				//they are able to be targetted.
 				if (TCharacter(ATarget).CharaState = charaDead) OR
 					 (TCharacter(ATarget).CharaState = charaPlayDead)then
 				begin
@@ -848,22 +876,25 @@ begin
 				end;
 			end;
 
+			//Clear movement events, we cannot move and attack at the same time.
 			EventList.DeleteMovementEvents;
 
 			if Pass = true then
 			begin
+				//Call calculate damage routine and apply damage here.
+				
 				//show character attack motion
-
 				Parameters := TParameterList.Create;
 				Parameters.AddAsLongWord(1, AttackDelay);
 				Parameters.AddAsLongWord(2, TargetID);
 				Parameters.AddAsLongWord(3, 0);//Damage, right hand
 				Parameters.AddAsLongWord(4, 0);//Damage, left hand
 				Parameters.AddAsLongWord(5, 1);//Number of divisions
-				Parameters.AddAsLongWord(6, self.ID);//Number of divisions
-				AreaLoop(ShowAttack, false, Parameters);
+				Parameters.AddAsLongWord(6, self.ID);//this being's ID
+				AreaLoop(ShowAttack, false, Parameters);//show the attack
 				Parameters.Free;
-			//if we're continually attacking then add an attack event
+
+			//if we're continually attacking then add a new attack event to replace this one
 				if AttackContinuous = true then
 				begin
 					EventList.Add(
@@ -939,7 +970,9 @@ begin
 					break;
 			end;
 		end;
+  finally
 		CriticalSection.Free;
+  end;
 end;
 //------------------------------------------------------------------------------
 
