@@ -108,6 +108,12 @@ uses
 		const AObject        : TGameObject;
 		const AParameters    : TParameterList = nil
 	);
+	procedure ShowAttack(
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : TParameterList = nil
+	);
+	
 implementation
 
 uses
@@ -530,4 +536,34 @@ begin
 	end;
 end;{RemoveGroundItem}
 //------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ShowAttack                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Shows a being attacking another being
+//
+//	Changes-
+//		[2008/10/03] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ShowAttack(
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : TParameterList = nil
+);
+begin
+	if (AObject is TCharacter) then
+	begin
+		if(AParameters.GetAsLongWord(6) = TBeing(AObject).ID) then
+    begin
+			DoAction(TCharacter(AObject).ClientInfo, TCharacter(ACurrentObject).AccountID, AParameters.GetAsLongWord(2), AParameters.GetAsLongWord(1) DIV 2, 0, ACTION_ATTACK, EnsureRange(AParameters.GetAsLongWord(3), 0, High(Word)), AParameters.GetAsLongWord(5), AParameters.GetAsLongWord(4));
+		end else
+		begin
+			DoAction(TCharacter(AObject).ClientInfo, TBeing(ACurrentObject).ID, AParameters.GetAsLongWord(2), AParameters.GetAsLongWord(1) DIV 2, 0, ACTION_ATTACK, EnsureRange(AParameters.GetAsLongWord(3), 0, High(Word)), AParameters.GetAsLongWord(5), AParameters.GetAsLongWord(4));
+		end;
+	end;
+end;{RemoveGroundItem}
+//------------------------------------------------------------------------------
+
 end.

@@ -804,11 +804,11 @@ var
 	ABeing : TBeing;
 	ATarget : TBeing;
 	Pass : Boolean;
-	Damage : LongWord;
 	AMoveDelay : LongWord;
 	AnAttackDelay : LongWord;
 	CriticalSection : TCriticalSection;
 	Found : Boolean;
+	Parameters : TParameterList;
 
 	//check to see if a target is in range
 	Function GetTargetIfInRange(ID : LongWord; Distance : Word) : TBeing;
@@ -826,42 +826,6 @@ var
 					begin
 						Result := TBeing(MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx]);
 						Exit;
-					end;
-				end;
-			end;
-		end;
-	end;
-  //show the attack motion and damage
-	Procedure ShowAttack(Damage : LongWord);
-	var
-		idxX, idxY, BeingIdx : Integer;
-	begin
-		for idxY := Max(0,Position.Y-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.Y+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.Y-1) do
-		begin
-			for idxX := Max(0,Position.X-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.X+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.X-1) do
-			begin
-				for BeingIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
-				begin
-					if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
-					begin
-						if MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] is TBeing then
-						begin
-							ABeing := MapInfo.Cell[idxX][idxY].Beings.Objects[BeingIdx] as TBeing;
-							if ABeing is TCharacter then
-							begin
-								if Self is TCharacter then
-								begin
-									if (ID=Self.ID) then
-										DoAction(TCharacter(ABeing).ClientInfo, TCharacter(Self).AccountID, TargetID, AttackDelay DIV 2, 0, ACTION_ATTACK, EnsureRange(Damage, 0, High(Word)), 1, 0)
-									else
-									if (TargetID=Self.ID) then
-										DoAction(TCharacter(ABeing).ClientInfo, ID, TCharacter(Self).AccountID, AttackDelay DIV 2, 0, ACTION_ATTACK, EnsureRange(Damage, 0, High(Word)), 1, 0)
-									else
-										DoAction(TCharacter(ABeing).ClientInfo, ID, TargetID, AttackDelay DIV 2, 0, ACTION_ATTACK, EnsureRange(Damage, 0, High(Word)), 1, 0);
-								end else
-									DoAction(TCharacter(ABeing).ClientInfo, ID, TargetID, AttackDelay DIV 2, 0, ACTION_ATTACK, EnsureRange(Damage, 0, High(Word)), 1, 0);
-							end;
-						end;
 					end;
 				end;
 			end;
@@ -889,9 +853,16 @@ begin
 			if Pass = true then
 			begin
 				//show character attack motion
-				Damage := 0;
-				ShowAttack(Damage);
 
+				Parameters := TParameterList.Create;
+				Parameters.AddAsLongWord(1, AttackDelay);
+				Parameters.AddAsLongWord(2, TargetID);
+				Parameters.AddAsLongWord(3, 0);//Damage, right hand
+				Parameters.AddAsLongWord(4, 0);//Damage, left hand
+				Parameters.AddAsLongWord(5, 1);//Number of divisions
+				Parameters.AddAsLongWord(6, self.ID);//Number of divisions
+				AreaLoop(ShowAttack, false, Parameters);
+				Parameters.Free;
 			//if we're continually attacking then add an attack event
 				if AttackContinuous = true then
 				begin
