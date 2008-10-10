@@ -286,7 +286,20 @@ procedure Effect(
 begin
 	if AObject is TCharacter then
 	begin
-		SendSpecialEffect(Tbeing(ACurrentObject), TCharacter(AObject).ClientInfo, AParameters.GetAsLongWord(1));
+		if AObject = ACurrentObject then
+			SendSpecialEffect(
+				Tbeing(AObject),
+				TCharacter(ACurrentObject).ClientInfo,
+				TCharacter(ACurrentObject).AccountID,
+				AParameters.GetAsLongWord(1)
+			)
+		else
+			SendSpecialEffect(
+				Tbeing(AObject),
+				TCharacter(ACurrentObject).ClientInfo,
+				TCharacter(ACurrentObject).ID,
+				AParameters.GetAsLongWord(1)
+			);
 	end;
 end;{Effect}
 //------------------------------------------------------------------------------

@@ -15,8 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 595 -
+[2008/10/10] Aeomin - Fixed #effect
+-
+
 - Rev 594 -
-[2008/10/09] Spre - Slight Fix to GMBan, Removed nonneeded Arguement check.
+(Someone forgot it)
 -
 
 - Rev 593 -
