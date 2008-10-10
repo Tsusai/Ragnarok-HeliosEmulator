@@ -147,8 +147,9 @@ protected
 	//fUnEquipAll				: Byte; 	// Unequips all gears [Spre]  Will be written when items are done
 	//fUpdateOption			:	Byte;  //	Removed options from character.
 	fCharaState       : TCharaState;
-  //Reset Look to Zero GM Command. [Spre]
-	fResetLook				:	Integer;
+	//Reset Look to Zero GM Command. [Spre]
+	fResetLook        : Integer;
+	fPermanantBan     : String;
 
 	procedure SetSaveTime(Value : Boolean);
 	procedure SetCharaState(Value : TCharaState);
@@ -211,7 +212,7 @@ protected
 	procedure SetWeight(Value : LongWord);
 	procedure SetMaxWeight(Value : LongWord);
 	procedure SetResetLook(Value		:	Integer);
-
+	procedure SetPermanantBan(Value : String);
 
 	procedure SetBabyID(
 		const Value : LongWord
@@ -357,6 +358,7 @@ public
 	// property UnEquipAll			:	Byte		read	fUnEquipAll	write SetUnEquipAll;
 	// property UpdateOption		:	Byte		read	fUpdateOption	write	SetUpdateOption;
 	property ResetLook	 : Integer		read	fResetLook	write	SetResetLook;
+	property PermanantBan    : String    read  fPermanantBan write SetPermanantBan;
 	end;{TCharacter}
 
 
@@ -3032,6 +3034,14 @@ begin
 	end;
 end;
 
+//Permanant Ban
+procedure TCharacter.SetPermanantBan(Value : String);
+begin
+	if ZoneStatus = isOnline then
+	begin
+		PermanantBan := Value
+        end;
+end;{PermanantBan}
 
 //------------------------------------------------------------------------------
 //LoadInventory                                                        PROCEDURE

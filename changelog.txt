@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 593 -
+[2008/10/09] Spre - Removed passKey code as requested by tsusai.
+[2008/10/09] Spre - Added Gm command BAN This bans and account permanantly, it is currently hardcoded into gmcommandsexe.pas but the
+groundwork for the design rax asked me to do is still there and interferes with nothing, compiles fine, issue with it = Weird ban times.
+-
+
 - Rev 592 -
 [2008/10/09] Spre - Fixed TempOraryBan Typo in Loginserver.pas and account.pas ..FIXED changelg entry for raxie!
 -

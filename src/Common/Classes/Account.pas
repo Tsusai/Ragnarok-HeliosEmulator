@@ -16,7 +16,8 @@ unit Account;
 
 interface
 uses
-	IdContext;
+	IdContext
+	;
 //------------------------------------------------------------------------------
 //TACCOUNT                                                                CLASS
 //------------------------------------------------------------------------------
@@ -31,7 +32,6 @@ uses
 		//Unicode
 		Name        		: string[24];
 		Password        : string[32];
-		Passkey         : string[6];
 		EMail           : string[24];
 		GenderNum       : Byte; //0 or 1 for packet (F/M respectively)
 		BannedUntil     : TDateTime;
@@ -56,6 +56,7 @@ uses
 		procedure SetBannedTime(TimeString : string);
 		procedure SetConnectUntilTime(TimeString : string);
 		procedure TemporaryBan(Seconds:Integer);
+		procedure PermanantBan(TimeString : string);
 		function GetBanUntilTimeString:String;
 		Constructor Create(AClient : TIdContext);
 	end;{TAccount}
@@ -148,6 +149,24 @@ begin
 	TThreadLink(ClientInfo.Data).DatabaseLink.Account.Save(self);
 end;{SetBannedTime}
 //------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetPermBan                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Set Permanent ban
+//
+//	Changes -
+//		October 9th, 2008 - Spre - Created
+//
+//------------------------------------------------------------------------------
+procedure TAccount.PermanantBan(TimeString : string);
+begin
+	TClientLink(ClientInfo.Data).AccountLink.SetBannedTime('9999-12-31 23:59:59');
+end;{SetPermBan}
+//------------------------------------------------------------------------------
+
 
 
 //------------------------------------------------------------------------------

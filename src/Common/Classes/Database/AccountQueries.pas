@@ -92,7 +92,7 @@ Procedure TAccountQueries.Load(
 
 const
 	AQuery =
-		'SELECT id, name, password, passkey, last_login, login_count, gender, email_address, '+
+		'SELECT id, name, password, last_login, login_count, gender, email_address, '+
 		'login_key_1, login_key_2, level, connect_until, banned_until, last_ip, state'+
 		' FROM accounts';
 
@@ -133,20 +133,19 @@ begin
 			AnAccount.ID						:= ADataSet.Fields[0].AsInteger;
 			AnAccount.Name					:= ADataSet.Fields[1].AsString;
 			AnAccount.Password			:= ADataSet.Fields[2].AsString;
-      AnAccount.Passkey       := ADataSet.Fields[3].AsString;
 			//Tsusai - For Gender, we need to return the first char, thats
 			//why there is a [1]
-			AnAccount.LastLoginTime := ADataSet.Fields[4].AsDateTime;
-			AnAccount.LoginCount		:= ADataSet.Fields[5].AsInteger;
-			AnAccount.Gender				:= (ADataSet.Fields[6].AsString)[1];
-			AnAccount.EMail					:= ADataSet.Fields[7].AsString;
-			AnAccount.LoginKey[1]		:= ADataSet.Fields[8].AsInteger;
-			AnAccount.LoginKey[2]		:= ADataSet.Fields[9].AsInteger;
-			AnAccount.Level					:= ADataSet.Fields[10].AsInteger;
-			AnAccount.ConnectUntil	:= ADataSet.Fields[11].AsDateTime;
-			AnAccount.BannedUntil		:= ADataSet.Fields[12].AsDateTime;
-			AnAccount.LastIP				:= ADataSet.Fields[13].AsString;
-			AnAccount.State					:= ADataSet.Fields[14].AsInteger;
+			AnAccount.LastLoginTime := ADataSet.Fields[3].AsDateTime;
+			AnAccount.LoginCount		:= ADataSet.Fields[4].AsInteger;
+			AnAccount.Gender				:= (ADataSet.Fields[5].AsString)[1];
+			AnAccount.EMail					:= ADataSet.Fields[6].AsString;
+			AnAccount.LoginKey[1]		:= ADataSet.Fields[7].AsInteger;
+			AnAccount.LoginKey[2]		:= ADataSet.Fields[8].AsInteger;
+			AnAccount.Level					:= ADataSet.Fields[9].AsInteger;
+			AnAccount.ConnectUntil	:= ADataSet.Fields[10].AsDateTime;
+			AnAccount.BannedUntil		:= ADataSet.Fields[11].AsDateTime;
+			AnAccount.LastIP				:= ADataSet.Fields[12].AsString;
+			AnAccount.State					:= ADataSet.Fields[13].AsInteger;
 		end;
 	finally
 		ADataSet.Free;

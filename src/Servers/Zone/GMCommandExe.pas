@@ -18,7 +18,8 @@ interface
 uses
 	Classes,
 	{Project}
-	Character
+	Character,
+	Account
 	;
 
 	{WARNING: FromChar is there for reference, you are NOT suppose to treat as controlling real character}
@@ -60,6 +61,7 @@ uses
 
 	procedure GMKick(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 	procedure GMKickAll(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+	procedure GMBan(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 
 	procedure GMEffect(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 	procedure GMWhere(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
@@ -1114,6 +1116,28 @@ procedure GMKickAll(const Arguments : array of String;const FromChar:TCharacter;
 begin
 	Kick(TargetChar);
 end;{GMKick}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//GMBan                                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		bans Specified User
+//
+//	Changes-
+//
+//------------------------------------------------------------------------------
+procedure GMBan(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		TClientLink(TargetChar.ClientInfo.Data).AccountLink.SetBannedTime('9999-12-31 23:59:59');
+		kick(TargetChar);
+		Error.Add('Player '''+TargetChar.Name+''' Banned.');
+	end else
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+end;{GMBan}
 //------------------------------------------------------------------------------
 
 
