@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 599 -
+[2008/10/10] Spre - #ban Fixed up the way it should be... NOTE RAX
+NO TEACHY WHILE SICKIE.
+-
+
 - Rev 598 -
 [2008/10/10] Aeomin - Fixed a mistaked caused item not drop or drop wrong one.
 -

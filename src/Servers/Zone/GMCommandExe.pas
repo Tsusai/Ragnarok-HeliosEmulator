@@ -1129,9 +1129,9 @@ end;{GMKick}
 //------------------------------------------------------------------------------
 procedure GMBan(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 begin
-	TClientLink(TargetChar.ClientInfo.Data).AccountLink.SetBannedTime('9999-12-31 23:59:59');
-	Kick(TargetChar);
-	Error.Add('Player '''+TargetChar.Name+''' Banned.');
+		TClientLink(TargetChar.ClientInfo.Data).AccountLink.PermanantBan();
+ 		kick(TargetChar);
+		Error.Add('Player '''+TargetChar.Name+''' Banned.');
 end;{GMBan}
 //------------------------------------------------------------------------------
 

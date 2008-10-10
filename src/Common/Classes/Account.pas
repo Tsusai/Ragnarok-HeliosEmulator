@@ -56,7 +56,7 @@ uses
 		procedure SetBannedTime(TimeString : string);
 		procedure SetConnectUntilTime(TimeString : string);
 		procedure TemporaryBan(Seconds:Integer);
-		procedure PermanantBan(TimeString : string);
+		procedure PermanantBan();
 		function GetBanUntilTimeString:String;
 		Constructor Create(AClient : TIdContext);
 	end;{TAccount}
@@ -161,9 +161,9 @@ end;{SetBannedTime}
 //		October 9th, 2008 - Spre - Created
 //
 //------------------------------------------------------------------------------
-procedure TAccount.PermanantBan(TimeString : string);
+procedure TAccount.PermanantBan();
 begin
-	TClientLink(ClientInfo.Data).AccountLink.SetBannedTime('9999-12-31 23:59:59');
+	SetBannedTime('9999-12-31 23:59:59');
 end;{SetPermBan}
 //------------------------------------------------------------------------------
 
