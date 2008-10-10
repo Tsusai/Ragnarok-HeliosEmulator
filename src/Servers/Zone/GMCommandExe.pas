@@ -1129,14 +1129,9 @@ end;{GMKick}
 //------------------------------------------------------------------------------
 procedure GMBan(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 begin
-	if (Length(Arguments) >= 2) then
-	begin
 		TClientLink(TargetChar.ClientInfo.Data).AccountLink.SetBannedTime('9999-12-31 23:59:59');
 		kick(TargetChar);
 		Error.Add('Player '''+TargetChar.Name+''' Banned.');
-	end else
-		Error.Add('Syntax Help:');
-		Error.Add(Arguments[Length(Arguments)-1]);
 end;{GMBan}
 //------------------------------------------------------------------------------
 

@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 594 -
+[2008/10/09] Spre - Slight Fix to GMBan, Removed nonneeded Arguement check.
+-
+
 - Rev 593 -
 [2008/10/09] Spre - Removed passKey code as requested by tsusai.
 [2008/10/09] Spre - Added Gm command BAN This bans and account permanantly, it is currently hardcoded into gmcommandsexe.pas but the
