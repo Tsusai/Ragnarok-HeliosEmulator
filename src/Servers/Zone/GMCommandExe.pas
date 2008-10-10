@@ -1129,9 +1129,9 @@ end;{GMKick}
 //------------------------------------------------------------------------------
 procedure GMBan(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 begin
-		TClientLink(TargetChar.ClientInfo.Data).AccountLink.SetBannedTime('9999-12-31 23:59:59');
-		kick(TargetChar);
-		Error.Add('Player '''+TargetChar.Name+''' Banned.');
+	TClientLink(TargetChar.ClientInfo.Data).AccountLink.SetBannedTime('9999-12-31 23:59:59');
+	Kick(TargetChar);
+	Error.Add('Player '''+TargetChar.Name+''' Banned.');
 end;{GMBan}
 //------------------------------------------------------------------------------
 
@@ -1190,7 +1190,7 @@ end;{GMWhere}
 //GMItem                                                               PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//		Get item (but doesn't save into database yet)
+//		Get item
 //
 //	Changes-
 //		[2008/10/20] Aeomin - Created.
@@ -1277,15 +1277,15 @@ end;{GMJob}
 //------------------------------------------------------------------------------
 procedure GMResetLook(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 begin
-	if (Length(Arguments)	>=2) then
+	if (Length(Arguments) >= 2) then
 	begin
-	TargetChar.ResetLook	:=	0;
-	Error.Add('Look reset successful!');
-	end	else
+		TargetChar.ResetLook := 0;
+		Error.Add('Look reset successful!');
+	end else
 	begin
 		Error.Add('Syntax Help:');
 		Error.Add(Arguments[Length(Arguments)-1]);
 	end;
 end;{GMResetLook}
-
+//------------------------------------------------------------------------------
 end{GMCommandExe}.

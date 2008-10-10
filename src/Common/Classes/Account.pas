@@ -242,57 +242,57 @@ begin
 	Dec(Years, 1970);
 	Dec(Months);
 	Dec(Days);
-	//Glue up between 2 time
+	//Glue up between 2 unit of time
 	Glue := ' ';
 	Result := '';
 		//Onlys shows Years, because months is 0
 		if (Years > 0) and (Months = 0) then
 		begin
-			Result := Result + InttoStr(Years) + ' ' + Plural(Years, 'Year');
+			Result := Result + InttoStr(Years) + ' ' + Plural(Years, 'year');
 		//Shows both years and months
 		end else if (Years > 0) and (Months > 0) then
 		begin
-			Result := Result + InttoStr(Years) + ' ' + Plural(Years, 'Year') + Glue + InttoStr(Months) + ' ' + Plural(Months, 'Month');
+			Result := Result + InttoStr(Years) + ' ' + Plural(Years, 'year') + Glue + InttoStr(Months) + ' ' + Plural(Months, 'month');
 		//Shows only months
 		end else if (Months > 0) and (Days = 0) then
 		begin
-			Result := Result + InttoStr(Months) + ' ' + Plural(Months, 'Month');
+			Result := Result + InttoStr(Months) + ' ' + Plural(Months, 'month');
 		//Shows months and days
 		end else if (Months > 0) and (Days > 0) then
 		begin
-			Result := Result + InttoStr(Months) + ' ' + Plural(Months, 'Month') + Glue + InttoStr(Days) + ' ' + Plural(Days, 'Day');
+			Result := Result + InttoStr(Months) + ' ' + Plural(Months, 'month') + Glue + InttoStr(Days) + ' ' + Plural(Days, 'day');
 		//Shows days only
 		end else if (Days > 0) and (Hours = 0) then
 		begin
-			Result := Result + InttoStr(Days) + ' ' + Plural(Days, 'Day');
+			Result := Result + InttoStr(Days) + ' ' + Plural(Days, 'day');
 		//Shows days and hours
 		end else if (Days > 0) and (Hours > 0) then
 		begin
-			Result := Result + InttoStr(Days) + ' ' + Plural(Days, 'Day') + Glue + InttoStr(Hours) + ' ' + Plural(Hours, 'Hour');
+			Result := Result + InttoStr(Days) + ' ' + Plural(Days, 'day') + Glue + InttoStr(Hours) + ' ' + Plural(Hours, 'hour');
 		//Shows hours online
 		end else if (Hours > 0) and (Minutes = 0) then
 		begin
-			Result := Result + InttoStr(Hours) + ' ' + Plural(Hours, 'Hour');
+			Result := Result + InttoStr(Hours) + ' ' + Plural(Hours, 'hour');
 		//Shows hours and minutes
 		end else if (Hours > 0) and (Minutes > 0) then
 		begin
-			Result := Result + InttoStr(Hours) + ' ' + Plural(Hours, 'Hour') + Glue + InttoStr(Minutes) + ' ' + Plural(Minutes, 'Minute');
+			Result := Result + InttoStr(Hours) + ' ' + Plural(Hours, 'hour') + Glue + InttoStr(Minutes) + ' ' + Plural(Minutes, 'minute');
 		//Shows only minutes
 		end else if (Minutes > 0) and (Seconds = 0) then
 		begin
-			Result := Result + InttoStr(Minutes) + ' ' + Plural(Minutes, 'Minute');
+			Result := Result + InttoStr(Minutes) + ' ' + Plural(Minutes, 'minute');
 		//Shows minutes and seconds
 		end else if (Minutes > 0) and (Seconds > 0) then
 		begin
-			Result := Result + InttoStr(Minutes) + ' ' + Plural(Minutes, 'Minute') + Glue + InttoStr(Seconds) + ' ' + Plural(Seconds, 'Second');
+			Result := Result + InttoStr(Minutes) + ' ' + Plural(Minutes, 'minute') + Glue + InttoStr(Seconds) + ' ' + Plural(Seconds, 'second');
 		//And.. only seconds left
 		end else if Seconds > 0 then
 		begin
-			Result := Result + InttoStr(Seconds) + ' ' + Plural(Seconds, 'Second');
+			Result := Result + InttoStr(Seconds) + ' ' + Plural(Seconds, 'second');
 		end;
 		//Not sure how this going to be trigger, but incase it does, just show 1 second...
 		if Result='' then
-			Result := '1 Second';
+			Result := '1 second';
 end;
 //------------------------------------------------------------------------------
 

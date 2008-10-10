@@ -582,7 +582,7 @@ begin
 	if (AObject is TCharacter) then
 	begin
 		if(AParameters.GetAsLongWord(6) = TBeing(AObject).ID) then
-    begin
+		begin
 			DoAction(TCharacter(AObject).ClientInfo, TCharacter(ACurrentObject).AccountID, AParameters.GetAsLongWord(2), AParameters.GetAsLongWord(1) DIV 2, 0, ACTION_ATTACK, EnsureRange(AParameters.GetAsLongWord(3), 0, High(Word)), AParameters.GetAsLongWord(5), AParameters.GetAsLongWord(4));
 		end else
 		begin

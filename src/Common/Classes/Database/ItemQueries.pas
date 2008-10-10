@@ -653,7 +653,7 @@ begin
 			AItem.Quantity := ADataSet.Fields[2].AsInteger;
 			AItem.Identified := Boolean(ADataSet.Fields[3].AsInteger);
 			AItem.Refined := ADataSet.Fields[4].AsInteger;
-			AItem.Equipped := IsEquipped(AItem.ID);
+//			AItem.Equipped := IsEquipped(AItem.ID);
 			AItem.X := ADataSet.Fields[5].AsInteger;
 			AItem.Y := ADataSet.Fields[6].AsInteger;
 			AItem.MapID := ADataSet.Fields[7].AsInteger;
