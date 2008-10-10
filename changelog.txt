@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 598 -
+[2008/10/10] Aeomin - Fixed a mistaked caused item not drop or drop wrong one.
+-
+
 - Rev 597 -
 [2008/10/10] Aeomin - commented out IsEquipped for some of you having error.
  (Eventually this will be replaced anyways)

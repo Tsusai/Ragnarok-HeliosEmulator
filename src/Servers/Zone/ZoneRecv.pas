@@ -1785,7 +1785,7 @@ begin
 	Quantity := BufferReadWord(ReadPts[1], InBuffer);
 	if Index > 0 then
 	begin
-		AChara.Inventory.Drop(Index,Quantity);
+		AChara.Inventory.Drop(Index-1,Quantity);
 	end;
 end;{DropItem}
 //------------------------------------------------------------------------------
