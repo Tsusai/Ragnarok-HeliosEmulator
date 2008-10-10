@@ -101,6 +101,7 @@ uses
 	procedure SendSpecialEffect(
 		const Who:TBeing;
 		AClient : TIdContext;
+		const BeingID:LongWord;
 		const EffectID : LongWord
 	);
 
@@ -113,7 +114,8 @@ uses
 	procedure ZoneDisappearBeing(
 		const Who:TBeing;
 		AClient : TIdContext;
-		const Effect:Byte=0
+		const Effect:Byte=0;
+		const BeingID : LongWord=0
 	);
 	procedure ZoneSendBeing(
 		const Who:TBeing;
@@ -779,13 +781,14 @@ end;{SendWhisperReply}
 procedure SendSpecialEffect(
 	const Who:TBeing;
 	AClient : TIdContext;
+	const BeingID:LongWord;
 	const EffectID : LongWord
 );
 var
 	OutBuffer : TBuffer;
 begin
 	WriteBufferWord(0, $01f3, OutBuffer);
-	WriteBufferLongWord(2, Who.ID, OutBuffer);
+	WriteBufferLongWord(2, BeingID, OutBuffer);
 	WriteBufferLongWord(6, EffectID, OutBuffer);
 	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($01f3));
 end;{SendSpecialEffec}
@@ -834,13 +837,17 @@ end;{SendEmotion}
 procedure ZoneDisappearBeing(
 	const Who:TBeing;
 	AClient : TIdContext;
-	const Effect:Byte=0
+	const Effect:Byte=0;
+	const BeingID : LongWord=0
 	);
 var
 	ReplyBuffer : TBuffer;
 begin
 	WriteBufferWord(0, $0080, ReplyBuffer);
-	WriteBufferLongWord(2, Who.ID, ReplyBuffer);
+	if BeingID >0 then
+		WriteBufferLongWord(2, BeingID, ReplyBuffer)
+	else
+		WriteBufferLongWord(2, Who.ID, ReplyBuffer);
 	WriteBufferByte(6, Effect, ReplyBuffer);
 	SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($0080));
 end;{ZoneDisappearBeing}

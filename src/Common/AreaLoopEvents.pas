@@ -433,7 +433,20 @@ procedure ShowDeath(
 begin
 	if (ACurrentObject is TCharacter) AND (AObject is TCharacter) then
 	begin
-		ZoneDisappearBeing(TBeing(ACurrentObject), TCharacter(AObject).ClientInfo, 1);
+		if AObject = ACurrentObject then
+			ZoneDisappearBeing(
+				TBeing(ACurrentObject),
+				TCharacter(AObject).ClientInfo,
+				1,
+				TCharacter(AObject).AccountID
+				)
+		else
+			ZoneDisappearBeing(
+				TBeing(ACurrentObject),
+				TCharacter(AObject).ClientInfo,
+				1,
+				TCharacter(AObject).ID
+			);
 	end;
 end;{ShowDeath}
 //------------------------------------------------------------------------------
