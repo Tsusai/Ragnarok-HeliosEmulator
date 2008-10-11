@@ -125,16 +125,16 @@ end;{ByteToItemType}
 function EquipLocationsToByte(const AnEquipLocation : TEquipLocations) : Word;
 begin
 	case AnEquipLocation of
-		HEADUPPER		: Result := 1;
-		HEADMID			: Result := 2;
-		HEADLOWER		: Result := 4;
-		RIGHTHAND		: Result := 8;
-		LEFTHAND		: Result := 16;
-		CAPE			: Result := 32;
+		HEADLOWER		: Result := 1;
+		RIGHTHAND		: Result := 2;
+		CAPE			: Result := 4;
+		ACCESSORY1		: Result := 8;
+		BODY			: Result := 16;
+		LEFTHAND		: Result := 32;
 		FEET			: Result := 64;
-		BODY			: Result := 128;
-		ACCESSORY1		: Result := 256;
-		ACCESSORY2		: Result := 512;
+		ACCESSORY2		: Result := 128;
+		HEADUPPER		: Result := 256;
+		HEADMID			: Result := 512;
 		else
 			Result := 1;
 	end;
@@ -143,16 +143,16 @@ end;{EquipLocationsToByte}
 function ByteToEquipLocations(AWord : Word) : TEquipLocations;
 begin
 	case AWord of
-		1		: Result := HEADUPPER;
-		2		: Result := HEADMID;
-		4		: Result := HEADLOWER;
-		8		: Result := RIGHTHAND;
-		16		: Result := LEFTHAND;
-		32		: Result := CAPE;
+		1		: Result := HEADLOWER;
+		2		: Result := RIGHTHAND;
+		4		: Result := CAPE;
+		8		: Result := ACCESSORY1;
+		16		: Result := BODY;
+		32		: Result := LEFTHAND;
 		64		: Result := FEET;
-		128		: Result := BODY;
-		256		: Result := ACCESSORY1;
-		512		: Result := ACCESSORY2;
+		128		: Result := ACCESSORY2;
+		256		: Result := HEADUPPER;
+		512		: Result := HEADMID;
 		else
 			Result := HEADUPPER;
 	end;

@@ -297,13 +297,13 @@ begin
 		WriteBufferWord(Offset + 50, Speed,ReplyBuffer);
 		WriteBufferWord(Offset + 52, JID,ReplyBuffer);
 		WriteBufferWord(Offset + 54, Hair,ReplyBuffer);
-		WriteBufferWord(Offset + 56, Equipment.EquipmentID[RIGHTHAND],ReplyBuffer);
+		WriteBufferWord(Offset + 56, Equipment.SpriteID[RIGHTHAND],ReplyBuffer);
 		WriteBufferWord(Offset + 58, BaseLV,ReplyBuffer);
 		WriteBufferWord(Offset + 60, EnsureRange(SkillPts, 0, High(Word)),ReplyBuffer);
-		WriteBufferWord(Offset + 62, Equipment.EquipmentID[HEADLOWER],ReplyBuffer);
-		WriteBufferWord(Offset + 64, Equipment.EquipmentID[LEFTHAND],ReplyBuffer);
-		WriteBufferWord(Offset + 66, Equipment.EquipmentID[HEADUPPER],ReplyBuffer);
-		WriteBufferWord(Offset + 68, Equipment.EquipmentID[HEADMID],ReplyBuffer);
+		WriteBufferWord(Offset + 62, Equipment.SpriteID[HEADLOWER],ReplyBuffer);
+		WriteBufferWord(Offset + 64, Equipment.SpriteID[LEFTHAND],ReplyBuffer);
+		WriteBufferWord(Offset + 66, Equipment.SpriteID[HEADUPPER],ReplyBuffer);
+		WriteBufferWord(Offset + 68, Equipment.SpriteID[HEADMID],ReplyBuffer);
 		WriteBufferWord(Offset + 70, HairColor,ReplyBuffer);
 		WriteBufferWord(Offset + 72, ClothesColor,ReplyBuffer);
 		WriteBufferString(Offset + 74, Name, 24,ReplyBuffer);
@@ -536,6 +536,9 @@ begin
 					with ACharacter do
 					begin
 						BaseIndex := Ver+(Count*CharacterDataSize);
+						TThreadLink(AClient.Data).DatabaseLink.Items.GetSpriteIDs(
+							ACharacter.Equipment
+						);
 						WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,BaseIndex);
 						Inc(Count);
 					end;

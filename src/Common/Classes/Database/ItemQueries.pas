@@ -31,6 +31,7 @@ uses
 	QueryBase,
 	Map,
 	Character,
+	Equipment,
 	{3rd Party}
 	ZSqlUpdate
 	;
@@ -93,9 +94,14 @@ type
 		function Find(
 			const ID : Word
 		):Boolean;overload;
+
 		function Find(
 			const Name : String
 		):Word;overload;
+
+		procedure GetSpriteIDs(
+			const AnEquipment : TEquipment
+		);
 
 	end;
 //------------------------------------------------------------------------------
@@ -151,7 +157,7 @@ begin
 	LoadDefinition(AnItem);
 	//LoadInstance(AnItem);
 
-	if AnItem.ItemType = Equipment then
+	if AnItem.ItemType = ItemTypes.Equipment then
 	begin
 		EquipmentItem := TEquipmentItem.Create;
 		ChangeType(AnItem, EquipmentItem);
@@ -802,5 +808,59 @@ begin
 		ADataSet.Free;
 	end;
 end;{Find}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//GetSpriteIDs                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Get sprite IDs
+//
+//	Changes -
+//		[2008/10/11] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+procedure TItemQueries.GetSpriteIDs(
+	const AnEquipment : TEquipment
+);
+const
+	AQuery = 'SELECT sprite_id FROM itemdefinitions  LEFT JOIN items ON itemdefinitions.id= items.item_definition_id WHERE items.id=:ID';
+	function DoQuery(const ID:LongWord):Word;
+	var
+		ADataSet	: TZQuery;
+		AParam		: TParam;
+	begin
+		Result := 0;
+		ADataSet	:= TZQuery.Create(nil);
+		try
+			//ID
+			AParam := ADataset.Params.CreateParam(ftInteger, 'ID', ptInput);
+			AParam.AsInteger := ID;
+			ADataSet.Params.AddParam(
+				AParam
+			);
+			Query(ADataSet, AQuery);
+			ADataSet.First;
+			if NOT ADataSet.Eof then
+			begin
+				Result := ADataSet.Fields[0].AsInteger;
+			end;
+		finally
+			ADataSet.Free;
+		end;
+	end;
+var
+	Index : Byte;
+begin
+	for Index := Byte(High(TEquipLocations)) downto 0 do
+	begin
+		if AnEquipment.EquipmentID[TEquipLocations(Index)] > 0 then
+		begin
+			AnEquipment.SpriteID[TEquipLocations(Index)]:=
+				DoQuery(AnEquipment.EquipmentID[TEquipLocations(Index)]);
+		end;
+	end;
+end;{GetSpriteIDs}
 //------------------------------------------------------------------------------
 end.

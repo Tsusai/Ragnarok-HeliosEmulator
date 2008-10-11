@@ -22,6 +22,7 @@ type
 		function GetInstanceByIndex(const AnIndex:Word):TItemInstance;
 		function GetInstanceByLocation(const ALocation : TEquipLocations):TItemInstance;
 		function GetSpriteID(const ALocation : TEquipLocations):LongWord;
+		procedure SetSpriteID(const ALocation : TEquipLocations;const Value:LongWord);
 		function GetEquipmentID(const ALocation : TEquipLocations):LongWord;
 		procedure SetEquipmentID(const ALocation : TEquipLocations;const Value:LongWord);
 	public
@@ -30,7 +31,7 @@ type
 		property Items[const ID:LongWord]:TItemInstance read GetInstance;default;
 		property IndexItem[const AnIndex:Word]:TItemInstance read GetInstanceByIndex;
 		property LocationItem[const ALocation : TEquipLocations]:TItemInstance read GetInstanceByLocation;
-		property SpriteID[const ALocation : TEquipLocations]:LongWord read GetSpriteID;
+		property SpriteID[const ALocation : TEquipLocations]:LongWord read GetSpriteID write SetSpriteID;
 		property EquipmentID[const ALocation : TEquipLocations]:LongWord read GetEquipmentID write SetEquipmentID;
 		procedure Add(const AnInstance:TItemInstance;const DontSend:Boolean=False);
 		procedure Remove(const AnIndex:Word);
@@ -172,6 +173,22 @@ function TEquipment.GetSpriteID(const ALocation : TEquipLocations):LongWord;
 begin
 	Result :=fSprites[Byte(ALocation)];
 end;{GetSpriteID}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SetSpriteID                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Set sprite id
+//
+//	Changes -
+//		[2008/10/11] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure TEquipment.SetSpriteID(const ALocation : TEquipLocations;const Value:LongWord);
+begin
+	fSprites[Byte(ALocation)] := Value;
+end;{SetSpriteID}
 //------------------------------------------------------------------------------
 
 
