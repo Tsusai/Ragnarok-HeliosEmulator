@@ -1812,7 +1812,10 @@ begin
 				WriteBufferByte(OffSetEquip+4, 5, OutBufferEquip);    //Type
 				WriteBufferByte(OffSetEquip+5, Byte(InventoryItem.Identified), OutBufferEquip);    //Identified
 				WriteBufferWord(OffSetEquip+6, EquipTypeToByte(EquipmentItem.EquipmentType), OutBufferEquip);
-				WriteBufferWord(OffSetEquip+8, Byte(InventoryItem.Equipped), OutBufferEquip); //Equiped?
+				if InventoryItem.Equipped then
+					WriteBufferWord(OffSetEquip+8, EquipLocationsToByte(EquipmentItem.EquipmentLocation), OutBufferEquip) //Equiped location
+				else
+					WriteBufferWord(OffSetEquip+8, 0, OutBufferEquip); //Equiped?
 				WriteBufferByte(OffSetEquip+10, 0, OutBufferEquip); //Broken?
 				WriteBufferByte(OffSetEquip+11, InventoryItem.Refined, OutBufferEquip);
 				WriteBufferWord(OffSetEquip+12, 0, OutBufferEquip);   //Card 1
