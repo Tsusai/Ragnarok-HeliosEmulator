@@ -113,6 +113,7 @@ uses
 	Globals,
 	TCPServerRoutines,
 	ZoneServerInfo,
+	ItemTypes,
 	//3rd
 	Types,
 	StrUtils,
@@ -296,13 +297,13 @@ begin
 		WriteBufferWord(Offset + 50, Speed,ReplyBuffer);
 		WriteBufferWord(Offset + 52, JID,ReplyBuffer);
 		WriteBufferWord(Offset + 54, Hair,ReplyBuffer);
-		WriteBufferWord(Offset + 56, RightHand,ReplyBuffer);
+		WriteBufferWord(Offset + 56, Equipment.EquipmentID[RIGHTHAND],ReplyBuffer);
 		WriteBufferWord(Offset + 58, BaseLV,ReplyBuffer);
 		WriteBufferWord(Offset + 60, EnsureRange(SkillPts, 0, High(Word)),ReplyBuffer);
-		WriteBufferWord(Offset + 62, HeadBottom,ReplyBuffer);
-		WriteBufferWord(Offset + 64, LeftHand,ReplyBuffer);
-		WriteBufferWord(Offset + 66, HeadTop,ReplyBuffer);
-		WriteBufferWord(Offset + 68, HeadMid,ReplyBuffer);
+		WriteBufferWord(Offset + 62, Equipment.EquipmentID[HEADLOWER],ReplyBuffer);
+		WriteBufferWord(Offset + 64, Equipment.EquipmentID[LEFTHAND],ReplyBuffer);
+		WriteBufferWord(Offset + 66, Equipment.EquipmentID[HEADUPPER],ReplyBuffer);
+		WriteBufferWord(Offset + 68, Equipment.EquipmentID[HEADMID],ReplyBuffer);
 		WriteBufferWord(Offset + 70, HairColor,ReplyBuffer);
 		WriteBufferWord(Offset + 72, ClothesColor,ReplyBuffer);
 		WriteBufferString(Offset + 74, Name, 24,ReplyBuffer);
@@ -774,16 +775,37 @@ begin
 				ACharacter.HairColor      := EnsureRange(HairColor,0,Options.MaxHairColor);
 				ACharacter.ClothesColor   := 0;
 
-				ACharacter.RightHand      := Options.DefaultRightHand;
-				ACharacter.LeftHand       := Options.DefaultLeftHand;
-				ACharacter.Armor          := Options.DefaultArmor;
-				ACharacter.Garment        := Options.DefaultGarment;
-				ACharacter.Shoes          := Options.DefaultShoes;
-				ACharacter.Accessory1     := Options.DefaultAccessory1;
-				ACharacter.Accessory2     := Options.DefaultAccessory2;
-				ACharacter.HeadTop        := Options.DefaultHeadTop;
-				ACharacter.HeadMid        := Options.DefaultHeadMid;
-				ACharacter.HeadBottom     := Options.DefaultHeadLow;
+				if Options.DefaultHeadTop > 0 then
+					ACharacter.Inventory.Add(Options.DefaultHeadTop,1,True);
+				if Options.DefaultHeadMid > 0 then
+					ACharacter.Inventory.Add(Options.DefaultHeadMid,1,True);
+				if Options.DefaultHeadLow > 0 then
+					ACharacter.Inventory.Add(Options.DefaultHeadLow,1,True);
+				if Options.DefaultRightHand >0 then
+					ACharacter.Inventory.Add(Options.DefaultRightHand,1,True);
+				if Options.DefaultLeftHand > 0 then
+					ACharacter.Inventory.Add(Options.DefaultLeftHand,1,True);
+				if Options.DefaultArmor > 0 then
+					ACharacter.Inventory.Add(Options.DefaultArmor,1,True);
+				if Options.DefaultShoes > 0 then
+					ACharacter.Inventory.Add(Options.DefaultShoes,1,True);
+				if Options.DefaultGarment > 0 then
+					ACharacter.Inventory.Add(Options.DefaultGarment,1,True);
+				if Options.DefaultAccessory1 > 0 then
+					ACharacter.Inventory.Add(Options.DefaultAccessory1,1,True);
+				if Options.DefaultAccessory2 > 0 then
+					ACharacter.Inventory.Add(Options.DefaultAccessory2,1,True);
+
+//				ACharacter.Equipment.EquipmentID[RIGHTHAND]      := Options.DefaultRightHand;
+//				ACharacter.Equipment.EquipmentID[LEFTHAND]       := Options.DefaultLeftHand;
+//				ACharacter.Equipment.EquipmentID[BODY]          := Options.DefaultArmor;
+//				ACharacter.Equipment.EquipmentID[CAPE]        := Options.DefaultGarment;
+//				ACharacter.Equipment.EquipmentID[FEET]          := Options.DefaultShoes;
+//				ACharacter.Equipment.EquipmentID[ACCESSORY1]     := Options.DefaultAccessory1;
+//				ACharacter.Equipment.EquipmentID[ACCESSORY2]     := Options.DefaultAccessory2;
+//				ACharacter.Equipment.EquipmentID[HEADUPPER]        := Options.DefaultHeadTop;
+//				ACharacter.Equipment.EquipmentID[HEADMID]        := Options.DefaultHeadMid;
+//				ACharacter.Equipment.EquipmentID[HEADLOWER]     := Options.DefaultHeadLow;
 				ACharacter.Map            := Options.DefaultMap;
 				ACharacter.Position       := Point(Options.DefaultPoint.X,Options.DefaultPoint.Y);
 				ACharacter.SaveMap        := Options.DefaultMap;

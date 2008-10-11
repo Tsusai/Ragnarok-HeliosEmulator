@@ -1193,10 +1193,10 @@ begin
 	Result := 0;
 	if GetCharaFromLua(ALua,AChara) then
 	begin
-		AChara.ResetLook;
+//		AChara.ResetLook;
 	end;
 	luaL_error(ALua,'script Reset Look syntax error');
-	end;
+end;
 
 
 //Special commands here

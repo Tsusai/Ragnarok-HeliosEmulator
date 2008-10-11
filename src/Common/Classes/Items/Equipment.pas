@@ -11,16 +11,19 @@ uses
 	;
 
 type
-	TLocationSprite = array[0..Byte(High(TEquipLocations))] of LongWord;
+	TEquipLocationID = array[0..Byte(High(TEquipLocations))] of LongWord;
 	TEquipment = class
 	private
 		ClientInfo : TIdContext;
 		fList : TIntList32;
-		fSprites : TLocationSprite;
+		fSprites : TEquipLocationID;
+		fEquipments : TEquipLocationID;
 		function GetInstance(const ID : LongWord):TItemInstance;
 		function GetInstanceByIndex(const AnIndex:Word):TItemInstance;
 		function GetInstanceByLocation(const ALocation : TEquipLocations):TItemInstance;
 		function GetSpriteID(const ALocation : TEquipLocations):LongWord;
+		function GetEquipmentID(const ALocation : TEquipLocations):LongWord;
+		procedure SetEquipmentID(const ALocation : TEquipLocations;const Value:LongWord);
 	public
 		constructor Create(Parent : TObject);
 		destructor Destroy; override;
@@ -28,8 +31,10 @@ type
 		property IndexItem[const AnIndex:Word]:TItemInstance read GetInstanceByIndex;
 		property LocationItem[const ALocation : TEquipLocations]:TItemInstance read GetInstanceByLocation;
 		property SpriteID[const ALocation : TEquipLocations]:LongWord read GetSpriteID;
+		property EquipmentID[const ALocation : TEquipLocations]:LongWord read GetEquipmentID write SetEquipmentID;
 		procedure Add(const AnInstance:TItemInstance;const DontSend:Boolean=False);
 		procedure Remove(const AnIndex:Word);
+		function IsEquipped(const ID:LongWord):Boolean;
 	end;
 implementation
 
@@ -171,6 +176,27 @@ end;{GetSpriteID}
 
 
 //------------------------------------------------------------------------------
+//GetEquipmentID                                                        FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//		Get item ID
+//
+//	Changes -
+//		[2008/10/10] Aeomin - Created
+//------------------------------------------------------------------------------
+function TEquipment.GetEquipmentID(const ALocation : TEquipLocations):LongWord;
+begin
+	Result :=fEquipments[Byte(ALocation)];
+end;{GetEquipmentID}
+//------------------------------------------------------------------------------
+
+
+procedure TEquipment.SetEquipmentID(const ALocation : TEquipLocations;const Value:LongWord);
+begin
+	fEquipments[Byte(ALocation)] := Value;
+end;
+
+//------------------------------------------------------------------------------
 //Add                                                                  PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does -
@@ -184,22 +210,25 @@ procedure TEquipment.Add(const AnInstance:TItemInstance;const DontSend:Boolean=F
 var
 	AChara : TCharacter;
 	BeforeItem : TItemInstance;
+	Equip : TEquipmentItem;
 begin
 	if AnInstance.Item is TEquipmentItem then
 	begin
 		AChara := TClientLink(ClientInfo.Data).CharacterLink;
 		if AnInstance.Identified then
 		begin
-			if (TEquipmentItem(AnInstance.Item).MinimumLevel <= AChara.BaseLV) then
+			Equip := TEquipmentItem(AnInstance.Item);
+			if (Equip.MinimumLevel <= AChara.BaseLV) then
 			begin
-				BeforeItem := LocationItem[TEquipmentItem(AnInstance.Item).EquipmentLocation];
+				BeforeItem := LocationItem[Equip.EquipmentLocation];
 				if BeforeItem <> nil then
 				begin
 					Remove(
 						BeforeItem.Index
 					);
 				end;
-				fSprites[Byte(TEquipmentItem(AnInstance.Item).EquipmentLocation)]:=AnInstance.Item.SpriteID;
+				fSprites[Byte(Equip.EquipmentLocation)]:=AnInstance.Item.SpriteID;
+				EquipmentID[Equip.EquipmentLocation]:=AnInstance.ID;
 				AnInstance.Equipped := True;
 				fList.AddObject(
 					AnInstance.ID,
@@ -210,7 +239,7 @@ begin
 						AChara,
 						AnInstance.Index,
 						EquipLocationsToByte(
-							TEquipmentItem(AnInstance.Item).EquipmentLocation
+							Equip.EquipmentLocation
 						),
 						True
 					);
@@ -253,6 +282,7 @@ var
 	AnInstance : TItemInstance;
 	Index : Integer;
 	AChara : TCharacter;
+	Equip : TEquipmentItem;
 begin
 	AChara := TClientLink(ClientInfo.Data).CharacterLink;
 	AnInstance := IndexItem[AnIndex];
@@ -261,13 +291,15 @@ begin
 		Index := fList.IndexOf(AnInstance.ID);
 		if Index > -1 then
 		begin
+			Equip := TEquipmentItem(AnInstance.Item);
 			AnInstance.Equipped := False;
-			fSprites[Byte(TEquipmentItem(AnInstance.Item).EquipmentLocation)]:= 0;
+			fSprites[Byte(Equip.EquipmentLocation)]:= 0;
+			EquipmentID[Equip.EquipmentLocation]:= 0;
 			SendUnequipItemResult(
 				AChara,
 				AnIndex,
 				EquipLocationsToByte(
-					TEquipmentItem(AnInstance.Item).EquipmentLocation
+					Equip.EquipmentLocation
 				),
 				True
 			);
@@ -291,5 +323,31 @@ begin
 		);
 	end;
 end;{Remove}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//IsEquipped                                                            FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//		Check if item is equipped against Instance ID
+//
+//	Changes -
+//		[2008/10/11] Aeomin - Created
+//------------------------------------------------------------------------------
+function TEquipment.IsEquipped(const ID:LongWord):Boolean;
+var
+	Index : Byte;
+begin
+	Result := False;
+	for Index := Byte(High(TEquipLocations)) downto 0 do
+	begin
+		if ID = fEquipments[Index] then
+		begin
+			Result := True;
+			Break;
+		end;
+	end;
+end;{IsEquipped}
 //------------------------------------------------------------------------------
 end.

@@ -104,6 +104,7 @@ uses
 	Math,
 	{Project}
 	GameConstants,
+	ItemTypes,
 	{3rd Party}
 	ZDataset,
 	DB
@@ -204,16 +205,16 @@ begin
 				Inventory.InventoryID := ADataSet.Fields[24].AsInteger;
 				Inventory.StorageID  := ADataSet.Fields[25].AsInteger;
 				//CartInventoryID	 := ADataSet.Fields[26].AsInteger;
-				RightHand        := ADataSet.Fields[27].AsInteger;
-				LeftHand         := ADataSet.Fields[28].AsInteger;
-				Armor        		 := ADataSet.Fields[29].AsInteger;
-				Garment        	 := ADataSet.Fields[30].AsInteger;
-				Shoes        		 := ADataSet.Fields[31].AsInteger;
-				Accessory1       := ADataSet.Fields[32].AsInteger;
-				Accessory2       := ADataSet.Fields[33].AsInteger;
-				HeadTop          := ADataSet.Fields[34].AsInteger;
-				HeadMid          := ADataSet.Fields[35].AsInteger;
-				HeadBottom       := ADataSet.Fields[36].AsInteger;
+				Equipment.EquipmentID[RIGHTHAND]:= ADataSet.Fields[27].AsInteger;
+				Equipment.EquipmentID[LEFTHAND]         := ADataSet.Fields[28].AsInteger;
+				Equipment.EquipmentID[BODY]        		 := ADataSet.Fields[29].AsInteger;
+				Equipment.EquipmentID[CAPE]        	 := ADataSet.Fields[30].AsInteger;
+				Equipment.EquipmentID[FEET]			 := ADataSet.Fields[31].AsInteger;
+				Equipment.EquipmentID[ACCESSORY1]       := ADataSet.Fields[32].AsInteger;
+				Equipment.EquipmentID[ACCESSORY2]       := ADataSet.Fields[33].AsInteger;
+				Equipment.EquipmentID[HEADUPPER]          := ADataSet.Fields[34].AsInteger;
+				Equipment.EquipmentID[HEADMID]          := ADataSet.Fields[35].AsInteger;
+				Equipment.EquipmentID[HEADLOWER]       := ADataSet.Fields[36].AsInteger;
 				Map              := ADataSet.Fields[37].AsString;
 					APoint.X       := ADataSet.Fields[38].AsInteger;
 					APoint.Y       := ADataSet.Fields[39].AsInteger;
@@ -669,61 +670,61 @@ begin
 		);
 		//RightHand
 		AParam := ADataset.Params.CreateParam(ftInteger, 'RightHand', ptInput);
-		AParam.AsInteger := ACharacter.RightHand;
+		AParam.AsInteger := ACharacter.Equipment.EquipmentID[RIGHTHAND];
 		ADataSet.Params.AddParam(
 			AParam
 		);
 		//LeftHand
 		AParam := ADataset.Params.CreateParam(ftInteger, 'LeftHand', ptInput);
-		AParam.AsInteger := ACharacter.LeftHand;
+		AParam.AsInteger := ACharacter.Equipment.EquipmentID[LEFTHAND];
 		ADataSet.Params.AddParam(
 			AParam
 		);
 		//Armor
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Armor', ptInput);
-		AParam.AsInteger := ACharacter.RightHand;
+		AParam.AsInteger := ACharacter.Equipment.EquipmentID[BODY];
 		ADataSet.Params.AddParam(
 			AParam
 		);
 		//Garment
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Garment', ptInput);
-		AParam.AsInteger := ACharacter.Garment;
+		AParam.AsInteger := ACharacter.Equipment.EquipmentID[CAPE];
 		ADataSet.Params.AddParam(
 			AParam
 		);
 		//Shoes
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Shoes', ptInput);
-		AParam.AsInteger := ACharacter.Shoes;
+		AParam.AsInteger := ACharacter.Equipment.EquipmentID[FEET];
 		ADataSet.Params.AddParam(
 			AParam
 		);
 		//Accessory1
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Accessory1', ptInput);
-		AParam.AsInteger := ACharacter.Accessory1;
+		AParam.AsInteger := ACharacter.Equipment.EquipmentID[ACCESSORY1];
 		ADataSet.Params.AddParam(
 			AParam
 		);
 		//Accessory2
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Accessory2', ptInput);
-		AParam.AsInteger := ACharacter.Accessory2;
+		AParam.AsInteger := ACharacter.Equipment.EquipmentID[ACCESSORY2];
 		ADataSet.Params.AddParam(
 			AParam
 		);
 		//HeadTop
 		AParam := ADataset.Params.CreateParam(ftInteger, 'HeadTop', ptInput);
-		AParam.AsInteger := ACharacter.HeadTop;
+		AParam.AsInteger := ACharacter.Equipment.EquipmentID[HEADUPPER];
 		ADataSet.Params.AddParam(
 			AParam
 		);
 		//HeadMiddle
 		AParam := ADataset.Params.CreateParam(ftInteger, 'HeadMiddle', ptInput);
-		AParam.AsInteger := ACharacter.HeadMid;
+		AParam.AsInteger := ACharacter.Equipment.EquipmentID[HEADMID];
 		ADataSet.Params.AddParam(
 			AParam
 		);
 		//HeadBottom
 		AParam := ADataset.Params.CreateParam(ftInteger, 'HeadBottom', ptInput);
-		AParam.AsInteger := ACharacter.HeadBottom;
+		AParam.AsInteger := ACharacter.Equipment.EquipmentID[HEADLOWER];
 		ADataSet.Params.AddParam(
 			AParam
 		);

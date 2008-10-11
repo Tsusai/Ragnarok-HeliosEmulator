@@ -612,12 +612,6 @@ var
 	ADataSet	: TZQuery;
 	AParam		: TParam;
 	AItem		: TItemInstance;
-	function IsEquipped(const ID : LongWord):Boolean;
-	begin
-		Result := (ID in [AChara.RightHand,AChara.LeftHand,AChara.Armor,AChara.Garment,
-			AChara.Shoes,AChara.Accessory1,AChara.Accessory2,AChara.HeadTop,
-			AChara.HeadMid,AChara.HeadBottom])
-	end;
 begin
 	ADataSet	:= TZQuery.Create(nil);
 	try
@@ -653,7 +647,7 @@ begin
 			AItem.Quantity := ADataSet.Fields[2].AsInteger;
 			AItem.Identified := Boolean(ADataSet.Fields[3].AsInteger);
 			AItem.Refined := ADataSet.Fields[4].AsInteger;
-//			AItem.Equipped := IsEquipped(AItem.ID);
+			AItem.Equipped := AChara.Equipment.IsEquipped(AItem.ID);
 			AItem.X := ADataSet.Fields[5].AsInteger;
 			AItem.Y := ADataSet.Fields[6].AsInteger;
 			AItem.MapID := ADataSet.Fields[7].AsInteger;

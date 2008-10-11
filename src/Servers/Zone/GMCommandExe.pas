@@ -1279,7 +1279,7 @@ procedure GMResetLook(const Arguments : array of String;const FromChar:TCharacte
 begin
 	if (Length(Arguments) >= 2) then
 	begin
-		TargetChar.ResetLook := 0;
+//		TargetChar.ResetLook := 0;
 		Error.Add('Look reset successful!');
 	end else
 	begin

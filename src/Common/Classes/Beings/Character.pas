@@ -212,7 +212,6 @@ protected
 	procedure SetParentID2(Value : LongWord);
 	procedure SetWeight(Value : LongWord);
 	procedure SetMaxWeight(Value : LongWord);
-	procedure SetResetLook(Value		:	Integer);
 	procedure SetPermanantBan(Value : String);
 
 	procedure SetBabyID(
@@ -336,16 +335,16 @@ public
 	property Hair      : Word       read fHair write SetHair;
 	property HairColor : Word       read fHairColor write SetHairColor;
 	property ClothesColor: Word     read fClothesColor write SetClothesColor;
-	property RightHand : Word       read fRightHand write SetRightHand;
-	property LeftHand  : Word       read fLeftHand write SetLeftHand;
-	property Armor     : Word       read fArmor write SetArmor;
-	property Garment   : Word       read fGarment write SetGarment;
-	property Shoes     : Word       read fShoes write SetShoes;
-	property Accessory1: Word       read fAccessory1 write SetAccessory1;
-	property Accessory2: Word       read fAccessory1 write SetAccessory2;
-	property HeadTop   : Word       read fHeadTop write SetHeadTop;
-	property HeadMid   : Word       read fHeadMid write SetHeadMid;
-	property HeadBottom: Word       read fHeadBottom write SetHeadBottom;
+//	property RightHand : Word       read fRightHand write SetRightHand;
+//	property LeftHand  : Word       read fLeftHand write SetLeftHand;
+//	property Armor     : Word       read fArmor write SetArmor;
+//	property Garment   : Word       read fGarment write SetGarment;
+//	property Shoes     : Word       read fShoes write SetShoes;
+//	property Accessory1: Word       read fAccessory1 write SetAccessory1;
+//	property Accessory2: Word       read fAccessory1 write SetAccessory2;
+//	property HeadTop   : Word       read fHeadTop write SetHeadTop;
+//	property HeadMid   : Word       read fHeadMid write SetHeadMid;
+//	property HeadBottom: Word       read fHeadBottom write SetHeadBottom;
 	property SaveMap   : String     read  fSaveMap write SetSMap;
 	property SavePoint : TPoint     read fSaveMapPt write SetSMapPt;
 	property PartnerID : LongWord   read fPartnerID write SetPartnerID;
@@ -359,7 +358,6 @@ public
 	property JobName   : String     read fJobName;
 	// property UnEquipAll			:	Byte		read	fUnEquipAll	write SetUnEquipAll;
 	// property UpdateOption		:	Byte		read	fUpdateOption	write	SetUpdateOption;
-	property ResetLook	 : Integer		read	fResetLook	write	SetResetLook;
 	property PermanantBan    : String    read  fPermanantBan write SetPermanantBan;
 	end;{TCharacter}
 
@@ -3019,22 +3017,7 @@ begin
 	end;
 end;
 
-//Reset Characters look to 0, Look being headgear view.
-procedure TCharacter.SetResetLook(Value	:	Integer);
-begin
-	if HeadTop > 0 then
-	begin
-		ResetLook := 0;
-	end;
-	if HeadMid > 0 then
-	begin
-		ResetLook := 0;
-	end;
-	if HeadBottom > 0 then
-	begin
-		ResetLook := 0;
-	end;
-end;
+
 
 //Permanant Ban
 procedure TCharacter.SetPermanantBan(Value : String);
@@ -3042,7 +3025,7 @@ begin
 	if ZoneStatus = isOnline then
 	begin
 		PermanantBan := Value
-        end;
+	end;
 end;{PermanantBan}
 
 //------------------------------------------------------------------------------

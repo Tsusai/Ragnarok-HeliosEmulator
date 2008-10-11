@@ -86,6 +86,7 @@ protected
 	procedure DecreaseWeight(const AWeight:LongWord);
 	function IsStackable(const AnItem : TItemInstance):Boolean;
 	function Move(var AnInventoryItem : TItemInstance;var New:Boolean;const IgnoreWeight:Boolean=False;const UpdateWeight:Boolean=True;const DontFree:Boolean=False):Byte;
+	procedure Remove(const OldItem:TItemInstance;const Quantity:Word;var NewItem:TItemInstance);overload;
 public
 	InventoryID : LongWord;
 	StorageID  : LongWord;
@@ -99,11 +100,10 @@ public
 	property CountEquip	: Word read fCountEquip;
 	property Weight : LongWord read fWeight;
 	procedure Pickup(const ID : LongWord);
-	procedure Add(AnItem : TItem; Quantity : Word;const DontSend:Boolean=False);overload;
-	function Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False;const Transfer:Boolean=False):Boolean;overload;
-	function Add(const ID:Word;const Quantity:Word):Boolean;overload;
+	procedure Add(AnItem : TItem; Quantity : Word=1;const DontSend:Boolean=False);overload;
+	function Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False;const DoCreate:Boolean=False):Boolean;overload;
+	function Add(const ID:Word;const Quantity:Word=1;const DontSend:Boolean=False):Boolean;overload;
 	procedure Drop(const Index:Word;const Quantity:Word);
-	procedure Remove(const OldItem:TItemInstance;const Quantity:Word;var NewItem:TItemInstance);overload;
 	function Remove(const OldItem:TItemInstance;const Quantity:Word):Word;overload;
 	procedure Remove(const ID : LongWord;Quantity:Word);overload;
 	procedure Remove(const Name : String;const Quantity:Word);overload;
@@ -416,20 +416,20 @@ end;{Pickup}
 
 
 //------------------------------------------------------------------------------
-procedure TInventory.Add(AnItem: TItem; Quantity: Word;const DontSend:Boolean=False);
+procedure TInventory.Add(AnItem: TItem; Quantity: Word=1;const DontSend:Boolean=False);
 var
 	Item : TItemInstance;
 begin
 	Item := TItemInstance.Create;
 	Item.Item := AnItem;
 	Item.Quantity := Quantity;
-	Add(Item,DontSend);
+	Add(Item,DontSend,True);
 end;
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-function TInventory.Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False;const Transfer:Boolean=False):Boolean;
+function TInventory.Add(var AnInventoryItem : TItemInstance;const DontSend:Boolean=False;const DoCreate:Boolean=False):Boolean;
 var
 	Amount : Word;
 	Failed : Byte;
@@ -437,7 +437,7 @@ var
 begin
 	Amount := AnInventoryItem.Quantity;
 	Failed := Move(AnInventoryItem,New,DontSend,NOT DontSend);
-	if (not DontSend) then
+	if (not DontSend) OR DoCreate then
 	begin
 		if New then
 		begin
@@ -484,7 +484,7 @@ end;{Add}
 //------------------------------------------------------------------------------
 
 
-function TInventory.Add(const ID:Word;const Quantity:Word):Boolean;
+function TInventory.Add(const ID:Word;const Quantity:Word=1;const DontSend:Boolean=False):Boolean;
 var
 	AnItem : TItemInstance;
 begin
@@ -497,7 +497,7 @@ begin
 		AnItem.Quantity := Quantity;
 		AnItem.Identified := True;
 		TThreadLink(ClientInfo.Data).DatabaseLink.Items.Load(AnItem.Item);
-		Add(AnItem);
+		Add(AnItem,DontSend,True);
 		Result := True;
 	end;
 end;{Add}

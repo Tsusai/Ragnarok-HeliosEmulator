@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 602 -
+[2008/10/11] Aeomin - Character server now creates default items for new characters.
+[2008/10/10] Aeomin - More work on equipment
+-
+
 - Rev 601 -
 [2008/10/10] Aeomin - More equipment related code.
 -

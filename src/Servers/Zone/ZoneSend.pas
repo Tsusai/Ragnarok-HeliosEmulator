@@ -907,11 +907,11 @@ var
 		Chara:=TCharacter(Who);
 		{Todo: Hair stlye, head bottom needed for Pet...}
 		WriteBufferWord(18, Chara.Hair, ReplyBuffer);
-		WriteBufferWord(20, Chara.RightHand, ReplyBuffer);  //Weapon
-		WriteBufferWord(22, Chara.LeftHand, ReplyBuffer);  //Shield
-		WriteBufferWord(24, Chara.HeadBottom, ReplyBuffer);  //Head bottom
-		WriteBufferWord(26, Chara.HeadTop, ReplyBuffer);  //Head top
-		WriteBufferWord(28, Chara.HeadMid, ReplyBuffer);  //head mid
+		WriteBufferWord(20, Chara.Equipment.EquipmentID[RIGHTHAND], ReplyBuffer);  //Weapon
+		WriteBufferWord(22, Chara.Equipment.EquipmentID[LEFTHAND], ReplyBuffer);  //Shield
+		WriteBufferWord(24, Chara.Equipment.EquipmentID[HEADLOWER], ReplyBuffer);  //Head bottom
+		WriteBufferWord(26, Chara.Equipment.EquipmentID[HEADUPPER], ReplyBuffer);  //Head top
+		WriteBufferWord(28, Chara.Equipment.EquipmentID[HEADMID], ReplyBuffer);  //head mid
 		WriteBufferWord(30, Chara.HairColor, ReplyBuffer);
 		WriteBufferWord(32, Chara.ClothesColor, ReplyBuffer);
 		WriteBufferWord(34, Chara.HeadDirection, ReplyBuffer);
