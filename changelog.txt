@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 604 -
+[2008/10/11] Aeomin - Fixed can't unequip after login
+-
+
 - Rev 603 -
 [2008/10/11] Aeomin - Now equip items are stored in db and shown equipment window
   after login.

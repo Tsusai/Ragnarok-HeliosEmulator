@@ -453,29 +453,31 @@ begin
 			);
 		end;
 	end;
-
-	if not DontSend then
+	if Failed = 0 then
 	begin
-		if Failed > 0 then
+		if AnInventoryItem.Equipped then
 		begin
-			SendNewItemFailed(
-				ClientInfo,
-				Failed
+			Equipment.Add(
+				AnInventoryItem,
+				DontSend
 			);
-		end else
+		end;
+		if not DontSend then
 		begin
-			if AnInventoryItem.Equipped then
-			begin
-				Equipment.Add(
-					AnInventoryItem,
-					DontSend
-				);
-			end;
 			SendNewItem(
 				ClientInfo,
 				AnInventoryItem,
 				AnInventoryItem.Index,
 				Amount
+			);
+		end;
+	end else
+	begin
+		if not DontSend then
+		begin
+			SendNewItemFailed(
+				ClientInfo,
+				Failed
 			);
 		end;
 	end;
