@@ -464,6 +464,13 @@ begin
 			);
 		end else
 		begin
+			if AnInventoryItem.Equipped then
+			begin
+				Equipment.Add(
+					AnInventoryItem,
+					DontSend
+				);
+			end;
 			SendNewItem(
 				ClientInfo,
 				AnInventoryItem,

@@ -1859,7 +1859,7 @@ procedure ItemEquip(
 var
 	Index:Word;
 begin
-	if AChara.CharaState in [charaStanding,charaWalking,charaAttacking] then
+	if AChara.CharaState in [charaSitting,charaStanding,charaWalking,charaAttacking] then
 	begin
 		Index := BufferReadWord(ReadPts[0], InBuffer);
 		if Index > 0 then
@@ -1893,7 +1893,7 @@ procedure ItemUnequip(
 var
 	Index:Word;
 begin
-	if AChara.CharaState in [charaStanding,charaWalking,charaAttacking] then
+	if AChara.CharaState in [charaSitting,charaStanding,charaWalking,charaAttacking] then
 	begin
 		Index := BufferReadWord(ReadPts[0], InBuffer);
 		if Index > 0 then

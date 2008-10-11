@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 601 -
+[2008/10/10] Aeomin - More equipment related code.
+-
+
 - Rev 600 -
 [2008/10/10] Aeomin - Inventory now forwards equip & unequip action to TEquipmen.
 [2008/10/10] Aeomin - Both equip & unequip works, but still packet playing.
