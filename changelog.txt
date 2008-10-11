@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 600 -
+[2008/10/10] Aeomin - Inventory now forwards equip & unequip action to TEquipmen.
+[2008/10/10] Aeomin - Both equip & unequip works, but still packet playing.
+[2008/10/10] Aeomin - BTW, 600!!!!!
+-
+
 - Rev 599 -
 [2008/10/10] Spre - #ban Fixed up the way it should be... NOTE RAX
 NO TEACHY WHILE SICKIE.

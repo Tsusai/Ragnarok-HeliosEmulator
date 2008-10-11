@@ -505,8 +505,8 @@ Begin
 					ExecCommand := ItemUse;}
 				end else if Command = 'equipitem' then begin
 					ExecCommand := ItemEquip;
-				{end else if Command = 'unequipitem' then begin
-					ExecCommand := ItemUnequip;}
+				end else if Command = 'unequipitem' then begin
+					ExecCommand := ItemUnequip;
 				end else if Command = 'restart' then begin
 					ExecCommand := ReturnToCharacterSelect;
 				end else if Command = 'npcselectmenu' then begin

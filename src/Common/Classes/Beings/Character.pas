@@ -48,6 +48,7 @@ uses
 	LuaCoreRoutines,
 	Inventory,
 	Mailbox,
+	Equipment,
 	{Third Party}
 	IdContext,
 	List32
@@ -244,6 +245,7 @@ public
 
 	//Our Character's inventory
 	Inventory		: TInventory;
+	Equipment		: TEquipment;
 
 	//Stat Calculations should fill these in
 	//Maybe a record type for this crap for shared info between mobs and chars
@@ -3148,7 +3150,8 @@ begin
 	ClientInfo := AClient;
 	fPosition := Point(-1, -1);
 	OnTouchIDs := TIntList32.Create;
-	Inventory := TInventory.Create(self);
+	Equipment := TEquipment.Create(Self);
+	Inventory := TInventory.Create(Self,Equipment);
 	ScriptStatus := SCRIPT_NOTRUNNING;
 	CharaState := charaStanding;
 	ZoneStatus := isOffline;
@@ -3187,6 +3190,7 @@ end;} //Needs finished [Spre]
 //------------------------------------------------------------------------------
 Destructor TCharacter.Destroy;
 begin
+	Equipment.Free;
 	Inventory.Free;
 	OnTouchIDs.Free;
 	TerminateLuaThread(LuaInfo);

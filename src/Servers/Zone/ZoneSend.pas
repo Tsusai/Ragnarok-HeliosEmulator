@@ -294,6 +294,12 @@ uses
 		const Location:Word;
 		const Success:Boolean
 	);
+	procedure SendUnequipItemResult(
+		const AChara : TCharacter;
+		const Index : Word;
+		const Location:Word;
+		const Success:Boolean
+	);
 implementation
 
 
@@ -2203,4 +2209,35 @@ begin
 end;{SendEquipItemResult}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//SendUnequipItemResult                                                PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Unequip an item
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/10/10] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendUnequipItemResult(
+	const AChara : TCharacter;
+	const Index : Word;
+	const Location:Word;
+	const Success:Boolean
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00ac, OutBuffer);
+	WriteBufferWord(2, Index+1, OutBuffer);
+	WriteBufferWord(4, Location, OutBuffer);
+	WriteBufferByte(6, Byte(Success), OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($00ac,AChara.ClientVersion));
+end;{SendUnequipItemResult}
+//------------------------------------------------------------------------------
 end{ZoneSend}.

@@ -254,6 +254,12 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure ItemUnequip(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -1862,6 +1868,40 @@ begin
 		end;
 	end;
 end;{ItemEquip}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ItemUnequip                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Unequip item
+//--
+//	Pre:
+//		TODO
+//	Post:
+//		TODO
+//--
+//  Changes -
+//		[2008/10/10] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ItemUnequip(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	Index:Word;
+begin
+	if AChara.CharaState in [charaStanding,charaWalking,charaAttacking] then
+	begin
+		Index := BufferReadWord(ReadPts[0], InBuffer);
+		if Index > 0 then
+		begin
+			AChara.Inventory.Unequip(Index-1);
+		end;
+	end;
+end;{ItemUnequip}
 //------------------------------------------------------------------------------
 
 

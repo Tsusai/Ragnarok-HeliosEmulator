@@ -47,6 +47,7 @@ uses
 	Item,
 	ItemInstance,
 	InventoryList,
+	Equipment,
 	{Third Party}
 	IdContext,
 	List32
@@ -79,6 +80,7 @@ protected
 	fCountItem	: Word;
 	fCountEquip	: Word;
 	fWeight : LongWord;
+	Equipment : TEquipment;
 	function GetItem(Index : Integer) : TItem;
 	procedure IncreaseWeight(const AWeight:LongWord);
 	procedure DecreaseWeight(const AWeight:LongWord);
@@ -109,8 +111,9 @@ public
 	function AmountOf(const ID:LongWord):LongWord;overload;
 	function AmountOf(const Name:String):LongWord;overload;
 	procedure Equip(const Index:Word);
+	procedure Unequip(const Index:Word);
 	{procedure Use(const Index:Word);}
-	constructor Create(Parent : TObject);
+	constructor Create(const Parent : TObject;const AnEquipment:TEquipment);
 	destructor Destroy;override;
 end;(* TInventory
 *== CLASS ====================================================================*)
@@ -156,10 +159,11 @@ Revisions:
 (Format: [yyyy/mm/dd] <Author> - <Comment>)
 [2007/10/29] RaX - Created.
 *-----------------------------------------------------------------------------*)
-Constructor TInventory.Create(Parent : TObject);
+Constructor TInventory.Create(const Parent : TObject;const AnEquipment:TEquipment);
 begin
 	inherited Create;
-	self.ClientInfo := TCharacter(Parent).ClientInfo;
+	Self.ClientInfo := TCharacter(Parent).ClientInfo;
+	Self.Equipment := AnEquipment;
 	fItemList := TInventoryList.Create(FALSE);
 	fCountItem := 0;
 	fCountEquip := 0;
@@ -509,11 +513,12 @@ begin
 		Exit;
 	end;
 	TheItem := fItemList.IndexItems[Index];
-	{You can't drop if equipment were equipped!}
-	if TheItem.Equipped then
-		Exit;
 	if (TheItem <> nil)AND(Quantity>0)AND(TheItem.Quantity >= Quantity) then
 	begin
+		{You can't drop if equipment were equipped!}
+		if TheItem.Equipped then
+			Exit;
+
 		Position.X:= AChara.Position.X + (Random(3)-1);
 		Position.Y:= AChara.Position.Y + (Random(3)-1);
 		FoundPosition := False;
@@ -817,47 +822,39 @@ end;{AmountOf}
 procedure TInventory.Equip(const Index:Word);
 var
 	AnItem : TItemInstance;
-	AChara : TCharacter;
 begin
 	AnItem := fItemList.IndexItems[Index];
 	if AnItem <> nil then
 	begin
-		if AnItem.Item is TEquipmentItem then
-		begin
-			AChara := TClientLink(ClientInfo.Data).CharacterLink;
-			if AnItem.Identified then
-			begin
-				if (TEquipmentItem(AnItem).MinimumLevel <= AChara.BaseLV) then
-				begin
-					AnItem.Equipped := True;
-					SendEquipItemResult(
-						AChara,
-						Index,
-						EquipLocationsToByte(
-							TEquipmentItem(AnItem.Item).EquipmentLocation
-						),
-						True
-					);
-				end else
-				begin
-					SendEquipItemResult(
-						AChara,
-						0,
-						0,
-						False
-					);
-				end;
-			end else
-			begin
-				SendEquipItemResult(
-					AChara,
-					0,
-					0,
-					False
-				);
-			end;
-		end;
+		//TEquipment will handle everything!
+		Equipment.Add(
+			AnItem
+		);
 	end;
 end;{Equip}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Unequip                                                               FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//		Remove item from equipment
+//
+//	Changes -
+//		[2008/10/10] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure TInventory.Unequip(const Index:Word);
+var
+	AnItem : TItemInstance;
+begin
+	AnItem := fItemList.IndexItems[Index];
+	if AnItem <> nil then
+	begin
+		Equipment.Remove(
+			AnItem.Index
+		);
+	end;
+end;{Unequip}
 //------------------------------------------------------------------------------
 end{Inventory}.

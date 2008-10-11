@@ -5,18 +5,21 @@ interface
 uses
 	ItemInstance,
 	ItemTypes,
-	List32
+	{Third Party}
+	List32,
+	IdContext
 	;
 
 type
 	TEquipment = class
 	private
+		ClientInfo : TIdContext;
 		fList : TIntList32;
 		function GetInstance(const ID : LongWord):TItemInstance;
 		function GetInstanceByIndex(const AnIndex:Word):TItemInstance;
 		function GetInstanceByLocation(const ALocation : TEquipLocations):TItemInstance;
 	public
-		constructor Create;
+		constructor Create(Parent : TObject);
 		destructor Destroy; override;
 		property Items[const ID:LongWord]:TItemInstance read GetInstance;default;
 		property IndexItem[const AnIndex:Word]:TItemInstance read GetInstanceByIndex;
@@ -27,7 +30,10 @@ type
 implementation
 
 uses
-	EquipmentItem
+	Character,
+	EquipmentItem,
+	ZoneSend,
+	PacketTypes
 	;
 
 //------------------------------------------------------------------------------
@@ -39,8 +45,9 @@ uses
 //	Changes -
 //		[2008/10/08] Aeomin - Created
 //------------------------------------------------------------------------------
-constructor TEquipment.Create;
+constructor TEquipment.Create(Parent : TObject);
 begin
+	self.ClientInfo := TCharacter(Parent).ClientInfo;
 	fList := TIntList32.Create;
 end;{Create}
 //------------------------------------------------------------------------------
@@ -154,11 +161,57 @@ end;{GetInstanceByLocation}
 //		[2008/10/08] Aeomin - Created
 //------------------------------------------------------------------------------
 procedure TEquipment.Add(const AnInstance:TItemInstance);
+var
+	AChara : TCharacter;
+	BeforeItem : TItemInstance;
 begin
-	fList.AddObject(
-		AnInstance.ID,
-		AnInstance
-		);
+	if AnInstance.Item is TEquipmentItem then
+	begin
+		AChara := TClientLink(ClientInfo.Data).CharacterLink;
+		if AnInstance.Identified then
+		begin
+			if (TEquipmentItem(AnInstance.Item).MinimumLevel <= AChara.BaseLV) then
+			begin
+				BeforeItem := LocationItem[TEquipmentItem(AnInstance.Item).EquipmentLocation];
+				if BeforeItem <> nil then
+				begin
+					Remove(
+						BeforeItem.Index
+					);
+				end;
+
+				AnInstance.Equipped := True;
+				fList.AddObject(
+					AnInstance.ID,
+					AnInstance
+				);
+				SendEquipItemResult(
+					AChara,
+					AnInstance.Index,
+					EquipLocationsToByte(
+						TEquipmentItem(AnInstance.Item).EquipmentLocation
+					),
+					True
+				);
+			end else
+			begin
+				SendEquipItemResult(
+					AChara,
+					0,
+					0,
+					False
+				);
+			end;
+		end else
+		begin
+			SendEquipItemResult(
+				AChara,
+				0,
+				0,
+				False
+			);
+		end;
+	end;
 end;{Add}
 //------------------------------------------------------------------------------
 
@@ -176,15 +229,41 @@ procedure TEquipment.Remove(const AnIndex:Word);
 var
 	AnInstance : TItemInstance;
 	Index : Integer;
+	AChara : TCharacter;
 begin
+	AChara := TClientLink(ClientInfo.Data).CharacterLink;
 	AnInstance := IndexItem[AnIndex];
 	if AnInstance <> nil then
 	begin
 		Index := fList.IndexOf(AnInstance.ID);
 		if Index > -1 then
 		begin
+			SendUnequipItemResult(
+				AChara,
+				AnIndex,
+				EquipLocationsToByte(
+					TEquipmentItem(AnInstance.Item).EquipmentLocation
+				),
+				True
+			);
 			fList.Delete(Index);
+		end else
+		begin
+			SendUnequipItemResult(
+				AChara,
+				AnIndex,
+				0,
+				False
+			);
 		end;
+	end else
+	begin
+		SendUnequipItemResult(
+			AChara,
+			AnIndex,
+			0,
+			False
+		);
 	end;
 end;{Remove}
 //------------------------------------------------------------------------------
