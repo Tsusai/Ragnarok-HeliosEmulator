@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 613 -
+[2008/10/12] RabidCh - Fixed something Tsusai left out of the GetVar fix involving a string to be pushed instead of an integer.
+-
+
 - Rev 612 -
 [2008/10/12] Aeomin - Declared getitemquantity into lua for RaX forgot it.
 -

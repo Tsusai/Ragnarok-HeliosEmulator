@@ -657,7 +657,7 @@ begin
 			end else
 			begin
 				Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.GetVariable(AChara,Key);
-				lua_pushstring(ALua, PChar(Value));
+				lua_pushinteger(ALua, Value);
 			end;
 		end;
 	end else
