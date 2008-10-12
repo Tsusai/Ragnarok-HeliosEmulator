@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 610 -
+[2008/10/12] Spre - Added Option Constants, options script and gm command comming soon.
+-
+
 - Rev 609 -
 [2008/10/11] RabidCh - Alleviated diagonal walking speed, seems Aegis likes it a little slower.
 -
