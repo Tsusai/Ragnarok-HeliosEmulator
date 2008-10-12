@@ -15,6 +15,17 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 611 -
+[2008/10/12] Tsusai - Lua Script fixes.  GetVar and SetVar now only work exclusively
+ with integers, for more compatibility with converted scripts.  If you want to save
+ strings to the database, it isn't happening right now.  Updated SQL calls to also
+ take care of this, and they do save and retrieve properly now that they are integers.
+ Also tweaked script_moveto to set the script status flag to say we're done, yet
+ the command itself will not end the script.  Some aegis scripts do some silent
+ stuff post warp.  It is up to script team to make sure things exit the script flow
+ properly.
+-
+
 - Rev 610 -
 [2008/10/12] Spre - Added Option Constants, options script and gm command comming soon.
 -

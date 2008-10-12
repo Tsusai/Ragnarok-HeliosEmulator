@@ -73,12 +73,12 @@ type
 		function GetVariable(
 			const ACharacter	: TCharacter;
 			const Key					: string
-			) : string;
+			) : integer;
 
 		procedure SetVariable(
 			const ACharacter	: TCharacter;
 			const Key					: string;
-			const Value				: string
+			const Value				: integer
 		);
 
 		procedure Rename(
@@ -916,7 +916,7 @@ end;//Delete
 Procedure TCharacterQueries.SetVariable(
 	const ACharacter: TCharacter;
 	const Key				: string;
-	const Value			: string
+	const Value			: integer
 );
 
 const
@@ -970,8 +970,8 @@ begin
 			AParam
 		);
 		//Value
-		AParam := ADataset2.Params.CreateParam(ftString, 'Value', ptInput);
-		AParam.AsString := Value;
+		AParam := ADataset2.Params.CreateParam(ftInteger, 'Value', ptInput);
+		AParam.AsInteger := Value;
 		ADataSet2.Params.AddParam(
 			AParam
 		);
@@ -1006,7 +1006,7 @@ end;//SetVariable
 Function TCharacterQueries.GetVariable(
 	const ACharacter: TCharacter;
 	const Key				: string
-) : String;
+) : Integer;
 
 const
 	AQuery =
@@ -1016,7 +1016,7 @@ var
 	ADataSet		: TZQuery;
 	AParam			: TParam;
 begin
-	Result := '';
+	Result := 0;
 
 	ADataSet			:= TZQuery.Create(nil);
 	try
@@ -1037,7 +1037,7 @@ begin
 		ADataset.First;
 		if NOT ADataSet.Eof then
 		begin
-			Result := ADataset.Fields[0].AsString;
+			Result := ADataset.Fields[0].AsInteger;
 		end;
 
 	finally

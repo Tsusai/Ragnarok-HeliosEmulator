@@ -300,7 +300,15 @@ begin
 				lua_tointeger(ALua,3)
 			);
 		end;
-		lua_yield(ALua,0);//end the script
+		//Tsusai Oct 11 2008: We can't end the script.  There are some stupid Aegis
+		//scripts that still continue doing behind the scenes stuff after warping.
+		//The script maker must verify it ends on its own.  However, we warked, so,
+		//assume we aren't running a script.  The previous script should end quickly
+		//anyways
+
+		//lua_yield(ALua,0);//end the script
+		AChara.ScriptStatus := SCRIPT_NOTRUNNING;
+
 	end else
 	begin
 		luaL_error(ALua,'script moveto syntax error');
@@ -459,8 +467,8 @@ end;
 function script_getcharavar(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
-	Value : String;
-	StrValue : String;
+	Value : Integer;
+	//StrValue : String;
 	Key : string;
 	KeyConst : Integer;
 begin
@@ -623,7 +631,7 @@ begin
 						lua_pushinteger(ALua, AChara.AccountID);
 					end;
 
-					VAR_MAPNAME: begin
+					(*VAR_MAPNAME: begin
 						lua_pushstring(ALua, PChar(AChara.Map));
 					end;
 
@@ -635,7 +643,7 @@ begin
 
 					VAR_CHARACTERNAME: begin
 						lua_pushstring(ALua, PChar(AChara.Name));
-					end;
+					end; *)
 
 					VAR_HEADPALETTE: begin
 						lua_pushinteger(ALua, AChara.HairColor);
@@ -662,8 +670,8 @@ end;
 function script_setcharavar(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
-	Value : String;
 	Key : string;
+	Value : Integer;
 begin
 	//Returns 0 results
 	Result := 0;
@@ -674,7 +682,7 @@ begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
 			Key := lua_tostring(ALua, 1);
-			Value := lua_tostring(ALua, 2);
+			Value := lua_tointeger(ALua, 2);
 			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.SetVariable(AChara,Key,Value);
 		end;
 	end else
