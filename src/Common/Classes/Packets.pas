@@ -705,10 +705,10 @@ Begin
 				{end else if Command = 'summon' then begin
 					ExecCommand := GMSummonChar;
 				end else if Command = 'autospell' then begin
-					ExecCommand := AutoSpellSelect;
+					ExecCommand := AutoSpellSelect;}
 				end else if Command = 'npcstringinput' then begin
 					ExecCommand := NPCStringInput;
-				end else if Command = 'gmreqnochatcount' then begin
+				{end else if Command = 'gmreqnochatcount' then begin
 					ExecCommand := GMReqNoChatCount;
 				end else if Command = 'sndoridori' then begin
 					ExecCommand := SNDoridori;

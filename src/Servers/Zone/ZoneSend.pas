@@ -304,6 +304,10 @@ uses
 		const AChara : TCharacter;
 		const NPCID : LongWord
 	);
+	procedure SendNPCInputStr(
+		const AChara : TCharacter;
+		const NPCID : LongWord
+	);
 implementation
 
 
@@ -2273,6 +2277,33 @@ begin
 	WriteBufferWord(0, $0142, OutBuffer);
 	WriteBufferLongWord(2, NPCID, OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($0142,AChara.ClientVersion));
+end;{SendNPCInput}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//SendNPCInputStr                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Send a string input box to client
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/10/11] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendNPCInputStr(
+	const AChara : TCharacter;
+	const NPCID : LongWord
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $01d4, OutBuffer);
+	WriteBufferLongWord(2, NPCID, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($01d4,AChara.ClientVersion));
 end;{SendNPCInput}
 //------------------------------------------------------------------------------
 end{ZoneSend}.
