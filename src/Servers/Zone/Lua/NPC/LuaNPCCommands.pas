@@ -30,7 +30,8 @@ uses
 	NPC,
 	PacketTypes,
 	ZoneSend,
-	LuaVarConstants
+	LuaVarConstants,
+	ZoneInterCommunication
 	;
 
 //Forward declarations of delphi procedures that are added to the lua engine.
@@ -71,12 +72,13 @@ function script_JobChange(ALua : TLua) : integer; cdecl; forward;
 function script_ResetLook(ALua	:TLua)	:	Integer; cdecl;	forward;
 function script_Input(ALua : TLua) : integer; cdecl; forward;
 function script_InputStr(ALua : TLua) : integer; cdecl; forward;
+function script_BroadcastInMap(ALua : TLua) : integer; cdecl; forward;
 //Special Commands
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 37;
+	NPCCommandCount = 38;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -119,6 +121,7 @@ const
 		(name:'ResetLook';func:script_ResetLook),
 		(name:'input';func:script_Input),
 		(name:'inputstr';func:script_InputStr),
+		(name:'broadcastinmap';func:script_BroadcastInMap),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -1280,6 +1283,29 @@ begin
 			);
 			AChara.ScriptStatus := SCRIPT_YIELD_INPUT;
 			Result := lua_yield(ALua,1);
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script Inputstr syntax error');
+	end;
+end;
+
+//Broadcast in current map
+function script_BroadcastInMap(ALua : TLua) : integer;
+var
+	AChara : TCharacter;
+begin
+	Result := 0;
+	if (lua_gettop(ALua) = 1) then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			ZoneSendGMCommandtoInter(
+				MainProc.ZoneServer.ToInterTCPClient,
+				AChara.AccountID,
+				AChara.ID,
+				'#BroadCastLN ' + lua_tostring(ALua,1)
+			);
 		end;
 	end else
 	begin
