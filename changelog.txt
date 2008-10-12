@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 612 -
+[2008/10/12] Aeomin - Declared getitemquantity into lua for RaX forgot it.
+-
+
 - Rev 611 -
 [2008/10/12] Tsusai - Lua Script fixes.  GetVar and SetVar now only work exclusively
  with integers, for more compatibility with converted scripts.  If you want to save

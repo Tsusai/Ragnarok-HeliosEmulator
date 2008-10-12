@@ -78,7 +78,7 @@ function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 38;
+	NPCCommandCount = 39;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -100,6 +100,7 @@ const
 		(name:'setitem';func:script_SetItem),
 		(name:'getitem';func:script_GetItem),
 		(name:'dropitem';func:script_DropItem),
+		(name:'getitemquantity';func:script_GetItemQuantity),
 		(name:'getgold';func:script_getgold),
 		(name:'dropgold';func:script_dropgold),
 		(name:'getexp';func:script_getexp),
