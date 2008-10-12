@@ -351,7 +351,7 @@ Revisions:
 Procedure TBeing.Walk;
 Var
 	spd        : Word;
-	Index			 : Integer;
+	Index      : Integer;
 	AMoveEvent : TMovementEvent;
 	OldPt      : TPoint;
 	idxY       : SmallInt;
@@ -637,7 +637,7 @@ Begin
 		{[2007/04/28] CR - Why isn't this if branch part of the Speed Property? }
 		if (Self.Direction IN Diagonals) then
 		begin
-			spd := Speed * 7 DIV 5;
+			spd := Speed * 3 DIV 2;
 		end else begin
 			spd := Speed;
 		end;
