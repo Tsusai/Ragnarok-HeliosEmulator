@@ -300,6 +300,10 @@ uses
 		const Location:Word;
 		const Success:Boolean
 	);
+	procedure SendNPCInput(
+		const AChara : TCharacter;
+		const NPCID : LongWord
+	);
 implementation
 
 
@@ -2242,5 +2246,33 @@ begin
 	WriteBufferByte(6, Byte(Success), OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($00ac,AChara.ClientVersion));
 end;{SendUnequipItemResult}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendNPCInput                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Send an integer input box to client
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/10/11] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendNPCInput(
+	const AChara : TCharacter;
+	const NPCID : LongWord
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $0142, OutBuffer);
+	WriteBufferLongWord(2, NPCID, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($0142,AChara.ClientVersion));
+end;{SendNPCInput}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

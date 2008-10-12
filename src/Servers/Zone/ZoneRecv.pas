@@ -171,6 +171,12 @@ uses
 		const ReadPts : TReadPts
 	);
 
+	procedure NPCIntegerInput(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
 	procedure QuitGame(
 		var AChara  : TCharacter;
 		const InBuffer : TBuffer;
@@ -1242,6 +1248,41 @@ begin
 		ResumeLuaNPCScript(AChara);
 	end;
 end;{NPCNext}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//NPCIntegerInput                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Receive an int input from player
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//	Changes -
+//		[2008/10/11] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure NPCIntegerInput(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	NPCID : LongWord;
+	Number : LongWord;
+begin
+	NPCID := BufferReadLongWord(ReadPts[0], InBuffer);
+	Number := BufferReadLongWord(ReadPts[1], InBuffer);
+	if (AChara.ScriptBeing.ID = NPCID) and
+		(AChara.ScriptStatus = SCRIPT_YIELD_INPUT) then
+	begin
+		AChara.ScriptStatus := SCRIPT_RUNNING;
+		ResumeLuaNPCScriptWithInteger(AChara,Number);
+	end;
+end;{NPCIntegerInput}
 //------------------------------------------------------------------------------
 
 

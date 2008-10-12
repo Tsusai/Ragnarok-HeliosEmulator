@@ -622,9 +622,9 @@ Begin
 					ExecCommand := GMMapMove;
 				end else if Command = 'recall' then begin
 					ExecCommand := GMRecall;
-				{end else if Command = 'npcamountinput' then begin
+				end else if Command = 'npcamountinput' then begin
 					ExecCommand := NPCIntegerInput;
-				end else if Command = 'npccloseclicked' then begin
+				{end else if Command = 'npccloseclicked' then begin
 					ExecCommand := NPCClickClose;
 				end else if Command = 'gmreqnochat' then begin
 					ExecCommand := GMRequestNoChat;
