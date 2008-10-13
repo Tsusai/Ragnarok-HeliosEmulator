@@ -1961,7 +1961,7 @@ end;{SendStatusIcon}
 
 
 //------------------------------------------------------------------------------
-//SendUpdatedLook																								 PROCEDURE
+//SendUpdatedLook                                                      PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does -
 //		Updates the look of a character.

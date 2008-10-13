@@ -124,7 +124,8 @@ uses
 	ZoneSend,
 	GameConstants,
 	GameTypes,
-	ItemInstance
+	ItemInstance,
+	Globals
 	{Third Party}
 	//none
 	;
@@ -286,20 +287,16 @@ procedure Effect(
 begin
 	if AObject is TCharacter then
 	begin
-		if AObject = ACurrentObject then
-			SendSpecialEffect(
-				Tbeing(AObject),
-				TCharacter(ACurrentObject).ClientInfo,
-				TCharacter(ACurrentObject).AccountID,
-				AParameters.GetAsLongWord(1)
-			)
-		else
-			SendSpecialEffect(
-				Tbeing(AObject),
-				TCharacter(ACurrentObject).ClientInfo,
-				TCharacter(ACurrentObject).ID,
-				AParameters.GetAsLongWord(1)
-			);
+		SendSpecialEffect(
+			Tbeing(AObject),
+			TCharacter(ACurrentObject).ClientInfo,
+				IIF(
+					(AObject = ACurrentObject),
+					TCharacter(ACurrentObject).AccountID,
+					TCharacter(ACurrentObject).ID
+				),
+			AParameters.GetAsLongWord(1)
+		);
 	end;
 end;{Effect}
 //------------------------------------------------------------------------------
@@ -347,21 +344,29 @@ begin
 		ACharacter := TCharacter(AObject);
 		ACurrentCharacter := TCharacter(ACurrentObject);
 		case ACurrentCharacter.CharaState of
-			charaSitting :
-				begin
-					if AObject = ACurrentObject then
-						DoAction(ACharacter.ClientInfo, ACurrentCharacter.AccountID, 0, 0, 0, ACTION_SIT, 0, 0, 0)
-					else
-						DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
-				end;
+			charaSitting :begin
+					DoAction(
+						ACharacter.ClientInfo,
+						IIF(
+							(AObject = ACurrentObject),
+							ACurrentCharacter.AccountID,
+							ACurrentCharacter.ID
+						),
+						0, 0, 0, ACTION_SIT, 0, 0, 0
+					);
+			end;
 
-			charaStanding :
-				begin
-					if AObject = ACurrentObject then
-						DoAction(ACharacter.ClientInfo, ACurrentCharacter.AccountID, 0, 0, 0, ACTION_STAND, 0, 0, 0)
-					else
-						DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
-				end;
+			charaStanding :begin
+					DoAction(
+						ACharacter.ClientInfo,
+						IIF(
+							(AObject = ACurrentObject),
+							ACurrentCharacter.AccountID,
+							ACurrentCharacter.ID
+						),
+						0, 0, 0, ACTION_STAND, 0, 0, 0
+					);
+			end;
 		end;
 	end;
 end;{ShowAction}
@@ -433,20 +438,16 @@ procedure ShowDeath(
 begin
 	if (ACurrentObject is TCharacter) AND (AObject is TCharacter) then
 	begin
-		if AObject = ACurrentObject then
-			ZoneDisappearBeing(
-				TBeing(ACurrentObject),
-				TCharacter(AObject).ClientInfo,
-				1,
-				TCharacter(AObject).AccountID
-				)
-		else
-			ZoneDisappearBeing(
-				TBeing(ACurrentObject),
-				TCharacter(AObject).ClientInfo,
-				1,
+		ZoneDisappearBeing(
+			TBeing(ACurrentObject),
+			TCharacter(AObject).ClientInfo,
+			1,
+			IIF(
+				(AObject = ACurrentObject),
+				TCharacter(AObject).AccountID,
 				TCharacter(AObject).ID
-			);
+			)
+		);
 	end;
 end;{ShowDeath}
 //------------------------------------------------------------------------------
@@ -468,10 +469,17 @@ procedure JobChange(
 begin
 	if (ACurrentObject is TCharacter) AND (AObject is TCharacter) then
 	begin
-		if ACurrentObject = AObject then
-			SendUpdatedLook(TCharacter(ACurrentObject), TCharacter(AObject).AccountId, LOOK_JOB, TCharacter(AObject).JID, 0)
-		else
-			SendUpdatedLook(TCharacter(ACurrentObject), TCharacter(AObject).ID, LOOK_JOB, TCharacter(AObject).JID, 0)
+		SendUpdatedLook(
+			TCharacter(ACurrentObject),
+			IIF(
+				(ACurrentObject = AObject),
+				TCharacter(AObject).AccountId,
+				TCharacter(AObject).ID
+			),
+			LOOK_JOB,
+			TCharacter(AObject).JID,
+			0
+		);
 	end;
 end;{ShowDeath}
 //------------------------------------------------------------------------------
@@ -521,18 +529,15 @@ procedure ShowPickupItem(
 begin
 	if (AObject is TCharacter) then
 	begin
-		if AObject = ACurrentObject then
-			SendPickUpItemAnimation(
-				TCharacter(AObject),
+		SendPickUpItemAnimation(
+			TCharacter(AObject),
+			IIF(
+				(AObject = ACurrentObject),
 				TCharacter(ACurrentObject).AccountID,
-				AParameters.GetAsLongWord(1)
-			)
-		else
-			SendPickUpItemAnimation(
-				TCharacter(AObject),
-				TCharacter(ACurrentObject).ID,
-				AParameters.GetAsLongWord(1)
-			);
+				TCharacter(ACurrentObject).ID
+			),
+			AParameters.GetAsLongWord(1)
+		);
 	end;
 end;{ShowPickupItem}
 //------------------------------------------------------------------------------
@@ -581,13 +586,23 @@ procedure ShowAttack(
 begin
 	if (AObject is TCharacter) then
 	begin
-		if(AParameters.GetAsLongWord(6) = TBeing(AObject).ID) then
-		begin
-			DoAction(TCharacter(AObject).ClientInfo, TCharacter(ACurrentObject).AccountID, AParameters.GetAsLongWord(2), AParameters.GetAsLongWord(1) DIV 2, 0, ACTION_ATTACK, EnsureRange(AParameters.GetAsLongWord(3), 0, High(Word)), AParameters.GetAsLongWord(5), AParameters.GetAsLongWord(4));
-		end else
-		begin
-			DoAction(TCharacter(AObject).ClientInfo, TBeing(ACurrentObject).ID, AParameters.GetAsLongWord(2), AParameters.GetAsLongWord(1) DIV 2, 0, ACTION_ATTACK, EnsureRange(AParameters.GetAsLongWord(3), 0, High(Word)), AParameters.GetAsLongWord(5), AParameters.GetAsLongWord(4));
-		end;
+		DoAction(
+			TCharacter(AObject).ClientInfo,
+			IIF(
+				(AParameters.GetAsLongWord(6) = TBeing(AObject).ID),
+				TCharacter(ACurrentObject).AccountID,
+				TBeing(ACurrentObject).ID
+			),
+			AParameters.GetAsLongWord(2),
+			AParameters.GetAsLongWord(1) DIV 2,
+			0,
+			ACTION_ATTACK,
+			EnsureRange(AParameters.GetAsLongWord(3),
+			0,
+			High(Word)),
+			AParameters.GetAsLongWord(5),
+			AParameters.GetAsLongWord(4)
+		);
 	end;
 end;{RemoveGroundItem}
 //------------------------------------------------------------------------------

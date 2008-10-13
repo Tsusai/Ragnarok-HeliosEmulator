@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 614 -
+[2008/10/13] Aeomin - Changed accountid/charid conditions into IIF.
+-
+
 - Rev 613 -
 [2008/10/12] RabidCh - Fixed something Tsusai left out of the GetVar fix involving a string to be pushed instead of an integer.
 -

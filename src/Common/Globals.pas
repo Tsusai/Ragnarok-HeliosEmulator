@@ -37,6 +37,7 @@ uses
 	function  ConvertMySQLTime(DateString: string) : TDateTime;
 	function  IncSecond(const AValue: TDateTime; const ANumberOfSeconds: Int64): TDateTime;
 	function  IncMinute(const AValue: TDateTime; const ANumberOfMinutes: Int64): TDateTime;
+	function IIF(const Statement:Boolean;const IFTrue,IFFalse:LongWord):LongWord;
 
 //------------------------------------------------------------------------------
 //                              Global Variables
@@ -276,4 +277,24 @@ begin
 end;{IncMinute}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//IIF                                                                   FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//		I don't remember if Delphi has this by default.
+//	Return IFTrue if statement was true, else IFFalse
+//
+//	Changes -
+//		[2008/10/13] - Aeomin Created
+//
+//------------------------------------------------------------------------------
+function IIF(const Statement:Boolean;const IFTrue,IFFalse:LongWord):LongWord;
+begin
+	if Statement then
+		Result := IFTrue
+	else
+		Result := IFFalse;
+end;{IIF}
+//------------------------------------------------------------------------------
 end.
