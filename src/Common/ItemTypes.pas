@@ -19,9 +19,11 @@ unit ItemTypes;
 interface
 
 
-//uses
+uses
 	{RTL/VCL}
 	{Project}
+	GameTypes
+	;
 	{Third Party}
 
 type
@@ -81,6 +83,8 @@ function ByteToEquipLocations(AWord : Word) : TEquipLocations;
 
 function EquipTypeToByte(const AnEquipType : TEquipTypes) : Byte;
 function ByteToEquipType(AByte : Byte) : TEquipTypes;
+
+function EquipLocationToLookType(const AnEquipLocation : TEquipLocations):TLookTypes;
 
 
 implementation
@@ -228,5 +232,17 @@ begin
 	end;
 end;{ByteToEquipType}
 
-
+function EquipLocationToLookType(const AnEquipLocation : TEquipLocations):TLookTypes;
+begin
+	case AnEquipLocation of
+		HEADUPPER:Result := LOOK_HEAD_TOP;
+		HEADMID:  Result := LOOK_HEAD_MID;
+		HEADLOWER:Result := LOOK_HEAD_BOTTOM;
+		RIGHTHAND:Result := LOOK_WEAPON;
+		LEFTHAND: Result := LOOK_SHIELD;
+		FEET:     Result := LOOK_SHOES;
+		else
+			Result := TLookTypes(0);
+	end;
+end;{EquipLocationToLookType}
 end.

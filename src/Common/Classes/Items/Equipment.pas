@@ -34,7 +34,7 @@ type
 		property SpriteID[const ALocation : TEquipLocations]:LongWord read GetSpriteID write SetSpriteID;
 		property EquipmentID[const ALocation : TEquipLocations]:LongWord read GetEquipmentID write SetEquipmentID;
 		procedure Add(const AnInstance:TItemInstance;const DontSend:Boolean=False);
-		procedure Remove(const AnIndex:Word);
+		procedure Remove(const AnIndex:Word;const DontChangeLook:Boolean=False);
 		function IsEquipped(const ID:LongWord):Boolean;
 	end;
 implementation
@@ -43,7 +43,10 @@ uses
 	Character,
 	EquipmentItem,
 	ZoneSend,
-	PacketTypes
+	PacketTypes,
+	GameTypes,
+	ParameterList,
+	AreaLoopEvents
 	;
 
 //------------------------------------------------------------------------------
@@ -228,6 +231,8 @@ var
 	AChara : TCharacter;
 	BeforeItem : TItemInstance;
 	Equip : TEquipmentItem;
+	ParameterList : TParameterList;
+	LookTypes : TLookTypes;
 begin
 	if AnInstance.Item is TEquipmentItem then
 	begin
@@ -241,7 +246,8 @@ begin
 				if BeforeItem <> nil then
 				begin
 					Remove(
-						BeforeItem.Index
+						BeforeItem.Index,
+						True
 					);
 				end;
 				fSprites[Byte(Equip.EquipmentLocation)]:=AnInstance.Item.SpriteID;
@@ -252,6 +258,7 @@ begin
 					AnInstance
 				);
 				if not DontSend then
+				begin
 					SendEquipItemResult(
 						AChara,
 						AnInstance.Index,
@@ -260,6 +267,16 @@ begin
 						),
 						True
 					);
+					LookTypes := EquipLocationToLookType(Equip.EquipmentLocation);
+					if Byte(LookTypes) >0 then
+					begin
+						ParameterList := TParameterList.Create;
+						ParameterList.AddAsLongWord(1,Byte(LookTypes));
+						ParameterList.AddAsLongWord(2,Equip.SpriteID);
+						AChara.AreaLoop(ShowChangeLook,False,ParameterList);
+						ParameterList.Free;
+					end;
+				end;
 			end else
 			begin
 				if not DontSend then
@@ -294,12 +311,14 @@ end;{Add}
 //	Changes -
 //		[2008/10/08] Aeomin - Created
 //------------------------------------------------------------------------------
-procedure TEquipment.Remove(const AnIndex:Word);
+procedure TEquipment.Remove(const AnIndex:Word;const DontChangeLook:Boolean=False);
 var
 	AnInstance : TItemInstance;
 	Index : Integer;
 	AChara : TCharacter;
 	Equip : TEquipmentItem;
+	ParameterList : TParameterList;
+	LookTypes : TLookTypes;
 begin
 	AChara := TClientLink(ClientInfo.Data).CharacterLink;
 	AnInstance := IndexItem[AnIndex];
@@ -320,6 +339,18 @@ begin
 				),
 				True
 			);
+			if not DontChangeLook then
+			begin
+				LookTypes := EquipLocationToLookType(Equip.EquipmentLocation);
+				if Byte(LookTypes) >0 then
+				begin
+					ParameterList := TParameterList.Create;
+					ParameterList.AddAsLongWord(1,Byte(LookTypes));
+					ParameterList.AddAsLongWord(2,0);
+					AChara.AreaLoop(ShowChangeLook,False,ParameterList);
+					ParameterList.Free;
+				end;
+			end;
 			fList.Delete(Index);
 		end else
 		begin

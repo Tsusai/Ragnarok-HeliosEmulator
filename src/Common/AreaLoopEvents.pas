@@ -108,7 +108,14 @@ uses
 		const AObject        : TGameObject;
 		const AParameters    : TParameterList = nil
 	);
+
 	procedure ShowAttack(
+		const ACurrentObject : TGameObject;
+		const AObject        : TGameObject;
+		const AParameters    : TParameterList = nil
+	);
+
+	procedure ShowChangeLook(
 		const ACurrentObject : TGameObject;
 		const AObject        : TGameObject;
 		const AParameters    : TParameterList = nil
@@ -570,7 +577,7 @@ end;{RemoveGroundItem}
 
 
 //------------------------------------------------------------------------------
-//ShowAttack                                                     PROCEDURE
+//ShowAttack                                                           PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //		Shows a being attacking another being
@@ -607,4 +614,36 @@ begin
 end;{RemoveGroundItem}
 //------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+//ShowChangeLook                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Sprite change
+//
+//	Changes-
+//		[2008/10/13] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ShowChangeLook(
+	const ACurrentObject : TGameObject;
+	const AObject        : TGameObject;
+	const AParameters    : TParameterList = nil
+);
+begin
+	if (AObject is TCharacter) then
+	begin
+		SendUpdatedLook(
+			TCharacter(AObject),
+			IIF(
+				AObject = ACurrentObject,
+				TCharacter(ACurrentObject).AccountID,
+				TCharacter(ACurrentObject).ID
+			),
+			TLookTypes(AParameters.GetAsLongWord(1)),
+			AParameters.GetAsLongWord(2),
+			0
+		);
+	end;
+end;{ShowChangeLook}
+//------------------------------------------------------------------------------
 end.

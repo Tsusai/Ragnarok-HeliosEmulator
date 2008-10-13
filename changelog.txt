@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 615 -
+[2008/10/13] Aeomin - Now updates view when equip/unequip.
+-
+
 - Rev 614 -
 [2008/10/13] Aeomin - Changed accountid/charid conditions into IIF.
 -
