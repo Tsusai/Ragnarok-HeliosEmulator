@@ -237,10 +237,12 @@ begin
 	if AnInstance.Item is TEquipmentItem then
 	begin
 		AChara := TClientLink(ClientInfo.Data).CharacterLink;
+		//Nothing happens if not identified
 		if AnInstance.Identified then
 		begin
 			Equip := TEquipmentItem(AnInstance.Item);
-			if (Equip.MinimumLevel <= AChara.BaseLV) then
+			if (Equip.MinimumLevel <= AChara.BaseLV)AND
+			(NOT AnInstance.Broken) then
 			begin
 				BeforeItem := LocationItem[Equip.EquipmentLocation];
 				if BeforeItem <> nil then
@@ -287,15 +289,6 @@ begin
 						False
 					);
 			end;
-		end else
-		begin
-			if not DontSend then
-				SendEquipItemResult(
-					AChara,
-					0,
-					0,
-					False
-				);
 		end;
 	end;
 end;{Add}
