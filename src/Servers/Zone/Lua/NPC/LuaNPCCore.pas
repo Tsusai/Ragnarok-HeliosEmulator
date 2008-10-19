@@ -62,7 +62,12 @@ begin
 	//Get the function
 	lua_getglobal(AChara.LuaInfo.Lua,PChar(LuaFunc));
 	//run the function
-	lua_resume(AChara.LuaInfo.Lua,0);
+	if lua_resume(AChara.LuaInfo.Lua,0) <> 0 then
+	begin
+		//If something went wrong, get the error message off the stack
+		WriteLn(lua_tostring(AChara.LuaInfo.Lua, -1));
+		lua_pop(AChara.LuaInfo.Lua, 1); //Remove the error string
+	end;
 end;
 
 procedure ResumeLuaNPCScript(
@@ -71,7 +76,12 @@ procedure ResumeLuaNPCScript(
 );
 begin
 	SetCharaToLua(AChara); //put the global back on the stack
-	lua_resume(AChara.LuaInfo.Lua, Byte(ReturnAValue));
+	if lua_resume(AChara.LuaInfo.Lua, Byte(ReturnAValue)) <> 0 then
+	begin
+		//If something went wrong, get the error message off the stack
+		WriteLn(lua_tostring(AChara.LuaInfo.Lua, -1));
+		lua_pop(AChara.LuaInfo.Lua, 1); //Remove the error string
+	end;
 end;
 
 procedure ResumeLuaNPCScriptWithString(

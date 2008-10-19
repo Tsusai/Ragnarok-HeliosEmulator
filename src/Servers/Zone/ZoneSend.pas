@@ -300,6 +300,13 @@ uses
 		const Location:Word;
 		const Success:Boolean
 	);
+
+	procedure SendNPCDialog(
+		const AChara : TCharacter;
+		const NPCID : LongWord;
+		const NPCMessage : string
+	);
+
 	procedure SendNPCInput(
 		const AChara : TCharacter;
 		const NPCID : LongWord
@@ -2252,6 +2259,38 @@ begin
 end;{SendUnequipItemResult}
 //------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+//SendNPCDialog                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Sends dialog text to a character
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/10/18] Tsusai - Created
+//------------------------------------------------------------------------------
+procedure SendNPCDialog(
+	const AChara : TCharacter;
+	const NPCID : LongWord;
+	const NPCMessage : string
+);
+var
+	OutBuffer : TBuffer;
+	Len : integer;
+begin
+	Len := Length(NPCMessage);
+	WriteBufferWord(0, $00b4, OutBuffer);
+	WriteBufferWord(2, Len + 8, OutBuffer);
+	WriteBufferLongWord(4, NPCID, OutBuffer);
+	WriteBufferString(8, NPCMessage, Len, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, len + 8);
+end;
+{SendUnequipItemResult}
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 //SendNPCInput                                                         PROCEDURE

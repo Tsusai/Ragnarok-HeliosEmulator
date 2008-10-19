@@ -15,6 +15,15 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 618 -
+[2008/10/18] Tsusai - Fixed Lua reporting errors.  Realized I did not pull the
+ error message off the stack (LuaNPCCore)
+[2008/10/18] Tsusai - Implemented use of lual_argcheck in NPC Script, Warp, and
+ script dialog command.  lual_argcheck invokes the equiv of Exit;, so I have 2
+ hints right now. (LuaNPCCommands)
+[2008/10/18] Tsusai - Moved Dialog packet to ZoneSend
+-
+
 - Rev 617 -
 [2008/10/18] Aeomin - Now you can "use" item now. (item just gone though.. HAHA).
 [2008/10/18] Aeomin - Need confirm what is packet 1c8 really do...

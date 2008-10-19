@@ -1,4 +1,7 @@
 //Contains all script commands used by the lua system
+//Note the command lual_argcheck will cause the procedure it is in to call exit;
+//So be aware of your code!
+
 unit LuaNPCCommands;
 
 {$IFDEF FPC}
@@ -147,37 +150,31 @@ begin
 end;
 
 //npc("new_1-1","Bulletin Board",spr_HIDDEN_NPC,66,114,4,0,0,"new_1-1_Bulletin_Board_66114"[,"optional ontouch"])
+//[2008/10/18] Tsusai - Implemented lua argchecks
 function CheckLuaNPCSyntax(ALua : TLua) : boolean;
 var
 	ParamCount : word;
 begin
-	//Assume true
-	Result := true;
+	//Assume false
+	Result := false;
 	ParamCount := lua_gettop(ALua);
-	if not ParamCount in [9..10] then
-	begin
-		if (ParamCount = 10) and
-			not Lua_isNonNumberString(ALua,10) then
-		begin
-			Result := false;
-		end;
-		if not Lua_isNonNumberString(ALua, 1) and
-			not Lua_isNonNumberString(ALua, 2) and
-			not lua_isnumber(ALua, 3) and
-			not lua_isnumber(ALua, 4) and
-			not lua_isnumber(ALua, 5) and
-			not lua_isnumber(ALua, 6) and
-			not lua_isnumber(ALua, 7) and
-			not lua_isnumber(ALua, 8) and
-			not Lua_isNonNumberString(ALua, 9) then
-		begin
-			Result := false;
-		end;
-	end;
-	if not Result then
-	begin
-		lual_error(ALua,'NPC Script Syntax Error');
-	end;
+	//Check parameter count
+	if not ParamCount in [9..10] then lual_error(ALua,'Invalid number of NPC Script parameters');
+	//Check parameters
+	lual_argcheck(ALua,Lua_isNonNumberString(ALua,1),1,'NPC Map parameter must be a string');
+	lual_argcheck(ALua,lua_isnumber(ALua,3),2,'NPC Name parameter must be a string');
+	lual_argcheck(ALua,lua_isnumber(ALua,3),3,'NPC Sprite parameter must be a integer');
+	lual_argcheck(ALua,lua_isnumber(ALua,4),4,'NPC X Coord parameter must be a integer');
+	lual_argcheck(ALua,lua_isnumber(ALua,5),5,'NPC Y Coord parameter must be a integer');
+	lual_argcheck(ALua,lua_isnumber(ALua,6),6,'NPC Direction parameter must be a integer');
+	lual_argcheck(ALua,lua_isnumber(ALua,7),7,'NPC X Radius parameter must be a integer');
+	lual_argcheck(ALua,lua_isnumber(ALua,8),8,'NPC Y Radius parameter must be a integer');
+	lual_argcheck(ALua,Lua_isNonNumberString(ALua,9),9,'NPC Function Name parameter must be a string');
+	//Optional Ontouch
+	if ParamCount = 10 then lual_argcheck(ALua,Lua_isNonNumberString(ALua,10),10,'NPC OnTouch Function Name parameter must be a string');
+
+	//Made it through, set to true
+	Result := true;
 end;
 
 //[2007/04/23] Tsusai - Added result
@@ -211,25 +208,26 @@ end;
 
 //Verifies all lua information on the warp syntax
 //(hidden)warp("map","name",x,y,xradius,yradius)
+//[2008/10/18] Tsusai - Implemented lua argchecks
 function CheckLuaWarpSyntax(
 	ALua : TLua
 ) : boolean;
 var
 	ParamCount : word;
 begin
+	//Assume false, since argchecks will cause Exit; to happen....somehow
 	Result := true;
+	//Validate
 	ParamCount := lua_gettop(ALua);
-	if not (ParamCount = 6) and
-		not (Lua_isNonNumberString(ALua,1)) and
-		not (Lua_isNonNumberString(ALua,2)) and
-		not (lua_isnumber(ALua,3)) and
-		not (lua_isnumber(ALua,4)) and
-		not (lua_isnumber(ALua,5)) and
-		not (lua_isnumber(ALua,6)) then
-	begin
-		lual_error(ALua,'NPC Script Syntax Error');
-		Result := false;
-	end;
+	if not ParamCount = 6 then lual_error(ALua,'Invalid number of NPC Warp parameters');
+	lual_argcheck(ALua,Lua_isNonNumberString(ALua,1),1,'Warp Map parameter must be a string');
+	lual_argcheck(ALua,Lua_isNonNumberString(ALua,2),2,'Warp Name parameter must be a string');
+	lual_argcheck(ALua,lua_isnumber(ALua,3),3,'Warp X Coord parameter must be a integer');
+	lual_argcheck(ALua,lua_isnumber(ALua,4),4,'Warp Y Coord parameter must be a integer');
+	lual_argcheck(ALua,lua_isnumber(ALua,5),5,'Warp X Radius parameter must be a integer');
+	lual_argcheck(ALua,lua_isnumber(ALua,6),6,'Warp Y Radius parameter must be a integer');
+	//Made it through, set true
+	Result := true;
 end;
 
 //Takes lua information and makes the warp
@@ -322,27 +320,13 @@ end;
 function script_dialog(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
-	Len : integer;
-	Dialog : string;
-	OutBuffer : TBuffer;
 begin
 	Result := 0;
-	if (lua_gettop(ALua) = 1) and
-		(lua_isstring(ALua,1)) then
+	if not (lua_gettop(ALua) = 1) then luaL_error(ALua,'NPC Dialog parameter count error');
+	lual_argcheck(ALua,lua_isstring(ALua,1),1,'NPC Dialog must be string with quotes');
+	if GetCharaFromLua(ALua,AChara) then
 	begin
-		if GetCharaFromLua(ALua,AChara) then
-		begin
-			Dialog := lua_tostring(ALua,1);
-			Len := Length(Dialog);
-			WriteBufferWord(0, $00b4, OutBuffer);
-			WriteBufferWord(2, Len + 8, OutBuffer);
-			WriteBufferLongWord(4, AChara.ScriptBeing.ID, OutBuffer);
-			WriteBufferString(8, Dialog, Len, OutBuffer);
-			SendBuffer(AChara.ClientInfo, OutBuffer, len + 8);
-		end;
-	end else
-	begin
-		luaL_error(ALua,'script dialog syntax error');
+		SendNPCDialog(AChara,AChara.ScriptBeing.ID,lua_tostring(ALua,1));
 	end;
 end;
 
@@ -378,18 +362,13 @@ var
 	OutBuffer : TBuffer;
 begin
 	Result := 0;
-	if lua_gettop(ALua) = 0 then
+	if not lua_gettop(ALua) = 0 then luaL_error(ALua,'Close command error');
+	if GetCharaFromLua(ALua,AChara) then
 	begin
-		if GetCharaFromLua(ALua,AChara) then
-		begin
-			WriteBufferWord(0, $00b6, OutBuffer);
-			WriteBufferLongWord(2, AChara.ScriptBeing.ID, OutBuffer);
-			SendBuffer(AChara.ClientInfo, OutBuffer, 6);
-			AChara.ScriptStatus := SCRIPT_NOTRUNNING;
-		end;
-	end else
-	begin
-		luaL_error(ALua,'script close syntax error');
+		WriteBufferWord(0, $00b6, OutBuffer);
+		WriteBufferLongWord(2, AChara.ScriptBeing.ID, OutBuffer);
+		SendBuffer(AChara.ClientInfo, OutBuffer, 6);
+		AChara.ScriptStatus := SCRIPT_NOTRUNNING;
 	end;
 end;
 
