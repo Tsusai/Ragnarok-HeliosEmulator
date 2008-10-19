@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 619 -
+[2008/10/18] Aeomin - Fixed HINTS.
+-
+
 - Rev 618 -
 [2008/10/18] Tsusai - Fixed Lua reporting errors.  Realized I did not pull the
  error message off the stack (LuaNPCCore)

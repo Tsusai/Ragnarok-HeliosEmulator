@@ -174,7 +174,7 @@ begin
 	if ParamCount = 10 then lual_argcheck(ALua,Lua_isNonNumberString(ALua,10),10,'NPC OnTouch Function Name parameter must be a string');
 
 	//Made it through, set to true
-	Result := true;
+	Result := not Result;
 end;
 
 //[2007/04/23] Tsusai - Added result
@@ -216,7 +216,7 @@ var
 	ParamCount : word;
 begin
 	//Assume false, since argchecks will cause Exit; to happen....somehow
-	Result := true;
+	Result := False;
 	//Validate
 	ParamCount := lua_gettop(ALua);
 	if not ParamCount = 6 then lual_error(ALua,'Invalid number of NPC Warp parameters');
@@ -227,7 +227,7 @@ begin
 	lual_argcheck(ALua,lua_isnumber(ALua,5),5,'Warp X Radius parameter must be a integer');
 	lual_argcheck(ALua,lua_isnumber(ALua,6),6,'Warp Y Radius parameter must be a integer');
 	//Made it through, set true
-	Result := true;
+	Result := NOT Result;
 end;
 
 //Takes lua information and makes the warp
