@@ -272,6 +272,12 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure ItemUse(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -1986,6 +1992,40 @@ begin
 		end;
 	end;
 end;{ItemUnequip}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ItemUse                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Use an item
+//--
+//	Pre:
+//		TODO
+//	Post:
+//		TODO
+//--
+//  Changes -
+//		[2008/10/18] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ItemUse(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	Index:Word;
+begin
+	if AChara.CharaState in [charaSitting,charaStanding,charaWalking,charaAttacking] then
+	begin
+		Index := BufferReadWord(ReadPts[0], InBuffer);
+		if Index > 0 then
+		begin
+			AChara.Inventory.Use(Index-1);
+		end;
+	end;
+end;{ItemUse}
 //------------------------------------------------------------------------------
 
 

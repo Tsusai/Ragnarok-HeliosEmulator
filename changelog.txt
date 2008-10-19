@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 617 -
+[2008/10/18] Aeomin - Now you can "use" item now. (item just gone though.. HAHA).
+[2008/10/18] Aeomin - Need confirm what is packet 1c8 really do...
+-
+
 - Rev 616 -
 [2008/10/14] Aeomin - Added condition check of broken equipment.
 [2008/10/14] Aeomin - Removed error message for unidentified.

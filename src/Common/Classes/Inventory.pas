@@ -112,7 +112,7 @@ public
 	function AmountOf(const Name:String):LongWord;overload;
 	procedure Equip(const Index:Word);
 	procedure Unequip(const Index:Word);
-	{procedure Use(const Index:Word);}
+	procedure Use(const Index:Word);
 	constructor Create(const Parent : TObject;const AnEquipment:TEquipment);
 	destructor Destroy;override;
 end;(* TInventory
@@ -865,5 +865,30 @@ begin
 		);
 	end;
 end;{Unequip}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Use                                                                   FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//		Attempt to use item
+//
+//	Changes -
+//		[2008/10/18] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure TInventory.Use(const Index:Word);
+var
+	AnItem : TItemInstance;
+begin
+	AnItem := fItemList.IndexItems[Index];
+	if AnItem <> nil then
+	begin
+		if AnItem.Item is TUseableItem then
+		begin
+			Remove(AnItem,1);
+		end;
+	end;
+end;{Use}
 //------------------------------------------------------------------------------
 end{Inventory}.

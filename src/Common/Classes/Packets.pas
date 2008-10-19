@@ -501,8 +501,8 @@ Begin
 					ExecCommand := TakeItem;
 				end else if Command = 'dropitem' then begin
 					ExecCommand := DropItem;
-				{end else if Command = 'useitem' then begin
-					ExecCommand := ItemUse;}
+				end else if Command = 'useitem' then begin
+					ExecCommand := ItemUse;
 				end else if Command = 'equipitem' then begin
 					ExecCommand := ItemEquip;
 				end else if Command = 'unequipitem' then begin
