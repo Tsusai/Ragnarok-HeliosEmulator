@@ -256,6 +256,13 @@ const
 	MOBSCALE_SMAL   = 0;
 	MOBSCALE_MEDIUM = 1;
 	MOBSCALE_LARGE  = 2;
+
+//------------------------------------------------------------------------------
+//                             Script Constants
+//------------------------------------------------------------------------------
+
+	CHARAVAR_INTEGER = 0;
+	CHARAVAR_STRING = 1;
 implementation
 
 end.

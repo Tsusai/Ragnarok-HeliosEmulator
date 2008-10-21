@@ -72,13 +72,15 @@ type
 
 		function GetVariable(
 			const ACharacter	: TCharacter;
-			const Key					: string
-			) : integer;
+			const Key					: string;
+			var AType					: Byte
+			) : string;
 
 		procedure SetVariable(
 			const ACharacter	: TCharacter;
 			const Key					: string;
-			const Value				: integer
+			const Value				: string;
+			AType							: Byte
 		);
 
 		procedure Rename(
@@ -916,19 +918,20 @@ end;//Delete
 Procedure TCharacterQueries.SetVariable(
 	const ACharacter: TCharacter;
 	const Key				: string;
-	const Value			: integer
+	const Value			: string;
+	AType						: Byte
 );
 
 const
 	UpdateVariableQuery =
 		'UPDATE charactervariables '+
-		'SET `value`=:Value '+
+		'SET `value`=:Value, `type`=:Type '+
 		'WHERE character_id=:ID AND `key`=:Key;';
 
 	InsertVariableQuery =
 		'INSERT INTO charactervariables '+
-		'(`character_id`, `key`, `value`) '+
-		'VALUES(:ID, :Key, :Value);';
+		'(`character_id`, `key`, `value`, `type`) '+
+		'VALUES(:ID, :Key, :Value, :Type);';
 
 	CheckVariableQuery =
 		'SELECT character_id FROM charactervariables WHERE '+
@@ -970,8 +973,14 @@ begin
 			AParam
 		);
 		//Value
-		AParam := ADataset2.Params.CreateParam(ftInteger, 'Value', ptInput);
-		AParam.AsInteger := Value;
+		AParam := ADataset2.Params.CreateParam(ftString, 'Value', ptInput);
+		AParam.AsString := Value;
+		ADataSet2.Params.AddParam(
+			AParam
+		);
+		//Value
+		AParam := ADataset2.Params.CreateParam(ftInteger, 'Type', ptInput);
+		AParam.AsInteger := AType;
 		ADataSet2.Params.AddParam(
 			AParam
 		);
@@ -1005,18 +1014,19 @@ end;//SetVariable
 //------------------------------------------------------------------------------
 Function TCharacterQueries.GetVariable(
 	const ACharacter: TCharacter;
-	const Key				: string
-) : Integer;
+	const Key				: string;
+	var AType				: Byte
+) : string;
 
 const
 	AQuery =
-		'SELECT `value` FROM charactervariables WHERE character_id=:ID AND `key`=:Key;';
+		'SELECT `value`, `type` FROM charactervariables WHERE character_id=:ID AND `key`=:Key;';
 
 var
 	ADataSet		: TZQuery;
 	AParam			: TParam;
 begin
-	Result := 0;
+	Result := '';
 
 	ADataSet			:= TZQuery.Create(nil);
 	try
@@ -1037,7 +1047,8 @@ begin
 		ADataset.First;
 		if NOT ADataSet.Eof then
 		begin
-			Result := ADataset.Fields[0].AsInteger;
+			AType := ADataset.Fields[1].AsInteger;
+			Result := ADataset.Fields[0].AsString;
 		end;
 
 	finally

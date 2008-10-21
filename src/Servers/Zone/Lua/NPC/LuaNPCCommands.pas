@@ -409,6 +409,7 @@ var
 	Size : word;
 	OutBuffer : TBuffer;
 	idx : word;
+
 begin
 	Result := 0;
 	MenuString := '';
@@ -447,10 +448,10 @@ end;
 function script_getcharavar(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
-	Value : Integer;
-	//StrValue : String;
+	Value : String;
 	Key : string;
 	KeyConst : Integer;
+	VarType : Byte;
 begin
 	//Returns 1 result
 	Result := 1;
@@ -611,19 +612,18 @@ begin
 						lua_pushinteger(ALua, AChara.AccountID);
 					end;
 
-					(*VAR_MAPNAME: begin
+					VAR_MAPNAME: begin
 						lua_pushstring(ALua, PChar(AChara.Map));
 					end;
 
 					VAR_ACCOUNTNAME: begin
-						// sigh.. i'm not sure why but it doesnt work directly.
-						StrValue := TClientLink(AChara.ClientInfo.Data).AccountLink.Name;
-						lua_pushstring(ALua, PChar(StrValue));
+						Value := TClientLink(AChara.ClientInfo.Data).AccountLink.Name;
+						lua_pushstring(ALua, PChar(Value));
 					end;
 
 					VAR_CHARACTERNAME: begin
 						lua_pushstring(ALua, PChar(AChara.Name));
-					end; *)
+					end;
 
 					VAR_HEADPALETTE: begin
 						lua_pushinteger(ALua, AChara.HairColor);
@@ -635,8 +635,18 @@ begin
 				end;
 			end else
 			begin
-				Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.GetVariable(AChara,Key);
-				lua_pushinteger(ALua, Value);
+				Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.GetVariable(AChara,Key, VarType);
+				//Check variable type and push appropriate type back to script.
+				case VarType of
+					CHARAVAR_INTEGER :
+						begin
+							lua_pushinteger(ALua, StrToIntDef(Value, 0));
+						end;
+					else
+          	begin
+							lua_pushstring(ALua, PChar(Value));
+						end;
+				end;
 			end;
 		end;
 	end else
@@ -651,19 +661,27 @@ function script_setcharavar(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
 	Key : string;
-	Value : Integer;
+	Value : String;
+	AType : Byte;
 begin
 	//Returns 0 results
 	Result := 0;
 	if (lua_gettop(ALua) = 2) and
-		(lua_isString(ALua,1)) and
-		(lua_isnumber(ALua,2)) then
+		(lua_isString(ALua,1)) then
 	begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
 			Key := lua_tostring(ALua, 1);
-			Value := lua_tointeger(ALua, 2);
-			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.SetVariable(AChara,Key,Value);
+			if lua_isnumber(ALua, 2) then
+			begin
+				AType := CHARAVAR_INTEGER;
+			end else
+			begin
+      	AType := CHARAVAR_STRING;
+      end;
+			Value := lua_tostring(ALua, 2);
+
+			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.SetVariable(AChara,Key,Value, AType);
 		end;
 	end else
 	begin
