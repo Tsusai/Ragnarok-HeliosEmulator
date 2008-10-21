@@ -638,13 +638,13 @@ begin
 				Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.GetVariable(AChara,Key, VarType);
 				//Check variable type and push appropriate type back to script.
 				case VarType of
-					CHARAVAR_INTEGER :
+					CHARAVAR_STRING :
 						begin
-							lua_pushinteger(ALua, StrToIntDef(Value, 0));
+							lua_pushstring(ALua, PChar(Value));
 						end;
 					else
-          	begin
-							lua_pushstring(ALua, PChar(Value));
+						begin
+							lua_pushinteger(ALua, StrToIntDef(Value, 0));
 						end;
 				end;
 			end;

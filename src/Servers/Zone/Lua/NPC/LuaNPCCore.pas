@@ -65,8 +65,11 @@ begin
 	//run the function
 	if lua_resume(AChara.LuaInfo.Lua,0) <> 0 then
 	begin
-		//If something went wrong, get the error message off the stack
-		Console.Message(lua_tostring(AChara.LuaInfo.Lua, -1), 'Zone Server', MS_ERROR);
+		if Length(lua_tostring(AChara.LuaInfo.Lua, -1)) > 0 then
+		begin
+			//If something went wrong, get the error message off the stack
+			Console.Message(lua_tostring(AChara.LuaInfo.Lua, -1), 'Zone Server', MS_ERROR);
+		end;
 		lua_pop(AChara.LuaInfo.Lua, 1); //Remove the error string
 	end;
 end;
@@ -79,8 +82,11 @@ begin
 	SetCharaToLua(AChara); //put the global back on the stack
 	if lua_resume(AChara.LuaInfo.Lua, Byte(ReturnAValue)) <> 0 then
 	begin
+		if Length(lua_tostring(AChara.LuaInfo.Lua, -1)) > 0 then
+		begin
 		//If something went wrong, get the error message off the stack
-		Console.Message(lua_tostring(AChara.LuaInfo.Lua, -1), 'Zone Server', MS_ERROR);
+			Console.Message(lua_tostring(AChara.LuaInfo.Lua, -1), 'Zone Server', MS_ERROR);
+    end;
 		lua_pop(AChara.LuaInfo.Lua, 1); //Remove the error string
 	end;
 end;

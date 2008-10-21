@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 621 -
+[2008/10/21] RaX - Forgot we should return an integer by default to lua, fixed.
+-
+
 - Rev 620 -
 [2008/10/21] RaX - added typed character variables for script.
 [2008/10/21] RaX - replaced instances of Writeln with console.message
