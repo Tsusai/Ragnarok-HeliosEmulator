@@ -80,6 +80,8 @@ type
 		procedure CreateChara(AClient : TIdContext; var ABuffer : TBuffer);
 		procedure DeleteChara(AClient : TIdContext; var ABuffer : Tbuffer);
 		procedure RenameChara(AClient : TIdContext; var ABuffer : Tbuffer);
+		procedure RenameCharaResult(AClient : TIdContext;const Flag:Word);
+		procedure DoRenameChara(AClient : TIdContext; var ABuffer : Tbuffer);
 
 		Procedure LoadOptions;
 
@@ -277,7 +279,7 @@ begin
 	Result := 108;
 	FillChar(ReplyBuffer[Offset],Offset + Result,0);
 	WriteBufferWord(Offset + 104, ACharacter.CharaNum,ReplyBuffer);
-	WriteBufferWord(Offset + 106, 1,ReplyBuffer); //eA : Rename bit (?)
+	WriteBufferWord(Offset + 106, 0,ReplyBuffer); //eA : Rename bit (?)
 	with ACharacter do begin
 		WriteBufferLongWord(Offset +  0, ID,ReplyBuffer);
 		WriteBufferLongWord(Offset +  4, BaseEXP,ReplyBuffer);
@@ -889,26 +891,95 @@ end;{DeleteChara}
 
 procedure TCharacterServer.RenameChara(AClient : TIdContext; var ABuffer : Tbuffer);
 var
-//	AccountID : LongWord;
-//	CharacterID : LongWord;
-//	NewName : String;
+	AccountID : LongWord;
+	{CharacterID : LongWord;}
+	NewName : String;
 	ReplyBuffer : TBuffer;
 begin
-	//No rename support yet XD
-	WriteBufferWord(0, $028e, ReplyBuffer);
-	WriteBufferWord(2, 0, ReplyBuffer);
-	SendBuffer(AClient,ReplyBuffer, 4);
-//	AccountID :=  BufferReadLongWord(2,ABuffer);
-//	CharacterID := BufferReadLongWord(6,ABuffer);
-//	NewName := BufferReadString(10,24,ABuffer);
 
-//	TThreadLink(AClient.Data).DatabaseLink.Character.Rename(
-//		AccountID,
-//		CharacterID,
-//		NewName
-//	);
+	AccountID :=  BufferReadLongWord(2,ABuffer);
+	{CharacterID := BufferReadLongWord(6,ABuffer);}
+	NewName := BufferReadString(10,24,ABuffer);
+
+	if (TClientLink(AClient.Data).AccountLink.ID = AccountID) then
+	begin
+		TClientLink(AClient.Data).NewCharName := NewName;
+		WriteBufferWord(0, $028e, ReplyBuffer);
+		WriteBufferWord(2, 1, ReplyBuffer);   //Confirm
+		SendBuffer(AClient,ReplyBuffer, 4);
+	end else
+	begin
+		RenameCharaResult(
+			AClient,
+			2       //Failed
+		);
+	end;
 end;
 
+procedure TCharacterServer.RenameCharaResult(AClient : TIdContext;const Flag:Word);
+var
+	ReplyBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $0290, ReplyBuffer);
+	WriteBufferWord(2, Flag, ReplyBuffer);
+	SendBuffer(AClient,ReplyBuffer, 4);
+end;
+
+procedure TCharacterServer.DoRenameChara(AClient : TIdContext; var ABuffer : Tbuffer);
+var
+	CharacterID : LongWord;
+	AChara:TCharacter;
+	TargetChar :TCharacter;
+begin
+	CharacterID := BufferReadLongWord(2,ABuffer);
+	if TClientLink(AClient.Data).NewCharName <> '' then
+	begin
+		AChara:=TCharacter.Create(nil);
+		TargetChar:=TCharacter.Create(nil);
+		try
+			AChara.Name := TClientLink(AClient.Data).NewCharName;
+			if TClientLink(AClient.Data).DatabaseLink.Character.Exists(AChara) then
+			begin
+				RenameCharaResult(
+					AClient,
+					4       //Name used
+				);
+			end else
+			begin
+				TargetChar.ID := CharacterID;
+				TClientLink(AClient.Data).DatabaseLink.Character.Load(TargetChar);
+				if TClientLink(AClient.Data).AccountLink.ID = TargetChar.AccountID then
+				begin
+					TClientLink(AClient.Data).DatabaseLink.Character.Rename(
+						TClientLink(AClient.Data).AccountLink.ID,
+						CharacterID,
+						TClientLink(AClient.Data).NewCharName
+					);
+					RenameCharaResult(
+						AClient,
+						0
+					);
+				end else
+				begin
+					RenameCharaResult(
+						AClient,
+						2
+					);
+				end;
+			end;
+		finally
+			AChara.Free;
+			TargetChar.Free;
+		end;
+
+	end else
+	begin
+		RenameCharaResult(
+			AClient,
+			2       //Failed
+		);
+	end;
+end;
 
 //------------------------------------------------------------------------------
 //VerifyZoneServer                                                     PROCEDURE
@@ -1079,54 +1150,47 @@ begin
 	//Check to see if it is an already connected Client
 	if (AConnection.Data is TClientLink) then
 	begin
-		if not TThreadLink(AConnection.Data).CharRename then
-		begin
-			case PacketID of
-			$0066: // Character Selected -- Refer Client to Map Server
-				begin
-					RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0066)-2);
-					SendCharaToMap(AConnection,ABuffer);
+		case PacketID of
+		$0066: // Character Selected -- Refer Client to Map Server
+			begin
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0066)-2);
+				SendCharaToMap(AConnection,ABuffer);
+			end;
+		$0067: // Create New Character
+			begin
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0067)-2);
+				CreateChara(AConnection,ABuffer);
 				end;
-			$0067: // Create New Character
+		$0068: // Request to Delete Character
+			begin
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0068)-2);
+				DeleteChara(AConnection,ABuffer);
+			end;
+		$0187: //Client keep alive
+			begin
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0187)-2);
+			end;
+		$028d: //Enter Character Rename mode
+			begin
+				RecvBuffer(AConnection,ABuffer[2],32);
+				RenameChara(AConnection,ABuffer);
+			end;
+		$028f:  // ??
+			begin
+				//<Char ID>
+				RecvBuffer(AConnection,ABuffer[2],4);
+				DoRenameChara(AConnection,ABuffer);
+			end
+		else
+			begin
+				Size := PacketDB.GetLength(PacketID);
+				Console.Message('Unknown Character Server Packet : ' + IntToHex(PacketID,4), 'Character Server', MS_WARNING);
+				if (Size-2 > 0) then
 				begin
-					RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0067)-2);
-					CreateChara(AConnection,ABuffer);
-				end;
-			$0068: // Request to Delete Character
-				begin
-					RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0068)-2);
-					DeleteChara(AConnection,ABuffer);
-				end;
-			$0187: //Client keep alive
-				begin
-					RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0187)-2);
-				end;
-			$028d: //Enter Character Rename mode
-				begin
-					{RecvBuffer(AConnection,ABuffer[2],2);
-					TThreadLink(AConnection.Data).CharRename := True;}
-				end;
-			$028f:  // ??
-				begin
-					//<Char ID>
-					RecvBuffer(AConnection,ABuffer[2],4);
-				end
-			else
-				begin
-					Size := PacketDB.GetLength(PacketID);
-					Console.Message('Unknown Character Server Packet : ' + IntToHex(PacketID,4), 'Character Server', MS_WARNING);
-					if (Size-2 > 0) then
-					begin
-						Console.Message(IntToStr(Size-2) + ' additional bytes were truncated','Character Server', MS_WARNING);
-						RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength(PacketID)-2);
-					end;
+					Console.Message(IntToStr(Size-2) + ' additional bytes were truncated','Character Server', MS_WARNING);
+					RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength(PacketID)-2);
 				end;
 			end;
-		end else
-		begin
-			//Char rename mode
-			RecvBuffer(AConnection,ABuffer[2],2);
-			RenameChara(AConnection,ABuffer);
 		end;
 	end else
 	begin

@@ -47,7 +47,6 @@ type
 	TThreadLink = class
 		Parent          : TIdContext;
 		DatabaseLink    : TDatabase;
-		CharRename : Boolean;  //Character Rename mode
 		Constructor Create(AClient : TIdContext);
 		Destructor Destroy();override;
 	end;
@@ -57,6 +56,7 @@ type
 		CharacterLink : TCharacter;
 		AccountInfo	: TCharAccountInfo;
 		Transfering   : Boolean;
+		NewCharName : String;
 
 		EncKey1		: LongWord;
 		EncKey2		: LongWord;
@@ -133,7 +133,6 @@ Constructor TThreadLink.Create(AClient : TIdContext);
 begin
 	inherited Create;
 	Parent := AClient;
-	CharRename := False;
 end;
 
 Destructor TThreadLink.Destroy;
@@ -145,6 +144,7 @@ begin
 	inherited Create(AClient);
 	EncKey1 := 0;
 	EncKey2 := 0;
+	NewCharName := '';
 end;
 procedure TClientLink.InitializeMessageID(const Key1,Key2:LongWord);
 var

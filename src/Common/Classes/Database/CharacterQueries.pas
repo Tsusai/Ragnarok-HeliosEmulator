@@ -1079,7 +1079,7 @@ begin
 			AParam
 		);
 		//AID
-		AParam := ADataset.Params.CreateParam(ftInteger, 'CID', ptInput);
+		AParam := ADataset.Params.CreateParam(ftInteger, 'AID', ptInput);
 		AParam.AsInteger := AccountID;
 		ADataSet.Params.AddParam(
 			AParam
@@ -1090,7 +1090,7 @@ begin
 		ADataSet.Params.AddParam(
 			AParam
 		);
-		Query(ADataSet, AQuery);
+		QueryNoResult(ADataSet, AQuery);
 	finally
 		ADataSet.Free;
 	end;
