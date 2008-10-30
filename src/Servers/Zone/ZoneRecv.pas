@@ -1125,7 +1125,7 @@ begin
 				//accordingly.
 				if (Direction in Diagonals) then
 				begin
-					spd := Speed * 7 DIV 5;
+					spd := Speed * 3 DIV 2;
 				end else begin
 					spd := Speed;
 				end;

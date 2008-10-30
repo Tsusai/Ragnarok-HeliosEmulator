@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 623 -
+[2008/10/30] RabidCh - Changed another value to alleviate Aegis walking speed, doesn't seem that bad now but needs more testing.
+[2008/10/30] RabidCh - Fixed copy-paste of a comment.
+-
+
 - Rev 622 -
 [2008/10/21] Aeomin - Implemented character rename during character select.
 -
