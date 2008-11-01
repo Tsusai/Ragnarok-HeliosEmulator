@@ -347,6 +347,7 @@ Revisions:
 	routine was fine.
 [2007/05/28] Tsusai - Mixed OnTouch to only run just once if a character is
 	in the walking ontouch field.
+Halloween 2008 - Tsusai - Updated WriteBufferTwoPoints settings
 *-----------------------------------------------------------------------------*)
 Procedure TBeing.Walk;
 Var
@@ -495,7 +496,7 @@ Var
 							begin
 								ZoneSendBeing(Self, TCharacter(ABeing));
 								ZoneSendBeing(ABeing, TCharacter(Self));
-								ZoneWalkingBeing(Self,Path[Path.count-1],Position,TCharacter(ABeing).ClientInfo);
+								ZoneWalkingBeing(Self,Position,Path[Path.count-1],TCharacter(ABeing).ClientInfo);
 							end else  //Npc/Mob/Pet/Homunculus/Mercenary packets to the client
 							begin
 								{Todo: events for NPC}

@@ -21,7 +21,6 @@ uses
 	SysUtils,
 	Types,
 	//Project
-	BufferIO,
 	Character,
 	GameConstants,
 	LuaNPCCore,
@@ -162,13 +161,13 @@ begin
 	if not ParamCount in [9..10] then lual_error(ALua,'Invalid number of NPC Script parameters');
 	//Check parameters
 	lual_argcheck(ALua,Lua_isNonNumberString(ALua,1),1,'NPC Map parameter must be a string');
-	lual_argcheck(ALua,lua_isnumber(ALua,3),2,'NPC Name parameter must be a string');
-	lual_argcheck(ALua,lua_isnumber(ALua,3),3,'NPC Sprite parameter must be a integer');
-	lual_argcheck(ALua,lua_isnumber(ALua,4),4,'NPC X Coord parameter must be a integer');
-	lual_argcheck(ALua,lua_isnumber(ALua,5),5,'NPC Y Coord parameter must be a integer');
-	lual_argcheck(ALua,lua_isnumber(ALua,6),6,'NPC Direction parameter must be a integer');
-	lual_argcheck(ALua,lua_isnumber(ALua,7),7,'NPC X Radius parameter must be a integer');
-	lual_argcheck(ALua,lua_isnumber(ALua,8),8,'NPC Y Radius parameter must be a integer');
+	lual_argcheck(ALua,lua_isNonNumberString(ALua,2),2,'NPC Name parameter must be a string');
+	lual_argcheck(ALua,lua_isposnumber(ALua,3),3,'NPC Sprite parameter must be a integer');
+	lual_argcheck(ALua,lua_isposnumber(ALua,4),4,'NPC X Coord parameter must be a integer');
+	lual_argcheck(ALua,lua_isposnumber(ALua,5),5,'NPC Y Coord parameter must be a integer');
+	lual_argcheck(ALua,lua_isposnumber(ALua,6),6,'NPC Direction parameter must be a integer');
+	lual_argcheck(ALua,lua_isposnumber(ALua,7),7,'NPC X Radius parameter must be a integer');
+	lual_argcheck(ALua,lua_isposnumber(ALua,8),8,'NPC Y Radius parameter must be a integer');
 	lual_argcheck(ALua,Lua_isNonNumberString(ALua,9),9,'NPC Function Name parameter must be a string');
 	//Optional Ontouch
 	if ParamCount = 10 then lual_argcheck(ALua,Lua_isNonNumberString(ALua,10),10,'NPC OnTouch Function Name parameter must be a string');
@@ -222,10 +221,10 @@ begin
 	if not ParamCount = 6 then lual_error(ALua,'Invalid number of NPC Warp parameters');
 	lual_argcheck(ALua,Lua_isNonNumberString(ALua,1),1,'Warp Map parameter must be a string');
 	lual_argcheck(ALua,Lua_isNonNumberString(ALua,2),2,'Warp Name parameter must be a string');
-	lual_argcheck(ALua,lua_isnumber(ALua,3),3,'Warp X Coord parameter must be a integer');
-	lual_argcheck(ALua,lua_isnumber(ALua,4),4,'Warp Y Coord parameter must be a integer');
-	lual_argcheck(ALua,lua_isnumber(ALua,5),5,'Warp X Radius parameter must be a integer');
-	lual_argcheck(ALua,lua_isnumber(ALua,6),6,'Warp Y Radius parameter must be a integer');
+	lual_argcheck(ALua,lua_isposnumber(ALua,3),3,'Warp X Coord parameter must be a integer');
+	lual_argcheck(ALua,lua_isposnumber(ALua,4),4,'Warp Y Coord parameter must be a integer');
+	lual_argcheck(ALua,lua_isposnumber(ALua,5),5,'Warp X Radius parameter must be a integer');
+	lual_argcheck(ALua,lua_isposnumber(ALua,6),6,'Warp Y Radius parameter must be a integer');
 	//Made it through, set true
 	Result := NOT Result;
 end;
@@ -284,35 +283,30 @@ function script_moveto(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
 begin
-
-	if (lua_gettop(ALua) = 3) and
-		(Lua_isNonNumberString(ALua,1)) and
-		(lua_isnumber(ALua,2)) and
-		(lua_isnumber(ALua,3)) then
-	begin
-		if GetCharaFromLua(ALua,AChara) then
-		begin
-			ZoneSendWarp(
-				AChara,
-				lua_tostring(ALua,1),
-				lua_tointeger(ALua,2),
-				lua_tointeger(ALua,3)
-			);
-		end;
-		//Tsusai Oct 11 2008: We can't end the script.  There are some stupid Aegis
-		//scripts that still continue doing behind the scenes stuff after warping.
-		//The script maker must verify it ends on its own.  However, we warked, so,
-		//assume we aren't running a script.  The previous script should end quickly
-		//anyways
-
-		//lua_yield(ALua,0);//end the script
-		AChara.ScriptStatus := SCRIPT_NOTRUNNING;
-
-	end else
-	begin
-		luaL_error(ALua,'script moveto syntax error');
-	end;
 	Result := 0;
+	//Validate
+	if not ParamCount = 3 then lual_error(ALua,'Invalid number of NPC moveto parameters');
+	lual_argcheck(ALua,Lua_isNonNumberString(ALua,1),1,'NPC moveto map parameter must be a string');
+	lual_argcheck(ALua,lua_isposnumber(ALua,2),2,'NPC moveto X coord parameter must be a integer');
+	lual_argcheck(ALua,lua_isposnumber(ALua,3),3,'NPC moveto Y coord parameter must be a integer');
+	//Run if validated
+	if GetCharaFromLua(ALua,AChara) then
+	begin
+		ZoneSendWarp(
+			AChara,
+			lua_tostring(ALua,1),
+			lua_tointeger(ALua,2),
+			lua_tointeger(ALua,3)
+		);
+	end;
+	//Tsusai Oct 11 2008: We can't end the script.  There are some stupid Aegis
+	//scripts that still continue doing behind the scenes stuff after warping.
+	//The script maker must verify it ends on its own.  However, we warked, so,
+	//assume we aren't running a script.  The previous script should end quickly
+	//anyways
+
+	//lua_yield(ALua,0);//end the script
+	AChara.ScriptStatus := SCRIPT_NOTRUNNING;
 end;
 
 //dialog "this is my text"
@@ -335,22 +329,16 @@ end;
 function script_wait(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
-	OutBuffer : TBuffer;
 begin
 	Result := 0;
-	if (lua_gettop(ALua) = 0) then
+	if not (lua_gettop(ALua) = 0) then luaL_error(ALua,'NPC wait must not have any parameters');
+	if GetCharaFromLua(ALua,AChara) then
 	begin
-		if GetCharaFromLua(ALua,AChara) then
-		begin
-			WriteBufferWord(0, $00b5, OutBuffer);
-			WriteBufferLongWord(2, AChara.ScriptBeing.ID, OutBuffer);
-			SendBuffer(AChara.ClientInfo, OutBuffer, 6);
-			AChara.ScriptStatus := SCRIPT_YIELD_WAIT;
-			Result := lua_yield(ALua,0);
-		end;
-	end else
-	begin
-		luaL_error(ALua,'script wait syntax error');
+		//Send the next button
+		SendNPCNext(AChara,AChara.ScriptBeing.ID);
+		//Pause lua.  Tell it to wait on 0 parameters in return.
+		AChara.ScriptStatus := SCRIPT_YIELD_WAIT;
+		Result := lua_yield(ALua,0);
 	end;
 end;
 
@@ -359,15 +347,13 @@ end;
 function script_close(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
-	OutBuffer : TBuffer;
 begin
 	Result := 0;
 	if not lua_gettop(ALua) = 0 then luaL_error(ALua,'Close command error');
 	if GetCharaFromLua(ALua,AChara) then
 	begin
-		WriteBufferWord(0, $00b6, OutBuffer);
-		WriteBufferLongWord(2, AChara.ScriptBeing.ID, OutBuffer);
-		SendBuffer(AChara.ClientInfo, OutBuffer, 6);
+		SendNPCClose(AChara,AChara.ScriptBeing.ID);
+		//Make lua stop
 		AChara.ScriptStatus := SCRIPT_NOTRUNNING;
 	end;
 end;
@@ -379,21 +365,17 @@ var
 	AChara : TCharacter;
 begin
 	Result := 0;
-	if (lua_gettop(ALua) = 3) and
-		(Lua_isNonNumberString(ALua,1)) and
-		(lua_isnumber(ALua,2)) and
-		(lua_isnumber(ALua,3)) then
+	//Validate
+	if not ParamCount = 3 then lual_error(ALua,'Invalid number of NPC checkpoint parameters');
+	lual_argcheck(ALua,Lua_isNonNumberString(ALua,1),1,'NPC checkpoint map parameter must be a string');
+	lual_argcheck(ALua,lua_isposnumber(ALua,2),2,'NPC checkpoint X coord parameter must be a integer');
+	lual_argcheck(ALua,lua_isposnumber(ALua,3),3,'NPC checkpoint Y coord parameter must be a integer');
+	//Save data
+	if GetCharaFromLua(ALua,AChara) then
 	begin
-		if GetCharaFromLua(ALua,AChara) then
-		begin
-			AChara.SaveMap := lua_tostring(ALua,1);
-			AChara.SavePoint := Point(
-				lua_tointeger(ALua,2), lua_tointeger(ALua,3)
-			);
-		end;
-	end else
-	begin
-		luaL_error(ALua,'script checkpoint syntax error');
+		AChara.SaveMap := lua_tostring(ALua,1);
+		AChara.SavePoint := Point(
+		lua_tointeger(ALua,2), lua_tointeger(ALua,3));
 	end;
 end;
 
@@ -406,40 +388,31 @@ var
 	AChara : TCharacter;
 	ParamCount : word;
 	MenuString : string;
-	Size : word;
-	OutBuffer : TBuffer;
 	idx : word;
 
 begin
 	Result := 0;
 	MenuString := '';
+	//Validate
 	ParamCount := lua_gettop(ALua);
-	if ParamCount > 0 then
+	if not ParamCount > 0 then lual_error(ALua,'NPC Menu needs at least one parameter');
+	for idx := 1 to ParamCount do lual_argcheck(ALua,lua_isString(ALua,idx),idx,'NPC Menu parameter must be a integer or string');
+	//Run
+	if GetCharaFromLua(ALua,AChara) then
 	begin
-		if GetCharaFromLua(ALua,AChara) then
+		for idx := 1 to ParamCount do
 		begin
-			for idx := 1 to ParamCount do
+			if idx = 1 then
 			begin
-				if idx = 1 then
-				begin
-					MenuString := lua_tostring(Alua,idx);
-				end else
-				begin
-					MenuString := MenuString + ':' + lua_tostring(Alua,idx);
-				end;
+				MenuString := lua_tostring(Alua,idx);
+			end else
+			begin
+				MenuString := MenuString + ':' + lua_tostring(Alua,idx);
 			end;
-			WriteBufferWord(0, $00b7, OutBuffer);
-			Size := Length(MenuString);
-			WriteBufferWord(2, Size + 8, OutBuffer);
-			WriteBufferLongWord(4, AChara.ScriptBeing.ID, OutBuffer);
-			WriteBufferString(8, MenuString, Size, OutBuffer);
-			SendBuffer(AChara.ClientInfo, OutBuffer, Size + 8);
-			AChara.ScriptStatus := SCRIPT_YIELD_MENU;
-			Result := lua_yield(ALua,1);
 		end;
-	end else
-	begin
-		luaL_error(ALua,'script menu syntax error');
+		SendNPCMenu(AChara,AChara.ScriptBeing.ID,MenuString);
+		AChara.ScriptStatus := SCRIPT_YIELD_MENU;
+		Result := lua_yield(ALua,1);
 	end;
 end;
 
@@ -689,7 +662,7 @@ begin
 	end;
 end;
 
-//SetItem - Apparently is set vriable..
+//SetItem - Apparently is set variable..
 //so I just made it wrapper of setvar
 function script_SetItem(ALua : TLua) : Integer;
 begin
@@ -863,22 +836,20 @@ var
 begin
 	//Returns 0 results
 	Result := 0;
-	if (lua_gettop(ALua) = 1) and
-		(lua_isnumber(ALua,1)) then
+	//Validate
+	if not (lua_gettop(ALua) = 1) then lual_error(ALua, 'NPC getgold error, there must be one parameter');
+	lual_argcheck(ALua, lua_isposnumber(ALua,1), 1, 'NPC getgold parameter must be a positive integer.');
+	//Run
+	if GetCharaFromLua(ALua,AChara) then
 	begin
-		if GetCharaFromLua(ALua,AChara) then
-		begin
-			//it can be a negative number.  It should be alright w/ the +
-			// 5 +-1 = 4 :)
-			//combining signed and unsigned types warning.  Ignoring
-			{$WARNINGS OFF}
-			Zeny := EnsureRange(lua_tointeger(ALua, 1),Low(LongInt),High(LongInt));
-			AChara.Zeny := EnsureRange(AChara.Zeny + Zeny,
-											Low(AChara.Zeny),
-											High(AChara.Zeny)
-			);
-			{$WARNINGS ON}
-		end;
+		//combining signed and unsigned types warning.  Ignoring
+		{$WARNINGS OFF}
+		Zeny := EnsureRange(lua_tointeger(ALua, 1),Low(LongInt),High(LongInt));
+		AChara.Zeny := EnsureRange(AChara.Zeny + Zeny,
+										Low(AChara.Zeny),
+										High(AChara.Zeny)
+		);
+		{$WARNINGS ON}
 	end;
 end;
 
@@ -890,61 +861,56 @@ var
 begin
 	//Returns 0 results
 	Result := 0;
-	if (lua_gettop(ALua) = 1) and
-		(lua_isnumber(ALua,1)) then
+	//Validate
+	if not (lua_gettop(ALua) = 1) then lual_error(ALua, 'NPC dropgold error, there must be one parameter');
+	lual_argcheck(ALua, lua_isposnumber(ALua,1), 1, 'NPC dropgold parameter must be a positive integer.');
+	//Run
+	if GetCharaFromLua(ALua,AChara) then
 	begin
-		if GetCharaFromLua(ALua,AChara) then
-		begin
-			{$WARNINGS OFF}
-			Zeny := EnsureRange(lua_tointeger(ALua, 1),Low(LongInt),High(LongInt));
-			AChara.Zeny := EnsureRange(AChara.Zeny - Zeny,
-											Low(AChara.Zeny),
-											High(AChara.Zeny)
-			);
-			{$WARNINGS ON}
-		end;
+		{$WARNINGS OFF}
+		Zeny := EnsureRange(lua_tointeger(ALua, 1),Low(LongInt),High(LongInt));
+		AChara.Zeny := EnsureRange(AChara.Zeny - Zeny,
+										Low(AChara.Zeny),
+										High(AChara.Zeny)
+		);
+		{$WARNINGS ON}
 	end;
 end;
 
 
 //getexp(value)
-//Gives or takes money/zeny to/from the character
+//Gives or takes base exp to/from the character
 function script_getexp(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
 begin
 	//Returns 0 results
 	Result := 0;
-	if (lua_gettop(ALua) = 1) and
-		(lua_isnumber(ALua,1)) then
+	if not (lua_gettop(ALua) = 1) then lual_error(ALua, 'NPC getexp error, there must be one parameter');
+	lual_argcheck(ALua, lua_isnumber(ALua,1), 1, 'NPC getexp parameter must be a integer.');
+	if GetCharaFromLua(ALua,AChara) then
 	begin
-		if GetCharaFromLua(ALua,AChara) then
-		begin
-			AChara.BaseEXP := AChara.BaseEXP +
-						Cardinal(EnsureRange(lua_tointeger(ALua, 1),0,High(Integer)));
-		end;
+		AChara.BaseEXP := AChara.BaseEXP +
+					Cardinal(EnsureRange(lua_tointeger(ALua, 1),0,High(Integer)));
 	end;
 end;
 
 //getJexp(value)
-//Gives or takes money/zeny to/from the character
+//Gives or takes job exp to/from the character
 function script_getJexp(ALua : TLua) : integer; cdecl;
 var
 	AChara : TCharacter;
 begin
 	//Returns 0 results
 	Result := 0;
-	if (lua_gettop(ALua) = 1) and
-		(lua_isnumber(ALua,1)) then
+	if not (lua_gettop(ALua) = 1) then lual_error(ALua, 'NPC getjexp error, there must be one parameter');
+	lual_argcheck(ALua, lua_isnumber(ALua,1), 1, 'NPC getjexp parameter must be a integer.');
+	if GetCharaFromLua(ALua,AChara) then
 	begin
-		if GetCharaFromLua(ALua,AChara) then
-		begin
-			AChara.JobEXP := AChara.JobEXP +
-						Cardinal(EnsureRange(lua_tointeger(ALua, 1),0,High(Integer)));
-		end;
+		AChara.JobEXP := AChara.JobEXP +
+					Cardinal(EnsureRange(lua_tointeger(ALua, 1),0,High(Integer)));
 	end;
 end;
-
 
 //ResetStat
 //Reset character's status
@@ -966,14 +932,13 @@ var
 	Percentage : Byte;
 begin
 	Result := 0;
-	if lua_gettop(ALua) = 1 then
+	if not (lua_gettop(ALua) = 1) then lual_error(ALua, 'NPC HPDrain error, there must be one parameter');
+	lual_argcheck(ALua, lua_isposnumber(ALua,1), 1, 'NPC HPDrain parameter must be a positive integer.');
+	if GetCharaFromLua(ALua,AChara) then
 	begin
-		if GetCharaFromLua(ALua,AChara) then
-		begin
-			Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
-			if AChara.HP > 0 then
-				AChara.HPPercent := AChara.HPPercent - Percentage;
-		end;
+		Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
+		if AChara.HP > 0 then
+			AChara.HPPercent := AChara.HPPercent - Percentage;
 	end;
 end;
 
@@ -984,14 +949,14 @@ var
 	Percentage : Byte;
 begin
 	Result := 0;
-	if lua_gettop(ALua) = 1 then
+	if not (lua_gettop(ALua) = 1) then lual_error(ALua, 'NPC HPHeal error, there must be one parameter');
+	lual_argcheck(ALua, lua_isposnumber(ALua,1), 1, 'NPC HPHeal parameter must be a positive integer.');
+
+	if GetCharaFromLua(ALua,AChara) then
 	begin
-		if GetCharaFromLua(ALua,AChara) then
-		begin
-			Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
-			if AChara.HP > 0 then
-				AChara.HPPercent := AChara.HPPercent + Percentage;
-		end;
+		Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
+		if AChara.HP > 0 then
+			AChara.HPPercent := AChara.HPPercent + Percentage;
 	end;
 end;
 

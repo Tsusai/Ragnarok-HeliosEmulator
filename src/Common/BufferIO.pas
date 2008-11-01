@@ -42,9 +42,9 @@ uses
 		const
 			Index  : Word;
 		const
-			Point1 : TPoint;
+			SourcePt : TPoint;
 		const
-			Point2 : TPoint;
+			DestPt : TPoint;
 		var
 			Buffer : TBuffer
 		);
@@ -156,83 +156,45 @@ Revisions:
 [2007/03/25] CR - Added Comment Header, and described routine in detail, and in
 	summary.  Made remaining three passed parameters constant.
 	Renamed local variables for more clarity:
+Halloween 2008 - Tsusai - Updated WriteBufferTwoPoints settings & Simplified.
 [yyyy/mm/dd] <Author> - <Comment>
 *-----------------------------------------------------------------------------*)
 Procedure WriteBufferTwoPoints(
 	const
 		Index  : Word;
 	const
-		Point1 : TPoint;
+		SourcePt : TPoint;
 	const
-		Point2 : TPoint;
+		DestPt : TPoint;
 	var
 		Buffer : TBuffer
 	);
-Var
-	Pack40 : Int64;
-	SwapMe : array[0..5] of Byte; {[2007/03/25] CR - Yes we DO need all 6 bytes! }
+
 Begin
-	{[2007/03/25] CR - Packing the XY points into 5 bytes - 40 bits.  This is
-	possible because of a HARD CODED map dimension limit of 512 x 512 squares.
-	512 = 2^10, thus 10 bits is the maximum needed per X or Y position. }
+	WriteBufferByte(Index+0, Byte((SourcePt.X) shr 2),Buffer);
+	WriteBufferByte(Index+1, Byte(((SourcePt.X) shl 6) or (((SourcePt.Y) shr 4) and $3f)), Buffer);
+	WriteBufferByte(Index+2, Byte(((SourcePt.Y) shl 4) or (((DestPt.X) shr 6) and $0f)), Buffer);
+	WriteBufferByte(Index+3, Byte(((DestPt.X) shl 2) or (((DestPt.Y) shr 8) and $03)), Buffer);
+	WriteBufferByte(Index+4, Byte(DestPt.Y), Buffer);
+	WriteBufferByte(Index+5, Byte(((8) shl 4) or ((8) and $0f)), Buffer);
 
-	Pack40 := (
-		((Int64(Point2.X) AND $3ff) shl 30) OR
-		((Int64(Point2.Y) AND $3ff) shl 20) OR
-		((Int64(Point1.X) AND $3ff) shl 10) OR
-		(Int64(Point1.Y) AND $3ff)
-	);
-
-
-	{[2007/03/17] CR - Tricky Code: Two parts to this trickiness, one is VERY
-	clever:
-	A) bb[5] is used as the bubbling byte to swap bytes both times.  Thus the 6th
-	bit is needed, BUT the value stored in it doesn't matter, because we overwrite
-	it.
-	B) Two sets of swaps are performed to reverse the byte level order, to
-	"confuse bots".  As mentioned above, this has LONG since been circumvented.
-	N.B. we are not reversing the whole thing bit by bit, but rather byte by byte.
-	}
-	Move(Pack40, SwapMe[0], 5);
-
-	{Swap 01234 ->  41230 }
-	SwapMe[5] := SwapMe[0];
-	SwapMe[0] := SwapMe[4];
-	SwapMe[4] := SwapMe[5];
-
-	{Swap 41230 ->  43210 -- A complete byte level reversal.}
-	SwapMe[5] := SwapMe[1];
-	SwapMe[1] := SwapMe[3];
-	SwapMe[3] := SwapMe[5];
-
-	{[2007/03/25] CR - N.B. If we want to optimize things further, we could make
-	these swaps inline ASM, and explicitly use registers instead of an array in
-	RAM for all of this.  If anyone is ambitious, I'd suggest checking in at the
-	FastCode project online, first. }
-
-	{[2007/03/25] CR - Finally, move the bit-mangled 5 bytes to the Buffer. }
-	Move(SwapMe[0], Buffer[Index], 5);
 End; (* Proc WriteBufferTwoPoints
 *-----------------------------------------------------------------------------*)
 
-
+	//Halloween 2008 - Tsusai - Simplified
 	procedure WriteBufferPointAndDirection(
 		const index:word;
 		const xy:TPoint;
 		var Buffer : TBuffer;
 		const Dir:byte = 0
 	);
-	var
+	{var
 		l   :LongWord;
-		ByteArray  :array[0..3] of Byte;
+		ByteArray  :array[0..3] of Byte;}
 	begin
-		l := (((xy.X and $3ff) shl 14) or ((xy.Y and $3ff) shl 4));
-		Move(l, ByteArray[0], 3);
-		ByteArray[3] := ByteArray[0];
-		ByteArray[0] := ByteArray[2];
-		ByteArray[2] := ByteArray[3];
-		ByteArray[2] := (ByteArray[2] or (Dir and $f));
-		Move(ByteArray[0], Buffer[index], 3);
+		WriteBufferByte(Index+0, Byte((xy.X) shr 2), Buffer);
+		WriteBufferByte(Index+1, Byte(((xy.x) shl 6) or (((xy.y) shr 4) and $3f)), Buffer);
+		WriteBufferByte(Index+2, Byte(((xy.y) shl 4) or ((dir) and $f)), Buffer);
 	End; (* Proc WriteBufferPointAndDirection *)
 //------------------------------------------------------------------------------
 

@@ -167,8 +167,8 @@ Begin
 		ABeing := TBeing(ACurrentObject);
 		ZoneWalkingBeing(
 			ABeing,
-			ABeing.Path[ABeing.Path.Count -1],
 			ABeing.Position,
+			ABeing.Path[ABeing.Path.Count -1],
 			TCharacter(AObject).ClientInfo
 		);
 	end;

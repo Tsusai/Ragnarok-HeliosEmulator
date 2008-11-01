@@ -155,7 +155,7 @@ uses
 	):Boolean;
 	procedure ZoneWalkingBeing(
 		const Who:TBeing;
-		const Point1,Point2:TPoint;
+		const Source,Dest:TPoint;
 		AClient : TIdContext
 	);
 	procedure ZoneUpdateDirection(
@@ -305,6 +305,22 @@ uses
 		const AChara : TCharacter;
 		const NPCID : LongWord;
 		const NPCMessage : string
+	);
+
+	procedure SendNPCNext(
+		const AChara : TCharacter;
+		const NPCID : LongWord
+	);
+
+	procedure SendNPCClose(
+		const AChara : TCharacter;
+		const NPCID : LongWord
+	);
+
+	procedure SendNPCMenu(
+		const AChara : TCharacter;
+		const NPCID : LongWord;
+		const MenuString : string
 	);
 
 	procedure SendNPCInput(
@@ -1177,6 +1193,7 @@ end;{ZoneSendTickToClient}
 //  Changes -
 //    February 27th, 2007 - RaX - Created Header;
 //		May 1st, 2007 - Tsusai - Added const to the parameters
+//		Halloween 2008 - Tsusai - Updated WriteBufferTwoPoints settings
 //------------------------------------------------------------------------------
 procedure ZoneSendWalkReply(
 	const ACharacter : TCharacter;
@@ -1187,7 +1204,7 @@ var
 begin
 	WriteBufferWord(0, $0087, ReplyBuffer);
 	WriteBufferLongWord(2, ACharacter.MoveTick, ReplyBuffer);
-	WriteBufferTwoPoints( 6, DestPoint, ACharacter.Position, ReplyBuffer);
+	WriteBufferTwoPoints( 6, ACharacter.Position, DestPoint, ReplyBuffer);
 	WriteBufferByte(11, 0, ReplyBuffer);
 	SendBuffer(ACharacter.ClientInfo, ReplyBuffer, PacketDB.GetLength($0087, ACharacter.ClientVersion));
 end;{ZoneSendWalkReply}
@@ -1290,10 +1307,11 @@ end;{ZoneSendWarp}
 //    March 18th, 2007 - Aeomin - Created Header
 //    March 23th, 2007 - Aeomin - Renamed from ZoneWalkingChar to ZoneWalkingBeing
 //		May 1st, 2007 - Tsusai - Added const to the parameters
+//		Halloween 2008 - Tsusai - Updated WriteBufferTwoPoints settings
 //------------------------------------------------------------------------------
 procedure ZoneWalkingBeing(
 	const Who:TBeing;
-	const Point1,Point2:TPoint;
+	const Source,Dest:TPoint;
 	AClient : TIdContext
 	);
 var
@@ -1302,7 +1320,7 @@ begin
 	FillChar(ReplyBuffer,PacketDB.GetLength($0086),0);
 	WriteBufferWord(0, $0086, ReplyBuffer);
 	WriteBufferLongWord(2, Who.ID, ReplyBuffer);
-	WriteBufferTwoPoints(6, Point1, Point2, ReplyBuffer);
+	WriteBufferTwoPoints(6, Source, Dest, ReplyBuffer);
 	WriteBufferLongWord(12, GetTick, ReplyBuffer);
 	SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($0086));
 end;{ZoneWalkingBeing}
@@ -2288,9 +2306,95 @@ begin
 	WriteBufferLongWord(4, NPCID, OutBuffer);
 	WriteBufferString(8, NPCMessage, Len, OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer, len + 8);
-end;
-{SendUnequipItemResult}
+end;{SendNPCDialog}
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//SendNPCNext                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Sends Next button to client
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/10/19] Tsusai - Created
+//------------------------------------------------------------------------------
+procedure SendNPCNext(
+	const AChara : TCharacter;
+	const NPCID : LongWord
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00b5, OutBuffer);
+	WriteBufferLongWord(2, NPCID, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, 6);
+end;{SendNPCWait}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//SendNPCClose                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Sends close button to client
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/10/19] Tsusai - Created
+//------------------------------------------------------------------------------
+procedure SendNPCClose(
+	const AChara : TCharacter;
+	const NPCID : LongWord
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00b6, OutBuffer);
+	WriteBufferLongWord(2, NPCID, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, 6);
+end;{SendNPCClose}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//SendNPCMenu                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Sends a menu packet to the client
+//--
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+//--
+//  Changes -
+//		[2008/10/19] Tsusai - Created
+//------------------------------------------------------------------------------
+procedure SendNPCMenu(
+	const AChara : TCharacter;
+	const NPCID : LongWord;
+	const MenuString : string
+);
+var
+	OutBuffer : TBuffer;
+	Size : word;
+begin
+	WriteBufferWord(0, $00b7, OutBuffer);
+	Size := Length(MenuString);
+	WriteBufferWord(2, Size + 8, OutBuffer);
+	WriteBufferLongWord(4, NPCID, OutBuffer);
+	WriteBufferString(8, MenuString, Size, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, Size + 8);
+end;{SendNPCMenu}
+//------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------
 //SendNPCInput                                                         PROCEDURE

@@ -15,6 +15,22 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 624 -
+[2008/10/31] Tsusai - Overview: Lua system updates, and packet updates
+[2008/10/31] Tsusai - BufferIO - Updated WriteBufferPointAndDirection and
+ WriteBufferTwoPoints, uses new bitmasking, and no longer does the array
+ re-arrange stuff.  Also changed the order of parameters for WriteBufferTwoPoints
+[2008/10/31] Tsusai - AreaLoopEvents, Being, ZoneSend - Updated for the above.
+[2008/10/31] Tsusai - LuaCoreRoutines - Added Lua_isposnumber, to check for
+ positive numbers.
+[2008/10/31] Tsusai - LuaNPCCommands - Removed all packets.  Implemented
+ lua_isposnumber for most number checks that must be positive, also
+ implemented lual_argcheck on a majority of commands, and cleaned up
+ some as well.
+[2008/10/31] Tsusai - ZoneSend - Added NPC packets that were removed in 
+ LuaNPCCommands
+-
+
 - Rev 623 -
 [2008/10/30] RabidCh - Changed another value to alleviate Aegis walking speed, doesn't seem that bad now but needs more testing.
 [2008/10/30] RabidCh - Fixed copy-paste of a comment.

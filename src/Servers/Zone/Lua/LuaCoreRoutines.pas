@@ -27,9 +27,14 @@ uses
 	) : boolean;
 
 	function Lua_toLongWord(
-		var ALua : TLua; 
+		var ALua : TLua;
 		Index : byte
 	) : LongWord;
+
+	function Lua_isposnumber(
+		ALua : TLua;
+		Index : word
+	) : boolean;
 
 	procedure MakeLuaThread(
 		var SourceLua : TLua;
@@ -84,6 +89,19 @@ begin
 		Round(lua_tonumber(ALua, Index)),
 		Low(LongWord), High(LongWord)
 	);
+end;
+
+// Check to see if it is a positive integer (including 0)
+function Lua_isposnumber(
+		ALua : TLua;
+		Index : word
+	) : boolean;
+begin
+	Result := false;
+	if lua_isnumber(ALua,Index) then
+	begin
+		Result := (lua_tonumber(ALua,Index) >= 0);
+	end;
 end;
 
 
