@@ -145,7 +145,7 @@ end;{SetBannedTime}
 //------------------------------------------------------------------------------
 procedure TAccount.TemporaryBan(Seconds:Integer);
 begin
-	Self.BannedUntil := UnixToDateTime(DateTimeToUnix(Now) + Seconds);
+	Self.BannedUntil := IncSecond(Now,Seconds);
 	TThreadLink(ClientInfo.Data).DatabaseLink.Account.Save(self);
 end;{SetBannedTime}
 //------------------------------------------------------------------------------
@@ -237,11 +237,11 @@ var
 
 begin
 	//Decode the remaining time to Years,Months,Days,Hours,Minutes,Seconds, and MillionSeconds
-	DecodeDateTime(UnixToDateTime(DateTimeToUnix(BannedUntil)-DateTimeToUnix(Now)), Years, Months, Days, Hours, Minutes, Seconds, MillionSeconds);
-	//Need to do something related to UNIX TIME
-	Dec(Years, 1970);
+	DecodeDateTime(BannedUntil - Now, Years, Months, Days, Hours, Minutes, Seconds, MillionSeconds);
+	//Fix the difference
+	Dec(Years, 1900); {Date starts on Jan 1900}
 	Dec(Months);
-	Dec(Days);
+	Inc(Days);
 	//Glue up between 2 unit of time
 	Glue := ' ';
 	Result := '';

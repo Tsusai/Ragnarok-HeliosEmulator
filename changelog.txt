@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 625 -
+[2008/10/31] Tsusai - Accounts - Removed a bunch of unneeded Time<->Unixtime
+ conversions.  Updated GetBanUntilTimeString's math from the conversions.
+-
+
 - Rev 624 -
 [2008/10/31] Tsusai - Overview: Lua system updates, and packet updates
 [2008/10/31] Tsusai - BufferIO - Updated WriteBufferPointAndDirection and
