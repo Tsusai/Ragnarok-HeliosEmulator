@@ -662,9 +662,13 @@ begin
 		//Various other tweaks
 		AChara.AddToMap;
 		AChara.ZoneStatus := isOnline;
+		//Nov 2 2008 Tsusai - Need to set the speed before showing up, else everyone
+		//sees the person jumping around
+		AChara.CalcSpeed;
+		//Teleport the person in
 		AChara.ShowTeleportIn;
 		AChara.AreaLoop(ShowInitialAction);
-
+		//Calculate the rest of the stats
 		AChara.SendCharacterStats;
 
 		//Inventory

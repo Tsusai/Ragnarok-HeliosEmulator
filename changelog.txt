@@ -16,6 +16,12 @@ Developers & Contributers
 --------------------------------------------------------------------------------
 
 - Rev 625 -
+[2008/10/31] Tsusai - ZoneRecv - ShowMap: Added CalcSpeed before displaying the
+ character in order to squish the bug where a second player warping in within
+ view of an existing is instantly jumping from cell to cell when they move.
+-
+
+- Rev 625 -
 [2008/10/31] Tsusai - Accounts - Removed a bunch of unneeded Time<->Unixtime
  conversions.  Updated GetBanUntilTimeString's math from the conversions.
 -
