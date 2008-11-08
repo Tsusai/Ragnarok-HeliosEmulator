@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 628 -
+[2008/11/07] Aeomin - Equipments now calls script function when onequip and ondisarm.
+-
+
 - Rev 627 -
 [2008/11/07] Aeomin - Weapon updates ATK value for testing purpose.
 -

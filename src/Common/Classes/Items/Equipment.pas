@@ -46,7 +46,8 @@ uses
 	PacketTypes,
 	GameTypes,
 	ParameterList,
-	AreaLoopEvents
+	AreaLoopEvents,
+	LuaNPCCore
 	;
 
 //------------------------------------------------------------------------------
@@ -282,6 +283,13 @@ begin
 						ParameterList.Free;
 					end;
 					AChara.SendSubStat(0,$29,AChara.ATK);
+					if Equip.OnEquip <> '' then
+					begin
+						RunLuaNPCScript(
+							AChara,
+							Equip.OnEquip
+						);
+					end;
 				end;
 			end else
 			begin
@@ -351,6 +359,13 @@ begin
 					ParameterList.Free;
 				end;
 				AChara.SendSubStat(0,$29,AChara.ATK);
+				if Equip.OnDisarm <> '' then
+				begin
+					RunLuaNPCScript(
+						AChara,
+						Equip.OnDisarm
+					);
+				end;
 			end;
 			fList.Delete(Index);
 		end else
