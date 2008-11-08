@@ -15,7 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
-- Rev 625 -
+- Rev 627 -
+[2008/11/07] Aeomin - Weapon updates ATK value for testing purpose.
+-
+
+- Rev 626 -
 [2008/10/31] Tsusai - ZoneRecv - ShowMap: Added CalcSpeed before displaying the
  character in order to squish the bug where a second player warping in within
  view of an existing is instantly jumping from cell to cell when they move.

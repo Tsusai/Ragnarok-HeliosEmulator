@@ -259,6 +259,9 @@ begin
 					AnInstance.ID,
 					AnInstance
 				);
+				//This needs to be changed
+				if Equip.Attack > 0 then
+					AChara.ATK := AChara.ATK + Equip.Attack;
 				if not DontSend then
 				begin
 					SendEquipItemResult(
@@ -278,6 +281,7 @@ begin
 						AChara.AreaLoop(ShowChangeLook,False,ParameterList);
 						ParameterList.Free;
 					end;
+					AChara.SendSubStat(0,$29,AChara.ATK);
 				end;
 			end else
 			begin
@@ -332,6 +336,9 @@ begin
 				),
 				True
 			);
+			//This needs to be changed
+			if Equip.Attack > 0 then
+				AChara.ATK := AChara.ATK - Equip.Attack;
 			if not DontChangeLook then
 			begin
 				LookTypes := EquipLocationToLookType(Equip.EquipmentLocation);
@@ -343,6 +350,7 @@ begin
 					AChara.AreaLoop(ShowChangeLook,False,ParameterList);
 					ParameterList.Free;
 				end;
+				AChara.SendSubStat(0,$29,AChara.ATK);
 			end;
 			fList.Delete(Index);
 		end else

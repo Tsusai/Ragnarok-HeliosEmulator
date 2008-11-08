@@ -294,6 +294,7 @@ public
 	);
 
 	procedure SendRequiredStatusPoint(const Stat : Byte;const Value : Byte);
+	procedure CalculateCharacterStats;
 	procedure SendCharacterStats(UpdateView : boolean = false);
 
 	procedure ResetStats;
@@ -2033,13 +2034,13 @@ begin
 	begin
 		BaseMaxHP := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetMaxHP(Self);
 
-		MaxHP := EnsureRange(
+		fMaxHP := EnsureRange(
 			( BaseMaxHP * (100 + ParamBase[VIT]) div 100 ), 1, High(fMaxHP)
 			);
 
 		if (HP > MaxHP) then
 		begin
-			HP := MaxHP;
+			fHP := MaxHP;
 		end;
 	end;
 end;{CalcMaxHP}
@@ -2172,6 +2173,42 @@ end;{SendSubStats}
 
 
 //------------------------------------------------------------------------------
+//CalculateCharacterStats                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Calculate character status, but don't send 'em
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		[2008/10/29] Aeomin - Create
+//
+//------------------------------------------------------------------------------
+procedure TCharacter.CalculateCharacterStats;
+begin
+	//Calculate all stats  and substats before sending
+	CalcMaxHP;
+	CalcMaxSP;
+	CalcMaxWeight;
+	CalcSpeed;
+	CalcASpeed;
+	CalcHIT;
+	CalcFLEE;
+	CalcMATK;
+	CalcPerfectDodge;
+	CalcFalseCritical;
+	CalcCritical;
+	CalcDEF2;
+	CalcMDEF2;
+	CalcATK;
+end;{CalculateCharacterStats}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //SendCharacterStats                                                   PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
@@ -2194,29 +2231,13 @@ var
 	idx :integer;
 	OutBuffer : TBuffer;
 begin
-	//Calculate all stats  and substats before sending
-	CalcMaxHP;
-	CalcMaxSP;
-	CalcMaxWeight;
-	CalcSpeed;
-	CalcASpeed;
-	CalcHIT;
-	CalcFLEE;
-	CalcMATK;
-	CalcPerfectDodge;
-	CalcFalseCritical;
-	CalcCritical;
-	CalcDEF2;
-	CalcMDEF2;
-	CalcATK;
-
 	//Speed
 	SendSubStat(0, 0, Speed);
 	//HPSP
-	SendSubStat(0, 5, HP);
+//	SendSubStat(0, 5, HP);
 	SendSubStat(0, 6, MAXHP);
 
-	SendSubStat(0, 7, SP);
+//	SendSubStat(0, 7, SP);
 	SendSubStat(0, 8, MAXSP);
 
 	// Update status points and points needed to level up.
@@ -2399,12 +2420,12 @@ procedure TCharacter.CalcMaxSP;
 begin
 	if ClientInfo <> nil then
 	begin
-		MAXSP := EnsureRange(
+		fMAXSP := EnsureRange(
 		TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetMaxSP(self) *
 			LongWord((100 + ParamBase[INT]) div 100), 0, High(fMaxSP));
 		if SP > MAXSP then
 		begin
-			SP := MAXSP;
+			fSP := MAXSP;
 		end;
 	end;
 end;{CalcMaxSP}
@@ -2457,7 +2478,7 @@ procedure TCharacter.CalcMaxWeight;
 begin
 	if ClientInfo <> nil then
 	begin
-		MaxWeight  := EnsureRange(
+		fMaxWeight  := EnsureRange(
 			LongWord((ParamBase[STR] + ParamBonus[STR]) * 300) +
 				TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetMaxWeight(self)
 				, 0, High(fMaxWeight));

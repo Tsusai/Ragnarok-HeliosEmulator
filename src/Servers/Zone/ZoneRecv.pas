@@ -564,6 +564,8 @@ begin
 				0 //0 = online; 1=offline
 			);
 
+			ACharacter.CalculateCharacterStats;
+
 			//Load Inventory
 			ACharacter.LoadInventory;
 		end;
