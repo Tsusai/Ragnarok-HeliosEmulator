@@ -396,7 +396,7 @@ begin
 	MenuString := '';
 	//Validate
 	ParamCount := lua_gettop(ALua);
-	if not ParamCount > 0 then lual_error(ALua,'NPC Menu needs at least one parameter');
+	if not (ParamCount > 0) then lual_error(ALua,'NPC Menu needs at least one parameter');
 	for idx := 1 to ParamCount do lual_argcheck(ALua,lua_isString(ALua,idx),idx,'NPC Menu parameter must be a integer or string');
 	//Run
 	if GetCharaFromLua(ALua,AChara) then

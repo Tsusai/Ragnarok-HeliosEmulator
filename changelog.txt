@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 630 -
+[2008/11/17] Tsusai - Notes/Overview: Lua fixes
+[2008/11/17] Tsusai - ZoneServer: Now initializes and terminates the ItemLua proper.
+[2008/11/17] Tsusai - LuaNPCCommands: Fixed NPC Menu "order of operations" mistake.
+-
+
 - Rev 629 -
 [2008/11/17] Tsusai - Notes/Overview: Added framework for Item script system.
  Required Script Rev 77

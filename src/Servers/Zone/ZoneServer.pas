@@ -376,6 +376,8 @@ begin
 		//Initiate NPC Lua
 		InitLuaState(NPCLua);
 		LoadNPCCommands(NPCLua);
+		//Intitiate Item Lua
+		InitLuaState(ItemLua);
 		LoadItemCommands(ItemLua);
 		//Run the Core script
 		LoadAndRunLuaScript(NPCLua, MainProc.Options.ScriptDirectory + LUA_NPC_CORE_FILE);
@@ -427,6 +429,7 @@ begin
 
 		//Kill ALL LUAS by killing the root lua.
 		TerminateLua(NPCLua);
+		TerminateLua(ItemLua);
 
 		//Save and free options, options must be free'd here to force a reload after
 		//start.
