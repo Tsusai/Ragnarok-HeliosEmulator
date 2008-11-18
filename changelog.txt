@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 632 -
+[2008/11/18] Tsusai - Notes/Overview: Removed Delphi "__history" temp from SVN
+-
+
 - Rev 631 -
 [2008/11/18] Tsusai - Notes/Overview: svn:ignore property updates. No code changed.
 -
