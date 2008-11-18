@@ -32,7 +32,7 @@ uses
 	CharacterEventThread,
 	CharaList,
 	GMCommands,
-	LuaCoreRoutines,
+	LuaTypes,
 	MapList,
 	PacketTypes,
 	Server,
@@ -82,6 +82,7 @@ type
 		CharacterEventThread : TCharacterEventThread;
 
 		NPCLua : TLua;
+		ItemLua : TLua;
 
 		Constructor Create;
 		Destructor  Destroy;Override;
@@ -106,6 +107,8 @@ uses
 	Being,
 	BufferIO,
 	Globals,
+	LuaCoreRoutines,
+	LuaItemCommands,
 	LuaNPCCommands,
 	Main,
 	Map,
@@ -373,8 +376,10 @@ begin
 		//Initiate NPC Lua
 		InitLuaState(NPCLua);
 		LoadNPCCommands(NPCLua);
+		LoadItemCommands(ItemLua);
 		//Run the Core script
-		RunLuaScript(NPCLua, MainProc.Options.ScriptDirectory + '/Core/Core.lua');
+		LoadAndRunLuaScript(NPCLua, MainProc.Options.ScriptDirectory + LUA_NPC_CORE_FILE);
+		LoadAndRunLuaScript(NPCLua, MainProc.Options.ScriptDirectory + LUA_ITEM_CORE_FILE);
 
 		CharacterEventThread.Start;
 	end else

@@ -45,7 +45,7 @@ uses
 	{Project}
 	Being,
 	GameConstants,
-	LuaCoreRoutines,
+	LuaTypes,
 	Inventory,
 	Mailbox,
 	Equipment,
@@ -377,6 +377,7 @@ uses
 	Globals,
 	GameTypes,
 	PacketTypes,
+	LuaCoreRoutines,
 	TCPServerRoutines,
 	CharaList,
 	AreaLoopEvents,

@@ -8,18 +8,14 @@ unit LuaCoreRoutines;
 
 interface
 uses
+	Character,
+	LuaTypes,
 	LuaPas;
 
-	//Wrapper for the lua state.
-	Type TLua = Plua_state;
+	const LUA_NPC_CORE_FILE = '/Core/NPCCore.lua';
+	const LUA_ITEM_CORE_FILE = '/Core/ItemCore.lua';
 
-	//Used mainly for descending lua threads off a root one
-	//so that it may be dereferenced later on and freed.
-	Type TLuaInfo = record
-		Lua       : TLua;
-		LuaID     : Integer;
-		ParentLua : TLua;
-	end;
+	type TLuaEnv = (LUA_NPC, LUA_ITEM);
 
 	function Lua_isNonNumberString(
 		ALua : TLua;
@@ -41,9 +37,15 @@ uses
 		var DestLua   : TLuaInfo
 	);
 
-	procedure RunLuaScript(
+	procedure LoadAndRunLuaScript(
 		var ALua : TLua;
 		Const LuaFile : String
+	);
+
+	procedure LuaRunPlayerScript(
+		var AChara : TCharacter;
+		const LuaMode : TLuaEnv;
+		const LuaFunc : string
 	);
 
 	procedure InitLuaState(
@@ -58,9 +60,15 @@ uses
 		var RootLuaOnly : TLua
 	);
 
+	procedure SetCharaToLua(var AChara : TCharacter);
+	function GetCharaFromLua(var ALua : TLua; var AChara : TCharacter) : boolean;
+
 
 implementation
 uses
+	Globals,
+	Terminal,
+	Main,
 	Math;
 
 //Since 23235 is a valid number and string to lua, this routine checks for
@@ -111,6 +119,7 @@ end;
 //Also Creates a table environment with a reference to the sourcelua's global
 //functions, variables etc, so that the creation of new globals do not
 //becomed shared with the source lua or other descendant threads.
+//THIS WAS A BITCH TO MAKE, SHOULD NOT NEED ALTERING IN ANY FORM
 procedure MakeLuaThread(
 	var SourceLua : TLua;
 	var DestLua   : TLuaInfo
@@ -140,19 +149,29 @@ begin
 end;
 
 //Tells a lua instance to load and execute a script file
-procedure RunLuaScript(var ALua : TLua; Const LuaFile : String);
+procedure LoadAndRunLuaScript(var ALua : TLua; Const LuaFile : String);
 begin
 	//Load the script
 	if luaL_loadfile(ALua, PChar(LuaFile)) <> 0 then //0 = no errors
 	begin
-		WriteLn(lua_tostring(ALua, -1));
+		if Length(lua_tostring(ALua, -1)) > 0 then
+		begin
+			//If something went wrong, get the error message off the stack
+			Console.Message(lua_tostring(ALua, -1), 'Zone Server - Lua', MS_ERROR);
+			Exit;
+		end;
 		lua_pop(ALua, 1); //Remove the error string
 	end;
 
 	//Executes the script
 	if lua_pcall(ALua,0,0,0) <> 0 then //0 = no errors
 	begin
-		WriteLn(lua_tostring(ALua, -1));
+		if Length(lua_tostring(ALua, -1)) > 0 then
+		begin
+			//If something went wrong, get the error message off the stack
+			Console.Message(lua_tostring(ALua, -1), 'Zone Server - Lua', MS_ERROR);
+			Exit;
+		end;
 		lua_pop(ALua, 1); //Remove the error string
 	end;
 end;
@@ -180,6 +199,61 @@ procedure TerminateLua(
 );
 begin
 	lua_close(RootLuaOnly);
+end;
+
+//Create and run a player based execution environment based on the function
+//name
+procedure LuaRunPlayerScript(
+	var AChara : TCharacter;
+	const LuaMode : TLuaEnv;
+	const LuaFunc : string
+);
+begin
+	//Set the player's lua thread, setting up its own unique runtime enviro.
+	case LuaMode of
+		LUA_NPC: MakeLuaThread(MainProc.ZoneServer.NPCLua,AChara.LuaInfo);
+		LUA_ITEM: MakeLuaThread(MainProc.ZoneServer.ItemLua,AChara.LuaInfo);
+	end;
+	//Set the character pointer to the global list
+	SetCharaToLua(AChara);
+	//Get the function
+	lua_getglobal(AChara.LuaInfo.Lua,PChar(LuaFunc));
+	//run the function
+	if lua_resume(AChara.LuaInfo.Lua,0) <> 0 then
+	begin
+		if Length(lua_tostring(AChara.LuaInfo.Lua, -1)) > 0 then
+		begin
+			//If something went wrong, get the error message off the stack
+			Console.Message(lua_tostring(AChara.LuaInfo.Lua, -1), 'Zone Server - Lua', MS_ERROR);
+		end;
+		lua_pop(AChara.LuaInfo.Lua, 1); //Remove the error string
+	end;
+end;
+
+//Pushes the Character Pointer onto the global array of the lua
+//This is meant so that when a character executes a script, we can retrieve the TCharacter object
+procedure SetCharaToLua(var AChara : TCharacter);
+begin
+	lua_pushlightuserdata(AChara.LuaInfo.Lua, @AChara); // Push pointer for the character
+	lua_setglobal(AChara.LuaInfo.Lua, 'character'); // Tell Lua to set it as global
+end;
+
+//Pulls the Character object pointer from the lua global array.
+function GetCharaFromLua(var ALua : TLua; var AChara : TCharacter) : boolean;
+var
+	PCharacter : ^TCharacter;
+begin
+	Result := false;
+	lua_getglobal(ALua, 'character');
+	PCharacter := lua_topointer(ALua, -1);
+	if Assigned(PCharacter) then
+	begin
+		AChara := PCharacter^;
+		if Assigned(AChara) then
+		begin
+			Result := true;
+		end;
+	end;
 end;
 
 end.

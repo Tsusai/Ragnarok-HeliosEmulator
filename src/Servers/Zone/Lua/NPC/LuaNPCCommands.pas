@@ -11,7 +11,8 @@ unit LuaNPCCommands;
 interface
 
 uses
-	LuaCoreRoutines;
+	LuaCoreRoutines,
+	LuaTypes;
 
 function LoadNPCCommands(var ALua : TLua) : boolean;
 

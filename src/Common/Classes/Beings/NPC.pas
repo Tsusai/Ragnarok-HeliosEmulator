@@ -132,7 +132,7 @@ implementation
 uses
 	//RTL
 	//Project
-	LuaNPCCore,
+	LuaCoreRoutines,
 	Main,
 	Map,
 	OnTouchCellEvent;
@@ -196,7 +196,7 @@ procedure TScriptNPC.OnTouch(ACharacter : TCharacter);
 begin
 	if TouchFunction <> '' then
 	begin
-		RunLuaNPCScript(ACharacter, TouchFunction);
+		LuaRunPlayerScript(ACharacter, LUA_NPC, TouchFunction);
 	end;
 end;
 
@@ -204,7 +204,7 @@ procedure TScriptNPC.OnClick(ACharacter : TCharacter);
 begin
 	if ClickFunction <> '' then
 	begin
-		RunLuaNPCScript(ACharacter, ClickFunction);
+		LuaRunPlayerScript(ACharacter, LUA_NPC, ClickFunction);
 	end;
 end;
 

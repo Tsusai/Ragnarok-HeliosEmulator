@@ -13,12 +13,8 @@ interface
 
 uses
 	Character,
-	LuaCoreRoutines;
-
-  procedure RunLuaNPCScript(
-		var AChara : TCharacter;
-		const LuaFunc : string
-	);
+	LuaCoreRoutines,
+	LuaTypes;
 
 	procedure ResumeLuaNPCScript(
 		var AChara : TCharacter;
@@ -41,8 +37,7 @@ uses
 	);
 
 
-	procedure SetCharaToLua(var AChara : TCharacter);
-	function GetCharaFromLua(var ALua : TLua; var AChara : TCharacter) : boolean;
+
 
 implementation
 uses
@@ -50,29 +45,6 @@ uses
 	Globals,
 	LuaPas;
 
-
-procedure RunLuaNPCScript(
-	var AChara : TCharacter;
-	const LuaFunc : string
-);
-begin
-	//Set the player's lua thread, setting up its own unique runtime enviro.
-	MakeLuaThread(MainProc.ZoneServer.NPCLua,AChara.LuaInfo);
-	//Set the character pointer to the global list
-	SetCharaToLua(AChara);
-	//Get the function
-	lua_getglobal(AChara.LuaInfo.Lua,PChar(LuaFunc));
-	//run the function
-	if lua_resume(AChara.LuaInfo.Lua,0) <> 0 then
-	begin
-		if Length(lua_tostring(AChara.LuaInfo.Lua, -1)) > 0 then
-		begin
-			//If something went wrong, get the error message off the stack
-			Console.Message(lua_tostring(AChara.LuaInfo.Lua, -1), 'Zone Server', MS_ERROR);
-		end;
-		lua_pop(AChara.LuaInfo.Lua, 1); //Remove the error string
-	end;
-end;
 
 procedure ResumeLuaNPCScript(
 	var AChara : TCharacter;
@@ -85,7 +57,7 @@ begin
 		if Length(lua_tostring(AChara.LuaInfo.Lua, -1)) > 0 then
 		begin
 		//If something went wrong, get the error message off the stack
-			Console.Message(lua_tostring(AChara.LuaInfo.Lua, -1), 'Zone Server', MS_ERROR);
+			Console.Message(lua_tostring(AChara.LuaInfo.Lua, -1), 'Zone Server - Lua', MS_ERROR);
     end;
 		lua_pop(AChara.LuaInfo.Lua, 1); //Remove the error string
 	end;
@@ -116,32 +88,6 @@ procedure ResumeLuaNPCScriptWithDouble(
 begin
 	lua_pushnumber(AChara.LuaInfo.Lua, ReturnDouble);
 	ResumeLuaNPCScript(AChara,true);
-end;
-
-//Pushes the Character Pointer onto the global array of the lua
-//This is meant so that when a character executes a script, we can retrieve the TCharacter object
-procedure SetCharaToLua(var AChara : TCharacter);
-begin
-	lua_pushlightuserdata(AChara.LuaInfo.Lua, @AChara); // Push pointer for the character
-	lua_setglobal(AChara.LuaInfo.Lua, 'character'); // Tell Lua to set it as global
-end;
-
-//Pulls the Character object pointer from the lua global array.
-function GetCharaFromLua(var ALua : TLua; var AChara : TCharacter) : boolean;
-var
-	PCharacter : ^TCharacter;
-begin
-	Result := false;
-	lua_getglobal(ALua, 'character');
-	PCharacter := lua_topointer(ALua, -1);
-	if Assigned(PCharacter) then
-	begin
-		AChara := PCharacter^;
-		if Assigned(AChara) then
-		begin
-			Result := true;
-		end;
-	end;
 end;
 
 end.

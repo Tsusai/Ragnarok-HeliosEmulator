@@ -47,7 +47,7 @@ uses
 	GameTypes,
 	ParameterList,
 	AreaLoopEvents,
-	LuaNPCCore
+	LuaCoreRoutines
 	;
 
 //------------------------------------------------------------------------------
@@ -285,8 +285,8 @@ begin
 					AChara.SendSubStat(0,$29,AChara.ATK);
 					if Equip.OnEquip <> '' then
 					begin
-						RunLuaNPCScript(
-							AChara,
+						LuaRunPlayerScript(AChara,
+							LUA_ITEM,
 							Equip.OnEquip
 						);
 					end;
@@ -361,8 +361,9 @@ begin
 				AChara.SendSubStat(0,$29,AChara.ATK);
 				if Equip.OnDisarm <> '' then
 				begin
-					RunLuaNPCScript(
+					LuaRunPlayerScript(
 						AChara,
+						LUA_ITEM,
 						Equip.OnDisarm
 					);
 				end;

@@ -62,7 +62,6 @@ program Helios;
 
 {$APPTYPE CONSOLE}
 uses
-  madLinkDisAsm,
 {*These definitions make it possible to step through programs in windows and
 compile for linux, at the same time*}
 //------------------------------------------------------------------------------
@@ -136,8 +135,10 @@ compile for linux, at the same time*}
 	//Lua
 	LuaPas in 'Common\ThirdParty\LuaPas.pas',
 	LuaCoreRoutines in 'Servers\Zone\Lua\LuaCoreRoutines.pas',
+	LuaItemCommands in 'Servers\Zone\Lua\Item\LuaItemCommands.pas',
 	LuaNPCCore in 'Servers\Zone\Lua\NPC\LuaNPCCore.pas',
 	LuaNPCCommands in 'Servers\Zone\Lua\NPC\LuaNPCCommands.pas',
+	LuaTypes in 'Servers\Zone\Lua\LuaTypes.pas',
 
 	//Lists
 	CharaList in 'Common\Classes\Lists\CharaList.pas',
@@ -191,6 +192,7 @@ compile for linux, at the same time*}
 	CommClient in 'Common\Classes\CommClient.pas',
 	Globals in 'Common\Globals.pas',
 	{$IFNDEF FPC} //If we aren't using Lazarus to compile, use madshi components
+		madLinkDisAsm,
 		madExcept,
 	{$ENDIF}
 	PacketTypes in 'Common\PacketTypes.pas',
@@ -270,8 +272,10 @@ compile for linux, at the same time*}
 	//Lua
 	LuaPas in 'Common/ThirdParty/LuaPas.pas',
 	LuaCoreRoutines in 'Servers/Zone/Lua/LuaCoreRoutines.pas',
+	LuaItemCommands in 'Servers/Zone/Lua/Item/LuaItemCommands.pas',
 	LuaNPCCore in 'Servers/Zone/Lua/NPC/LuaNPCCore.pas',
 	LuaNPCCommands in 'Servers/Zone/Lua/NPC/LuaNPCCommands.pas',
+	LuaTypes in 'Servers/Zone/Lua/LuaTypes.pas',
 
 	//Lists
 	CharaList in 'Common/Classes/Lists/CharaList.pas',
