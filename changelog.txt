@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 631 -
+[2008/11/18] Tsusai - Notes/Overview: svn:ignore property updates. No code changed.
+-
+
 - Rev 630 -
 [2008/11/17] Tsusai - Notes/Overview: Lua fixes
 [2008/11/17] Tsusai - ZoneServer: Now initializes and terminates the ItemLua proper.
