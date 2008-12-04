@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 633 -
+[2008/12/03] Tsusai - Notes/Overview: BufferIO - Updated reading one xy point
+ off the buffer with simpler code.
+-
+
 - Rev 632 -
 [2008/11/18] Tsusai - Notes/Overview: Removed Delphi "__history" temp from SVN
 -

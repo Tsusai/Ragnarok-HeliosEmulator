@@ -349,21 +349,16 @@ End; (* Func BufferReadString
 //
 //	Changes -
 //		March 12th, 2007 - Aeomin - Reformat Header.
+//		Dec 2, 2008 - Tsusai - Implemented better bit shifting
 //
 //------------------------------------------------------------------------------
 	function BufferReadOnePoint(const Index:word; const Buffer : TBuffer) : TPoint;
 	var
-		l   :LongWord;
-		bb  :array[0..3] of byte;
+		bb  :array[0..2] of byte;
 	begin
 		Move(Buffer[index], bb[0], 3);
-		bb[3] := bb[0];
-		bb[0] := bb[2];
-		bb[2] := bb[3];
-		Move(bb[0], l, 3);
-		l := l shr 4;
-		Result.Y :=  (l and $003ff);
-		Result.X := ((l and $ffc00) shr 10);
+		Result.X := (bb[0] * 4) + (bb[1] shr 6);
+		Result.Y := ((bb[1] and $3f) shl 4) + (bb[2] shr 4);
 	end;
 //------------------------------------------------------------------------------
 
