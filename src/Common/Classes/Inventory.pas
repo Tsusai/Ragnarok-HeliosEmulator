@@ -348,9 +348,9 @@ var
 		begin
 			if New then
 			begin
-				AnInventoryItem.X := 0;
-				AnInventoryItem.Y := 0;
+				AnInventoryItem.Position := Point(0,0);
 				AnInventoryItem.MapID := 0;
+				AnInventoryItem.MapInfo := nil;
 				TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
 					AnInventoryItem,
 					Self
@@ -382,8 +382,8 @@ begin
 	if Index > -1 then
 	begin
 		AnInventoryItem := AChara.MapInfo.ItemList.Objects[Index] as TItemInstance;
-		X := AnInventoryItem.X;
-		Y := AnInventoryItem.Y;
+		X := AnInventoryItem.Position.X;
+		Y := AnInventoryItem.Position.Y;
 		//Make sure within 1 cell distance
 		if (Abs(AChara.Position.X-X)<=1)AND
 		(Abs(AChara.Position.Y-Y)<=1) then
@@ -549,8 +549,7 @@ begin
 
 		if Quantity >= TheItem.Quantity then
 		begin
-			TheItem.X := Position.X;
-			TheItem.Y := Position.Y;
+			TheItem.Position := Position;
 			TheItem.MapID := AChara.MapInfo.ID;
 			TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
 				TheItem,
@@ -564,6 +563,7 @@ begin
 			);
 			DecreaseWeight(Quantity*TheItem.Item.Weight);
 
+			TheItem.MapInfo := AChara.MapInfo;
 			ParameterList := TParameterList.Create;
 			ParameterList.AddAsObject(1,TheItem);
 			ParameterList.AddAsLongWord(2,Quantity);
@@ -571,6 +571,7 @@ begin
 			ParameterList.Free;
 
 			fItemList.Delete(TheItem,True);
+			TheItem.Dropped;
 		end else
 		begin
 			Remove(
@@ -578,24 +579,24 @@ begin
 				Quantity,
 				NewItem
 			);
-			NewItem.X := Position.X;
-			NewItem.Y := Position.Y;
+			NewItem.Position := Position;
 			NewItem.MapID := AChara.MapInfo.ID;
 			{FIX ME}
 			TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
 				NewItem,
 				nil
 			);
-
+			NewItem.MapInfo := AChara.MapInfo;
 			ParameterList := TParameterList.Create;
 			ParameterList.AddAsObject(1,NewItem);
 			ParameterList.AddAsLongWord(2,Quantity);
 			AChara.AreaLoop(ShowDropitem,False,ParameterList);
 			ParameterList.Free;
+			NewItem.Dropped;
 
 			TheItem := NewItem;
 		end;
-		AChara.MapInfo.Cell[TheItem.X,TheItem.Y].Items.AddObject(TheItem.ID,TheItem);
+		AChara.MapInfo.Cell[TheItem.Position.X,TheItem.Position.Y].Items.AddObject(TheItem.ID,TheItem);
 		AChara.MapInfo.ItemList.AddObject(TheItem.ID,TheItem);
 	end;
 end;{Drop}

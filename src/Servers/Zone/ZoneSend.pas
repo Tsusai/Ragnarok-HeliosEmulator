@@ -2077,8 +2077,8 @@ begin
 	WriteBufferLongWord(2, AnItem.ID, OutBuffer);
 	WriteBufferWord(6, AnItem.Item.ID, OutBuffer);
 	WriteBufferByte(8, Byte(AnItem.Identified), OutBuffer);
-	WriteBufferWord(9, AnItem.X, OutBuffer);
-	WriteBufferWord(11, AnItem.Y, OutBuffer);
+	WriteBufferWord(9, AnItem.Position.X, OutBuffer);
+	WriteBufferWord(11, AnItem.Position.Y, OutBuffer);
 	WriteBufferByte(13, AnItem.SubX, OutBuffer);
 	WriteBufferByte(14, AnItem.SubY, OutBuffer);
 	WriteBufferWord(15, AQuantity, OutBuffer);
@@ -2142,8 +2142,8 @@ begin
 	WriteBufferLongWord(2, AnItem.ID, OutBuffer);
 	WriteBufferWord(6, AnItem.Item.ID, OutBuffer);
 	WriteBufferByte(8, Byte(AnItem.Identified), OutBuffer);
-	WriteBufferWord(9, AnItem.X, OutBuffer);
-	WriteBufferWord(11, AnItem.Y, OutBuffer);
+	WriteBufferWord(9, AnItem.Position.X, OutBuffer);
+	WriteBufferWord(11, AnItem.Position.Y, OutBuffer);
 	WriteBufferWord(13, AnItem.Quantity, OutBuffer);
 	WriteBufferByte(15, AnItem.SubX, OutBuffer);
 	WriteBufferByte(16, AnItem.SubY, OutBuffer);

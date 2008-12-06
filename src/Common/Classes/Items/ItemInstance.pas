@@ -15,7 +15,6 @@ TItemInstance = Class(TGameObject)
 	private
 	public
 		Index		: Word;  //Should only modify by TInventoryList
-		ID		: LongWord; //Instance ID
 
 		Item		: TItem;
 		Quantity	: Word;
@@ -25,7 +24,6 @@ TItemInstance = Class(TGameObject)
 		Broken : Boolean;
 		Equipped :Boolean;
 
-		X,Y : Word;
 		SubX,SubY : Byte;
 		MapID : LongWord;
 		procedure GenerateSubCoordinate;
@@ -40,7 +38,9 @@ implementation
 
 uses
 	Main,
-	RemoveGroundItemEvent
+	RemoveGroundItemEvent,
+	AreaLoopEvents,
+	ParameterList
 	;
 
 procedure TItemInstance.GenerateSubCoordinate;
@@ -66,9 +66,26 @@ begin
 end;
 
 procedure TItemInstance.RemoveFromGround;
+var
+	AParameters : TParameterList;
+	Index : Integer;
 begin
-
-//	AreaLoop(RemoveGroundItem, FALSE,AParameters);
+	if MapID > 0 then
+	begin
+		Index := MapInfo.Cell[Position.X,Position.Y].Items.IndexOf(ID);
+		if Index > -1 then
+		begin
+			MapInfo.Cell[
+				Position.X,
+				Position.Y
+				].Items.Delete(Index);
+		end;
+		AParameters := TParameterList.Create;
+		AParameters.AddAsLongWord(1,ID);
+		AreaLoop(RemoveGroundItem, FALSE,AParameters);
+		AParameters.Free;
+		MainProc.ZoneServer.Database.Items.Delete(ID);
+	end;
 end;
 
 constructor TItemInstance.Create;

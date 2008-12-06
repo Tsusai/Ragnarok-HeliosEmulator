@@ -39,6 +39,7 @@ uses
 procedure TRemoveGroundItemEvent.Execute;
 begin
 	AnItem.RemoveFromGround;
+	AnItem.Free;
 end;
 
 constructor TRemoveGroundItemEvent.Create(SetExpiryTime : LongWord; Item : TItemInstance);

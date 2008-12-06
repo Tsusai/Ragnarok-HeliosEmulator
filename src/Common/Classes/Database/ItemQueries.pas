@@ -451,13 +451,13 @@ begin
 		);
 		//X
 		AParam := ADataset.Params.CreateParam(ftInteger, 'X', ptInput);
-		AParam.AsInteger := AnItem.X;
+		AParam.AsInteger := AnItem.Position.X;
 		ADataSet.Params.AddParam(
 			AParam
 		);
 		//Y
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Y', ptInput);
-		AParam.AsInteger := AnItem.Y;
+		AParam.AsInteger := AnItem.Position.Y;
 		ADataSet.Params.AddParam(
 			AParam
 		);
@@ -537,13 +537,13 @@ begin
 		);
 		//X
 		AParam := ADataset.Params.CreateParam(ftInteger, 'X', ptInput);
-		AParam.AsInteger := AnItem.X;
+		AParam.AsInteger := AnItem.Position.X;
 		ADataSet.Params.AddParam(
 			AParam
 		);
 		//Y
 		AParam := ADataset.Params.CreateParam(ftInteger, 'Y', ptInput);
-		AParam.AsInteger := AnItem.Y;
+		AParam.AsInteger := AnItem.Position.Y;
 		ADataSet.Params.AddParam(
 			AParam
 		);
@@ -618,6 +618,7 @@ var
 	ADataSet	: TZQuery;
 	AParam		: TParam;
 	AItem		: TItemInstance;
+	APoint		: TPoint;
 begin
 	ADataSet	:= TZQuery.Create(nil);
 	try
@@ -654,8 +655,9 @@ begin
 			AItem.Identified := Boolean(ADataSet.Fields[3].AsInteger);
 			AItem.Refined := ADataSet.Fields[4].AsInteger;
 			AItem.Equipped := AChara.Equipment.IsEquipped(AItem.ID);
-			AItem.X := ADataSet.Fields[5].AsInteger;
-			AItem.Y := ADataSet.Fields[6].AsInteger;
+			APoint.X       := ADataSet.Fields[5].AsInteger;
+			APoint.Y       := ADataSet.Fields[6].AsInteger;
+			AItem.Position := APoint;
 			AItem.MapID := ADataSet.Fields[7].AsInteger;
 			Load(AItem.Item);
 			AChara.Inventory.Add(
@@ -692,6 +694,7 @@ var
 	ADataSet	: TZQuery;
 	AParam		: TParam;
 	AItem		: TItemInstance;
+	APoint		: TPoint;
 begin
 	ADataSet	:= TZQuery.Create(nil);
 	try
@@ -712,11 +715,13 @@ begin
 			AItem.Quantity := ADataSet.Fields[2].AsInteger;
 			AItem.Identified := Boolean(ADataSet.Fields[3].AsInteger);
 			AItem.Refined := ADataSet.Fields[4].AsInteger;;
-			AItem.X := ADataSet.Fields[5].AsInteger;
-			AItem.Y := ADataSet.Fields[6].AsInteger;
+			APoint.X       := ADataSet.Fields[5].AsInteger;
+			APoint.Y       := ADataSet.Fields[6].AsInteger;
+			AItem.Position := APoint;
 			AItem.MapID := ADataSet.Fields[7].AsInteger;
+			AItem.MapInfo := Map;
 			Load(AItem.Item);
-			Map.Cell[AItem.X, AItem.Y].Items.AddObject(
+			Map.Cell[AItem.Position.X, AItem.Position.Y].Items.AddObject(
 				AItem.ID,
 				AItem
 			);
