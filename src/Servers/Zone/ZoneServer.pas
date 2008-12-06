@@ -26,12 +26,12 @@ interface
 uses
 	{RTL/VCL}
 	CommClient,
+	Classes,
 	SysUtils,
 	{Project}
 	Character,
 	CharacterEventThread,
 	GroundItemRemovalEventThread,
-	EventList,
 	CharaList,
 	GMCommands,
 	LuaTypes,
@@ -84,7 +84,7 @@ type
 		CharacterEventThread : TCharacterEventThread;
 		GroundItemEventThread : TGroundItemEventThread;
 
-		GroundItemEventList : TEventList;
+		GroundItemList : TThreadList;
 
 		NPCLua : TLua;
 		ItemLua : TLua;
@@ -106,7 +106,6 @@ implementation
 
 uses
 	{RTL/VCL}
-	Classes,
 	StrUtils,
 	{Project}
 	GameObject,
@@ -162,8 +161,8 @@ begin
 
 	CharacterEventThread := TCharacterEventThread.Create(CharacterList);
 
-	GroundItemEventList := TEventList.Create(FALSE);
-	GroundItemEventThread := TGroundItemEventThread.Create(GroundItemEventList);
+	GroundItemList := TThreadList.Create;
+	GroundItemEventThread := TGroundItemEventThread.Create(GroundItemList);
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -213,6 +212,7 @@ Begin
 	objects properly... }
 	CharacterEventThread.Free;
 	GroundItemEventThread.Free;
+	GroundItemList.Free;
 
 	ToCharaTCPClient.Free;
 	ToInterTCPClient.Free;

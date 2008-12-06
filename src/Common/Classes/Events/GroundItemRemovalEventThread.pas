@@ -19,8 +19,8 @@ interface
 
 uses
 	{RTL/VCL}
+	Classes,
 	{Project}
-	EventList,
 	{Third Party}
 	IdThread
 	;
@@ -31,8 +31,8 @@ type
 //------------------------------------------------------------------------------
 	TGroundItemEventThread = class(TIdThread)
 	public
-		EventList : TEventList;
-		constructor Create(AnEventList : TEventList);reintroduce;
+		GroundItemList : TThreadList;
+		constructor Create(AGroundItemList : TThreadList);reintroduce;
 		procedure 	Run;override;
 	end;
 //------------------------------------------------------------------------------
@@ -42,11 +42,11 @@ implementation
 uses
 	{RTL/VCL}
 	SysUtils,
-	Classes,
 	SyncObjs,
 	{Project}
 	Main,
 	Event,
+	ItemInstance,
 	{3rd Party}
 	WinLinux
 	;
@@ -61,10 +61,10 @@ uses
 //		[2008/12/05] Aeomin - Created
 //
 //------------------------------------------------------------------------------
-Constructor TGroundItemEventThread.Create(AnEventList : TEventList);
+Constructor TGroundItemEventThread.Create(AGroundItemList : TThreadList);
 begin
-	inherited Create(TRUE, TRUE, 'GroundItemEventThread');
-	EventList := AnEventList;
+	inherited Create(TRUE, TRUE, 'GroundItemRemovalThread');
+	GroundItemList := AGroundItemList;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -83,8 +83,8 @@ Procedure TGroundItemEventThread.Run;
 var
 	EventIndex		: Integer;
 	CurrentTime		: LongWord;
-	AnEvent			: TRootEvent;
-	AnEventList		: TList;
+	AnItem			: TItemInstance;
+	AGroundItemList		: TList;
 	CriticalSection		: TCriticalSection;
 begin
 	//Get the current "Tick" or time.
@@ -92,24 +92,22 @@ begin
 	CriticalSection := TCriticalSection.Create;
 	//Loop through the character list
 	CriticalSection.Enter;
-	AnEventList := EventList.LockList;
+	AGroundItemList := GroundItemList.LockList;
 	try
 		//Loop through each character's eventlist.
-		for EventIndex := (AnEventList.Count - 1) downto 0 do
+		for EventIndex := (AGroundItemList.Count - 1) downto 0 do
 		begin
-			AnEvent := AnEventList[EventIndex];
+			AnItem := AGroundItemList[EventIndex];
 			//Check to see if the event needs to be fired.
-			if CurrentTime >= AnEvent.ExpiryTime then
+			if CurrentTime >= AnItem.RemovalTime then
 			begin
-				//If it does, execute the event, then delete it from the list.
-				//(The list "owns" the events, so this does not leak)   {not right now though}
-				AnEventList.Delete(EventIndex);
-				AnEvent.Execute;
-				AnEvent.Free;
+				AGroundItemList.Delete(EventIndex);
+				AnItem.RemoveFromGround;
+				AnItem.Free;
 			end;
 		end;
 	finally
-		EventList.UnlockList;
+		GroundItemList.UnlockList;
 	end;
 	CriticalSection.Leave;
 	CriticalSection.Free;

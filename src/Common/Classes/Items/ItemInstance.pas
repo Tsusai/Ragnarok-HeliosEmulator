@@ -26,6 +26,8 @@ TItemInstance = Class(TGameObject)
 
 		SubX,SubY : Byte;
 		MapID : LongWord;
+
+		RemovalTime : LongWord;
 		procedure GenerateSubCoordinate;
 		procedure Dropped;
 		procedure RemoveFromGround;
@@ -38,9 +40,9 @@ implementation
 
 uses
 	Main,
-	RemoveGroundItemEvent,
 	AreaLoopEvents,
-	ParameterList
+	ParameterList,
+	WinLinux
 	;
 
 procedure TItemInstance.GenerateSubCoordinate;
@@ -55,14 +57,9 @@ end;{GenerateSubCoordinate}
 
 
 procedure TItemInstance.Dropped;
-var
-	RemoveGroundItemEvent : TRemoveGroundItemEvent;
 begin
-	RemoveGroundItemEvent := TRemoveGroundItemEvent.Create(
-							MainProc.ZoneServer.Options.GroundItemTimeout * 1000,
-							Self
-							);
-	MainProc.ZoneServer.GroundItemEventList.Add(RemoveGroundItemEvent);
+	MainProc.ZoneServer.GroundItemList.Add(Self);
+	RemovalTime := GetTick + (MainProc.ZoneServer.Options.GroundItemTimeout * 1000);
 end;
 
 procedure TItemInstance.RemoveFromGround;

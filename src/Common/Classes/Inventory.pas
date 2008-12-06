@@ -328,6 +328,9 @@ var
 	CellIndex : Integer;
 	X,Y:Word;
 	AParameters : TParameterList;
+
+	AList : TList;
+	GroundIndex : Integer;
 	function TransferToInventory:Boolean;
 	var
 		Amount : Word;
@@ -394,6 +397,22 @@ begin
 			].Items.IndexOf(ID);
 			if CellIndex > -1 then
 			begin
+				AList := MainProc.ZoneServer.GroundItemList.LockList;
+				try
+					if AList.Count > 0 then
+					begin
+						for GroundIndex := (AList.Count - 1) downto 0 do
+						begin
+							if AList.Items[GroundIndex] = AnInventoryItem then
+							begin
+								AList.Delete(GroundIndex);
+							end;
+						end;
+					end;
+				finally
+					MainProc.ZoneServer.GroundItemList.UnlockList;
+				end;
+
 				if TransferToInventory then
 				begin
 					AChara.MapInfo.Cell[

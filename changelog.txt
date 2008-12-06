@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 638 -
+[2008/12/06] Aeomin - Rewrote most of ground item removal thread to fix a bug.
+-
+
 - Rev 637 -
 [2008/12/05] Aeomin - Finish up ground item removal thread.
          the timer will be reset if server restart
