@@ -43,6 +43,7 @@ uses
 	{RTL/VCL}
 	Types,
 	{Project}
+	GameObject,
 	Being,
 	GameConstants,
 	LuaTypes,

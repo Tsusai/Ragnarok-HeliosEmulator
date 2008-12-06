@@ -51,6 +51,7 @@ uses
 	{Project}
 	Main,
 	Event,
+	GameObject,
 	Being,
 	{3rd Party}
 	WinLinux

@@ -109,6 +109,7 @@ uses
 	Classes,
 	StrUtils,
 	{Project}
+	GameObject,
 	Being,
 	BufferIO,
 	Globals,

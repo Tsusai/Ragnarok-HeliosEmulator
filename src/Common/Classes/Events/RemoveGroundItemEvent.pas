@@ -33,6 +33,9 @@ type
 	end;
 implementation
 
+uses
+	WinLinux;
+
 procedure TRemoveGroundItemEvent.Execute;
 begin
 	AnItem.RemoveFromGround;
@@ -40,7 +43,7 @@ end;
 
 constructor TRemoveGroundItemEvent.Create(SetExpiryTime : LongWord; Item : TItemInstance);
 begin
-	inherited Create(SetExpiryTime);
+	inherited Create(SetExpiryTime + GetTick);
 	AnItem := Item;
 end;
 end.

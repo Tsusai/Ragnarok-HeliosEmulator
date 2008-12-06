@@ -724,6 +724,8 @@ begin
 				AItem.ID,
 				AItem
 			);
+			//Add to event!
+			AItem.Dropped;
 			ADataSet.Next;
 		end;
 	finally

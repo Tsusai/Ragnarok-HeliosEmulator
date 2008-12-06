@@ -31,6 +31,7 @@ uses
 	Classes,
 	Types,
 	{Project}
+	GameObject,
 	Being,
 	GameTypes,
 	Character,

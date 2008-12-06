@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 636 -
+[2008/12/05] Aeomin - Ground item removal Part II
+[2008/12/05] Aeomin - Moved AreaLoop from TBeing to TGameObject
+-
+
 - Rev 635 -
 [2008/12/05] Aeomin - Ground item removal Part I
 -

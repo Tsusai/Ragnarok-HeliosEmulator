@@ -70,6 +70,7 @@ interface
 
 			fMaxStackItem : Word;
 			fMaxItems : Word;
+			fGroundItemTimeout : LongWord;
 
 			fDynamicMapLoading : Boolean;
 
@@ -128,6 +129,7 @@ interface
 
 			property MaxStackItem : Word read fMaxStackItem;
 			property MaxItems : Word read fMaxItems;
+			property GroundItemTimeout : LongWord read fGroundItemTimeout;
 
 			property DynamicMapLoading : Boolean read fDynamicMapLoading;
 
@@ -260,6 +262,7 @@ implementation
 			fMaxStats := StrToIntDef(Section.Values['Max. Character Stats'], 99);
 			fMaxStackItem := EnsureRange(StrToIntDef(Section.Values['MaxStackItem'], 30000),0,High(Word));
 			fMaxItems := EnsureRange(StrToIntDef(Section.Values['MaxItems'], 100),0,High(Word));
+			fGroundItemTimeout := EnsureRange(StrToIntDef(Section.Values['GroundItemTimeout'], 60),1,High(Word));
 			fDynamicMapLoading := StrToBoolDef(Section.Values['Dynamic Map Loading'], true);
 		end;{Subroutine LoadPerformance}
 	//--------------------------------------------------------------------------
@@ -350,6 +353,8 @@ implementation
 
 		WriteString('Game','MaxStackItem',IntToStr(fMaxStackItem));
 		WriteString('Game','MaxItems',IntToStr(fMaxItems));
+		WriteString('Game','GroundItemTimeout', IntToStr(fGroundItemTimeout));
+
 		WriteString('Game','Dynamic Map Loading',BoolToStr(fDynamicMapLoading));
 		//Options
 

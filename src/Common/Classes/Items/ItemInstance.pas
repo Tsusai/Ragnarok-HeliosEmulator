@@ -29,6 +29,7 @@ TItemInstance = Class(TGameObject)
 		SubX,SubY : Byte;
 		MapID : LongWord;
 		procedure GenerateSubCoordinate;
+		procedure Dropped;
 		procedure RemoveFromGround;
 		constructor Create;
 end;
@@ -37,6 +38,10 @@ end;
 
 implementation
 
+uses
+	Main,
+	RemoveGroundItemEvent
+	;
 
 procedure TItemInstance.GenerateSubCoordinate;
 var
@@ -49,9 +54,21 @@ end;{GenerateSubCoordinate}
 //------------------------------------------------------------------------------
 
 
+procedure TItemInstance.Dropped;
+var
+	RemoveGroundItemEvent : TRemoveGroundItemEvent;
+begin
+	RemoveGroundItemEvent := TRemoveGroundItemEvent.Create(
+							MainProc.ZoneServer.Options.GroundItemTimeout * 1000,
+							Self
+							);
+	MainProc.ZoneServer.GroundItemEventList.Add(RemoveGroundItemEvent);
+end;
+
 procedure TItemInstance.RemoveFromGround;
 begin
-	writeln('time to eat!');
+
+//	AreaLoop(RemoveGroundItem, FALSE,AParameters);
 end;
 
 constructor TItemInstance.Create;

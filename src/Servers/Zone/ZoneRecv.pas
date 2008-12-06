@@ -25,6 +25,7 @@ uses
 	{RTL/VCL}
 	//none
 	{Project}
+	GameObject,
 	Character,
 	PacketTypes,
 	{Third Party}

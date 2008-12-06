@@ -68,20 +68,8 @@ type
 
 StatArray = array [STR..LUK] of Integer;
 
-TBeingZoneStatus = (
-		isOffline,
-		isOnline
-	);
 
 TBeing = class; //Forward Declaration.
-
-{[2007/03/28] CR - No X,Y parameters needed -- reduced and eliminated. }
-TLoopCall = procedure(
-		const ACurrentObject	: TGameObject;
-		const AObject		: TGameObject;
-		const AObjectID		: LongWord;
-		const AParameters	: TParameterList = nil
-		);
 
 (*= CLASS =====================================================================*
 TBeing
@@ -124,8 +112,6 @@ protected
 	fStatus           : Word;
 	fAilments         : Word;
 	fOption           : Word;
-	fMap              : String;
-	fPosition         : TPoint;
 	fSpeed            : Word;
 	fASpeed						: Word;
 	//Added Min and max hit for MobQueries.pas [Spre]
@@ -170,8 +156,6 @@ protected
 	Procedure SetStatus(Value : word); virtual;
 	Procedure SetAilments(Value : word); virtual;
 	Procedure SetOption(Value : word); virtual;
-	procedure SetMap(Value : string); virtual;
-	procedure SetPosition(Value : TPoint); virtual;
 	procedure SetSpeed(Value : Word); virtual;
 	procedure SetASpeed(Value : Word); virtual;
 	procedure SetMinimumHit(Value : Integer); virtual;
@@ -206,12 +190,10 @@ public
 	Critical		: Word;
 
 	SaveMapID		: LongWord;
-	MapInfo			: TMap;
 	EventList		: TEventList;
 	Path				: TPointList;
 	PathIndex		: Word;
 	MoveTick		: LongWord;
-	ZoneStatus		: TBeingZoneStatus; //Is the being online in the Zone or not?
 
 	TargetID		: LongWord;
 
@@ -235,8 +217,6 @@ public
 	property Status    : Word       read fStatus write SetStatus;
 	property Ailments  : Word       read fAilments write SetAilments;
 	property Option    : Word       read fOption write SetOption;
-	property Map       : string     read fMap write SetMap;
-	property Position  : TPoint     read fPosition write SetPosition;
 	property Speed     : Word       read fSpeed write SetSpeed;
 	property ASpeed		 : Word				read fASpeed write SetASpeed;
 	property MinimumHit		 : Integer				read fMinimumHit write SetMinimumHit;
@@ -262,11 +242,6 @@ public
 	procedure ShowEffect(EffectID:LongWord);
 	procedure ShowEmotion(EmotionID:Byte);
 	procedure Attack(ATargetID : LongWord; AttackContinuous : Boolean; JustAttacked : Boolean);virtual;
-	procedure AreaLoop(
-			ALoopCall           : TLoopCall;
-			AIgnoreCurrentBeing : Boolean = True;
-			AParameter          : TParameterList = nil
-		);
 	Function GetTargetIfInRange(
 		const ID						: LongWord;
 		const Distance			: Word;
@@ -677,55 +652,6 @@ begin
 	ADelayEvent := TDelayDisconnectEvent.Create(ExpireTime,Self);
 	ADelayEvent.ExpiryTime := ExpireTime;
 	EventList.Add(ADelayEvent);
-end;
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//ViewAreaLoop                                                         PROCEDURE
-//------------------------------------------------------------------------------
-//  What it does -
-//      master procedure for Area loop, and call Dynamic Sub Procedure.
-//
-//  Changes -
-//    March 20th, 2007 - Aeomin - Created
-//------------------------------------------------------------------------------
-procedure TBeing.AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True;AParameter : TParameterList = nil);
-var
-		idxY : integer;
-		idxX : integer;
-		ObjectIdx : integer;
-		AObject : TGameObject;
-begin
-	for idxY := Max(0,Position.Y-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.Y+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.Y-1) do
-	begin
-		for idxX := Max(0,Position.X-MainProc.ZoneServer.Options.CharShowArea) to Min(Position.X+MainProc.ZoneServer.Options.CharShowArea, MapInfo.Size.X-1) do
-		begin
-			for ObjectIdx := MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
-			begin
-				if MapInfo.Cell[idxX][idxY].Beings.Objects[ObjectIdx] is TBeing then
-				begin
-					AObject := MapInfo.Cell[idxX][idxY].Beings.Objects[ObjectIdx] as TGameObject;
-					if (Self = AObject) and AIgnoreCurrentBeing then Continue;
-					{if not (ABeing is TCharacter) then Continue;} //Target MUST be a TCharacter
-					//Even though it's good idea to prevent packet send to non players
-					//But the problem is that.. NPC is invisible now
-					if (AObject is TCharacter) AND (Self = AObject) then
-						ALoopCall(Self, AObject, TCharacter(Self).AccountID, AParameter)
-					else
-						ALoopCall(Self, AObject, TBeing(Self).ID, AParameter);
-				end;
-			end;
-			if MapInfo.Cell[idxX][idxY].Items.Count > 0 then
-			begin
-				for ObjectIdx := MapInfo.Cell[idxX][idxY].Items.Count -1 downto 0 do
-				begin
-					AObject := MapInfo.Cell[idxX][idxY].Items.Objects[ObjectIdx] as TGameObject;
-					ALoopCall(Self, AObject, TGameObject(AObject).ID, AParameter);
-				end;
-			end;
-		end;
-	end;
 end;
 //------------------------------------------------------------------------------
 
@@ -1258,7 +1184,6 @@ procedure TBeing.SetSP(Value : word); begin fSP := Value; end;
 Procedure TBeing.SetStatus(Value : word); begin fStatus := Value; end;
 Procedure TBeing.SetAilments(Value : word); begin fAilments := Value; end;
 Procedure TBeing.SetOption(Value : word); begin fOption := Value; end;
-procedure TBeing.SetMap(Value : string); begin fMap := Value; end;
 
 procedure TBeing.SetSpeed(Value : Word); begin fSpeed := Value; end;
 
@@ -1299,37 +1224,6 @@ begin
 	fElement	:=	Value;
 end;
 
-procedure TBeing.SetPosition(Value : TPoint);
-var
-	OldPt : TPoint;
-	Index : Integer;
-begin
-	OldPt := Position;
-	fPosition := Value;
-	//check if we're online before we add/remove ourselves from the map...
-	if ZoneStatus = isOnline then
-	begin
-		//Position is initialized to -1, -1 on create, so if we're not on the map
-		//yet, don't remove us!
-		if MapInfo.PointInRange(OldPt) then
-		begin
-			Index := MapInfo.Cell[OldPt.X][OldPt.Y].Beings.IndexOf(ID);
-			if Index > -1 then
-			begin
-				MapInfo.Cell[OldPt.X][OldPt.Y].Beings.Delete(
-					Index
-				);
-			end;
-		end;
-
-		//same as above, if we've set position to -1, -1, then don't add us to a
-		//non-existant cell!
-		if MapInfo.PointInRange(Position) then
-		begin
-			MapInfo.Cell[Position.X][Position.Y].Beings.AddObject(ID, self);
-		end;
-	end;
-end;
 
 (*- Procedure -----------------------------------------------------------------*
 TBeing.CalcSpeed
