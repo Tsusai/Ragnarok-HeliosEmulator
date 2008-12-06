@@ -76,12 +76,13 @@ function script_ResetLook(ALua	:TLua)	:	Integer; cdecl;	forward;
 function script_Input(ALua : TLua) : integer; cdecl; forward;
 function script_InputStr(ALua : TLua) : integer; cdecl; forward;
 function script_BroadcastInMap(ALua : TLua) : integer; cdecl; forward;
+function script_CreateInstanceMap(ALua : TLua) : integer; cdecl; forward;
 //Special Commands
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 39;
+	NPCCommandCount = 40;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -126,6 +127,7 @@ const
 		(name:'input';func:script_Input),
 		(name:'inputstr';func:script_InputStr),
 		(name:'broadcastinmap';func:script_BroadcastInMap),
+		(name:'createinstancemap';func:script_CreateInstanceMap),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -1283,5 +1285,10 @@ begin
 	begin
 		luaL_error(ALua,'script Inputstr syntax error');
 	end;
+end;
+
+function script_CreateInstanceMap(ALua : TLua) : integer;
+begin
+	Result := 0;
 end;
 end.

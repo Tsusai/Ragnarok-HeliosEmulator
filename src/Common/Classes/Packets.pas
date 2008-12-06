@@ -732,6 +732,8 @@ Begin
 					ExecCommand := DeleteMail;
 				end else if Command = 'mailsend' then begin
 					ExecCommand := RequestSendMail;
+				end else if Command = 'hotkey' then begin
+					ExecCommand := SaveHotKey;
 				end;
 			end;
 			//Add data (or update, .Add knows how) to current work list

@@ -7,7 +7,7 @@
 //
 //  License -
 //------------------------------------------------------------------------------
-//                 Project Helios - Copyright (c) 2005-2007
+//                 Project Helios - Copyright (c) 2005-2008
 //
 //    Contributors(A-Z) -
 //        Matthew Mazanec (Tsusai - tsusai at gmail dot com)
@@ -117,6 +117,7 @@ compile for linux, at the same time*}
 	Character in 'Common\Classes\Beings\Character.pas',
 	Being in 'Common\Classes\Beings\Being.pas',
 	Map in 'Common\Classes\Map.pas',
+	InstanceMap in 'Common\Classes\InstanceMap.pas',
 	NPC in 'Common\Classes\Beings\NPC.pas',
 	Mob in 'Common\Classes\Beings\Mob.pas',
 	Mailbox in 'Common\Classes\Mailbox.pas',
@@ -255,6 +256,7 @@ compile for linux, at the same time*}
 	Character in 'Common/Classes/Beings/Character.pas',
 	Being in 'Common/Classes/Beings/Being.pas',
 	Map in 'Common/Classes/Map.pas',
+	InstanceMap in 'Common/Classes/InstanceMap.pas',
 	NPC in 'Common/Classes/Beings/NPC.pas',
 	Mob in 'Common/Classes/Beings/Mob.pas',
 	Mailbox in 'Common/Classes/Mailbox.pas',

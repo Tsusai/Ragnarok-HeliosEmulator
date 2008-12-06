@@ -68,7 +68,7 @@ TMap = class(TObject)
 				PmsFile : String
 			) : Boolean;
 
-		Procedure Load;
+		procedure Load;
 		Procedure Unload;
 
 		Function PointInRange(const APoint : TPoint) : Boolean;

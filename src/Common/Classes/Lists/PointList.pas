@@ -33,9 +33,9 @@ type
 		NextSlot : PPoint; // Points to the next free slot in memory
 
 		Function GetValue(Index : Integer) : TPoint;
-    Procedure SetValue(Index : Integer; Value : TPoint);
+		Procedure SetValue(Index : Integer; Value : TPoint);
 		Procedure Expand(const Size : Integer);
-    Procedure Shrink(const Size : Integer);
+		Procedure Shrink(const Size : Integer);
 
 	Public
 		Constructor Create();
@@ -74,7 +74,7 @@ constructor TPointList.Create();
 begin
 	inherited Create;
 	MsCount  := 0; // No Points in the list yet
-  MaxCount := 0; //no mem yet!
+	MaxCount := 0; //no mem yet!
 	MemStart := NIL;//no memory yet
 end;{Create}
 //------------------------------------------------------------------------------

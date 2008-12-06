@@ -279,6 +279,12 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure SaveHotKey(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -608,24 +614,47 @@ var
 	OutBuffer   : TBuffer;
 	AMap        : TMap;
 	MapIndex    : Integer;
+	Loaded      : Boolean;
+	function LoadMap:Boolean;
+	begin
+		Result := False;
+		//Load map cells if they are not already loaded
+		MapIndex := MainProc.ZoneServer.MapList.IndexOf(AChara.Map);
+		if MapIndex > -1 then
+		begin
+			if MainProc.ZoneServer.MapList[MapIndex].State = UNLOADED then
+			begin
+				MainProc.ZoneServer.MapList[MapIndex].SafeLoad;
+
+				AMap := MainProc.ZoneServer.MapList[MapIndex];
+				AChara.MapInfo := AMap;
+			end else
+			begin
+				AMap := MainProc.ZoneServer.MapList[MapIndex];
+				AChara.MapInfo := AMap;
+			end;
+			Result := True;
+		end;
+	end;
+	function LoadInstanceMap:Boolean;
+	begin
+		Result := False;
+	end;
 begin
 	AChara.EventList.Clear;
-	//Load map cells if they are not already loaded
-	MapIndex := MainProc.ZoneServer.MapList.IndexOf(AChara.Map);
-	if MapIndex > -1 then
+
+	//Check Instance map special character
+	if (Pos('#',AChara.Map)>0) OR (Pos('@',AChara.Map)>0) then
 	begin
-		if MainProc.ZoneServer.MapList[MapIndex].State = UNLOADED then
-		begin
-			MainProc.ZoneServer.MapList[MapIndex].SafeLoad;
+		//Load Instance map first, if fail then normal
+		Loaded := LoadInstanceMap OR LoadMap;
+	end else
+	begin
+		Loaded := LoadMap;
+	end;
 
-			AMap := MainProc.ZoneServer.MapList[MapIndex];
-			AChara.MapInfo := AMap;
-		end else
-		begin
-			AMap := MainProc.ZoneServer.MapList[MapIndex];
-			AChara.MapInfo := AMap;
-		end;
-
+	if Loaded then
+	begin
 		AChara.OnTouchIDs.Clear;
 
 		//Update character options
@@ -682,7 +711,7 @@ begin
 	end else
 	begin
 		AChara.ClientInfo.Connection.Disconnect;
-  end;
+	end;
 end;{ShowMap}
 //------------------------------------------------------------------------------
 
@@ -2031,6 +2060,33 @@ begin
 		end;
 	end;
 end;{ItemUse}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SaveHotKey                                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Redirect whisper message from Inter to client
+//	Changes -
+//		[2008/12/06] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SaveHotKey(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+{var
+	Index : Word;
+	AType : Byte;
+	ID    : LongWord;
+	SkillLevel : Word;}
+begin
+	{Index := BufferReadWord(ReadPts[0], InBuffer);
+	AType := BufferReadByte(ReadPts[1], InBuffer);
+	ID    := BufferReadLongWord(ReadPts[2], InBuffer);
+	SkillLevel := BufferReadWord(ReadPts[3], InBuffer);} {Wonder why is word?}
+end;{SaveHotKey}
 //------------------------------------------------------------------------------
 
 
