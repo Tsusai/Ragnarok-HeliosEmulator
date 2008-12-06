@@ -157,6 +157,8 @@ compile for linux, at the same time*}
 	OnTouchCellEvent in 'Common\Classes\Events\OnTouchCellEvent.pas',
 	AddFriendEvent in 'Common\Classes\Events\AddFriendEvent.pas',
 	AttackEvent in 'Common\Classes\Events\AttackEvent.pas',
+	GroundItemRemovalEventThread in 'Common\Classes\Events\GroundItemRemovalEventThread.pas',
+	RemoveGroundItemEvent in 'Common\Classes\Events\RemoveGroundItemEvent.pas',
 
 	//Database
 	Database in 'Common\Classes\Database\Database.pas',
@@ -294,6 +296,8 @@ compile for linux, at the same time*}
 	OnTouchCellEvent in 'Common/Classes/Events/OnTouchCellEvent.pas',
 	AddFriendEvent in 'Common/Classes/Events/AddFriendEvent.pas',
 	AttackEvent in 'Common/Classes/Events/AttackEvent.pas',
+	GroundItemRemovalEventThread in 'Common/Classes/Events/GroundItemRemovalEventThread.pas',
+	RemoveGroundItemEvent in 'Common/Classes/Events/RemoveGroundItemEvent.pas',
 
 	//Database
 	Database in 'Common/Classes/Database/Database.pas',

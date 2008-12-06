@@ -30,6 +30,8 @@ uses
 	{Project}
 	Character,
 	CharacterEventThread,
+	GroundItemRemovalEventThread,
+	EventList,
 	CharaList,
 	GMCommands,
 	LuaTypes,
@@ -80,6 +82,9 @@ type
 		NPCList       : TIntList32;
 
 		CharacterEventThread : TCharacterEventThread;
+		GroundItemEventThread : TGroundItemEventThread;
+
+		GroundItemEventList : TEventList;
 
 		NPCLua : TLua;
 		ItemLua : TLua;
@@ -155,6 +160,9 @@ begin
 	ToInterTCPClient.OnReceive   := InterClientRead;
 
 	CharacterEventThread := TCharacterEventThread.Create(CharacterList);
+
+	GroundItemEventList := TEventList.Create(FALSE);
+	GroundItemEventThread := TGroundItemEventThread.Create(GroundItemEventList);
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -203,6 +211,7 @@ Begin
 	{[2007/06/02] CR - These are still a it suspect for freeing up their sub-
 	objects properly... }
 	CharacterEventThread.Free;
+	GroundItemEventThread.Free;
 
 	ToCharaTCPClient.Free;
 	ToInterTCPClient.Free;
@@ -351,7 +360,7 @@ Procedure TZoneServer.Start();
 begin
 	if NOT Started then
 	begin
-  	inherited;
+	inherited;
 		//Load our Zone.ini
 		LoadOptions;
 
@@ -384,6 +393,7 @@ begin
 		LoadAndRunLuaScript(NPCLua, MainProc.Options.ScriptDirectory + LUA_ITEM_CORE_FILE);
 
 		CharacterEventThread.Start;
+		GroundItemEventThread.Start;
 	end else
 	begin
 		Console.Message('Cannot Start():: Zone Server already running!', 'Zone Server', MS_ALERT);
@@ -413,6 +423,11 @@ begin
 		end;
 		CharacterEventThread.Terminate;
 		while NOT CharacterEventThread.Terminated do
+		begin
+			Sleep(1);
+		end;
+		GroundItemEventThread.Terminate;
+		while NOT GroundItemEventThread.Terminated do
 		begin
 			Sleep(1);
 		end;

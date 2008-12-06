@@ -29,6 +29,7 @@ TItemInstance = Class(TGameObject)
 		SubX,SubY : Byte;
 		MapID : LongWord;
 		procedure GenerateSubCoordinate;
+		procedure RemoveFromGround;
 		constructor Create;
 end;
 //------------------------------------------------------------------------------
@@ -47,6 +48,11 @@ begin
 end;{GenerateSubCoordinate}
 //------------------------------------------------------------------------------
 
+
+procedure TItemInstance.RemoveFromGround;
+begin
+	writeln('time to eat!');
+end;
 
 constructor TItemInstance.Create;
 begin
