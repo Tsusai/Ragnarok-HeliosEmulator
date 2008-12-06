@@ -6,6 +6,7 @@ type
 	TGameObject = class
 	private
 	public
+		ID	: LongWord;
 	end;
 
 implementation

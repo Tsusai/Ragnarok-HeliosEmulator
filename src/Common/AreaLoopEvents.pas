@@ -36,89 +36,104 @@ uses
 	;
 
 	procedure ShowBeingWalk(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 		);
 	procedure ShowAreaObjects(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 		);
 	procedure TeleOut(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 		);
 	procedure UpdateDir(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 		);
 	procedure Effect(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 		);
 
 	procedure Emotion(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 		);
 
 	procedure ShowSitStand(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 	);
 
 	procedure ShowInitialAction(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 	);
 
 	procedure ShowDeath(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 	);
 
 	procedure JobChange(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 	);
 
 	procedure ShowDropitem(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 	);
 
 	procedure ShowPickupItem(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 	);
 
 	procedure RemoveGroundItem(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 	);
 
 	procedure ShowAttack(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 	);
 
 	procedure ShowChangeLook(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 	);
 	
 implementation
@@ -155,9 +170,10 @@ Revisions:
 [yyyy/mm/dd] <Author> - <Comment>
 *-----------------------------------------------------------------------------*)
 Procedure ShowBeingWalk(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 var
 	ABeing : TBeing;
@@ -194,9 +210,10 @@ Revisions:
 [2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
 Procedure ShowAreaObjects(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 Begin
 	if AObject is TCharacter then
@@ -233,9 +250,10 @@ Revisions:
 [2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
 Procedure TeleOut(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 Begin
 	if AObject is TCharacter then
@@ -264,9 +282,10 @@ Revisions:
 [2007/05/25] Tsusai - Added IS TCHARACTER conditionals
 *-----------------------------------------------------------------------------*)
 Procedure UpdateDir(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 Begin
 	if AObject is TCharacter then
@@ -287,9 +306,10 @@ End; (* Proc UpdateDir
 //		[2007/11/24] Aeomin - Created.
 //------------------------------------------------------------------------------
 procedure Effect(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 begin
 	if AObject is TCharacter then
@@ -297,11 +317,7 @@ begin
 		SendSpecialEffect(
 			Tbeing(AObject),
 			TCharacter(ACurrentObject).ClientInfo,
-				IIF(
-					(AObject = ACurrentObject),
-					TCharacter(ACurrentObject).AccountID,
-					TCharacter(ACurrentObject).ID
-				),
+			AObjectID,
 			AParameters.GetAsLongWord(1)
 		);
 	end;
@@ -309,9 +325,10 @@ end;{Effect}
 //------------------------------------------------------------------------------
 
 procedure Emotion(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 begin
 	if AObject is TCharacter then
@@ -338,9 +355,10 @@ end;
 //		[2007/12/24] RaX - Created.
 //------------------------------------------------------------------------------
 procedure ShowSitStand(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 var
 	ACurrentCharacter : TCharacter;
@@ -354,11 +372,7 @@ begin
 			charaSitting :begin
 					DoAction(
 						ACharacter.ClientInfo,
-						IIF(
-							(AObject = ACurrentObject),
-							ACurrentCharacter.AccountID,
-							ACurrentCharacter.ID
-						),
+						AObjectID,
 						0, 0, 0, ACTION_SIT, 0, 0, 0
 					);
 			end;
@@ -366,11 +380,7 @@ begin
 			charaStanding :begin
 					DoAction(
 						ACharacter.ClientInfo,
-						IIF(
-							(AObject = ACurrentObject),
-							ACurrentCharacter.AccountID,
-							ACurrentCharacter.ID
-						),
+						AObjectID,
 						0, 0, 0, ACTION_STAND, 0, 0, 0
 					);
 			end;
@@ -390,9 +400,10 @@ end;{ShowAction}
 //		[2007/12/24] RaX - Created.
 //------------------------------------------------------------------------------
 procedure ShowInitialAction(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 var
 	ACurrentCharacter : TCharacter;
@@ -438,9 +449,10 @@ end;{ShowAction}
 //		[2007/12/28] RaX - Created.
 //------------------------------------------------------------------------------
 procedure ShowDeath(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 begin
 	if (ACurrentObject is TCharacter) AND (AObject is TCharacter) then
@@ -449,11 +461,7 @@ begin
 			TBeing(ACurrentObject),
 			TCharacter(AObject).ClientInfo,
 			1,
-			IIF(
-				(AObject = ACurrentObject),
-				TCharacter(AObject).AccountID,
-				TCharacter(AObject).ID
-			)
+			AObjectID
 		);
 	end;
 end;{ShowDeath}
@@ -469,20 +477,17 @@ end;{ShowDeath}
 //		[2008/9/27] RaX - Created.
 //------------------------------------------------------------------------------
 procedure JobChange(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 begin
 	if (ACurrentObject is TCharacter) AND (AObject is TCharacter) then
 	begin
 		SendUpdatedLook(
 			TCharacter(ACurrentObject),
-			IIF(
-				(ACurrentObject = AObject),
-				TCharacter(AObject).AccountId,
-				TCharacter(AObject).ID
-			),
+			AObjectID,
 			LOOK_JOB,
 			TCharacter(AObject).JID,
 			0
@@ -502,9 +507,10 @@ end;{ShowDeath}
 //		[2008/10/02] Aeomin - Created
 //------------------------------------------------------------------------------
 procedure ShowDropitem(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 begin
 	if (AObject is TCharacter) then
@@ -529,20 +535,17 @@ end;{ShowDropitem}
 //		[2008/10/03] Aeomin - Created
 //------------------------------------------------------------------------------
 procedure ShowPickupItem(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 begin
 	if (AObject is TCharacter) then
 	begin
 		SendPickUpItemAnimation(
 			TCharacter(AObject),
-			IIF(
-				(AObject = ACurrentObject),
-				TCharacter(ACurrentObject).AccountID,
-				TCharacter(ACurrentObject).ID
-			),
+			AObjectID,
 			AParameters.GetAsLongWord(1)
 		);
 	end;
@@ -560,9 +563,10 @@ end;{ShowPickupItem}
 //		[2008/10/03] Aeomin - Created
 //------------------------------------------------------------------------------
 procedure RemoveGroundItem(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 begin
 	if (AObject is TCharacter) then
@@ -586,20 +590,17 @@ end;{RemoveGroundItem}
 //		[2008/10/03] Aeomin - Created
 //------------------------------------------------------------------------------
 procedure ShowAttack(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 begin
 	if (AObject is TCharacter) then
 	begin
 		DoAction(
 			TCharacter(AObject).ClientInfo,
-			IIF(
-				(AParameters.GetAsLongWord(6) = TBeing(AObject).ID),
-				TCharacter(ACurrentObject).AccountID,
-				TBeing(ACurrentObject).ID
-			),
+			AObjectID,
 			AParameters.GetAsLongWord(2),
 			AParameters.GetAsLongWord(1) DIV 2,
 			0,
@@ -625,20 +626,17 @@ end;{RemoveGroundItem}
 //		[2008/10/13] Aeomin - Created
 //------------------------------------------------------------------------------
 procedure ShowChangeLook(
-	const ACurrentObject : TGameObject;
-	const AObject        : TGameObject;
-	const AParameters    : TParameterList = nil
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
 );
 begin
 	if (AObject is TCharacter) then
 	begin
 		SendUpdatedLook(
 			TCharacter(AObject),
-			IIF(
-				AObject = ACurrentObject,
-				TCharacter(ACurrentObject).AccountID,
-				TCharacter(ACurrentObject).ID
-			),
+			AObjectID,
 			TLookTypes(AParameters.GetAsLongWord(1)),
 			AParameters.GetAsLongWord(2),
 			0

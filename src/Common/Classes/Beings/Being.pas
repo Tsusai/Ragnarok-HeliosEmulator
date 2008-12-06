@@ -77,9 +77,10 @@ TBeing = class; //Forward Declaration.
 
 {[2007/03/28] CR - No X,Y parameters needed -- reduced and eliminated. }
 TLoopCall = procedure(
-		const ACurrentObject : TGameObject;
-		const AObject        : TGameObject;
-		const AParameters    : TParameterList = nil
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
 		);
 
 (*= CLASS =====================================================================*
@@ -185,7 +186,6 @@ protected
 	procedure SetSPPercent(Value : Byte);
 
 public
-	ID					: LongWord;
 	HeadDirection	: Word;
 	Direction 	: Byte;
 
@@ -710,7 +710,10 @@ begin
 					{if not (ABeing is TCharacter) then Continue;} //Target MUST be a TCharacter
 					//Even though it's good idea to prevent packet send to non players
 					//But the problem is that.. NPC is invisible now
-					ALoopCall(Self, AObject, AParameter);
+					if (AObject is TCharacter) AND (Self = AObject) then
+						ALoopCall(Self, AObject, TCharacter(Self).AccountID, AParameter)
+					else
+						ALoopCall(Self, AObject, TBeing(Self).ID, AParameter);
 				end;
 			end;
 			if MapInfo.Cell[idxX][idxY].Items.Count > 0 then
@@ -718,7 +721,7 @@ begin
 				for ObjectIdx := MapInfo.Cell[idxX][idxY].Items.Count -1 downto 0 do
 				begin
 					AObject := MapInfo.Cell[idxX][idxY].Items.Objects[ObjectIdx] as TGameObject;
-					ALoopCall(Self, AObject, AParameter);
+					ALoopCall(Self, AObject, TGameObject(AObject).ID, AParameter);
 				end;
 			end;
 		end;

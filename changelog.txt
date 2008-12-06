@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 634 -
+[2008/12/05] Aeomin - Removed disturbing IFF and use another method.
+[2008/12/05] Aeomin - Fixed player shown as wearing xmas suit
+-
+
 - Rev 633 -
 [2008/12/03] Tsusai - Notes/Overview: BufferIO - Updated reading one xy point
  off the buffer with simpler code.
