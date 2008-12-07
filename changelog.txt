@@ -15,8 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 642 -
+[2008/12/07] Aeomin - Tweak in createinstancemap function [LuaNPCCommands.pas]
+[2008/12/07] Aeomin - Able to talk to NPC in instance map now [ZoneRecv.pas]
+-
+
 - Rev 641 -
-[2008/12/07] Aeomin - Instance map part II
+[2008/12/07] Aeomin - Instance map part III
 [2008/12/07] Aeomin - Able to warp now =)
 -
 

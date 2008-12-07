@@ -42,6 +42,8 @@ TMap = class(TObject)
 	protected
 		Path : String;
 
+		procedure LoadNpc;
+
 	public
 		ID		: LongWord;
 		Name	: String;
@@ -268,7 +270,6 @@ Var
 	XIndex  : Integer;
 	YIndex  : Integer;
 	ObjIndex    : Integer;
-	AnNPC       : TNPC;
 	AnMob       : TMob;
 Begin
 	State  := LOADING;
@@ -291,6 +292,42 @@ Begin
 		end;
 	end;
 
+	LoadNpc;
+
+	//Add mobs that is already in list
+	for ObjIndex := 0 to MobList.Count -1 do
+	begin
+		AnMob := TMob(MobList[ObjIndex]);
+		if PointInRange(AnMob.Position) then
+		begin
+			AnMob.MapInfo := Self;
+			Cell[AnMob.Position.X][AnMob.Position.Y].Beings.AddObject(AnMob.ID, AnMob);
+		end;
+	end;
+
+	MainProc.ZoneServer.Database.Items.FillMapGround(Self);
+
+	State := LOADED;
+
+	MapFile.Free;//finally, free the memory stream.
+End;//Load
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//LoadNPC                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Extracted from Load
+//
+//	Changes -
+//		[2008/12/07] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure TMap.LoadNpc;
+Var
+	ObjIndex    : Integer;
+	AnNPC       : TNPC;
+begin
 	//Enable all npcs on this map.
 	for ObjIndex := 0 to MainProc.ZoneServer.NPCList.Count -1 do
 	begin
@@ -306,23 +343,7 @@ Begin
 			end;
 		end;
 	end;
-
-	//Add mobs that is already in list
-	for ObjIndex := 0 to MobList.Count -1 do
-	begin
-		AnMob := TMob(MobList[ObjIndex]);
-		if PointInRange(AnMob.Position) then
-		begin
-			AnMob.MapInfo := Self;
-			Cell[AnMob.Position.X][AnMob.Position.Y].Beings.AddObject(AnMob.ID, AnMob);
-		end;
-	end;
-	MainProc.ZoneServer.Database.Items.FillMapGround(Self);
-
-	State := LOADED;
-
-	MapFile.Free;//finally, free the memory stream.
-End;//Load
+end;{LoadNPC}
 //------------------------------------------------------------------------------
 
 

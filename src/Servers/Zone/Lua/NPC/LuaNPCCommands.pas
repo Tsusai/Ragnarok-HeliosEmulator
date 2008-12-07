@@ -1296,14 +1296,24 @@ begin
 	begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
-			ZoneSendCreateInstanceMapRequest
-			(
-				MainProc.ZoneServer.ToInterTCPClient,
-				lua_tostring(ALua, 1),
-				lua_tostring(ALua, 2),
-				AChara.ID,
-				AChara.ScriptBeing.ID
-			);
+			if lua_isnumber(ALua, 1) then
+				ZoneSendCreateInstanceMapRequest
+				(
+					MainProc.ZoneServer.ToInterTCPClient,
+					IntToStr(lua_tointeger(ALua, 1)),
+					lua_tostring(ALua, 2),
+					AChara.ID,
+					AChara.ScriptBeing.ID
+				)
+			else
+				ZoneSendCreateInstanceMapRequest
+				(
+					MainProc.ZoneServer.ToInterTCPClient,
+					lua_tostring(ALua, 1),
+					lua_tostring(ALua, 2),
+					AChara.ID,
+					AChara.ScriptBeing.ID
+				);
 			AChara.ScriptStatus := SCRIPT_YIELD_INSTANCEREQUEST;
 			Result := lua_yield(ALua,1);
 		end;

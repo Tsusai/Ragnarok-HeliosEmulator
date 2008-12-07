@@ -1222,7 +1222,8 @@ begin
 		 [MainProc.ZoneServer.NPCList.IndexOf(NPCID)] as TNPC;
 		if ANPC is TScriptNPC then
 		begin
-			if (AChara.Map = ANPC.Map)AND
+			if ((AChara.MapInfo is TInstanceMap)AND(TInstanceMap(AChara.MapInfo).BaseName = ANPC.Map) OR
+			(AChara.Map = ANPC.Map) )AND
 			(AChara.InPointRange(ANPC.Position)) then
 			begin
 				AChara.ScriptBeing := ANPC;

@@ -21,6 +21,7 @@ type
 		//Instance Map ID
 		Identifier : String;
 	public
+		BaseName : String;
 		procedure Load(const InstanceIdentifier, OriginalMapName:String);reintroduce;
 	end;
 implementation
@@ -37,6 +38,7 @@ implementation
 //------------------------------------------------------------------------------
 procedure TInstanceMap.Load(const InstanceIdentifier, OriginalMapName:String);
 begin
+	BaseName := OriginalMapName;
 	Name := OriginalMapName;
 
 	//Temporary hack..
