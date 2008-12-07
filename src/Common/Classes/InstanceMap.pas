@@ -38,7 +38,12 @@ implementation
 procedure TInstanceMap.Load(const InstanceIdentifier, OriginalMapName:String);
 begin
 	Name := OriginalMapName;
+
+	//Temporary hack..
+	Path := 'Maps/'+Name+'.pms';
+
 	Identifier := InstanceIdentifier;
+	LoadFromFile(Path);
 	inherited Load;
 end;{Load}
 //------------------------------------------------------------------------------

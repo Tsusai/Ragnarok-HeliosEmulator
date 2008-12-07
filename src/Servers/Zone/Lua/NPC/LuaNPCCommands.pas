@@ -1288,7 +1288,28 @@ begin
 end;
 
 function script_CreateInstanceMap(ALua : TLua) : integer;
+var
+	AChara : TCharacter;
 begin
 	Result := 0;
+	if (lua_gettop(ALua) = 2) then
+	begin
+		if GetCharaFromLua(ALua,AChara) then
+		begin
+			ZoneSendCreateInstanceMapRequest
+			(
+				MainProc.ZoneServer.ToInterTCPClient,
+				lua_tostring(ALua, 1),
+				lua_tostring(ALua, 2),
+				AChara.ID,
+				AChara.ScriptBeing.ID
+			);
+			AChara.ScriptStatus := SCRIPT_YIELD_INSTANCEREQUEST;
+			Result := lua_yield(ALua,1);
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script CreateInstanceMap syntax error');
+	end;
 end;
 end.

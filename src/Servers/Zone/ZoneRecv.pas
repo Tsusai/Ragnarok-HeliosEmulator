@@ -299,7 +299,7 @@ uses
 	);
 
 	procedure RecvRedirectWhisper(
-			InBuffer : TBuffer
+		InBuffer : TBuffer
 	);
 
 	procedure RecvWarpRequestReplyFromInter(
@@ -307,24 +307,30 @@ uses
 	);
 
 	procedure RecvWhisperReply(
-			InBuffer : TBuffer
+		InBuffer : TBuffer
 	);
 
 	procedure RecvAddFriendRequest(
-			InBuffer : TBuffer
+		InBuffer : TBuffer
 	);
 
 	procedure RecvAddFriendRequestReply(
-			InBuffer : TBuffer
+		InBuffer : TBuffer
 	);
 
 	procedure RecvFriendOnlineStatus(
-			InBuffer : TBuffer
+		InBuffer : TBuffer
 	);
 	procedure RecvFriendStatus(
-			InBuffer : TBuffer
+		InBuffer : TBuffer
 	);
 	procedure RecvMailNotify(
+		InBuffer : TBuffer
+	);
+	procedure RecvCreateInstanceResult(
+		InBuffer : TBuffer
+	);
+	procedure RecvCreateInstance(
 		InBuffer : TBuffer
 	);
 	//----------------------------------------------------------------------
@@ -358,7 +364,8 @@ uses
 	ZoneInterCommunication,
 	AddFriendEvent,
 	AreaLoopEvents,
-	Mailbox
+	Mailbox,
+	InstanceMap
 	{3rd Party}
 	//none
 	;
@@ -644,7 +651,7 @@ begin
 	AChara.EventList.Clear;
 
 	//Check Instance map special character
-	if (Pos('#',AChara.Map)>0) OR (Pos('@',AChara.Map)>0) then
+	if (Pos('#',AChara.Map)>0) then
 	begin
 		//Load Instance map first, if fail then normal
 		Loaded := LoadInstanceMap OR LoadMap;
@@ -2754,5 +2761,118 @@ begin
 		);
 	end;
 end;{RecvMailNotify}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvCreateInstanceResult                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Received result, let's see...
+//
+//	Changes -
+//	[2008/12/06] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvCreateInstanceResult(
+	InBuffer : TBuffer
+);
+var
+	Size : Word;
+	CharID : LongWord;
+	ScriptID : LongWord;
+	FullName : String;
+	Flag : Byte;
+
+	Index : Integer;
+	AChara : TCharacter;
+begin
+	Size       := BufferReadWord(2, InBuffer);
+	CharID     := BufferReadLongWord(4, InBuffer);
+	ScriptID   := BufferReadLongWord(8, InBuffer);
+	Flag       := BufferReadByte(12, InBuffer);
+	FullName := BufferReadString(13, Size-13, InBuffer);
+
+
+	Index := MainProc.ZoneServer.CharacterList.IndexOf(CharID);
+	if Index > -1 then
+	begin
+		AChara := MainProc.ZoneServer.CharacterList.Items[Index];
+		if Flag = 0 then
+		begin
+			if ScriptID > 0 then
+			begin
+				AChara.ScriptStatus := SCRIPT_RUNNING;
+				ResumeLuaNPCScriptWithString(AChara,FullName);
+			end else
+			begin
+				ZoneSendCharacterMessage(
+					AChara,
+					'Instance map '+ FullName + ' created'
+				);
+			end;
+		end else
+		begin
+			if ScriptID > 0 then
+			begin
+				AChara.ScriptStatus := SCRIPT_RUNNING;
+				//Failed, return empty string
+				ResumeLuaNPCScriptWithString(AChara,'');
+			end else
+			begin
+				ZoneSendCharacterMessage(
+					AChara,
+					'Request create instance map failed'
+				);
+			end;
+		end;
+	end;
+end;{RecvCreateInstanceResult}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvCreateInstance                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		YESH, Let's CREATE..
+//
+//	Changes -
+//	[2008/12/07] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvCreateInstance(
+	InBuffer : TBuffer
+);
+var
+	Size : Word;
+	Identifier : String;
+	MapName : String;
+	ZoneID: LongWord;
+	CharID : LongWord;
+	ScriptID : LongWord;
+	FullName : String;
+
+	AMap : TInstanceMap;
+begin
+	Size       := BufferReadWord(2, InBuffer);
+	ZoneID     := BufferReadLongWord(4, InBuffer);
+	CharID     := BufferReadLongWord(8, InBuffer);
+	ScriptID   := BufferReadLongWord(12, InBuffer);
+	MapName    := BufferReadString(16, 16, InBuffer);
+	Identifier := BufferReadString(32, Size-32, InBuffer);
+
+	FullName := Identifier + '#' + MapName;
+
+	AMap := TInstanceMap.Create;
+	AMap.Load(Identifier,MapName);
+	MainProc.ZoneServer.InstancMapList.Add(AMap);
+
+	ZoneSendCreatedInstance(
+		MainProc.ZoneServer.ToInterTCPClient,
+		ZoneID,
+		CharID,
+		ScriptID,
+		FullName
+	);
+end;{RecvCreateInstance}
 //------------------------------------------------------------------------------
 end{ZoneRecv}.

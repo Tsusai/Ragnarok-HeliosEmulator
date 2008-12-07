@@ -190,6 +190,8 @@ begin
 	AddCommand('Effect',          GMEffect,               99, TYPE_RETURNBACK, '<Effect Id>');
 	AddCommand('Where',           GMWhere,                99, TYPE_RETURNBACK,  '');
 
+	AddCommand('CreateInstance',  GMCreateInstance,       99, TYPE_RETURNBACK,  '<Identifier>,<MapName>');
+
 	// Use temperary list!!!
 	fCommandPrefix := CommandOptions.Load(fTmpCommandList, fCommands);
 	CommandOptions.Save(fTmpCommandList);

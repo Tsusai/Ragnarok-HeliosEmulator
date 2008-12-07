@@ -55,6 +55,12 @@
 //Mailbox
 0x2222,6
 0x2223,74
+//Instance map
+0x2224,-1
+0x2225,-1
+0x2226,3
+0x2227,-1
+0x2228,-1
 
 //GM Command from zone to inter
 0x2205,-1

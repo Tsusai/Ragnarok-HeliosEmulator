@@ -117,6 +117,23 @@ uses
 		const Sender : String;
 		const Title  : String
 	);
+
+	procedure InterSendInstanceMapResult(
+		AClient : TIdContext;
+		const CharID : LongWord;
+		const ScriptID : LongWord;
+		const Flag : Byte;
+		const MapName : String
+	);
+
+	procedure InterSendCreateInstance(
+		AClient : TIdContext;
+		const ZoneID : LongWord;
+		const CharID : LongWord;
+		const ScriptID : LongWord;
+		const Identifier : String;
+		const MapName : String
+	);
 implementation
 
 
@@ -676,5 +693,77 @@ begin
 	WriteBufferString(10+NAME_LENGTH, Title, 40, OutBuffer);
 	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2223));
 end;{InterSendMailNotify}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//InterSendInstanceMapResult                                           PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Send back results, fail if flag = 1
+//
+//	Changes -
+//		[2008/12/06] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure InterSendInstanceMapResult(
+	AClient : TIdContext;
+	const CharID : LongWord;
+	const ScriptID : LongWord;
+	const Flag : Byte;
+	const MapName : String
+);
+var
+	OutBuffer   : TBuffer;
+	Len : Byte;
+begin
+	Len := Length(MapName);
+	if Len > 0 then
+	begin
+		WriteBufferWord(0, $2225, OutBuffer);
+		WriteBufferWord(2, Len + 13, OutBuffer);
+		WriteBufferLongWord(4, CharID, OutBuffer);
+		WriteBufferLongWord(8, ScriptID, OutBuffer);
+		WriteBufferByte(12, Flag, OutBuffer);
+		WriteBufferString(13, MapName, Len, OutBuffer);
+		SendBuffer(AClient, OutBuffer, Len + 13);
+	end;
+end;{nterSendInstanceMapResult}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//InterSendCreateInstance                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Tell zone server to instance map ..NOW!
+//
+//	Changes -
+//		[2008/12/07] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure InterSendCreateInstance(
+	AClient : TIdContext;
+	const ZoneID : LongWord;
+	const CharID : LongWord;
+	const ScriptID : LongWord;
+	const Identifier : String;
+	const MapName : String
+);
+var
+	OutBuffer   : TBuffer;
+	Len : Byte;
+begin
+	Len := Length(Identifier);
+	if Len > 0 then
+	begin
+		WriteBufferWord(0, $2227, OutBuffer);
+		WriteBufferWord(2, Len + 32, OutBuffer);
+		WriteBufferLongWord(4, ZoneID, OutBuffer);
+		WriteBufferLongWord(8, CharID, OutBuffer);
+		WriteBufferLongWord(12, ScriptID, OutBuffer);
+		WriteBufferString(16, MapName, 16, OutBuffer);
+		WriteBufferString(32, Identifier, Len, OutBuffer);
+		SendBuffer(AClient, OutBuffer, Len + 32);
+	end;
+end;{InterSendCreateInstance}
 //------------------------------------------------------------------------------
 end.

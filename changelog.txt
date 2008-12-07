@@ -15,6 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 640 -
+[2008/12/07] Aeomin - Instance map Part II
+[2008/12/07] Aeomin - Added GM command #createinstance for testing.
+                      (You can create, but you can't warp there yet HAHA)
+[2008/12/07] Aeomin - There's a hack used in this commit, needs to be implemented.
+-
+
 - Rev 639 -
 [2008/12/06] Aeomin - Instance map Part I
 -

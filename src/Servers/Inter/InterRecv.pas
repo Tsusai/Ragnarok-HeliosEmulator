@@ -79,6 +79,21 @@ procedure RecvZoneNewMailNotify(
 	AClient : TIdContext;
 	ABuffer : TBuffer
 );
+
+procedure RecvZoneCreateInstanceMapRequest(
+	AClient : TIdContext;
+	ABuffer : TBuffer
+);
+
+procedure RecvSetAllowInstance(
+	AClient : TIdContext;
+	InBuffer : TBuffer
+);
+
+procedure RecvInstanceCreated(
+	AClient : TIdContext;
+	InBuffer : TBuffer
+);
 implementation
 
 
@@ -761,5 +776,165 @@ begin
 		TargetChara.Free;
 	end;
 end;{RecvZoneNewMailNotify}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvZoneCreateInstanceMapRequest                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Want create an instance map?
+//	Changes -
+//		[2008/12/06] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvZoneCreateInstanceMapRequest(
+	AClient : TIdContext;
+	ABuffer : TBuffer
+);
+var
+	Size : Word;
+	Identifier : String;
+	MapName : String;
+	CharID : LongWord;
+	ScriptID : LongWord;
+	FullName : String;
+
+	Index : Integer;
+	ZoneServerLink : TZoneServerLink;
+begin
+	Size       := BufferReadWord(2, ABuffer);
+	MapName    := BufferReadString(4, 16, Abuffer);
+	CharID     := BufferReadLongWord(20, ABuffer);
+	ScriptID   := BufferReadLongWord(24, ABuffer);
+	Identifier := BufferReadString(28, Size-28, Abuffer);
+
+	FullName := Identifier + '#' + MapName;
+
+	if MainProc.InterServer.InstanceZones.Count > 0 then
+	begin
+		Index := MainProc.InterServer.Instances.IndexOf(FullName);
+		if Index > -1 then
+		begin
+			InterSendInstanceMapResult(
+				AClient,
+				CharID,
+				ScriptID,
+				1,
+				FullName
+			);
+		end else
+		begin
+			//Randomly pick one
+			Index := Random(MainProc.InterServer.InstanceZones.Count);
+			ZoneServerLink := MainProc.InterServer.InstanceZones.Items[Index];
+			//TELL 'EM TELL 'EM, "WE ARE ALIVE"
+			InterSendCreateInstance(
+				ZoneServerLink.Info.Connection,
+				TZoneServerLink(AClient.Data).Info.ZoneID,
+				CharID,
+				ScriptID,
+				Identifier,
+				MapName
+			);
+		end;
+	end else
+	begin
+		InterSendInstanceMapResult(
+			AClient,
+			CharID,
+			ScriptID,
+			1,
+			FullName
+		);
+	end;
+end;{RecvZoneCreateInstanceMapRequest}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvSetAllowInstance                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Is zone server allow instance?
+//
+//	Changes -
+//		[2008/12/06] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvSetAllowInstance(
+	AClient : TIdContext;
+	InBuffer : TBuffer
+);
+var
+	Flag : Boolean;
+	Index : Integer;
+begin
+	Flag  := Boolean(BufferReadByte(2, InBuffer));
+	if TZoneServerLink(AClient.Data).Info.AllowInstance and NOT Flag then
+	begin
+		//Clean up
+		Index := MainProc.InterServer.InstanceZones.IndexOf(AClient.Data);
+		if Index > -1 then
+		begin
+			MainProc.InterServer.InstanceZones.Delete(Index);
+		end;
+	end else
+	if NOT TZoneServerLink(AClient.Data).Info.AllowInstance AND Flag then
+	begin
+		//Add to record
+		MainProc.InterServer.InstanceZones.Add(AClient.Data);
+	end;
+	TZoneServerLink(AClient.Data).Info.AllowInstance := Flag;
+end;{RecvSetAllowInstance}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvInstanceCreated                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		So instance created eh? let's do something about it...
+//
+//	Changes -
+//		[2008/12/07] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvInstanceCreated(
+	AClient : TIdContext;
+	InBuffer : TBuffer
+);
+var
+	Size : Word;
+	ZoneID : LongWord;
+	CharID : LongWord;
+	ScriptID : LongWord;
+	FullName : String;
+
+	Index : Integer;
+begin
+	Size       := BufferReadWord(2, InBuffer);
+	ZoneID     := BufferReadLongWord(4, InBuffer);
+	CharID     := BufferReadLongWord(8, InBuffer);
+	ScriptID   := BufferReadLongWord(12, InBuffer);
+	FullName := BufferReadString(16, Size - 16, InBuffer);
+
+	with MainProc.InterServer do
+	begin
+		Index := ZoneServerList.IndexOf(ZoneID);
+		if (Index > -1) then
+		begin
+			if Assigned(ZoneServerLink[Index]) AND
+				(ZoneServerLink[Index].Info.ZoneID = ZoneID) then
+			begin
+				Instances.AddObject(FullName,AClient.Data);
+				InterSendInstanceMapResult(
+					ZoneServerInfo[Index].Connection,
+					CharID,
+					ScriptID,
+					0,
+					FullName
+				);
+			end;
+		end;
+	end;
+end;{RecvInstanceCreated}
 //------------------------------------------------------------------------------
 end.

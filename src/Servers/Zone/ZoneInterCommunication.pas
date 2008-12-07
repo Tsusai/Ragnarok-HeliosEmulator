@@ -156,6 +156,31 @@ const
 		const MailID : LongWord
 	);
 	//----------------------------------------------------------------------
+
+
+	//----------------------------------------------------------------------
+	// Instance Map
+	//----------------------------------------------------------------------
+	procedure ZoneSendCreateInstanceMapRequest(
+		AClient : TInterClient;
+		const Identifier : String;
+		const MapName : String;
+		const CharID : LongWord;
+		const ScriptID : LongWord
+	);
+	procedure ZoneSendAllowInstanceFlag(
+		AClient : TInterClient;
+		const Flag : Boolean
+	);
+	procedure ZoneSendCreatedInstance(
+		AClient : TInterClient;
+		const ZoneID : LongWord;
+		const CharID : LongWord;
+		const ScriptID : LongWord;
+		const MapName : String
+	);
+	//----------------------------------------------------------------------
+
 implementation
 uses
 	Main,
@@ -708,5 +733,98 @@ begin
 	WriteBufferLongWord(2, MailID, OutBuffer);
 	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2222));
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ZoneSendCreateInstanceMapRequest                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Tell inter server to create an instance map
+//
+//	Changes -
+//		[2008/12/26] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ZoneSendCreateInstanceMapRequest(
+	AClient : TInterClient;
+	const Identifier : String;
+	const MapName : String;
+	const CharID : LongWord;
+	const ScriptID : LongWord
+);
+var
+	OutBuffer   : TBuffer;
+	Len : Byte;
+begin
+	Len := Length(Identifier);
+	if Len > 0 then
+	begin
+		WriteBufferWord(0, $2224, OutBuffer);
+		WriteBufferWord(2, Len + 28, OutBuffer);
+		WriteBufferString(4, MapName, 16, OutBuffer);
+		WriteBufferLongWord(20, CharID, OutBuffer);
+		WriteBufferLongWord(24, ScriptID, OutBuffer);
+		WriteBufferString(28, Identifier, Len, OutBuffer);
+		SendBuffer(AClient, OutBuffer, Len + 28);
+	end;
+end;{ZoneSendCreateInstanceMapRequest}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ZoneSendAllowInstanceFlag                                            PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Tell inter server about this zone server allow instance or not
+//
+//	Changes -
+//		[2008/12/06] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ZoneSendAllowInstanceFlag(
+	AClient : TInterClient;
+	const Flag : Boolean
+);
+var
+	OutBuffer   : TBuffer;
+begin
+	WriteBufferWord(0, $2226, OutBuffer);
+	WriteBufferByte(2, Byte(Flag), OutBuffer);
+	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($2226));
+end;{ZoneSendAllowInstanceFlag}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ZoneSendCreatedInstance                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Created, let's tell Inter server
+//
+//	Changes -
+//		[2008/12/07] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ZoneSendCreatedInstance(
+	AClient : TInterClient;
+	const ZoneID : LongWord;
+	const CharID : LongWord;
+	const ScriptID : LongWord;
+	const MapName : String
+);
+var
+	OutBuffer   : TBuffer;
+	Len : Byte;
+begin
+	Len := Length(MapName);
+	if Len > 0 then
+	begin
+		WriteBufferWord(0, $2228, OutBuffer);
+		WriteBufferWord(2, Len + 16, OutBuffer);
+		WriteBufferLongWord(4, ZoneID, OutBuffer);
+		WriteBufferLongWord(8, CharID, OutBuffer);
+		WriteBufferLongWord(12, ScriptID, OutBuffer);
+		WriteBufferString(16, MapName, Len, OutBuffer);
+		SendBuffer(AClient, OutBuffer, Len + 16);
+	end;
+end;{ZoneSendCreatedInstance}
 //------------------------------------------------------------------------------
 end{ZoneInterCommunication}.

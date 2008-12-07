@@ -69,6 +69,9 @@ uses
 	procedure GMItem(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 
 	procedure GMJob(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+
+	procedure GMCreateInstance(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+
 implementation
 uses
 	{RTL/VCL}
@@ -83,7 +86,8 @@ uses
 	GameConstants,
 	Item,
 	ItemTypes,
-	ItemInstance
+	ItemInstance,
+	ZoneInterCommunication
 	{Third Party}
 	;
 
@@ -1288,4 +1292,24 @@ begin
 	end;
 end;{GMResetLook}
 //------------------------------------------------------------------------------
+
+
+procedure GMCreateInstance(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+begin
+	if (Length(Arguments) >= 3) then
+	begin
+		ZoneSendCreateInstanceMapRequest(
+			MainProc.ZoneServer.ToInterTCPClient,
+			Arguments[0],
+			Arguments[1],
+			TargetChar.ID,
+			0
+		);
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+end;
+
 end{GMCommandExe}.

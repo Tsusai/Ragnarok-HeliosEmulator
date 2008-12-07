@@ -97,6 +97,10 @@ Revisions:
 		Commands				 : TGMCommands;
 		Options : TInterOptions;
 		ClientList			 : TList;
+
+		Instances : TStringList;
+		InstanceZones	: TList;
+
 		Constructor Create;
 		Destructor  Destroy;Override;
 		Procedure   Start;override;
@@ -152,6 +156,10 @@ begin
 
 	fZoneServerList := TIntList32.Create;
 	ClientList := TList.Create;
+	Instances := TStringList.Create;
+	Instances.Duplicates := dupAccept;
+	//Record zones that allow instance
+	InstanceZones	:= TList.Create;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -171,6 +179,8 @@ begin
 	fZoneServerList.Free;
 	ClientList.Free;
 	Commands.Free;
+	Instances.Free;
+	InstanceZones.Free;
 	Inherited;
 end;{Destroy}
 //------------------------------------------------------------------------------
@@ -205,16 +215,23 @@ end;{OnDisconnect}
 //------------------------------------------------------------------------------
 procedure TInterServer.OnDisconnect(AConnection: TIdContext);
 var
-	idx : integer;
+	Index : integer;
 	AZoneServInfo : TZoneServerInfo;
 begin
 	if AConnection.Data is TZoneServerLink then
 	begin
 		AZoneServInfo := TZoneServerLink(AConnection.Data).Info;
-		idx := fZoneServerList.IndexOfObject(AZoneServInfo);
-		if not (idx = -1) then
+
+		Index := InstanceZones.IndexOf(AConnection.Data);
+		if Index > -1 then
 		begin
-			fZoneServerList.Delete(idx);
+			InstanceZones.Delete(Index);
+		end;
+
+		Index := fZoneServerList.IndexOfObject(AZoneServInfo);
+		if not (Index = -1) then
+		begin
+			fZoneServerList.Delete(Index);
 		end;
 		AConnection.Data.Free;
 		AConnection.Data:=nil;
@@ -444,6 +461,34 @@ begin
 			begin
 				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2222)-2);
 				RecvZoneNewMailNotify(AConnection, ABuffer);
+			end;
+		end;
+	$2224: //Request create instance map
+		begin
+			if AConnection.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AConnection,ABuffer[2],2);
+				Size := BufferReadWord(2,ABuffer);
+				RecvBuffer(AConnection,ABuffer[4],Size-4);
+				RecvZoneCreateInstanceMapRequest(AConnection, ABuffer);
+			end;
+		end;
+	$2226: //Set allow instance
+		begin
+			if AConnection.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2226)-2);
+				RecvSetAllowInstance(AConnection, ABuffer);
+			end;
+		end;
+	$2228: //Instance created
+		begin
+			if AConnection.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AConnection,ABuffer[2],2);
+				Size := BufferReadWord(2,ABuffer);
+				RecvBuffer(AConnection,ABuffer[4],Size-4);
+				RecvInstanceCreated(AConnection, ABuffer);
 			end;
 		end
 	else

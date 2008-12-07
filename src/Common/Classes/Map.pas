@@ -39,7 +39,7 @@ type
 //TMap                                                                     CLASS
 //------------------------------------------------------------------------------
 TMap = class(TObject)
-	private
+	protected
 		Path : String;
 
 	public

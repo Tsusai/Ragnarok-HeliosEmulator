@@ -45,6 +45,7 @@ type
 	public
 		ZoneID : LongWord;
 		OnlineUsers : word;
+		AllowInstance : Boolean;
 	end;
 
 implementation

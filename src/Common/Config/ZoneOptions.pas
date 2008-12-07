@@ -74,6 +74,8 @@ interface
 
 			fDynamicMapLoading : Boolean;
 
+			fAllowInstance : Boolean;
+
 			//Gets/Sets
 			procedure SetPort(Value : Word);
 			procedure SetWANIP(Value : String);
@@ -132,6 +134,8 @@ interface
 			property GroundItemTimeout : LongWord read fGroundItemTimeout;
 
 			property DynamicMapLoading : Boolean read fDynamicMapLoading;
+
+			property AllowInstance : Boolean read fAllowInstance;
 
 			//Public methods
 			procedure Load;
@@ -242,9 +246,9 @@ implementation
 	//--------------------------------------------------------------------------
 
 
-	//--------------------------------------------------------------------------
-	//LoadGame                                              SUB PROCEDURE
-	//--------------------------------------------------------------------------
+		//--------------------------------------------------------------
+		//LoadGame                                         SUB PROCEDURE
+		//--------------------------------------------------------------
 		procedure LoadGame;
 		begin
 			ReadSectionValues('Game', Section);
@@ -264,8 +268,9 @@ implementation
 			fMaxItems := EnsureRange(StrToIntDef(Section.Values['MaxItems'], 100),0,High(Word));
 			fGroundItemTimeout := EnsureRange(StrToIntDef(Section.Values['GroundItemTimeout'], 60),1,High(Word));
 			fDynamicMapLoading := StrToBoolDef(Section.Values['Dynamic Map Loading'], true);
+			fAllowInstance := StrToBoolDef(Section.Values['Allow Instance'], true);
 		end;{Subroutine LoadPerformance}
-	//--------------------------------------------------------------------------
+		//--------------------------------------------------------------
 
 		//--------------------------------------------------------------------------
 		//LoadOptions                                               SUB PROCEDURE
@@ -356,6 +361,7 @@ implementation
 		WriteString('Game','GroundItemTimeout', IntToStr(fGroundItemTimeout));
 
 		WriteString('Game','Dynamic Map Loading',BoolToStr(fDynamicMapLoading));
+		WriteString('Game','Allow Instance',BoolToStr(fAllowInstance));
 		//Options
 
 		UpdateFile;

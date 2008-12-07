@@ -78,6 +78,7 @@ type
 		Options       : TZoneOptions;
 
 		MapList       : TMapList;
+		InstancMapList  : TMapList;
 		CharacterList : TCharacterList;
 		NPCList       : TIntList32;
 
@@ -147,6 +148,7 @@ begin
 	Commands := TGMCommands.Create;
 
 	MapList := TMapList.Create(TRUE);
+	InstancMapList := TMapList.Create(TRUE);
 	CharacterList := TCharacterList.Create(TRUE);
 	NPCList := TIntList32.Create;
 
@@ -191,6 +193,7 @@ Var
 Begin
 	{[2007/06/02] CR - MapList and CharacterList are both self-cleaning. }
 	MapList.Free;
+	InstancMapList.Free;
 	CharacterList.Free;
 
 	{[2007/06/02] CR - Tsusai was right, we did need to free up this list - the
@@ -822,6 +825,7 @@ begin
 				SendZoneWANIPToInter(ToInterTCPClient,Self);
 				SendZoneLANIPToInter(ToInterTCPClient,Self);
 				SendZoneOnlineUsersToInter(ToInterTCPClient,Self);
+				ZoneSendAllowInstanceFlag(ToInterTCPClient,Options.AllowInstance);
 			end else
 			begin
 				case Response of
@@ -892,6 +896,20 @@ begin
 		begin
 			RecvBuffer(AClient,ABuffer[2],PacketDB.GetLength($2223)-2);
 			RecvMailNotify(ABuffer);
+		end;
+	$2225:
+		begin
+			RecvBuffer(AClient,ABuffer[2],2);
+			Size := BufferReadWord(2,ABuffer);
+			RecvBuffer(AClient,ABuffer[4],Size-4);
+			RecvCreateInstanceResult(ABuffer);
+		end;
+	$2227:
+		begin
+			RecvBuffer(AClient,ABuffer[2],2);
+			Size := BufferReadWord(2,ABuffer);
+			RecvBuffer(AClient,ABuffer[4],Size-4);
+			RecvCreateInstance(ABuffer);
 		end;
 	end;
 end;{InterClientRead}
