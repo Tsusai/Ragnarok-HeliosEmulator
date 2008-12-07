@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 641 -
+[2008/12/07] Aeomin - Instance map part II
+[2008/12/07] Aeomin - Able to warp now =)
+-
+
 - Rev 640 -
 [2008/12/07] Aeomin - Instance map Part II
 [2008/12/07] Aeomin - Added GM command #createinstance for testing.

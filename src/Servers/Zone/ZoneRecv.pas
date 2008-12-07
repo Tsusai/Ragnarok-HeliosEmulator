@@ -645,7 +645,12 @@ var
 	end;
 	function LoadInstanceMap:Boolean;
 	begin
-		Result := False;
+		MapIndex := MainProc.ZoneServer.InstancMapList.IndexOf(AChara.Map);
+		Result := MapIndex > -1;
+		if Result then
+		begin
+			AChara.MapInfo := MainProc.ZoneServer.InstancMapList.Items[MapIndex];
+		end;
 	end;
 begin
 	AChara.EventList.Clear;
@@ -2176,7 +2181,7 @@ var
 	X, Y            : Word;
 	ACharacter      : TCharacter;
 	OutBuffer       : TBuffer;
-
+	Position        : Integer;
 begin
 	CharacterID 	:= BufferReadLongWord(4, InBuffer);
 	IP						:= BufferReadLongWord(8, InBuffer);
@@ -2189,7 +2194,12 @@ begin
 
 	ACharacter.Map := MapName;
 	ACharacter.Position := Point(X,Y);
-
+	Position := Pos('#',MapName);
+	if Position >0 then
+	begin
+		//Remove it! gotta tell lie!
+		Delete(MapName,1, Position);
+	end;
 	WriteBufferWord(0, $0092, OutBuffer);
 	WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
 	WriteBufferWord(18, X, OutBuffer);

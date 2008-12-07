@@ -119,15 +119,31 @@ end;{GMZoneStatus}
 //------------------------------------------------------------------------------
 procedure GMWarp(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 var
+	MapName        : String;
 	MapZoneID      : SmallInt;
 	Index          : Integer;
 	Map            : TMap;
 	APoint         : TPoint;
+	IsInstance     : Boolean;
 begin
 	if (Length(Arguments) >= 2) then
 	begin
-
-		MapZoneID := TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Map.GetZoneID(Arguments[0]);
+		IsInstance := False;
+		MapName :=Arguments[0];
+		if Pos('#', MapName) > 0 then
+		begin
+			if MainProc.ZoneServer.InstancMapList.IndexOf(MapName) > -1 then
+			begin
+				MapZoneID := MainProc.ZoneServer.Options.ID;
+				IsInstance := True;
+			end else
+			begin
+				MapZoneID := TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Map.GetZoneID(MapName);
+			end;
+		end else
+		begin
+			MapZoneID := TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Map.GetZoneID(MapName);
+		end;
 
 		//Map not found
 		if MapZoneID < 0 then
@@ -146,18 +162,25 @@ begin
 				APoint.Y := -1;
 			end;
 
-			if Cardinal(MapZoneID) = MainProc.ZoneServer.Options.ID then
+			if LongWord(MapZoneID) = MainProc.ZoneServer.Options.ID then
 			begin
 				//The map is at same zone, so lets find the index id
-				Index := MainProc.ZoneServer.MapList.IndexOf(Arguments[0]);
+				if IsInstance then
+					Index := MainProc.ZoneServer.InstancMapList.IndexOf(MapName)
+				else
+					Index := MainProc.ZoneServer.MapList.IndexOf(MapName);
+
 				if Index < 0 then
 				begin
 					//This is impossible as i know of, but IF it happened...
-					Error.Add('Map ' + Arguments[0] + ' not found!');
+					Error.Add('Map ' + MapName + ' not found!');
 				end else
 				begin
 					//So, found it!
-					Map := MainProc.ZoneServer.MapList.Items[Index];
+					if IsInstance then
+						Map := MainProc.ZoneServer.InstancMapList.Items[Index]
+					else
+						Map := MainProc.ZoneServer.MapList.Items[Index];
 
 					if Map.SafeLoad then
 					begin
@@ -166,17 +189,18 @@ begin
 						begin
 							APoint := Map.RandomCell;
 						end;
+
 						if not ZoneSendWarp(
 								TargetChar,
-								Arguments[0],
+								MapName,
 								APoint.X,
 								APoint.Y
 							)
 						then begin
-							Error.Add('Map ' + Arguments[0] + ' not found!');
+							Error.Add('Map ' + MapName + ' not found!');
 						end else
 						begin
-							Error.Add('Warped to ' + Arguments[0]);
+							Error.Add('Warped to ' + MapName);
 						end;
 					end else
 					begin
@@ -194,7 +218,7 @@ begin
 				//The map is not in same zone..~
 				ZoneSendWarp(
 					TargetChar,
-					Arguments[0],
+					MapName,
 					APoint.X,
 					APoint.Y
 					)

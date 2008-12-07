@@ -45,6 +45,7 @@ begin
 	Identifier := InstanceIdentifier;
 	LoadFromFile(Path);
 	inherited Load;
+	Name := Identifier + '#'+ Name;
 end;{Load}
 //------------------------------------------------------------------------------
 

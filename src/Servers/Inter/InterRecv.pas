@@ -411,19 +411,42 @@ Var
 	ZServerInfo   : TZoneServerInfo;
 	ReturnIPCard  : LongWord;
 	Zidx : integer;
-Begin
-	CharacterID := BufferReadLongWord(4, ABuffer);
-	X						:= BufferReadWord(8, ABuffer);
-	Y						:= BufferReadWord(10, ABuffer);
-	MapNameSize := BufferReadWord(12, ABuffer);
-	MapName			:= BufferReadString(14, MapNameSize, ABuffer);
-
-	ClientIPSize := BufferReadWord(14+MapNameSize, ABuffer);
-	ClientIP		 := BufferReadString(16+MapNameSize, ClientIPSize, ABuffer);
-
-	with TThreadLink(AClient.Data).DatabaseLink.Map do
+	function GetZoneByMap:Boolean;
 	begin
-		ZoneID := GetZoneID(MapName);
+		with TThreadLink(AClient.Data).DatabaseLink.Map do
+		begin
+			ZoneID := GetZoneID(MapName);
+			Result := True;
+		end;
+	end;
+	function GetZoneByInstanceMap:Boolean;
+	var
+		Index : Integer;
+	begin
+		Result := False;
+		Index := MainProc.InterServer.Instances.IndexOf(MapName);
+		if (Index > -1) then
+		begin
+			ZoneID := TZoneServerLink(MainProc.InterServer.Instances.Objects[Index]).Info.ZoneID;
+			Result := True;
+		end;
+	end;
+Begin
+	CharacterID	:= BufferReadLongWord(4, ABuffer);
+	X		:= BufferReadWord(8, ABuffer);
+	Y		:= BufferReadWord(10, ABuffer);
+	MapNameSize	:= BufferReadWord(12, ABuffer);
+	MapName		:= BufferReadString(14, MapNameSize, ABuffer);
+
+	ClientIPSize	:= BufferReadWord(14+MapNameSize, ABuffer);
+	ClientIP	:= BufferReadString(16+MapNameSize, ClientIPSize, ABuffer);
+
+	if Pos('#', MapName) > 0 then
+	begin
+		GetZoneByInstanceMap or GetZoneByMap;
+	end else
+	begin
+		GetZoneByMap;
 	end;
 
 	ZIdx := MainProc.InterServer.ZoneServerList.IndexOf(ZoneID);

@@ -150,7 +150,7 @@ uses
 	);
 	function ZoneSendWarp(
 		const ACharacter : TCharacter;
-		const MapName : String;
+		MapName : String;
 		const X : Word;
 		const Y : Word
 	):Boolean;
@@ -1232,7 +1232,7 @@ end;{ZoneSendWalkReply}
 //------------------------------------------------------------------------------
 function ZoneSendWarp(
 	const ACharacter : TCharacter;
-	const MapName : String;
+	MapName : String;
 	const X : Word;
 	const Y : Word
 	):boolean;
@@ -1242,9 +1242,24 @@ var
 	MapNameSize : Word;
 	ClientIPSize : Word;
 	MapZoneID	: SmallInt;
+	IsInstance : Boolean;
 
 begin
-		MapZoneID := TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.Map.GetZoneID(MapName);
+	IsInstance := False;
+		if Pos('#', MapName) > 0 then
+		begin
+			if MainProc.ZoneServer.InstancMapList.IndexOf(MapName) > -1 then
+			begin
+				MapZoneID := MainProc.ZoneServer.Options.ID;
+				IsInstance := True;
+			end else
+			begin
+				MapZoneID := TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.Map.GetZoneID(MapName);
+			end;
+		end else
+		begin
+			MapZoneID := TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.Map.GetZoneID(MapName);
+		end;
 		if MapZoneID < 0 then
 		begin
 			Result := False;
@@ -1261,6 +1276,8 @@ begin
 				ACharacter.Map := MapName;
 				ACharacter.Position := Point(X,Y);
 				WriteBufferWord(0, $0091, OutBuffer);
+				if IsInstance then
+					Delete(MapName,1, Pos('#', MapName));
 				WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
 				WriteBufferWord(18, X, OutBuffer);
 				WriteBufferWord(20, Y, OutBuffer);
