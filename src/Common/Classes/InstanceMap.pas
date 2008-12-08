@@ -4,7 +4,7 @@
 //	What it does -
 //		Object for instance map
 //
-//  Changes -
+//	Changes -
 //		[2008/12/06] Aeomin - Created
 //
 //------------------------------------------------------------------------------

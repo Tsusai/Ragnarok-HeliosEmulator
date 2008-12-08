@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 643 -
+[2008/12/07] Aeomin - Optimize Mapload
+                      (You wouldn't notice unless go through a benchmark)
+-
+
 - Rev 642 -
 [2008/12/07] Aeomin - Tweak in createinstancemap function [LuaNPCCommands.pas]
 [2008/12/07] Aeomin - Able to talk to NPC in instance map now [ZoneRecv.pas]

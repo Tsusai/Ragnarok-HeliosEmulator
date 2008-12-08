@@ -38,6 +38,7 @@ unit NPC;
 interface
 uses
 	Being,
+	Map,
 	Character;
 
 	
@@ -78,7 +79,8 @@ uses
 	//Basic scripted NPC.  Has ontouch & onclick function
 	//string names.  They are filled in on creation and can
 	//only be read for executing the lua script.
-	type TScriptNPC = class(TNPC)
+	type
+		TScriptNPC = class(TNPC)
 		protected
 
 			fClickFunction	: string;
@@ -95,7 +97,7 @@ uses
 			procedure OnTouch(ACharacter : TCharacter);
 			procedure OnClick(ACharacter : TCharacter);
 
-			Procedure Enable;
+			procedure Enable;
 			Procedure Disable;
 
 			//Properties for lua function names
@@ -134,7 +136,6 @@ uses
 	//Project
 	LuaCoreRoutines,
 	Main,
-	Map,
 	OnTouchCellEvent;
 
 //Start NPC IDs at 100K
@@ -210,36 +211,28 @@ end;
 
 Procedure TScriptNPC.Enable;
 var
-	AMap						: TMap;
 	XIndex					: Integer;
 	YIndex					: Integer;
 	AnOnTouchEvent	: TOnTouchCellEvent;
-	MapIndex        : Integer;
 begin
 	fEnabled := TRUE;
 	//if we're not already enabled and ontouch is enabled...
 	if OnTouchEnabled then
 	begin
-		//get our map.
-		MapIndex := MainProc.ZoneServer.MapList.IndexOf(self.Map);
-		if MapIndex <> -1 then
+		//make sure our ontouch coordinates are in the map's bounds.
+		if ((Position.X + OnTouchXRadius) < MapInfo.Size.X) AND
+		 ((Position.Y + OnTouchYRadius) < MapInfo.Size.Y) AND
+		 ((Position.X - OnTouchXRadius) > 0) AND
+		 ((Position.Y - OnTouchYRadius) > 0) then
 		begin
-			AMap := MainProc.ZoneServer.MapList[MapIndex];
-			//make sure our ontouch coordinates are in the map's bounds.
-			if ((Position.X + OnTouchXRadius) < AMap.Size.X) AND
-			 ((Position.Y + OnTouchYRadius) < AMap.Size.Y) AND
-			 ((Position.X - OnTouchXRadius) > 0) AND
-			 ((Position.Y - OnTouchYRadius) > 0) then
+			//loop through our ontouch area
+			for XIndex := (Position.X-OnTouchXRadius) to (Position.X + OnTouchXRadius) do
 			begin
-				//loop through our ontouch area
-				for XIndex := (Position.X-OnTouchXRadius) to (Position.X + OnTouchXRadius) do
+				for YIndex := (Position.Y-OnTouchYRadius) to (Position.Y + OnTouchYRadius) do
 				begin
-					for YIndex := (Position.Y-OnTouchYRadius) to (Position.Y + OnTouchYRadius) do
-					begin
-						//add our ontouch events
-						AnOnTouchEvent := TOnTouchCellEvent.Create(self);
-						AMap.Cell[XIndex][YIndex].Beings.AddObject(0, AnOnTouchEvent);
-					end;
+					//add our ontouch events
+					AnOnTouchEvent := TOnTouchCellEvent.Create(self);
+					MapInfo.Cell[XIndex][YIndex].Beings.AddObject(0, AnOnTouchEvent);
 				end;
 			end;
 		end;
@@ -249,7 +242,6 @@ end;
 //[2007/05/27] Tsusai - Removed MapPointer (useless...)
 Procedure TScriptNPC.Disable;
 var
-	AMap						: TMap;
 	XIndex					: Integer;
 	YIndex					: Integer;
 	Index						: Integer;
@@ -259,18 +251,16 @@ begin
 	//If this npc has been enabled and ontouch is enabled...
 	if OnTouchEnabled then
 	begin
-		//Get our map.
-		AMap := MapInfo;
 		//Loop through our ontouch area.
 		for XIndex := (Position.X-OnTouchXRadius) to (Position.X + OnTouchXRadius) do
 		begin
 			for YIndex := (Position.Y-OnTouchYRadius) to (Position.Y + OnTouchYRadius) do
 			begin
 				//loop through our beings list
-				for Index := AMap.Cell[XIndex][YIndex].Beings.Count - 1 downto 0 do
+				for Index := MapInfo.Cell[XIndex][YIndex].Beings.Count - 1 downto 0 do
 				begin
 					//get our object
-					AnObject := AMap.Cell[XIndex][YIndex].Beings.Objects[Index];
+					AnObject := MapInfo.Cell[XIndex][YIndex].Beings.Objects[Index];
 					//check to see if our object is an ontouch event
 					if AnObject is TOnTouchCellEvent then
 					begin
@@ -279,10 +269,10 @@ begin
 						begin
 							//since it is, free and delete.
 							AnObject.Free;
-							AMap.Cell[XIndex][YIndex].Beings.Delete(Index);
-            end;
+							MapInfo.Cell[XIndex][YIndex].Beings.Delete(Index);
+						end;
 					end;
-        end;
+				end;
 			end;
 		end;
 	end;
@@ -299,8 +289,8 @@ begin
 		end else
 		begin
 			Disable;
-    end;
-  end;
+		end;
+	end;
 end;
 
 
