@@ -101,8 +101,10 @@ uses
 			Procedure Disable;
 
 			//Properties for lua function names
-			property ClickFunction : string read fClickFunction;
-			property TouchFunction : string read fTouchFunction;
+			property ClickFunction : string read fClickFunction write fClickFunction;
+			property TouchFunction : string read fTouchFunction write fTouchFunction;
+
+			procedure CloneTo(const TargetNpc:TScriptNPC);
 
 			//Creation fills in the function names.
 			constructor Create(
@@ -121,13 +123,6 @@ uses
 				TouchFunc : string = ''
 			);
 
-	end;
-
-	//Holder for now, contains the NPC for an item
-	//Contains an ExpireTime for cleanup (kill dropped items)
-	type TItemNPC = class(TNPC)
-		public
-			ExpireTime : LongWord;
 	end;
 
 implementation
@@ -293,6 +288,20 @@ begin
 	end;
 end;
 
+
+procedure TScriptNPC.CloneTo(const TargetNpc:TScriptNPC);
+begin
+	TargetNpc.ClickFunction := fClickFunction;
+	TargetNpc.TouchFunction := fTouchFunction;
+	TargetNpc.OnTouchXRadius := OnTouchXRadius;
+	TargetNpc.OnTouchYRadius := OnTouchYRadius;
+	TargetNpc.OnTouchEnabled := OnTouchEnabled;
+
+	TargetNpc.Name := Name;
+	TargetNpc.JID := JID;
+	TargetNpc.Position := Position;
+	TargetNpc.Direction := Direction;
+end;
 
 constructor TWarpNPC.Create(
 	TouchFunc : string = ''

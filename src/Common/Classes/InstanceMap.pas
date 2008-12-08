@@ -14,6 +14,7 @@ interface
 
 uses
 	Classes,
+	ContNrs,
 	Map;
 
 type
@@ -21,10 +22,14 @@ type
 	private
 		//Instance Map ID
 		Identifier : String;
+
 		function LoadCache(const Name:String;var Memory : TMemoryStream):Boolean;
+		procedure LoadNpc;
 	public
 		BaseName : String;
 		procedure Load(const InstanceIdentifier, OriginalMapName:String);reintroduce;
+		constructor Create;
+		destructor Destroy;override;
 	end;
 implementation
 
@@ -33,6 +38,7 @@ uses
 	Main,
 	Globals,
 	MapTypes,
+	NPC,
 	List32
 	;
 
@@ -136,4 +142,84 @@ end;{Load}
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//LoadNpc                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Load & Clone npc object
+//
+//	Changes -
+//		[2008/12/08] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure TInstanceMap.LoadNpc;
+Var
+	ObjIndex    : Integer;
+	AnNPC       : TScriptNPC;
+	NewNPC : TScriptNPC;
+begin
+	//Enable all npcs on this map.
+	for ObjIndex := 0 to MainProc.ZoneServer.NPCList.Count -1 do
+	begin
+		AnNPC := TScriptNPC(MainProc.ZoneServer.NPCList.Objects[ObjIndex]);
+		if AnNPC.Map = BaseName then
+		begin
+			if PointInRange(AnNPC.Position) then
+			begin
+				if AnNPC is TWarpNPC then
+					NewNPC := TWarpNPC.Create()
+				else
+					NewNPC := TScriptNPC.Create();
+
+				AnNPC.CloneTo(NewNPC);
+
+				//Let's clone it!
+				NewNPC.Map := Self.BaseName;
+				NewNPC.MapInfo := Self;
+				Cell[NewNPC.Position.X][NewNPC.Position.Y].Beings.AddObject(NewNPC.ID, NewNPC);
+				NewNPC.Enabled := True;
+				NPCList.AddObject(NewNPC.ID,NewNPC);
+			end;
+		end;
+	end;
+end;{LoadNPC}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Create                                                             CONSTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does -
+//		Create..
+//
+//	Changes -
+//		[2008/12/08] Aeomin - Created.
+//------------------------------------------------------------------------------
+constructor TInstanceMap.Create;
+begin
+	inherited;
+
+end;{Create}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//Destroy                                                             DESTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does -
+//		Destroy..
+//
+//	Changes -
+//		[2008/12/08] Aeomin - Created.
+//------------------------------------------------------------------------------
+destructor TInstanceMap.Destroy;
+var
+	Index : Integer;
+begin
+	for Index := 0 to NPCList.Count - 1 do
+	begin
+		NPCList.Objects[Index].Free;
+	end;
+	inherited;
+end;{Destroy}
+//------------------------------------------------------------------------------
 end{InstanceMap}.

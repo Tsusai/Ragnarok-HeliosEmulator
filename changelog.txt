@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 645 -
+[2008/12/08] Aeomin - Make clone routine to clone NPC object into instance map.
+[2008/12/08] Aeomin - Optimize NPC calling..(Less loop search)
+-
+
 - Rev 644 -
 [2008/12/07] Aeomin - Added cache list (hopefully will make instance map faster)
 [2008/12/07] Aeomin - This cache system also solved problem when create on

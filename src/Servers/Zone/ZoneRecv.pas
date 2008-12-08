@@ -466,10 +466,10 @@ begin
 		end else
 		begin
 			//NPC and Mob shit here
-			idx := MainProc.ZoneServer.NPCList.IndexOf(ID);
+			idx := AChara.MapInfo.NPCList.IndexOf(ID);
 			if idx > -1 then
 			begin
-				RecvNPC := MainProc.ZoneServer.NPCList.Objects[idx] as TNPC;
+				RecvNPC := AChara.MapInfo.NPCList.Objects[idx] as TNPC;
 				ZoneSendObjectNameAndIDBasic(
 					AChara,
 					RecvNPC.ID,
@@ -1212,22 +1212,25 @@ procedure NPCClick(
 var
 	NPCID : LongWord;
 	ANPC : TNPC;
+	Index : Integer;
 begin
 	if (AChara.ScriptStatus = SCRIPT_NOTRUNNING) and
 		(AChara.CharaState = charaStanding) then
 	begin
 		NPCID := BufferReadLongWord(ReadPts[0], InBuffer);
-		//TEMPORARY
-		ANPC := MainProc.ZoneServer.NPCList.Objects
-		 [MainProc.ZoneServer.NPCList.IndexOf(NPCID)] as TNPC;
-		if ANPC is TScriptNPC then
+
+		Index := AChara.MapInfo.NPCList.IndexOf(NPCID);
+		if Index > -1 then
 		begin
-			if ((AChara.MapInfo is TInstanceMap)AND(TInstanceMap(AChara.MapInfo).BaseName = ANPC.Map) OR
-			(AChara.Map = ANPC.Map) )AND
-			(AChara.InPointRange(ANPC.Position)) then
+			ANPC := AChara.MapInfo.NPCList.Objects [Index] as TNPC;
+			if ANPC is TScriptNPC then
 			begin
-				AChara.ScriptBeing := ANPC;
-				TScriptNPC(ANPC).OnClick(AChara);
+				//Map is guaranteed
+				if (AChara.InPointRange(ANPC.Position)) then
+				begin
+					AChara.ScriptBeing := ANPC;
+					TScriptNPC(ANPC).OnClick(AChara);
+				end;
 			end;
 		end;
 	end;

@@ -60,6 +60,7 @@ TMap = class(TObject)
 		EventList : TEventList;
 		MobList  : TObjectList;
 		ItemList : TIntList32;
+		NPCList  : TIntList32;
 
 		Constructor Create;
 		Destructor Destroy;override;
@@ -123,6 +124,8 @@ begin
 	//We own mob objects here!
 	MobList := TObjectList.Create(TRUE);
 	ItemList := TIntList32.Create;
+	{Don't own the objects please.. Delphi's TObjectList never actually owns}
+	NPCList := TIntList32.Create;
 end;
 //------------------------------------------------------------------------------
 
@@ -144,6 +147,7 @@ begin
 	EventList.Free;
 	MobList.Free;
 	ItemList.Free;
+	NPCList.Free;
 	inherited;
 end;
 //------------------------------------------------------------------------------
@@ -354,6 +358,7 @@ begin
 				AnNPC.MapInfo := Self;
 				Cell[AnNPC.Position.X][AnNPC.Position.Y].Beings.AddObject(AnNPC.ID, AnNPC);
 				AnNPC.Enabled := True;
+				NPCList.AddObject(AnNPC.ID,AnNPC);
 			end;
 		end;
 	end;
