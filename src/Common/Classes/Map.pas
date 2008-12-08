@@ -24,6 +24,7 @@ interface
 uses
 	{RTL/VCL}
 	Types,
+	Classes,
 	contnrs,
 	{Project}
 	EventList,
@@ -43,6 +44,10 @@ TMap = class(TObject)
 		Path : String;
 
 		procedure LoadNpc;
+
+		function LoadFromStream(
+			AStream : TStream
+		):Boolean;
 
 	public
 		ID		: LongWord;
@@ -65,7 +70,7 @@ TMap = class(TObject)
 				AGraph : TGraph = NIL
 			) : Boolean;
 
-		Function LoadFromFile(
+		function LoadFromFile(
 			const
 				PmsFile : String
 			) : Boolean;
@@ -88,7 +93,6 @@ implementation
 uses
 	{RTL/VCL}
 	SysUtils,
-	Classes,
 	Math,
 	WinLinux,
 	{Project}
@@ -171,6 +175,55 @@ end;
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//LoadFromStream                                                        FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//		Load Map data from Stream
+//
+//	Changes -
+//		[2008/12/07] Aeomin - Created
+//------------------------------------------------------------------------------
+function TMap.LoadFromStream(
+	AStream : TStream
+):Boolean;
+Var
+	AByte   : Byte;
+	MapTag  : array[1..MAX_PMS_HEADER_LENGTH] of Char;
+begin
+	Result := TRUE;
+	AStream.Read(MapTag[1], MAX_PMS_HEADER_LENGTH);
+	if (MapTag <> 'PrometheusMap') then //Check type
+	begin
+		Console.WriteLn('The Map :' + Path + ' is not a Prometheus Map.');
+		Result := FALSE;
+	end
+	else
+	begin
+		AStream.Read(AByte,1); //Check version.
+
+		if (AByte <> 1) then
+		begin
+			Console.WriteLn('The Map :' + Path + ' failed the version check.');
+			Result := FALSE;
+		end
+		else
+		begin
+			AStream.Read(Size.X, 4);
+			AStream.Read(Size.Y, 4);
+
+			//check size.
+			if NOT (InRange(Size.X, 0, 511) AND InRange(Size.Y, 0, 511)) then
+			begin
+				Console.WriteLn('The Map :' + Path + '''s size is out of range.');
+				Result := FALSE;
+			end;
+		end;
+	end;
+end;{LoadFromStream}
+//------------------------------------------------------------------------------
+
+
 (*- Function ------------------------------------------------------------------*
 		TMap.LoadFromFile()
 --------------------------------------------------------------------------------
@@ -199,53 +252,14 @@ Function TMap.LoadFromFile(
 		PmsFile : String
 	) : Boolean;
 Var
-	AByte   : Byte;
 	MapFile : TMemoryStream;
-	MapTag  : array[1..MAX_PMS_HEADER_LENGTH] of Char;
-	MapSize : TPoint;
 Begin
-	Result := TRUE;
-
 	MapFile := TMemoryStream.Create;
 	try
 		MapFile.LoadFromFile(PmsFile);
 		Path := PmsFile;
 
-		MapFile.Read(MapTag[1], MAX_PMS_HEADER_LENGTH);
-		if (MapTag <> 'PrometheusMap') then //Check type
-		begin
-			Console.WriteLn('The Map :' + Path + ' is not a Prometheus Map.');
-			Result := FALSE;
-		end
-		else
-		begin
-			MapFile.Read(AByte,1); //Check version.
-
-			if (AByte <> 1) then
-			begin
-				Console.WriteLn('The Map :' + Path + ' failed the version check.');
-				Result := FALSE;
-			end
-			else
-			begin
-				MapFile.Read(MapSize.X, 4);
-				MapFile.Read(MapSize.Y, 4);
-
-				//check size.
-				if NOT (InRange(MapSize.X, 0, 511) AND InRange(MapSize.Y, 0, 511)) then
-				begin
-					Console.WriteLn('The Map :' + Path + '''s size is out of range.');
-					Result := FALSE;
-				end;
-			end;
-		end;
-
-		if Result then //If we've passed the checks then...
-		begin
-			//Load Map Information.
-			Size := MapSize;
-		end;
-
+		Result := LoadFromStream(MapFile);
 	finally
 		MapFile.Free; //finally, free the memory stream.
 	end;

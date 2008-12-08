@@ -78,9 +78,10 @@ type
 		Options       : TZoneOptions;
 
 		MapList       : TMapList;
-		InstancMapList  : TMapList;
+		InstanceMapList  : TMapList;
 		CharacterList : TCharacterList;
 		NPCList       : TIntList32;
+		InstanceCache  : TStringList;
 
 		CharacterEventThread : TCharacterEventThread;
 		GroundItemEventThread : TGroundItemEventThread;
@@ -148,9 +149,10 @@ begin
 	Commands := TGMCommands.Create;
 
 	MapList := TMapList.Create(TRUE);
-	InstancMapList := TMapList.Create(TRUE);
+	InstanceMapList := TMapList.Create(TRUE);
 	CharacterList := TCharacterList.Create(TRUE);
 	NPCList := TIntList32.Create;
+	InstanceCache  := TStringList.Create;
 
 	ToCharaTCPClient := TInterClient.Create('Zone','Character', true, MainProc.Options.ReconnectDelay);
 	ToInterTCPClient := TInterClient.Create('Zone','Inter', true, MainProc.Options.ReconnectDelay);
@@ -189,22 +191,31 @@ Revisions:
 *-----------------------------------------------------------------------------*)
 Destructor TZoneServer.Destroy;
 Var
-	Idx : Integer;
+	Index : Integer;
 Begin
 	{[2007/06/02] CR - MapList and CharacterList are both self-cleaning. }
 	MapList.Free;
-	InstancMapList.Free;
+	InstanceMapList.Free;
 	CharacterList.Free;
+
+	if InstanceCache.Count > 0 then
+	begin
+		for Index := 0 to InstanceCache.Count - 1 do
+		begin
+			InstanceCache.Objects[Index].Free;
+		end;
+	end;
+	InstanceCache.Free;
 
 	{[2007/06/02] CR - Tsusai was right, we did need to free up this list - the
 	Zone owns the NPCs on it's maps. }
 	if NPCList.Count > 0 then
 	begin
-		for Idx := NPCList.Count -1 downto 0 do
+		for Index := NPCList.Count -1 downto 0 do
 		begin
-			if Assigned(NPCList.Objects[Idx]) then
+			if Assigned(NPCList.Objects[Index]) then
 			begin
-				NPCList.Objects[Idx].Free;
+				NPCList.Objects[Index].Free;
 			end;
 		end;
 	end;
@@ -425,6 +436,7 @@ begin
 		begin
 			KickAll;
 		end;
+
 		CharacterEventThread.Terminate;
 		while NOT CharacterEventThread.Terminated do
 		begin
@@ -665,7 +677,7 @@ Begin
 		end else
 		begin
 			Console.WriteLn('      - Map ' + MapFileName + ' does not exist!');
-    end;
+		end;
 
 		if NOT Pass then
 		begin

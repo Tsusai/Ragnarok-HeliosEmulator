@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 644 -
+[2008/12/07] Aeomin - Added cache list (hopefully will make instance map faster)
+[2008/12/07] Aeomin - This cache system also solved problem when create on
+                      map that is not loaded.
+-
+
 - Rev 643 -
 [2008/12/07] Aeomin - Optimize Mapload
                       (You wouldn't notice unless go through a benchmark)

@@ -442,7 +442,7 @@ var
 begin
 	WriteBufferWord(0, $018B, OutBuffer);
 	WriteBufferWord(2, 0, OutBuffer);
-	SendBuffer(Who.ClientInfo,OutBuffer,PacketDB.GetLength($018B));
+	SendBuffer(Who.ClientInfo,OutBuffer,PacketDB.GetLength($018B,Who.ClientVersion));
 	Who.DelayDisconnect(GetTick + 10000);
 end;
 //------------------------------------------------------------------------------
@@ -1248,7 +1248,7 @@ begin
 	IsInstance := False;
 		if Pos('#', MapName) > 0 then
 		begin
-			if MainProc.ZoneServer.InstancMapList.IndexOf(MapName) > -1 then
+			if MainProc.ZoneServer.InstanceMapList.IndexOf(MapName) > -1 then
 			begin
 				MapZoneID := MainProc.ZoneServer.Options.ID;
 				IsInstance := True;

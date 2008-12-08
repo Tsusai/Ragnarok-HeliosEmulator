@@ -645,11 +645,11 @@ var
 	end;
 	function LoadInstanceMap:Boolean;
 	begin
-		MapIndex := MainProc.ZoneServer.InstancMapList.IndexOf(AChara.Map);
+		MapIndex := MainProc.ZoneServer.InstanceMapList.IndexOf(AChara.Map);
 		Result := MapIndex > -1;
 		if Result then
 		begin
-			AChara.MapInfo := MainProc.ZoneServer.InstancMapList.Items[MapIndex];
+			AChara.MapInfo := MainProc.ZoneServer.InstanceMapList.Items[MapIndex];
 		end;
 	end;
 begin
@@ -2875,7 +2875,7 @@ begin
 
 	AMap := TInstanceMap.Create;
 	AMap.Load(Identifier,MapName);
-	MainProc.ZoneServer.InstancMapList.Add(AMap);
+	MainProc.ZoneServer.InstanceMapList.Add(AMap);
 
 	ZoneSendCreatedInstance(
 		MainProc.ZoneServer.ToInterTCPClient,

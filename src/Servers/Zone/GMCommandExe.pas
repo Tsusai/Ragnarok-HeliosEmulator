@@ -132,7 +132,7 @@ begin
 		MapName :=Arguments[0];
 		if Pos('#', MapName) > 0 then
 		begin
-			if MainProc.ZoneServer.InstancMapList.IndexOf(MapName) > -1 then
+			if MainProc.ZoneServer.InstanceMapList.IndexOf(MapName) > -1 then
 			begin
 				MapZoneID := MainProc.ZoneServer.Options.ID;
 				IsInstance := True;
@@ -166,7 +166,7 @@ begin
 			begin
 				//The map is at same zone, so lets find the index id
 				if IsInstance then
-					Index := MainProc.ZoneServer.InstancMapList.IndexOf(MapName)
+					Index := MainProc.ZoneServer.InstanceMapList.IndexOf(MapName)
 				else
 					Index := MainProc.ZoneServer.MapList.IndexOf(MapName);
 
@@ -178,7 +178,7 @@ begin
 				begin
 					//So, found it!
 					if IsInstance then
-						Map := MainProc.ZoneServer.InstancMapList.Items[Index]
+						Map := MainProc.ZoneServer.InstanceMapList.Items[Index]
 					else
 						Map := MainProc.ZoneServer.MapList.Items[Index];
 
