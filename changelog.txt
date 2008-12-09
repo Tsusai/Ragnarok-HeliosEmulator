@@ -15,6 +15,16 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 646 -
+[2008/12/08] Tsusai - Implemented random warp to different zone hack.
+[2008/12/08] Tsusai - GMCommandsExe: Changed GMWarp's random xy for a different
+ zone to $FFFF (High(Word)).
+[2008/12/08] Tsusai - ZoneRecv - ShowMap: Reads the point, if its $FFFF, a forced
+ rewarp on the same map will be called.  Player will probably see black land for
+ a moment, then be instantly warped again (faster since map is already loaded on
+ client and server)
+-
+
 - Rev 645 -
 [2008/12/08] Aeomin - Make clone routine to clone NPC object into instance map.
 [2008/12/08] Aeomin - Optimize NPC calling..(Less loop search)

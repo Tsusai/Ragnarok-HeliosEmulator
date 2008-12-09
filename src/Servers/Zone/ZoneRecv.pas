@@ -720,6 +720,14 @@ begin
 		);
 
 		AChara.GenerateWeight;
+
+		if (AChara.Position.X = High(Word)) or
+			(AChara.Position.Y = High(Word)) then
+		begin
+			AChara.Position := AChara.MapInfo.RandomCell;
+			ZoneSendWarp(AChara,AChara.Map,AChara.Position.X,AChara.Position.Y);
+		end;
+
 	end else
 	begin
 		AChara.ClientInfo.Connection.Disconnect;

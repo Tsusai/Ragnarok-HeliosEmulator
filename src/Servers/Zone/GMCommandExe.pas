@@ -212,9 +212,9 @@ begin
 			end else
 			begin
 				if APoint.X < 0 then
-					APoint.X := Random(High(Word));
+					APoint.X := {Random}(High(Word));
 				if APoint.Y < 0 then
-					APoint.Y := Random(High(Word));
+					APoint.Y := {Random}(High(Word));
 				//The map is not in same zone..~
 				ZoneSendWarp(
 					TargetChar,
