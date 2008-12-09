@@ -42,6 +42,7 @@ uses
 	Main,
 	AreaLoopEvents,
 	ParameterList,
+	InstanceMap,
 	WinLinux
 	;
 
@@ -67,22 +68,20 @@ var
 	AParameters : TParameterList;
 	Index : Integer;
 begin
-	if MapID > 0 then
+	Index := MapInfo.Cell[Position.X,Position.Y].Items.IndexOf(ID);
+	if Index > -1 then
 	begin
-		Index := MapInfo.Cell[Position.X,Position.Y].Items.IndexOf(ID);
-		if Index > -1 then
-		begin
-			MapInfo.Cell[
-				Position.X,
-				Position.Y
-				].Items.Delete(Index);
-		end;
-		AParameters := TParameterList.Create;
-		AParameters.AddAsLongWord(1,ID);
-		AreaLoop(RemoveGroundItem, FALSE,AParameters);
-		AParameters.Free;
-		MainProc.ZoneServer.Database.Items.Delete(ID);
+		MapInfo.Cell[
+			Position.X,
+			Position.Y
+			].Items.Delete(Index);
 	end;
+	AParameters := TParameterList.Create;
+	AParameters.AddAsLongWord(1,ID);
+	AreaLoop(RemoveGroundItem, FALSE,AParameters);
+	AParameters.Free;
+	if NOT (MapInfo is TInstanceMap) then
+		MainProc.ZoneServer.Database.Items.Delete(ID);
 end;
 
 constructor TItemInstance.Create;

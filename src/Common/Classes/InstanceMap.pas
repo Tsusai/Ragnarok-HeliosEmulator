@@ -14,8 +14,9 @@ interface
 
 uses
 	Classes,
-	ContNrs,
-	Map;
+	Map,
+	List32
+	;
 
 type
 	TInstanceMap = class(TMap)
@@ -23,11 +24,15 @@ type
 		//Instance Map ID
 		Identifier : String;
 
+		SlotList : TIntList32;
+		NextID : LongWord;
+
 		function LoadCache(const Name:String;var Memory : TMemoryStream):Boolean;
 		procedure LoadNpc;
 	public
 		BaseName : String;
 		procedure Load(const InstanceIdentifier, OriginalMapName:String);reintroduce;
+		function NewObjectID:LongWord;
 		constructor Create;
 		destructor Destroy;override;
 	end;
@@ -38,8 +43,7 @@ uses
 	Main,
 	Globals,
 	MapTypes,
-	NPC,
-	List32
+	NPC
 	;
 
 //------------------------------------------------------------------------------
@@ -186,6 +190,31 @@ end;{LoadNPC}
 
 
 //------------------------------------------------------------------------------
+//NewObjectID                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Generate a "GUID"
+//	result is > 0; fail if return 0
+//
+//	Changes -
+//		[2008/12/08] Aeomin - Created.
+//------------------------------------------------------------------------------
+function TInstanceMap.NewObjectID:LongWord;
+begin
+	{Result := 0; }
+	if SlotList.Count = 0 then
+	begin
+		Result := NextID;
+		Inc(NextID);
+	end else
+	begin
+		Result := SlotList[0];
+	end;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //Create                                                             CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does -
@@ -197,7 +226,8 @@ end;{LoadNPC}
 constructor TInstanceMap.Create;
 begin
 	inherited;
-
+	SlotList := TIntList32.Create;
+	NextID := 1;
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -215,6 +245,7 @@ destructor TInstanceMap.Destroy;
 var
 	Index : Integer;
 begin
+	SlotList.Free;
 	for Index := 0 to NPCList.Count - 1 do
 	begin
 		NPCList.Objects[Index].Free;

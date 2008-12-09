@@ -135,7 +135,8 @@ uses
 	ErrorConstants,
 	ItemTypes,
 	ParameterList,
-	AreaLoopEvents
+	AreaLoopEvents,
+	InstanceMap
 	;
 	{Third Party}
 	//none
@@ -354,6 +355,14 @@ var
 				AnInventoryItem.Position := Point(0,0);
 				AnInventoryItem.MapID := 0;
 				AnInventoryItem.MapInfo := nil;
+				if (AChara.MapInfo is TInstanceMap) then
+				begin
+					//Item never actually store when in instance map
+					TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
+						AnInventoryItem,
+						Self
+					);
+				end;
 				TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
 					AnInventoryItem,
 					Self
@@ -570,10 +579,18 @@ begin
 		begin
 			TheItem.Position := Position;
 			TheItem.MapID := AChara.MapInfo.ID;
-			TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
-				TheItem,
-				nil
-			);
+			if (AChara.MapInfo is TInstanceMap) then
+			begin
+				//It shouldn't exists..
+				TThreadLink(ClientInfo.Data).DatabaseLink.Items.Delete(TheItem.ID);
+				TheItem.ID:=TInstanceMap(AChara.MapInfo).NewObjectID;
+			end else
+			begin
+				TThreadLink(ClientInfo.Data).DatabaseLink.Items.Save(
+					TheItem,
+					nil
+				);
+			end;
 			{Deletem 'em all}
 			SendDeleteItem(
 				AChara,
@@ -600,11 +617,16 @@ begin
 			);
 			NewItem.Position := Position;
 			NewItem.MapID := AChara.MapInfo.ID;
-			{FIX ME}
-			TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
-				NewItem,
-				nil
-			);
+			if NOT (AChara.MapInfo is TInstanceMap) then
+			begin
+				TThreadLink(ClientInfo.Data).DatabaseLink.Items.New(
+					NewItem,
+					nil
+				);
+			end else
+			begin
+				NewItem.ID:=TInstanceMap(AChara.MapInfo).NewObjectID;
+			end;
 			NewItem.MapInfo := AChara.MapInfo;
 			ParameterList := TParameterList.Create;
 			ParameterList.AddAsObject(1,NewItem);

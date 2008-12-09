@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 647 -
+[2008/12/08] Aeomin - Tweak in Inventory.pas to fix error on ground items in instance
+                      map.
+-
+
 - Rev 646 -
 [2008/12/08] Tsusai - Implemented random warp to different zone hack.
 [2008/12/08] Tsusai - GMCommandsExe: Changed GMWarp's random xy for a different
