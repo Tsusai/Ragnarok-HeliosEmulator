@@ -80,7 +80,8 @@ begin
 	AParameters.AddAsLongWord(1,ID);
 	AreaLoop(RemoveGroundItem, FALSE,AParameters);
 	AParameters.Free;
-	if NOT (MapInfo is TInstanceMap) then
+	if (MapInfo is TInstanceMap) then
+	else
 		MainProc.ZoneServer.Database.Items.Delete(ID);
 end;
 

@@ -29,10 +29,12 @@ type
 
 		function LoadCache(const Name:String;var Memory : TMemoryStream):Boolean;
 		procedure LoadNpc;
+		procedure StepCleanupSlotList;
 	public
 		BaseName : String;
 		procedure Load(const InstanceIdentifier, OriginalMapName:String);reintroduce;
 		function NewObjectID:LongWord;
+		procedure DisposeObjectID(const ID:LongWord);
 		constructor Create;
 		destructor Destroy;override;
 	end;
@@ -210,7 +212,51 @@ begin
 	begin
 		Result := SlotList[0];
 	end;
+	StepCleanupSlotList;
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//DisposeObjectID                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Delete an object id
+//
+//	Changes -
+//		[2008/12/09] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure TInstanceMap.DisposeObjectID(const ID:LongWord);
+begin
+	if SlotList.IndexOf(ID) = -1 then
+	begin
+		SlotList.Add(ID);
+		StepCleanupSlotList;
+	end;
+end;{DisposeObjectID}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//StepCleanupSlotList                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Sometimes slot list just too much items..
+//
+//	Changes -
+//		[2008/12/09] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure TInstanceMap.StepCleanupSlotList;
+begin
+	if SlotList.Count > 0 then
+	begin
+		if (SlotList[SlotList.Count-1]+1) = NextID then
+		begin
+			SlotList.Delete(SlotList.Count-1);
+			Dec(NextID);
+		end;
+	end;
+end;{StepCleanupSlotList}
 //------------------------------------------------------------------------------
 
 

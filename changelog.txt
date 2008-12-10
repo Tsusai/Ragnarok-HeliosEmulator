@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 648 -
+[2008/12/09] Aeomin - Another tweak in ground items of instance maps..
+                      (Reduce chance of huge list of slotlist)
+-
+
 - Rev 647 -
 [2008/12/08] Aeomin - Tweak in Inventory.pas to fix error on ground items in instance
                       map.
