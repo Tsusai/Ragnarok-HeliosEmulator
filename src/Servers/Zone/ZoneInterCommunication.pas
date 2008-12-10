@@ -179,6 +179,9 @@ const
 		const ScriptID : LongWord;
 		const MapName : String
 	);
+	procedure ZoneSendInstanceList(
+		AClient : TInterClient
+	);
 	//----------------------------------------------------------------------
 
 implementation
@@ -826,5 +829,66 @@ begin
 		SendBuffer(AClient, OutBuffer, Len + 16);
 	end;
 end;{ZoneSendCreatedInstance}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ZoneSendInstanceList                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Only send after connect to Inter Server.
+//	This is used when in situation connection dropped and reconnect.
+//
+//	Changes -
+//		[2008/12/09] - Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ZoneSendInstanceList(
+	AClient : TInterClient
+);
+var
+	OutBuffer   : TBuffer;
+	Index : Integer;
+	Count : Byte;
+	OffSet:Word;
+	Len : Word;
+	StrLen:Byte;
+	Name : String;
+begin
+	Count := 0;
+	Len := 0;
+	OffSet := 5;
+	with MainProc.ZoneServer do
+	begin
+		if InstanceMapList.Count > 0 then
+		begin
+			for Index := 0 to InstanceMapList.Count - 1 do
+			begin
+
+				Name  := InstanceMapList.Items[Index].Name;
+				StrLen := Length(Name);
+
+				WriteBufferByte(OffSet, StrLen, OutBuffer);
+				WriteBufferString(OffSet+1, Name, Len, OutBuffer);
+				Inc(OffSet,Len+1);
+				Inc(Len,Len+1);
+
+				if (Count > 100) OR (Index = (InstanceMapList.Count - 1)) then
+				begin
+					WriteBufferWord(0, $2229, OutBuffer);
+					WriteBufferWord(2, Len + 5, OutBuffer);
+					WriteBufferByte(4, Count, OutBuffer);
+					SendBuffer(AClient, OutBuffer, Len + 5);
+					OffSet := 5;
+					Len := 0;
+				end;
+				//Send 100 of them at a time.
+				if Count > 100 then
+					Count := 0;
+
+				Inc(Count);
+			end;
+		end;
+	end;
+end;{ZoneSendInstanceList}
 //------------------------------------------------------------------------------
 end{ZoneInterCommunication}.

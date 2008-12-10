@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 649 -
+[2008/12/09] Aeomin - More improvement.
+[2008/12/09] Aeomin - Zone now should send a list of instance map when reconnect.
+-
+
 - Rev 648 -
 [2008/12/09] Aeomin - Another tweak in ground items of instance maps..
                       (Reduce chance of huge list of slotlist)

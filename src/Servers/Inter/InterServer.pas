@@ -222,6 +222,13 @@ begin
 	begin
 		AZoneServInfo := TZoneServerLink(AConnection.Data).Info;
 
+		Index := Instances.IndexOfObject(AConnection.Data);
+		while Index > -1 do
+		begin
+			Instances.Delete(Index);
+			Index := Instances.IndexOfObject(AConnection.Data);
+		end;
+
 		Index := InstanceZones.IndexOf(AConnection.Data);
 		if Index > -1 then
 		begin
@@ -490,7 +497,17 @@ begin
 				RecvBuffer(AConnection,ABuffer[4],Size-4);
 				RecvInstanceCreated(AConnection, ABuffer);
 			end;
-		end
+		end;
+	$2229: //Instance List
+		begin
+			if AConnection.Data is TZoneServerLink then
+			begin
+				RecvBuffer(AConnection,ABuffer[2],2);
+				Size := BufferReadWord(2,ABuffer);
+				RecvBuffer(AConnection,ABuffer[4],Size-4);
+				RecvInstanceList(AConnection, ABuffer);
+			end;
+		end;
 	else
 		begin
 			Console.Message('Unknown Inter Server Packet : ' + IntToHex(PacketID,4), 'Inter Server', MS_WARNING);

@@ -94,6 +94,11 @@ procedure RecvInstanceCreated(
 	AClient : TIdContext;
 	InBuffer : TBuffer
 );
+
+procedure RecvInstanceList(
+	AClient : TIdContext;
+	InBuffer : TBuffer
+);
 implementation
 
 
@@ -900,6 +905,13 @@ begin
 		begin
 			MainProc.InterServer.InstanceZones.Delete(Index);
 		end;
+
+		Index := MainProc.InterServer.Instances.IndexOfObject(AClient.Data);
+		while Index > -1 do
+		begin
+			MainProc.InterServer.Instances.Delete(Index);
+			Index := MainProc.InterServer.Instances.IndexOfObject(AClient.Data);
+		end;
 	end else
 	if NOT TZoneServerLink(AClient.Data).Info.AllowInstance AND Flag then
 	begin
@@ -959,5 +971,38 @@ begin
 		end;
 	end;
 end;{RecvInstanceCreated}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvInstanceList                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Instance list, this should NOT commonly occur!
+//
+//	Changes -
+//		[2008/12/09] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvInstanceList(
+	AClient : TIdContext;
+	InBuffer : TBuffer
+);
+var
+	Count : Byte;
+	Index : Byte;
+	OffSet : Word;
+	NameLen : Byte;
+	Name : String;
+begin
+	Count := BufferReadByte(4, InBuffer);
+	OffSet := 5;
+	for Index := 1 to Count do
+	begin
+		NameLen := BufferReadByte(OffSet, InBuffer);
+		Name := BufferReadString(OffSet+1,NameLen,InBuffer);
+		Inc(OffSet, NameLen + 1 );
+		MainProc.InterServer.Instances.AddObject(Name,AClient.Data);
+	end;
+end;{RecvInstanceList}
 //------------------------------------------------------------------------------
 end.

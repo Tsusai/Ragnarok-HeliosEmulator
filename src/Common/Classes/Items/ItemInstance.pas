@@ -81,6 +81,7 @@ begin
 	AreaLoop(RemoveGroundItem, FALSE,AParameters);
 	AParameters.Free;
 	if (MapInfo is TInstanceMap) then
+		TInstanceMap(MapInfo).DisposeObjectID(ID)
 	else
 		MainProc.ZoneServer.Database.Items.Delete(ID);
 end;

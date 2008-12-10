@@ -838,6 +838,7 @@ begin
 				SendZoneLANIPToInter(ToInterTCPClient,Self);
 				SendZoneOnlineUsersToInter(ToInterTCPClient,Self);
 				ZoneSendAllowInstanceFlag(ToInterTCPClient,Options.AllowInstance);
+				ZoneSendInstanceList(ToInterTCPClient);
 			end else
 			begin
 				case Response of
