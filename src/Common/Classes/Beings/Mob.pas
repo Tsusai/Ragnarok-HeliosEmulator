@@ -15,7 +15,7 @@ type
 	public
 		SpriteName : String;
 
-		Defence    : Word;
+		Defense    : Word;
 		MDEF       : Word;
 		
 		Race  : Byte;

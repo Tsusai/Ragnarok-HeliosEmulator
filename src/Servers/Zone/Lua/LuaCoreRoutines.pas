@@ -1,5 +1,13 @@
-//Wrapper to keep lua from using all the lua units in various units.  This way,
-//lua is only required in the zone.
+//------------------------------------------------------------------------------
+//LuaCoreRoutines                                                          UNIT
+//------------------------------------------------------------------------------
+//	What it does -
+//			Contains core routines for Lua.
+//    Wrapper to keep lua from using all the lua units in various units.
+//	 	This way, lua is only required in the zone.
+//	Changes -
+//  	[2008/12/10] RabidCh - Created header for documentation.
+//------------------------------------------------------------------------------
 unit LuaCoreRoutines;
 
 {$IFDEF FPC}
@@ -8,7 +16,9 @@ unit LuaCoreRoutines;
 
 interface
 uses
+	{Project}
 	Character,
+	{Lua}
 	LuaTypes,
 	LuaPas;
 
@@ -17,6 +27,7 @@ uses
 
 	type TLuaEnv = (LUA_NPC, LUA_ITEM);
 
+  // Additional checks for Lua values
 	function Lua_isNonNumberString(
 		ALua : TLua;
 		Index : word
@@ -32,6 +43,7 @@ uses
 		Index : word
 	) : boolean;
 
+  // Core Routines
 	procedure MakeLuaThread(
 		var SourceLua : TLua;
 		var DestLua   : TLuaInfo
@@ -66,16 +78,25 @@ uses
 
 implementation
 uses
+	{RTL/VCL}
 	Globals,
 	Terminal,
+  {Project}
 	Main,
 	Math;
 
-//Since 23235 is a valid number and string to lua, this routine checks for
-//non pure number string checking
-//345345 = false
-//Test = true
-//"test 123" = true
+//------------------------------------------------------------------------------
+//Lua_isNonNumberString                                                 FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//			Checks for non-pure number strings since
+//		23235 is a valid number and string to lua.
+//		Examples:
+//			345345 = false
+//			Test = true
+//			"test 123" = true
+//	Changes -
+//------------------------------------------------------------------------------
 function Lua_isNonNumberString(
 	ALua : TLua;
 	Index : word
@@ -83,10 +104,17 @@ function Lua_isNonNumberString(
 begin
 	Result := (Boolean(lua_isstring(ALua,Index)) and
 	not Boolean(lua_isnumber(ALua,Index)));
-end;
+end;{Lua_isNonNumberString}
+//------------------------------------------------------------------------------
 
 
-// Convert to LongWord
+//------------------------------------------------------------------------------
+//Lua_toLongWord                                                        FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//		Converts lua value to LongWord
+//	Changes -
+//------------------------------------------------------------------------------
 function Lua_toLongWord(
 	var ALua : TLua; 
 	Index : byte
@@ -97,9 +125,18 @@ begin
 		Round(lua_tonumber(ALua, Index)),
 		Low(LongWord), High(LongWord)
 	);
-end;
+end;{Lua_toLongWord}
+//------------------------------------------------------------------------------
 
-// Check to see if it is a positive integer (including 0)
+
+//------------------------------------------------------------------------------
+//Lua_isposnumber                                                       FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//			Checks if lua value is a positive integer (including 0) and returns
+//		true/false
+//	Changes -
+//------------------------------------------------------------------------------
 function Lua_isposnumber(
 		ALua : TLua;
 		Index : word
@@ -110,16 +147,23 @@ begin
 	begin
 		Result := (lua_tonumber(ALua,Index) >= 0);
 	end;
-end;
+end;{Lua_isposnumber}
+//------------------------------------------------------------------------------
 
 
-//Takes an existing lua, and makes a new execution thread for a
-//descendant.  Also stores the parent's info so that it can
-//be deferenced and freed.
-//Also Creates a table environment with a reference to the sourcelua's global
-//functions, variables etc, so that the creation of new globals do not
-//becomed shared with the source lua or other descendant threads.
-//THIS WAS A BITCH TO MAKE, SHOULD NOT NEED ALTERING IN ANY FORM
+//------------------------------------------------------------------------------
+//MakeLuaThread                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//			Takes an existing lua, and makes a new execution thread for a descendant.
+//		Also stores the parent's info so that it can be deferenced and freed.
+//		Also Creates a table environment with a reference to the sourcelua's global
+//		functions, variables etc, so that the creation of new globals do not
+//		becomed shared with the source lua or other descendant threads.
+//		THIS WAS A BITCH TO MAKE, SHOULD NOT NEED ALTERING IN ANY FORM
+//
+//	Changes -
+//------------------------------------------------------------------------------
 procedure MakeLuaThread(
 	var SourceLua : TLua;
 	var DestLua   : TLuaInfo
@@ -139,16 +183,32 @@ begin
 	lua_setfield(SourceLua, -2, '__index');
 	lua_setfenv(SourceLua, -2);
 	lua_pop(SourceLua, 1);
-end;
+end;{MakeLuaThread}
+//------------------------------------------------------------------------------
 
-//Initializes a brand new lua, not for descendant threads.
+
+//------------------------------------------------------------------------------
+//InitLuaState                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//			Initializes a brand new lua, not for descendant threads.
+//	Changes -
+//------------------------------------------------------------------------------
 procedure InitLuaState(var ALua : TLua);
 begin
 	ALua := lua_open;
 	luaL_openlibs(ALua);
-end;
+end;{InitLuaState}
+//------------------------------------------------------------------------------
 
-//Tells a lua instance to load and execute a script file
+
+//------------------------------------------------------------------------------
+//LoadAndRunLuaScript                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//			Tells a lua instance to load and execute a script file
+//	Changes -
+//------------------------------------------------------------------------------
 procedure LoadAndRunLuaScript(var ALua : TLua; Const LuaFile : String);
 begin
 	//Load the script
@@ -174,10 +234,18 @@ begin
 		end;
 		lua_pop(ALua, 1); //Remove the error string
 	end;
-end;
+end;{LoadAndRunLuaScript}
+//------------------------------------------------------------------------------
 
-//Using the stored parent info, we are able to dereference and free
-//up a lua descendant thread.
+
+//------------------------------------------------------------------------------
+//TerminateLuaThread                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//			Using the stored parent info, we are able to dereference and free
+//		up a lua descendant thread.
+//	Changes -
+//------------------------------------------------------------------------------
 procedure TerminateLuaThread(
 	const LuaInfo : TLuaInfo
 );
@@ -199,10 +267,18 @@ procedure TerminateLua(
 );
 begin
 	lua_close(RootLuaOnly);
-end;
+end;{TerminateLuaThread}
+//------------------------------------------------------------------------------
 
-//Create and run a player based execution environment based on the function
-//name
+
+//------------------------------------------------------------------------------
+//LuaRunPlayerScript                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//			Creates and runs a player based execution environment based on
+//		the function name
+//	Changes -
+//------------------------------------------------------------------------------
 procedure LuaRunPlayerScript(
 	var AChara : TCharacter;
 	const LuaMode : TLuaEnv;
@@ -228,17 +304,34 @@ begin
 		end;
 		lua_pop(AChara.LuaInfo.Lua, 1); //Remove the error string
 	end;
-end;
+end;{LuaRunPlayerScript}
+//------------------------------------------------------------------------------
 
-//Pushes the Character Pointer onto the global array of the lua
-//This is meant so that when a character executes a script, we can retrieve the TCharacter object
+
+//------------------------------------------------------------------------------
+//SetCharaToLua                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//			Pushes the Character Pointer onto the global array of the lua
+//	Changes -
+//------------------------------------------------------------------------------
+//	This is meant so that when a character executes a script,
+//	we can retrieve the TCharacter object
 procedure SetCharaToLua(var AChara : TCharacter);
 begin
 	lua_pushlightuserdata(AChara.LuaInfo.Lua, @AChara); // Push pointer for the character
 	lua_setglobal(AChara.LuaInfo.Lua, 'character'); // Tell Lua to set it as global
-end;
+end;{SetCharaToLua}
+//------------------------------------------------------------------------------
 
-//Pulls the Character object pointer from the lua global array.
+
+//------------------------------------------------------------------------------
+//GetCharaFromLua                                                      FUNCTION
+//------------------------------------------------------------------------------
+//	What it does -
+//			Pulls the Character object pointer from the lua global array.
+//	Changes -
+//------------------------------------------------------------------------------
 function GetCharaFromLua(var ALua : TLua; var AChara : TCharacter) : boolean;
 var
 	PCharacter : ^TCharacter;
@@ -254,6 +347,6 @@ begin
 			Result := true;
 		end;
 	end;
-end;
-
-end.
+end;{GetCharaFromLua}
+//------------------------------------------------------------------------------
+end{LuaCoreRoutines}.

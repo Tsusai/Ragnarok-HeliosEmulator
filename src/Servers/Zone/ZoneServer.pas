@@ -471,7 +471,7 @@ begin
 	begin
 		Console.Message('Cannot Stop():: Zone Server is not running!', 'Zone Server', MS_ALERT);
 	end;
-end;{Start}
+end;{Stop}
 //------------------------------------------------------------------------------
 
 

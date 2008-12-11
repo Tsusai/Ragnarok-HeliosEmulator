@@ -105,7 +105,7 @@ begin
 				//Attack_Rating_min and Max Fields below [Spre]
 				MinimumHit       := ADataSet.Fields[13].AsInteger;
 				MaximumHit       := ADataSet.Fields[14].AsInteger;
-				Defence          := ADataSet.Fields[15].AsInteger;
+				Defense          := ADataSet.Fields[15].AsInteger;
 				BaseExp          := ADataSet.Fields[16].AsInteger;
 				JobExp           := ADataSet.Fields[17].AsInteger;
 				ASpeed           := ADataSet.Fields[18].AsInteger; //as = AttackSpeed [Spre]

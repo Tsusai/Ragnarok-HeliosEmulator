@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 650 -
+[2008/12/10] RabidCh - Added some headers to LuaCoreRoutines.
+[2008/12/10] RabidCh - Misc. typo fixes and changed English spelling.
+-
+
 - Rev 649 -
 [2008/12/09] Aeomin - More improvement.
 [2008/12/09] Aeomin - Zone now should send a list of instance map when reconnect.
