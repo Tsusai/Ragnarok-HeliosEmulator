@@ -95,7 +95,6 @@ Revisions:
 *=============================================================================*)
 TBeing = class(TGameObject)
 protected
-	fName             : String;
 	fJID              : Word;
 	fBaseLV           : Word;
 	fJobLV            : Word;
@@ -124,11 +123,6 @@ protected
 	fEnemySight				:	Byte;
 	fElement	:	Word;
 	AttackDelay				: LongWord;
-
-	procedure SetName(
-		const
-			Value : String
-		); virtual;
 
 	procedure SetJID(Value : word); virtual;
 	procedure SetBaseLV(Value : word); virtual;
@@ -197,7 +191,6 @@ public
 
 	TargetID		: LongWord;
 
-	property Name      : string     read fName    write SetName;
 	property JID       : Word       read fJID     write SetJID;
 	property BaseLV    : Word       read fBaseLV  write SetBaseLV;
 	property JobLV     : Word       read fJobLV   write SetJobLV;
@@ -1034,29 +1027,6 @@ Begin
 End;(* Dest TBeing.Destroy
 *-----------------------------------------------------------------------------*)
 
-
-(*- Procedure -----------------------------------------------------------------*
-TBeing.SetName
---------------------------------------------------------------------------------
-Overview:
---
-
-	Property method for Name.
-
---
-Revisions:
---
-(Format: [yyyy/mm/dd] <Author> - <Comment>)
-[2007/04/24] CR - Added Comment Header, made Value parameter const.
-*-----------------------------------------------------------------------------*)
-Procedure TBeing.SetName(
-	const
-		Value : String
-	);
-Begin
-	fName := Value;
-End; (* Proc TBeing.SetName
-*-----------------------------------------------------------------------------*)
 
 procedure TBeing.SetJID(
 		Value : Word

@@ -977,5 +977,7 @@ packet_ver: 23
 0x0438,10,useskilltoid,2:4:6
 0x0439,8,useitem,2:4
 
+0x01A2,37
+
 //Add new packets here
 //packet_ver: 24

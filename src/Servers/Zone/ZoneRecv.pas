@@ -340,6 +340,7 @@ implementation
 
 uses
 	{RTL/VCL}
+	Math,
 	WinLinux,
 	Classes,
 	SysUtils,
@@ -437,9 +438,11 @@ procedure GetNameAndID(
 );
 var
 	ID : LongWord;
-	idx : integer;
 	RecvCharacter : TCharacter;
 	RecvNPC : TNPC;
+	idxX,idxY:Integer;
+	ObjectIdx : Integer;
+	AObject : TGameObject;
 begin
 	ID := BufferReadLongWord(ReadPts[0], InBuffer);
 	if AChara.AccountID = ID then
@@ -451,30 +454,28 @@ begin
 		);
 	end else
 	begin
-		idx := MainProc.ZoneServer.CharacterList.IndexOf(ID);
-		if idx > -1 then
+		for idxY := Max(0,AChara.Position.Y-MainProc.ZoneServer.Options.CharShowArea) to Min(AChara.Position.Y+MainProc.ZoneServer.Options.CharShowArea, AChara.MapInfo.Size.Y-1) do
 		begin
-			RecvCharacter := MainProc.ZoneServer.CharacterList.Items[idx];
-			{guild check}
-			{guild version packet}
-			{else}
-			ZoneSendObjectNameAndIDBasic(
-				AChara,
-				RecvCharacter.ID,
-				RecvCharacter.Name
-			);
-		end else
-		begin
-			//NPC and Mob shit here
-			idx := AChara.MapInfo.NPCList.IndexOf(ID);
-			if idx > -1 then
+			for idxX := Max(0,AChara.Position.X-MainProc.ZoneServer.Options.CharShowArea) to Min(AChara.Position.X+MainProc.ZoneServer.Options.CharShowArea, AChara.MapInfo.Size.X-1) do
 			begin
-				RecvNPC := AChara.MapInfo.NPCList.Objects[idx] as TNPC;
-				ZoneSendObjectNameAndIDBasic(
-					AChara,
-					RecvNPC.ID,
-					RecvNPC.Name
-				);
+				for ObjectIdx := AChara.MapInfo.Cell[idxX][idxY].Beings.Count -1 downto 0 do
+				begin
+					if AChara.MapInfo.Cell[idxX][idxY].Beings.Objects[ObjectIdx] is TBeing then
+					begin
+						AObject := AChara.MapInfo.Cell[idxX][idxY].Beings.Objects[ObjectIdx] as TGameObject;
+						if AObject = AChara then
+							Continue;
+						if AObject.ID = ID then
+						begin
+							ZoneSendObjectNameAndIDBasic(
+								AChara,
+								AObject.ID,
+								AObject.Name
+							);
+							Break;
+						end;
+					end;
+				end;
 			end;
 		end;
 	end;

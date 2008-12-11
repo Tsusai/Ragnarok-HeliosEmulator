@@ -22,14 +22,17 @@ type
 
 	TGameObject = class
 	protected
+		fName             : String;
 		fPosition         : TPoint;
 		fMap              : String;
 		procedure SetPosition(Value : TPoint); virtual;
 		procedure SetMap(Value : string); virtual;
+		procedure SetName(const Value : String); virtual;
 	public
 		ID	: LongWord;
 		ZoneStatus		: TBeingZoneStatus; //Is the being online in the Zone or not?
 		MapInfo			: TMap;
+		property Name      : string     read fName    write SetName;
 		property Position  : TPoint     read fPosition write SetPosition;
 		property Map       : string     read fMap write SetMap;
 		procedure AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True;AParameter : TParameterList = nil);
@@ -125,4 +128,28 @@ begin
 	end;
 end;
 //------------------------------------------------------------------------------
+
+
+(*- Procedure -----------------------------------------------------------------*
+TBeing.SetName
+--------------------------------------------------------------------------------
+Overview:
+--
+
+	Property method for Name.
+
+--
+Revisions:
+--
+(Format: [yyyy/mm/dd] <Author> - <Comment>)
+[2007/04/24] CR - Added Comment Header, made Value parameter const.
+*-----------------------------------------------------------------------------*)
+Procedure TGameObject.SetName(
+	const
+		Value : String
+	);
+Begin
+	fName := Value;
+End; (* Proc TBeing.SetName
+*-----------------------------------------------------------------------------*)
 end.
