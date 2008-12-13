@@ -364,7 +364,6 @@ begin
 			AnNPC.MapInfo := Self;
 			Cell[AnNPC.Position.X][AnNPC.Position.Y].Beings.AddObject(AnNPC.ID, AnNPC);
 			AnNPC.Enabled := True;
-			NPCList.AddObject(AnNPC.ID,AnNPC);
 		end;
 	end;
 end;{LoadNPC}
