@@ -124,6 +124,10 @@ compile for linux, at the same time*}
 	Packets in 'Common\Classes\Packets.pas',
 	GameObject in 'Common\Classes\GameObject.pas',
 
+	//AI
+	AI in 'Common\Classes\AI\AI.pas',
+	MobAI in 'Common\Classes\AI\MobAI.pas',
+
 	//Items
 	Item in 'Common\Classes\Items\Item.pas',
 	EquipmentItem in 'Common\Classes\Items\EquipmentItem.pas',
@@ -262,6 +266,10 @@ compile for linux, at the same time*}
 	Mailbox in 'Common/Classes/Mailbox.pas',
 	Packets in 'Common/Classes/Packets.pas',
 	GameObject in 'Common/Classes/GameObject.pas',
+
+	//AI
+	AI in 'Common/Classes/AI/AI.pas',
+	MobAI in 'Common/Classes/AI/MobAI.pas',
 
 	//Items
 	Item in 'Common/Classes/Items/Item.pas',

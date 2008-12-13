@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 656 -
+[2008/12/13] Aeomin - Forgot commit dpr change
+[2008/12/13] Aeomin - Fixed NPC become small after warp
+-
+
 - Rev 655 -
 [2008/12/13] Aeomin - Fixed warp portal not shown.
 -

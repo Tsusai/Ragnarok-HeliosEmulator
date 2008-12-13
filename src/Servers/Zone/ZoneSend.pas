@@ -972,6 +972,7 @@ var
 	end;
 	procedure SubSendNPC;
 	begin
+		FillChar(ReplyBuffer,PacketDB.GetLength($0078),0);
 		WriteBufferWord(0, $0078, ReplyBuffer);
 		WriteBufferByte(2, 0, ReplyBuffer);
 		WriteBufferLongWord(3, Who.ID, ReplyBuffer);
@@ -991,6 +992,7 @@ var
 	end;
 	procedure SubSendMob;
 	begin
+		FillChar(ReplyBuffer,PacketDB.GetLength($0078),0);
 		WriteBufferWord(0, $0078, ReplyBuffer);
 		WriteBufferByte(2, 0, ReplyBuffer);
 		WriteBufferLongWord(3, Who.ID, ReplyBuffer);
