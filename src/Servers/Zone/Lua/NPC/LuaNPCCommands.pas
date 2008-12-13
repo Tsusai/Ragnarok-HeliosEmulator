@@ -244,6 +244,7 @@ procedure MakeNPCWarp(
 	const JID : Word
 );
 var
+	Index    : Integer;
 	AWarpNPC : TWarpNPC;
 begin
 	AWarpNPC := TWarpNPC.Create(lua_tostring(ALua,2));
@@ -257,6 +258,13 @@ begin
 		);
 	AWarpNPC.OnTouchXRadius := lua_tointeger(ALua,5);
 	AWarpNPC.OnTouchYRadius := lua_tointeger(ALua,6);
+
+	Index := MainProc.ZoneServer.MapList.IndexOf(AWarpNPC.Map);
+	if Index > -1 then
+	begin
+		MainProc.ZoneServer.MapList.Items[Index].NPCList.AddObject(AWarpNPC.ID,AWarpNPC);
+	end;
+
 	MainProc.ZoneServer.NPCList.AddObject(AWarpNPC.ID,AWarpNPC);
 end;
 
