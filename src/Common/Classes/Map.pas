@@ -355,19 +355,16 @@ Var
 	AnNPC       : TNPC;
 begin
 	//Enable all npcs on this map.
-	for ObjIndex := 0 to MainProc.ZoneServer.NPCList.Count -1 do
+	for ObjIndex := 0 to NPCList.Count -1 do
 	begin
-		AnNPC := TNPC(MainProc.ZoneServer.NPCList.Objects[ObjIndex]);
-		if AnNPC.Map = Name then
+		AnNPC := TNPC(NPCList.Objects[ObjIndex]);
+		if PointInRange(AnNPC.Position) then
 		begin
-			if PointInRange(AnNPC.Position) then
-			begin
-				// We don't want add npc outside of map..
-				AnNPC.MapInfo := Self;
-				Cell[AnNPC.Position.X][AnNPC.Position.Y].Beings.AddObject(AnNPC.ID, AnNPC);
-				AnNPC.Enabled := True;
-				NPCList.AddObject(AnNPC.ID,AnNPC);
-			end;
+			// We don't want add npc outside of map..
+			AnNPC.MapInfo := Self;
+			Cell[AnNPC.Position.X][AnNPC.Position.Y].Beings.AddObject(AnNPC.ID, AnNPC);
+			AnNPC.Enabled := True;
+			NPCList.AddObject(AnNPC.ID,AnNPC);
 		end;
 	end;
 end;{LoadNPC}

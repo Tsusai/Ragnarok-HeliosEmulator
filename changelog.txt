@@ -15,6 +15,12 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 653 -
+[2008/12/13] Aeomin - Speed up mapload MORE! However, this does not apply to Instance Map.
+[2008/12/13] Aeomin - The trick of this was put NPC object into map's NPCList instead
+                      loop through all NPC during mapload.
+-
+
 - Rev 652 -
 [2008/12/13] Aeomin - Mob implementation part I.
 [2008/12/13] Aeomin - Added AI classes.

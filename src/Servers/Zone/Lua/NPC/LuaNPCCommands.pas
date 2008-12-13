@@ -185,7 +185,8 @@ end;
 function addnpc(ALua : TLua) : integer; cdecl;
 var
 	ANPC : TScriptNPC;
-	OnTouch : string;
+	OnTouch : String;
+	Index : Integer;
 begin
 	OnTouch := '';
 	if CheckLuaNPCSyntax(ALua) then
@@ -203,6 +204,11 @@ begin
 		ANPC.Direction := lua_tointeger(ALua,6);
 		ANPC.OnTouchXRadius := lua_tointeger(ALua,7);
 		ANPC.OnTouchYRadius := lua_tointeger(ALua,8);
+		Index := MainProc.ZoneServer.MapList.IndexOf(ANPC.Map);
+		if Index > -1 then
+		begin
+			MainProc.ZoneServer.MapList.Items[Index].NPCList.AddObject(ANPC.ID,ANPC);
+		end;
 		MainProc.ZoneServer.NPCList.AddObject(ANPC.ID,ANPC);
 	end;
 	Result := 0;
