@@ -26,6 +26,7 @@ uses
 	AccountQueries,
 	CharacterQueries,
 	FriendQueries,
+	MobQueries,
 	MapQueries,
 	MailQueries,
 	ItemQueries,
@@ -53,8 +54,9 @@ type
 		Account			: TAccountQueries;
 		Character		: TCharacterQueries;
 		Friend			: TFriendQueries;
-		Map					: TMapQueries;
+		Map			: TMapQueries;
 		Mail			: TMailQueries;
+		Mob			: TMobQueries;
 		Items			: TItemQueries;
 		CharacterConstant: TCharacterConstantQueries;
 
@@ -125,13 +127,14 @@ Begin
 	GameConnection.User					:= Options.GameConfig.User;
 	GameConnection.Password			:= Options.GameConfig.Pass;
 
-	Account											:= TAccountQueries.Create(AccountConnection);
-	Character										:= TCharacterQueries.Create(GameConnection);
-	Friend											:= TFriendQueries.Create(GameConnection);
-	Map													:= TMapQueries.Create(GameConnection);
-	CharacterConstant						:= TCharacterConstantQueries.Create(GameConnection);
-	Mail								:= TMailQueries.Create(GameConnection);
-	Items					:= TItemQueries.Create(GameConnection);
+	Account			:= TAccountQueries.Create(AccountConnection);
+	Character		:= TCharacterQueries.Create(GameConnection);
+	Friend			:= TFriendQueries.Create(GameConnection);
+	Map			:= TMapQueries.Create(GameConnection);
+	CharacterConstant	:= TCharacterConstantQueries.Create(GameConnection);
+	Mail			:= TMailQueries.Create(GameConnection);
+	Mob			:= TMobQueries.Create(GameConnection);
+	Items			:= TItemQueries.Create(GameConnection);
 End;{Create}
 //------------------------------------------------------------------------------
 
@@ -158,6 +161,7 @@ begin
 	Map.Free;
 	CharacterConstant.Free;
 	Mail.Free;
+	Mob.Free;
 	Items.Free;
 	
 	AccountConnection.Free;

@@ -72,6 +72,8 @@ uses
 
 	procedure GMCreateInstance(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 
+	procedure GMSpawn(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+
 implementation
 uses
 	{RTL/VCL}
@@ -87,6 +89,8 @@ uses
 	Item,
 	ItemTypes,
 	ItemInstance,
+	Mob,
+	AreaLoopEvents,
 	ZoneInterCommunication
 	{Third Party}
 	;
@@ -1318,6 +1322,15 @@ end;{GMResetLook}
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//GMCreateInstance                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Create an instance map
+//
+//	Changes-
+//		[2008/12/?] Aeomin - Create.
+//------------------------------------------------------------------------------
 procedure GMCreateInstance(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 begin
 	if (Length(Arguments) >= 3) then
@@ -1334,6 +1347,32 @@ begin
 		Error.Add('Syntax Help:');
 		Error.Add(Arguments[Length(Arguments)-1]);
 	end;
-end;
+end;{GMCreateInstance}
+//------------------------------------------------------------------------------
 
+
+procedure GMSpawn(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
+var
+	AMob : TMob;
+begin
+	if (Length(Arguments) >= 2) then
+	begin
+		AMob := TMob.Create;
+		AMob.JID := StrToIntDef(Arguments[0],0);
+		AMob.Name := 'KFC Rejected';
+		AMob.SpriteName := Arguments[0];
+		AMob.Position:=TargetChar.Position;
+		AMob.ID:= TargetChar.MapInfo.NewObjectID;
+		TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Mob.Load(AMob);
+		AMob.MapInfo := TargetChar.MapInfo;
+		AMob.Initiate;
+	end else
+	begin
+		Error.Add('Syntax Help:');
+		Error.Add(Arguments[Length(Arguments)-1]);
+	end;
+
+
+end;
+//------------------------------------------------------------------------------
 end{GMCommandExe}.

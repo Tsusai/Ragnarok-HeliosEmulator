@@ -50,9 +50,9 @@ procedure TMobQueries.Load(
 );
 const
 	AQuery =  //Changed Query Code slightly to conform with sql. [Spre]
-		'SELECT `id`, `sprite_name`, `name`, `aRan` , `LV`, `HP`, `SP`, `str`, `int`, `vit`, `dex`, `agi`, `luk`, '+
-		'`attack_rating_min`, `attack_rating_max`, `def`, `exp`, `jexp`, `as`, `es`, `mspeed`, `attackedmt`, `attackmt`, ' +
-		'`element`, `scale`, `race`, `mdef`, `taming_item`, `food_item` ' +
+		'SELECT `id`, `sprite_name`, `name`, `range` , `LV`, `HP`, `SP`, `str`, `int`, `vit`, `dex`, `agi`, `luk`, '+
+		'`attack_rating_min`, `attack_rating_max`, `def`, `exp`, `jexp`, `as`, `es`, `move_speed`, `attackedmt`, `attackmt`, ' +
+		'`property`, `scale`, `race`, `mdef`, `taming_item`, `food_item` ' +
 		'FROM mobs';
 var
 	ADataSet	: TZQuery;
@@ -60,7 +60,7 @@ var
 	WhereClause	: String;
 begin
 
-	if AnMob.ID > 0 then
+	if AnMob.JID > 0 then
 	begin
 		WhereClause := ' WHERE id=:ID;';
 	end else
@@ -72,7 +72,7 @@ begin
 
 	//ID
 	AParam := ADataset.Params.CreateParam(ftInteger, 'ID', ptInput);
-	AParam.AsInteger := AnMob.ID;
+	AParam.AsInteger := AnMob.JID;
 	ADataSet.Params.AddParam(
 		AParam
 	);
@@ -89,7 +89,7 @@ begin
 		begin
 			with AnMob do
 			begin
-				ID               := ADataSet.Fields[0].AsInteger;
+				JID              := ADataSet.Fields[0].AsInteger;
 				SpriteName       := ADataSet.Fields[1].AsString;
 				Name             := ADataSet.Fields[2].AsString;
 				AttackRange      := ADataSet.Fields[3].AsInteger;

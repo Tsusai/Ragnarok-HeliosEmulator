@@ -348,6 +348,7 @@ uses
 	UseableItem,
 	EquipmentItem,
 	MiscItem,
+	NPC,
 	TCPServerRoutines,
 	WinLinux
 	{3rd Party}
@@ -971,11 +972,12 @@ var
 	end;
 	procedure SubSendNPC;
 	begin
-		FillChar(ReplyBuffer,PacketDB.GetLength($0078),0);
 		WriteBufferWord(0, $0078, ReplyBuffer);
 		WriteBufferByte(2, 0, ReplyBuffer);
 		WriteBufferLongWord(3, Who.ID, ReplyBuffer);
 		WriteBufferWord(7, Who.Speed, ReplyBuffer);
+		WriteBufferWord(9, 0, ReplyBuffer); //bstate?
+		WriteBufferWord(11, 0, ReplyBuffer);//hstate?
 		WriteBufferWord(13, Who.Option, ReplyBuffer);
 		WriteBufferWord(15, Who.JID, ReplyBuffer);
 		WriteBufferWord(17, 0, ReplyBuffer);   //hair_style
@@ -985,6 +987,27 @@ var
 		WriteBufferPointAndDirection(47, Who.Position, ReplyBuffer,Who.Direction);
 		WriteBufferByte(50, 5, ReplyBuffer);
 		WriteBufferByte(51, 5, ReplyBuffer);
+		SendBuffer(AClient.ClientInfo,ReplyBuffer,PacketDB.GetLength($0078,AClient.ClientVersion));
+	end;
+	procedure SubSendMob;
+	begin
+		WriteBufferWord(0, $0078, ReplyBuffer);
+		WriteBufferByte(2, 0, ReplyBuffer);
+		WriteBufferLongWord(3, Who.ID, ReplyBuffer);
+		WriteBufferWord(7, Who.Speed, ReplyBuffer);
+		WriteBufferWord(9, 0, ReplyBuffer); //bstate?
+		WriteBufferWord(11, 0, ReplyBuffer);//hstate?
+		WriteBufferWord(13, Who.Option, ReplyBuffer);
+		WriteBufferWord(15, Who.JID, ReplyBuffer);
+		WriteBufferWord(17, 0, ReplyBuffer);   //hair_style
+		WriteBufferWord(19, 0, ReplyBuffer);   //Weapon
+		WriteBufferWord(21, 0, ReplyBuffer);   //Shield
+		WriteBufferLongWord(23, 0, ReplyBuffer);//emblem ID
+		WriteBufferLongWord(27, 0, ReplyBuffer); //Guild id
+		WriteBufferPointAndDirection(47, Who.Position, ReplyBuffer,Who.Direction);
+		WriteBufferByte(50, 5, ReplyBuffer);
+		WriteBufferByte(51, 5, ReplyBuffer);
+		WriteBufferWord(53, 1, ReplyBuffer);  //Level
 		SendBuffer(AClient.ClientInfo,ReplyBuffer,PacketDB.GetLength($0078,AClient.ClientVersion));
 	end;
 begin
@@ -997,7 +1020,10 @@ begin
 	if Who is TCharacter then
 		SubSendPlayer
 	else
-		SubSendNPC;
+	if Who is TNPC then
+		SubSendNPC
+	else
+		SubSendMob;
 end;{ZoneSendBeing}
 
 //------------------------------------------------------------------------------

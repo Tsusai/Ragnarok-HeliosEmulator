@@ -43,12 +43,15 @@ TMap = class(TObject)
 	protected
 		Path : String;
 
+		SlotList : TIntList32;
+		NextID : LongWord;
+
 		procedure LoadNpc;
 
 		function LoadFromStream(
 			AStream : TStream
 		):Boolean;
-
+		procedure StepCleanupSlotList;
 	public
 		ID		: LongWord;
 		Name	: String;
@@ -84,6 +87,8 @@ TMap = class(TObject)
 		function RandomCell: TPoint;
 		function SafeLoad: Boolean;
 
+		function NewObjectID:LongWord;
+		procedure DisposeObjectID(const ID:LongWord);
 end;
 //------------------------------------------------------------------------------
 
@@ -126,6 +131,8 @@ begin
 	ItemList := TIntList32.Create;
 	{Don't own the objects please.. Delphi's TObjectList never actually owns}
 	NPCList := TIntList32.Create;
+	SlotList := TIntList32.Create;
+	NextID := 1;
 end;
 //------------------------------------------------------------------------------
 
@@ -148,6 +155,7 @@ begin
 	MobList.Free;
 	ItemList.Free;
 	NPCList.Free;
+	SlotList.Free;
 	inherited;
 end;
 //------------------------------------------------------------------------------
@@ -288,7 +296,7 @@ Var
 	XIndex  : Integer;
 	YIndex  : Integer;
 	ObjIndex    : Integer;
-	AnMob       : TMob;
+	AMob       : TMob;
 Begin
 	State  := LOADING;
 
@@ -315,11 +323,11 @@ Begin
 	//Add mobs that is already in list
 	for ObjIndex := 0 to MobList.Count -1 do
 	begin
-		AnMob := TMob(MobList[ObjIndex]);
-		if PointInRange(AnMob.Position) then
+		AMob := TMob(MobList[ObjIndex]);
+		if PointInRange(AMob.Position) then
 		begin
-			AnMob.MapInfo := Self;
-			Cell[AnMob.Position.X][AnMob.Position.Y].Beings.AddObject(AnMob.ID, AnMob);
+			AMob.MapInfo := Self;
+			Cell[AMob.Position.X][AMob.Position.Y].Beings.AddObject(AMob.ID, AMob);
 		end;
 	end;
 
@@ -527,6 +535,75 @@ begin
 		Result := FALSE;
 	end;
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//NewObjectID                                                          PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Generate a "GUID"
+//	result is > 0; fail if return 0
+//
+//	Changes -
+//		[2008/12/08] Aeomin - Created.
+//------------------------------------------------------------------------------
+function TMap.NewObjectID:LongWord;
+begin
+	{Result := 0; }
+	if SlotList.Count = 0 then
+	begin
+		Result := NextID;
+		Inc(NextID);
+	end else
+	begin
+		Result := SlotList[0];
+	end;
+	StepCleanupSlotList;
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//DisposeObjectID                                                      PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Delete an object id
+//
+//	Changes -
+//		[2008/12/09] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure TMap.DisposeObjectID(const ID:LongWord);
+begin
+	if SlotList.IndexOf(ID) = -1 then
+	begin
+		SlotList.Add(ID);
+		StepCleanupSlotList;
+	end;
+end;{DisposeObjectID}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//StepCleanupSlotList                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Sometimes slot list just too much items..
+//
+//	Changes -
+//		[2008/12/09] Aeomin - Created.
+//------------------------------------------------------------------------------
+procedure TMap.StepCleanupSlotList;
+begin
+	if SlotList.Count > 0 then
+	begin
+		if (SlotList[SlotList.Count-1]+1) = NextID then
+		begin
+			SlotList.Delete(SlotList.Count-1);
+			Dec(NextID);
+		end;
+	end;
+end;{StepCleanupSlotList}
 //------------------------------------------------------------------------------
 end.
 

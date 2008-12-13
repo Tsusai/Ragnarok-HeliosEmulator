@@ -438,8 +438,6 @@ procedure GetNameAndID(
 );
 var
 	ID : LongWord;
-	RecvCharacter : TCharacter;
-	RecvNPC : TNPC;
 	idxX,idxY:Integer;
 	ObjectIdx : Integer;
 	AObject : TGameObject;

@@ -192,6 +192,8 @@ begin
 
 	AddCommand('CreateInstance',  GMCreateInstance,       99, TYPE_RETURNBACK,  '<Identifier>,<MapName>');
 
+	AddCommand('Spawn',            GMSpawn,                99, TYPE_RETURNBACK,  '');
+
 	// Use temperary list!!!
 	fCommandPrefix := CommandOptions.Load(fTmpCommandList, fCommands);
 	CommandOptions.Save(fTmpCommandList);

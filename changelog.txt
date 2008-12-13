@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 652 -
+[2008/12/13] Aeomin - Mob implementation part I.
+[2008/12/13] Aeomin - Added AI classes.
+-
+
 - Rev 651 -
 [2008/12/10] Aeomin - Optimized GetNameAndID procedure, it should be way faster.
                       [ZoneRecv.pas]

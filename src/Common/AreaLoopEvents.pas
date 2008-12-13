@@ -135,6 +135,13 @@ uses
 		const AObjectID		: LongWord;
 		const AParameters	: TParameterList = nil
 	);
+
+	procedure SpawnMob(
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
+	);
 	
 implementation
 
@@ -147,7 +154,8 @@ uses
 	GameConstants,
 	GameTypes,
 	ItemInstance,
-	Globals
+	Globals,
+	Mob
 	{Third Party}
 	//none
 	;
@@ -222,6 +230,10 @@ Begin
 	end;
 
 	if (ACurrentObject is TCharacter)AND(AObject is TBeing) then
+	begin
+		ZoneSendBeing(TBeing(AObject), TCharacter(ACurrentObject));
+	end else
+	if AObject is TMob then
 	begin
 		ZoneSendBeing(TBeing(AObject), TCharacter(ACurrentObject));
 	end else
@@ -643,5 +655,29 @@ begin
 		);
 	end;
 end;{ShowChangeLook}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SpawnMob                                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send mob to players; similar to ShowAreaObjects?
+//
+//	Changes-
+//		[2008/12/12] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SpawnMob(
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
+);
+begin
+	if AObject is TCharacter then
+	begin
+		ZoneSendBeing(TBeing(ACurrentObject), TCharacter(AObject), True);
+	end;
+end;{SpawnMob}
 //------------------------------------------------------------------------------
 end.
