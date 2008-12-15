@@ -7,7 +7,7 @@ unit Mob;
 interface
 uses
 	Being,
-	MobAI
+	AI
 	;
 
 type
@@ -25,7 +25,7 @@ type
 		TamingItem : LongWord;
 		FoodItem  : LongWord;
 
-		AI : TMobAI;
+		AI : TAI;
 
 		procedure CalcMaxHP; override;
 		procedure CalcMaxSP; override;
@@ -39,6 +39,7 @@ type
 implementation
 
 uses
+	MobAI,
 	AreaLoopEvents
 	;
 
@@ -67,12 +68,14 @@ begin
 	MapInfo.MobList.Add(Self);
 	MapInfo.Cell[Position.X, Position.Y].Beings.AddObject(ID,Self);
 	AreaLoop(SpawnMob);
+	{Let's see what we have around here...}
+	AI.Probe;
 end;{Initiate}
 //------------------------------------------------------------------------------
 
 constructor TMob.Create;
 begin
-	AI := TMobAI.Create;
+	AI := TMobAI.Create(Self);
 end;
 destructor TMob.Destroy;
 begin

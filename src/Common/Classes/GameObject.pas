@@ -36,6 +36,7 @@ type
 		property Position  : TPoint     read fPosition write SetPosition;
 		property Map       : string     read fMap write SetMap;
 		procedure AreaLoop(ALoopCall:TLoopCall; AIgnoreCurrentBeing:Boolean=True;AParameter : TParameterList = nil);
+		function Distance(const APoint:TPoint):Word;
 	end;
 
 implementation
@@ -152,4 +153,29 @@ Begin
 	fName := Value;
 End; (* Proc TBeing.SetName
 *-----------------------------------------------------------------------------*)
+
+
+//------------------------------------------------------------------------------
+//Distance                                                              FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//		Calculate distance between 2 TPoint.
+//	Note that this routine only get either distance of X or Y.
+//	Because visible range was in square...
+//
+//	Changes-
+//		[2008/12/14] Aeomin - Create.
+//------------------------------------------------------------------------------
+function TGameObject.Distance(const APoint:TPoint):Word;
+var
+	DistanceX, DistanceY : Word;
+begin
+	DistanceX := Abs(APoint.X - fPosition.X);
+	DistanceY := Abs(APoint.Y - fPosition.Y);
+	if DistanceX > DistanceY then
+		Result := DistanceX
+	else
+		Result := DistanceY;
+end;{Distance}
+//------------------------------------------------------------------------------
 end.
