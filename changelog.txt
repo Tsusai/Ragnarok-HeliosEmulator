@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 660 -
+[2008/12/18] Aeomin - Changed TCharacterEventThread to TBeingEventThread
+-
+
 - Rev 659 -
 [2008/12/17] Aeomin - For some reason.. SVN only commited changelog...
 -

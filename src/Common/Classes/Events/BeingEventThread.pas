@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//CharacterEventThread                                                     UNIT
+//BeingEventThread                                                          UNIT
 //------------------------------------------------------------------------------
 //	What it does-
 //      Contains the CharacterEventThread class, which is our thread that
@@ -8,9 +8,10 @@
 //	Changes -
 //		January 31st,  2007 - RaX - Created Header.
 //		[2007/03/28] CR - Cleaned up uses clauses, using Icarus as a guide.
+//		[2008/12/18] Aeomin - Renamed from CharacterEventThread
 //
 //------------------------------------------------------------------------------
-unit CharacterEventThread;
+unit BeingEventThread;
 
 {$IFDEF FPC}
 {$MODE Delphi}
@@ -29,12 +30,12 @@ uses
 
 type
 //------------------------------------------------------------------------------
-//TCharacterEventThread
+//TBeingEventThread
 //------------------------------------------------------------------------------
-	TCharacterEventThread = class(TIdThread)
+	TBeingEventThread = class(TIdThread)
 	public
-		CharacterList : TBeingList;
-		Constructor Create(ACharacterList : TBeingList);reintroduce;
+		BeingList : TBeingList;
+		Constructor Create(ABeingList : TBeingList;AName:String);reintroduce;
 		Destructor  Destroy;override;
 		Procedure 	Run;override;
 	end;
@@ -53,6 +54,7 @@ uses
 	Event,
 	GameObject,
 	Being,
+	Character,
 	{3rd Party}
 	WinLinux
 	//none
@@ -60,7 +62,7 @@ uses
 
 
 //------------------------------------------------------------------------------
-//Create                                                          	CONSTRUCTOR
+//Create                                                             CONSTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //      Initializes our EventThread
@@ -69,16 +71,16 @@ uses
 //		January 31st,  2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Constructor TCharacterEventThread.Create(ACharacterList : TBeingList);
+Constructor TBeingEventThread.Create(ABeingList : TBeingList;AName:String);
 begin
-	inherited Create(TRUE, TRUE, 'CharacterEventThread');
-	CharacterList := ACharacterList;
+	inherited Create(TRUE, TRUE, AName);
+	BeingList := ABeingList;
 end;//Create
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//Destroy                                                          	 DESTRUCTOR
+//Destroy                                                             DESTRUCTOR
 //------------------------------------------------------------------------------
 //	What it does-
 //      Destroys our EventThread
@@ -87,7 +89,7 @@ end;//Create
 //		January 31st,  2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Destructor TCharacterEventThread.Destroy;
+Destructor TBeingEventThread.Destroy;
 begin
 	inherited;
 end;//Destroy
@@ -98,15 +100,15 @@ end;//Destroy
 //Run                                                                  PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
-//      The actual thread executing code.
+//		The actual thread executing code.
 //
 //	Changes -
 //		January 31st,  2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Procedure TCharacterEventThread.Run;
+Procedure TBeingEventThread.Run;
 var
-	CharacterIndex		: Integer;
+	BeingIndex		: Integer;
 	EventIndex		: Integer;
 	CurrentTime		: LongWord;
 	AnEvent			: TRootEvent;
@@ -117,34 +119,33 @@ begin
 	CurrentTime := GetTick;
 	CriticalSection := TCriticalSection.Create;
 	//Loop through the character list
-	for CharacterIndex := CharacterList.Count - 1 downto 0 do
+	for BeingIndex :=BeingList.Count - 1 downto 0 do
 	begin
-		if CharacterIndex < CharacterList.Count then
+		if BeingIndex < BeingList.Count then
 		begin
-			if CharacterList[CharacterIndex].ZoneStatus = isOnline then
-			begin
-				CriticalSection.Enter;
-				AnEventList := CharacterList[CharacterIndex].EventList.LockList;
-				try
-					//Loop through each character's eventlist.
-					for EventIndex := (AnEventList.Count - 1) downto 0 do
+			if (BeingList[BeingIndex] is TCharacter) AND NOT(BeingList[BeingIndex].ZoneStatus = isOnline) then
+
+			CriticalSection.Enter;
+			AnEventList := BeingList[BeingIndex].EventList.LockList;
+			try
+				//Loop through each character's eventlist.
+				for EventIndex := (AnEventList.Count - 1) downto 0 do
+				begin
+					AnEvent := AnEventList[EventIndex];
+					//Check to see if the event needs to be fired.
+					if CurrentTime >= AnEvent.ExpiryTime then
 					begin
-						AnEvent := AnEventList[EventIndex];
-						//Check to see if the event needs to be fired.
-						if CurrentTime >= AnEvent.ExpiryTime then
-						begin
-							//If it does, execute the event, then delete it from the list.
-							//(The list "owns" the events, so this does not leak)   {not right now though}
-							AnEventList.Delete(EventIndex);
-							AnEvent.Execute;
-							AnEvent.Free;
-						end;
+						//If it does, execute the event, then delete it from the list.
+						//(The list "owns" the events, so this does not leak)   {not right now though}
+						AnEventList.Delete(EventIndex);
+						AnEvent.Execute;
+						AnEvent.Free;
 					end;
-				finally
-					CharacterList[CharacterIndex].EventList.UnlockList;
 				end;
-				CriticalSection.Leave;
+			finally
+				BeingList[BeingIndex].EventList.UnlockList;
 			end;
+			CriticalSection.Leave;
 		end;
 	end;
 	CriticalSection.Free;

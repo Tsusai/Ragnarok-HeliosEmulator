@@ -30,7 +30,7 @@ uses
 	SysUtils,
 	{Project}
 	Character,
-	CharacterEventThread,
+	BeingEventThread,
 	GroundItemRemovalEventThread,
 	BeingList,
 	GMCommands,
@@ -83,7 +83,7 @@ type
 		NPCList       : TIntList32;
 		InstanceCache  : TStringList;
 
-		CharacterEventThread : TCharacterEventThread;
+		CharacterEventThread : TBeingEventThread;
 		GroundItemEventThread : TGroundItemEventThread;
 
 		GroundItemList : TThreadList;
@@ -163,7 +163,7 @@ begin
 	ToInterTCPClient.OnConnected := InterClientOnConnect;
 	ToInterTCPClient.OnReceive   := InterClientRead;
 
-	CharacterEventThread := TCharacterEventThread.Create(CharacterList);
+	CharacterEventThread := TBeingEventThread.Create(CharacterList,'CharacterEventThread');
 
 	GroundItemList := TThreadList.Create;
 	GroundItemEventThread := TGroundItemEventThread.Create(GroundItemList);
