@@ -105,7 +105,7 @@ implementation
 uses
 	Math,
 	//Helios
-	CharaList,
+	BeingList,
 	CharAccountInfo,
 	CharaLoginCommunication,
 	ZoneCharaCommunication,
@@ -476,7 +476,7 @@ var
 	Count       : Byte;
 	PacketSize  : Word;
 	Ver         : Byte;
-	ACharaList  : TCharacterList;
+	ACharaList  : TBeingList;
 	BaseIndex   : Integer;
 	CharacterDataSize : integer;
 	Idx         : Integer;
@@ -500,7 +500,7 @@ begin
 			//LINK the account to the client connection for the other procedures
 			TClientLink(AClient.Data).AccountLink := AnAccount;
 			SendPadding(AClient); //Legacy padding
-			ACharaList := TCharacterList.Create(TRUE);
+			ACharaList := TBeingList.Create(TRUE);
 			TThreadLink(AClient.Data).DatabaseLink.Character.LoadByAccount(ACharaList, AnAccount);
 
 			Idx := fAccountList.IndexOf(AnAccount.ID);
@@ -533,7 +533,7 @@ begin
 			begin
 				for Index := ACharaList.Count-1 downto 0 do
 				begin
-					ACharacter := ACharaList.Items[Index];
+					ACharacter := ACharaList.Items[Index] as TCharacter;
 					AnAccount.CharaID[ACharacter.CharaNum] := ACharacter.ID;
 					with ACharacter do
 					begin

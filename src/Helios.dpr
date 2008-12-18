@@ -146,7 +146,7 @@ compile for linux, at the same time*}
 	LuaTypes in 'Servers\Zone\Lua\LuaTypes.pas',
 
 	//Lists
-	CharaList in 'Common\Classes\Lists\CharaList.pas',
+	BeingList in 'Common\Classes\Lists\BeingList.pas',
 	MapList in 'Common\Classes\Lists\MapList.pas',
 	List32 in 'Common\ThirdParty\List32.pas',
 	PointList in 'Common\Classes\Lists\PointList.pas',
@@ -289,7 +289,7 @@ compile for linux, at the same time*}
 	LuaTypes in 'Servers/Zone/Lua/LuaTypes.pas',
 
 	//Lists
-	CharaList in 'Common/Classes/Lists/CharaList.pas',
+	BeingList in 'Common/Classes/Lists/BeingList.pas',
 	MapList in 'Common/Classes/Lists/MapList.pas',
 	List32 in 'Common/ThirdParty/List32.pas',
 	PointList in 'Common/Classes/Lists/PointList.pas',

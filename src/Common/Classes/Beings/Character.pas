@@ -381,7 +381,7 @@ uses
 	PacketTypes,
 	LuaCoreRoutines,
 	TCPServerRoutines,
-	CharaList,
+	BeingList,
 	AreaLoopEvents,
 	ItemInstance,
 	ZoneSend,
@@ -2979,11 +2979,11 @@ end;{ResetStats}
 procedure TCharacter.SendFriendList;
 var
 	OutBuffer   : TBuffer;
-	FriendList  : TCharacterList;
+	FriendList  : TBeingList;
 	Char        : TCharacter;
 	Index       : Byte;
 begin
-	FriendList := TCharacterList.Create(TRUE);
+	FriendList := TBeingList.Create(TRUE);
 	TThreadLink(ClientInfo.Data).DatabaseLink.Friend.LoadList(FriendList, Self);
 	if FriendList.Count > 0 then
 	begin
@@ -2991,7 +2991,7 @@ begin
 		WriteBufferWord(2, 4 + ( 32 * FriendList.Count ), OutBuffer);
 		for Index := 0 to FriendList.Count - 1 do
 		begin
-			Char := FriendList.Items[Index];
+			Char := FriendList.Items[Index] as TCharacter;
 
 			WriteBufferLongWord(4 + 32 * Index + 0, Char.AccountID,   OutBuffer);
 			WriteBufferLongWord(4 + 32 * Index + 4, Char.ID,  OutBuffer);

@@ -282,7 +282,8 @@ uses
 	OnTouchCellEvent,
 	MapTypes,
 	AttackEvent,
-	ItemInstance
+	ItemInstance,
+	Mob
 	{Third Party}
 	//none
 	;
@@ -467,6 +468,10 @@ Var
 								ZoneWalkingBeing(Self,Position,Path[Path.count-1],TCharacter(ABeing).ClientInfo);
 							end else  //Npc/Mob/Pet/Homunculus/Mercenary packets to the client
 							begin
+								if ABeing is TMob then
+								begin
+									TMob(ABeing).AI.ObjectNear(Self);
+								end;
 								{Todo: events for NPC}
 								ZoneSendBeing(ABeing,TCharacter(Self));
 							end;

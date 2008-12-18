@@ -26,7 +26,8 @@ uses
 	Math,
 	ContNrs,
 	Main,
-	Character
+	Character,
+	ItemInstance
 	;
 
 procedure TMobAI.Probe;
@@ -56,6 +57,7 @@ begin
 		if Beings.Count > 0 then
 		begin
 			AObject := Beings.Items[Random(Beings.Count)] as TCharacter;
+			FoundObject(AObject);
 			writeln('FOUND ', AObject.Name);
 		end;
 	finally
@@ -67,11 +69,21 @@ end;
 procedure TMobAI.FoundObject(const AnObj:TGameObject);
 begin
 	writeln('I SAW CHIKEN!');
+	if AnObj is TCharacter then
+	begin
+		{is agressive?}
+	end
+	else
+	if AnObj is TItemInstance then
+	begin
+		{pick 'em?}
+	end;
 end;
 
 procedure TMobAI.ObjectNear(const AnObj:TGameObject);
 begin
 	writeln('CHIKEN SAW ME!');
+	FoundObject(AnObj);
 end;
 
 constructor TMobAI.Create(const AMob : TMob);

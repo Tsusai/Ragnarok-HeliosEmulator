@@ -2149,7 +2149,7 @@ begin
 	Idx := MainProc.ZoneServer.CharacterList.IndexOf(ToID);
 	if Idx > -1 then
 	begin
-		Chara := MainProc.ZoneServer.CharacterList.Items[idx];
+		Chara := MainProc.ZoneServer.CharacterList.Items[idx] as TCharacter;
 		SendWhisper(FromName, Whisper, Chara.ClientInfo);
 
 		if not ((ZoneID = 0) and (FromID = 0)) then
@@ -2201,7 +2201,7 @@ begin
 	Y							:= BufferReadWord(16, InBuffer);
 	MapNameLength := BufferReadWord(18, InBuffer);
 	MapName				:= BufferReadString(20, MapNameLength, InBuffer);
-	ACharacter		:= MainProc.ZoneServer.CharacterList.Items[MainProc.ZoneServer.CharacterList.IndexOf(CharacterID)];
+	ACharacter		:= MainProc.ZoneServer.CharacterList.Items[MainProc.ZoneServer.CharacterList.IndexOf(CharacterID)] as TCharacter;
 
 	ACharacter.Map := MapName;
 	ACharacter.Position := Point(X,Y);
@@ -2250,7 +2250,7 @@ begin
 	Idx := MainProc.ZoneServer.CharacterList.IndexOf(CharacterID);
 	if Idx > -1 then
 	begin
-		Chara := MainProc.ZoneServer.CharacterList.Items[idx];
+		Chara := MainProc.ZoneServer.CharacterList.Items[idx] as TCharacter;
 		SendWhisperReply(Chara, Code);
 	end;
 end;{RecvWhisperReply}
@@ -2335,7 +2335,7 @@ begin
 				Index := MainProc.ZoneServer.CharacterList.IndexOf(CharacterID);
 				if Index > -1 then
 				begin
-					TargetChar := MainProc.ZoneServer.CharacterList.Items[Index];
+					TargetChar := MainProc.ZoneServer.CharacterList.Items[Index] as TCharacter;
 					MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
 				end;
 			end;
@@ -2345,7 +2345,7 @@ begin
 			begin
 				for Index := MainProc.ZoneServer.CharacterList.Count -1 downto 0 do
 				begin
-					TargetChar := MainProc.ZoneServer.CharacterList.Items[Index];
+					TargetChar := MainProc.ZoneServer.CharacterList.Items[Index] as TCharacter;
 					MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
 				end;
 			end;
@@ -2356,7 +2356,7 @@ begin
 				Index := MainProc.ZoneServer.CharacterList.IndexOf(TargetID);
 				if Index > -1 then
 				begin
-					TargetChar := MainProc.ZoneServer.CharacterList.Items[Index];
+					TargetChar := MainProc.ZoneServer.CharacterList.Items[Index] as TCharacter;
 					MainProc.ZoneServer.Commands.Commands[CommandID](Arguments, FromChar, TargetChar, Error);
 				end else
 				begin
@@ -2457,7 +2457,7 @@ begin
 			Index := MainProc.ZoneServer.CharacterList.IndexOf(CharacterID);
 			if Index > -1 then
 			begin
-				ACharacter	:= MainProc.ZoneServer.CharacterList[Index];
+				ACharacter	:= MainProc.ZoneServer.CharacterList[Index] as TCharacter;
 				for Index := 0 to Error.Count - 1 do
 				begin
 					ZoneSendCharacterMessage(ACharacter, Error[Index]);
@@ -2662,7 +2662,7 @@ begin
 	Index := MainProc.ZoneServer.CharacterList.IndexOf(TargetCID);
 	if (Index > -1) then
 	begin
-		Chara := MainProc.ZoneServer.CharacterList.Items[Index];
+		Chara := MainProc.ZoneServer.CharacterList.Items[Index] as TCharacter;
 
 		if Offline = 0 then
 		begin
@@ -2724,7 +2724,7 @@ begin
 
 	if (Index > -1) then
 	begin
-		Chara := MainProc.ZoneServer.CharacterList.Items[Index];
+		Chara := MainProc.ZoneServer.CharacterList.Items[Index] as TCharacter;
 
 		SendFirendOnlineStatus(
 			Chara.ClientInfo,
@@ -2772,7 +2772,7 @@ begin
 
 	if (Index > -1) then
 	begin
-		Chara := MainProc.ZoneServer.CharacterList.Items[Index];
+		Chara := MainProc.ZoneServer.CharacterList.Items[Index] as TCharacter;
 
 		SendNewMailNotify(
 			Chara,
@@ -2817,7 +2817,7 @@ begin
 	Index := MainProc.ZoneServer.CharacterList.IndexOf(CharID);
 	if Index > -1 then
 	begin
-		AChara := MainProc.ZoneServer.CharacterList.Items[Index];
+		AChara := MainProc.ZoneServer.CharacterList.Items[Index] as TCharacter;
 		if Flag = 0 then
 		begin
 			if ScriptID > 0 then

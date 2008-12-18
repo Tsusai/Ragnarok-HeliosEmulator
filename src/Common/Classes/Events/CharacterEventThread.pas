@@ -21,7 +21,7 @@ interface
 uses
 	{RTL/VCL}
 	{Project}
-	CharaList,
+	BeingList,
 	{Third Party}
 	IdThread
 	;
@@ -33,8 +33,8 @@ type
 //------------------------------------------------------------------------------
 	TCharacterEventThread = class(TIdThread)
 	public
-		CharacterList : TCharacterList;
-		Constructor Create(ACharacterList : TCharacterList);reintroduce;
+		CharacterList : TBeingList;
+		Constructor Create(ACharacterList : TBeingList);reintroduce;
 		Destructor  Destroy;override;
 		Procedure 	Run;override;
 	end;
@@ -69,7 +69,7 @@ uses
 //		January 31st,  2007 - RaX - Created Header.
 //
 //------------------------------------------------------------------------------
-Constructor TCharacterEventThread.Create(ACharacterList : TCharacterList);
+Constructor TCharacterEventThread.Create(ACharacterList : TBeingList);
 begin
 	inherited Create(TRUE, TRUE, 'CharacterEventThread');
 	CharacterList := ACharacterList;

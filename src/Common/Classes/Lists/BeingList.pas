@@ -1,13 +1,14 @@
 //------------------------------------------------------------------------------
-//CharacterList                                                            UNIT
+//BeingList                                                                 UNIT
 //------------------------------------------------------------------------------
-//  What it does -
-//      A list of TCharacters
+//	What it does -
+//		A list of TCharacters
 //
-//  Changes -
-//    December 22nd, 2006 - RaX - Created.
+//	Changes -
+//		[2008/12/17] Aeomin- Changed to BeingList from CharaList
+//		December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-unit CharaList;
+unit BeingList;
 
 {$IFDEF FPC}
 {$MODE Delphi}
@@ -15,33 +16,34 @@ unit CharaList;
 
 interface
 uses
+	Being,
 	Character,
 	ContNrs;
 
 type
-	PCharacter = ^TCharacter;
+	PBeing = ^TBeing;
 
 //------------------------------------------------------------------------------
 //TCharacterList                                                          CLASS
 //------------------------------------------------------------------------------
-	TCharacterList = Class(TObject)
+	TBeingList = Class(TObject)
 
 	Private
 		fList : TObjectList;
 
-		Function GetValue(Index : Integer) : TCharacter;
-		Procedure SetValue(Index : Integer; Value : TCharacter);
+		Function GetValue(Index : Integer) : TBeing;
+		Procedure SetValue(Index : Integer; Value : TBeing);
 		Function GetCount : Integer;
 
 	Public
-		Constructor Create(OwnsCharacters : Boolean);
+		Constructor Create(OwnsBeings : Boolean);
 		Destructor Destroy; override;
-		Property Items[Index : Integer] : TCharacter
+		Property Items[Index : Integer] : TBeing
 		read GetValue write SetValue;default;
 		Property Count : Integer read GetCount;
 
-		Procedure Add(const ACharacter : TCharacter);
-		Procedure Insert(const ACharacter : TCharacter; Index : Integer);
+		Procedure Add(const ABeing : TBeing);
+		Procedure Insert(const ABeing : TBeing; Index : Integer);
 		Procedure Delete(Index : Integer);
 		Procedure Clear();
 
@@ -62,10 +64,10 @@ implementation
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-constructor TCharacterList.Create(OwnsCharacters : Boolean);
+constructor TBeingList.Create(OwnsBeings : Boolean);
 begin
 	inherited Create;
-	fList := TObjectList.Create(OwnsCharacters);
+	fList := TObjectList.Create(OwnsBeings);
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -79,7 +81,7 @@ end;{Create}
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-destructor TCharacterList.Destroy;
+destructor TBeingList.Destroy;
 begin
 	fList.Free;
 	// Call TObject destructor
@@ -97,9 +99,9 @@ end;{Destroy}
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-procedure TCharacterList.Add(const ACharacter : TCharacter);
+procedure TBeingList.Add(const ABeing : TBeing);
 begin
-	fList.Add(ACharacter);
+	fList.Add(ABeing);
 end;{Add}
 //------------------------------------------------------------------------------
 
@@ -113,9 +115,9 @@ end;{Add}
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-procedure TCharacterList.Insert(const ACharacter : TCharacter; Index: Integer);
+procedure TBeingList.Insert(const ABeing : TBeing; Index: Integer);
 begin
-	fList.Insert(Index, ACharacter);
+	fList.Insert(Index, ABeing);
 end;{Insert}
 //------------------------------------------------------------------------------
 
@@ -129,7 +131,7 @@ end;{Insert}
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-procedure TCharacterList.Delete(Index : Integer);
+procedure TBeingList.Delete(Index : Integer);
 begin
 	fList.Delete(Index);
 end;{Delete}
@@ -145,7 +147,7 @@ end;{Delete}
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-function TCharacterList.IndexOf(const ID: LongWord): Integer;
+function TBeingList.IndexOf(const ID: LongWord): Integer;
 var
 	Index : Integer;
 begin
@@ -173,7 +175,7 @@ end;{IndexOf}
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-function TCharacterList.IndexOfAID(const AID: LongWord): Integer;
+function TBeingList.IndexOfAID(const AID: LongWord): Integer;
 var
 	Index : Integer;
 begin
@@ -181,7 +183,7 @@ begin
 	Result := -1;
 	while (Index >= 0) do
 	begin
-		if AID = Items[Index].AccountID then
+		if (Items[Index] is TCharacter)AND(AID = TCharacter(Items[Index]).AccountID) then
 		begin
 			Result := Index;
 			Break;
@@ -201,7 +203,7 @@ end;{IndexOfAID}
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-procedure TCharacterList.Clear;
+procedure TBeingList.Clear;
 begin
 	fList.Clear;
 end;{Clear}
@@ -217,9 +219,9 @@ end;{Clear}
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-function TCharacterList.GetValue(Index : Integer): TCharacter;
+function TBeingList.GetValue(Index : Integer): TBeing;
 begin
-	Result := TCharacter(fList.Items[Index]);
+	Result := TBeing(fList.Items[Index]);
 end;{GetValue}
 //------------------------------------------------------------------------------
 
@@ -233,7 +235,7 @@ end;{GetValue}
 //  Changes -
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
-procedure TCharacterList.SetValue(Index : Integer; Value : TCharacter);
+procedure TBeingList.SetValue(Index : Integer; Value : TBeing);
 begin
 	fList.Items[Index] := Value;
 end;{SetValue}
@@ -249,7 +251,7 @@ end;{SetValue}
 //  Changes -
 //    October 30th, 2007 - RaX - Created.
 //------------------------------------------------------------------------------
-Function TCharacterList.GetCount : Integer;
+Function TBeingList.GetCount : Integer;
 begin
 	Result := fList.Count;
 end;{GetCount}

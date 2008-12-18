@@ -32,7 +32,7 @@ uses
 	Character,
 	CharacterEventThread,
 	GroundItemRemovalEventThread,
-	CharaList,
+	BeingList,
 	GMCommands,
 	LuaTypes,
 	MapList,
@@ -79,7 +79,7 @@ type
 
 		MapList       : TMapList;
 		InstanceMapList  : TMapList;
-		CharacterList : TCharacterList;
+		CharacterList : TBeingList;
 		NPCList       : TIntList32;
 		InstanceCache  : TStringList;
 
@@ -150,7 +150,7 @@ begin
 
 	MapList := TMapList.Create(TRUE);
 	InstanceMapList := TMapList.Create(TRUE);
-	CharacterList := TCharacterList.Create(TRUE);
+	CharacterList := TBeingList.Create(TRUE);
 	NPCList := TIntList32.Create;
 	InstanceCache  := TStringList.Create;
 

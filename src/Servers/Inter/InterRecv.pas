@@ -114,7 +114,7 @@ uses
 	ZoneInterCommunication,
 	InterSend,
 	GameConstants,
-	CharaList,
+	BeingList,
 	MailBox
 	{3rd Party}
 	//none
@@ -638,7 +638,7 @@ var
 	AID		: LongWord;
 	CID		: LongWord;
 	Offline		: Byte;
-	FriendList	: TCharacterList;
+	FriendList	: TBeingList;
 	ACharacter		: TCharacter;
 	Index		: Byte;
 	ZoneID		: Integer;
@@ -654,7 +654,7 @@ begin
 
 	with TZoneServerLink(AClient.Data).DatabaseLink.Friend do
 	begin
-		FriendList := TCharacterList.Create(TRUE);
+		FriendList := TBeingList.Create(TRUE);
 		LoadList(FriendList, ACharacter);
 	end;
 	ACharacter.Free;
@@ -666,7 +666,7 @@ begin
 		begin
 			for Index := 0 to FriendList.Count - 1 do
 			begin
-				ACharacter := FriendList.Items[Index];
+				ACharacter := FriendList.Items[Index] as TCharacter;
 
 				// OK, we got all chars.
 				// let's SPAM 'EM

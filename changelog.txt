@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 659 -
+[2008/12/17] Aeomin - For some reason.. SVN only commited changelog...
+-
+
 - Rev 658 -
 [2008/12/17] Aeomin - Changed TCharaList to TBeingList,
                       so we can put in great use later on...

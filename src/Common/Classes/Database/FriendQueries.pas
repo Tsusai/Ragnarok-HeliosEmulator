@@ -23,7 +23,7 @@ uses
 	{Project}
 	Character,
 	QueryBase,
-	CharaList,
+	BeingList,
 	{3rd Party}
 	ZSqlUpdate
 	;
@@ -41,7 +41,7 @@ type
 
 	public
 		procedure  LoadList(
-			const ACharacterList	: TCharacterList;
+			const ACharacterList	: TBeingList;
 			const ACharacter			: TCharacter
 		);
 
@@ -88,7 +88,7 @@ uses
 //
 //------------------------------------------------------------------------------
 procedure TFriendQueries.LoadList(
-	const ACharacterList : TCharacterList;
+	const ACharacterList : TBeingList;
 	const ACharacter : TCharacter
 );
 

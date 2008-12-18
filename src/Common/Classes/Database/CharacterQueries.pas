@@ -24,7 +24,7 @@ uses
 	Account,
 	Character,
 	QueryBase,
-	CharaList,
+	BeingList,
 	{3rd Party}
 	ZSqlUpdate
 	;
@@ -54,7 +54,7 @@ type
 		) : String;
 
 		Procedure LoadByAccount(
-			const ACharacterList		: TCharacterList;
+			const ACharacterList		: TBeingList;
 			const AnAccount					: TAccount
 		);
 
@@ -307,7 +307,7 @@ end;//GetName
 //
 //------------------------------------------------------------------------------
 Procedure TCharacterQueries.LoadByAccount(
-	const ACharacterList		: TCharacterList;
+	const ACharacterList		: TBeingList;
 	const AnAccount					: TAccount
 );
 const
