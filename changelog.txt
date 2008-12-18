@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 658 -
+[2008/12/17] Aeomin - Changed TCharaList to TBeingList,
+                      so we can put in great use later on...
+-
+
 - Rev 657 -
 [2008/12/14] Aeomin - Mob implementation Part II.
 [2008/12/14] Aeomin - This is an attempt of MobAI.
