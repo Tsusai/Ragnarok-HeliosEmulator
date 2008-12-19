@@ -207,8 +207,11 @@ uses
 			end;
 
 		except
-			Console.Message('Connection to '+fClient.DestinationName+' Server lost.', fClient.SourceName + ' Server', MS_ALERT);
-			fClient.Reconnect;
+			if NOT fClient.ShutDown then
+			begin
+				Console.Message('Connection to '+fClient.DestinationName+' Server lost.', fClient.SourceName + ' Server', MS_ALERT);
+				fClient.Reconnect;
+			end;
 		end;
 
 	end;{Run}
@@ -452,7 +455,7 @@ procedure TInterClient.Reconnect(
 );
 begin
 
-	if not ShutDown then
+	if fActive then
 	begin
 
 		DoReconnectEvent;

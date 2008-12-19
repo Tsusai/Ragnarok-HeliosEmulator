@@ -411,7 +411,7 @@ begin
 		LoadItemCommands(ItemLua);
 		//Run the Core script
 		LoadAndRunLuaScript(NPCLua, MainProc.Options.ScriptDirectory + LUA_NPC_CORE_FILE);
-		LoadAndRunLuaScript(NPCLua, MainProc.Options.ScriptDirectory + LUA_ITEM_CORE_FILE);
+		LoadAndRunLuaScript(ItemLua, MainProc.Options.ScriptDirectory + LUA_ITEM_CORE_FILE);
 
 		CharacterEventThread.Start;
 		GroundItemEventThread.Start;
