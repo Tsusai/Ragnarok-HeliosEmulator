@@ -30,6 +30,7 @@ type
 
 	Private
 		fList : TObjectList;
+		fOwnsObject : Boolean;
 
 		Function GetValue(Index : Integer) : TBeing;
 		Procedure SetValue(Index : Integer; Value : TBeing);
@@ -67,7 +68,8 @@ implementation
 constructor TBeingList.Create(OwnsBeings : Boolean);
 begin
 	inherited Create;
-	fList := TObjectList.Create(OwnsBeings);
+	fOwnsObject := OwnsBeings;
+	fList := TObjectList.Create(FALSE);
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -82,7 +84,14 @@ end;{Create}
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 destructor TBeingList.Destroy;
+var
+	Index : Integer;
 begin
+	if fOwnsObject AND (fList.Count >0) then
+	begin
+		for Index := fList.Count -1 downto 0 do
+			fList.Items[Index].Free;
+	end;
 	fList.Free;
 	// Call TObject destructor
 	inherited;
@@ -133,6 +142,8 @@ end;{Insert}
 //------------------------------------------------------------------------------
 procedure TBeingList.Delete(Index : Integer);
 begin
+	if fOwnsObject then
+		fList.Items[Index].Free;
 	fList.Delete(Index);
 end;{Delete}
 //------------------------------------------------------------------------------
@@ -204,7 +215,14 @@ end;{IndexOfAID}
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure TBeingList.Clear;
+var
+	Index : Integer;
 begin
+	if fOwnsObject AND (fList.Count >0) then
+	begin
+		for Index := fList.Count -1 downto 0 do
+			fList.Items[Index].Free;
+	end;
 	fList.Clear;
 end;{Clear}
 //------------------------------------------------------------------------------

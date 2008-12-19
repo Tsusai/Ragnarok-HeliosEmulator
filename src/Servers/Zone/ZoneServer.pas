@@ -82,9 +82,11 @@ type
 		CharacterList : TBeingList;
 		NPCList       : TIntList32;
 		InstanceCache  : TStringList;
+		MobList       : TBeingList;
 
 		CharacterEventThread : TBeingEventThread;
 		GroundItemEventThread : TGroundItemEventThread;
+		MobEventThread : TBeingEventThread;
 
 		GroundItemList : TThreadList;
 
@@ -153,6 +155,7 @@ begin
 	CharacterList := TBeingList.Create(TRUE);
 	NPCList := TIntList32.Create;
 	InstanceCache  := TStringList.Create;
+	MobList := TBeingList.Create(TRUE);
 
 	ToCharaTCPClient := TInterClient.Create('Zone','Character', true, MainProc.Options.ReconnectDelay);
 	ToInterTCPClient := TInterClient.Create('Zone','Inter', true, MainProc.Options.ReconnectDelay);
@@ -164,6 +167,7 @@ begin
 	ToInterTCPClient.OnReceive   := InterClientRead;
 
 	CharacterEventThread := TBeingEventThread.Create(CharacterList,'CharacterEventThread');
+	MobEventThread := TBeingEventThread.Create(MobList, 'MobEventThread');
 
 	GroundItemList := TThreadList.Create;
 	GroundItemEventThread := TGroundItemEventThread.Create(GroundItemList);
@@ -197,6 +201,7 @@ Begin
 	MapList.Free;
 	InstanceMapList.Free;
 	CharacterList.Free;
+	MobList.Free;
 
 	if InstanceCache.Count > 0 then
 	begin
@@ -224,6 +229,7 @@ Begin
 	//--
 	{[2007/06/02] CR - These are still a it suspect for freeing up their sub-
 	objects properly... }
+	MobEventThread.Free;
 	CharacterEventThread.Free;
 	GroundItemEventThread.Free;
 	GroundItemList.Free;
@@ -409,6 +415,7 @@ begin
 
 		CharacterEventThread.Start;
 		GroundItemEventThread.Start;
+		MobEventThread.Start;
 	end else
 	begin
 		Console.Message('Cannot Start():: Zone Server already running!', 'Zone Server', MS_ALERT);
@@ -444,6 +451,11 @@ begin
 		end;
 		GroundItemEventThread.Terminate;
 		while NOT GroundItemEventThread.Terminated do
+		begin
+			Sleep(1);
+		end;
+		MobEventThread.Terminate;
+		while NOT MobEventThread.Terminated do
 		begin
 			Sleep(1);
 		end;

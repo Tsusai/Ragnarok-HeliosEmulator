@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 661 -
+[2008/12/18] Aeomin - Tweak TMapList & TBeingList for TObjectList NEVER
+                      actually owns object (Borland's fault)
+-
+
 - Rev 660 -
 [2008/12/18] Aeomin - Changed TCharacterEventThread to TBeingEventThread
 -

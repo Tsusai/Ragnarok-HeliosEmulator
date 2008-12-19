@@ -27,6 +27,7 @@ type
 
 	Private
 		fList : TObjectList;
+		fOwnsObject : Boolean;
 
 		Function GetValue(Index : Integer) : TMap;
 		Procedure SetValue(Index : Integer; Value : TMap);
@@ -63,7 +64,8 @@ implementation
 constructor TMapList.Create(OwnsMaps : Boolean);
 begin
 	inherited Create;
-	fList := TObjectList.Create(OwnsMaps);
+	fOwnsObject := OwnsMaps;
+	fList := TObjectList.Create(FALSE);
 end;{Create}
 //------------------------------------------------------------------------------
 
@@ -78,7 +80,14 @@ end;{Create}
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 destructor TMapList.Destroy;
+var
+	Index : Integer;
 begin
+	if fOwnsObject AND (fList.Count >0) then
+	begin
+		for Index := fList.Count -1 downto 0 do
+			fList.Items[Index].Free;
+	end;
 	fList.Free;
 
 	// Call TObject destructor
@@ -130,6 +139,8 @@ end;{Insert}
 //------------------------------------------------------------------------------
 procedure TMapList.Delete(Index : Integer);
 begin
+	if fOwnsObject then
+		fList.Items[Index].Free;
 	fList.Delete(Index);
 end;{Delete}
 //------------------------------------------------------------------------------
@@ -173,7 +184,14 @@ end;{IndexOf}
 //    December 22nd, 2006 - RaX - Created.
 //------------------------------------------------------------------------------
 procedure TMapList.Clear;
+var
+	Index : Integer;
 begin
+	if fOwnsObject AND (fList.Count >0) then
+	begin
+		for Index := fList.Count -1 downto 0 do
+			fList.Items[Index].Free;
+	end;
 	fList.Clear;
 end;{Clear}
 //------------------------------------------------------------------------------
