@@ -55,7 +55,7 @@ begin
 	OldPt := Position;
 	fPosition := Value;
 	//check if we're online before we add/remove ourselves from the map...
-	if ZoneStatus = isOnline then
+	if (NOT(Self is TCharacter)AND Assigned(MapInfo)) OR (ZoneStatus = isOnline) then
 	begin
 		//Position is initialized to -1, -1 on create, so if we're not on the map
 		//yet, don't remove us!

@@ -70,7 +70,6 @@ var
 	ObjectIdx : Integer;
 	AObject : TCharacter;
 begin
-	writeln('LETS FIND CHKN');
 	Beings := TObjectList.Create(FALSE);
 	try
 		for idxY := Max(0,Mob.Position.Y-MainProc.ZoneServer.Options.CharShowArea) to Min(Mob.Position.Y+MainProc.ZoneServer.Options.CharShowArea, Mob.MapInfo.Size.Y-1) do
@@ -133,7 +132,6 @@ var
 		end;
 	end;
 begin
-	writeln('time to strech my butt');
 	Pass := False;
 	for Retry := 1 to 10 do
 	begin
@@ -207,7 +205,6 @@ end;
 
 procedure TMobAI.FinishWalk;
 begin
-	writeln('finished walking');
 	if AIStatus = msWandering then
 	begin
 		AIStatus := msIdle;

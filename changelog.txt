@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 665 -
+[2009/01/01] Aeomin - Happy New Year of 2000 & 9.
+[2009/01/01] Aeomin - Fixed mob randomly disappear for no reason.
+-
+
 - Rev 664 -
 [2008/12/31] Aeomin - Mobs able to walk around now, ENJOY WATCH YOUR PECO!
 -

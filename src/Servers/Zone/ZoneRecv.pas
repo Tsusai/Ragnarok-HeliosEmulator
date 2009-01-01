@@ -1073,11 +1073,14 @@ begin
 	ActionType := BufferReadByte(ReadPts[1], InBuffer);
 	case ActionType of
 
-		0 ://Hit target one time
+		ACTION_ATTACK ://Hit target one time
 			begin
-				AChara.EventList.DeleteAttackEvents;
-				AChara.EventList.DeleteMovementEvents;
-				AChara.CharaState := charaAttacking;
+				if NOT (AChara.CharaState = charaAttacking) then
+				begin
+					AChara.EventList.DeleteAttackEvents;
+					AChara.EventList.DeleteMovementEvents;
+					AChara.CharaState := charaAttacking;
+				end;
 				AChara.Attack(TargetID, FALSE, FALSE);
 			end;
 
