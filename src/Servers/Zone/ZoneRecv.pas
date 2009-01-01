@@ -2193,6 +2193,7 @@ var
 	ACharacter      : TCharacter;
 	OutBuffer       : TBuffer;
 	Position        : Integer;
+	Index           : Integer;
 begin
 	CharacterID 	:= BufferReadLongWord(4, InBuffer);
 	IP						:= BufferReadLongWord(8, InBuffer);
@@ -2201,23 +2202,27 @@ begin
 	Y							:= BufferReadWord(16, InBuffer);
 	MapNameLength := BufferReadWord(18, InBuffer);
 	MapName				:= BufferReadString(20, MapNameLength, InBuffer);
-	ACharacter		:= MainProc.ZoneServer.CharacterList.Items[MainProc.ZoneServer.CharacterList.IndexOf(CharacterID)] as TCharacter;
-
-	ACharacter.Map := MapName;
-	ACharacter.Position := Point(X,Y);
-	Position := Pos('#',MapName);
-	if Position >0 then
+	Index := MainProc.ZoneServer.CharacterList.IndexOf(CharacterID);
+	if Index > -1 then
 	begin
-		//Remove it! gotta tell lie!
-		Delete(MapName,1, Position);
+		ACharacter		:= MainProc.ZoneServer.CharacterList.Items[Index] as TCharacter;
+
+		ACharacter.Map := MapName;
+		ACharacter.Position := Point(X,Y);
+		Position := Pos('#',MapName);
+		if Position >0 then
+		begin
+			//Remove it! gotta tell lie!
+			Delete(MapName,1, Position);
+		end;
+		WriteBufferWord(0, $0092, OutBuffer);
+		WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
+		WriteBufferWord(18, X, OutBuffer);
+		WriteBufferWord(20, Y, OutBuffer);
+		WriteBufferLongWord(22, IP, OutBuffer);
+		WriteBufferWord(26, Port, Outbuffer);
+		SendBuffer(ACharacter.ClientInfo, OutBuffer, 28);
 	end;
-	WriteBufferWord(0, $0092, OutBuffer);
-	WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
-	WriteBufferWord(18, X, OutBuffer);
-	WriteBufferWord(20, Y, OutBuffer);
-	WriteBufferLongWord(22, IP, OutBuffer);
-	WriteBufferWord(26, Port, Outbuffer);
-	SendBuffer(ACharacter.ClientInfo, OutBuffer, 28);
 end;{RecvWarpRequestReplyFromInter}
 //------------------------------------------------------------------------------
 

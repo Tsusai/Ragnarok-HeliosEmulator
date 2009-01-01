@@ -1351,6 +1351,15 @@ end;{GMCreateInstance}
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//GMSpawn                                                              PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Spawn a mob?
+//
+//	Changes-
+//		[2008/12/?] Aeomin - Create.
+//------------------------------------------------------------------------------
 procedure GMSpawn(const Arguments : array of String;const FromChar:TCharacter;const TargetChar: TCharacter;const Error : TStringList);
 var
 	AMob : TMob;

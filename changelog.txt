@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 663 -
+[2008/12/31] Aeomin - Some work on MobAI, and no, still few hundred miles before complete.
+-
+
 - Rev 662 -
 [2008/12/18] Aeomin - Fixed a typo that loads item script into NPCLua
 -

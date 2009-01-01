@@ -163,6 +163,7 @@ compile for linux, at the same time*}
 	AddFriendEvent in 'Common\Classes\Events\AddFriendEvent.pas',
 	AttackEvent in 'Common\Classes\Events\AttackEvent.pas',
 	GroundItemRemovalEventThread in 'Common\Classes\Events\GroundItemRemovalEventThread.pas',
+	MobMovementEvent in 'Common\Classes\Events\MobMovementEvent.pas',
 
 	//Database
 	Database in 'Common\Classes\Database\Database.pas',
@@ -306,6 +307,7 @@ compile for linux, at the same time*}
 	AddFriendEvent in 'Common/Classes/Events/AddFriendEvent.pas',
 	AttackEvent in 'Common/Classes/Events/AttackEvent.pas',
 	GroundItemRemovalEventThread in 'Common/Classes/Events/GroundItemRemovalEventThread.pas',
+	MobMovementEvent in 'Common/Classes/Events/MobMovementEvent.pas',
 
 	//Database
 	Database in 'Common/Classes/Database/Database.pas',

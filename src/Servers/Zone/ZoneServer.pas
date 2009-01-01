@@ -155,7 +155,7 @@ begin
 	CharacterList := TBeingList.Create(TRUE);
 	NPCList := TIntList32.Create;
 	InstanceCache  := TStringList.Create;
-	MobList := TBeingList.Create(TRUE);
+	MobList := TBeingList.Create(FALSE);
 
 	ToCharaTCPClient := TInterClient.Create('Zone','Character', true, MainProc.Options.ReconnectDelay);
 	ToInterTCPClient := TInterClient.Create('Zone','Inter', true, MainProc.Options.ReconnectDelay);
@@ -201,6 +201,7 @@ Begin
 	MapList.Free;
 	InstanceMapList.Free;
 	CharacterList.Free;
+	MobEventThread.Free;
 	MobList.Free;
 
 	if InstanceCache.Count > 0 then
@@ -229,7 +230,6 @@ Begin
 	//--
 	{[2007/06/02] CR - These are still a it suspect for freeing up their sub-
 	objects properly... }
-	MobEventThread.Free;
 	CharacterEventThread.Free;
 	GroundItemEventThread.Free;
 	GroundItemList.Free;

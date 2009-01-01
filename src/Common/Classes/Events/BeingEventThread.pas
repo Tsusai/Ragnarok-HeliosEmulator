@@ -124,22 +124,26 @@ begin
 		if BeingIndex < BeingList.Count then
 		begin
 			if (BeingList[BeingIndex] is TCharacter) AND NOT(BeingList[BeingIndex].ZoneStatus = isOnline) then
-
+				Continue;
 			CriticalSection.Enter;
+
 			AnEventList := BeingList[BeingIndex].EventList.LockList;
 			try
 				//Loop through each character's eventlist.
-				for EventIndex := (AnEventList.Count - 1) downto 0 do
+				if AnEventList.Count > 0 then
 				begin
-					AnEvent := AnEventList[EventIndex];
-					//Check to see if the event needs to be fired.
-					if CurrentTime >= AnEvent.ExpiryTime then
+					for EventIndex := (AnEventList.Count - 1) downto 0 do
 					begin
-						//If it does, execute the event, then delete it from the list.
-						//(The list "owns" the events, so this does not leak)   {not right now though}
-						AnEventList.Delete(EventIndex);
-						AnEvent.Execute;
-						AnEvent.Free;
+						AnEvent := AnEventList[EventIndex];
+						//Check to see if the event needs to be fired.
+						if CurrentTime >= AnEvent.ExpiryTime then
+						begin
+							//If it does, execute the event, then delete it from the list.
+							//(The list "owns" the events, so this does not leak)   {not right now though}
+							AnEventList.Delete(EventIndex);
+							AnEvent.Execute;
+							AnEvent.Free;
+						end;
 					end;
 				end;
 			finally

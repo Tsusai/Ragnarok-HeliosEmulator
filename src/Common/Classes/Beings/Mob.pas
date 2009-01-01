@@ -39,6 +39,7 @@ type
 implementation
 
 uses
+	Main,
 	MobAI,
 	AreaLoopEvents
 	;
@@ -65,16 +66,18 @@ end;
 //------------------------------------------------------------------------------
 procedure TMob.Initiate;
 begin
-	MapInfo.MobList.Add(Self);
 	MapInfo.Cell[Position.X, Position.Y].Beings.AddObject(ID,Self);
+	MainProc.ZoneServer.MobList.Add(Self);
+	MapInfo.MobList.Add(Self);
 	AreaLoop(SpawnMob);
 	{Let's see what we have around here...}
-	AI.Probe;
+	AI.Initiate;
 end;{Initiate}
 //------------------------------------------------------------------------------
 
 constructor TMob.Create;
 begin
+	inherited;
 	AI := TMobAI.Create(Self);
 end;
 destructor TMob.Destroy;
