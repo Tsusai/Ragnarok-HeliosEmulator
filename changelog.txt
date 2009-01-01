@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 664 -
+[2008/12/31] Aeomin - Mobs able to walk around now, ENJOY WATCH YOUR PECO!
+-
+
 - Rev 663 -
 [2008/12/31] Aeomin - Some work on MobAI, and no, still few hundred miles before complete.
 -

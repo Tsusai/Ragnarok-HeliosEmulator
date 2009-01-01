@@ -35,6 +35,8 @@ type
 		procedure ObjectNear(const AnObj:TGameObject); override;
 		procedure RandomWalk;
 		procedure WalkTo(const APoint : TPoint);
+		function GetIdleTicket:Word;
+		procedure FinishWalk;override;
 		constructor Create(const AMob : TMob);
 	end;
 
@@ -46,6 +48,8 @@ uses
 	Main,
 	Character,
 	ItemInstance,
+	Event,
+	MovementEvent,
 	MobMovementEvent,
 	WinLinux,
 	GameConstants
@@ -117,16 +121,46 @@ end;
 procedure TMobAI.RandomWalk;
 var
 	APoint : TPoint;
+	Retry:Byte;
+	Pass : Boolean;
+	MoveEvent : TRootEvent;
+	function RandomPoint:TPoint;
+	begin
+		with MainProc.ZoneServer.Options do
+		begin
+			Result.X := Mob.Position.X + (Random($FFFF) mod (CharShowArea*2) - CharShowArea);
+			Result.Y := Mob.Position.Y + (Random($FFFF) mod (CharShowArea*2) - CharShowArea);
+		end;
+	end;
 begin
 	writeln('time to strech my butt');
-	APoint.X := Mob.Position.X +3;
-	APoint.Y := Mob.Position.Y +3;
-	WalkTo(APoint);
+	Pass := False;
+	for Retry := 1 to 10 do
+	begin
+		APoint := RandomPoint;
+		if Mob.MapInfo.PointInRange(APoint) AND
+		NOT Mob.MapInfo.IsBlocked(APoint) then
+		begin
+			Pass := True;
+			Break;
+		end;
+	end;
+	if Pass then
+		WalkTo(APoint)
+	else
+	begin
+		//Still..heh
+		MoveEvent := TMobMovementEvent.Create(
+							GetTick + GetIdleTicket,
+							Mob
+						);
+		Mob.EventList.Add(MoveEvent);
+	end;
 end;
 
 procedure TMobAI.WalkTo(const APoint : TPoint);
 var
-	MoveEvent : TMobMovementEvent;
+	MoveEvent : TRootEvent;
 	Speed     : LongWord;
 begin
 	if Mob.GetPath(Mob.Position, APoint, Mob.Path) then
@@ -136,19 +170,47 @@ begin
 
 		Mob.PathIndex := 0;
 
-		if (Mob.Direction in Diagonals) then
+		if AIStatus = msIdle then
 		begin
-			Speed := Mob.Speed * 3 DIV 2;
+			//Gotta delay !
+			MoveEvent := TMobMovementEvent.Create(
+								GetTick + GetIdleTicket,
+								Mob
+							);
 		end else
 		begin
-			Speed := Mob.Speed;
+			if (Mob.Direction in Diagonals) then
+			begin
+				Speed := Mob.Speed * 3 DIV 2;
+			end else
+			begin
+				Speed := Mob.Speed;
+			end;
+
+			Mob.MoveTick := GetTick + Speed DIV 2;
+			MoveEvent := TMovementEvent.Create(Mob.MoveTick,Mob);
 		end;
-
-		Mob.MoveTick := GetTick + Speed DIV 2;
-
-		MoveEvent := TMobMovementEvent.Create(Mob.MoveTick,Mob);
 		Mob.EventList.Add(MoveEvent);
-		Mob.ShowBeingWalking;
+	end;
+end;
+
+function TMobAI.GetIdleTicket:Word;
+begin
+	Result := 1000;
+	case fAIStatus of
+		msIdle: Result := (Random($FFFFFF) mod 5000)+1000;
+//		msWandering: ;
+//		msChasing: ;
+//		msAttacking: ;
+	end;
+end;
+
+procedure TMobAI.FinishWalk;
+begin
+	writeln('finished walking');
+	if AIStatus = msWandering then
+	begin
+		AIStatus := msIdle;
 	end;
 end;
 

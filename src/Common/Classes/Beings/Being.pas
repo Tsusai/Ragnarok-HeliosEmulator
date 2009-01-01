@@ -624,13 +624,18 @@ Begin
 	begin
 		PathIndex := 0;
 
-		if Self IS TCharacter then
+
+		if Self is TCharacter then
 		begin
 			TCharacter(Self).CharaState := charaStanding;
+		end else
+		if Self is TMob then
+		begin
+			TMob(Self).AI.FinishWalk;
 		end;
 
-  end;
-End; (* Proc TBeing.Walk
+	end;
+end; (* Proc TBeing.Walk
 *-----------------------------------------------------------------------------*)
 
 

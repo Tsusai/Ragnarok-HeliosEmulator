@@ -17,6 +17,7 @@ type
 		procedure Probe; virtual;abstract;
 		procedure FoundObject(const AnObj:TGameObject);virtual;abstract;
 		procedure ObjectNear(const AnObj:TGameObject);virtual;abstract;
+		procedure FinishWalk;virtual;abstract;
 	end;
 
 implementation
