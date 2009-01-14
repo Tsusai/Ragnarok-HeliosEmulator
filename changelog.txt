@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 666 -
+[2009/01/13] Aeomin - Updated sqlite DB.
+-
+
 - Rev 665 -
 [2009/01/01] Aeomin - Happy New Year of 2000 & 9.
 [2009/01/01] Aeomin - Fixed mob randomly disappear for no reason.
