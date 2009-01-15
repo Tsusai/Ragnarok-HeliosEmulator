@@ -618,7 +618,6 @@ Begin
 		MoveTick := MoveTick + spd;
 
 		AMoveEvent := TMovementEvent.Create(MoveTick, Self);
-		AMoveEvent.ExpiryTime := MoveTick;
 		Self.EventList.Add(AMoveEvent);
 	end else
 	begin
@@ -782,11 +781,12 @@ var
 	ABeing						: TBeing;
 	ATarget						: TBeing;
 	Pass							: Boolean;
-	AMoveDelay				: LongWord;
+//	AMoveDelay				: LongWord;
 	AnAttackDelay			: LongWord;
 	CriticalSection		: TCriticalSection;
 	Found							: Boolean;
 	Parameters				: TParameterList;
+	spd       : LongWord;
 
 begin
 	Found := false;
@@ -802,17 +802,13 @@ begin
 			begin
 				//We check to see if the character is either dead or playing dead, to see if
 				//they are able to be targetted.
-				if (TCharacter(ATarget).CharaState = charaDead) OR
-					 (TCharacter(ATarget).CharaState = charaPlayDead)then
-				begin
-					Pass := FALSE;
-				end;
+				Pass := NOT (TCharacter(ATarget).CharaState in [charaDead, charaPlayDead]);
 			end;
 
 			//Clear movement events, we cannot move and attack at the same time.
 			EventList.DeleteMovementEvents;
 
-			if Pass = true then
+			if Pass then
 			begin
 				//Call calculate damage routine and apply damage here.
 				
@@ -827,7 +823,7 @@ begin
 				AreaLoop(ShowAttack, false, Parameters);//show the attack
 				Parameters.Free;
 
-			//if we're continually attacking then add a new attack event to replace this one
+				//if we're continually attacking then add a new attack event to replace this one
 				if AttackContinuous = true then
 				begin
 					EventList.Add(
@@ -860,30 +856,40 @@ begin
 									TargetID := ATargetID;
 									ATarget := ABeing;
 									PathIndex := 0;
-									if GetPath(Position, ABeing.Position, Path) = true then
+									writeln('[1]',Position.X,' ',Position.Y);
+									writeln('[2]',ABeing.Position.X,' ',ABeing.Position.Y);
+									if GetPath(Position, ABeing.Position, Path) then
 									begin
 										//We've gotta figure out a way to do this without having
 										//being-conditional code in tbeing.
 										if self IS TCharacter then
 										begin
+											writeln('[3]',Path[Path.Count-1].X,' ',Path[Path.Count-1].Y);
 											ZoneSendWalkReply(TCharacter(self), Path[Path.Count-1]);
 										end;
 
 										ShowBeingWalking;
 
+										if (Direction in Diagonals) then
+										begin
+											spd := Speed * 3 DIV 2;
+										end else
+										begin
+											spd := Speed;
+										end;
 
 										//If we just attacked, add events with a bit more delay
 										if (JustAttacked) then
 										begin
-											AMoveDelay := GetTick + AttackDelay + Speed;
+											MoveTick := GetTick + AttackDelay + (spd DIV 2);
 											AnAttackDelay := GetTick + AttackDelay + Speed * Word(Max(Path.Count,0));
 										end else
 										begin
-											AMoveDelay := GetTick + Speed;
+											MoveTick := GetTick + (spd DIV 2);
 											AnAttackDelay := GetTick + Speed * Word(Max(Path.Count,0));
 										end;
 										EventList.Add(
-											TMovementEvent.Create(AMoveDelay, self)
+											TMovementEvent.Create(MoveTick, self)
 										);
 
 										EventList.Add(
@@ -903,9 +909,9 @@ begin
 					break;
 			end;
 		end;
-  finally
+	finally
 		CriticalSection.Free;
-  end;
+	end;
 end;
 //------------------------------------------------------------------------------
 

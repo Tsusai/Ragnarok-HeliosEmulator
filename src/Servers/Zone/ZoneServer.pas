@@ -78,7 +78,6 @@ type
 		Options       : TZoneOptions;
 
 		MapList       : TMapList;
-		InstanceMapList  : TMapList;
 		CharacterList : TBeingList;
 		NPCList       : TIntList32;
 		InstanceCache  : TStringList;
@@ -151,7 +150,6 @@ begin
 	Commands := TGMCommands.Create;
 
 	MapList := TMapList.Create(TRUE);
-	InstanceMapList := TMapList.Create(TRUE);
 	CharacterList := TBeingList.Create(TRUE);
 	NPCList := TIntList32.Create;
 	InstanceCache  := TStringList.Create;
@@ -199,7 +197,6 @@ Var
 Begin
 	{[2007/06/02] CR - MapList and CharacterList are both self-cleaning. }
 	MapList.Free;
-	InstanceMapList.Free;
 	CharacterList.Free;
 	MobEventThread.Free;
 	MobList.Free;

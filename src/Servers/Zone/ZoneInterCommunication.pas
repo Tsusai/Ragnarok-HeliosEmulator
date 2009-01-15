@@ -192,7 +192,9 @@ uses
 	PacketTypes,
 	TCPServerRoutines,
 	GameConstants,
-	SysUtils;
+	SysUtils,
+	InstanceMap
+	;
 
 //------------------------------------------------------------------------------
 //ValidateWithInterServer                                              PROCEDURE
@@ -859,12 +861,15 @@ begin
 	OffSet := 5;
 	with MainProc.ZoneServer do
 	begin
-		if InstanceMapList.Count > 0 then
+		if MapList.Count > 0 then
 		begin
-			for Index := 0 to InstanceMapList.Count - 1 do
+			for Index := 0 to MapList.Count - 1 do
 			begin
+				//Skip non instance map
+				if NOT (MapList.Items[Index] is TInstanceMap) then
+					Continue;
 
-				Name  := InstanceMapList.Items[Index].Name;
+				Name  := MapList.Items[Index].Name;
 				StrLen := Length(Name);
 
 				WriteBufferByte(OffSet, StrLen, OutBuffer);
@@ -872,7 +877,7 @@ begin
 				Inc(OffSet,Len+1);
 				Inc(Len,Len+1);
 
-				if (Count > 100) OR (Index = (InstanceMapList.Count - 1)) then
+				if (Count > 100) OR (Index = (MapList.Count - 1)) then
 				begin
 					WriteBufferWord(0, $2229, OutBuffer);
 					WriteBufferWord(2, Len + 5, OutBuffer);

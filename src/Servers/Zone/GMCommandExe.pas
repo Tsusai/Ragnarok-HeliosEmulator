@@ -128,18 +128,15 @@ var
 	Index          : Integer;
 	Map            : TMap;
 	APoint         : TPoint;
-	IsInstance     : Boolean;
 begin
 	if (Length(Arguments) >= 2) then
 	begin
-		IsInstance := False;
 		MapName :=Arguments[0];
 		if Pos('#', MapName) > 0 then
 		begin
-			if MainProc.ZoneServer.InstanceMapList.IndexOf(MapName) > -1 then
+			if MainProc.ZoneServer.MapList.IndexOf(MapName) > -1 then
 			begin
 				MapZoneID := MainProc.ZoneServer.Options.ID;
-				IsInstance := True;
 			end else
 			begin
 				MapZoneID := TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Map.GetZoneID(MapName);
@@ -169,10 +166,7 @@ begin
 			if LongWord(MapZoneID) = MainProc.ZoneServer.Options.ID then
 			begin
 				//The map is at same zone, so lets find the index id
-				if IsInstance then
-					Index := MainProc.ZoneServer.InstanceMapList.IndexOf(MapName)
-				else
-					Index := MainProc.ZoneServer.MapList.IndexOf(MapName);
+				Index := MainProc.ZoneServer.MapList.IndexOf(MapName);
 
 				if Index < 0 then
 				begin
@@ -181,10 +175,7 @@ begin
 				end else
 				begin
 					//So, found it!
-					if IsInstance then
-						Map := MainProc.ZoneServer.InstanceMapList.Items[Index]
-					else
-						Map := MainProc.ZoneServer.MapList.Items[Index];
+					Map := MainProc.ZoneServer.MapList.Items[Index];
 
 					if Map.SafeLoad then
 					begin

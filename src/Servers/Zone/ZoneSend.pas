@@ -1274,66 +1274,65 @@ var
 
 begin
 	IsInstance := False;
-		if Pos('#', MapName) > 0 then
+	if Pos('#', MapName) > 0 then
+	begin
+		if MainProc.ZoneServer.MapList.IndexOf(MapName) > -1 then
 		begin
-			if MainProc.ZoneServer.InstanceMapList.IndexOf(MapName) > -1 then
-			begin
-				MapZoneID := MainProc.ZoneServer.Options.ID;
-				IsInstance := True;
-			end else
-			begin
-				MapZoneID := TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.Map.GetZoneID(MapName);
-			end;
+			MapZoneID := MainProc.ZoneServer.Options.ID;
+			IsInstance := True;
 		end else
 		begin
 			MapZoneID := TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.Map.GetZoneID(MapName);
 		end;
-		if MapZoneID < 0 then
+	end else
+	begin
+		MapZoneID := TThreadLink(ACharacter.ClientInfo.Data).DatabaseLink.Map.GetZoneID(MapName);
+	end;
+	if MapZoneID < 0 then
+	begin
+		Result := False;
+	end else
+	begin
+		ACharacter.EventList.DeleteMovementEvents;
+
+		if Cardinal(MapZoneID) = MainProc.ZoneServer.Options.ID then
 		begin
-			Result := False;
+			ACharacter.RemoveFromMap;
+			ACharacter.ShowTeleportOut;
+			ACharacter.ZoneStatus := isOffline;
+			ACharacter.Map := MapName;
+			ACharacter.Position := Point(X,Y);
+			WriteBufferWord(0, $0091, OutBuffer);
+			if IsInstance then
+				Delete(MapName,1, Pos('#', MapName));
+			WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
+			WriteBufferWord(18, X, OutBuffer);
+			WriteBufferWord(20, Y, OutBuffer);
+			SendBuffer(ACharacter.ClientInfo, OutBuffer, 22);
 		end else
 		begin
-
-			ACharacter.EventList.DeleteMovementEvents;
-
-			if Cardinal(MapZoneID) = MainProc.ZoneServer.Options.ID then
-			begin
-				ACharacter.RemoveFromMap;
-				ACharacter.ShowTeleportOut;
-				ACharacter.ZoneStatus := isOffline;
-				ACharacter.Map := MapName;
-				ACharacter.Position := Point(X,Y);
-				WriteBufferWord(0, $0091, OutBuffer);
-				if IsInstance then
-					Delete(MapName,1, Pos('#', MapName));
-				WriteBufferString(2, MapName+'.rsw', 16, OutBuffer);
-				WriteBufferWord(18, X, OutBuffer);
-				WriteBufferWord(20, Y, OutBuffer);
-				SendBuffer(ACharacter.ClientInfo, OutBuffer, 22);
-			end else
-			begin
-				MapNameSize := Length(MapName);
-				ClientIPSize := Length(ACharacter.ClientInfo.Binding.PeerIP);
-				Size := ClientIPSize + MapNameSize + 16;
-				//<id>,<size>,<cid>,<mapnamesize>,<mapname>,<clientipsize>,<clientip>
-				WriteBufferWord(0, $2208, OutBuffer);
-				WriteBufferWord(2, Size, OutBuffer);
-				WriteBufferLongWord(4, ACharacter.ID, OutBuffer);
-				WriteBufferWord(8, X, OutBuffer);
-				WriteBufferWord(10, Y, OutBuffer);
-				WriteBufferWord(12, MapNameSize, OutBuffer);
-				WriteBufferString(14, MapName, Length(MapName), OutBuffer);
-				WriteBufferWord(14+MapNameSize, ClientIPSize, OutBuffer);
-				WriteBufferString(
-					16+MapNameSize,
-				ACharacter.ClientInfo.Binding.PeerIP,
-				Length(ACharacter.ClientInfo.Binding.PeerIP),
-					OutBuffer
-					);
-				SendBuffer(MainProc.ZoneServer.ToInterTCPClient,OutBuffer,Size);
-			end;
-			Result := True;
+			MapNameSize := Length(MapName);
+			ClientIPSize := Length(ACharacter.ClientInfo.Binding.PeerIP);
+			Size := ClientIPSize + MapNameSize + 16;
+			//<id>,<size>,<cid>,<mapnamesize>,<mapname>,<clientipsize>,<clientip>
+			WriteBufferWord(0, $2208, OutBuffer);
+			WriteBufferWord(2, Size, OutBuffer);
+			WriteBufferLongWord(4, ACharacter.ID, OutBuffer);
+			WriteBufferWord(8, X, OutBuffer);
+			WriteBufferWord(10, Y, OutBuffer);
+			WriteBufferWord(12, MapNameSize, OutBuffer);
+			WriteBufferString(14, MapName, Length(MapName), OutBuffer);
+			WriteBufferWord(14+MapNameSize, ClientIPSize, OutBuffer);
+			WriteBufferString(
+				16+MapNameSize,
+			ACharacter.ClientInfo.Binding.PeerIP,
+			Length(ACharacter.ClientInfo.Binding.PeerIP),
+				OutBuffer
+				);
+			SendBuffer(MainProc.ZoneServer.ToInterTCPClient,OutBuffer,Size);
 		end;
+		Result := True;
+	end;
 end;{ZoneSendWarp}
 //------------------------------------------------------------------------------
 

@@ -644,11 +644,11 @@ var
 	end;
 	function LoadInstanceMap:Boolean;
 	begin
-		MapIndex := MainProc.ZoneServer.InstanceMapList.IndexOf(AChara.Map);
+		MapIndex := MainProc.ZoneServer.MapList.IndexOf(AChara.Map);
 		Result := MapIndex > -1;
 		if Result then
 		begin
-			AChara.MapInfo := MainProc.ZoneServer.InstanceMapList.Items[MapIndex];
+			AChara.MapInfo := MainProc.ZoneServer.MapList.Items[MapIndex];
 		end;
 	end;
 begin
@@ -1075,10 +1075,10 @@ begin
 
 		ACTION_ATTACK ://Hit target one time
 			begin
+				AChara.EventList.DeleteAttackEvents;
+				AChara.EventList.DeleteMovementEvents;
 				if NOT (AChara.CharaState = charaAttacking) then
 				begin
-					AChara.EventList.DeleteAttackEvents;
-					AChara.EventList.DeleteMovementEvents;
 					AChara.CharaState := charaAttacking;
 				end;
 				AChara.Attack(TargetID, FALSE, FALSE);
@@ -1095,11 +1095,14 @@ begin
 				AChara.CharaState := charaStanding;
 			end;
 
-		7 : //Hit target continuously
+		ACTION_CONTINUE_ATTACK : //Hit target continuously
 			begin
 				AChara.EventList.DeleteAttackEvents;
 				AChara.EventList.DeleteMovementEvents;
-				AChara.CharaState := charaAttacking;
+				if NOT (AChara.CharaState = charaAttacking) then
+				begin
+					AChara.CharaState := charaAttacking;
+				end;
 				AChara.Attack(TargetID, TRUE, FALSE);
 			end;
 	end;
@@ -1156,7 +1159,6 @@ var
 	MoveEvent : TMovementEvent;
 	DestPoint : TPoint;
 	spd       : LongWord;
-
 begin
 	DestPoint := BufferReadOnePoint(ReadPts[0], InBuffer);
 	if (AChara.ScriptStatus = SCRIPT_NOTRUNNING) and
@@ -2893,7 +2895,7 @@ begin
 
 	AMap := TInstanceMap.Create;
 	AMap.Load(Identifier,MapName);
-	MainProc.ZoneServer.InstanceMapList.Add(AMap);
+	MainProc.ZoneServer.MapList.Add(AMap);
 
 	ZoneSendCreatedInstance(
 		MainProc.ZoneServer.ToInterTCPClient,
