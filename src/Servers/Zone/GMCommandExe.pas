@@ -1359,13 +1359,17 @@ begin
 	begin
 		AMob := TMob.Create;
 		AMob.JID := StrToIntDef(Arguments[0],0);
-		AMob.Name := 'KFC Rejected';
+		AMob.Name := '';
 		AMob.SpriteName := Arguments[0];
 		AMob.Position:=TargetChar.Position;
 		AMob.ID:= TargetChar.MapInfo.NewObjectID;
-		TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Mob.Load(AMob);
 		AMob.MapInfo := TargetChar.MapInfo;
-		AMob.Initiate;
+		if NOT TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Mob.Load(AMob) then
+		begin
+			AMob.Free;
+			Error.Add('Monster can not be found');
+		end else
+			AMob.Initiate;
 	end else
 	begin
 		Error.Add('Syntax Help:');

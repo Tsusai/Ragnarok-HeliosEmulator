@@ -23,9 +23,9 @@ type
 	protected
 
 	public
-		procedure Load(
+		function Load(
 			const AnMob : TMob
-		);
+		):Boolean;
 	end;
 
 implementation
@@ -45,9 +45,9 @@ uses
 //		[03/24/2008] Aeomin - Forged.
 //
 //------------------------------------------------------------------------------
-procedure TMobQueries.Load(
+function TMobQueries.Load(
 	const AnMob : TMob
-);
+):Boolean;
 const
 	AQuery =  //Changed Query Code slightly to conform with sql. [Spre]
 		'SELECT `id`, `sprite_name`, `name`, `range` , `LV`, `HP`, `SP`, `str`, `int`, `vit`, `dex`, `agi`, `luk`, '+
@@ -59,7 +59,7 @@ var
 	AParam		: TParam;
 	WhereClause	: String;
 begin
-
+	Result := False;
 	if AnMob.JID > 0 then
 	begin
 		WhereClause := ' WHERE id=:ID;';
@@ -120,6 +120,7 @@ begin
 				TamingItem       := ADataSet.Fields[27].AsInteger;
 				FoodItem         := ADataSet.Fields[28].AsInteger;
 			end;
+			Result := True;
 		end;
 	finally
 		ADataSet.Free;

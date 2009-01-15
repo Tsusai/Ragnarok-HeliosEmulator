@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 668 -
+[2009/01/14] Aeomin - Plants no longer moves (not working? sorry, you need fix your DB).
+[2009/01/14] Aeomin - Summon no longer show "KFC Rejected" when mob not found - -
+-
+
 - Rev 667 -
 [2009/01/14] Aeomin - Merged InstanceList to MapList.
 [2009/01/14] Aeomin - Although sharing same list seems to be funky, but it will

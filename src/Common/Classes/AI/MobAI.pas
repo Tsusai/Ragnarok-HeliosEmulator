@@ -216,9 +216,10 @@ begin
 	fAIStatus := AValue;
 	case fAIStatus of
 		msIdle:
-			begin
+		begin
+			if NOT Boolean(Mob.Race AND MOBRACE_PLANT) then
 				RandomWalk;
-			end;
+		end;
 		msWandering: ;
 		msChasing: ;
 		msAttacking: ;
