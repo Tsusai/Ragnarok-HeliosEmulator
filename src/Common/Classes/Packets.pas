@@ -515,8 +515,8 @@ Begin
 					ExecCommand := NPCNext;
 				end else if Command = 'statusup' then begin
 					ExecCommand := StatUP;
-				{end else if Command = 'emotion' then begin
-					ExecCommand := EmotionCheck;}
+				end else if Command = 'emotion' then begin
+					ExecCommand := EmotionCheck;
 				end else if Command = 'howmanyconnections' then begin
 					ExecCommand := SlashWho;
 				{end else if Command = 'npcbuysellselected' then begin

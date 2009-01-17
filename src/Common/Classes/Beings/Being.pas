@@ -344,7 +344,10 @@ Var
 	OnTouchCellFound : boolean;
 	OnTouchCell : TOnTouchCellEvent;
 
+	CriticalSection : TCriticalSection;
+
 	ParameterList : TParameterList;
+
 
 	(*. local function ...................*
 	Gets our new direction
@@ -426,7 +429,10 @@ Var
 							end else  //Npc/Mob/Pet/Homunculus/Mercenary
 							begin
 								{Todo: events for NPC}
-								ZoneDisappearBeing(ABeing,TCharacter(Self).ClientInfo);
+								if NOT (ABeing.BeingState = BeingWalking) then
+								begin
+									ZoneDisappearBeing(ABeing,TCharacter(Self).ClientInfo);
+								end;
 							end;
 						end else
 						begin
@@ -483,10 +489,10 @@ Var
 						if Self is TCharacter then
 						begin
 							//If the target TBeing is also a character, they need info on us.
+							ZoneSendBeing(ABeing,TCharacter(Self));
 							if ABeing is TCharacter then
 							begin
 								ZoneSendBeing(Self, TCharacter(ABeing));
-								ZoneSendBeing(ABeing, TCharacter(Self));
 								ZoneWalkingBeing(Self,Position,Path[Path.count-1],TCharacter(ABeing).ClientInfo);
 							end else  //Npc/Mob/Pet/Homunculus/Mercenary packets to the client
 							begin
@@ -495,10 +501,9 @@ Var
 									TMob(ABeing).AI.ObjectNear(Self);
 								end;
 								{Todo: events for NPC}
-								ZoneSendBeing(ABeing,TCharacter(Self));
 								if ABeing.BeingState = BeingWalking then
 								begin
-									ZoneWalkingBeing(ABeing,ABeing.Position,ABeing.Path[Path.count-1],TCharacter(Self).ClientInfo);
+									ZoneWalkingBeing(ABeing,ABeing.Position,ABeing.Path[ABeing.Path.count-1],TCharacter(Self).ClientInfo);
 								end;
 							end;
 						end else
@@ -529,6 +534,8 @@ Var
 	end;
 
 Begin
+	CriticalSection := TCriticalSection.Create;
+	CriticalSection.Enter;
 	if PathIndex < Path.Count then
 	begin
 		//Setup visual radius
@@ -669,6 +676,8 @@ Begin
 		end;
 
 	end;
+	CriticalSection.Leave;
+	CriticalSection.Free;
 end; (* Proc TBeing.Walk
 *-----------------------------------------------------------------------------*)
 
@@ -822,10 +831,10 @@ var
 	Found							: Boolean;
 	Parameters				: TParameterList;
 	spd       : LongWord;
-
 begin
 	Found := false;
 	CriticalSection := TCriticalSection.Create;
+
 	try
 		//Try to find the target if it's in range of us.
 		//Needs range implemented here in place of the 1

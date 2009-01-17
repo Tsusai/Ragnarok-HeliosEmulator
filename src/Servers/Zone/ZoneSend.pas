@@ -107,7 +107,7 @@ uses
 	);
 
 	procedure SendEmotion(
-		const Who:TBeing;
+		const ID:LongWord;
 		AClient : TIdContext;
 		const EmotionID : Byte
 	);
@@ -852,7 +852,7 @@ end;{SendSpecialEffec}
 //		[2007/11/24] Aeomin - Created.
 //------------------------------------------------------------------------------
 procedure SendEmotion(
-	const Who:TBeing;
+	const ID:LongWord;
 	AClient : TIdContext;
 	const EmotionID : Byte
 );
@@ -860,7 +860,7 @@ var
 	OutBuffer : TBuffer;
 begin
 	WriteBufferWord(0, $00c0, OutBuffer);
-	WriteBufferLongWord(2, Who.ID, OutBuffer);
+	WriteBufferLongWord(2, ID, OutBuffer);
 	WriteBufferByte(6, EmotionID, OutBuffer);
 	SendBuffer(AClient, OutBuffer, PacketDB.GetLength($00c0));
 end;{SendEmotion}

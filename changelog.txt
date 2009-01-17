@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 671 -
+[2009/01/11] Aeomin - Added player emotion implementation.
+-
+
 - Rev 670 -
 [2009/01/16] Aeomin - Tweak walk routine to partial fix "mob run" bug.
 [2009/01/16] Aeomin - Changed charaStatus to BeingStatus.

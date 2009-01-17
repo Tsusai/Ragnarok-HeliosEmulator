@@ -285,6 +285,12 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure EmotionCheck(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -366,7 +372,8 @@ uses
 	AddFriendEvent,
 	AreaLoopEvents,
 	Mailbox,
-	InstanceMap
+	InstanceMap,
+	ParameterList
 	{3rd Party}
 	//none
 	;
@@ -2115,6 +2122,35 @@ begin
 	ID    := BufferReadLongWord(ReadPts[2], InBuffer);
 	SkillLevel := BufferReadWord(ReadPts[3], InBuffer);} {Wonder why is word?}
 end;{SaveHotKey}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//EmotionCheck                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Emotion? EMOTION!
+//	Changes -
+//		[2009/01/17] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure EmotionCheck(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	EmotionID : Byte;
+	Parameters : TParameterList;
+begin
+	EmotionID := BufferReadByte(ReadPts[0], InBuffer);
+	if EmotionID <> 34 then
+	begin
+		Parameters := TParameterList.Create;
+		Parameters.AddAsLongWord(1, EmotionID);
+		AChara.AreaLoop(Emotion,False,Parameters);
+		Parameters.Free;
+	end;
+end;{EmotionCheck}
 //------------------------------------------------------------------------------
 
 

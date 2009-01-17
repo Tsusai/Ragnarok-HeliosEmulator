@@ -352,7 +352,7 @@ begin
 	if AObject is TCharacter then
 	begin
 		SendEmotion(
-			TBeing(ACurrentObject),
+			AObjectID,
 			TCharacter(AObject).ClientInfo,
 			EnsureRange(
 				AParameters.GetAsLongWord(1),
