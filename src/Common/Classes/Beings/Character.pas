@@ -68,15 +68,6 @@ TCharaScriptStatus = (
 		SCRIPT_YIELD_INSTANCEREQUEST
 	);
 
-TCharaState = (
-		charaDead,
-		charaPlayDead,
-		charaSitting,
-		charaStanding,
-		charaWalking,
-		charaAttacking
-	);
-
 
 (*= CLASS =====================================================================*
 TCharacter
@@ -149,13 +140,12 @@ protected
 	//Start New info for jobchange [Spre]
 	//fUnEquipAll				: Byte; 	// Unequips all gears [Spre]  Will be written when items are done
 	//fUpdateOption			:	Byte;  //	Removed options from character.
-	fCharaState       : TCharaState;
+
 	//Reset Look to Zero GM Command. [Spre]
 	fResetLook        : Integer;
 	fPermanantBan     : String;
 
 	procedure SetSaveTime(Value : Boolean);
-	procedure SetCharaState(Value : TCharaState);
 	procedure SetCharaNum(Value : Byte);
 
 	Procedure SetName(
@@ -318,7 +308,6 @@ public
 		read  fDataChanged
 		write SetSaveTime;
 
-	property CharaState  : TCharaState read fCharaState write SetCharaState;
  
 	//For timed save procedure to activate.
 	property BaseEXP   : LongWord    read fBaseEXP write SetBaseEXP;
@@ -416,50 +405,6 @@ begin
 		fTimeToSave   := IncMinute(Now,5);
 	end;
 end;{SetSaveTime}
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-//SetCharaState                                                        PROCEDURE
-//------------------------------------------------------------------------------
-//	What it does-
-//			Sets Character State
-// --
-//   Pre:
-//	TODO
-//   Post:
-//	TODO
-// --
-//	Changes -
-//		March 12th, 2007 - Aeomin - Created Header
-//
-//------------------------------------------------------------------------------
-procedure TCharacter.SetCharaState(
-		Value : TCharaState
-	);
-	var
-		OldState : TCharaState;
-begin
-	OldState := fCharaState;
-	fCharaState := Value;
-
-	if ZoneStatus = isOnline then
-	begin
-		if (fCharaState = charaSitting) AND (OldState = charaStanding) then
-		begin
-			AreaLoop(ShowSitStand, FALSE);
-		end else
-		if (fCharaState = charaStanding) AND (OldState = charaSitting) then
-		begin
-			AreaLoop(ShowSitStand, FALSE);
-		end else
-		if (fCharaState = charaDead) then
-		begin
-			AreaLoop(ShowDeath, FALSE);
-		end;
-	end;
-
-end;{SetCharaState}
 //------------------------------------------------------------------------------
 
 
@@ -3024,7 +2969,7 @@ end;{SendFriendList}
 procedure TCharacter.Death;
 begin
 	inherited;
-	CharaState := charaDead;
+	BeingState := BeingDead;
 end;{Death}
 //------------------------------------------------------------------------------
 
@@ -3160,7 +3105,7 @@ begin
 	Equipment := TEquipment.Create(Self);
 	Inventory := TInventory.Create(Self,Equipment);
 	ScriptStatus := SCRIPT_NOTRUNNING;
-	CharaState := charaStanding;
+	BeingState := BeingStanding;
 	ZoneStatus := isOffline;
 	CharaNum := 255;
 	Mails := TMailbox.Create(Self);

@@ -68,6 +68,14 @@ type
 
 StatArray = array [STR..LUK] of Integer;
 
+TBeingState = (
+	BeingDead,
+	BeingPlayDead,
+	BeingSitting,
+	BeingStanding,
+	BeingWalking,
+	BeingAttacking
+);
 
 TBeing = class; //Forward Declaration.
 
@@ -124,6 +132,9 @@ protected
 	fElement	:	Word;
 	AttackDelay				: LongWord;
 
+	fBeingState : TBeingState;
+
+	procedure SetBeingState(Value : TBeingState);
 	procedure SetJID(Value : word); virtual;
 	procedure SetBaseLV(Value : word); virtual;
 	procedure SetJobLV(Value : word); virtual;
@@ -218,6 +229,9 @@ public
 	property Attack_Motion	:	Integer				read fAttack_Motion	write	SetAttack_Motion;
 	property EnemySight	:	Byte				read	fEnemySight	write	SetEnemySight;
 	property Element	:	Word			read	fElement	write	SetElement;
+
+	property BeingState  : TBeingState read fBeingState write SetBeingState;
+
 	Procedure Walk;
 
 	Procedure CalcMaxHP; virtual; abstract;
@@ -414,6 +428,12 @@ Var
 								{Todo: events for NPC}
 								ZoneDisappearBeing(ABeing,TCharacter(Self).ClientInfo);
 							end;
+						end else
+						begin
+							if ABeing is TCharacter then
+							begin
+								ZoneDisappearBeing(Self,   TCharacter(ABeing).ClientInfo);
+							end;
 						end;
 					end;
 				end;
@@ -476,6 +496,17 @@ Var
 								end;
 								{Todo: events for NPC}
 								ZoneSendBeing(ABeing,TCharacter(Self));
+								if ABeing.BeingState = BeingWalking then
+								begin
+									ZoneWalkingBeing(ABeing,ABeing.Position,ABeing.Path[Path.count-1],TCharacter(Self).ClientInfo);
+								end;
+							end;
+						end else
+						begin
+							if ABeing is TCharacter then
+							begin
+								ZoneSendBeing(Self, TCharacter(ABeing));
+								ZoneWalkingBeing(Self,Position,Path[Path.count-1],TCharacter(ABeing).ClientInfo);
 							end;
 						end;
 					end;
@@ -504,10 +535,7 @@ Begin
 		Radius := MainProc.ZoneServer.Options.CharShowArea + 1;
 		OnTouchCellFound := false;
 
-		if Self is TCharacter then
-		begin
-			TCharacter(Self).CharaState := charaWalking;
-		end;
+		Self.BeingState := BeingWalking;
 
 		OldPt     := Position;
 
@@ -583,13 +611,13 @@ Begin
 			end;
 		end;
 
+		if NOT (Self.BeingState = BeingWalking) then
+		begin
+			PathIndex := Path.Count;
+		end;
+
 		if Self is TCharacter then
 		begin
-			if NOT (TCharacter(Self).CharaState = charaWalking) then
-			begin
-				PathIndex := Path.Count;
-			end;
-
 			//Check for ontouch events.
 			for Index := MapInfo.Cell[Position.X][Position.Y].Beings.Count-1 downto 0 do
 			begin
@@ -600,7 +628,7 @@ Begin
 					if TCharacter(Self).OnTouchIDs.IndexOf(OnTouchCell.ScriptNPC.ID) = -1 then
 					begin
 						TCharacter(Self).OnTouchIDs.Add(OnTouchCell.ScriptNPC.ID);
-						TCharacter(Self).CharaState := charaStanding;
+						TCharacter(Self).BeingState := BeingStanding;
 						OnTouchCell.Execute(TCharacter(Self));
 					end;
 				end;
@@ -613,7 +641,6 @@ Begin
 					TCharacter(Self).OnTouchIDs.Clear;
 				end;
 			end;
-
 		end;
 
 		//Move to the next element in the path list.
@@ -635,10 +662,7 @@ Begin
 		PathIndex := 0;
 
 
-		if Self is TCharacter then
-		begin
-			TCharacter(Self).CharaState := charaStanding;
-		end else
+		Self.BeingState := BeingStanding;
 		if Self is TMob then
 		begin
 			TMob(Self).AI.FinishWalk;
@@ -813,7 +837,7 @@ begin
 			begin
 				//We check to see if the character is either dead or playing dead, to see if
 				//they are able to be targetted.
-				Pass := NOT (TCharacter(ATarget).CharaState in [charaDead, charaPlayDead]);
+				Pass := NOT (TCharacter(ATarget).BeingState in [BeingDead, BeingPlayDead]);
 			end;
 
 			//Clear movement events, we cannot move and attack at the same time.
@@ -1054,6 +1078,49 @@ Begin
 End;(* Dest TBeing.Destroy
 *-----------------------------------------------------------------------------*)
 
+
+//------------------------------------------------------------------------------
+//SetCharaState                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//			Sets Character State
+// --
+//   Pre:
+//	TODO
+//   Post:
+//	TODO
+// --
+//	Changes -
+//		March 12th, 2007 - Aeomin - Created Header
+//
+//------------------------------------------------------------------------------
+procedure TBeing.SetBeingState(
+	Value : TBeingState
+);
+var
+	OldState : TBeingState;
+begin
+	OldState := fBeingState;
+	fBeingState := Value;
+
+	if ZoneStatus = isOnline then
+	begin
+		if (fBeingState = BeingSitting) AND (OldState = BeingStanding) then
+		begin
+			AreaLoop(ShowSitStand, FALSE);
+		end else
+		if (fBeingState = BeingStanding) AND (OldState = BeingSitting) then
+		begin
+			AreaLoop(ShowSitStand, FALSE);
+		end else
+		if (fBeingState = BeingDead) then
+		begin
+			AreaLoop(ShowDeath, FALSE);
+		end;
+	end;
+
+end;{SetCharaState}
+//------------------------------------------------------------------------------
 
 procedure TBeing.SetJID(
 		Value : Word

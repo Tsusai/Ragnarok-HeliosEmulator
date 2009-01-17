@@ -386,8 +386,8 @@ begin
 	begin
 		ACharacter := TCharacter(AObject);
 		ACurrentCharacter := TCharacter(ACurrentObject);
-		case ACurrentCharacter.CharaState of
-			charaSitting :begin
+		case ACurrentCharacter.BeingState of
+			BeingSitting :begin
 					DoAction(
 						ACharacter.ClientInfo,
 						AObjectID,
@@ -395,7 +395,7 @@ begin
 					);
 			end;
 
-			charaStanding :begin
+			BeingStanding :begin
 					DoAction(
 						ACharacter.ClientInfo,
 						AObjectID,
@@ -431,23 +431,23 @@ begin
 	begin
 		ACharacter := TCharacter(AObject);
 		ACurrentCharacter := TCharacter(ACurrentObject);
-		case ACharacter.CharaState of
-			charaSitting :
+		case ACharacter.BeingState of
+			BeingSitting :
 				begin
 					DoAction(ACurrentCharacter.ClientInfo, ACharacter.ID, 0, 0, 0, ACTION_SIT, 0, 0, 0);
 				end;
 
-			charaStanding :
+			BeingStanding :
 				begin
 					DoAction(ACurrentCharacter.ClientInfo, ACharacter.ID, 0, 0, 0, ACTION_STAND, 0, 0, 0);
 				end;
 
-			charaAttacking :
+			BeingAttacking :
 				begin
 					DoAction(ACharacter.ClientInfo, ACurrentCharacter.ID, ACurrentCharacter.TargetID, 0, 0, ACTION_ATTACK, 0, 0, 0);
 				end;
 
-			charaDead :
+			BeingDead :
 				begin
 					ZoneDisappearBeing(TBeing(AObject), TCharacter(ACurrentObject).ClientInfo, 1);
 				end;

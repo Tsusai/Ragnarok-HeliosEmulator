@@ -699,7 +699,7 @@ begin
 		WriteBufferWord(2, 0, OutBuffer);
 		SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($013c,AChara.ClientVersion));
 
-		AChara.CharaState := charaStanding;
+		AChara.BeingState := BeingStanding;
 
 		//Weather updates
 		//Various other tweaks
@@ -1077,9 +1077,9 @@ begin
 			begin
 				AChara.EventList.DeleteAttackEvents;
 				AChara.EventList.DeleteMovementEvents;
-				if NOT (AChara.CharaState = charaAttacking) then
+				if NOT (AChara.BeingState = BeingAttacking) then
 				begin
-					AChara.CharaState := charaAttacking;
+					AChara.BeingState := BeingAttacking;
 				end;
 				AChara.Attack(TargetID, FALSE, FALSE);
 			end;
@@ -1087,21 +1087,21 @@ begin
 		ACTION_SIT://Sit
 			begin
 				//TODO -- basic skill checks here
-				AChara.CharaState := charaSitting;
+				AChara.BeingState := BeingSitting;
 			end;
 
 		ACTION_STAND://Stand
 			begin
-				AChara.CharaState := charaStanding;
+				AChara.BeingState := BeingStanding;
 			end;
 
 		ACTION_CONTINUE_ATTACK : //Hit target continuously
 			begin
 				AChara.EventList.DeleteAttackEvents;
 				AChara.EventList.DeleteMovementEvents;
-				if NOT (AChara.CharaState = charaAttacking) then
+				if NOT (AChara.BeingState = BeingAttacking) then
 				begin
-					AChara.CharaState := charaAttacking;
+					AChara.BeingState := BeingAttacking;
 				end;
 				AChara.Attack(TargetID, TRUE, FALSE);
 			end;
@@ -1162,7 +1162,7 @@ var
 begin
 	DestPoint := BufferReadOnePoint(ReadPts[0], InBuffer);
 	if (AChara.ScriptStatus = SCRIPT_NOTRUNNING) and
-	(AChara.CharaState in [charaStanding,charaAttacking,charaWalking]) then
+	(AChara.BeingState in [BeingStanding,BeingAttacking,BeingWalking]) then
 	begin
 		if AChara.GetPath(AChara.Position, DestPoint, AChara.Path) then
 		begin
@@ -1175,7 +1175,7 @@ begin
 				//Remove previous movement events from the event list
 				EventList.DeleteMovementEvents;
 
-				CharaState := charaStanding;
+				BeingState := BeingStanding;
 				PathIndex := 0;
 
 				//Setup first speed
@@ -1227,7 +1227,7 @@ var
 	Index : Integer;
 begin
 	if (AChara.ScriptStatus = SCRIPT_NOTRUNNING) and
-		(AChara.CharaState = charaStanding) then
+		(AChara.BeingState = BeingStanding) then
 	begin
 		NPCID := BufferReadLongWord(ReadPts[0], InBuffer);
 
@@ -1452,12 +1452,12 @@ begin
 	case ActionByte of
 	0:
 		begin
-			if AChara.CharaState = charaDead then
+			if AChara.BeingState = BeingDead then
 			begin
 				//Send Leave with '0' as byte modifier
 				//Only runs when dead.
 				//Return to save point, and load map
-				AChara.CharaState := charaStanding;
+				AChara.BeingState := BeingStanding;
 				ZoneSendWarp(
 					AChara,
 					AChara.SaveMap,
@@ -1975,7 +1975,7 @@ begin
 	CriticalSection := TCriticalSection.Create;
 	CriticalSection.Enter;
 	try
-	if AChara.CharaState in [charaStanding,charaWalking,charaAttacking] then
+	if AChara.BeingState in [BeingStanding,BeingWalking,BeingAttacking] then
 	begin
 		ID := BufferReadLongWord(ReadPts[0], InBuffer);
 		AChara.Inventory.Pickup(ID);
@@ -2011,7 +2011,7 @@ procedure ItemEquip(
 var
 	Index:Word;
 begin
-	if AChara.CharaState in [charaSitting,charaStanding,charaWalking,charaAttacking] then
+	if AChara.BeingState in [BeingSitting,BeingStanding,BeingWalking,BeingAttacking] then
 	begin
 		Index := BufferReadWord(ReadPts[0], InBuffer);
 		if Index > 0 then
@@ -2045,7 +2045,7 @@ procedure ItemUnequip(
 var
 	Index:Word;
 begin
-	if AChara.CharaState in [charaSitting,charaStanding,charaWalking,charaAttacking] then
+	if AChara.BeingState in [BeingSitting,BeingStanding,BeingWalking,BeingAttacking] then
 	begin
 		Index := BufferReadWord(ReadPts[0], InBuffer);
 		if Index > 0 then
@@ -2079,7 +2079,7 @@ procedure ItemUse(
 var
 	Index:Word;
 begin
-	if AChara.CharaState in [charaSitting,charaStanding,charaWalking,charaAttacking] then
+	if AChara.BeingState in [BeingSitting,BeingStanding,BeingWalking,BeingAttacking] then
 	begin
 		Index := BufferReadWord(ReadPts[0], InBuffer);
 		if Index > 0 then

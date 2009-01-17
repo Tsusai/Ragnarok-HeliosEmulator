@@ -321,7 +321,7 @@ begin
 			ACharacter.ShowTeleportOut;
 		end;
 
-		if ACharacter.CharaState = charaDead then
+		if ACharacter.BeingState = BeingDead then
 		begin
 			ACharacter.Map := ACharacter.SaveMap;
 			ACharacter.Position := ACharacter.SavePoint;

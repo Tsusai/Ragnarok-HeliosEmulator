@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 670 -
+[2009/01/16] Aeomin - Tweak walk routine to partial fix "mob run" bug.
+[2009/01/16] Aeomin - Changed charaStatus to BeingStatus.
+-
+
 - Rev 669 -
 [2009/01/16] Aeomin - Added debug effect to see all walking tracks[Looks awesome].
 [2009/01/15] Aeomin - Added partial support for putmob script command.

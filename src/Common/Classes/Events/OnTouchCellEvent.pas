@@ -9,6 +9,7 @@ unit OnTouchCellEvent;
 interface
 uses
 	NPC,
+	Being,
 	Character;
 
 type
@@ -33,7 +34,7 @@ implementation
 	Procedure TOnTouchCellEvent.Execute(ACharacter : TCharacter);
 	begin
 		if (ACharacter.ScriptStatus = SCRIPT_NOTRUNNING) and
-		(ACharacter.CharaState = charaStanding) then
+		(ACharacter.BeingState = BeingStanding) then
 		begin
 			ACharacter.ScriptBeing := fScriptNPC;
 			fScriptNPC.OnTouch(ACharacter);
