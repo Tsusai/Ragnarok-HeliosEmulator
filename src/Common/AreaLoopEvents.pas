@@ -142,7 +142,13 @@ uses
 		const AObjectID		: LongWord;
 		const AParameters	: TParameterList = nil
 	);
-	
+
+	procedure ShowSkillUnit(
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
+	);
 implementation
 
 uses
@@ -679,5 +685,36 @@ begin
 		ZoneSendBeing(TBeing(ACurrentObject), TCharacter(AObject), True);
 	end;
 end;{SpawnMob}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ShowSkillUnit                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Send a single unit of skill effect to client
+//
+//	Changes-
+//		[2009/01/16] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ShowSkillUnit(
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
+);
+begin
+	if AObject is TCharacter then
+	begin
+		SendSkillGroundUnit(
+			TCharacter(AObject),
+			AParameters.GetAsLongWord(1),
+			AObjectID,
+			AParameters.GetAsLongWord(2),
+			AParameters.GetAsLongWord(3) ,
+			AParameters.GetAsLongWord(4)
+		);
+	end;
+end;{ShowSkillUnit}
 //------------------------------------------------------------------------------
 end.

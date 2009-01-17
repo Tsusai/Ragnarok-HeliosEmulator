@@ -90,7 +90,6 @@ begin
 		begin
 			AObject := Beings.Items[Random(Beings.Count)] as TCharacter;
 			FoundObject(AObject);
-			writeln('FOUND ', AObject.Name);
 		end;
 	finally
 		Beings.Free;
@@ -99,7 +98,7 @@ end;
 
 procedure TMobAI.FoundObject(const AnObj:TGameObject);
 begin
-	writeln('I SAW CHIKEN!');
+//	writeln('I SAW CHIKEN!');
 	if AnObj is TCharacter then
 	begin
 		{is agressive?}
@@ -113,7 +112,7 @@ end;
 
 procedure TMobAI.ObjectNear(const AnObj:TGameObject);
 begin
-	writeln('CHIKEN SAW ME!');
+//	writeln('CHIKEN SAW ME!');
 	FoundObject(AnObj);
 end;
 
@@ -217,7 +216,7 @@ begin
 	case fAIStatus of
 		msIdle:
 		begin
-			if NOT Boolean(Mob.Race AND MOBRACE_PLANT) then
+//			if NOT Boolean(Mob.Race AND MOBRACE_PLANT) then
 				RandomWalk;
 		end;
 		msWandering: ;

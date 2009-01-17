@@ -328,9 +328,18 @@ uses
 		const AChara : TCharacter;
 		const NPCID : LongWord
 	);
+
 	procedure SendNPCInputStr(
 		const AChara : TCharacter;
 		const NPCID : LongWord
+	);
+
+	procedure SendSkillGroundUnit(
+		const AChara : TCharacter;
+		const ID : LongWord;
+		const SrcID : LongWord;
+		const X,Y: Word;
+		const SkillType: Byte
 	);
 implementation
 
@@ -2469,7 +2478,7 @@ end;{SendNPCInput}
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//SendNPCInputStr                                                       PROCEDURE
+//SendNPCInputStr                                                      PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does -
 //		Send a string input box to client
@@ -2493,5 +2502,36 @@ begin
 	WriteBufferLongWord(2, NPCID, OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($01d4,AChara.ClientVersion));
 end;{SendNPCInput}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendSkillGroundUnit                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Send a skill unit to specific coordinate
+
+//	Changes -
+//		[2009/01/16] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendSkillGroundUnit(
+	const AChara : TCharacter;
+	const ID : LongWord;
+	const SrcID : LongWord;
+	const X,Y: Word;
+	const SkillType: Byte
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $011f, OutBuffer);
+	WriteBufferLongWord(2, ID, OutBuffer);
+	WriteBufferLongWord(6, SrcID, OutBuffer);
+	WriteBufferWord(10, X, OutBuffer);
+	WriteBufferWord(12, Y, OutBuffer);
+	WriteBufferWord(14, SkillType, OutBuffer);
+	WriteBufferByte(16, 1, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($011f,AChara.ClientVersion));
+end;{SendSkillGroundUnit}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

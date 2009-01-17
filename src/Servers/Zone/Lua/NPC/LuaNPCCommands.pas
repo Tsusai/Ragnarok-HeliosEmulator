@@ -34,7 +34,9 @@ uses
 	PacketTypes,
 	ZoneSend,
 	LuaVarConstants,
-	ZoneInterCommunication
+	ZoneInterCommunication,
+	Mob,
+	Map
 	;
 
 //Forward declarations of delphi procedures that are added to the lua engine.
@@ -77,12 +79,13 @@ function script_Input(ALua : TLua) : integer; cdecl; forward;
 function script_InputStr(ALua : TLua) : integer; cdecl; forward;
 function script_BroadcastInMap(ALua : TLua) : integer; cdecl; forward;
 function script_CreateInstanceMap(ALua : TLua) : integer; cdecl; forward;
+function script_PutMob(ALua : TLua) : integer; cdecl; forward;
 //Special Commands
 function script_get_charaname(ALua : TLua) : integer; cdecl; forward;
 function lua_print(ALua : TLua) : integer; cdecl; forward;
 
 const
-	NPCCommandCount = 40;
+	NPCCommandCount = 41;
 
 const
 	//"Function name in lua" , Delphi function name
@@ -128,6 +131,7 @@ const
 		(name:'inputstr';func:script_InputStr),
 		(name:'broadcastinmap';func:script_BroadcastInMap),
 		(name:'createinstancemap';func:script_CreateInstanceMap),
+		(name:'putmob';func:script_PutMob),
 		//Special Variable retrieving functions
 		(name:'PcName';func:script_get_charaname),
 		//Misc tools.
@@ -1334,6 +1338,65 @@ begin
 	end else
 	begin
 		luaL_error(ALua,'script CreateInstanceMap syntax error');
+	end;
+end;
+
+function script_PutMob(ALua : TLua) : integer;
+var
+	MapName : String;
+	Position:TPoint;
+	RadiusX,RadiusY:Word;
+	Amount:Word;
+	MobName : String;
+//	TimerMin,TimerMax:LongWord;
+	AMob : TMob;
+	MapIndex:Integer;
+	AMap:TMap;
+	Index : Word;
+begin
+	Result := 0;
+	if (lua_gettop(ALua) = 10) then
+	begin
+		MapName := lua_tostring(ALua, 1);
+		Position.X := EnsureRange(lua_tointeger(ALua, 2),0,High(Word));
+		Position.Y := EnsureRange(lua_tointeger(ALua, 3),0,High(Word));
+		RadiusX := EnsureRange(lua_tointeger(ALua, 4),0,High(Word));
+		RadiusY := EnsureRange(lua_tointeger(ALua, 5),0,High(Word));
+		Amount := EnsureRange(lua_tointeger(ALua, 6),1,High(Word));
+		MobName := lua_tostring(ALua, 7);
+//		TimerMin := lua_tolongword(ALua,7);
+//		TimerMax := lua_tolongword(ALua,8);
+		MapIndex := MainProc.ZoneServer.MapList.IndexOf(MapName);
+		if MapIndex > -1 then
+		begin
+			AMap := MainProc.ZoneServer.MapList.Items[MapIndex];
+			for Index := 1 to Amount do
+			begin
+				AMob := TMob.Create;
+				AMob.SpriteName := MobName;
+				AMob.Position := Position;
+				AMob.InitPosition := Position;
+				AMob.RadiusX := RadiusX;
+				AMob.RadiusY := RadiusY;
+				if NOT MainProc.ZoneServer.Database.Mob.Load(AMob) then
+				begin
+					AMob.Free;
+					luaL_error(ALua,'Monster cannot found');
+				end else
+				begin
+					AMob.MapInfo := AMap;
+					AMob.SummonType := stREPEAT;
+					AMob.AddToList;
+					AMob.Initiate;
+				end;
+			end;
+		end else
+		begin
+			luaL_error(ALua,'Map cannot found');
+		end;
+	end else
+	begin
+		luaL_error(ALua,'script PutMob syntax error');
 	end;
 end;
 end.

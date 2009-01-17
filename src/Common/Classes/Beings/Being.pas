@@ -330,6 +330,8 @@ Var
 	OnTouchCellFound : boolean;
 	OnTouchCell : TOnTouchCellEvent;
 
+	ParameterList : TParameterList;
+
 	(*. local function ...................*
 	Gets our new direction
 	Using basic mathematics and an existing array, we are able to get a direction in the form of the following
@@ -511,6 +513,15 @@ Begin
 
 		Position	:= Path[PathIndex];
 		Direction := GetDirection(OldPt, Position);
+
+		//This is for debug, disable if needed.
+		ParameterList := TParameterList.Create;
+		ParameterList.AddAsLongWord(1,Random($FFFFFFF));
+		ParameterList.AddAsLongWord(2,Path[PathIndex].X);
+		ParameterList.AddAsLongWord(3,Path[PathIndex].Y);
+		ParameterList.AddAsLongWord(4,$83);
+		AreaLoop(ShowSkillUnit,FALSE,ParameterList);
+		ParameterList.Free;
 
 	//-Tsusai
 	//17 (Radius) covers the old 16x16 grid, no matter which dir we go I think

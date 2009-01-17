@@ -1367,16 +1367,18 @@ begin
 		if NOT TThreadLink(TargetChar.ClientInfo.Data).DatabaseLink.Mob.Load(AMob) then
 		begin
 			AMob.Free;
-			Error.Add('Monster can not be found');
+			Error.Add('Monster cannot found');
 		end else
+		begin
+			AMob.SummonType := stONELIFE;
+			AMob.AddToList;
 			AMob.Initiate;
+		end;
 	end else
 	begin
 		Error.Add('Syntax Help:');
 		Error.Add(Arguments[Length(Arguments)-1]);
 	end;
-
-
 end;
 //------------------------------------------------------------------------------
 end{GMCommandExe}.

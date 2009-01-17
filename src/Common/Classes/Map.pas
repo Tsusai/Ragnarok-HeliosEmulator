@@ -47,6 +47,7 @@ TMap = class(TObject)
 		NextID : LongWord;
 
 		procedure LoadNpc;
+		procedure LoadMob;
 
 		function LoadFromStream(
 			AStream : TStream
@@ -295,8 +296,6 @@ Var
 	MapFile : TMemoryStream;
 	XIndex  : Integer;
 	YIndex  : Integer;
-	ObjIndex    : Integer;
-	AMob       : TMob;
 Begin
 	State  := LOADING;
 
@@ -318,22 +317,13 @@ Begin
 		end;
 	end;
 
-	LoadNpc;
+	State := LOADED;
 
-	//Add mobs that is already in list
-	for ObjIndex := 0 to MobList.Count -1 do
-	begin
-		AMob := TMob(MobList[ObjIndex]);
-		if PointInRange(AMob.Position) then
-		begin
-			AMob.MapInfo := Self;
-			Cell[AMob.Position.X][AMob.Position.Y].Beings.AddObject(AMob.ID, AMob);
-		end;
-	end;
+	LoadNpc;
+	LoadMob;
 
 	MainProc.ZoneServer.Database.Items.FillMapGround(Self);
 
-	State := LOADED;
 
 	MapFile.Free;//finally, free the memory stream.
 End;//Load
@@ -350,7 +340,7 @@ End;//Load
 //		[2008/12/07] Aeomin - Created
 //------------------------------------------------------------------------------
 procedure TMap.LoadNpc;
-Var
+var
 	ObjIndex    : Integer;
 	AnNPC       : TNPC;
 begin
@@ -369,6 +359,20 @@ begin
 end;{LoadNPC}
 //------------------------------------------------------------------------------
 
+
+procedure TMap.LoadMob;
+var
+	ObjIndex    : Integer;
+	AMob        : TMob;
+begin
+	//Add mobs that is already in list
+	for ObjIndex := 0 to MobList.Count -1 do
+	begin
+		AMob := TMob(MobList[ObjIndex]);
+		AMob.ID := NewObjectID;
+		AMob.Initiate;
+	end;
+end;
 
 //------------------------------------------------------------------------------
 //Unload()                                                             FUNCTION

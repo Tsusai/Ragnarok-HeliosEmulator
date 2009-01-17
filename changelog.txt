@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 669 -
+[2009/01/16] Aeomin - Added debug effect to see all walking tracks[Looks awesome].
+[2009/01/15] Aeomin - Added partial support for putmob script command.
+-
+
 - Rev 668 -
 [2009/01/14] Aeomin - Plants no longer moves (not working? sorry, you need fix your DB).
 [2009/01/14] Aeomin - Summon no longer show "KFC Rejected" when mob not found - -
