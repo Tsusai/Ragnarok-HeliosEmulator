@@ -770,6 +770,20 @@ end;
 				Password := BufferReadMD5(30,Buffer);
 				ValidateLogin(AConnection,Buffer,Username,Password);
 			end;
+		$01fa: //Another MD5 based login
+			begin
+				RecvBuffer(AConnection,Buffer[2],PacketDB.GetLength($01fa)-2);
+				UserName := BufferReadString(6,24,Buffer);
+				Password := BufferReadMD5(30,Buffer);
+				ValidateLogin(AConnection,Buffer,Username,Password);
+			end;
+		$027c: //Yet another one
+			begin
+				RecvBuffer(AConnection,Buffer[2],PacketDB.GetLength($027c)-2);
+				UserName := BufferReadString(6,24,Buffer);
+				Password := BufferReadMD5(30,Buffer);
+				ValidateLogin(AConnection,Buffer,Username,Password);
+			end;
 		$0277:// New login packet (kRO 2006-04-24aSakexe langtype 0)
 			begin
 				RecvBuffer(AConnection,Buffer[2],PacketDB.GetLength($0277,6)-2);

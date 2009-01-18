@@ -50,6 +50,7 @@ uses
 	Inventory,
 	Mailbox,
 	Equipment,
+	ChatRoom,
 	{Third Party}
 	IdContext,
 	List32
@@ -244,8 +245,8 @@ public
 
 	AttackRange : Word;
 	//No idea what 0..5 is from.  Stats?
-//Commenting below, ATK + items + skills needs to be worked out before this
-//	ATK : array[R_HAND..L_HAND] of array[0..5] of Word; // Displayed ATK power
+	//Commenting below, ATK + items + skills needs to be worked out before this
+	//	ATK : array[R_HAND..L_HAND] of array[0..5] of Word; // Displayed ATK power
 
 	//Which packet array (since arrays start at 0) holds all the packets that are compatible.
 	ClientVersion : Integer;
@@ -258,6 +259,8 @@ public
 	Friends : Byte;
 
 	Mails : TMailBox;
+
+	ChatRoom : TChatRoom; //It doesn't create when TCharacter create.
 
 	procedure CalcMaxHP; override;
 	procedure CalcMaxSP; override;

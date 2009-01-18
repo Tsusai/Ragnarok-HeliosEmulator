@@ -17,7 +17,6 @@ unit BeingList;
 interface
 uses
 	Being,
-	Character,
 	ContNrs;
 
 type
@@ -55,6 +54,10 @@ type
 
 
 implementation
+
+uses
+	Character
+	;
 
 //------------------------------------------------------------------------------
 //Create                                                            CONSTRUCTOR
