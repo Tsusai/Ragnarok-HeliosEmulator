@@ -297,6 +297,12 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure ChatRoomExit(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -2168,7 +2174,7 @@ end;{EmotionCheck}
 //		Wanna create a chatroom? ya? here we go.. and FAIL ..MUAHAHA
 //
 //	Changes -
-//		[2009/01/07] Aeomin - Created
+//		[2009/01/17] Aeomin - Created
 //------------------------------------------------------------------------------
 procedure CreateChatroom(
 	var AChara  : TCharacter;
@@ -2195,7 +2201,6 @@ begin
 		AChara.ChatRoom.PassWord := Password;
 		AChara.ChatRoom.Title := Title;
 		AChara.ChatRoom.Limit := Limit;
-		AChara.ChatRoom.ID := AChara.MapInfo.NewObjectID;
 		SendCreateChatRoomResult(AChara, False);
 
 		ParameterList := TParameterList.Create;
@@ -2207,6 +2212,35 @@ begin
 		SendCreateChatRoomResult(AChara, True);
 	end;
 end;{CreateChatroom}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ChatRoomExit                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Exit chatroom
+//
+//	Changes -
+//		[2009/01/18] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ChatRoomExit(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	Chatroom : TChatroom;
+begin
+	//No extra data in packet
+	if Assigned(AChara.ChatRoom) then
+	begin
+		Chatroom := AChara.ChatRoom;
+		AChara.ChatRoom.Quit(AChara.ID);
+		if Chatroom.Characters.Count = 0 then
+			Chatroom.Free;
+	end;
+end;
 //------------------------------------------------------------------------------
 
 

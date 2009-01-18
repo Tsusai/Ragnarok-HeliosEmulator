@@ -352,6 +352,17 @@ uses
 		const AChara : TCharacter;
 		const ChatRoom : TChatRoom
 	);
+
+	procedure SendQuitChat(
+		const AChara : TCharacter;
+		const Count : Word;
+		const Kicked : Boolean
+	);
+
+	procedure SendClearChat(
+		const AChara : TCharacter;
+		const ID : LongWord
+	);
 implementation
 
 
@@ -2597,6 +2608,55 @@ begin
 	WriteBufferByte(16, Byte(ChatRoom.isPublic), OutBuffer);
 	WriteBufferString(17,ChatRoom.Title,Len,OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer, Len + 17);
-end;
+end;{DisplayChatroomBar}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendQuitChat                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Notify that someone left chatroom.
+//
+//	Changes -
+//		[2009/01/18] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendQuitChat(
+	const AChara : TCharacter;
+	const Count : Word;
+	const Kicked : Boolean
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00dd, OutBuffer);
+	WriteBufferWord(2, Count, OutBuffer);
+	WriteBufferString(4,AChara.Name,NAME_LENGTH,OutBuffer);
+	WriteBufferByte(28, Byte(Kicked), OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer,PacketDB.GetLength($00dd,AChara.ClientVersion));
+end;{SendQuitChat}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendClearChat                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Remove chat from public eyes
+//
+//	Changes -
+//		[2009/01/18] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendClearChat(
+	const AChara : TCharacter;
+	const ID : LongWord
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00d8, OutBuffer);
+	WriteBufferLongWord(2, ID, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer,PacketDB.GetLength($00d8,AChara.ClientVersion));
+end;{SendClearChat}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

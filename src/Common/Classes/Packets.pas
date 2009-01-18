@@ -546,10 +546,10 @@ Begin
 				end else if Command = 'changechatowner' then begin
 					ExecCommand := ChatroomOwnerChange;
 				end else if Command = 'kickfromchat' then begin
-					ExecCommand := KickFromChat;
+					ExecCommand := KickFromChat;}
 				end else if Command = 'chatleave' then begin
-					ExecAvoidSelfCommand := ChatRoomExit;
-				end else if Command = 'traderequest' then begin
+					ExecCommand := ChatRoomExit;
+				{end else if Command = 'traderequest' then begin
 					ExecCommand := RequestTrade;
 				end else if Command = 'tradeack' then begin
 					ExecCommand := TradeRequestAcceptDeny;

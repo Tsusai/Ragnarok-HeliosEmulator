@@ -157,6 +157,12 @@ uses
 		const AParameters	: TParameterList = nil
 	);
 
+	procedure RemoveChatroomInArea(
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
+	);
 implementation
 
 uses
@@ -737,7 +743,7 @@ end;{ShowSkillUnit}
 
 
 //------------------------------------------------------------------------------
-// ShowChatroom                                                        PROCEDURE
+//ShowChatroom                                                         PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //		Tell everyone about your chatroom!
@@ -760,5 +766,32 @@ begin
 		);
 	end;
 end;{ShowChatroom}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//emoveChatroomInArea                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Remove chatroom from area.
+//
+//	Changes-
+//		[2009/01/18] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RemoveChatroomInArea(
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
+);
+begin
+	if AObject is TCharacter then
+	begin
+		SendClearChat(
+			TCharacter(AObject),
+			AParameters.GetAsLongWord(1)
+		);
+	end;
+end;{RemoveChatroomInArea}
 //------------------------------------------------------------------------------
 end.

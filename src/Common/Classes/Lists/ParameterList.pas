@@ -15,7 +15,7 @@ interface
 uses
 	List32;
 type
-	TParameterType = (fString,fInteger,fLongWord,fObject);
+	TParameterType = (fString,fInteger,fLongWord,fObject,fBoolean);
 
 	TParameterObject = class
 	private
@@ -25,6 +25,7 @@ type
 		fInteger : Integer;
 		fLongWord:LongWord;
 		fObject : TObject;
+		fBoolean : Boolean;
 	end;
 	//----------------------------------------------------------------------
 	//TParameterList                                                   CLASS
@@ -43,6 +44,8 @@ type
 		function GetAsString(const ID:LongWord):String;
 		procedure AddAsObject(const ID:LongWord;const AnObject:TObject);
 		function GetAsObject(const ID:LongWord):TObject;
+		procedure AddAsBoolean(const ID:LongWord;const ABoolean:Boolean);
+		function GetAsBoolean(const ID:LongWord):Boolean;
 	end;
 	//----------------------------------------------------------------------
 implementation
@@ -277,4 +280,30 @@ begin
 end;{GetAsObject}
 //------------------------------------------------------------------------------
 
+
+procedure TParameterList.AddAsBoolean(const ID:LongWord;const ABoolean:Boolean);
+var
+	ParameterObject : TParameterObject;
+begin
+	if AddObject(ID,ParameterObject) then
+	begin
+		ParameterObject.fType := fBoolean;
+		ParameterObject.fBoolean := ABoolean;
+	end;
+end;
+
+function TParameterList.GetAsBoolean(const ID:LongWord):Boolean;
+var
+	ParameterObject : TParameterObject;
+begin
+	Result := false;
+	if GetObject(ID,ParameterObject) then
+	begin
+		case ParameterObject.fType of
+			fLongWord : Result := Boolean(ParameterObject.fLongWord);
+			fInteger : Result := Boolean(ParameterObject.fInteger);
+			fBoolean : Result := ParameterObject.fBoolean;
+		end;
+	end;
+end;
 end{ParameterList}.
