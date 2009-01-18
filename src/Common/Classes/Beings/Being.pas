@@ -494,6 +494,14 @@ Var
 							begin
 								ZoneSendBeing(Self, TCharacter(ABeing));
 								ZoneWalkingBeing(Self,Position,Path[Path.count-1],TCharacter(ABeing).ClientInfo);
+								if Assigned(TCharacter(ABeing).ChatRoom) then
+								begin
+									if TCharacter(ABeing).ChatRoom.Owner = ABeing then
+									begin
+										DisplayChatroomBar(TCharacter(Self),TCharacter(ABeing).ChatRoom);
+									end;
+								end;
+								
 							end else  //Npc/Mob/Pet/Homunculus/Mercenary packets to the client
 							begin
 								if ABeing is TMob then

@@ -248,13 +248,21 @@ Begin
 	begin
 		ZoneSendBeing(TBeing(AObject), TCharacter(ACurrentObject));
 	end else
-	if AObject is TMob then
-	begin
-		ZoneSendBeing(TBeing(AObject), TCharacter(ACurrentObject));
-	end else
 	if AObject is TItemInstance then
 	begin
 		SendGroundItem(TCharacter(ACurrentObject), TItemInstance(AObject));
+	end;
+
+	//Show chatroom
+	if (ACurrentObject is TCharacter)AND(AObject is TCharacter) then
+	begin
+		if Assigned(TCharacter(AObject).ChatRoom) then
+		begin
+			if TCharacter(AObject).ChatRoom.Owner = AObject then
+			begin
+				DisplayChatroomBar(TCharacter(ACurrentObject),TCharacter(AObject).ChatRoom);
+			end;
+		end;
 	end;
 End; (* Proc ShowAreaBeings
 *-----------------------------------------------------------------------------*)
