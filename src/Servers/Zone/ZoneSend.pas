@@ -40,6 +40,7 @@ uses
 	Inventory,
 	Item,
 	ItemInstance,
+	ChatRoom,
 	{Third Party}
 	IdContext
 	;
@@ -340,6 +341,16 @@ uses
 		const SrcID : LongWord;
 		const X,Y: Word;
 		const SkillType: Byte
+	);
+
+	procedure SendCreateChatRoomResult(
+		const AChara : TCharacter;
+		const Fail : Boolean
+	);
+
+	procedure DisplayChatroomBar(
+		const AChara : TCharacter;
+		const ChatRoom : TChatRoom
 	);
 implementation
 
@@ -2510,7 +2521,7 @@ end;{SendNPCInput}
 //------------------------------------------------------------------------------
 //	What it does -
 //		Send a skill unit to specific coordinate
-
+//
 //	Changes -
 //		[2009/01/16] Aeomin - Created
 //------------------------------------------------------------------------------
@@ -2533,5 +2544,59 @@ begin
 	WriteBufferByte(16, 1, OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($011f,AChara.ClientVersion));
 end;{SendSkillGroundUnit}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendCreateChatRoomResult                                             PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Create success or not.
+//
+//	Changes -
+//		[2009/01/17] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendCreateChatRoomResult(
+	const AChara : TCharacter;
+	const Fail : Boolean
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00d6, OutBuffer);
+	WriteBufferByte(2, Byte(Fail), OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, PacketDB.GetLength($00d6,AChara.ClientVersion));
+end;{SendCreateChatRoomResult}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//DisplayChatroomBar                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Display a bar thingy above chatroom owner.
+//
+//	Changes -
+//		[2009/01/17] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure DisplayChatroomBar(
+	const AChara : TCharacter;
+	const ChatRoom : TChatRoom
+);
+var
+	OutBuffer : TBuffer;
+	Len : Word;
+begin
+	Len := Length(ChatRoom.Title);
+	WriteBufferWord(0, $00d7, OutBuffer);
+	WriteBufferWord(2, Len + 17, OutBuffer);
+	WriteBufferLongWord(4, ChatRoom.Owner.ID, OutBuffer);
+	WriteBufferLongWord(8, ChatRoom.ID, OutBuffer);
+	WriteBufferWord(12, ChatRoom.Limit, OutBuffer);
+	WriteBufferWord(14, ChatRoom.Characters.Count, OutBuffer);
+	WriteBufferByte(16, Byte(ChatRoom.isPublic), OutBuffer);
+	WriteBufferString(17,ChatRoom.Title,Len,OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, Len + 17);
+end;
 //------------------------------------------------------------------------------
 end{ZoneSend}.

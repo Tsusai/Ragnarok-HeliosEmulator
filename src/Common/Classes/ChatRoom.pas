@@ -21,14 +21,20 @@ type
 	TChatRoom = class
 	private
 		fOwner : TBeing;
-		Characters : TBeingList;
 		procedure SetOwner(NewOwner : TBeing);
 	public
+		ID : LongWord;
+		isPublic : Boolean;
+		PassWord : String;
+		Title : String;
+		Limit : Word;
+		Characters : TBeingList;
 		property Owner : TBeing read fOwner write SetOwner;
 		constructor Create(Owner:TBeing);
 		destructor Destroy; override;
 	end;
 implementation
+
 
 //------------------------------------------------------------------------------
 //SetOwner                                                             PROCEDURE
@@ -62,6 +68,7 @@ constructor TChatRoom.Create(Owner:TBeing);
 begin
 	fOwner := Owner;
 	Characters := TBeingList.Create(FALSE);
+	Characters.Add(fOwner);
 end;{Creat}
 //------------------------------------------------------------------------------
 

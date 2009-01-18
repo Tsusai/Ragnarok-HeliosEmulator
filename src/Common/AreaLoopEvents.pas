@@ -149,6 +149,14 @@ uses
 		const AObjectID		: LongWord;
 		const AParameters	: TParameterList = nil
 	);
+
+	procedure ShowChatroom(
+		const ACurrentObject	: TGameObject;
+		const AObject		: TGameObject;
+		const AObjectID		: LongWord;
+		const AParameters	: TParameterList = nil
+	);
+
 implementation
 
 uses
@@ -161,7 +169,8 @@ uses
 	GameTypes,
 	ItemInstance,
 	Globals,
-	Mob
+	Mob,
+	ChatRoom
 	{Third Party}
 	//none
 	;
@@ -716,5 +725,32 @@ begin
 		);
 	end;
 end;{ShowSkillUnit}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+// ShowChatroom                                                        PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Tell everyone about your chatroom!
+//
+//	Changes-
+//		[2009/01/17] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ShowChatroom(
+	const ACurrentObject	: TGameObject;
+	const AObject		: TGameObject;
+	const AObjectID		: LongWord;
+	const AParameters	: TParameterList = nil
+);
+begin
+	if AObject is TCharacter then
+	begin
+		DisplayChatroomBar(
+			TCharacter(AObject),
+			TChatRoom(AParameters.GetAsObject(1))
+		);
+	end;
+end;{ShowChatroom}
 //------------------------------------------------------------------------------
 end.

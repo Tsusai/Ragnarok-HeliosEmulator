@@ -535,11 +535,11 @@ Begin
 				end else if Command = 'wisall' then begin
 					ExecCommand := wisall;
 				end else if Command = 'wisexlist' then begin
-					ExecCommand := wisexlist;
+					ExecCommand := wisexlist;}
 				//end of first unknown eA block
 				end else if Command = 'createchatroom' then begin
 					ExecCommand := CreateChatroom;
-				end else if Command = 'chataddmember' then begin
+				{end else if Command = 'chataddmember' then begin
 					ExecCommand := JoinChatroom;
 				end else if Command = 'chatroomstatuschange' then begin
 					ExecCommand := UpdateChatroom;

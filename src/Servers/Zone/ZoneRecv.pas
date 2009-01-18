@@ -291,6 +291,12 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure CreateChatroom(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -373,7 +379,8 @@ uses
 	AreaLoopEvents,
 	Mailbox,
 	InstanceMap,
-	ParameterList
+	ParameterList,
+	ChatRoom
 	{3rd Party}
 	//none
 	;
@@ -2151,6 +2158,55 @@ begin
 		Parameters.Free;
 	end;
 end;{EmotionCheck}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//CreateChatroom                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Wanna create a chatroom? ya? here we go.. and FAIL ..MUAHAHA
+//
+//	Changes -
+//		[2009/01/07] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure CreateChatroom(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	Len : Word;
+	Limit : Word;
+	isPublic : Boolean;
+	Password : String;
+	Title : String;
+	ParameterList : TParameterList;
+begin
+	Len := BufferReadWord(ReadPts[0], InBuffer) - 15;
+	Limit := BufferReadWord(ReadPts[1], InBuffer);
+	isPublic := Boolean(BufferReadByte(ReadPts[2], InBuffer));
+	Password := BufferReadString(ReadPts[3],8,InBuffer);
+	Title := BufferReadString(ReadPts[4],Len,InBuffer);
+	if NOT Assigned(AChara.ChatRoom) then
+	begin
+		AChara.ChatRoom := TChatRoom.Create(AChara);
+		AChara.ChatRoom.isPublic := isPublic;
+		AChara.ChatRoom.PassWord := Password;
+		AChara.ChatRoom.Title := Title;
+		AChara.ChatRoom.Limit := Limit;
+		AChara.ChatRoom.ID := AChara.MapInfo.NewObjectID;
+		SendCreateChatRoomResult(AChara, False);
+
+		ParameterList := TParameterList.Create;
+		ParameterList.AddAsObject(1,AChara.ChatRoom);
+		AChara.AreaLoop(ShowChatroom,False,ParameterList);
+		ParameterList.Free;
+	end else
+	begin
+		SendCreateChatRoomResult(AChara, True);
+	end;
+end;{CreateChatroom}
 //------------------------------------------------------------------------------
 
 
