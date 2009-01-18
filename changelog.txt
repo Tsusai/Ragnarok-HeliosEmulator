@@ -15,8 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 672 -
+[2009/01/17] Aeomin - Added TAIBeing & TChatRoom class.
+[2009/01/17] Aeomin - TAIBeing used to classify all beings that uses AI.
+-
+
 - Rev 671 -
-[2009/01/11] Aeomin - Added player emotion implementation.
+[2009/01/17] Aeomin - Added player emotion implementation.
 -
 
 - Rev 670 -

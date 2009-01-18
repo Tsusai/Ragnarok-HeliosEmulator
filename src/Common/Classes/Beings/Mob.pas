@@ -1,3 +1,13 @@
+//------------------------------------------------------------------------------
+//Mob                                                                       UNIT
+//------------------------------------------------------------------------------
+//	What it does-
+//		A mob that uses TMobAI to take control of everything.
+//
+//	Changes -
+//		[2008/12/?] Aeomin - Created (actually created long ago).
+//
+//------------------------------------------------------------------------------
 unit Mob;
 
 {$IFDEF FPC}
@@ -7,13 +17,13 @@ unit Mob;
 interface
 uses
 	Types,
-	Being,
+	AIBeing,
 	AI
 	;
 
 type
 	TSummonType = (stREPEAT,stONELIFE);
-	TMob = class(TBeing)
+	TMob = class(TAIBeing)
 	protected
 
 	public
@@ -26,8 +36,6 @@ type
 		Scale : Byte;
 		TamingItem : LongWord;
 		FoodItem  : LongWord;
-
-		AI : TAI;
 
 		InitPosition : TPoint;
 		RadiusX : Word;

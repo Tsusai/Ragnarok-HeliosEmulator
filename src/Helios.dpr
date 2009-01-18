@@ -123,6 +123,8 @@ compile for linux, at the same time*}
 	Mailbox in 'Common\Classes\Mailbox.pas',
 	Packets in 'Common\Classes\Packets.pas',
 	GameObject in 'Common\Classes\GameObject.pas',
+	AIBeing in 'Common\Classes\Beings\AIBeing.pas',
+	ChatRoom in 'Common\Classes\ChatRoom.pas',
 
 	//AI
 	AI in 'Common\Classes\AI\AI.pas',
@@ -267,6 +269,8 @@ compile for linux, at the same time*}
 	Mailbox in 'Common/Classes/Mailbox.pas',
 	Packets in 'Common/Classes/Packets.pas',
 	GameObject in 'Common/Classes/GameObject.pas',
+	AIBeing in 'Common/Classes/Beings/AIBeing.pas',
+	ChatRoom in 'Common/Classes/ChatRoom.pas',
 
 	//AI
 	AI in 'Common/Classes/AI/AI.pas',
