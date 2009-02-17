@@ -15,7 +15,14 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
-- Rev 677 -
+- Rev 678 -
+[2009/02/16] Tsusai - NPC OnTouch and OnClick methods updated to use a proper
+ TCharacter pointer.
+[2009/02/16] Tsusai - TCharacter now has PCharacter sister method (should fix 677)
+[2009/02/16] Tsusai - All lua npc commands use PCharacter
+-
+
+- Rev 677 - Broken
 [2009/02/16] Tsusai - Modified lua execution thread code, tests showed that it
  fixed having multiple thread globals
 -

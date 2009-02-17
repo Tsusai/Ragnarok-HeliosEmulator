@@ -20,7 +20,7 @@ implementation
 uses
 	//RTL
 	SysUtils,
-	Types,
+	Types,       
 	//Project
 	Character,
 	GameConstants,
@@ -302,7 +302,7 @@ end;
 //Warps the character to the given destination
 function script_moveto(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	//Validate
@@ -314,7 +314,7 @@ begin
 	if GetCharaFromLua(ALua,AChara) then
 	begin
 		ZoneSendWarp(
-			AChara,
+			AChara^,
 			lua_tostring(ALua,1),
 			lua_tointeger(ALua,2),
 			lua_tointeger(ALua,3)
@@ -327,21 +327,21 @@ begin
 	//anyways
 
 	//lua_yield(ALua,0);//end the script
-	AChara.ScriptStatus := SCRIPT_NOTRUNNING;
+	AChara^.ScriptStatus := SCRIPT_NOTRUNNING;
 end;
 
 //dialog "this is my text"
 //NPC Dialog to the character
 function script_dialog(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if not (lua_gettop(ALua) = 1) then luaL_error(ALua,'NPC Dialog parameter count error');
 	lual_argcheck(ALua,lua_isstring(ALua,1),1,'NPC Dialog must be string with quotes');
 	if GetCharaFromLua(ALua,AChara) then
 	begin
-		SendNPCDialog(AChara,AChara.ScriptBeing.ID,lua_tostring(ALua,1));
+		SendNPCDialog(AChara^,AChara^.ScriptBeing.ID,lua_tostring(ALua,1));
 	end;
 end;
 
@@ -349,16 +349,16 @@ end;
 //Sends the next button to the client
 function script_wait(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if not (lua_gettop(ALua) = 0) then luaL_error(ALua,'NPC wait must not have any parameters');
 	if GetCharaFromLua(ALua,AChara) then
 	begin
 		//Send the next button
-		SendNPCNext(AChara,AChara.ScriptBeing.ID);
+		SendNPCNext(AChara^,AChara^.ScriptBeing.ID);
 		//Pause lua.  Tell it to wait on 0 parameters in return.
-		AChara.ScriptStatus := SCRIPT_YIELD_WAIT;
+		AChara^.ScriptStatus := SCRIPT_YIELD_WAIT;
 		Result := lua_yield(ALua,0);
 	end;
 end;
@@ -367,15 +367,16 @@ end;
 //Sends the close button to the client and flags the script user as not running.
 function script_close(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if not lua_gettop(ALua) = 0 then luaL_error(ALua,'Close command error');
 	if GetCharaFromLua(ALua,AChara) then
 	begin
-		SendNPCClose(AChara,AChara.ScriptBeing.ID);
+		SendNPCClose(AChara^,AChara^.ScriptBeing.ID);
 		//Make lua stop
-		AChara.ScriptStatus := SCRIPT_NOTRUNNING;
+		AChara^.ScriptStatus := SCRIPT_NOTRUNNING;
+		TerminateLuaThread(AChara^.LuaInfo);
 	end;
 end;
 
@@ -383,7 +384,7 @@ end;
 //Sets the specified save point to the character
 function script_checkpoint(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	//Validate
@@ -394,8 +395,8 @@ begin
 	//Save data
 	if GetCharaFromLua(ALua,AChara) then
 	begin
-		AChara.SaveMap := lua_tostring(ALua,1);
-		AChara.SavePoint := Point(
+		AChara^.SaveMap := lua_tostring(ALua,1);
+		AChara^.SavePoint := Point(
 		lua_tointeger(ALua,2), lua_tointeger(ALua,3));
 	end;
 end;
@@ -406,7 +407,7 @@ end;
 //Each menu choice is delimited by ":"
 function script_menu(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 	ParamCount : word;
 	MenuString : string;
 	idx : word;
@@ -431,8 +432,8 @@ begin
 				MenuString := MenuString + ':' + lua_tostring(Alua,idx);
 			end;
 		end;
-		SendNPCMenu(AChara,AChara.ScriptBeing.ID,MenuString);
-		AChara.ScriptStatus := SCRIPT_YIELD_MENU;
+		SendNPCMenu(AChara^,AChara^.ScriptBeing.ID,MenuString);
+		AChara^.ScriptStatus := SCRIPT_YIELD_MENU;
 		Result := lua_yield(ALua,1);
 	end;
 end;
@@ -441,7 +442,7 @@ end;
 //Returns a character variable.
 function script_getcharavar(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 	Value : String;
 	Key : string;
 	KeyConst : Integer;
@@ -460,176 +461,176 @@ begin
 				KeyConst := lua_toInteger(ALua, 1);
 				case KeyConst of
 					VAR_ASPD: begin
-						lua_pushinteger(ALua, AChara.ASpeed);
+						lua_pushinteger(ALua, AChara^.ASpeed);
 					end;
 
 					VAR_CURXPOS: begin
-						lua_pushinteger(ALua, AChara.Position.X);
+						lua_pushinteger(ALua, AChara^.Position.X);
 					end;
 
 					VAR_CURYPOS: begin
-						lua_pushinteger(ALua, AChara.Position.Y);
+						lua_pushinteger(ALua, AChara^.Position.Y);
 					end;
 
 					VAR_CLEVEL: begin
-						lua_pushinteger(ALua, AChara.BaseLV);
+						lua_pushinteger(ALua, AChara^.BaseLV);
 					end;
 
 					VAR_EXP: begin
-						lua_pushinteger(ALua, AChara.BaseEXP);
+						lua_pushinteger(ALua, AChara^.BaseEXP);
 					end;
 
 					VAR_HAIRCOLOR: begin
-						lua_pushinteger(ALua, AChara.HairColor);
+						lua_pushinteger(ALua, AChara^.HairColor);
 					end;
 
 					VAR_HP: begin
-						lua_pushinteger(ALua, AChara.HP);
+						lua_pushinteger(ALua, AChara^.HP);
 					end;
 
 					VAR_JOB: begin
-						lua_pushinteger(ALua, AChara.JID);
+						lua_pushinteger(ALua, AChara^.JID);
 					end;
 
 					VAR_JOBEXP: begin
-						lua_pushinteger(ALua, AChara.JobEXP);
+						lua_pushinteger(ALua, AChara^.JobEXP);
 					end;
 
 					VAR_JOBLEVEL: begin
-						lua_pushinteger(ALua, AChara.JobLV);
+						lua_pushinteger(ALua, AChara^.JobLV);
 					end;
 
 					VAR_MAXHP: begin
-						lua_pushinteger(ALua, AChara.MaxHP);
+						lua_pushinteger(ALua, AChara^.MaxHP);
 					end;
 
 					VAR_MAXSP: begin
-						lua_pushinteger(ALua, AChara.MaxSP);
+						lua_pushinteger(ALua, AChara^.MaxSP);
 					end;
 
 					VAR_MAXWEIGHT: begin
-						lua_pushinteger(ALua, AChara.MaxWeight);
+						lua_pushinteger(ALua, AChara^.MaxWeight);
 					end;
 
 					VAR_MONEY : begin
-						lua_pushinteger(ALua, AChara.Zeny);
+						lua_pushinteger(ALua, AChara^.Zeny);
 					end;
 
 					VAR_POINT: begin
-						lua_pushinteger(ALua, AChara.StatusPts);
+						lua_pushinteger(ALua, AChara^.StatusPts);
 					end;
 
 					VAR_SEX : begin
-						lua_pushinteger(ALua, TClientLink(AChara.ClientInfo.Data).AccountLink.GenderNum);
+						lua_pushinteger(ALua, TClientLink(AChara^.ClientInfo.Data).AccountLink.GenderNum);
 					end;
 
 					VAR_SP: begin
-						lua_pushinteger(ALua, AChara.SP);
+						lua_pushinteger(ALua, AChara^.SP);
 					end;
 
 					VAR_SPEED: begin
-						lua_pushinteger(ALua, AChara.Speed);
+						lua_pushinteger(ALua, AChara^.Speed);
 					end;
 
 					VAR_SPPOINT: begin
-						lua_pushinteger(ALua, AChara.SkillPts);
+						lua_pushinteger(ALua, AChara^.SkillPts);
 					end;
 
 					VAR_WEIGHT: begin
-						lua_pushinteger(ALua, AChara.Weight);
+						lua_pushinteger(ALua, AChara^.Weight);
 					end;
 
 					//Ismarried Variable
 					//Implemented by Spre 2007/12/31
 					//Comment Here Incase changes need to be made, easily Identifiable
 					VAR_ISMARRIED: begin
-						lua_pushinteger(ALua, Byte(AChara.IsMarried));
+						lua_pushinteger(ALua, Byte(AChara^.IsMarried));
 					end;
 
 					VAR_STR: begin
-						lua_pushinteger(ALua, AChara.ParamBase[STR] + AChara.ParamBonus[STR]);
+						lua_pushinteger(ALua, AChara^.ParamBase[STR] + AChara^.ParamBonus[STR]);
 					end;
 
 					VAR_AGI: begin
-						lua_pushinteger(ALua, AChara.ParamBase[AGI] + AChara.ParamBonus[AGI]);
+						lua_pushinteger(ALua, AChara^.ParamBase[AGI] + AChara^.ParamBonus[AGI]);
 					end;
 
 					VAR_VIT: begin
-						lua_pushinteger(ALua, AChara.ParamBase[VIT] + AChara.ParamBonus[VIT]);
+						lua_pushinteger(ALua, AChara^.ParamBase[VIT] + AChara^.ParamBonus[VIT]);
 					end;
 
 					VAR_INT: begin
-						lua_pushinteger(ALua, AChara.ParamBase[INT] + AChara.ParamBonus[INT]);
+						lua_pushinteger(ALua, AChara^.ParamBase[INT] + AChara^.ParamBonus[INT]);
 					end;
 
 					VAR_DEX: begin
-						lua_pushinteger(ALua, AChara.ParamBase[DEX] + AChara.ParamBonus[DEX]);
+						lua_pushinteger(ALua, AChara^.ParamBase[DEX] + AChara^.ParamBonus[DEX]);
 					end;
 
 					VAR_LUK: begin
-						lua_pushinteger(ALua, AChara.ParamBase[LUK] + AChara.ParamBonus[LUK]);
+						lua_pushinteger(ALua, AChara^.ParamBase[LUK] + AChara^.ParamBonus[LUK]);
 					end;
 
 					VAR_STANDARD_STR: begin
-						lua_pushinteger(ALua, AChara.ParamBase[STR]);
+						lua_pushinteger(ALua, AChara^.ParamBase[STR]);
 					end;
 
 					VAR_STANDARD_AGI: begin
-						lua_pushinteger(ALua, AChara.ParamBase[AGI]);
+						lua_pushinteger(ALua, AChara^.ParamBase[AGI]);
 					end;
 
 					VAR_STANDARD_VIT: begin
-						lua_pushinteger(ALua, AChara.ParamBase[VIT]);
+						lua_pushinteger(ALua, AChara^.ParamBase[VIT]);
 					end;
 
 					VAR_STANDARD_INT: begin
-						lua_pushinteger(ALua, AChara.ParamBase[INT]);
+						lua_pushinteger(ALua, AChara^.ParamBase[INT]);
 					end;
 
 					VAR_STANDARD_DEX: begin
-						lua_pushinteger(ALua, AChara.ParamBase[DEX]);
+						lua_pushinteger(ALua, AChara^.ParamBase[DEX]);
 					end;
 
 					VAR_STANDARD_LUK: begin
-						lua_pushinteger(ALua, AChara.ParamBase[LUK]);
+						lua_pushinteger(ALua, AChara^.ParamBase[LUK]);
 					end;
 
 					VAR_CURDIR: begin
-						lua_pushinteger(ALua, AChara.Direction);
+						lua_pushinteger(ALua, AChara^.Direction);
 					end;
 
 					VAR_CHARACTERID: begin
-						lua_pushinteger(ALua, AChara.ID);
+						lua_pushinteger(ALua, AChara^.ID);
 					end;
 
 					VAR_ACCOUNTID: begin
-						lua_pushinteger(ALua, AChara.AccountID);
+						lua_pushinteger(ALua, AChara^.AccountID);
 					end;
 
 					VAR_MAPNAME: begin
-						lua_pushstring(ALua, PChar(AChara.Map));
+						lua_pushstring(ALua, PChar(AChara^.Map));
 					end;
 
 					VAR_ACCOUNTNAME: begin
-						Value := TClientLink(AChara.ClientInfo.Data).AccountLink.Name;
+						Value := TClientLink(AChara^.ClientInfo.Data).AccountLink.Name;
 						lua_pushstring(ALua, PChar(Value));
 					end;
 
 					VAR_CHARACTERNAME: begin
-						lua_pushstring(ALua, PChar(AChara.Name));
+						lua_pushstring(ALua, PChar(AChara^.Name));
 					end;
 
 					VAR_HEADPALETTE: begin
-						lua_pushinteger(ALua, AChara.HairColor);
+						lua_pushinteger(ALua, AChara^.HairColor);
 					end;
 
 					VAR_BODYPALETTE: begin
-						lua_pushinteger(ALua, AChara.ClothesColor);
+						lua_pushinteger(ALua, AChara^.ClothesColor);
 					end;
 				end;
 			end else
 			begin
-				Value := TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.GetVariable(AChara,Key, VarType);
+				Value := TThreadLink(AChara^.ClientInfo.Data).DatabaseLink.Character.GetVariable(AChara^,Key, VarType);
 				//Check variable type and push appropriate type back to script.
 				case VarType of
 					CHARAVAR_STRING :
@@ -653,7 +654,7 @@ end;
 //Sets a character variable
 function script_setcharavar(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 	Key : string;
 	Value : String;
 	AType : Byte;
@@ -675,7 +676,7 @@ begin
       end;
 			Value := lua_tostring(ALua, 2);
 
-			TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Character.SetVariable(AChara,Key,Value, AType);
+			TThreadLink(AChara^.ClientInfo.Data).DatabaseLink.Character.SetVariable(AChara^,Key,Value, AType);
 		end;
 	end else
 	begin
@@ -693,7 +694,7 @@ end;
 //gives the character an item of quantity
 function script_GetItem(ALua : TLua) : Integer;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 	AnItem : TItemInstance;
 	ItemID	: Word;
 begin
@@ -710,7 +711,7 @@ begin
 			if lua_isnumber(ALua, 1) then
 			begin
 				//if we're dealing with an id, we try to find the item.
-				if	TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Find(
+				if	TThreadLink(AChara^.ClientInfo.Data).DatabaseLink.Items.Find(
 							lua_tointeger(ALua, 1)
 						) then
 				begin
@@ -719,7 +720,7 @@ begin
 			//else, if we're dealing with a name, we try to find the id.
 			end else
 			begin
-				ItemID :=  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Find(lua_tostring(ALua, 1));
+				ItemID :=  TThreadLink(AChara^.ClientInfo.Data).DatabaseLink.Items.Find(lua_tostring(ALua, 1));
 			end;
 			//if an id was found, we check the second parameter
 			if ItemID > 0 then
@@ -733,8 +734,8 @@ begin
 					AnItem.Item.ID := ItemID;
 					AnItem.Quantity := EnsureRange(lua_tointeger(ALua, 2), 1, High(Word));
 					AnItem.Identified := true;
-					TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Load(AnItem.Item);
-					AChara.Inventory.Add(AnItem);
+					TThreadLink(AChara^.ClientInfo.Data).DatabaseLink.Items.Load(AnItem.Item);
+					AChara^.Inventory.Add(AnItem);
 				end else
 				begin
 					luaL_error(ALua,'script getitem syntax error, second parameter should be numeric');
@@ -752,7 +753,7 @@ end;
 
 function script_GetItemQuantity(ALua : TLua) : Integer;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 	ItemID	: Word;
 begin
 	Result := 0;
@@ -768,7 +769,7 @@ begin
 			if lua_isnumber(ALua, 1) then
 			begin
 				//if we're dealing with an id, we try to find the item.
-				if	TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Find(
+				if	TThreadLink(AChara^.ClientInfo.Data).DatabaseLink.Items.Find(
 							lua_tointeger(ALua, 1)
 						) then
 				begin
@@ -777,12 +778,12 @@ begin
 			//else, if we're dealing with a name, we try to find the id.
 			end else
 			begin
-				ItemID :=  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Find(lua_tostring(ALua, 1));
+				ItemID :=  TThreadLink(AChara^.ClientInfo.Data).DatabaseLink.Items.Find(lua_tostring(ALua, 1));
 			end;
 			//if an id was found, we check the second parameter
 			if ItemID > 0 then
 			begin
-					lua_pushinteger(ALua, AChara.Inventory.AmountOf(ItemId));
+					lua_pushinteger(ALua, AChara^.Inventory.AmountOf(ItemId));
 			end else
 			begin
 				luaL_error(ALua,'script getitemquantity syntax error, item not found');
@@ -796,7 +797,7 @@ end;
 
 function script_DropItem(ALua : TLua) : Integer;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 	ItemID	: Word;
 	Quantity : Word;
 begin
@@ -813,7 +814,7 @@ begin
 			if lua_isnumber(ALua, 1) then
 			begin
 				//if we're dealing with an id, we try to find the item.
-				if	TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Find(
+				if	TThreadLink(AChara^.ClientInfo.Data).DatabaseLink.Items.Find(
 							lua_tointeger(ALua, 1)
 						) then
 				begin
@@ -822,7 +823,7 @@ begin
 			//else, if we're dealing with a name, we try to find the id.
 			end else
 			begin
-				ItemID :=  TThreadLink(AChara.ClientInfo.Data).DatabaseLink.Items.Find(lua_tostring(ALua, 1));
+				ItemID :=  TThreadLink(AChara^.ClientInfo.Data).DatabaseLink.Items.Find(lua_tostring(ALua, 1));
 			end;
 			//if an id was found, we check the second parameter
 			if ItemID > 0 then
@@ -832,7 +833,7 @@ begin
 				begin
 					Quantity := EnsureRange(lua_toInteger(ALua, 2), 1, High(Word));
 					//since we passed all checks, create the item instance and add it to the inventory.
-					AChara.Inventory.Remove(ItemID, Quantity);
+					AChara^.Inventory.Remove(ItemID, Quantity);
 				end else
 				begin
 					luaL_error(ALua,'script dropitem syntax error, second parameter should be numeric');
@@ -852,7 +853,7 @@ end;
 //Gives or takes money/zeny to/from the character
 function script_getgold(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 	Zeny : LongInt;
 begin
 	//Returns 0 results
@@ -866,9 +867,9 @@ begin
 		//combining signed and unsigned types warning.  Ignoring
 		{$WARNINGS OFF}
 		Zeny := EnsureRange(lua_tointeger(ALua, 1),Low(LongInt),High(LongInt));
-		AChara.Zeny := EnsureRange(AChara.Zeny + Zeny,
-										Low(AChara.Zeny),
-										High(AChara.Zeny)
+		AChara^.Zeny := EnsureRange(AChara^.Zeny + Zeny,
+										Low(AChara^.Zeny),
+										High(AChara^.Zeny)
 		);
 		{$WARNINGS ON}
 	end;
@@ -877,7 +878,7 @@ end;
 //dropgold
 function script_dropgold(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 	Zeny : LongInt;
 begin
 	//Returns 0 results
@@ -890,9 +891,9 @@ begin
 	begin
 		{$WARNINGS OFF}
 		Zeny := EnsureRange(lua_tointeger(ALua, 1),Low(LongInt),High(LongInt));
-		AChara.Zeny := EnsureRange(AChara.Zeny - Zeny,
-										Low(AChara.Zeny),
-										High(AChara.Zeny)
+		AChara^.Zeny := EnsureRange(AChara^.Zeny - Zeny,
+										Low(AChara^.Zeny),
+										High(AChara^.Zeny)
 		);
 		{$WARNINGS ON}
 	end;
@@ -903,7 +904,7 @@ end;
 //Gives or takes base exp to/from the character
 function script_getexp(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	//Returns 0 results
 	Result := 0;
@@ -911,7 +912,7 @@ begin
 	lual_argcheck(ALua, lua_isnumber(ALua,1), 1, 'NPC getexp parameter must be a integer.');
 	if GetCharaFromLua(ALua,AChara) then
 	begin
-		AChara.BaseEXP := AChara.BaseEXP +
+		AChara^.BaseEXP := AChara^.BaseEXP +
 					Cardinal(EnsureRange(lua_tointeger(ALua, 1),0,High(Integer)));
 	end;
 end;
@@ -920,7 +921,7 @@ end;
 //Gives or takes job exp to/from the character
 function script_getJexp(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	//Returns 0 results
 	Result := 0;
@@ -928,7 +929,7 @@ begin
 	lual_argcheck(ALua, lua_isnumber(ALua,1), 1, 'NPC getjexp parameter must be a integer.');
 	if GetCharaFromLua(ALua,AChara) then
 	begin
-		AChara.JobEXP := AChara.JobEXP +
+		AChara^.JobEXP := AChara^.JobEXP +
 					Cardinal(EnsureRange(lua_tointeger(ALua, 1),0,High(Integer)));
 	end;
 end;
@@ -937,19 +938,19 @@ end;
 //Reset character's status
 function script_ResetStat(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if GetCharaFromLua(ALua,AChara) then
 	begin
-		AChara.ResetStats;
+		AChara^.ResetStats;
 	end;
 end;
 
 // Lose some % hp for player
 function script_HpDrain(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 	Percentage : Byte;
 begin
 	Result := 0;
@@ -958,15 +959,15 @@ begin
 	if GetCharaFromLua(ALua,AChara) then
 	begin
 		Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
-		if AChara.HP > 0 then
-			AChara.HPPercent := AChara.HPPercent - Percentage;
+		if AChara^.HP > 0 then
+			AChara^.HPPercent := AChara^.HPPercent - Percentage;
 	end;
 end;
 
 //Gain some % HP for player
 function script_HpHeal(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 	Percentage : Byte;
 begin
 	Result := 0;
@@ -976,15 +977,15 @@ begin
 	if GetCharaFromLua(ALua,AChara) then
 	begin
 		Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
-		if AChara.HP > 0 then
-			AChara.HPPercent := AChara.HPPercent + Percentage;
+		if AChara^.HP > 0 then
+			AChara^.HPPercent := AChara^.HPPercent + Percentage;
 	end;
 end;
 
 // Lose some sp for player
 function script_SpDrain(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 	Percentage : Byte;
 begin
 	Result := 0;
@@ -993,8 +994,8 @@ begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
 			Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
-			if AChara.SP > 0 then
-				AChara.SPPercent := AChara.SPPercent - Percentage;
+			if AChara^.SP > 0 then
+				AChara^.SPPercent := AChara^.SPPercent - Percentage;
 		end;
 	end;
 end;
@@ -1002,7 +1003,7 @@ end;
 //Gain some % SP for player
 function script_SpHeal(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 	Percentage : Byte;
 begin
 	Result := 0;
@@ -1011,8 +1012,8 @@ begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
 			Percentage := EnsureRange(lua_tointeger(ALua, 1),0,100);
-			if AChara.SP > 0 then
-				AChara.SPPercent := AChara.SPPercent + Percentage;
+			if AChara^.SP > 0 then
+				AChara^.SPPercent := AChara^.SPPercent + Percentage;
 		end;
 	end;
 end;
@@ -1020,14 +1021,14 @@ end;
 //Full heal player's HP
 function script_HPFullHeal(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if lua_gettop(ALua) = 0 then
 	begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
-			AChara.HP := AChara.MaxHP;
+			AChara^.HP := AChara^.MaxHP;
 		end;
 	end else
 	begin
@@ -1038,14 +1039,14 @@ end;
 //Full heal player's SP
 function script_SPFullHeal(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if lua_gettop(ALua) = 0 then
 	begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
-			AChara.SP := AChara.MaxSP;
+			AChara^.SP := AChara^.MaxSP;
 		end;
 	end else
 	begin
@@ -1056,7 +1057,7 @@ end;
 //Compass - mark on mini map
 function script_Compass(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 	PointType : Byte;
 begin
 	Result := 0;
@@ -1073,8 +1074,8 @@ begin
 				if PointType = 0 then
 					PointType := 2;
 				SendCompass(
-					AChara.ClientInfo,
-					AChara.ScriptBeing.ID,
+					AChara^.ClientInfo,
+					AChara^.ScriptBeing.ID,
 					lua_tointeger(ALua, 1),
 					lua_tointeger(ALua, 2),
 					lua_tointeger(ALua, 3),
@@ -1089,7 +1090,7 @@ end;
 //Show cutin thingy
 function script_ShowImage(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if lua_gettop(ALua) = 2 then
@@ -1100,7 +1101,7 @@ begin
 			if GetCharaFromLua(ALua,AChara) then
 			begin
 				SendCutin(
-					AChara.ClientInfo,
+					AChara^.ClientInfo,
 					lua_toString(ALua, 1),
 					EnsureRange(lua_toInteger(ALua, 2),0,255)
 				);
@@ -1122,14 +1123,14 @@ end;
 //Trigger emotion
 function script_Emotion(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if lua_gettop(ALua) = 1 then
 	begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
-			AChara.ScriptBeing.ShowEmotion(lua_tointeger(ALua,1));
+			AChara^.ScriptBeing.ShowEmotion(lua_tointeger(ALua,1));
 		end;
 	end;
 end;
@@ -1137,13 +1138,13 @@ end;
 //Open Mailbox
 function script_OpenMailBox(ALua : TLua) : integer;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if GetCharaFromLua(ALua,AChara) then
 	begin
 		ToggleMailWindow(
-			AChara,
+			AChara^,
 			True
 		);
 	end;
@@ -1152,13 +1153,13 @@ end;
 //Close Mailbox
 function script_CloseMailBox(ALua : TLua) : integer;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if GetCharaFromLua(ALua,AChara) then
 	begin
 		ToggleMailWindow(
-			AChara,
+			AChara^,
 			False
 		);
 	end;
@@ -1168,13 +1169,13 @@ end;
 //Change Job script code [Spre]
 function script_JobChange(ALua : TLua) : integer;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	if (lua_gettop(ALua) = 1) then
 	begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
-			AChara.ChangeJob(EnsureRange(lua_tointeger(ALua, 1), 0, high(word)));
+			AChara^.ChangeJob(EnsureRange(lua_tointeger(ALua, 1), 0, high(word)));
 		end;
 	end else
 	begin
@@ -1187,12 +1188,12 @@ end;
 //Code I am working on to reset ones look to 0 [Spre]
 function script_ResetLook(ALua	:TLua)	:	Integer;	cdecl;
 var
-	AChara	:	TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if GetCharaFromLua(ALua,AChara) then
 	begin
-//		AChara.ResetLook;
+//		AChara^.ResetLook;
 	end;
 	luaL_error(ALua,'script Reset Look syntax error');
 end;
@@ -1201,14 +1202,14 @@ end;
 //Special commands here
 function script_get_charaname(ALua : TLua) : integer; cdecl;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 1; //we are going to return 1 result
 	if (lua_gettop(ALua) = 0) then
 	begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
-			lua_pushstring(ALua,PChar(AChara.Name));
+			lua_pushstring(ALua,PChar(AChara^.Name));
 		end;
 	end else
 	begin
@@ -1227,10 +1228,12 @@ begin
 	begin
 		if i > 1 then
 			Write(#9);
-		if lua_isstring(ALua, i) then
-			Write(lua_tostring(ALua, i))
-		else
-			Write(Format('%s:%p', [lua_type(ALua, i), lua_topointer(ALua, i)]));
+		try//if lua_isstring(ALua, i) then
+			Write(lua_tostring(ALua, i));
+			write(lua_typename(ALua, i));
+		except//else
+			//Write(Format('%s:%p', [lua_type(ALua, i), lua_topointer(ALua, i)]));
+		end;
 	end;
 	WriteLn;
 	Result := 0;
@@ -1239,7 +1242,7 @@ end;
 //Input a number
 function script_Input(ALua : TLua) : integer;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if (lua_gettop(ALua) = 0) then
@@ -1247,10 +1250,10 @@ begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
 			SendNPCInput(
-				AChara,
-				AChara.ScriptBeing.ID
+				AChara^,
+				AChara^.ScriptBeing.ID
 			);
-			AChara.ScriptStatus := SCRIPT_YIELD_INPUT;
+			AChara^.ScriptStatus := SCRIPT_YIELD_INPUT;
 			Result := lua_yield(ALua,1);
 		end;
 	end else
@@ -1262,7 +1265,7 @@ end;
 //Input of a string
 function script_InputStr(ALua : TLua) : integer;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if (lua_gettop(ALua) = 0) then
@@ -1270,10 +1273,10 @@ begin
 		if GetCharaFromLua(ALua,AChara) then
 		begin
 			SendNPCInputStr(
-				AChara,
-				AChara.ScriptBeing.ID
+				AChara^,
+				AChara^.ScriptBeing.ID
 			);
-			AChara.ScriptStatus := SCRIPT_YIELD_INPUT;
+			AChara^.ScriptStatus := SCRIPT_YIELD_INPUT;
 			Result := lua_yield(ALua,1);
 		end;
 	end else
@@ -1285,7 +1288,7 @@ end;
 //Broadcast in current map
 function script_BroadcastInMap(ALua : TLua) : integer;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if (lua_gettop(ALua) = 1) then
@@ -1294,8 +1297,8 @@ begin
 		begin
 			ZoneSendGMCommandtoInter(
 				MainProc.ZoneServer.ToInterTCPClient,
-				AChara.AccountID,
-				AChara.ID,
+				AChara^.AccountID,
+				AChara^.ID,
 				'#BroadCastLN ' + lua_tostring(ALua,1)
 			);
 		end;
@@ -1307,7 +1310,7 @@ end;
 
 function script_CreateInstanceMap(ALua : TLua) : integer;
 var
-	AChara : TCharacter;
+	AChara : PCharacter;
 begin
 	Result := 0;
 	if (lua_gettop(ALua) = 2) then
@@ -1320,8 +1323,8 @@ begin
 					MainProc.ZoneServer.ToInterTCPClient,
 					IntToStr(lua_tointeger(ALua, 1)),
 					lua_tostring(ALua, 2),
-					AChara.ID,
-					AChara.ScriptBeing.ID
+					AChara^.ID,
+					AChara^.ScriptBeing.ID
 				)
 			else
 				ZoneSendCreateInstanceMapRequest
@@ -1329,10 +1332,10 @@ begin
 					MainProc.ZoneServer.ToInterTCPClient,
 					lua_tostring(ALua, 1),
 					lua_tostring(ALua, 2),
-					AChara.ID,
-					AChara.ScriptBeing.ID
+					AChara^.ID,
+					AChara^.ScriptBeing.ID
 				);
-			AChara.ScriptStatus := SCRIPT_YIELD_INSTANCEREQUEST;
+			AChara^.ScriptStatus := SCRIPT_YIELD_INSTANCEREQUEST;
 			Result := lua_yield(ALua,1);
 		end;
 	end else

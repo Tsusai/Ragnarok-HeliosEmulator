@@ -94,8 +94,8 @@ uses
 			OnTouchYRadius : word;
 			OnTouchEnabled : boolean;
 
-			procedure OnTouch(ACharacter : TCharacter);
-			procedure OnClick(ACharacter : TCharacter);
+			procedure OnTouch(var ACharacter : TCharacter);
+			procedure OnClick(var ACharacter : TCharacter);
 
 			procedure Enable;
 			Procedure Disable;
@@ -188,7 +188,7 @@ begin
 	inherited;
 end;
 
-procedure TScriptNPC.OnTouch(ACharacter : TCharacter);
+procedure TScriptNPC.OnTouch(var ACharacter : TCharacter);
 begin
 	if TouchFunction <> '' then
 	begin
@@ -196,7 +196,7 @@ begin
 	end;
 end;
 
-procedure TScriptNPC.OnClick(ACharacter : TCharacter);
+procedure TScriptNPC.OnClick(var ACharacter : TCharacter);
 begin
 	if ClickFunction <> '' then
 	begin

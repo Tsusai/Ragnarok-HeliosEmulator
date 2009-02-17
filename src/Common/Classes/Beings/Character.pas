@@ -99,6 +99,9 @@ Revisions:
 [2007/05/28] Tsusai - Added ScriptID, to store current(/last?) script id in use
 [2008/06/28] Tsusai - Added eAPacketVer to hold the packetdb ea number.
 *=============================================================================*)
+TCharacter = class; //Declaration
+PCharacter = ^TCharacter; // Add Pointer version
+
 TCharacter = class(TBeing)
 protected
 	fCharacterNumber  : Byte;
