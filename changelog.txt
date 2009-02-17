@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 677 -
+[2009/02/16] Tsusai - Modified lua execution thread code, tests showed that it
+ fixed having multiple thread globals
+-
+
 - Rev 676 -
 [2009/01/18] Aeomin - Chatroom implementation part III.
 -

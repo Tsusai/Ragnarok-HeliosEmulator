@@ -43,7 +43,7 @@ uses
 		Index : word
 	) : boolean;
 
-  // Core Routines
+	// Core Routines
 	procedure MakeLuaThread(
 		var SourceLua : TLua;
 		var DestLua   : TLuaInfo
@@ -73,7 +73,7 @@ uses
 	);
 
 	procedure SetCharaToLua(var AChara : TCharacter);
-	function GetCharaFromLua(var ALua : TLua; var AChara : TCharacter) : boolean;
+	function GetCharaFromLua(var ALua : TLua; var AChara : PCharacter) : boolean;
 
 
 implementation
@@ -81,9 +81,11 @@ uses
 	{RTL/VCL}
 	Globals,
 	Terminal,
-  {Project}
+	//LuaTCharacter,
+	{Project}
 	Main,
-	Math;
+	Math,
+	WinLinux;
 
 //------------------------------------------------------------------------------
 //Lua_isNonNumberString                                                 FUNCTION
@@ -163,6 +165,7 @@ end;{Lua_isposnumber}
 //		THIS WAS A BITCH TO MAKE, SHOULD NOT NEED ALTERING IN ANY FORM
 //
 //	Changes -
+//		Feb 16 2009 - Tsusai: Changed to better example from lua mailing lists
 //------------------------------------------------------------------------------
 procedure MakeLuaThread(
 	var SourceLua : TLua;
@@ -176,13 +179,14 @@ begin
 	//Create a local environment with a link to global environment via
 	//    __index metamethod
 	//This allows for thread only globals
-	lua_newtable(SourceLua);
-	lua_pushvalue(SourceLua, -1);
-	lua_setmetatable(SourceLua, -2); //Set itself as metatable
-	lua_pushvalue(SourceLua, LUA_GLOBALSINDEX);
-	lua_setfield(SourceLua, -2, '__index');
-	lua_setfenv(SourceLua, -2);
-	lua_pop(SourceLua, 1);
+	lua_newtable(SourceLua); //new table for globals
+	lua_newtable(SourceLua); //metatable for new globals
+	lua_pushliteral(SourceLua, '__index');
+	lua_pushvalue(SourceLua, LUA_GLOBALSINDEX); //__index tries old common globals
+	lua_settable(SourceLua, -3);
+	lua_setmetatable(SourceLua, -2);
+	lua_replace(SourceLua, LUA_GLOBALSINDEX);
+
 end;{MakeLuaThread}
 //------------------------------------------------------------------------------
 
@@ -211,6 +215,7 @@ end;{InitLuaState}
 //------------------------------------------------------------------------------
 procedure LoadAndRunLuaScript(var ALua : TLua; Const LuaFile : String);
 begin
+	//RegisterClassTCharacter(ALua);
 	//Load the script
 	if luaL_loadfile(ALua, PChar(LuaFile)) <> 0 then //0 = no errors
 	begin
@@ -321,6 +326,12 @@ procedure SetCharaToLua(var AChara : TCharacter);
 begin
 	lua_pushlightuserdata(AChara.LuaInfo.Lua, @AChara); // Push pointer for the character
 	lua_setglobal(AChara.LuaInfo.Lua, 'character'); // Tell Lua to set it as global
+	//RegisterClassTCharacter(AChara.LuaInfo.Lua);
+	//RegisterExistingClassTCharacter(AChara.LuaInfo.Lua,AChara,'LuaChara');
+	lua_pushstring(Achara.LuaInfo.Lua, 'Moocakes');
+	lua_setglobal(AChara.LuaInfo.Lua, 'moo');
+	//luatcharacter.RegisterClassTCharacter(AChara.LuaInfo.Lua);
+	//Writeln('TCharacter put onto buffer is ' + Inttohex(integer(@AChara),8));
 end;{SetCharaToLua}
 //------------------------------------------------------------------------------
 
@@ -332,21 +343,13 @@ end;{SetCharaToLua}
 //			Pulls the Character object pointer from the lua global array.
 //	Changes -
 //------------------------------------------------------------------------------
-function GetCharaFromLua(var ALua : TLua; var AChara : TCharacter) : boolean;
-var
-	PCharacter : ^TCharacter;
+function GetCharaFromLua(var ALua : TLua; var AChara : PCharacter) : boolean;
 begin
-	Result := false;
 	lua_getglobal(ALua, 'character');
-	PCharacter := lua_topointer(ALua, -1);
-	if Assigned(PCharacter) then
-	begin
-		AChara := PCharacter^;
-		if Assigned(AChara) then
-		begin
-			Result := true;
-		end;
-	end;
+	AChara := lua_topointer(ALua, -1);
+	Result := Assigned(AChara); //Need something better
+	lua_getglobal(ALua, 'moo');
+	writeln(lua_tostring(ALua, -1));
 end;{GetCharaFromLua}
 //------------------------------------------------------------------------------
 end{LuaCoreRoutines}.
