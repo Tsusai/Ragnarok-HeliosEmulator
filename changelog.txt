@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 679 -
+[2009/03/01] Tsusai - Added LuaTCharacter.  This module is a wrapper for
+ the TCharacter class
+-
+
 - Rev 678 -
 [2009/02/16] Tsusai - NPC OnTouch and OnClick methods updated to use a proper
  TCharacter pointer.

@@ -81,8 +81,8 @@ uses
 	{RTL/VCL}
 	Globals,
 	Terminal,
-	//LuaTCharacter,
 	{Project}
+	LuaTCharacter,
 	Main,
 	Math,
 	WinLinux;
@@ -215,7 +215,7 @@ end;{InitLuaState}
 //------------------------------------------------------------------------------
 procedure LoadAndRunLuaScript(var ALua : TLua; Const LuaFile : String);
 begin
-	//RegisterClassTCharacter(ALua);
+	RegisterClassTCharacter(ALua);
 	//Load the script
 	if luaL_loadfile(ALua, PChar(LuaFile)) <> 0 then //0 = no errors
 	begin
@@ -327,11 +327,7 @@ begin
 	lua_pushlightuserdata(AChara.LuaInfo.Lua, @AChara); // Push pointer for the character
 	lua_setglobal(AChara.LuaInfo.Lua, 'character'); // Tell Lua to set it as global
 	//RegisterClassTCharacter(AChara.LuaInfo.Lua);
-	//RegisterExistingClassTCharacter(AChara.LuaInfo.Lua,AChara,'LuaChara');
-	lua_pushstring(Achara.LuaInfo.Lua, 'Moocakes');
-	lua_setglobal(AChara.LuaInfo.Lua, 'moo');
-	//luatcharacter.RegisterClassTCharacter(AChara.LuaInfo.Lua);
-	//Writeln('TCharacter put onto buffer is ' + Inttohex(integer(@AChara),8));
+	RegisterExistingClassTCharacter(AChara.LuaInfo.Lua,AChara,'LuaChara');
 end;{SetCharaToLua}
 //------------------------------------------------------------------------------
 
@@ -348,8 +344,6 @@ begin
 	lua_getglobal(ALua, 'character');
 	AChara := lua_topointer(ALua, -1);
 	Result := Assigned(AChara); //Need something better
-	lua_getglobal(ALua, 'moo');
-	writeln(lua_tostring(ALua, -1));
 end;{GetCharaFromLua}
 //------------------------------------------------------------------------------
 end{LuaCoreRoutines}.

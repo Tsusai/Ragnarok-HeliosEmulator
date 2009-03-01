@@ -146,6 +146,8 @@ compile for linux, at the same time*}
 	LuaNPCCore in 'Servers\Zone\Lua\NPC\LuaNPCCore.pas',
 	LuaNPCCommands in 'Servers\Zone\Lua\NPC\LuaNPCCommands.pas',
 	LuaTypes in 'Servers\Zone\Lua\LuaTypes.pas',
+	LuaUtils in 'Common\ThirdParty\LuaUtils.pas',
+	LuaTCharacter in 'Common\Classes\Beings\Lua\LuaTCharacter.pas',
 
 	//Lists
 	BeingList in 'Common\Classes\Lists\BeingList.pas',
@@ -358,7 +360,6 @@ compile for linux, at the same time*}
 //------------------------------------------------------------------------------
 	//Main Unit
 	Main in 'Main.pas',
-
 	SysUtils;
 //------------------------------------------------------------------------------
 
@@ -382,7 +383,6 @@ compile for linux, at the same time*}
 //------------------------------------------------------------------------------
 var
 	AnInput   : string;
-
 begin
 	try
 		//Tsusai 7/8/06 : Randomize added.  Learned from Prometheus.
