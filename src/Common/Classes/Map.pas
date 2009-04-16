@@ -65,6 +65,7 @@ TMap = class(TObject)
 		MobList  : TObjectList;
 		ItemList : TIntList32;
 		NPCList  : TIntList32;
+		ChatroomList : TIntList32;
 
 		Constructor Create;
 		Destructor Destroy;override;
@@ -134,6 +135,7 @@ begin
 	NPCList := TIntList32.Create;
 	SlotList := TIntList32.Create;
 	NextID := 1;
+	ChatroomList := TIntList32.Create;
 end;
 //------------------------------------------------------------------------------
 
@@ -157,6 +159,7 @@ begin
 	ItemList.Free;
 	NPCList.Free;
 	SlotList.Free;
+	ChatroomList.Free;
 	inherited;
 end;
 //------------------------------------------------------------------------------

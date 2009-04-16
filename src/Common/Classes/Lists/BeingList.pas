@@ -26,7 +26,6 @@ type
 //TCharacterList                                                          CLASS
 //------------------------------------------------------------------------------
 	TBeingList = Class(TObject)
-
 	Private
 		fList : TObjectList;
 		fOwnsObject : Boolean;

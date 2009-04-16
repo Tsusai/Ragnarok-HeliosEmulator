@@ -303,6 +303,12 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure JoinChatroom(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -2191,6 +2197,9 @@ var
 begin
 	Len := BufferReadWord(ReadPts[0], InBuffer) - 15;
 	Limit := BufferReadWord(ReadPts[1], InBuffer);
+	//Hard coded CAP!
+	if Limit > 100 then
+		Exit;
 	isPublic := Boolean(BufferReadByte(ReadPts[2], InBuffer));
 	Password := BufferReadString(ReadPts[3],8,InBuffer);
 	Title := BufferReadString(ReadPts[4],Len,InBuffer);
@@ -2241,6 +2250,46 @@ begin
 			Chatroom.Free;
 	end;
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//JoinChatroom                                                         PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Joint a chatroom
+//
+//	Changes -
+//		[2009/01/18] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure JoinChatroom(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	RoomID : LongWord;
+	Password : String;
+
+	Index : Integer;
+	Room : TChatRoom;
+begin
+	RoomID := BufferReadLongWord(ReadPts[0], InBuffer);
+	Password := BufferReadString(ReadPts[1],8, InBuffer);
+
+	Index := AChara.MapInfo.ChatroomList.IndexOf(RoomID);
+	if Index > -1 then
+	begin
+		Room := AChara.MapInfo.ChatroomList.Objects[Index] as TChatRoom;
+		Room.Join(AChara,Password);
+	end else
+	begin
+		SendJoinChatFailed(
+			AChara,
+			0
+		);
+	end;
+end;{JoinChatroom}
 //------------------------------------------------------------------------------
 
 

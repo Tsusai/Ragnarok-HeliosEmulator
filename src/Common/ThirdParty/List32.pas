@@ -55,7 +55,6 @@ Type
     FDuplicates: TDuplicates;
     FOnChange: TNotifyEvent;
     FOnChanging: TNotifyEvent;
-    CriticalSection : TCriticalSection;
     procedure ExchangeItems(Index1, Index2: Integer);
     procedure Grow;
     procedure QuickSort(L, R: Integer; SCompare: TIntListSortCompare);
@@ -119,8 +118,6 @@ type
 constructor TIntList32.Create;
 begin
 	inherited;
-	CriticalSection := TCriticalSection.Create;
-	CriticalSection.Enter;
 end;
 
 
@@ -128,8 +125,6 @@ destructor TIntList32.Destroy;
 begin
 	FOnChange := nil;
 	FOnChanging := nil;
-	CriticalSection.Leave;
-	CriticalSection.Free;
   inherited destroy;
   FCount := 0;
   SetCapacity(0);

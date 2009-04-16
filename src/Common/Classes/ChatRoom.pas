@@ -31,6 +31,7 @@ type
 		Characters : TBeingList;
 		property Owner : TBeing read fOwner write SetOwner;
 		function Quit(const ID:LongWord;const Kick:Boolean=False;const Safe : Boolean=False):Boolean;
+		function Join(const ABeing:TBeing;const Password:String):Boolean;
 		constructor Create(const Owner:TBeing);
 		destructor Destroy; override;
 	end;
@@ -54,9 +55,17 @@ uses
 //
 //------------------------------------------------------------------------------
 procedure TChatRoom.SetOwner(NewOwner : TBeing);
+var
+	Index : Integer;
 begin
-	{TODO:Update packet?}
 	fOwner := NewOwner;
+	for Index := 0 to Characters.Count - 1 do
+	begin
+		SendChangeChatOwner(
+			TCharacter(Characters[Index]),
+			fOwner.Name
+		);
+	end;
 end;{SetOwner}
 //------------------------------------------------------------------------------
 
@@ -118,6 +127,67 @@ end;{Quit}
 
 
 //------------------------------------------------------------------------------
+//Join                                                                 PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does-
+//		Attempt to join the channel
+//
+//	Changes -
+//		[2009/01/18] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function TChatRoom.Join(const ABeing:TBeing;const Password:String):Boolean;
+var
+	AChara : TCharacter;
+	Index : Word;
+begin
+	Result := False;
+	AChara := TCharacter(Abeing);
+	if (Characters.Count >= Limit) then
+	begin
+		SendJoinChatFailed(
+			AChara,
+			0
+		);
+	end else
+	if (Characters.IndexOf(AChara.ID) > -1) then
+	begin
+		SendJoinChatFailed(
+			AChara,
+			1
+		);
+	end;
+	if (isPublic or (Password = self.PassWord)) then
+	begin
+		AChara.EventList.DeleteMovementEvents;
+		AChara.EventList.DeleteAttackEvents;
+		AChara.ChatRoom := Self;
+		for Index := 0 to Characters.Count - 1 do
+		begin
+			SendNotifyJoinChat(
+				TCharacter(Characters.Items[Index]),
+				Characters.Count +1,
+				AChara.Name
+			);
+		end;
+		Characters.Add(ABeing);
+		SendJoinChatOK(
+			AChara,
+			Self
+		);
+		Result := True;
+	end else
+	begin
+		SendJoinChatFailed(
+			AChara,
+			1
+		);
+	end;
+end;{Join}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
 //Create                                                             CONSTRUCOTR
 //------------------------------------------------------------------------------
 //	What it does-
@@ -133,6 +203,7 @@ begin
 	Characters := TBeingList.Create(FALSE);
 	Characters.Add(fOwner);
 	ID := TCharacter(fOwner).MapInfo.NewObjectID;
+	TCharacter(fOwner).MapInfo.ChatroomList.AddObject(ID,Self)
 end;{Creat}
 //------------------------------------------------------------------------------
 
@@ -148,8 +219,15 @@ end;{Creat}
 //
 //------------------------------------------------------------------------------
 destructor TChatRoom.Destroy;
+var
+	Index : Integer;
 begin
 	Characters.Free;
+	Index := TCharacter(fOwner).MapInfo.ChatroomList.IndexOf(ID);
+	if Index > -1 then
+	begin
+		TCharacter(fOwner).MapInfo.ChatroomList.Delete(Index);
+	end;
 	TCharacter(fOwner).MapInfo.DisposeObjectID(ID);
 	inherited;
 end;{Destroy}

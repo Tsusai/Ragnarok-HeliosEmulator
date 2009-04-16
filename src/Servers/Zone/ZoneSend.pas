@@ -363,6 +363,27 @@ uses
 		const AChara : TCharacter;
 		const ID : LongWord
 	);
+
+	procedure SendChangeChatOwner(
+		const AChara : TCharacter;
+		const Name:String
+	);
+
+	procedure SendJoinChatFailed(
+		const AChara : TCharacter;
+		const Flag : Byte
+	);
+
+	procedure SendJoinChatOK(
+		const AChara : TCharacter;
+		const AChatRoom : TChatRoom
+	);
+
+	procedure SendNotifyJoinChat(
+		const AChara : TCharacter;
+		const NewUsers : Word;
+		const Name : String
+	);
 implementation
 
 
@@ -542,28 +563,49 @@ var
 	idxX			: SmallInt;
 	BeingIdx	: integer;
 begin
-	//16 covers the old 15x15 grid
-	for idxY := Max(ACharacter.Position.Y-MainProc.ZoneServer.Options.CharShowArea,0) to Min(ACharacter.Position.Y+MainProc.ZoneServer.Options.CharShowArea,ACharacter.MapInfo.Size.Y - 1) do
+	if Assigned(ACharacter.ChatRoom) then
 	begin
-		for idxX := Max(ACharacter.Position.X-MainProc.ZoneServer.Options.CharShowArea,0) to Min(ACharacter.Position.X+MainProc.ZoneServer.Options.CharShowArea,ACharacter.MapInfo.Size.X - 1) do
+		for BeingIdx := 0 to ACharacter.ChatRoom.Characters.Count - 1 do
 		begin
-			for BeingIdx := ACharacter.MapInfo.Cell[idxX,idxY].Beings.Count - 1 downto 0 do
+			APerson := ACharacter.ChatRoom.Characters.Items[BeingIdx] as TCharacter;
+			if APerson = ACharacter then
 			begin
-				if not (ACharacter.MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] is TCharacter) then
+				ZoneSendCharacterMessage(ACharacter, Chat);
+			end else
+			begin
+				WriteBufferWord(0, $008d, OutBuffer);
+				WriteBufferWord(2, Length+9, OutBuffer);
+				WriteBufferLongWord(4, ACharacter.ID, OutBuffer);
+				WriteBufferString(8, Chat+#0, Length+1, OutBuffer);
+				Sendbuffer(APerson.ClientInfo, OutBuffer, Length+9);
+			end;
+			
+		end;
+	end else
+	begin
+		//16 covers the old 15x15 grid
+		for idxY := Max(ACharacter.Position.Y-MainProc.ZoneServer.Options.CharShowArea,0) to Min(ACharacter.Position.Y+MainProc.ZoneServer.Options.CharShowArea,ACharacter.MapInfo.Size.Y - 1) do
+		begin
+			for idxX := Max(ACharacter.Position.X-MainProc.ZoneServer.Options.CharShowArea,0) to Min(ACharacter.Position.X+MainProc.ZoneServer.Options.CharShowArea,ACharacter.MapInfo.Size.X - 1) do
+			begin
+				for BeingIdx := ACharacter.MapInfo.Cell[idxX,idxY].Beings.Count - 1 downto 0 do
 				begin
-					Continue;
-				end;
-				APerson := ACharacter.MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TCharacter;
-				if APerson = ACharacter then
-				begin
-					ZoneSendCharacterMessage(ACharacter, Chat);
-				end else
-				begin
-					WriteBufferWord(0, $008d, OutBuffer);
-					WriteBufferWord(2, Length+9, OutBuffer);
-					WriteBufferLongWord(4, ACharacter.ID, OutBuffer);
-					WriteBufferString(8, Chat+#0, Length+1, OutBuffer);
-					Sendbuffer(APerson.ClientInfo, OutBuffer, Length+9);
+					if not (ACharacter.MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] is TCharacter) then
+					begin
+						Continue;
+					end;
+					APerson := ACharacter.MapInfo.Cell[idxX,idxY].Beings.Objects[BeingIdx] as TCharacter;
+					if APerson = ACharacter then
+					begin
+						ZoneSendCharacterMessage(ACharacter, Chat);
+					end else
+					begin
+						WriteBufferWord(0, $008d, OutBuffer);
+						WriteBufferWord(2, Length+9, OutBuffer);
+						WriteBufferLongWord(4, ACharacter.ID, OutBuffer);
+						WriteBufferString(8, Chat+#0, Length+1, OutBuffer);
+						Sendbuffer(APerson.ClientInfo, OutBuffer, Length+9);
+					end;
 				end;
 			end;
 		end;
@@ -2658,5 +2700,107 @@ begin
 	WriteBufferLongWord(2, ID, OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer,PacketDB.GetLength($00d8,AChara.ClientVersion));
 end;{SendClearChat}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendChangeChatOwner                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Change chat owner
+//
+//	Changes -
+//		[2009/01/18] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendChangeChatOwner(
+	const AChara : TCharacter;
+	const Name:String
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00e1, OutBuffer);
+	WriteBufferLongWord(2, 1, OutBuffer);
+	WriteBufferString(6,Name,NAME_LENGTH,OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer,PacketDB.GetLength($00e1,AChara.ClientVersion));
+end;{SendChangeChatOwner}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendJoinChatFailed                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Failed to join chatroom
+//
+//	Changes -
+//		[2009/01/18] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendJoinChatFailed(
+	const AChara : TCharacter;
+	const Flag : Byte
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00da, OutBuffer);
+	WriteBufferByte(2, Flag, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer,PacketDB.GetLength($00da,AChara.ClientVersion));
+end;{SendJoinChatFailed}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendJoinChatOK                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Join chatroom OK, send player list
+//
+//	Changes -
+//		[2009/04/16] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendJoinChatOK(
+	const AChara : TCharacter;
+	const AChatRoom : TChatRoom
+);
+var
+	OutBuffer : TBuffer;
+	Index : Word;
+begin
+	WriteBufferWord(0, $00db, OutBuffer);
+	WriteBufferWord(2, 28*AChatRoom.Characters.Count + 8, OutBuffer);
+	WriteBufferLongWord(4, AChatRoom.ID, OutBuffer);
+	for Index := 0 to AChatRoom.Characters.Count - 1 do
+	begin
+		WriteBufferLongWord(Index * 28 + 8, Byte((Index > 0)OR(AChatRoom.Owner is TNPC)), OutBuffer);
+		WriteBufferString(Index * 28 + 12,AChatRoom.Characters.Items[Index].Name ,NAME_LENGTH, OutBuffer);
+	end;
+	SendBuffer(AChara.ClientInfo, OutBuffer,28*AChatRoom.Characters.Count + 8);
+end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//SendNotifyJoinChat                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Notify players when someone joins the chatroom
+//
+//	Changes -
+//		[2009/04/16] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure SendNotifyJoinChat(
+	const AChara : TCharacter;
+	const NewUsers : Word;
+	const Name : String
+);
+var
+	OutBuffer : TBuffer;
+begin
+	WriteBufferWord(0, $00dc, OutBuffer);
+	WriteBufferWord(2, NewUsers, OutBuffer);
+	WriteBufferString(4,  Name ,NAME_LENGTH, OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer,PacketDB.GetLength($00dc,AChara.ClientVersion));
+end;
 //------------------------------------------------------------------------------
 end{ZoneSend}.

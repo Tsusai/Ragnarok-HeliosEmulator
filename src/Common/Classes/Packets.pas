@@ -539,9 +539,9 @@ Begin
 				//end of first unknown eA block
 				end else if Command = 'createchatroom' then begin
 					ExecCommand := CreateChatroom;
-				{end else if Command = 'chataddmember' then begin
+				end else if Command = 'chataddmember' then begin
 					ExecCommand := JoinChatroom;
-				end else if Command = 'chatroomstatuschange' then begin
+				{end else if Command = 'chatroomstatuschange' then begin
 					ExecCommand := UpdateChatroom;
 				end else if Command = 'changechatowner' then begin
 					ExecCommand := ChatroomOwnerChange;
