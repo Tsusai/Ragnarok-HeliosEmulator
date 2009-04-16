@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 680 -
+[2009/04/16] Aeomin - Fixed crash when reach beyond level 1
+[2009/01/19] Aeomin - Updated packet_db
+-
+
 - Rev 679 -
 [2009/03/01] Tsusai - Added LuaTCharacter.  This module is a wrapper for
  the TCharacter class

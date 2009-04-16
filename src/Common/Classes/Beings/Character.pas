@@ -657,26 +657,29 @@ var
 	OldBaseEXPToNextLevel: LongWord;
 begin
 	Inherited;
-	for Index := 1 to MainProc.ZoneServer.Options.MaxBaseLevelsPerEXPGain do
+	if ZoneStatus = isOnline then
 	begin
-		if (BaseEXP > BaseEXPToNextLevel) and (BaseLv <= MainProc.ZoneServer.Options.MaxBaseLevel) then
+		for Index := 1 to MainProc.ZoneServer.Options.MaxBaseLevelsPerEXPGain do
 		begin
-			BaseLv := BaseLv + 1;
-		end else
-		begin
-			Break;
+			if (BaseEXP > BaseEXPToNextLevel) and (BaseLv <= MainProc.ZoneServer.Options.MaxBaseLevel) then
+			begin
+				BaseLv := BaseLv + 1;
+			end else
+			begin
+				Break;
+			end;
 		end;
+
+		if BaseEXP > BaseEXPToNextLevel then
+		begin
+
+			OldBaseEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetBaseEXPToNextLevel(self, BaseLv-1)
+				div MainProc.ZoneServer.Options.BaseXPMultiplier;
+			BaseEXP := (BaseEXPToNextLevel - OldBaseEXPToNextLevel) DIV 2 + OldBaseEXPToNextLevel;
+		end;
+
+		SendSubStat(1, $0001, BaseEXP);
 	end;
-
-	if BaseEXP > BaseEXPToNextLevel then
-	begin
-
-		OldBaseEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetBaseEXPToNextLevel(self, BaseLv-1)
-			div MainProc.ZoneServer.Options.BaseXPMultiplier;
-		BaseEXP := (BaseEXPToNextLevel - OldBaseEXPToNextLevel) DIV 2 + OldBaseEXPToNextLevel;
-	end;
-
-	SendSubStat(1, $0001, BaseEXP);
 end;{SetBaseEXP}
 //------------------------------------------------------------------------------
 
@@ -705,26 +708,29 @@ var
 	OldJobEXPToNextLevel : LongWord;
 begin
 	Inherited;
-	for Index := 1 to MainProc.ZoneServer.Options.MaxJobLevelsPerEXPGain do
+	if ZoneStatus = isOnline then
 	begin
-		if Value > JobEXPToNextLevel then
+		for Index := 1 to MainProc.ZoneServer.Options.MaxJobLevelsPerEXPGain do
 		begin
-			JobLv := JobLv + 1;
-		end else
-		begin
-			Break;
+			if Value > JobEXPToNextLevel then
+			begin
+				JobLv := JobLv + 1;
+			end else
+			begin
+				Break;
+			end;
 		end;
+
+		if (JobEXP > JobEXPToNextLevel) AND (JobLv <= MainProc.ZoneServer.Options.MaxJobLevel) then
+		begin
+
+			OldJobEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetJobEXPToNextLevel(self, JobLv-1)
+				div MainProc.ZoneServer.Options.JobXPMultiplier;
+			JobEXP := (JobEXPToNextLevel - OldJobEXPToNextLevel) DIV 2 + OldJobEXPToNextLevel;
+		end;
+
+		SendSubStat(1, $0002, JobEXP);
 	end;
-
-	if (JobEXP > JobEXPToNextLevel) AND (JobLv <= MainProc.ZoneServer.Options.MaxJobLevel) then
-	begin
-
-		OldJobEXPToNextLevel := TThreadLink(ClientInfo.Data).DatabaseLink.CharacterConstant.GetJobEXPToNextLevel(self, JobLv-1)
-			div MainProc.ZoneServer.Options.JobXPMultiplier;
-		JobEXP := (JobEXPToNextLevel - OldJobEXPToNextLevel) DIV 2 + OldJobEXPToNextLevel;
-	end;
-
-	SendSubStat(1, $0002, JobEXP);
 end;{SetJobEXP}
 //------------------------------------------------------------------------------
 
