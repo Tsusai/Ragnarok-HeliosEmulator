@@ -15,6 +15,10 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 682 -
+[2009/04/17] Aeomin - Clean up some code in InterServer.
+-
+
 - Rev 681 -
 [2009/04/16] Aeomin - Chatroom implementation part IV.
 -

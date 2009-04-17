@@ -62,6 +62,7 @@
 0x2227,-1
 0x2228,-1
 0x2229,-1
+0x2230,-1
 
 //GM Command from zone to inter
 0x2205,-1

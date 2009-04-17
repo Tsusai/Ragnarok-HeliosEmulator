@@ -345,15 +345,10 @@ begin
 	RecvBuffer(AConnection,ABuffer,2);
 	PacketID := BufferReadWord(0, ABuffer);
 
-	case PacketID of
-	$2200: // Zone Server Connection request
-		begin
-			RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2200)-2);
-			VerifyZoneServer(AConnection,ABuffer);
-		end;
-	$2202: // Zone Server sending new WAN location details
-		begin
-			if AConnection.Data is TZoneServerLink then
+	if AConnection.Data is TZoneServerLink then
+	begin
+		case PacketID of
+		$2202: // Zone Server sending new WAN location details
 			begin
 				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
@@ -361,10 +356,7 @@ begin
 				TZoneServerLink(AConnection.Data).Info.WAN := BufferReadString(4,Size-4,ABuffer);
 				Console.Message('Received updated Zone Server WANIP.', 'Inter Server', MS_NOTICE);
 			end;
-		end;
-	$2203: // Zone Server sending new LAN location details
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2203: // Zone Server sending new LAN location details
 			begin
 				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
@@ -372,145 +364,117 @@ begin
 				TZoneServerLink(AConnection.Data).Info.LAN := BufferReadString(4,Size-4,ABuffer);
 				Console.Message('Received updated Zone Server LANIP.', 'Inter Server', MS_NOTICE);
 			end;
-		end;
-	$2204: // Zone Server sending new Online User count
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2204: // Zone Server sending new Online User count
 			begin
 				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2204)-2);
 				//TZoneServerLink(AClient.Data).Info.OnlineUsers := BufferReadWord(2,ABuffer);
 				Console.Message('Received updated Zone Server Online Users.', 'Inter Server', MS_NOTICE);
 			end;
-		end;
-	$2205: // Zone server sending GM command to be sent to other servers + self
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2205: // Zone server sending GM command to be sent to other servers + self
 			begin
 				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
 				RecvBuffer(AConnection,ABuffer[4],Size-4);
 				RecvGMCommand(AConnection, ABuffer);
 			end;
-		end;
-	$2207: // Zone server sending GM command result
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2207: // Zone server sending GM command result
 			begin
 				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
 				RecvBuffer(AConnection,ABuffer[4],Size-4);
 				RecvGMCommandReply(AConnection, ABuffer);
 			end;
-		end;
-	$2208: // Zone server sending Warp Request
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2208: // Zone server sending Warp Request
 			begin
 				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
 				RecvBuffer(AConnection,ABuffer[4],Size-4);
 				RecvZoneWarpRequest(AConnection, ABuffer);
 			end;
-		end;
-	$2210: //Zone Server send Private Message
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2210: //Zone Server send Private Message
 			begin
 				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
 				RecvBuffer(AConnection,ABuffer[4],Size-4);
 				RecvWhisper(AConnection, ABuffer);
 			end;
-		end;
-	$2211:
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2211:
 			begin
 				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2211)-2);
 				RecvWhisperReply(AConnection, ABuffer);
 			end;
-		end;
-	$2215:
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2215:
 			begin
 				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2215)-2);
 				RecvZoneRequestFriend(AConnection, ABuffer);
 			end;
-		end;
-	$2217:
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2217:
 			begin
 				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2217)-2);
 				RecvZoneRequestFriendReply(AConnection, ABuffer);
 			end;
-		end;
-	$2218:
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2218:
 			begin
 				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2218)-2);
 				RecvZonePlayerOnlineStatus(AConnection, ABuffer);
 			end;
-		end;
-	$2220:
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2220:
 			begin
 				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2220)-2);
 				RecvZonePlayerOnlineReply(AConnection, ABuffer);
 			end;
-		end;
-	$2222:
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2222:
 			begin
 				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2222)-2);
 				RecvZoneNewMailNotify(AConnection, ABuffer);
 			end;
-		end;
-	$2224: //Request create instance map
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2224: //Request create instance map
 			begin
 				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
 				RecvBuffer(AConnection,ABuffer[4],Size-4);
 				RecvZoneCreateInstanceMapRequest(AConnection, ABuffer);
 			end;
-		end;
-	$2226: //Set allow instance
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2226: //Set allow instance
 			begin
 				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2226)-2);
 				RecvSetAllowInstance(AConnection, ABuffer);
 			end;
-		end;
-	$2228: //Instance created
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2228: //Instance created
 			begin
 				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
 				RecvBuffer(AConnection,ABuffer[4],Size-4);
 				RecvInstanceCreated(AConnection, ABuffer);
 			end;
-		end;
-	$2229: //Instance List
-		begin
-			if AConnection.Data is TZoneServerLink then
+		$2229: //Instance List
 			begin
 				RecvBuffer(AConnection,ABuffer[2],2);
 				Size := BufferReadWord(2,ABuffer);
 				RecvBuffer(AConnection,ABuffer[4],Size-4);
 				RecvInstanceList(AConnection, ABuffer);
 			end;
+		$2230: //Destroy instance map
+			begin
+
+			end;
+			else
+			begin
+				Console.Message('Unknown Inter Server Packet : ' + IntToHex(PacketID,4), 'Inter Server', MS_WARNING);
+			end;
 		end;
-	else
-		begin
-			Console.Message('Unknown Inter Server Packet : ' + IntToHex(PacketID,4), 'Inter Server', MS_WARNING);
+	end else
+	begin
+		case PacketID of
+			$2200: // Zone Server Connection request
+				begin
+					RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($2200)-2);
+					VerifyZoneServer(AConnection,ABuffer);
+				end;
+			else
+			begin
+				Console.Message('Unknown Inter Server Packet : ' + IntToHex(PacketID,4), 'Inter Server', MS_WARNING);
+			end;
 		end;
 	end;
 end; {ParseCharaInterServ}
