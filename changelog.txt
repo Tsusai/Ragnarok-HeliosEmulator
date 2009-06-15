@@ -15,6 +15,13 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 683 -
+[2009/06/15] Aeomin - Make Helios compile in Lazarus(FPC).
+                      This is only an attempt.. while client does able to
+                      login, stability is really a problem (*hint* lua)..
+[2009/04/19] Aeomin - Updated packet_db.
+-
+
 - Rev 682 -
 [2009/04/17] Aeomin - Clean up some code in InterServer.
 -

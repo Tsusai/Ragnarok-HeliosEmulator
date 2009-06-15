@@ -1,5 +1,7 @@
 unit Equipment;
-
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
 interface
 
 uses

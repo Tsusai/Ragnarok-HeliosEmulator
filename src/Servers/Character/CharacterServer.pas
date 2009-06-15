@@ -189,8 +189,8 @@ end;{Destroy}
 procedure TCharacterServer.OnException(AConnection: TIdContext;
 	AException: Exception);
 begin
-	if ContainsStr(AException.Message, '10053') or
-		ContainsStr(AException.Message, '10054')
+	if AnsiContainsStr(AException.Message, '10053') or
+		AnsiContainsStr(AException.Message, '10054')
 	then begin
 		AConnection.Connection.Disconnect;
 	end;

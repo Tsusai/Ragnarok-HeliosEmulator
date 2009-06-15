@@ -2,12 +2,14 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="\"/>
-    <Version Value="6"/>
+    <Version Value="7"/>
     <General>
+      <Flags>
+        <LRSInOutputDirectory Value="False"/>
+      </Flags>
       <MainUnit Value="0"/>
-      <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -24,100 +26,644 @@
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <Units Count="9">
+    <RequiredPackages Count="4">
+      <Item1>
+        <PackageName Value="zcore"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="zcomponent"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="indylaz"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="LCL"/>
+      </Item4>
+    </RequiredPackages>
+    <Units Count="104">
       <Unit0>
-        <Filename Value="Helios.dpr"/>
+        <Filename Value="Helios.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="342"/>
-        <EditorIndex Value="0"/>
-        <UsageCount Value="21"/>
-        <Loaded Value="True"/>
+        <CursorPos X="4" Y="65"/>
+        <TopLine Value="65"/>
+        <UsageCount Value="23"/>
       </Unit0>
       <Unit1>
         <Filename Value="Servers\Login\LoginServer.pas"/>
+        <IsPartOfProject Value="True"/>
         <UnitName Value="LoginServer"/>
-        <CursorPos X="12" Y="4"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="1"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <CursorPos X="21" Y="291"/>
+        <TopLine Value="277"/>
+        <UsageCount Value="22"/>
       </Unit1>
       <Unit2>
         <Filename Value="Common\Classes\Database\QueryBase.pas"/>
+        <IsPartOfProject Value="True"/>
         <UnitName Value="QueryBase"/>
-        <CursorPos X="1" Y="1"/>
+        <CursorPos X="1" Y="13"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="10"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="Servers\Login\LoginAccountInfo.pas"/>
+        <IsPartOfProject Value="True"/>
         <UnitName Value="LoginAccountInfo"/>
-        <CursorPos X="1" Y="1"/>
+        <CursorPos X="1" Y="13"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="3"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="22"/>
       </Unit3>
       <Unit4>
         <Filename Value="Common\Classes\Database\CharacterQueries.pas"/>
+        <IsPartOfProject Value="True"/>
         <UnitName Value="CharacterQueries"/>
         <CursorPos X="11" Y="101"/>
         <TopLine Value="77"/>
-        <EditorIndex Value="8"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="22"/>
       </Unit4>
       <Unit5>
         <Filename Value="Common\Classes\Database\CharacterConstantQueries.pas"/>
+        <IsPartOfProject Value="True"/>
         <UnitName Value="CharacterConstantQueries"/>
         <CursorPos X="11" Y="97"/>
         <TopLine Value="83"/>
-        <EditorIndex Value="7"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="22"/>
       </Unit5>
       <Unit6>
         <Filename Value="Common\Classes\Database\MapQueries.pas"/>
+        <IsPartOfProject Value="True"/>
         <UnitName Value="MapQueries"/>
         <CursorPos X="11" Y="77"/>
         <TopLine Value="57"/>
-        <EditorIndex Value="6"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="22"/>
       </Unit6>
       <Unit7>
         <Filename Value="Common\Classes\Database\FriendQueries.pas"/>
+        <IsPartOfProject Value="True"/>
         <UnitName Value="FriendQueries"/>
         <CursorPos X="11" Y="80"/>
         <TopLine Value="57"/>
-        <EditorIndex Value="5"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="22"/>
       </Unit7>
       <Unit8>
         <Filename Value="Common\Classes\Database\AccountQueries.pas"/>
+        <IsPartOfProject Value="True"/>
         <UnitName Value="AccountQueries"/>
         <CursorPos X="111" Y="76"/>
         <TopLine Value="65"/>
-        <EditorIndex Value="4"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="22"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="Common\Console\CRTWrapper.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="Common\Console\WinCRT\WinConsole.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="Common\Console\Terminal.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="Servers\Character\CharacterServer.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CharacterServer"/>
+        <CursorPos X="46" Y="184"/>
+        <TopLine Value="179"/>
+        <UsageCount Value="22"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="Servers\Character\CharacterServerInfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="Servers\Character\CharaLoginCommunication.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="Servers\Character\CharAccountInfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="Servers\Inter\InterServer.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="InterServer"/>
+        <CursorPos X="21" Y="266"/>
+        <TopLine Value="252"/>
+        <UsageCount Value="22"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="Servers\Inter\InterSend.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="Servers\Inter\InterRecv.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="InterRecv"/>
+        <CursorPos X="25" Y="457"/>
+        <TopLine Value="443"/>
+        <UsageCount Value="22"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="Servers\Zone\ZoneCharaCommunication.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="Servers\Zone\ZoneInterCommunication.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="Servers\Zone\ZoneServer.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ZoneServer"/>
+        <CursorPos X="21" Y="358"/>
+        <TopLine Value="344"/>
+        <UsageCount Value="22"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="Servers\Zone\ZoneServerInfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="Servers\Zone\ZoneRecv.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="Servers\Zone\ZoneSend.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="Servers\Zone\GMCommands.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="Servers\Zone\GMCommandExe.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="Constants\GameConstants.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="Constants\DatabaseConstants.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="Constants\NetworkConstants.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="Constants\LuaVarConstants.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="Constants\ErrorConstants.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="Common\Classes\Account.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="Common\Classes\Beings\Character.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Character"/>
+        <CursorPos X="45" Y="86"/>
+        <TopLine Value="73"/>
+        <UsageCount Value="22"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="Common\Classes\Beings\Being.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Being"/>
+        <CursorPos X="1" Y="43"/>
+        <TopLine Value="31"/>
+        <UsageCount Value="22"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="Common\Classes\Map.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="Common\Classes\InstanceMap.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="InstanceMap"/>
+        <CursorPos X="10" Y="14"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="22"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="Common\Classes\Beings\NPC.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="Common\Classes\Beings\Mob.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="Common\Classes\Mailbox.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="Common\Classes\Packets.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="Common\Classes\GameObject.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="GameObject"/>
+        <CursorPos X="10" Y="4"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="22"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="Common\Classes\Beings\AIbeing.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="Common\Classes\ChatRoom.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ChatRoom"/>
+        <CursorPos X="10" Y="14"/>
+        <TopLine Value="2"/>
+        <UsageCount Value="22"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="Common\Classes\AI\AI.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="Common\Classes\AI\MobAI.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="Common\Classes\Items\Item.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="Common\Classes\Items\EquipmentItem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="Common\Classes\Items\UseableItem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="Common\Classes\Items\MiscItem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="Common\Classes\Inventory.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit50>
+      <Unit51>
+        <Filename Value="Common\Classes\Items\ItemInstance.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ItemInstance"/>
+        <CursorPos X="18" Y="10"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="22"/>
+      </Unit51>
+      <Unit52>
+        <Filename Value="Common\Classes\Items\Equipment.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Equipment"/>
+        <CursorPos X="10" Y="4"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="22"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="Common\ThirdParty\LuaPas.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="LuaPas"/>
+        <CursorPos X="1" Y="3"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="22"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="Servers\Zone\Lua\LuaCoreRoutines.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit54>
+      <Unit55>
+        <Filename Value="Servers\Zone\Lua\Item\LuaItemCommands.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit55>
+      <Unit56>
+        <Filename Value="Servers\Zone\Lua\NPC\LuaNPCCore.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit56>
+      <Unit57>
+        <Filename Value="Servers\Zone\Lua\NPC\LuaNPCCommands.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit57>
+      <Unit58>
+        <Filename Value="Servers\Zone\Lua\LuaTypes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="LuaTypes"/>
+        <CursorPos X="31" Y="11"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="22"/>
+      </Unit58>
+      <Unit59>
+        <Filename Value="Common\ThirdParty\LuaUtils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="LuaUtils"/>
+        <CursorPos X="14" Y="1010"/>
+        <TopLine Value="997"/>
+        <UsageCount Value="22"/>
+      </Unit59>
+      <Unit60>
+        <Filename Value="Common\Classes\Beings\Lua\LuaTCharacter.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="LuaTCharacter"/>
+        <CursorPos X="71" Y="269"/>
+        <TopLine Value="256"/>
+        <UsageCount Value="22"/>
+      </Unit60>
+      <Unit61>
+        <Filename Value="Common\Classes\Lists\BeingList.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit61>
+      <Unit62>
+        <Filename Value="Common\Classes\Lists\MapList.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit62>
+      <Unit63>
+        <Filename Value="Common\ThirdParty\List32.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit63>
+      <Unit64>
+        <Filename Value="Common\Classes\Lists\PointList.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit64>
+      <Unit65>
+        <Filename Value="Common\Classes\Events\EventList.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit65>
+      <Unit66>
+        <Filename Value="Common\Classes\Lists\InventoryList.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit66>
+      <Unit67>
+        <Filename Value="Common\Classes\Lists\ParameterList.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit67>
+      <Unit68>
+        <Filename Value="Common\Classes\Events\Event.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit68>
+      <Unit69>
+        <Filename Value="Common\Classes\Events\DelayDisconnectEvent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit69>
+      <Unit70>
+        <Filename Value="Common\Classes\Events\MovementEvent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit70>
+      <Unit71>
+        <Filename Value="Common\Classes\Events\BeingEventThread.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit71>
+      <Unit72>
+        <Filename Value="Common\Classes\Events\OnTouchCellEvent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit72>
+      <Unit73>
+        <Filename Value="Common\Classes\Events\AddFriendEvent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit73>
+      <Unit74>
+        <Filename Value="Common\Classes\Events\AttackEvent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit74>
+      <Unit75>
+        <Filename Value="Common\Classes\Events\GroundItemRemovalEventThread.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit75>
+      <Unit76>
+        <Filename Value="Common\Classes\Events\MobMovementEvent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit76>
+      <Unit77>
+        <Filename Value="Common\Classes\Database\Database.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit77>
+      <Unit78>
+        <Filename Value="Common\Classes\Database\ItemQueries.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit78>
+      <Unit79>
+        <Filename Value="Common\Classes\Database\MobQueries.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit79>
+      <Unit80>
+        <Filename Value="Common\Classes\Database\MailQueries.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit80>
+      <Unit81>
+        <Filename Value="Common\Config\HeliosOptions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit81>
+      <Unit82>
+        <Filename Value="Common\Config\LoginOptions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit82>
+      <Unit83>
+        <Filename Value="Common\Config\CharaOptions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit83>
+      <Unit84>
+        <Filename Value="Common\Config\InterOptions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit84>
+      <Unit85>
+        <Filename Value="Common\Config\ZoneOptions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit85>
+      <Unit86>
+        <Filename Value="Common\Config\DatabaseOptions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit86>
+      <Unit87>
+        <Filename Value="Common\Config\ConsoleOptions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit87>
+      <Unit88>
+        <Filename Value="Common\Config\GMCommandsOptions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit88>
+      <Unit89>
+        <Filename Value="Common\MapTypes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit89>
+      <Unit90>
+        <Filename Value="Common\ItemTypes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit90>
+      <Unit91>
+        <Filename Value="Common\GameTypes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit91>
+      <Unit92>
+        <Filename Value="Common\AreaLoopEvents.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit92>
+      <Unit93>
+        <Filename Value="Common\BufferIO.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="BufferIO"/>
+        <CursorPos X="19" Y="26"/>
+        <TopLine Value="13"/>
+        <UsageCount Value="22"/>
+      </Unit93>
+      <Unit94>
+        <Filename Value="Common\Classes\Commands.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit94>
+      <Unit95>
+        <Filename Value="Common\Classes\CommClient.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit95>
+      <Unit96>
+        <Filename Value="Common\Globals.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit96>
+      <Unit97>
+        <Filename Value="Common\PacketTypes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit97>
+      <Unit98>
+        <Filename Value="Servers\Server.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit98>
+      <Unit99>
+        <Filename Value="Common\Classes\ServerInfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ServerInfo"/>
+        <CursorPos X="16" Y="67"/>
+        <TopLine Value="50"/>
+        <UsageCount Value="22"/>
+      </Unit99>
+      <Unit100>
+        <Filename Value="Common\TCPServerRoutines.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit100>
+      <Unit101>
+        <Filename Value="Common\Version.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit101>
+      <Unit102>
+        <Filename Value="Common\WinLinux.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit102>
+      <Unit103>
+        <Filename Value="Main.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="22"/>
+      </Unit103>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="1" HistoryIndex="0">
+      <Position1>
+        <Filename Value="Common\Classes\Database\QueryBase.pas"/>
+        <Caret Line="56" Column="41" TopLine="1"/>
+      </Position1>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="5"/>
+    <Version Value="8"/>
     <PathDelim Value="\"/>
     <Target>
       <Filename Value="../bin/Helios.exe"/>
     </Target>
     <SearchPaths>
-      <UnitOutputDirectory Value="../obj"/>
+      <IncludeFiles Value="Common\;Common\Classes\;Common\Classes\AI\;Common\Classes\Beings\;Common\Classes\Beings\Lua\;Common\Classes\Database\;Common\Classes\Events\;Common\Classes\Items\;Common\Classes\Lists\;Common\Config\;Common\Console\;Common\Console\WinCRT\;Common\ThirdParty\;Constants\;Servers\;Servers\Character\;Servers\Inter\;Servers\Login\;Servers\Zone\;Servers\Zone\Lua\;Servers\Zone\Lua\Item\;Servers\Zone\Lua\NPC\"/>
+      <OtherUnitFiles Value="Common\;Common\Classes\;Common\Classes\AI\;Common\Classes\Beings\;Common\Classes\Beings\Lua\;Common\Classes\Database\;Common\Classes\Events\;Common\Classes\Items\;Common\Classes\Lists\;Common\Config\;Common\Console\;Common\Console\WinCRT\;Common\ThirdParty\;Constants\;Servers\;Servers\Character\;Servers\Inter\;Servers\Login\;Servers\Zone\;Servers\Zone\Lua\;Servers\Zone\Lua\Item\;Servers\Zone\Lua\NPC\"/>
+      <UnitOutputDirectory Value="..\obj"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <CStyleOperator Value="False"/>
+      </SyntaxOptions>
+    </Parsing>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
       <Checks>
@@ -126,7 +672,6 @@
         <OverflowChecks Value="True"/>
         <StackChecks Value="True"/>
       </Checks>
-      <Generate Value="Faster"/>
     </CodeGeneration>
     <Linking>
       <LinkSmart Value="True"/>

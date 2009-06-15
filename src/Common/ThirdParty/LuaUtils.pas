@@ -29,7 +29,9 @@
 //     Solved Bugs : Stack problem in LuaProcessTableName
 //                   LuaToInteger why Round?, Trunc is better
 unit LuaUtils;
-
+{$IFDEF FPC}
+	{$MODE Delphi}
+{$ENDIF}
 interface
 
 uses
@@ -267,7 +269,7 @@ begin
      varOleStr,
      varString        :LuaPushString(L, N);
      varDate          :LuaPushString(L, DateTimeToStr(VarToDateTime(N)));
-     else lua_pushnumber(L, N);
+     else lua_pushnumber(L, Integer(N));
      end;
 end;
 
@@ -661,7 +663,9 @@ begin
     Result := TableToStr(Index);
   LUA_TFUNCTION:
 		if (lua_iscfunction(L, Index)) then
-      Result := Format('CFUNC:%p', [Pointer(lua_tocfunction(L, Index))])
+        {TODO : FIXME;Make it compile under FPC!}
+  	Result := ''
+      //Result := Format('CFUNC:%p', [Pointer(lua_tocfunction(L, Index))])
     else
       Result := Format('FUNC:%p', [lua_topointer(L, Index)]);
   LUA_TUSERDATA:

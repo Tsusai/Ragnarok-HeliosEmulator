@@ -60,11 +60,11 @@ end;
 //integer form.
 function TServerInfo.Address(const ClientIP : string) : LongWord;
 begin
-	if StartsText('127.0.0.', ClientIP) then
+	if AnsiStartsText('127.0.0.', ClientIP) then
 	begin
 		Result := GetLongWordFromIPString('127.0.0.1');
 	end else
-	if StartsText(fLANPartial, ClientIP) then
+	if AnsiStartsText(fLANPartial, ClientIP) then
 	begin
 		Result := fLANIPCard;
 	end else

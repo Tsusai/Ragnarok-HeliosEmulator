@@ -99,6 +99,11 @@ procedure RecvInstanceList(
 	AClient : TIdContext;
 	InBuffer : TBuffer
 );
+
+procedure RecvDeleteInstance(
+	AClient : TIdContext;
+	InBuffer : TBuffer
+);
 implementation
 
 
@@ -448,7 +453,8 @@ Begin
 
 	if Pos('#', MapName) > 0 then
 	begin
-		GetZoneByInstanceMap or GetZoneByMap;
+		if NOT GetZoneByInstanceMap then
+  			GetZoneByMap;
 	end else
 	begin
 		GetZoneByMap;
@@ -1004,5 +1010,34 @@ begin
 		MainProc.InterServer.Instances.AddObject(Name,AClient.Data);
 	end;
 end;{RecvInstanceList}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//RecvDeleteInstance                                                   PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Delete instance.
+//
+//	Changes -
+//		[2009/04/17] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure RecvDeleteInstance(
+	AClient : TIdContext;
+	InBuffer : TBuffer
+);
+var
+	Index : Integer;
+	NameLen : Byte;
+	Name : String;
+begin
+	NameLen := BufferReadByte(4, InBuffer);
+	Name := BufferReadString(5,NameLen,InBuffer);
+	Index := MainProc.InterServer.Instances.IndexOf(Name);
+	if Index > -1 then
+	begin
+		MainProc.InterServer.Instances.Delete(Index);
+	end;
+end;{RecvDeleteInstance}
 //------------------------------------------------------------------------------
 end.

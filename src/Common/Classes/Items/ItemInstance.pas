@@ -1,5 +1,7 @@
 unit ItemInstance;
-
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
 interface
 
 uses

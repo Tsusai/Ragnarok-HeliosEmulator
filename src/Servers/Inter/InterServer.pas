@@ -262,8 +262,8 @@ end;{OnDisconnect}
 procedure TInterServer.OnException(AConnection: TIdContext;
 	AException: Exception);
 begin
-	if ContainsStr(AException.Message, '10053') or
-		ContainsStr(AException.Message, '10054')
+	if AnsiContainsStr(AException.Message, '10053') or
+		AnsiContainsStr(AException.Message, '10054')
 	then begin
 		AConnection.Connection.Disconnect;
 	end;
@@ -456,7 +456,10 @@ begin
 			end;
 		$2230: //Destroy instance map
 			begin
-
+				RecvBuffer(AConnection,ABuffer[2],2);
+				Size := BufferReadWord(2,ABuffer);
+				RecvBuffer(AConnection,ABuffer[4],Size-4);
+				RecvDeleteInstance(AConnection, ABuffer);
 			end;
 			else
 			begin

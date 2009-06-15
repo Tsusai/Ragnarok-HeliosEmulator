@@ -152,9 +152,9 @@ protected
 	procedure SetSaveTime(Value : Boolean);
 	procedure SetCharaNum(Value : Byte);
 
-	Procedure SetName(
+	procedure SetName(
 		const Value : String
-	); override;
+	);override;
 
 	procedure SetJID(Value : Word); override;
 	procedure SetBaseLV(Value : Word); override;

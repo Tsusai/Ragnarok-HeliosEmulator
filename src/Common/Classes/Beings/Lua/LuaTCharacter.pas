@@ -1,5 +1,7 @@
 unit LuaTCharacter;
-
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
 interface
 
 uses

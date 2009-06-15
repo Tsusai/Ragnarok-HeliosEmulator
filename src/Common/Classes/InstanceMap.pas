@@ -9,7 +9,9 @@
 //
 //------------------------------------------------------------------------------
 unit InstanceMap;
-
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
 interface
 
 uses

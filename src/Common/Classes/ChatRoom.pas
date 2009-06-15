@@ -9,7 +9,9 @@
 //
 //------------------------------------------------------------------------------
 unit ChatRoom;
-
+{$IFDEF FPC}
+{$MODE Delphi}
+{$ENDIF}
 interface
 
 uses
