@@ -48,6 +48,8 @@ type
 
 		Function IndexOf(const ID : LongWord) : Integer;
 		Function IndexOfAID(const AID : LongWord) : Integer;
+		// DO NOT USE THIS UNLESS MUST
+		function IndexOfName(const Name : String):Integer;
 	end;
 //------------------------------------------------------------------------------
 
@@ -204,6 +206,35 @@ begin
 		Dec(Index);
 	end;
 end;{IndexOfAID}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//IndexOfName                                                           FUNCTION
+//------------------------------------------------------------------------------
+//	What it does-
+//		Find index by name, DO NOT USE THIS UNLESS MUST
+//
+//	Changes -
+//		[2009/06/27] Aeomin - Created.
+//
+//------------------------------------------------------------------------------
+function TBeingList.IndexOfName(const Name : String):Integer;
+var
+	Index : Integer;
+begin
+	Index := fList.Count-1;
+	Result := -1;
+	while (Index >= 0) do
+	begin
+		if (Items[Index] is TCharacter)AND(Name = TCharacter(Items[Index]).Name) then
+		begin
+			Result := Index;
+			Break;
+		end;
+		Dec(Index);
+	end;
+end;
 //------------------------------------------------------------------------------
 
 

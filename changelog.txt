@@ -15,6 +15,25 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 689 - ChatRoom Branch
+[2009/06/27] Aeomin - Implemented Kick.
+[2009/06/27] Aeomin - Implemented update chatroom options.
+[2009/06/27] Aeomin - Half fixed thread crash when owner dropped connection.
+         (Waiting for arealoop lock)
+-
+
+- Rev 688 - ChatRoom Branch
+[2009/06/27] Aeomin - Fixed odd behavior of chatroom bar.
+[2009/06/27] Aeomin - Fixed chatroom ownership change.
+[2009/06/27] Aeomin - Implemented change ownership packet.
+-
+
+- Rev 687 - ChatRoom Branch
+[2009/06/26] Aeomin - Fixed quit chatroom.
+[2009/06/26] Aeomin - Fixed public chat "leaks" into chatroom.
+[2009/06/27] Aeomin - Fixed chatroom owner quit causing chatroom disappear.
+-
+
 - Rev 683 -
 [2009/06/15] Aeomin - Make Helios compile in Lazarus(FPC).
                       This is only an attempt.. while client does able to

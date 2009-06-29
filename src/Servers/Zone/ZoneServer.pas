@@ -125,7 +125,8 @@ uses
 	ZoneCharaCommunication,
 	ZoneInterCommunication,
 	ZoneRecv,
-	ZoneSend
+	ZoneSend,
+	Chatroom
 	{3rd Party}
 	//none
 	;
@@ -295,7 +296,7 @@ procedure TZoneServer.OnDisconnect(AConnection: TIdContext);
 var
 	CharacterIndex : Integer;
 	ACharacter : TCharacter;
-
+	AChatroom : TChatroom;
 begin
 	if AConnection.Data is TClientLink then
 	begin
@@ -309,6 +310,14 @@ begin
 					ACharacter.ID,
 					1 //0 = online; 1=offline
 				);
+
+		if Assigned(ACharacter.ChatRoom) then
+		begin
+			AChatroom := ACharacter.ChatRoom;
+			ACharacter.ChatRoom.Quit(ACharacter.ID,False,True);
+			if AChatroom.Characters.Count = 0 then
+				AChatroom.Free;
+		end;
 
 		TThreadLink(AConnection.Data).DatabaseLink.Character.Save(ACharacter);
 

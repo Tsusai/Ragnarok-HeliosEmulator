@@ -3153,22 +3153,13 @@ end;} //Needs finished [Spre]
 //
 //------------------------------------------------------------------------------
 Destructor TCharacter.Destroy;
-var
-	AChatroom : TChatroom;
 begin
 	Equipment.Free;
 	Inventory.Free;
 	OnTouchIDs.Free;
 	TerminateLuaThread(LuaInfo);
 	Mails.Free;
-	if Assigned(ChatRoom) then
-	begin
-		AChatroom := ChatRoom;
-		ChatRoom.Quit(ID,False,True);
-		if AChatroom.Characters.Count = 0 then
-			AChatroom.Free;
-	end;
 	inherited;
-	end;{Destroy}
+end;{Destroy}
 //------------------------------------------------------------------------------
 end{Character}.

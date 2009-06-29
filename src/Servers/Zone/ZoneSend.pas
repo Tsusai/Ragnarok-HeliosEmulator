@@ -355,18 +355,20 @@ uses
 
 	procedure SendQuitChat(
 		const AChara : TCharacter;
+		const Name : String;
 		const Count : Word;
 		const Kicked : Boolean
 	);
 
 	procedure SendClearChat(
 		const AChara : TCharacter;
-		const ID : LongWord
+		const ChatRoom : TChatRoom
 	);
 
 	procedure SendChangeChatOwner(
 		const AChara : TCharacter;
-		const Name:String
+		const OldOwner : String;
+		const NewOwner : String
 	);
 
 	procedure SendJoinChatFailed(
@@ -383,6 +385,11 @@ uses
 		const AChara : TCharacter;
 		const NewUsers : Word;
 		const Name : String
+	);
+
+	procedure UpdateChatroom(
+		const AChara : TCharacter;
+		const Chatroom : TChatRoom
 	);
 implementation
 
@@ -600,11 +607,14 @@ begin
 						ZoneSendCharacterMessage(ACharacter, Chat);
 					end else
 					begin
-						WriteBufferWord(0, $008d, OutBuffer);
-						WriteBufferWord(2, Length+9, OutBuffer);
-						WriteBufferLongWord(4, ACharacter.ID, OutBuffer);
-						WriteBufferString(8, Chat+#0, Length+1, OutBuffer);
-						Sendbuffer(APerson.ClientInfo, OutBuffer, Length+9);
+						if NOT Assigned(APerson.ChatRoom) then
+						begin
+							WriteBufferWord(0, $008d, OutBuffer);
+							WriteBufferWord(2, Length+9, OutBuffer);
+							WriteBufferLongWord(4, ACharacter.ID, OutBuffer);
+							WriteBufferString(8, Chat+#0, Length+1, OutBuffer);
+							Sendbuffer(APerson.ClientInfo, OutBuffer, Length+9);
+						end;
 					end;
 				end;
 			end;
@@ -2640,16 +2650,19 @@ var
 	OutBuffer : TBuffer;
 	Len : Word;
 begin
-	Len := Length(ChatRoom.Title);
-	WriteBufferWord(0, $00d7, OutBuffer);
-	WriteBufferWord(2, Len + 17, OutBuffer);
-	WriteBufferLongWord(4, ChatRoom.Owner.ID, OutBuffer);
-	WriteBufferLongWord(8, ChatRoom.ID, OutBuffer);
-	WriteBufferWord(12, ChatRoom.Limit, OutBuffer);
-	WriteBufferWord(14, ChatRoom.Characters.Count, OutBuffer);
-	WriteBufferByte(16, Byte(ChatRoom.isPublic), OutBuffer);
-	WriteBufferString(17,ChatRoom.Title,Len,OutBuffer);
-	SendBuffer(AChara.ClientInfo, OutBuffer, Len + 17);
+	if NOT Assigned(AChara.ChatRoom) OR (AChara.ChatRoom <> ChatRoom) then
+	begin
+		Len := Length(ChatRoom.Title);
+		WriteBufferWord(0, $00d7, OutBuffer);
+		WriteBufferWord(2, Len + 17, OutBuffer);
+		WriteBufferLongWord(4, ChatRoom.Owner.ID, OutBuffer);
+		WriteBufferLongWord(8, ChatRoom.ID, OutBuffer);
+		WriteBufferWord(12, ChatRoom.Limit, OutBuffer);
+		WriteBufferWord(14, ChatRoom.Characters.Count, OutBuffer);
+		WriteBufferByte(16, Byte(ChatRoom.isPublic), OutBuffer);
+		WriteBufferString(17,ChatRoom.Title,Len,OutBuffer);
+		SendBuffer(AChara.ClientInfo, OutBuffer, Len + 17);
+	end;
 end;{DisplayChatroomBar}
 //------------------------------------------------------------------------------
 
@@ -2665,6 +2678,7 @@ end;{DisplayChatroomBar}
 //------------------------------------------------------------------------------
 procedure SendQuitChat(
 	const AChara : TCharacter;
+	const Name : String;
 	const Count : Word;
 	const Kicked : Boolean
 );
@@ -2673,7 +2687,7 @@ var
 begin
 	WriteBufferWord(0, $00dd, OutBuffer);
 	WriteBufferWord(2, Count, OutBuffer);
-	WriteBufferString(4,AChara.Name,NAME_LENGTH,OutBuffer);
+	WriteBufferString(4,Name,NAME_LENGTH,OutBuffer);
 	WriteBufferByte(28, Byte(Kicked), OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer,PacketDB.GetLength($00dd,AChara.ClientVersion));
 end;{SendQuitChat}
@@ -2691,14 +2705,17 @@ end;{SendQuitChat}
 //------------------------------------------------------------------------------
 procedure SendClearChat(
 	const AChara : TCharacter;
-	const ID : LongWord
+	const ChatRoom : TChatRoom
 );
 var
 	OutBuffer : TBuffer;
 begin
-	WriteBufferWord(0, $00d8, OutBuffer);
-	WriteBufferLongWord(2, ID, OutBuffer);
-	SendBuffer(AChara.ClientInfo, OutBuffer,PacketDB.GetLength($00d8,AChara.ClientVersion));
+	if NOT Assigned(AChara.ChatRoom) OR (AChara.ChatRoom <> ChatRoom) then
+	begin
+		WriteBufferWord(0, $00d8, OutBuffer);
+		WriteBufferLongWord(2, ChatRoom.ID, OutBuffer);
+		SendBuffer(AChara.ClientInfo, OutBuffer,PacketDB.GetLength($00d8,AChara.ClientVersion));
+	end;
 end;{SendClearChat}
 //------------------------------------------------------------------------------
 
@@ -2714,15 +2731,23 @@ end;{SendClearChat}
 //------------------------------------------------------------------------------
 procedure SendChangeChatOwner(
 	const AChara : TCharacter;
-	const Name:String
+	const OldOwner : String;
+	const NewOwner : String
 );
 var
 	OutBuffer : TBuffer;
 begin
 	WriteBufferWord(0, $00e1, OutBuffer);
 	WriteBufferLongWord(2, 1, OutBuffer);
-	WriteBufferString(6,Name,NAME_LENGTH,OutBuffer);
-	SendBuffer(AChara.ClientInfo, OutBuffer,PacketDB.GetLength($00e1,AChara.ClientVersion));
+	WriteBufferString(6,OldOwner,NAME_LENGTH,OutBuffer);
+	//SendBuffer(AChara.ClientInfo, OutBuffer,PacketDB.GetLength($00e1,AChara.ClientVersion));
+
+	//FillChar(OutBuffer, PacketDB.GetLength($00e1,AChara.ClientVersion), 0);
+
+	WriteBufferWord(30, $00e1, OutBuffer);
+	WriteBufferLongWord(32, 0, OutBuffer);
+	WriteBufferString(36,NewOwner,NAME_LENGTH,OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer,PacketDB.GetLength($00e1,AChara.ClientVersion)*2);
 end;{SendChangeChatOwner}
 //------------------------------------------------------------------------------
 
@@ -2802,5 +2827,36 @@ begin
 	WriteBufferString(4,  Name ,NAME_LENGTH, OutBuffer);
 	SendBuffer(AChara.ClientInfo, OutBuffer,PacketDB.GetLength($00dc,AChara.ClientVersion));
 end;
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//UpdateChatroom                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Update chatroom stuff
+//
+//	Changes -
+//		[2009/06/27] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure UpdateChatroom(
+	const AChara : TCharacter;
+	const Chatroom : TChatRoom
+);
+var
+	OutBuffer : TBuffer;
+	Len : Word;
+begin
+	Len := Length(ChatRoom.Title);
+	WriteBufferWord(0, $00df, OutBuffer);
+	WriteBufferWord(2, Len + 17, OutBuffer);
+	WriteBufferLongWord(4, ChatRoom.Owner.ID, OutBuffer);
+	WriteBufferLongWord(8, ChatRoom.ID, OutBuffer);
+	WriteBufferWord(12, ChatRoom.Limit, OutBuffer);
+	WriteBufferWord(14, ChatRoom.Characters.Count, OutBuffer);
+	WriteBufferByte(16, Byte(ChatRoom.isPublic), OutBuffer);
+	WriteBufferString(17,ChatRoom.Title,Len,OutBuffer);
+	SendBuffer(AChara.ClientInfo, OutBuffer, Len + 17);
+end;{UpdateChatroom}
 //------------------------------------------------------------------------------
 end{ZoneSend}.

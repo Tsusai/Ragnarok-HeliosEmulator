@@ -789,7 +789,7 @@ begin
 	begin
 		SendClearChat(
 			TCharacter(AObject),
-			AParameters.GetAsLongWord(1)
+			TChatRoom(AParameters.GetAsObject(1))
 		);
 	end;
 end;{RemoveChatroomInArea}

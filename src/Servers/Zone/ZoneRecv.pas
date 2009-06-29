@@ -309,6 +309,24 @@ uses
 		const InBuffer : TBuffer;
 		const ReadPts : TReadPts
 	);
+
+	procedure ChatroomOwnerChange(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
+	procedure KickFromChatroom(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
+
+	procedure UpdateChatroom(
+		var AChara  : TCharacter;
+		const InBuffer : TBuffer;
+		const ReadPts : TReadPts
+	);
 	//----------------------------------------------------------------------
 
 	//----------------------------------------------------------------------
@@ -2290,6 +2308,118 @@ begin
 		);
 	end;
 end;{JoinChatroom}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ChatroomOwnerChange                                                  PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Change ownership.
+//
+//	Changes -
+//		[2009/06/27] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure ChatroomOwnerChange(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	NewOwnerName : String;
+	Index : Integer;
+begin
+	NewOwnerName := BufferReadString(ReadPts[1], NAME_LENGTH, InBuffer);
+	if Assigned(AChara.ChatRoom) then
+	begin
+		if (AChara = AChara.ChatRoom.Owner) AND (AChara.Name <> NewOwnerName) then
+		begin
+			Index := AChara.ChatRoom.Characters.IndexOfName(NewOwnerName);
+			if Index > -1 then
+			begin
+				AChara.ChatRoom.Owner := AChara.ChatRoom.Characters[Index];
+			end;
+		end;
+	end;
+end;{ChatroomOwnerChange}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//UpdateChatroom                                                       PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Setup chatroom
+//
+//	Changes -
+//		[2009/06/27] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure UpdateChatroom(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	Len : Word;
+	Limit : Word;
+	isPublic : Boolean;
+	Password : String;
+	Title : String;
+begin
+	Len := BufferReadWord(ReadPts[0], InBuffer) - 15;
+	Limit := BufferReadWord(ReadPts[1], InBuffer);
+	//Hard coded CAP!
+	if Limit > 100 then
+		Exit;
+	isPublic := Boolean(BufferReadByte(ReadPts[2], InBuffer));
+	Password := BufferReadString(ReadPts[3],8,InBuffer);
+	Title := BufferReadString(ReadPts[4],Len,InBuffer);
+	if Assigned(AChara.ChatRoom) AND (AChara = AChara.ChatRoom.Owner) then
+	begin
+		AChara.ChatRoom.isPublic := isPublic;
+		AChara.ChatRoom.PassWord := Password;
+		AChara.ChatRoom.Title := Title;
+		AChara.ChatRoom.Limit := Limit;
+		AChara.ChatRoom.UpdateStatus;
+	end;
+end;{UpdateChatroom}
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//KickFromChatroom                                                     PROCEDURE
+//------------------------------------------------------------------------------
+//	What it does -
+//		Kick the user from chatroom
+//
+//	Changes -
+//		[2009/06/27] Aeomin - Created
+//------------------------------------------------------------------------------
+procedure KickFromChatroom(
+	var AChara  : TCharacter;
+	const InBuffer : TBuffer;
+	const ReadPts : TReadPts
+);
+var
+	Target : String;
+	Index : Integer;
+begin
+	Target:= BufferReadString(ReadPts[0], NAME_LENGTH, InBuffer);
+	if Assigned(AChara.ChatRoom) then
+	begin
+		if (AChara = AChara.ChatRoom.Owner) AND (AChara.Name <> Target) then
+		begin
+			Index := AChara.ChatRoom.Characters.IndexOfName(Target);
+			if Index > -1 then
+			begin
+				AChara.ChatRoom.Quit(
+					AChara.ChatRoom.Characters[Index].ID,
+					True
+				);
+			end;
+		end;
+	end;
+end;{KickFromChatroom}
 //------------------------------------------------------------------------------
 
 
