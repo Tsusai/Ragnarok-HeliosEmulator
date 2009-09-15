@@ -130,22 +130,22 @@ begin
 		if NOT ADataSet.Eof then
 		begin
 			//fill character data
-			AnAccount.ID						:= ADataSet.Fields[0].AsInteger;
-			AnAccount.Name					:= ADataSet.Fields[1].AsString;
-			AnAccount.Password			:= ADataSet.Fields[2].AsString;
+			AnAccount.ID			:= ADataSet.Fields[0].AsInteger;
+			AnAccount.Name			:= ADataSet.Fields[1].AsString;
+			AnAccount.Password		:= ADataSet.Fields[2].AsString;
 			//Tsusai - For Gender, we need to return the first char, thats
 			//why there is a [1]
-			AnAccount.LastLoginTime := ADataSet.Fields[3].AsDateTime;
+			AnAccount.LastLoginTime		:= ADataSet.Fields[3].AsDateTime;
 			AnAccount.LoginCount		:= ADataSet.Fields[4].AsInteger;
-			AnAccount.Gender				:= (ADataSet.Fields[5].AsString)[1];
-			AnAccount.EMail					:= ADataSet.Fields[6].AsString;
+			AnAccount.Gender		:= (ADataSet.Fields[5].AsString)[1];
+			AnAccount.EMail			:= ADataSet.Fields[6].AsString;
 			AnAccount.LoginKey[1]		:= ADataSet.Fields[7].AsInteger;
 			AnAccount.LoginKey[2]		:= ADataSet.Fields[8].AsInteger;
-			AnAccount.Level					:= ADataSet.Fields[9].AsInteger;
-			AnAccount.ConnectUntil	:= ADataSet.Fields[10].AsDateTime;
+			AnAccount.Level			:= ADataSet.Fields[9].AsInteger;
+			AnAccount.ConnectUntil		:= ADataSet.Fields[10].AsDateTime;
 			AnAccount.BannedUntil		:= ADataSet.Fields[11].AsDateTime;
-			AnAccount.LastIP				:= ADataSet.Fields[12].AsString;
-			AnAccount.State					:= ADataSet.Fields[13].AsInteger;
+			AnAccount.LastIP		:= ADataSet.Fields[12].AsString;
+			AnAccount.State			:= ADataSet.Fields[13].AsInteger;
 		end;
 	finally
 		ADataSet.Free;
@@ -157,7 +157,7 @@ end;//Load
 
 
 //------------------------------------------------------------------------------
-//Exists							                                                PROCEDURE
+//Exists                                                               PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Checks to see if an account exists
@@ -219,7 +219,7 @@ end;//Exists
 
 
 //------------------------------------------------------------------------------
-//Save				 						      																			 PROCEDURE
+//Save                                                                 PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //		Save an account.
@@ -345,7 +345,7 @@ end;//Save
 
 
 //------------------------------------------------------------------------------
-//New					                                                       PROCEDURE
+//New                                                                  PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //			Creates an account.
@@ -406,7 +406,7 @@ end;//New
 
 
 //------------------------------------------------------------------------------
-//Refresh																								               Procedure
+//Refresh                                                              Procedure
 //------------------------------------------------------------------------------
 //	What it does-
 //			Refreshes some account data

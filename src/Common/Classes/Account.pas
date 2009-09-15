@@ -16,7 +16,8 @@ unit Account;
 
 interface
 uses
-	IdContext
+	IdContext,
+	List32
 	;
 //------------------------------------------------------------------------------
 //TACCOUNT                                                                CLASS
@@ -30,14 +31,14 @@ uses
 	public
 		ID : LongWord;
 		//Unicode
-		Name        		: string[24];
+		Name            : string[24];
 		Password        : string[32];
 		EMail           : string[24];
 		GenderNum       : Byte; //0 or 1 for packet (F/M respectively)
 		BannedUntil     : TDateTime;
 		LastIP          : string[15];
 		LoginKey        : array [1..2] of LongWord;
-		CharaID         : array [0..8] of LongWord;
+		CharaID         : array[0..9] of LongWord;
 		LoginCount      : Integer;
 		LastLoginTime   : TDateTime;
 		Level           : Byte;
@@ -58,7 +59,8 @@ uses
 		procedure TemporaryBan(Seconds:Integer);
 		procedure PermanantBan();
 		function GetBanUntilTimeString:String;
-		Constructor Create(AClient : TIdContext);
+		constructor Create(AClient : TIdContext);
+		destructor Destroy;override;
 	end;{TAccount}
 //------------------------------------------------------------------------------
 
@@ -307,7 +309,7 @@ end;
 //		March 27th, 2007 - RaX - Created.
 //
 //------------------------------------------------------------------------------
-Constructor TAccount.Create(AClient : TIdContext);
+constructor TAccount.Create(AClient : TIdContext);
 begin
 	inherited Create;
 	ClientInfo := AClient;
@@ -315,4 +317,19 @@ end;{SetConnectUntilTime}
 //------------------------------------------------------------------------------
 
 
+//------------------------------------------------------------------------------
+//Destroy                                                             DESTRUCTOR
+//------------------------------------------------------------------------------
+//	What it does-
+//		Fre up objects
+//
+//	Changes -
+//		March 27th, 2007 - RaX - Created.
+//
+//------------------------------------------------------------------------------
+destructor TAccount.Destroy;
+begin
+	inherited;
+end;
+//------------------------------------------------------------------------------
 end.

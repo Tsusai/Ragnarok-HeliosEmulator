@@ -63,7 +63,7 @@ uses
 	function BufferReadMD5(const Index : word; const Buffer : TBuffer) : string;
 	function BufferReadOnePoint(const Index:word; const Buffer : TBuffer) : TPoint;
 
-	procedure SendPadding(var AClient : TIdContext);
+	procedure SendPadding(var AClient : TIdContext;const ID:LongWord);
 
 	procedure SendBuffer(var AClient : TIdContext;const Buffer : TBuffer; const Size : LongWord);overload;
 	procedure SendBuffer(var AClient : TInterClient; const Buffer : TBuffer; const Size : LongWord);overload;
@@ -379,11 +379,11 @@ PREMADE SENDING OF BUFFER TO CLIENT
 //		March 12th, 2007 - Aeomin - Reformat Header.
 //
 //------------------------------------------------------------------------------
-	procedure SendPadding(var AClient : TIdContext);
+	procedure SendPadding(var AClient : TIdContext;const ID:LongWord);
 	var
 		ABuf : TBuffer;
 	begin
-		WriteBufferLongWord(0,$00000000,ABuf);
+		WriteBufferLongWord(0,ID,ABuf);
 		SendBuffer(AClient,ABuf,4);
 	end;
 

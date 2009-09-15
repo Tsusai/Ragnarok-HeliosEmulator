@@ -672,8 +672,8 @@ begin
 				AType := CHARAVAR_INTEGER;
 			end else
 			begin
-      	AType := CHARAVAR_STRING;
-      end;
+				AType := CHARAVAR_STRING;
+			end;
 			Value := lua_tostring(ALua, 2);
 
 			TThreadLink(AChara^.ClientInfo.Data).DatabaseLink.Character.SetVariable(AChara^,Key,Value, AType);

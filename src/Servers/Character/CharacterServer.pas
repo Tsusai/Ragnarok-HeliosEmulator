@@ -276,10 +276,8 @@ function TCharacterServer.WriteCharacterDataToBuffer(
 	const Offset : Integer
 ) : Byte;
 begin
-	Result := 108;
+	Result := 112;
 	FillChar(ReplyBuffer[Offset],Offset + Result,0);
-	WriteBufferWord(Offset + 104, ACharacter.CharaNum,ReplyBuffer);
-	WriteBufferWord(Offset + 106, 0,ReplyBuffer); //eA : Rename bit (?)
 	with ACharacter do begin
 		WriteBufferLongWord(Offset +  0, ID,ReplyBuffer);
 		WriteBufferLongWord(Offset +  4, BaseEXP,ReplyBuffer);
@@ -292,30 +290,32 @@ begin
 		WriteBufferLongWord(Offset + 32, Karma,ReplyBuffer);
 		WriteBufferLongWord(Offset + 36, Manner,ReplyBuffer);
 		WriteBufferWord(Offset + 40, EnsureRange(StatusPts, 0, High(SmallInt)),ReplyBuffer);
-		WriteBufferWord(Offset + 42, EnsureRange(HP, 0, High(SmallInt)),ReplyBuffer);
-		WriteBufferWord(Offset + 44, EnsureRange(MAXHP, 0, High(SmallInt)),ReplyBuffer);
-		WriteBufferWord(Offset + 46, EnsureRange(SP, 0, High(SmallInt)),ReplyBuffer);
-		WriteBufferWord(Offset + 48, EnsureRange(MAXSP, 0, High(SmallInt)),ReplyBuffer);
-		WriteBufferWord(Offset + 50, Speed,ReplyBuffer);
-		WriteBufferWord(Offset + 52, JID,ReplyBuffer);
-		WriteBufferWord(Offset + 54, Hair,ReplyBuffer);
-		WriteBufferWord(Offset + 56, Equipment.SpriteID[RIGHTHAND],ReplyBuffer);
-		WriteBufferWord(Offset + 58, BaseLV,ReplyBuffer);
-		WriteBufferWord(Offset + 60, EnsureRange(SkillPts, 0, High(Word)),ReplyBuffer);
-		WriteBufferWord(Offset + 62, Equipment.SpriteID[HEADLOWER],ReplyBuffer);
-		WriteBufferWord(Offset + 64, Equipment.SpriteID[LEFTHAND],ReplyBuffer);
-		WriteBufferWord(Offset + 66, Equipment.SpriteID[HEADUPPER],ReplyBuffer);
-		WriteBufferWord(Offset + 68, Equipment.SpriteID[HEADMID],ReplyBuffer);
-		WriteBufferWord(Offset + 70, HairColor,ReplyBuffer);
-		WriteBufferWord(Offset + 72, ClothesColor,ReplyBuffer);
-		WriteBufferString(Offset + 74, Name, 24,ReplyBuffer);
+		WriteBufferLongWord(Offset + 42, EnsureRange(HP, 0, High(SmallInt)),ReplyBuffer);
+		WriteBufferLongWord(Offset + 46, EnsureRange(MAXHP, 0, High(SmallInt)),ReplyBuffer);
+		WriteBufferWord(Offset + 50, EnsureRange(SP, 0, High(SmallInt)),ReplyBuffer);
+		WriteBufferWord(Offset + 52, EnsureRange(MAXSP, 0, High(SmallInt)),ReplyBuffer);
+		WriteBufferWord(Offset + 54, Speed,ReplyBuffer);
+		WriteBufferWord(Offset + 56, JID,ReplyBuffer);
+		WriteBufferWord(Offset + 58, Hair,ReplyBuffer);
+		WriteBufferWord(Offset + 60, Equipment.SpriteID[RIGHTHAND],ReplyBuffer);
+		WriteBufferWord(Offset + 62, BaseLV,ReplyBuffer);
+		WriteBufferWord(Offset + 64, EnsureRange(SkillPts, 0, High(Word)),ReplyBuffer);
+		WriteBufferWord(Offset + 66, Equipment.SpriteID[HEADLOWER],ReplyBuffer);
+		WriteBufferWord(Offset + 68, Equipment.SpriteID[LEFTHAND],ReplyBuffer);
+		WriteBufferWord(Offset + 70, Equipment.SpriteID[HEADUPPER],ReplyBuffer);
+		WriteBufferWord(Offset + 72, Equipment.SpriteID[HEADMID],ReplyBuffer);
+		WriteBufferWord(Offset + 74, HairColor,ReplyBuffer);
+		WriteBufferWord(Offset + 76, ClothesColor,ReplyBuffer);
+		WriteBufferString(Offset + 78, Name, 24,ReplyBuffer);
 
-		WriteBufferByte(Offset + 98,  EnsureRange(ParamBase[STR], 0, High(Byte)),ReplyBuffer);
-		WriteBufferByte(Offset + 99,  EnsureRange(ParamBase[AGI], 0, High(Byte)),ReplyBuffer);
-		WriteBufferByte(Offset + 100, EnsureRange(ParamBase[VIT], 0, High(Byte)),ReplyBuffer);
-		WriteBufferByte(Offset + 101, EnsureRange(ParamBase[INT], 0, High(Byte)),ReplyBuffer);
-		WriteBufferByte(Offset + 102, EnsureRange(ParamBase[DEX], 0, High(Byte)),ReplyBuffer);
-		WriteBufferByte(Offset + 103, EnsureRange(ParamBase[LUK], 0, High(Byte)),ReplyBuffer);
+		WriteBufferByte(Offset + 102,  EnsureRange(ParamBase[STR], 0, High(Byte)),ReplyBuffer);
+		WriteBufferByte(Offset + 103,  EnsureRange(ParamBase[AGI], 0, High(Byte)),ReplyBuffer);
+		WriteBufferByte(Offset + 104, EnsureRange(ParamBase[VIT], 0, High(Byte)),ReplyBuffer);
+		WriteBufferByte(Offset + 105, EnsureRange(ParamBase[INT], 0, High(Byte)),ReplyBuffer);
+		WriteBufferByte(Offset + 106, EnsureRange(ParamBase[DEX], 0, High(Byte)),ReplyBuffer);
+		WriteBufferByte(Offset + 107, EnsureRange(ParamBase[LUK], 0, High(Byte)),ReplyBuffer);
+		WriteBufferWord(Offset + 108, CharaNum,ReplyBuffer);
+		WriteBufferWord(Offset + 110, 1,ReplyBuffer); //Rename Flag
 	end;
 end;
 
@@ -379,7 +379,7 @@ end;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-//OnConnect											                                          EVENT
+//OnConnect                                                                EVENT
 //------------------------------------------------------------------------------
 //	What it does-
 //			Nothing
@@ -458,7 +458,7 @@ end;{LoginClientRead}
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
 //		July 6th, 2006 - Tsusai - Started work on changing dummy procedure to real
-//      	procedure.
+//		procedure.
 //		January 3rd, 2007 - Tsusai - Added console messages.
 //		January 20th, 2007 - Tsusai - Wrapped the console messages, now using
 //			IdContext.Binding shortcut
@@ -467,6 +467,9 @@ end;{LoginClientRead}
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.SendCharas(AClient : TIdContext; var ABuffer : TBuffer);
+const
+	Ver : Byte = 24;
+	CharacterDataSize : Byte = 112;
 var
 	AccountID   : LongWord;
 	AnAccount   : TAccount;
@@ -475,97 +478,90 @@ var
 	Index       : integer;
 	Count       : Byte;
 	PacketSize  : Word;
-	Ver         : Byte;
 	ACharaList  : TBeingList;
 	BaseIndex   : Integer;
-	CharacterDataSize : integer;
 	Idx         : Integer;
 	AccountInfo : TCharAccountInfo;
 begin
 	Count     := 0;
-	Ver       := 24;
-
-	CharacterDataSize := 108;
 
 	AccountID := BufferReadLongWord(2, ABuffer);
 	AnAccount := TAccount.Create(AClient);
 	AnAccount.ID := AccountID;
 	TThreadLink(AClient.Data).DatabaseLink.Account.Load(AnAccount);
 
-	if AnAccount.ID = AccountID then
+	if  (AnAccount.LoginKey[1] = BufferReadLongWord(6,  ABuffer)) and (AnAccount.LoginKey[1] > 0) and
+		(AnAccount.LoginKey[2] = BufferReadLongWord(10, ABuffer)) and (AnAccount.LoginKey[2] > 0) then
 	begin
-		if  (AnAccount.LoginKey[1] = BufferReadLongWord(6,  ABuffer)) and (AnAccount.LoginKey[1] > 0) and
-			(AnAccount.LoginKey[2] = BufferReadLongWord(10, ABuffer)) and (AnAccount.LoginKey[2] > 0) then
-		begin
-			//LINK the account to the client connection for the other procedures
-			TClientLink(AClient.Data).AccountLink := AnAccount;
-			SendPadding(AClient); //Legacy padding
-			ACharaList := TBeingList.Create(TRUE);
-			TThreadLink(AClient.Data).DatabaseLink.Character.LoadByAccount(ACharaList, AnAccount);
+		//LINK the account to the client connection for the other procedures
+		TClientLink(AClient.Data).AccountLink := AnAccount;
+		SendPadding(AClient, AccountID);
+		ACharaList := TBeingList.Create(TRUE);
+		TThreadLink(AClient.Data).DatabaseLink.Character.LoadByAccount(ACharaList, AnAccount);
 
-			Idx := fAccountList.IndexOf(AnAccount.ID);
-			if Idx > -1 then
-			begin
-				AccountInfo := fAccountList.Objects[idx] as TCharAccountInfo;
-				//Make sure no dup login via skip server.
-				if (not AccountInfo.Transfering)or(AccountInfo.InGame) then
-				begin   //Reject!
-					WriteBufferWord(0, $006a, ReplyBuffer);
-					WriteBufferByte(2, 03, ReplyBuffer);
-					SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($006a));
-				end else
-				begin
-					AccountInfo.ClientInfo := AClient;
-					TClientLink(AClient.Data).AccountInfo := AccountInfo;
-				end;
+		Idx := fAccountList.IndexOf(AnAccount.ID);
+		if Idx > -1 then
+		begin
+			AccountInfo := fAccountList.Objects[idx] as TCharAccountInfo;
+			//Make sure no dup login via skip server.
+			if (not AccountInfo.Transfering)or(AccountInfo.InGame) then
+			begin   //Reject!
+				WriteBufferWord(0, $006a, ReplyBuffer);
+				WriteBufferByte(2, 03, ReplyBuffer);
+				SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($006a));
 			end else
 			begin
-				AccountInfo := TCharAccountInfo.Create(AnAccount.ID);
 				AccountInfo.ClientInfo := AClient;
 				TClientLink(AClient.Data).AccountInfo := AccountInfo;
-				AccountInfo.Transfering := True;
-				fAccountList.AddObject(AnAccount.ID, AccountInfo);
-				SendAccountLogon(CharaToLoginClient, AccountInfo, Self);
 			end;
-
-			//Ah..lets make sure again
-			if (AccountInfo.Transfering)or(not AccountInfo.InGame) then
-			begin
-				for Index := ACharaList.Count-1 downto 0 do
-				begin
-					ACharacter := ACharaList.Items[Index] as TCharacter;
-					AnAccount.CharaID[ACharacter.CharaNum] := ACharacter.ID;
-					with ACharacter do
-					begin
-						BaseIndex := Ver+(Count*CharacterDataSize);
-						TThreadLink(AClient.Data).DatabaseLink.Items.GetSpriteIDs(
-							ACharacter.Equipment
-						);
-						WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,BaseIndex);
-						Inc(Count);
-					end;
-					ACharaList.Delete(Index);
-				end;
-				//size is (24 + (character count * Character data size))
-				PacketSize := (Ver + (Count * CharacterDataSize));
-				WriteBufferWord(0,$006b,ReplyBuffer); //header
-				WriteBufferWord(2,PacketSize,ReplyBuffer);
-				SendBuffer(AClient,ReplyBuffer,PacketSize);
-			end;
-			ACharaList.Free;
-			AccountInfo.Transfering := False;
 		end else
 		begin
-			WriteBufferWord(0, $0081, ReplyBuffer);
-			WriteBufferByte(2, 01, ReplyBuffer);
-			SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($0081));
-
-			Console.Message(
-				'Connecting RO client from '+
-				AClient.Binding.PeerIP +
-				' did not pass key validation.', 'Character Server', MS_WARNING
-			);
+			AccountInfo := TCharAccountInfo.Create(AnAccount.ID);
+			AccountInfo.ClientInfo := AClient;
+			TClientLink(AClient.Data).AccountInfo := AccountInfo;
+			AccountInfo.Transfering := True;
+			fAccountList.AddObject(AnAccount.ID, AccountInfo);
+			SendAccountLogon(CharaToLoginClient, AccountInfo, Self);
 		end;
+
+		//Ah..lets make sure again
+		if (AccountInfo.Transfering)or(not AccountInfo.InGame) then
+		begin
+			for Index := ACharaList.Count-1 downto 0 do
+			begin
+				ACharacter := ACharaList.Items[Index] as TCharacter;
+				AnAccount.CharaID[ACharacter.CharaNum] := ACharacter.ID;
+				with ACharacter do
+				begin
+					BaseIndex := Ver+(Count*CharacterDataSize);
+					TThreadLink(AClient.Data).DatabaseLink.Items.GetSpriteIDs(
+						ACharacter.Equipment
+					);
+					WriteCharacterDataToBuffer(ACharacter,ReplyBuffer,BaseIndex);
+					Inc(Count);
+				end;
+				ACharaList.Delete(Index);
+			end;
+			//size is (24 + (character count * Character data size))
+			PacketSize := (Ver + (Count * CharacterDataSize));
+			WriteBufferWord(0,$006b,ReplyBuffer); //header
+			WriteBufferWord(2,PacketSize,ReplyBuffer);
+			SendBuffer(AClient,ReplyBuffer,PacketSize);
+		end;
+		ACharaList.Free;
+		AccountInfo.Transfering := False;
+	end else
+	begin
+		WriteBufferWord(0, $0081, ReplyBuffer);
+		WriteBufferByte(2, 01, ReplyBuffer);
+		SendBuffer(AClient,ReplyBuffer,PacketDB.GetLength($0081));
+
+		Console.Message(
+			'Connecting RO client from '+
+			AClient.Binding.PeerIP +
+			' did not pass key validation.', 'Character Server', MS_WARNING
+		);
+		AClient.Connection.Disconnect;
 	end;
 end; {SendCharas}
 //------------------------------------------------------------------------------
@@ -590,7 +586,7 @@ procedure TCharacterServer.SendCharaToMap(
 );
 var
 	AnAccount : TAccount;
-	CharaIdx : byte;
+	CharaIdx : Byte;
 	ACharacter : TCharacter;
 	OutBuffer : TBuffer;
 	ZServerInfo : TZoneServerInfo;
@@ -598,20 +594,18 @@ var
 	idx : integer;
 
 begin
-	if not (AClient.Data is TThreadLink) then exit;
 	AnAccount := TClientLink(AClient.Data).AccountLink;
 
 	//Tsusai: Possible Check for online characters here...but
 	//they should be terminated when logging in.
-
 	CharaIdx := BufferReadByte(2, ABuffer);
-	if AnAccount.CharaID[CharaIdx] <> 0 then
+	if (CharaIdx < 9) AND (AnAccount.CharaID[CharaIdx] > 0) then
 	begin
 			ACharacter := TCharacter.Create(AClient);
 			ACharacter.ID := AnAccount.CharaID[CharaIdx];
 			TThreadLink(AClient.Data).DatabaseLink.Character.Load(ACharacter);
 			//ACharacter.ClientVersion := -1; //Need to either save, or make sure its cleared
-																			//later on
+							//later on
 
 			if TThreadLink(AClient.Data).DatabaseLink.Map.CantSave(ACharacter.Map) then
 			begin
@@ -657,7 +651,7 @@ end;{SendCharaToMap}
 
 
 //------------------------------------------------------------------------------
-//CreateChara			                                                    PROCEDURE
+//CreateChara                                                          PROCEDURE
 //------------------------------------------------------------------------------
 //	What it does-
 //      Is called after creating a character in the client.
@@ -665,10 +659,10 @@ end;{SendCharaToMap}
 //
 //	Changes -
 //		December 17th, 2006 - RaX - Created Header.
-//    July      6th, 2006 - Tsusai - Started work on changing dummy procedure to
-//      real procedure.
+//		July 6th, 2006 - Tsusai - Started work on changing dummy procedure to
+//			real procedure.
 //		January 12th, 2007 - Tsusai - Fixed Stat point display.
-//    September 29th 2008 - Tsusai - Corrected InventoryID spelling error.
+//		September 29th 2008 - Tsusai - Corrected InventoryID spelling error.
 //
 //------------------------------------------------------------------------------
 procedure TCharacterServer.CreateChara(
@@ -833,9 +827,9 @@ begin
 		begin
 			CreateCharaError(INVALIDNAME);
 		end;
-  finally
+	finally
 		ACharacter.Free;
-  end;
+	end;
 end;{CreateChara}
 //------------------------------------------------------------------------------
 
@@ -856,7 +850,7 @@ procedure TCharacterServer.DeleteChara(
 );
 var
 	CharacterID : LongWord;
-	EmailOrID   : string;
+	AnEmail   : string;
 	AnAccount   : TAccount;
 	ACharacter  : TCharacter;
 	ReplyBuffer : TBuffer;
@@ -870,19 +864,25 @@ var
 
 begin
 	CharacterID := BufferReadLongWord(2,ABuffer);
-	EmailOrID := BufferReadString(6,40,ABuffer);
+	AnEmail := BufferReadString(6,40,ABuffer);
 	AnAccount := TClientLink(AClient.Data).AccountLink;
 	ACharacter := TCharacter.Create(AClient);
 	try
 		ACharacter.ID := CharacterID;
 		TThreadLink(AClient.Data).DatabaseLink.Character.Load(ACharacter);
-		if AnAccount.EMail = EmailOrID then
+		if (AnAccount.EMail <> AnEmail) then
+		begin
+			DeleteCharaError(DELETEBADEMAIL);
+		end else
+		if (ACharacter.AccountID <> AnAccount.ID) then
+		begin
+			DeleteCharaError(DELETEBADCHAR);
+		end else
 		begin
 			TThreadLink(AClient.Data).DatabaseLink.Character.Delete(ACharacter);
 			WriteBufferWord(0, $006f, ReplyBuffer);
 			SendBuffer(AClient,ReplyBuffer, PacketDB.GetLength($006f));
-		end else
-			DeleteCharaError(DELETEBADEMAIL);
+		end;
 	finally
 		ACharacter.Free;
 	end;
@@ -1161,6 +1161,7 @@ begin
 				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0067)-2);
 				CreateChara(AConnection,ABuffer);
 				end;
+		$01bf,
 		$0068: // Request to Delete Character
 			begin
 				RecvBuffer(AConnection,ABuffer[2],PacketDB.GetLength($0068)-2);
@@ -1172,14 +1173,14 @@ begin
 			end;
 		$028d: //Enter Character Rename mode
 			begin
-				RecvBuffer(AConnection,ABuffer[2],32);
-				RenameChara(AConnection,ABuffer);
+				{RecvBuffer(AConnection,ABuffer[2],32);
+				RenameChara(AConnection,ABuffer);}
 			end;
 		$028f:  // ??
 			begin
 				//<Char ID>
-				RecvBuffer(AConnection,ABuffer[2],4);
-				DoRenameChara(AConnection,ABuffer);
+				{RecvBuffer(AConnection,ABuffer[2],4);
+				DoRenameChara(AConnection,ABuffer);}
 			end
 		else
 			begin

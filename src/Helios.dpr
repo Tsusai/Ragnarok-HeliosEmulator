@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-//Helios			                                                         Program
+//Helios                                                                 Program
 //------------------------------------------------------------------------------
 //	What it does-
 //			Helios is a cross-compatible(Windows & Linux), multi-threaded,
@@ -62,6 +62,9 @@ program Helios;
 
 {$APPTYPE CONSOLE}
 uses
+  madListHardware,
+  madListProcesses,
+  madListModules,
 {*These definitions make it possible to step through programs in windows and
 compile for linux, at the same time*}
 //------------------------------------------------------------------------------

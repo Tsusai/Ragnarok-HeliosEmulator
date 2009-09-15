@@ -15,6 +15,11 @@ Developers & Contributers
 
 --------------------------------------------------------------------------------
 
+- Rev 690 -
+[2009/09/13] Aeomin - First revision after Helios's death.
+[2009/09/13] Aeomin - Support RagRE client (Regular Sakray client no longer works).
+-
+
 - Rev 689 - ChatRoom Branch
 [2009/06/27] Aeomin - Implemented Kick.
 [2009/06/27] Aeomin - Implemented update chatroom options.

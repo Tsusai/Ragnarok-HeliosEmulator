@@ -112,8 +112,8 @@ protected
 	fJobEXPToNextLevel: LongWord;
 	fZeny             : Integer;
 	fParamBase        : StatArray;
-	fMaxHP            : Word;
-	fHP               : Word;
+	fMaxHP            : LongWord;
+	fHP               : LongWord;
 	fMaxSP            : Word;
 	fSP               : Word;
 	fStatus           : Word;
@@ -154,10 +154,10 @@ protected
 			Value : Integer
 		); virtual;
 
-	procedure SetMaxHP(Value : word); virtual;
-	procedure SetHP(Value : word); virtual;
-	procedure SetMaxSP(Value : word); virtual;
-	procedure SetSP(Value : word); virtual;
+	procedure SetMaxHP(Value : LongWord); virtual;
+	procedure SetHP(Value : LongWord); virtual;
+	procedure SetMaxSP(Value : Word); virtual;
+	procedure SetSP(Value : Word); virtual;
 	Procedure SetStatus(Value : word); virtual;
 	Procedure SetAilments(Value : word); virtual;
 	Procedure SetOption(Value : word); virtual;
@@ -212,8 +212,8 @@ public
 	property ParamBase[const Index : Byte] : Integer
 		read  GetBaseStats
 		write SetBaseStats;
-	property MaxHP     : Word       read fMaxHP write SetMaxHP;
-	property HP        : Word       read fHP write SetHP;
+	property MaxHP     : LongWord       read fMaxHP write SetMaxHP;
+	property HP        : LongWord       read fHP write SetHP;
 	property HPPercent : Byte       read GetHpPercent write SetHPPercent;
 	property SPPercent : Byte       read GetSpPercent write SetSPPercent;
 	property MaxSP     : Word       read fMaxSP write SetMaxSP;
@@ -1249,13 +1249,13 @@ Begin
 End; (* Proc TBeing.SetBaseStats
 *-----------------------------------------------------------------------------*)
 
-Procedure TBeing.SetMaxHP(Value : word);
+Procedure TBeing.SetMaxHP(Value : LongWord);
 Begin
 	fMaxHP := Value;
 End; (* Proc TBeing.SetMaxHP
 *-----------------------------------------------------------------------------*)
 
-Procedure TBeing.SetHP(Value : word);
+Procedure TBeing.SetHP(Value : LongWord);
 Begin
 	fHP := Value;
 End; (* Proc TBeing.SetHP

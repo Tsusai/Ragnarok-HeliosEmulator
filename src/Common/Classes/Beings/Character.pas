@@ -170,8 +170,8 @@ protected
 		const Value: Integer
 	); override;
 
-	procedure SetMaxHP(Value : Word); override;
-	procedure SetHP(Value : Word); override;
+	procedure SetMaxHP(Value : LongWord); override;
+	procedure SetHP(Value : LongWord); override;
 	procedure SetMaxSP(Value : Word); override;
 	procedure SetSP(Value : Word); override;
 	procedure SetOption(Value : Word); override;
@@ -863,7 +863,7 @@ end;{SetBaseStats}
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.SetMaxHP(
-		Value : word
+		Value : LongWord
 	);
 begin
 	Inherited;
@@ -889,7 +889,7 @@ end;{SetMaxHP}
 //
 //------------------------------------------------------------------------------
 procedure TCharacter.SetHP(
-		Value : word
+		Value : LongWord
 	);
 begin
 	Inherited;
